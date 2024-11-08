@@ -73,6 +73,16 @@ export const useShinkaiNodeGetDefaultModel = (
   });
   return { ...query } as UseQueryResult<string, Error>;
 };
+export const useShinkaiNodeGetOllamaVersionQuery = (
+  options?: Omit<QueryObserverOptions, 'queryKey'>,
+): UseQueryResult<string, Error> => {
+  const query = useQuery({
+    queryKey: ['shinkai_node_get_ollama_version'],
+    queryFn: (): Promise<string> => invoke('shinkai_node_get_ollama_version'),
+    ...options,
+  });
+  return { ...query } as UseQueryResult<string, Error>;
+};
 
 // Mutations
 export const useShinkaiNodeSpawnMutation = (options?: UseMutationOptions) => {

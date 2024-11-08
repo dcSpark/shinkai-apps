@@ -1,8 +1,10 @@
 use std::{path::PathBuf, time::Duration};
 
+use anyhow::Result;
 use regex::Regex;
 use serde::Serialize;
 use tauri::AppHandle;
+use tauri_plugin_shell::ShellExt;
 use tokio::sync::mpsc::Sender;
 
 use crate::local_shinkai_node::ollama_api::ollama_api_client::OllamaApiClient;
@@ -178,7 +180,8 @@ impl OllamaProcessHandler {
         for process in processes {
             log::info!(
                 "terminating process: PID={}, Name={}",
-                process.pid, process.name
+                process.pid,
+                process.name
             );
             kill_process_by_pid(self.app.clone(), &process.pid.to_string()).await;
         }
@@ -189,5 +192,36 @@ impl OllamaProcessHandler {
         kill_process_by_name(self.app.clone(), "ollama_llama_server").await;
         self.process_handler.kill().await;
         let _ = self.kill_existing_processes_using_ports().await;
+    }
+
+    pub async fn version(app: AppHandle) -> Result<String> {
+        let shell = app.shell();
+        let output = shell
+            .sidecar(Self::PROCESS_NAME)
+            .map_err(|error| {
+                let message = format!("failed to spawn ollama version, error: {}", error);
+                log::info!("{}", message);
+                anyhow::anyhow!("{}", message)
+            })?
+            .args(["-v"])
+            .output()
+            .await
+            .map_err(|error| {
+                let message = format!("failed to spawn error: {}", error);
+                log::info!("{}", message);
+                anyhow::anyhow!("{}", message)
+            })?;
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        log::info!("capturing ollama version from stdout: {:?}", stdout);
+
+        let re = Regex::new(r"client version is (\S+)").unwrap();
+        let version = re
+            .captures(&stdout)
+            .and_then(|cap| cap.get(1))
+            .map(|m| m.as_str())
+            .unwrap_or("");
+        log::info!("ollama version {}", version);
+
+        Ok(version.to_string())
     }
 }

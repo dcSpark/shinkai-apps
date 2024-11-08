@@ -548,6 +548,7 @@ export default {
     label: 'Workflow Playground',
   },
   ollama: {
+    version: 'Ollama Version',
     errors: {
       failedToFetch:
         'Failed to fetch local Ollama models. Please ensure Ollama is running correctly.',

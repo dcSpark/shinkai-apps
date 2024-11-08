@@ -280,6 +280,7 @@
     }
   },
   "ollama": {
+    "version": "Ollama 版本",
     "errors": {
       "failedToFetch": "无法获取本地Ollama模型。请确保Ollama正常运行。"
     }

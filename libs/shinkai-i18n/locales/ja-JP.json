@@ -280,6 +280,7 @@
     }
   },
   "ollama": {
+    "version": "Ollamaバージョン",
     "errors": {
       "failedToFetch": "ローカルのOllamaモデルの取得に失敗しました。Ollamaが正常に動作していることを確認してください。"
     }
