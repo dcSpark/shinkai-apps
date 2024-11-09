@@ -9,8 +9,8 @@ const envSchema = z.object({
   PUB_DATE: z.string().optional(),
   DARWIN_AARCH64_SIGNATURE: z.string().min(1),
   DARWIN_AARCH64_URL: z.string().url(),
-  LINUX_x86_64_SIGNATURE: z.string().min(1),
-  LINUX_x86_64_URL: z.string().url(),
+  // LINUX_x86_64_SIGNATURE: z.string().min(1),
+  // LINUX_x86_64_URL: z.string().url(),
   WINDOWS_x86_64_SIGNATURE: z.string().min(1),
   WINDOWS_x86_64_URL: z.string().url(),
 });
