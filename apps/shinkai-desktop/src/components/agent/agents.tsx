@@ -10,6 +10,9 @@ import {
   Badge,
   Button,
   buttonVariants,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -25,6 +28,11 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+  Label,
+  MarkdownPreview,
   ScrollArea,
   Select,
   SelectContent,
@@ -36,10 +44,13 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  Slider,
+  Switch,
+  Textarea,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Edit, Plus, TrashIcon } from 'lucide-react';
+import { ChevronRight, Edit, Plus, TrashIcon } from 'lucide-react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -48,6 +59,7 @@ import { z } from 'zod';
 
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import { CreateChatConfigActionBar } from '../chat/chat-action-bar/chat-config-action-bar';
 
 function Agents() {
   const auth = useAuth((state) => state.auth);
@@ -128,7 +140,8 @@ const AddAgentSheet = () => {
     resolver: zodResolver(addAgentFormSchema),
     defaultValues: {
       name: 'agent_test',
-      uiDescription: '',
+      uiDescription:
+        'It delivers strong performance at a lower cost compared to its peers, and is engineered for high endurance in large-scale AI deployments.',
       storage_path: '',
       knowledge: [],
       tools: [],
@@ -185,7 +198,7 @@ const AddAgentSheet = () => {
           <span>Add Agent</span>
         </Button>
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent className="h-full overflow-auto">
         <SheetHeader className="mb-6">
           <SheetTitle className="font-normal">Create Agent</SheetTitle>
         </SheetHeader>
@@ -260,6 +273,233 @@ const AddAgentSheet = () => {
               {/*    <TextField field={field} label="Tools" />*/}
               {/*  )}*/}
               {/*/>*/}
+              <div className="!mt-10 space-y-4">
+                <Collapsible className="rounded-lg bg-gray-400">
+                  <CollapsibleTrigger
+                    className={cn(
+                      'flex w-full max-w-full items-center justify-between gap-6 px-5 py-2',
+                      '[&[data-state=open]>svg]:rotate-90',
+                    )}
+                  >
+                    <span className="flex-1 items-center gap-1 truncate py-2 text-left text-xs font-medium text-gray-50">
+                      Knowledge
+                    </span>
+
+                    <ChevronRight className="text-gray-80 h-4 w-4 shrink-0" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-5 pb-5 pt-2.5">
+                    TODO: kwnoledge
+                  </CollapsibleContent>
+                </Collapsible>
+                <Collapsible className="rounded-lg bg-gray-400">
+                  <CollapsibleTrigger
+                    className={cn(
+                      'flex w-full max-w-full items-center justify-between gap-6 px-5 py-2',
+                      '[&[data-state=open]>svg]:rotate-90',
+                    )}
+                  >
+                    <span className="flex-1 items-center gap-1 truncate py-2 text-left text-xs font-medium text-gray-50">
+                      Tools
+                    </span>
+
+                    <ChevronRight className="text-gray-80 h-4 w-4 shrink-0" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-5 pb-5 pt-2.5">
+                    TODO: tools
+                  </CollapsibleContent>
+                </Collapsible>
+                <Collapsible className="rounded-lg bg-gray-400">
+                  <CollapsibleTrigger
+                    className={cn(
+                      'flex w-full max-w-full items-center justify-between gap-6 px-5 py-2',
+                      '[&[data-state=open]>svg]:rotate-90',
+                    )}
+                  >
+                    <span className="flex-1 items-center gap-1 truncate py-2 text-left text-xs font-medium text-gray-50">
+                      Model Configuration
+                    </span>
+
+                    <ChevronRight className="text-gray-80 h-4 w-4 shrink-0" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="px-5 pb-5 pt-2.5">
+                    <div className="space-y-6">
+                      <FormField
+                        control={form.control}
+                        name="config.stream"
+                        render={({ field }) => (
+                          <FormItem className="flex w-full flex-col gap-3">
+                            <div className="flex gap-3">
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="static space-y-1.5 text-sm text-white">
+                                  Enable Stream
+                                </FormLabel>
+                              </div>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="config.temperature"
+                        render={({ field }) => (
+                          <FormItem className="flex gap-2.5">
+                            <FormControl>
+                              <HoverCard openDelay={200}>
+                                <HoverCardTrigger asChild>
+                                  <div className="grid w-full gap-4">
+                                    <div className="flex items-center justify-between">
+                                      <Label htmlFor="temperature">
+                                        Temperature
+                                      </Label>
+                                      <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                                        {field.value}
+                                      </span>
+                                    </div>
+                                    <Slider
+                                      aria-label="Temperature"
+                                      className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
+                                      id="temperature"
+                                      max={1}
+                                      onValueChange={(vals) => {
+                                        field.onChange(vals[0]);
+                                      }}
+                                      step={0.1}
+                                      value={[field.value]}
+                                    />
+                                  </div>
+                                </HoverCardTrigger>
+                                <HoverCardContent
+                                  align="start"
+                                  className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
+                                  side="left"
+                                >
+                                  Temperature is a parameter that affects the
+                                  randomness of AI outputs. Higher temp = more
+                                  unexpected, lower temp = more predictable.
+                                </HoverCardContent>
+                              </HoverCard>
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="config.top_p"
+                        render={({ field }) => (
+                          <FormItem className="flex gap-2.5">
+                            <FormControl>
+                              <HoverCard openDelay={200}>
+                                <HoverCardTrigger asChild>
+                                  <div className="grid w-full gap-4">
+                                    <div className="flex items-center justify-between">
+                                      <Label htmlFor="topP">Top P</Label>
+                                      <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                                        {field.value}
+                                      </span>
+                                    </div>
+                                    <Slider
+                                      aria-label="Top P"
+                                      className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
+                                      id="topP"
+                                      max={1}
+                                      min={0}
+                                      onValueChange={(vals) => {
+                                        field.onChange(vals[0]);
+                                      }}
+                                      step={0.1}
+                                      value={[field.value]}
+                                    />
+                                  </div>
+                                </HoverCardTrigger>
+                                <HoverCardContent
+                                  align="start"
+                                  className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
+                                  side="left"
+                                >
+                                  Adjust the probability threshold to increase
+                                  the relevance of results. For example, a
+                                  threshold of 0.9 could be optimal for
+                                  targeted, specific applications, whereas a
+                                  threshold of 0.95 or 0.97 might be preferred
+                                  for tasks that require broader, more creative
+                                  responses.
+                                </HoverCardContent>
+                              </HoverCard>
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="config.top_k"
+                        render={({ field }) => (
+                          <FormItem className="flex gap-2.5">
+                            <FormControl>
+                              <HoverCard openDelay={200}>
+                                <HoverCardTrigger asChild>
+                                  <div className="grid w-full gap-4">
+                                    <div className="flex items-center justify-between">
+                                      <Label htmlFor="topK">Top K</Label>
+                                      <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                                        {field.value}
+                                      </span>
+                                    </div>
+                                    <Slider
+                                      aria-label="Top K"
+                                      className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
+                                      id="topK"
+                                      max={100}
+                                      onValueChange={(vals) => {
+                                        field.onChange(vals[0]);
+                                      }}
+                                      step={1}
+                                      value={[field.value]}
+                                    />
+                                  </div>
+                                </HoverCardTrigger>
+                                <HoverCardContent
+                                  align="start"
+                                  className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
+                                  side="left"
+                                >
+                                  Adjust the count of key words for creating
+                                  sequences. This parameter governs the extent
+                                  of the generated passage, forestalling too
+                                  much repetition. Selecting a higher figure
+                                  yields longer narratives, whereas a smaller
+                                  figure keeps the text brief.
+                                </HoverCardContent>
+                              </HoverCard>
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="config.custom_prompt"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>System Prompt</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                className="!min-h-[130px] resize-none text-sm"
+                                spellCheck={false}
+                                {...field}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              </div>
             </div>
             <Button
               className="w-full"
