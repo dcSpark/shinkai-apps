@@ -28,10 +28,10 @@ const updatesJson = {
       signature: env.DARWIN_AARCH64_SIGNATURE,
       url: env.DARWIN_AARCH64_URL,
     },
-    'linux-x86_64': {
-      signature: env.LINUX_x86_64_SIGNATURE,
-      url: env.LINUX_x86_64_URL,
-    },
+    // 'linux-x86_64': {
+    //   signature: env.LINUX_x86_64_SIGNATURE,
+    //   url: env.LINUX_x86_64_URL,
+    // },
     'windows-x86_64': {
       signature: env.WINDOWS_x86_64_SIGNATURE,
       url: env.WINDOWS_x86_64_URL,
