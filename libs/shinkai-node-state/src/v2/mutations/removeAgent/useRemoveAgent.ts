@@ -1,24 +1,21 @@
-import {
-  useMutation,
-  type UseMutationOptions,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { UseMutationOptions, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
 import { APIError } from '../../types';
-import { createAgent } from './index';
-import { CreateAgentInput, CreateAgentOutput } from './types';
+import { removeAgent } from '.';
+import { RemoveAgentInput, RemoveAgentOutput } from './types';
 
 type Options = UseMutationOptions<
-  CreateAgentOutput,
+  RemoveAgentOutput,
   APIError,
-  CreateAgentInput
+  RemoveAgentInput
 >;
 
-export const useCreateAgent = (options?: Options) => {
+export const useRemoveAgent = (options?: Options) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: createAgent,
+    mutationFn: removeAgent,
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
