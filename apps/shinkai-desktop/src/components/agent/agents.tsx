@@ -32,7 +32,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
   Label,
-  MarkdownPreview,
   ScrollArea,
   Select,
   SelectContent,
@@ -59,7 +58,6 @@ import { z } from 'zod';
 
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
-import { CreateChatConfigActionBar } from '../chat/chat-action-bar/chat-config-action-bar';
 
 function Agents() {
   const auth = useAuth((state) => state.auth);
