@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DialogClose } from '@radix-ui/react-dialog';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/createAgent/useCreateAgent';
@@ -9,6 +10,11 @@ import {
   Badge,
   Button,
   buttonVariants,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -27,7 +33,6 @@ import {
   SelectValue,
   Sheet,
   SheetContent,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -482,35 +487,46 @@ const RemoveAgentDrawer = ({
   });
 
   return (
-    <Sheet onOpenChange={onOpenChange} open={open}>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle className="font-normal">
-            {t('llmProviders.delete.label')}
-            <span className="font-medium">{agentId}</span>{' '}
-          </SheetTitle>
-        </SheetHeader>
-        <p className="text-gray-80 my-3 text-base">
-          {t('llmProviders.delete.description')}
-        </p>
-        <SheetFooter>
-          <Button
-            className="mt-4"
-            isLoading={isPending}
-            onClick={async () => {
-              if (!auth) return;
-              await removeAgent({
-                nodeAddress: auth?.node_address ?? '',
-                agentId,
-                token: auth?.api_v2_key ?? '',
-              });
-            }}
-            variant="destructive"
-          >
-            {t('common.delete')}
-          </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+    <Dialog onOpenChange={onOpenChange} open={open}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogTitle className="pb-0">
+          Delete Agent <span className="font-mono text-base">{agentId}</span> ?
+        </DialogTitle>
+        <DialogDescription>
+          The agent will be permanently deleted. This action cannot be undone.
+        </DialogDescription>
+
+        <DialogFooter>
+          <div className="flex gap-2 pt-4">
+            <DialogClose asChild className="flex-1">
+              <Button
+                className="min-w-[100px] flex-1"
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                {t('common.cancel')}
+              </Button>
+            </DialogClose>
+            <Button
+              className="min-w-[100px] flex-1"
+              disabled={isPending}
+              isLoading={isPending}
+              onClick={async () => {
+                await removeAgent({
+                  nodeAddress: auth?.node_address ?? '',
+                  agentId,
+                  token: auth?.api_v2_key ?? '',
+                });
+              }}
+              size="sm"
+              variant="destructive"
+            >
+              {t('common.delete')}
+            </Button>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
