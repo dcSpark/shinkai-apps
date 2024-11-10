@@ -250,7 +250,7 @@ jobs:
           # Windows Only
           CPAL_ASIO_DIR: ${{ github.workspace }}/asiosdk_2.3.3_2019-06-14
           LIBCLANG_PATH: C:\Program Files\LLVM\bin
-          NODE_OPTIONS: "--max_old_space_size=4096"
+          NODE_OPTIONS: "--max_old_space_size=8192"
       - name: Prepare binary files
         id: prepare-files
         shell: bash
