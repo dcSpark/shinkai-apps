@@ -223,7 +223,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           VITE_POSTHOG_API_KEY: ${{ secrets.VITE_POSTHOG_API_KEY }}
           SECRET_DESKTOP_INSTALLATION_PROOF_KEY: ${{ secrets.SECRET_DESKTOP_INSTALLATION_PROOF_KEY }}
-          NODE_OPTIONS: "--max_old_space_size=4096"
+          NODE_OPTIONS: "--max_old_space_size=8192"
       - name: (Macos) Run NX build on shinkai-desktop
         if: ${{ matrix.arch == 'aarch64-apple-darwin' }}
         run: npx nx build shinkai-desktop --skip-nx-cache
@@ -238,7 +238,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           VITE_POSTHOG_API_KEY: ${{ secrets.VITE_POSTHOG_API_KEY }}
           SECRET_DESKTOP_INSTALLATION_PROOF_KEY: ${{ secrets.SECRET_DESKTOP_INSTALLATION_PROOF_KEY }}
-          NODE_OPTIONS: "--max_old_space_size=4096"
+          NODE_OPTIONS: "--max_old_space_size=8192"
       - name: (Windows) Run NX build on shinkai-desktop
         if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         run: npx nx build shinkai-desktop --skip-nx-cache
