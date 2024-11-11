@@ -41,7 +41,7 @@ import { toast } from 'sonner';
 import Agents from '../components/agent/agents';
 import { useAuth } from '../store/auth';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
-import { getModelObject } from './create-ai';
+import { getModelObject } from './add-ai';
 import { SimpleLayout } from './layout/simple-layout';
 
 const AIsPage = () => {
