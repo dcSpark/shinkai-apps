@@ -42,7 +42,7 @@ import { toast } from 'sonner';
 import Agents from '../components/agent/agents';
 import { useAuth } from '../store/auth';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
-import { getModelObject } from './create-agent';
+import { getModelObject } from './create-ai';
 import { SimpleLayout } from './layout/simple-layout';
 
 const AgentsPage = () => {
@@ -63,10 +63,10 @@ const AgentsPage = () => {
 
   const onAddAgentClick = () => {
     if (isLocalShinkaiNodeIsUse) {
-      navigate('/agents-locally');
+      navigate('/local-ais');
       return;
     }
-    navigate('/add-agent');
+    navigate('/add-ai');
   };
 
   console.log(agents, 'agents');

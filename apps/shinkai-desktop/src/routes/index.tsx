@@ -27,14 +27,13 @@ import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-n
 import { ShinkaiNodeRunningOverlay } from '../lib/shinkai-node-overlay';
 import AgentsPage from '../pages/agents';
 import AIModelInstallation from '../pages/ai-model-installation';
-import AgentsLocally from '../pages/ai-model-locally';
 import AnalyticsPage from '../pages/analytics';
 import AnalyticsSettingsPage from '../pages/analytics-settings';
 import ChatConversation from '../pages/chat/chat-conversation';
 import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
 import { ConnectMethodQrCodePage } from '../pages/connect-method-qr-code';
-import CreateAgentPage from '../pages/create-agent';
+import CreateAIPage from '../pages/create-ai';
 import CreateChatPage from '../pages/create-chat';
 import CryptoWalletPage from '../pages/crypto-wallet';
 import { ExportConnection } from '../pages/export-connection';
@@ -45,6 +44,7 @@ import GetStartedPage from '../pages/get-started';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
+import LocalAis from '../pages/local-ais';
 import { PromptLibrary } from '../pages/prompt-library';
 import { PublicKeys } from '../pages/public-keys';
 import QuickConnectionPage from '../pages/quick-connection';
@@ -268,8 +268,8 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         >
-          <Route element={<CreateAgentPage />} path="add-agent" />
-          <Route element={<AgentsLocally />} path="agents-locally" />
+          <Route element={<CreateAIPage />} path="add-ai" />
+          <Route element={<LocalAis />} path="local-ais" />
           <Route element={<AgentsPage />} index path="agents" />
         </Route>
         <Route
