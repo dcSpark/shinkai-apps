@@ -4,6 +4,7 @@ import { debug } from '@tauri-apps/plugin-log';
 import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
+import AddAgentPage from '../components/agent/add-agent';
 import { ChatProvider } from '../components/chat/context/chat-context';
 import { SetJobScopeProvider } from '../components/chat/context/set-job-scope-context';
 import { ToolsProvider } from '../components/chat/context/tools-context';
@@ -25,15 +26,15 @@ import {
 } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { ShinkaiNodeRunningOverlay } from '../lib/shinkai-node-overlay';
-import AgentsPage from '../pages/agents';
+import AddAIPage from '../pages/add-ai';
 import AIModelInstallation from '../pages/ai-model-installation';
+import AIsPage from '../pages/ais';
 import AnalyticsPage from '../pages/analytics';
 import AnalyticsSettingsPage from '../pages/analytics-settings';
 import ChatConversation from '../pages/chat/chat-conversation';
 import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
 import { ConnectMethodQrCodePage } from '../pages/connect-method-qr-code';
-import CreateAIPage from '../pages/create-ai';
 import CreateChatPage from '../pages/create-chat';
 import CryptoWalletPage from '../pages/crypto-wallet';
 import { ExportConnection } from '../pages/export-connection';
@@ -44,7 +45,7 @@ import GetStartedPage from '../pages/get-started';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
-import LocalAis from '../pages/local-ais';
+import LocalAisPage from '../pages/local-ais';
 import { PromptLibrary } from '../pages/prompt-library';
 import { PublicKeys } from '../pages/public-keys';
 import QuickConnectionPage from '../pages/quick-connection';
@@ -268,9 +269,10 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         >
-          <Route element={<CreateAIPage />} path="add-ai" />
-          <Route element={<LocalAis />} path="local-ais" />
-          <Route element={<AgentsPage />} index path="agents" />
+          <Route element={<LocalAisPage />} path="local-ais" />
+          <Route element={<AIsPage />} index path="ais" />
+          <Route element={<AddAIPage />} path="add-ai" />
+          <Route element={<AddAgentPage />} index path="add-agent" />
         </Route>
         <Route
           element={

@@ -7,7 +7,6 @@ import {
 } from '@shinkai_network/shinkai-node-state/forms/agents/edit-agent';
 import { useRemoveLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/removeLLMProvider/useRemoveLLMProvider';
 import { useUpdateLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/updateLLMProvider/useUpdateLLMProvider';
-import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
   Badge,
@@ -45,15 +44,11 @@ import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { getModelObject } from './create-ai';
 import { SimpleLayout } from './layout/simple-layout';
 
-const AgentsPage = () => {
+const AIsPage = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const { llmProviders } = useGetLLMProviders({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
-  const { data: agents } = useGetAgents({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
@@ -69,7 +64,6 @@ const AgentsPage = () => {
     navigate('/add-ai');
   };
 
-  console.log(agents, 'agents');
   return (
     <SimpleLayout>
       <Tabs className="relative flex h-full flex-col" defaultValue="ais">
@@ -142,7 +136,7 @@ const AgentsPage = () => {
   );
 };
 
-export default AgentsPage;
+export default AIsPage;
 
 function LLMProviderCard({
   llmProviderId,

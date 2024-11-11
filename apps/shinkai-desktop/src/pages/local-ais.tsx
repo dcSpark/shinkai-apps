@@ -9,7 +9,7 @@ import { OllamaModels } from '../components/shinkai-node-manager/ollama-models';
 import { shinkaiNodeQueryClient } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { SubpageLayout } from './layout/simple-layout';
 
-const LocalAis = () => {
+const LocalAisPage = () => {
   const { t } = useTranslation();
   return (
     <QueryClientProvider client={shinkaiNodeQueryClient}>
@@ -40,4 +40,4 @@ const LocalAis = () => {
   );
 };
 
-export default LocalAis;
+export default LocalAisPage;

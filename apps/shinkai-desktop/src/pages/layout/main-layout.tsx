@@ -363,7 +363,7 @@ export function MainNav() {
   const footerNavigationLinks = [
     {
       title: t('layout.menuItems.agents'),
-      href: '/agents',
+      href: '/ais',
       icon: <BotIcon className="h-5 w-5" />,
     },
     {
