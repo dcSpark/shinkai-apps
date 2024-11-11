@@ -13,6 +13,7 @@ use crate::commands::shinkai_node_manager_commands::{
     shinkai_node_set_options, shinkai_node_spawn, show_shinkai_node_manager_window,
 };
 
+use commands::logs::retrieve_logs;
 use commands::spotlight_commands::{hide_spotlight_window_app, show_spotlight_window_app};
 use global_shortcuts::global_shortcut_handler;
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
@@ -89,6 +90,7 @@ fn main() {
             get_request,
             post_request,
             shinkai_node_get_ollama_version,
+            retrieve_logs,
         ])
         .setup(|app| {
             log::info!("startin app version: {}", env!("CARGO_PKG_VERSION"));
