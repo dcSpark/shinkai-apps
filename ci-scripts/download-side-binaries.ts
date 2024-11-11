@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-import { createWriteStream, existsSync } from 'fs';
+import { createWriteStream } from 'fs';
 import path from 'path';
 import axios from 'axios';
 import { ensureFile } from 'fs-extra';
@@ -46,9 +46,6 @@ const addExecPermissions = (path: string) => {
 };
 
 const downloadFile = async (url: string, path: string): Promise<void> => {
-  if (existsSync(path)) {
-    return Promise.resolve();
-  }
   console.log(`Downloading ${url}`);
   const response = await axios({
     method: 'GET',

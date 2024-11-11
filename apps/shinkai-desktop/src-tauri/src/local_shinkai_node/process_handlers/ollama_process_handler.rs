@@ -214,12 +214,28 @@ impl OllamaProcessHandler {
         let stdout = String::from_utf8_lossy(&output.stdout);
         log::info!("capturing ollama version from stdout: {:?}", stdout);
 
+        /*
+            'client version is *.*.*' is the real ollam version our app is running BUT
+            - when embedded and local ollama are equal the message says 'ollama version is *.*.*'
+            - when embedded and local are different, the message says 'ollama version is *.*.*... \nWarning client version is *.*.*'
+
+            So we try to find the client version and if it doesn't exists we fallback to ollama version (that means client and local are equals)
+        */
         let re = Regex::new(r"client version is (\S+)").unwrap();
-        let version = re
+        let mut version = re
             .captures(&stdout)
             .and_then(|cap| cap.get(1))
             .map(|m| m.as_str())
             .unwrap_or("");
+
+        if version.is_empty() {
+            let re = Regex::new(r"ollama version is (\S+)").unwrap();
+            version = re
+                .captures(&stdout)
+                .and_then(|cap| cap.get(1))
+                .map(|m| m.as_str())
+                .unwrap_or("");
+        }
         log::info!("ollama version {}", version);
 
         Ok(version.to_string())
