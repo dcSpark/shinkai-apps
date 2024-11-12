@@ -39,6 +39,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import Agents from '../components/agent/agents';
+import { useURLQueryParams } from '../hooks/use-url-query-params';
 import { useAuth } from '../store/auth';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { getModelObject } from './add-ai';
@@ -55,6 +56,8 @@ const AIsPage = () => {
   const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
     (state) => state.isInUse,
   );
+  const query = useURLQueryParams();
+  const tabSelected = query.get('tab') ?? 'ais';
 
   const onAddAgentClick = () => {
     if (isLocalShinkaiNodeIsUse) {
@@ -66,7 +69,10 @@ const AIsPage = () => {
 
   return (
     <SimpleLayout>
-      <Tabs className="relative flex h-full flex-col" defaultValue="ais">
+      <Tabs
+        className="relative flex h-full flex-col"
+        defaultValue={tabSelected}
+      >
         <TabsList className="grid w-full max-w-[200px] grid-cols-2 overflow-auto rounded-lg border border-gray-400 bg-transparent p-0.5">
           <TabsTrigger
             className="flex h-8 items-center gap-1.5 text-xs font-semibold"
@@ -163,7 +169,7 @@ function LLMProviderCard({
         className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
         data-testid={`${llmProviderId}-agent-button`}
         onClick={() => {
-          navigate(`/inboxes`, { state: { agentName: llmProviderId } });
+          navigate(`/inboxes`, { state: { llmProviderId: llmProviderId } });
         }}
         role="button"
       >

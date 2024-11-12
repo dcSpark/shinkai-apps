@@ -25,6 +25,11 @@ import {
   Switch,
   Textarea,
   TextField,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useForm } from 'react-hook-form';
@@ -37,7 +42,12 @@ import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 
 const addAgentFormSchema = z.object({
-  name: z.string(),
+  name: z
+    .string()
+    .regex(
+      /^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/,
+      'It just accepts alphanumeric characters and underscores',
+    ),
   llmProviderId: z.string(),
   uiDescription: z.string(),
   storage_path: z.string(),
@@ -48,7 +58,6 @@ const addAgentFormSchema = z.object({
     .object({
       custom_prompt: z.string(),
       temperature: z.number(),
-      seed: z.number(),
       top_k: z.number(),
       top_p: z.number(),
       stream: z.boolean(),
@@ -67,7 +76,7 @@ function AddAgentPage() {
   const form = useForm<AddAgentFormValues>({
     resolver: zodResolver(addAgentFormSchema),
     defaultValues: {
-      name: 'agent_test',
+      name: '',
       uiDescription: '',
       storage_path: '',
       knowledge: [],
@@ -79,12 +88,12 @@ function AddAgentPage() {
         top_p: DEFAULT_CHAT_CONFIG.top_p,
         top_k: DEFAULT_CHAT_CONFIG.top_k,
         custom_prompt: '',
-        seed: DEFAULT_CHAT_CONFIG.seed,
         other_model_params: {},
       },
       llmProviderId: defaultAgentId,
     },
   });
+
   const { data: toolsList } = useGetTools({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
@@ -95,6 +104,9 @@ function AddAgentPage() {
       toast.error('Failed to create agent', {
         description: error.response?.data?.message ?? error.message,
       });
+    },
+    onSuccess: () => {
+      navigate('/ais?tab=agents');
     },
   });
 
@@ -129,13 +141,32 @@ function AddAgentPage() {
           className="flex flex-col justify-between space-y-6"
           onSubmit={form.handleSubmit(submit)}
         >
-          <div className="grid grid-cols-[1fr_340px] gap-10">
+          <div className="grid grid-cols-[1fr_360px] gap-6">
             <div className="space-y-4">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <TextField field={field} label="Agent Name" />
+                  <TextField
+                    autoFocus
+                    field={{
+                      ...field,
+                      onChange: (e) => {
+                        const value = e.target.value;
+                        const alphanumericValue = value.replace(
+                          /[^a-zA-Z0-9_]/g,
+                          '_',
+                        );
+                        field.onChange({
+                          ...e,
+                          target: {
+                            value: alphanumericValue,
+                          },
+                        });
+                      },
+                    }}
+                    label="Agent Name"
+                  />
                 )}
               />
               <FormField
@@ -144,7 +175,6 @@ function AddAgentPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
-
                     <FormControl>
                       <Textarea
                         className="!min-h-[100px] resize-none text-sm"
@@ -185,12 +215,12 @@ function AddAgentPage() {
                   </FormItem>
                 )}
               />
-              <div className="space-y-6 rounded-lg bg-gray-400 px-4 py-4">
-                <span className="flex-1 items-center gap-1 truncate py-2 text-left text-xs font-semibold text-gray-50">
-                  Knowledge
-                </span>
-                <div>TODO: kwnoledge</div>
-              </div>
+              {/*<div className="space-y-6 rounded-lg bg-gray-400 px-4 py-4">*/}
+              {/*  <span className="flex-1 items-center gap-1 truncate py-2 text-left text-xs font-semibold text-gray-50">*/}
+              {/*    Knowledge*/}
+              {/*  </span>*/}
+              {/*  <div>TODO: kwnoledge</div>*/}
+              {/*</div>*/}
               <div className="space-y-6 rounded-lg bg-gray-400 px-4 py-4">
                 <div className="flex items-center justify-between gap-2">
                   <span className="flex-1 items-center gap-1 truncate text-left text-xs font-semibold text-gray-50">
@@ -213,7 +243,7 @@ function AddAgentPage() {
                     <span className="text-gray-80 text-xs">Enabled All</span>
                   </div>
                 </div>
-                <div className="flex flex-col gap-2.5">
+                <div className="flex max-h-[37vh] flex-col gap-2.5 overflow-auto">
                   {toolsList?.map((tool) => (
                     <FormField
                       control={form.control}
@@ -221,14 +251,13 @@ function AddAgentPage() {
                       name="tools"
                       render={({ field }) => (
                         <FormItem className="flex w-full flex-col gap-3">
-                          <div className="flex gap-3">
+                          <div className="flex items-center gap-3">
                             <FormControl>
                               <Switch
                                 checked={field.value.includes(
                                   tool.tool_router_key,
                                 )}
                                 onCheckedChange={() => {
-                                  // add it if true , remove if false
                                   field.onChange(
                                     field.value.includes(tool.tool_router_key)
                                       ? field.value.filter(
@@ -241,9 +270,25 @@ function AddAgentPage() {
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
-                              <FormLabel className="text-gray-80 static space-y-1.5 text-xs">
-                                {formatText(tool.name)}
-                              </FormLabel>
+                              <TooltipProvider delayDuration={0}>
+                                <Tooltip>
+                                  <TooltipTrigger className="flex items-center gap-1">
+                                    <FormLabel className="text-gray-80 static space-y-1.5 text-xs">
+                                      {formatText(tool.name)}
+                                    </FormLabel>
+                                  </TooltipTrigger>
+                                  <TooltipPortal>
+                                    <TooltipContent
+                                      align="start"
+                                      alignOffset={-10}
+                                      className="max-w-md"
+                                      side="top"
+                                    >
+                                      {tool.description}
+                                    </TooltipContent>
+                                  </TooltipPortal>
+                                </Tooltip>
+                              </TooltipProvider>
                             </div>
                           </div>
                         </FormItem>

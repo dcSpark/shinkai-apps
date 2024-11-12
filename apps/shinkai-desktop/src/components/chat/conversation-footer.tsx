@@ -86,11 +86,13 @@ import { useSetJobScope } from './context/set-job-scope-context';
 
 export const actionButtonClassnames =
   'shrink-0 bg-gray-350 inline-flex h-[30px] w-[30px] cursor-pointer items-center justify-center gap-1.5 truncate border border-gray-200 px-[7px] py-1.5 text-left text-xs rounded-lg font-normal text-gray-50 hover:bg-gray-300 hover:text-white';
+
 export type ChatConversationLocationState = {
   files: File[];
   agentName: string;
   selectedVRFiles: VRItem[];
   selectedVRFolders: VRFolder[];
+  llmProviderId: string;
 };
 
 function ConversationEmptyFooter() {
@@ -156,15 +158,22 @@ function ConversationEmptyFooter() {
   }, [llmProviders, chatForm, defaulAgentId]);
 
   useEffect(() => {
+    if (!locationState?.llmProviderId) {
+      return;
+    }
+    const llmProvider = llmProviders.find(
+      (agent) => agent.id === locationState.llmProviderId,
+    );
+    if (llmProvider) {
+      chatForm.setValue('agent', llmProvider.id);
+    }
+  }, [chatForm, locationState, llmProviders]);
+
+  useEffect(() => {
     if (!locationState?.agentName) {
       return;
     }
-    const agent = llmProviders.find(
-      (agent) => agent.id === locationState.agentName,
-    );
-    if (agent) {
-      chatForm.setValue('agent', agent.id);
-    }
+    chatForm.setValue('agent', locationState.agentName);
   }, [chatForm, locationState, llmProviders]);
 
   useEffect(() => {
