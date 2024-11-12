@@ -487,7 +487,7 @@ function AddAgentPage() {
             <Button
               className="min-w-[120px]"
               disabled={isPending}
-              onClick={() => navigate('/ais')}
+              onClick={() => navigate('/ais?tab=agents')}
               size="sm"
               type="button"
               variant="outline"

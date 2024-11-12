@@ -17,8 +17,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   ScrollArea,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { AIAgentIcon } from '@shinkai_network/shinkai-ui/assets';
+import { AIAgentIcon, CreateAIIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Edit, Plus, TrashIcon } from 'lucide-react';
 import React from 'react';
@@ -112,14 +117,7 @@ const AgentCard = ({
 
   return (
     <React.Fragment>
-      <div
-        className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
-        data-testid={`${agentId}-agent-button`}
-        onClick={() => {
-          navigate(`/inboxes`, { state: { agentName: agentId } });
-        }}
-        role="button"
-      >
+      <div className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg">
             <AIAgentIcon />
@@ -134,64 +132,92 @@ const AgentCard = ({
             </span>
           </div>
         </div>
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <div
-              className={cn(
-                buttonVariants({
-                  variant: 'tertiary',
-                  size: 'icon',
-                }),
-                'border-0 hover:bg-gray-500/40',
-              )}
-              onClick={(event) => {
-                event.stopPropagation();
-              }}
-              role="button"
-              tabIndex={0}
-            >
-              <span className="sr-only">{t('common.moreOptions')}</span>
-              <DotsVerticalIcon className="text-gray-100" />
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="w-[160px] border bg-gray-500 px-2.5 py-2"
-          >
-            {[
-              {
-                name: t('common.edit'),
-                icon: <Edit className="mr-3 h-4 w-4" />,
-                onClick: () => {
-                  // navigate(true);
-                },
-              },
-              {
-                name: t('common.delete'),
-                icon: <TrashIcon className="mr-3 h-4 w-4" />,
-                onClick: () => {
-                  setIsDeleteAgentDrawerOpen(true);
-                },
-              },
-            ].map((option) => (
-              <React.Fragment key={option.name}>
-                {option.name === 'Delete' && (
-                  <DropdownMenuSeparator className="bg-gray-300" />
-                )}
-                <DropdownMenuItem
-                  key={option.name}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    option.onClick();
+        <div className="flex items-center gap-4">
+          <TooltipProvider delayDuration={0}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={() => {
+                    navigate(`/inboxes`, { state: { agentName: agentId } });
                   }}
+                  size="sm"
+                  variant="gradient"
                 >
-                  {option.icon}
-                  {option.name}
-                </DropdownMenuItem>
-              </React.Fragment>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+                  <CreateAIIcon className="size-4" />
+                  <span className="sr-only">New Chat</span>
+                </Button>
+              </TooltipTrigger>
+
+              <TooltipPortal>
+                <TooltipContent
+                  align="center"
+                  className="flex flex-col items-center gap-1"
+                  side="right"
+                >
+                  Create New Chat
+                </TooltipContent>
+              </TooltipPortal>
+            </Tooltip>
+          </TooltipProvider>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <div
+                className={cn(
+                  buttonVariants({
+                    variant: 'tertiary',
+                    size: 'icon',
+                  }),
+                  'border-0 hover:bg-gray-500/40',
+                )}
+                onClick={(event) => {
+                  event.stopPropagation();
+                }}
+                role="button"
+                tabIndex={0}
+              >
+                <span className="sr-only">{t('common.moreOptions')}</span>
+                <DotsVerticalIcon className="text-gray-100" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="w-[160px] border bg-gray-500 px-2.5 py-2"
+            >
+              {[
+                {
+                  name: t('common.edit'),
+                  icon: <Edit className="mr-3 h-4 w-4" />,
+                  onClick: () => {
+                    // navigate(true);
+                  },
+                },
+                {
+                  name: t('common.delete'),
+                  icon: <TrashIcon className="mr-3 h-4 w-4" />,
+                  onClick: () => {
+                    setIsDeleteAgentDrawerOpen(true);
+                  },
+                },
+              ].map((option) => (
+                <React.Fragment key={option.name}>
+                  {option.name === 'Delete' && (
+                    <DropdownMenuSeparator className="bg-gray-300" />
+                  )}
+                  <DropdownMenuItem
+                    key={option.name}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      option.onClick();
+                    }}
+                  >
+                    {option.icon}
+                    {option.name}
+                  </DropdownMenuItem>
+                </React.Fragment>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <RemoveAgentDrawer
         agentId={agentId}
