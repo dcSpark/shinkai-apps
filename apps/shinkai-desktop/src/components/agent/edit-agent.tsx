@@ -68,7 +68,7 @@ const addAgentFormSchema = z.object({
 
 type AddAgentFormValues = z.infer<typeof addAgentFormSchema>;
 
-function AddAgentPage() {
+function EditAgentPage() {
   const defaultAgentId = useSettings((state) => state.defaultAgentId);
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
@@ -514,4 +514,4 @@ function AddAgentPage() {
   );
 }
 
-export default AddAgentPage;
+export default EditAgentPage;

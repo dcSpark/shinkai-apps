@@ -72,22 +72,8 @@ export function AIModelSelector({
             side="top"
           >
             <DropdownMenuRadioGroup onValueChange={onValueChange} value={value}>
-              <DropdownMenuLabel className="px-2 py-1">AIs</DropdownMenuLabel>
-              {llmProviders.map((agent) => (
-                <DropdownMenuRadioItem
-                  className="flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
-                  key={agent.id}
-                  value={agent.id}
-                >
-                  <BotIcon className="h-3.5 w-3.5 shrink-0" />
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs">{agent.id}</span>
-                  </div>
-                </DropdownMenuRadioItem>
-              ))}
-              <DropdownMenuSeparator className="bg-gray-200" />
-              <DropdownMenuLabel className="mt-2 px-2 py-1">
-                AI Agents
+              <DropdownMenuLabel className="px-2 py-1">
+                Agents
               </DropdownMenuLabel>
               {agents?.map((agent) => (
                 <DropdownMenuRadioItem
@@ -98,6 +84,22 @@ export function AIModelSelector({
                   <AIAgentIcon className="h-3.5 w-3.5 shrink-0" />
                   <div className="flex flex-col gap-1">
                     <span className="text-xs">{agent.name}</span>
+                  </div>
+                </DropdownMenuRadioItem>
+              ))}
+              <DropdownMenuSeparator className="bg-gray-200" />
+              <DropdownMenuLabel className="mt-2 px-2 py-1">
+                AI Models
+              </DropdownMenuLabel>
+              {llmProviders.map((llmProvider) => (
+                <DropdownMenuRadioItem
+                  className="flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
+                  key={llmProvider.id}
+                  value={llmProvider.id}
+                >
+                  <BotIcon className="h-3.5 w-3.5 shrink-0" />
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs">{llmProvider.id}</span>
                   </div>
                 </DropdownMenuRadioItem>
               ))}
