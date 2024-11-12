@@ -15,3 +15,7 @@ export const useRetrieveLogsQuery = (
   });
   return { ...query } as UseQueryResult<string, Error>;
 };
+
+export const retrieveLogs = async (): Promise<string> => {
+  return invoke('retrieve_logs');
+};

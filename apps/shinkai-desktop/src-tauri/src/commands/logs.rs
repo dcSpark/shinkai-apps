@@ -1,28 +1,14 @@
-use std::env;
+use tauri::Manager;
 
 #[tauri::command]
-pub async fn retrieve_logs() -> Result<String, String> {
-    let log_dir = {
-        #[cfg(target_os = "windows")]
-        {
-            let local_app_data = env::var("LOCALAPPDATA").map_err(|e| e.to_string())?;
-            format!("{}/com.shinkai.desktop/logs", local_app_data)
-        }
-
-        #[cfg(target_os = "linux")]
-        {
-            let home = env::var("HOME").map_err(|e| e.to_string())?;
-            format!("{}/.config/com.shinkai.desktop/logs", home)
-        }
-
-        #[cfg(target_os = "macos")]
-        {
-            let home = env::var("HOME").map_err(|e| e.to_string())?;
-            format!("{}/Library/Logs/com.shinkai.desktop", home)
-        }
-    };
-
-    let log_file = format!("{}/Shinkai Desktop.log", log_dir);
+pub async fn retrieve_logs(app_handle: tauri::AppHandle) -> Result<String, String> {
+    let log_dir = app_handle.path().app_log_dir().map_err(|e| e.to_string())?;
+    let product_name = app_handle
+        .config()
+        .product_name
+        .clone()
+        .unwrap_or("Shinkai Desktop".to_string());
+    let log_file = format!("{}/{}.log", log_dir.display(), product_name);
 
     let log_contents = match std::fs::read_to_string(log_file) {
         Ok(contents) => contents,
