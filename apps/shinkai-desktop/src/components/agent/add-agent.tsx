@@ -32,6 +32,7 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
+import { PlusIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -230,6 +231,21 @@ function AddAgentPage() {
                   <span className="flex-1 items-center gap-1 truncate text-left text-xs font-semibold text-gray-50">
                     Tools
                   </span>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      className="h-[30px] text-xs"
+                      onClick={() => {
+                        navigate('/tools/create');
+                      }}
+                      size="auto"
+                      variant="outline"
+                    >
+                      <PlusIcon className="mr-1 size-3.5" />
+                      Create New Tool
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex max-h-[28vh] flex-col gap-2.5 overflow-auto">
                   <div className="flex items-center gap-3">
                     <Switch
                       checked={form.watch('tools').length === toolsList?.length}
@@ -246,8 +262,6 @@ function AddAgentPage() {
                     />
                     <span className="text-gray-80 text-xs">Enabled All</span>
                   </div>
-                </div>
-                <div className="flex max-h-[28vh] flex-col gap-2.5 overflow-auto">
                   {toolsList?.map((tool) => (
                     <FormField
                       control={form.control}

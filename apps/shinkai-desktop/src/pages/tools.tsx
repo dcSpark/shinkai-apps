@@ -18,7 +18,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { BoltIcon, SearchIcon, XIcon } from 'lucide-react';
+import { BoltIcon, PlusIcon, SearchIcon, XIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -51,7 +51,25 @@ export const Tools = () => {
   const { mutateAsync: updateTool } = useUpdateTool();
 
   return (
-    <SimpleLayout classname="max-w-3xl" title={t('tools.label')}>
+    <SimpleLayout
+      classname="max-w-3xl"
+      headerRightElement={
+        <Link
+          className={cn(
+            buttonVariants({
+              variant: 'default',
+              size: 'sm',
+            }),
+            'gap-2 px-3',
+          )}
+          to="/tools/create"
+        >
+          <PlusIcon className="size-4" />
+          Create Tool
+        </Link>
+      }
+      title={t('tools.label')}
+    >
       <ScrollArea className="pr-4 [&>div>div]:!block">
         <div className="relative mb-4 flex h-10 w-full items-center">
           <Input

@@ -36,6 +36,7 @@ import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
 import { ConnectMethodQrCodePage } from '../pages/connect-method-qr-code';
 import CreateChatPage from '../pages/create-chat';
+import CreateToolPage from '../pages/create-tool';
 import CryptoWalletPage from '../pages/crypto-wallet';
 import { ExportConnection } from '../pages/export-connection';
 import FreeSubscriptionsPage from '../pages/free-subscription';
@@ -329,6 +330,7 @@ const AppRoutes = () => {
         >
           <Route element={<Tools />} index />
           <Route element={<ToolDetails />} path={':toolKey'} />
+          <Route element={<CreateToolPage />} path={'create'} />
         </Route>
         <Route
           element={
