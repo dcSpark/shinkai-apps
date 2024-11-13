@@ -6,6 +6,8 @@ import {
   AddWorkflowResponse,
   CreatePromptRequest,
   CreatePromptResponse,
+  CreateToolCodeRequest,
+  CreateToolCodeResponse,
   DeletePromptRequest,
   GetAllPromptsResponse,
   GetToolResponse,
@@ -231,4 +233,20 @@ export const removePrompt = async (
     },
   );
   return response.data;
+};
+
+export const createToolCode = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: CreateToolCodeRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/tool_implementation'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as CreateToolCodeResponse;
 };

@@ -147,3 +147,18 @@ export type UpdatePromptRequest = Prompt;
 export type DeletePromptRequest = {
   prompt_name: string;
 };
+
+export type CreateToolCodeRequest = {
+  raw?: boolean;
+  code?: string;
+  metadata?: string;
+  output?: string;
+  fetch_query?: boolean;
+  language: string;
+  prompt: string;
+  llm_provider: string;
+};
+
+export type CreateToolCodeResponse = {
+  job_id: string;
+};
