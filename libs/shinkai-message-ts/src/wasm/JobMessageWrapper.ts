@@ -10,15 +10,12 @@ export class JobMessageWrapper {
     content_js: any,
     files_inbox_js: any,
     parent: any,
-    workflow_code: any,
   ) {
     this.wasmWrapper = new JobMessageWrapperWASM(
       job_id_js,
       content_js,
       files_inbox_js,
       parent,
-      workflow_code,
-      undefined, // workflow_name
     );
   }
 
@@ -37,7 +34,6 @@ export class JobMessageWrapper {
       js_value.content_js,
       js_value.files_inbox_js,
       js_value.parent_js,
-      js_value.workflow_js,
     );
   }
 
@@ -47,12 +43,11 @@ export class JobMessageWrapper {
       js_value.content_js,
       js_value.files_inbox_js,
       js_value.parent_js,
-      js_value.workflow_js,
     );
   }
 
   static fromStrings(job_id: string, content: string): JobMessageWrapper {
-    return new JobMessageWrapper(job_id, content, [], '', undefined);
+    return new JobMessageWrapper(job_id, content, [], '');
   }
 
   static fromStringsWithFileInbox(
@@ -60,9 +55,8 @@ export class JobMessageWrapper {
     content: string,
     file_inbox: string,
     parent: string,
-    workflow: string,
   ): JobMessageWrapper {
-    return new JobMessageWrapper(job_id, content, file_inbox, parent, workflow);
+    return new JobMessageWrapper(job_id, content, file_inbox, parent);
   }
 
   free(): void {

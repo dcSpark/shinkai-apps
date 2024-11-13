@@ -15,7 +15,6 @@ import { useSetJobScope } from '../../components/chat/context/set-job-scope-cont
 import ConversationFooter from '../../components/chat/conversation-footer';
 import ConversationHeader from '../../components/chat/conversation-header';
 import { usePromptSelectionStore } from '../../components/prompt/context/prompt-selection-context';
-import { useWorkflowSelectionStore } from '../../components/workflow/context/workflow-selection-context';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
@@ -37,9 +36,6 @@ const EmptyMessage = () => {
   const { t } = useTranslation();
 
   const resetJobScope = useSetJobScope((state) => state.resetJobScope);
-  const setWorkflowSelected = useWorkflowSelectionStore(
-    (state) => state.setWorkflowSelected,
-  );
   const setPromptSelected = usePromptSelectionStore(
     (state) => state.setPromptSelected,
   );
@@ -60,7 +56,6 @@ const EmptyMessage = () => {
   });
   useEffect(() => {
     resetJobScope();
-    setWorkflowSelected(undefined);
     setPromptSelected(undefined);
   }, []);
 

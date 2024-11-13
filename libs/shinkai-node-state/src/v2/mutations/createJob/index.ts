@@ -14,8 +14,6 @@ export const createJob = async ({
   sheetId,
   content,
   isHidden,
-  workflowName,
-  workflowCode,
   files,
   selectedVRFiles,
   selectedVRFolders,
@@ -50,9 +48,7 @@ export const createJob = async ({
 
   await sendMessageToJob(nodeAddress, token, {
     job_message: {
-      workflow_code: workflowCode,
       content,
-      workflow_name: workflowName,
       job_id: jobId,
       files_inbox: folderId,
       parent: '',

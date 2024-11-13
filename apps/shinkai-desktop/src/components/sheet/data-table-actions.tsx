@@ -8,7 +8,6 @@ import { useAddRowsSheet } from '@shinkai_network/shinkai-node-state/lib/mutatio
 import { useRemoveRowsSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/removeRowsSheet/useRemoveRowsSheet';
 import { useSetColumnSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/setColumnSheet/useSetColumnSheet';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
-import { useGetWorkflowList } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowList/useGetWorkflowList';
 import {
   Badge,
   Button,
@@ -32,8 +31,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { WorkflowPlaygroundIcon } from '@shinkai_network/shinkai-ui/assets';
-import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { RowSelectionState } from '@tanstack/react-table';
 import { motion } from 'framer-motion';
 import { BotIcon, ChevronRight, PlusIcon } from 'lucide-react';
@@ -143,11 +140,6 @@ export function AddColumnAction() {
     token: auth?.api_v2_key ?? '',
   });
 
-  const { data: workflowList } = useGetWorkflowList({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
-
   const setColumnForm = useForm<SetColumnFormSchema>({
     resolver: zodResolver(setColumnFormSchema),
     defaultValues: {
@@ -155,7 +147,6 @@ export function AddColumnAction() {
       columnType: ColumnType.Text,
       promptInput: '',
       agentId: llmProviders[0]?.id,
-      workflowKey: undefined,
     },
   });
 
@@ -176,10 +167,6 @@ export function AddColumnAction() {
     name: 'agentId',
   });
 
-  const currentWorkflowKey = useWatch({
-    control: setColumnForm.control,
-    name: 'workflowKey',
-  });
   const currentFormula = useWatch({
     control: setColumnForm.control,
     name: 'formula',
@@ -201,7 +188,6 @@ export function AddColumnAction() {
         return {
           [ColumnType.LLMCall]: {
             input: currentPromptInput as string,
-            workflow_name: currentWorkflowKey,
             llm_provider_name: currentAgentId ?? '',
           },
         };
@@ -219,9 +205,6 @@ export function AddColumnAction() {
   };
 
   const selectedType = fieldTypes.find((type) => type.id === currentColumnType);
-  const selectedWorkflow = workflowList?.find(
-    (workflow) => workflow.tool_router_key === currentWorkflowKey,
-  );
 
   const onSubmit = async (values: SetColumnFormSchema) => {
     if (!auth || !sheetId || !selectedType) return;
@@ -389,57 +372,6 @@ export function AddColumnAction() {
                       )}
                     />
                   </div>
-                )}
-                {selectedType?.id === ColumnType.LLMCall && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="flex justify-between gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-gray-500">
-                        <span className="text-gray-80">Workflow</span>
-                        <div className="flex items-center gap-2">
-                          <span className="flex items-center gap-1.5 text-gray-50">
-                            <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
-                            {formatText(selectedWorkflow?.name ?? 'None')}
-                          </span>
-                          <ChevronRight className="text-gray-80 h-3.5 w-3.5" />
-                        </div>
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="start"
-                      className="max-h-[40vh] w-[240px] overflow-auto rounded-md bg-gray-300 p-0 px-2 py-2.5 text-gray-50"
-                      side="right"
-                    >
-                      <DropdownMenuCheckboxItem
-                        checked={undefined === currentWorkflowKey}
-                        className="flex gap-2 truncate text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
-                        onCheckedChange={() =>
-                          setColumnForm.setValue('workflowKey', undefined)
-                        }
-                      >
-                        None
-                      </DropdownMenuCheckboxItem>
-
-                      {workflowList?.map((option) => {
-                        return (
-                          <DropdownMenuCheckboxItem
-                            checked={
-                              option.tool_router_key === currentWorkflowKey
-                            }
-                            className="flex gap-2 truncate text-xs capitalize hover:bg-gray-500 [&>svg]:bg-transparent"
-                            key={option.name}
-                            onCheckedChange={() =>
-                              setColumnForm.setValue(
-                                'workflowKey',
-                                option.tool_router_key,
-                              )
-                            }
-                          >
-                            {option.name}
-                          </DropdownMenuCheckboxItem>
-                        );
-                      })}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
                 )}
 
                 {selectedType?.id === ColumnType.LLMCall && (

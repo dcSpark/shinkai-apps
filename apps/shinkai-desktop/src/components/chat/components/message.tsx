@@ -73,7 +73,7 @@ type MessageProps = {
   handleRetryMessage?: () => void;
   disabledRetry?: boolean;
   disabledEdit?: boolean;
-  handleEditMessage?: (message: string, workflowName?: string) => void;
+  handleEditMessage?: (message: string) => void;
   messageExtra?: React.ReactNode;
 };
 
@@ -178,7 +178,7 @@ export const MessageBase = ({
 
   const onSubmit = async (data: z.infer<typeof editMessageFormSchema>) => {
     if (message.role === 'user') {
-      handleEditMessage?.(data.message, message.workflowName);
+      handleEditMessage?.(data.message);
       setEditing(false);
     }
   };

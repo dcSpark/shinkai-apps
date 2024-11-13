@@ -83,11 +83,7 @@ export const MessageList = ({
   >;
   regenerateMessage?: (messageId: string) => void;
   regenerateFirstMessage?: (message: string) => void;
-  editAndRegenerateMessage?: (
-    content: string,
-    messageHash: string,
-    workflowName?: string,
-  ) => void;
+  editAndRegenerateMessage?: (content: string, messageHash: string) => void;
   containerClassName?: string;
   lastMessageContent?: React.ReactNode;
   disabledRetryAndEdit?: boolean;
@@ -292,14 +288,10 @@ export const MessageList = ({
                           regenerateMessage?.(message?.messageId ?? '');
                         };
 
-                        const handleEditMessage = (
-                          message: string,
-                          workflowName?: string,
-                        ) => {
+                        const handleEditMessage = (message: string) => {
                           editAndRegenerateMessage?.(
                             message,
                             previousMessage?.messageId ?? '',
-                            workflowName,
                           );
                         };
 

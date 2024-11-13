@@ -7,8 +7,6 @@ export type SendMessageToJobInput = Token & {
   message: string;
   files?: File[];
   parent: string | null;
-  workflowCode?: string;
-  workflowName?: string;
 };
 
 export type SendMessageToJobOutput = JobMessageResponse;

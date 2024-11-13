@@ -1,7 +1,6 @@
 import {
   JSShinkaiTool,
   ShinkaiTool,
-  WorkflowShinkaiTool,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useGetTool } from '@shinkai_network/shinkai-node-state/v2/queries/getTool/useGetTool';
 import { Skeleton } from '@shinkai_network/shinkai-ui';
@@ -10,13 +9,6 @@ import { useParams } from 'react-router-dom';
 import { SubpageLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
 import JsTool from './js-tool';
-import WorkflowTool from './workflow-tool';
-
-export function isWorkflowShinkaiTool(
-  tool: ShinkaiTool,
-): tool is WorkflowShinkaiTool {
-  return (tool as WorkflowShinkaiTool).workflow !== undefined;
-}
 
 function isJSShinkaiTool(tool: ShinkaiTool): tool is JSShinkaiTool {
   return (tool as JSShinkaiTool).js_code !== undefined;
@@ -56,9 +48,7 @@ export default function ToolDetails() {
     );
   }
 
-  if (isSuccess && isWorkflowShinkaiTool(tool)) {
-    return <WorkflowTool isEnabled={isEnabled} tool={tool} />;
-  } else if (isSuccess && isJSShinkaiTool(tool)) {
+  if (isSuccess && isJSShinkaiTool(tool)) {
     return <JsTool isEnabled={isEnabled} tool={tool} />;
   } else {
     return <div>Tool not found</div>;

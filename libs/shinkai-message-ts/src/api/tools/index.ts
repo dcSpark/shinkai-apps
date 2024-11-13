@@ -2,67 +2,18 @@ import { httpClient } from '../../http-client';
 import { urlJoin } from '../../utils/url-join';
 import {
   AddToolRequest,
-  AddWorkflowRequest,
-  AddWorkflowResponse,
   CreatePromptRequest,
   CreatePromptResponse,
   DeletePromptRequest,
   GetAllPromptsResponse,
   GetToolResponse,
   GetToolsResponse,
-  ListAllWorkflowsResponse,
   PayInvoiceRequest,
   SearchPromptsResponse,
-  SearchWorkflowsResponse,
   UpdatePromptRequest,
   UpdateToolRequest,
   UpdateToolResponse,
 } from './types';
-
-export const listAllWorkflows = async (
-  nodeAddress: string,
-  bearerToken: string,
-) => {
-  const response = await httpClient.get(
-    urlJoin(nodeAddress, '/v2/list_all_workflows'),
-    {
-      headers: { Authorization: `Bearer ${bearerToken}` },
-      responseType: 'json',
-    },
-  );
-  return response.data as ListAllWorkflowsResponse;
-};
-export const searchWorkflows = async (
-  nodeAddress: string,
-  bearerToken: string,
-  query: string,
-) => {
-  const response = await httpClient.get(
-    urlJoin(nodeAddress, '/v2/search_workflows'),
-    {
-      headers: { Authorization: `Bearer ${bearerToken}` },
-      params: { query },
-      responseType: 'json',
-    },
-  );
-  return response.data as SearchWorkflowsResponse;
-};
-
-export const createWorkflow = async (
-  nodeAddress: string,
-  bearerToken: string,
-  payload: AddWorkflowRequest,
-) => {
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v2/set_workflow'),
-    payload,
-    {
-      headers: { Authorization: `Bearer ${bearerToken}` },
-      responseType: 'json',
-    },
-  );
-  return response.data as AddWorkflowResponse;
-};
 
 export const createTool = async (
   nodeAddress: string,

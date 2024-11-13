@@ -17,7 +17,6 @@ import { VectorFolderSelectionProvider } from '../components/vector-fs/component
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
 import VectorFs from '../components/vector-fs/vector-fs';
 import SearchNodeFiles from '../components/vector-search/search-node-files';
-import { WorkflowSelectionProvider } from '../components/workflow/context/workflow-selection-context';
 import {
   useShinkaiNodeIsRunningQuery,
   useShinkaiNodeSetOptionsMutation,
@@ -55,9 +54,6 @@ import SheetProject from '../pages/sheet-project';
 import ShinkaiPrivatePage from '../pages/shinkai-private';
 import TermsAndConditionsPage from '../pages/terms-conditions';
 import { Tools } from '../pages/tools';
-import WorkflowPlayground, {
-  PlaygroundPreview,
-} from '../pages/workflow-playground';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
@@ -206,11 +202,9 @@ const AppRoutes = () => {
             <ProtectedRoute>
               <ChatProvider>
                 <SetJobScopeProvider>
-                  <WorkflowSelectionProvider>
                     <PromptSelectionProvider>
                       <ChatLayout />
                     </PromptSelectionProvider>
-                  </WorkflowSelectionProvider>
                 </SetJobScopeProvider>
               </ChatProvider>
             </ProtectedRoute>
@@ -297,25 +291,6 @@ const AppRoutes = () => {
             }
             path=":sheetId"
           />
-        </Route>
-        <Route
-          element={
-            <ProtectedRoute>
-              <SetJobScopeProvider>
-                <WorkflowSelectionProvider>
-                  <PromptSelectionProvider>
-                    <ToolsProvider>
-                      <WorkflowPlayground />
-                    </ToolsProvider>
-                  </PromptSelectionProvider>
-                </WorkflowSelectionProvider>
-              </SetJobScopeProvider>
-            </ProtectedRoute>
-          }
-          path="workflow-playground"
-        >
-          <Route element={<PlaygroundPreview />} index />
-          <Route element={<PlaygroundPreview />} path=":inboxId" />
         </Route>
         <Route
           element={

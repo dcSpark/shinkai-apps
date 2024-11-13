@@ -28,7 +28,6 @@ import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mut
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
-import { useGetWorkflowSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getWorkflowSearch/useGetWorkflowSearch';
 import {
   Button,
   ChatInputArea,
@@ -47,7 +46,6 @@ import {
   fileIconMap,
   FileTypeIcon,
   SendIcon,
-  WorkflowPlaygroundIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
@@ -68,7 +66,6 @@ import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { usePromptSelectionStore } from '../prompt/context/prompt-selection-context';
-import { useWorkflowSelectionStore } from '../workflow/context/workflow-selection-context';
 import {
   AIModelSelector,
   AiUpdateSelectionActionBar,
@@ -80,7 +77,6 @@ import {
   UpdateChatConfigActionBar,
 } from './chat-action-bar/chat-config-action-bar';
 import PromptSelectionActionBar from './chat-action-bar/prompt-selection-action-bar';
-import WorkflowSelectionActionBar from './chat-action-bar/workflow-selection-action-bar';
 import { streamingSupportedModels } from './constants';
 import { useSetJobScope } from './context/set-job-scope-context';
 
@@ -212,33 +208,11 @@ function ConversationEmptyFooter() {
     selectedFolderKeysRef,
   ]);
 
-  const workflowSelected = useWorkflowSelectionStore(
-    (state) => state.workflowSelected,
-  );
-  const setWorkflowSelected = useWorkflowSelectionStore(
-    (state) => state.setWorkflowSelected,
-  );
-
   const currentMessage = useWatch({
     control: chatForm.control,
     name: 'message',
   });
   const debounceMessage = useDebounce(currentMessage, 500);
-
-  const {
-    data: workflowRecommendations,
-    isSuccess: isWorkflowRecommendationsSuccess,
-  } = useGetWorkflowSearch(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      search: debounceMessage,
-    },
-    {
-      enabled: !!debounceMessage && !!currentMessage,
-      select: (data) => data.slice(0, 3),
-    },
-  );
 
   const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
     useDropzone({
@@ -285,21 +259,9 @@ function ConversationEmptyFooter() {
     },
   });
 
-  const isWorkflowSelectedAndFilesPresent =
-    workflowSelected && currentFiles && currentFiles.length > 0;
-
   useEffect(() => {
     chatForm.setValue('message', promptSelected?.prompt ?? '');
   }, [chatForm, promptSelected]);
-
-  useEffect(() => {
-    if (isWorkflowSelectedAndFilesPresent) {
-      chatForm.setValue(
-        'message',
-        `${formatText(workflowSelected.name)} - ${workflowSelected.description}`,
-      );
-    }
-  }, [chatForm, isWorkflowSelectedAndFilesPresent, workflowSelected]);
 
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth || data.message.trim() === '') return;
@@ -318,7 +280,6 @@ function ConversationEmptyFooter() {
       llmProvider: data.agent,
       content: data.message,
       files: currentFiles,
-      workflowName: workflowSelected?.tool_router_key,
       isHidden: false,
       selectedVRFiles,
       selectedVRFolders,
@@ -332,7 +293,6 @@ function ConversationEmptyFooter() {
     });
 
     chatForm.reset();
-    setWorkflowSelected(undefined);
     selectedFileKeysRef.clear();
     selectedFolderKeysRef.clear();
     onSelectedKeysChange(null);
@@ -390,7 +350,6 @@ function ConversationEmptyFooter() {
                           </Tooltip>
                         </TooltipProvider>
                         <PromptSelectionActionBar />
-                        <WorkflowSelectionActionBar />
                       </div>
                       <CreateChatConfigActionBar form={chatConfigForm} />
                     </div>
@@ -421,53 +380,11 @@ function ConversationEmptyFooter() {
                           </Button>
                         </div>
                       }
-                      disabled={isPending || isWorkflowSelectedAndFilesPresent}
+                      disabled={isPending}
                       onChange={field.onChange}
                       onSubmit={chatForm.handleSubmit(onSubmit)}
                       topAddons={
                         <>
-                          {workflowSelected && (
-                            <div className="relative max-w-full rounded-lg border border-gray-200 p-1.5 px-2">
-                              <TooltipProvider delayDuration={0}>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div className="flex items-center gap-2 pr-6">
-                                      <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
-                                      <div className="text-gray-80 line-clamp-1 text-xs">
-                                        <span className="text-white">
-                                          {formatText(workflowSelected.name)}{' '}
-                                        </span>
-                                        -{' '}
-                                        <span className="">
-                                          {workflowSelected.description}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipPortal>
-                                    <TooltipContent
-                                      align="end"
-                                      alignOffset={-10}
-                                      className="max-w-[400px]"
-                                      side="top"
-                                      sideOffset={10}
-                                    >
-                                      {workflowSelected.description}
-                                    </TooltipContent>
-                                  </TooltipPortal>
-                                </Tooltip>
-                              </TooltipProvider>
-                              <button
-                                className="absolute right-2 top-1.5 text-gray-100 hover:text-white"
-                                onClick={() => {
-                                  setWorkflowSelected(undefined);
-                                }}
-                                type="button"
-                              >
-                                <XIcon className="h-4 w-4" />
-                              </button>
-                            </div>
-                          )}
                           {currentFiles && currentFiles.length > 0 && (
                             <div className="flex flex-wrap gap-2">
                               {currentFiles.map((file, index) => (
@@ -523,28 +440,6 @@ function ConversationEmptyFooter() {
                       transition={{ duration: 0.2 }}
                     >
                       <div className="flex gap-2">
-                        {!!debounceMessage &&
-                          !workflowSelected &&
-                          isWorkflowRecommendationsSuccess &&
-                          workflowRecommendations?.length > 0 &&
-                          workflowRecommendations?.map((workflow) => (
-                            <motion.button
-                              animate={{ opacity: 1, x: 0 }}
-                              className={cn(
-                                'hover:bg-brand-gradient bg-gray-350 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white',
-                              )}
-                              exit={{ opacity: 0, x: -10 }}
-                              initial={{ opacity: 0, x: -10 }}
-                              key={workflow.name}
-                              onClick={() => {
-                                setWorkflowSelected(workflow);
-                              }}
-                              type="button"
-                            >
-                              <WorkflowPlaygroundIcon className="h-3 w-3" />
-                              {formatText(workflow.name)}
-                            </motion.button>
-                          ))}
                         {!debounceMessage && (
                           <span className="text-xs font-light text-gray-100">
                             <span className="font-medium">Shift + Enter</span>{' '}
@@ -567,9 +462,6 @@ function ConversationEmptyFooter() {
 function ConversationChatFooter({ inboxId }: { inboxId: string }) {
   const { t } = useTranslation();
   const size = partial({ standard: 'jedec' });
-  const setWorkflowSelected = useWorkflowSelectionStore(
-    (state) => state.setWorkflowSelected,
-  );
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const auth = useAuth((state) => state.auth);
@@ -597,8 +489,6 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     { enabled: !!inboxId },
   );
 
-  const firstMessageWorkflow = useFirstMessageWorkflow();
-
   const hasProviderEnableStreaming = streamingSupportedModels.includes(
     currentInbox?.agent?.model.split(':')?.[0] as Models,
   );
@@ -613,30 +503,11 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
       !hasProviderEnableStreaming || chatConfig?.stream === false,
   });
 
-  const workflowSelected = useWorkflowSelectionStore(
-    (state) => state.workflowSelected,
-  );
-
   const currentMessage = useWatch({
     control: chatForm.control,
     name: 'message',
   });
   const debounceMessage = useDebounce(currentMessage, 500);
-
-  const {
-    data: workflowRecommendations,
-    isSuccess: isWorkflowRecommendationsSuccess,
-  } = useGetWorkflowSearch(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      search: debounceMessage,
-    },
-    {
-      enabled: !!debounceMessage && !!currentMessage,
-      select: (data) => data.slice(0, 3),
-    },
-  );
 
   const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
     useDropzone({
@@ -680,25 +551,8 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     );
   }, [data?.pages, inboxId]);
 
-  const isWorkflowSelectedAndFilesPresent =
-    workflowSelected && currentFiles && currentFiles.length > 0;
-
-  useEffect(() => {
-    if (isWorkflowSelectedAndFilesPresent) {
-      chatForm.setValue(
-        'message',
-        `${formatText(workflowSelected.name)} - ${workflowSelected.description}`,
-      );
-    }
-  }, [chatForm, isWorkflowSelectedAndFilesPresent, workflowSelected]);
-
   const onSubmit = async (data: ChatMessageFormSchema) => {
     if (!auth || data.message.trim() === '') return;
-
-    let workflowKeyToUse = workflowSelected?.tool_router_key;
-    if (!workflowKeyToUse && firstMessageWorkflow) {
-      workflowKeyToUse = firstMessageWorkflow.tool_router_key;
-    }
 
     if (isJobInbox(inboxId)) {
       const jobId = extractJobIdFromInbox(inboxId);
@@ -708,7 +562,6 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
         jobId: jobId,
         message: data.message,
         parent: '', // Note: we should set the parent if we want to retry or branch out
-        workflowName: workflowKeyToUse,
         files: currentFiles,
       });
     } else {
@@ -729,7 +582,6 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
       });
     }
     chatForm.reset();
-    setWorkflowSelected(undefined);
   };
 
   useEffect(() => {
@@ -745,7 +597,6 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
 
   useEffect(() => {
     chatForm.reset();
-    setWorkflowSelected(undefined);
   }, [chatForm, inboxId]);
 
   return (
@@ -799,7 +650,6 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                           </Tooltip>
                         </TooltipProvider>
                         <PromptSelectionActionBar />
-                        <WorkflowSelectionActionBar />
                       </div>
 
                       <UpdateChatConfigActionBar />
@@ -834,55 +684,13 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                         </div>
                       }
                       disabled={
-                        isLoadingMessage || isWorkflowSelectedAndFilesPresent
+                        isLoadingMessage
                       }
                       onChange={field.onChange}
                       onSubmit={chatForm.handleSubmit(onSubmit)}
                       ref={textareaRef}
                       topAddons={
                         <>
-                          {workflowSelected && (
-                            <div className="relative max-w-full rounded-lg border border-gray-200 p-1.5 px-2">
-                              <TooltipProvider delayDuration={0}>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div className="flex items-center gap-2 pr-6">
-                                      <WorkflowPlaygroundIcon className="h-3.5 w-3.5" />
-                                      <div className="text-gray-80 line-clamp-1 text-xs">
-                                        <span className="text-white">
-                                          {formatText(workflowSelected.name)}{' '}
-                                        </span>
-                                        -{' '}
-                                        <span className="">
-                                          {workflowSelected.description}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipPortal>
-                                    <TooltipContent
-                                      align="end"
-                                      alignOffset={-10}
-                                      className="max-w-[400px]"
-                                      side="top"
-                                      sideOffset={10}
-                                    >
-                                      {workflowSelected.description}
-                                    </TooltipContent>
-                                  </TooltipPortal>
-                                </Tooltip>
-                              </TooltipProvider>
-                              <button
-                                className="absolute right-2 top-1.5 text-gray-100 hover:text-white"
-                                onClick={() => {
-                                  setWorkflowSelected(undefined);
-                                }}
-                                type="button"
-                              >
-                                <XIcon className="h-4 w-4" />
-                              </button>
-                            </div>
-                          )}
                           {currentFiles && currentFiles.length > 0 && (
                             <div className="flex flex-wrap gap-2">
                               {currentFiles.map((file, index) => (
@@ -938,28 +746,6 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                       transition={{ duration: 0.2 }}
                     >
                       <div className="flex gap-2">
-                        {!!debounceMessage &&
-                          !workflowSelected &&
-                          isWorkflowRecommendationsSuccess &&
-                          workflowRecommendations?.length > 0 &&
-                          workflowRecommendations?.map((workflow) => (
-                            <motion.button
-                              animate={{ opacity: 1, x: 0 }}
-                              className={cn(
-                                'hover:bg-brand-gradient bg-gray-350 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white',
-                              )}
-                              exit={{ opacity: 0, x: -10 }}
-                              initial={{ opacity: 0, x: -10 }}
-                              key={workflow.name}
-                              onClick={() => {
-                                setWorkflowSelected(workflow);
-                              }}
-                              type="button"
-                            >
-                              <WorkflowPlaygroundIcon className="h-3 w-3" />
-                              {formatText(workflow.name)}
-                            </motion.button>
-                          ))}
                         {!debounceMessage && (
                           <span className="text-xs font-light text-gray-100">
                             <span className="font-medium">Shift + Enter</span>{' '}
@@ -1025,39 +811,4 @@ function StopGeneratingButton({
       )}
     </AnimatePresence>
   );
-}
-
-function useFirstMessageWorkflow() {
-  const auth = useAuth((state) => state.auth);
-  const { inboxId: encodedInboxId = '' } = useParams();
-  const inboxId = decodeURIComponent(encodedInboxId);
-  const { data } = useGetChatConversationWithPagination({
-    token: auth?.api_v2_key ?? '',
-    nodeAddress: auth?.node_address ?? '',
-    inboxId: inboxId as string,
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    profile: auth?.profile ?? '',
-  });
-
-  const [firstMessageWorkflow, setFirstMessageWorkflow] = useState<{
-    name: string;
-    author: string;
-    tool_router_key: string;
-  } | null>(null);
-
-  useEffect(() => {
-    if (data?.pages && data.pages.length > 0 && data.pages[0].length > 0) {
-      const firstMessage = data.pages[0][0];
-      if (firstMessage.role === 'user' && firstMessage.workflowName) {
-        const [name, author] = firstMessage.workflowName.split(':::');
-        setFirstMessageWorkflow({
-          name,
-          author,
-          tool_router_key: firstMessage.workflowName,
-        });
-      }
-    }
-  }, [data?.pages]);
-
-  return firstMessageWorkflow;
 }

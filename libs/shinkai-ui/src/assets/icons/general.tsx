@@ -748,44 +748,6 @@ export const AISearchContentIcon = ({ className }: { className?: string }) => (
     />
   </svg>
 );
-export const WorkflowPlaygroundIcon = ({
-  className,
-}: {
-  className?: string;
-}) => (
-  <svg
-    className={cn('shrink-0', className)}
-    fill="none"
-    height="24"
-    viewBox="0 0 24 24"
-    width="24"
-  >
-    <path
-      d="M15 7V3C15 2.44772 14.5523 2 14 2H10C9.44772 2 9 2.44772 9 3V7C9 7.55228 9.44772 8 10 8H14C14.5523 8 15 7.55228 15 7Z"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M8 21V17C8 16.4477 7.55228 16 7 16H3C2.44772 16 2 16.4477 2 17V21C2 21.5523 2.44772 22 3 22H7C7.55228 22 8 21.5523 8 21Z"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M22 21V17C22 16.4477 21.5523 16 21 16H17C16.4477 16 16 16.4477 16 17V21C16 21.5523 16.4477 22 17 22H21C21.5523 22 22 21.5523 22 21Z"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M12 8V9M12 9C12 9.93188 12 10.3978 12.1776 10.7654C12.4144 11.2554 12.8687 11.6448 13.4404 11.8478C13.8692 12 14.4128 12 15.5 12H17C18.1046 12 19 12.8954 19 14V16M12 9C12 9.93188 12 10.3978 11.8224 10.7654C11.5856 11.2554 11.1313 11.6448 10.5596 11.8478C10.1308 12 9.5872 12 8.5 12H7C5.89543 12 5 12.8954 5 14V16"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-  </svg>
-);
 export const BrowseSubscriptionIcon = ({
   className,
 }: {

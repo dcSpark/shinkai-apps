@@ -349,11 +349,6 @@ export function MainNav() {
       icon: <SheetIcon className="h-5 w-5" />,
     },
     optInExperimental && {
-      title: 'Playground',
-      href: '/workflow-playground',
-      icon: <SquareTerminal className="h-5 w-5" />,
-    },
-    optInExperimental && {
       title: 'Shinkai Tools',
       href: '/tools',
       icon: <ToolsIcon className="h-5 w-5" />,
@@ -474,7 +469,7 @@ export function MainNav() {
           {navigationLinks.map((item) => {
             return (
               <Fragment key={item.title}>
-                {item.href === '/workflow-playground' && optInExperimental && (
+                {optInExperimental && (
                   <Separator className="my-0.5 w-full bg-gray-200" />
                 )}
                 <TooltipProvider
