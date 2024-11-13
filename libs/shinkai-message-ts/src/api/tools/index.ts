@@ -8,7 +8,10 @@ import {
   CreatePromptResponse,
   CreateToolCodeRequest,
   CreateToolCodeResponse,
+  CreateToolMetadataRequest,
   DeletePromptRequest,
+  ExecuteToolCodeRequest,
+  ExecuteToolCodeResponse,
   GetAllPromptsResponse,
   GetToolResponse,
   GetToolsResponse,
@@ -235,7 +238,7 @@ export const removePrompt = async (
   return response.data;
 };
 
-export const createToolCode = async (
+export const toolImplementation = async (
   nodeAddress: string,
   bearerToken: string,
   payload: CreateToolCodeRequest,
@@ -249,4 +252,35 @@ export const createToolCode = async (
     },
   );
   return response.data as CreateToolCodeResponse;
+};
+export const toolMetadataImplementation = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: CreateToolMetadataRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/tool_metadata_implementation'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as CreateToolMetadataRequest;
+};
+
+export const executeToolCode = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: ExecuteToolCodeRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/tool_execution'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as ExecuteToolCodeResponse;
 };
