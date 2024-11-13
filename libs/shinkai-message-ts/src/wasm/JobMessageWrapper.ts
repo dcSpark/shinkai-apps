@@ -16,6 +16,8 @@ export class JobMessageWrapper {
       content_js,
       files_inbox_js,
       parent,
+      undefined,
+      undefined,
     );
   }
 

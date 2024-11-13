@@ -359,6 +359,8 @@ export class ShinkaiMessageBuilderWrapper {
       content,
       files_inbox,
       parent === null ? '' : parent,
+      undefined,
+      undefined,
       my_encryption_secret_key,
       my_signature_secret_key,
       receiver_public_key,
