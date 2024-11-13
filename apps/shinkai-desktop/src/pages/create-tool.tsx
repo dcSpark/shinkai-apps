@@ -20,7 +20,7 @@ import {
 import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Play, Save, Share2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
@@ -37,10 +37,18 @@ export const createToolCodeFormSchema = z.object({
 
 export type CreateToolCodeFormSchema = z.infer<typeof createToolCodeFormSchema>;
 
+function extractTypeScriptCode(message: string): string | null {
+  const codeRegex = /```typescript\n([\s\S]*?)\n```/;
+  const match = message.match(codeRegex);
+  return match ? match[1] : null;
+}
+
 function CreateToolPage() {
   const [tab, setTab] = useState<'use' | 'build'>('use');
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
+
+  const [toolCode, setToolCode] = useState<string>('');
 
   const [chatInboxId, setChatInboxId] = useState<string | null>(null);
   // useWebSocketMessage({
@@ -74,6 +82,17 @@ function CreateToolPage() {
       setChatInboxId(buildInboxIdFromJobId(data.job_id));
     },
   });
+
+  useEffect(() => {
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
+
+    if (
+      lastMessage?.role === 'assistant' &&
+      lastMessage?.status.type !== 'running'
+    ) {
+      setToolCode(extractTypeScriptCode(lastMessage?.content) ?? '');
+    }
+  }, [data?.pages]);
 
   useWebSocketMessage({
     inboxId: chatInboxId ?? '',
@@ -253,7 +272,7 @@ function CreateToolPage() {
                     <div className="flex h-10 items-center justify-between gap-3 rounded-t-lg bg-gray-300 pl-4 pr-3">
                       {/* by default App.tsx */}
                       <h2 className="text-gray-80 text-xs font-semibold">
-                        App.tsx
+                        Code
                       </h2>
                     </div>
                     <SyntaxHighlighter
@@ -265,10 +284,10 @@ function CreateToolPage() {
                         padding: '0.5rem 1rem',
                         borderRadius: 0,
                       }}
-                      language={'jsx'}
+                      language={'typescript'}
                       style={oneDark}
                     >
-                      codeeeeeeeee
+                      {toolCode}
                     </SyntaxHighlighter>
                   </TabsContent>
                   <TabsContent
