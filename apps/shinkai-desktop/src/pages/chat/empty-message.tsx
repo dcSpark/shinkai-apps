@@ -1,15 +1,11 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
-import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
-import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { Badge, buttonVariants } from '@shinkai_network/shinkai-ui';
 import { invoke } from '@tauri-apps/api/core';
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
 import ConversationFooter from '../../components/chat/conversation-footer';
@@ -17,7 +13,6 @@ import ConversationHeader from '../../components/chat/conversation-header';
 import { usePromptSelectionStore } from '../../components/prompt/context/prompt-selection-context';
 import { useWorkflowSelectionStore } from '../../components/workflow/context/workflow-selection-context';
 import { useAuth } from '../../store/auth';
-import { useSettings } from '../../store/settings';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 
 export const showSpotlightWindow = async () => {
@@ -43,44 +38,12 @@ const EmptyMessage = () => {
   const setPromptSelected = usePromptSelectionStore(
     (state) => state.setPromptSelected,
   );
-  const navigate = useNavigate();
-  const defaultAgentId = useSettings((state) => state.defaultAgentId);
 
-  const { mutateAsync: createJob } = useCreateJob({
-    onError: (error) => {
-      toast.error('Failed to send message', {
-        description: error.response?.data?.message ?? error.message,
-      });
-    },
-    onSuccess: async (data) => {
-      navigate(
-        `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
-      );
-    },
-  });
   useEffect(() => {
     resetJobScope();
     setWorkflowSelected(undefined);
     setPromptSelected(undefined);
   }, []);
-
-  const onCreateJob = async (message: string, isToolNeeded = false) => {
-    if (!auth) return;
-    await createJob({
-      nodeAddress: auth.node_address,
-      token: auth.api_v2_key,
-      llmProvider: defaultAgentId,
-      content: message,
-      isHidden: false,
-      chatConfig: {
-        stream: isToolNeeded ? false : DEFAULT_CHAT_CONFIG.stream,
-        custom_prompt: '',
-        temperature: DEFAULT_CHAT_CONFIG.temperature,
-        top_p: DEFAULT_CHAT_CONFIG.top_p,
-        top_k: DEFAULT_CHAT_CONFIG.top_k,
-      },
-    });
-  };
 
   return (
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
@@ -117,14 +80,12 @@ const EmptyMessage = () => {
             {[
               {
                 text: 'Search in Perplexity',
-                prompt:
-                  'Can you search in Perplexity? If you need more information, ask me a follow up question.',
+                prompt: 'Search in Perplexity for: ',
                 isToolNeeded: true,
               },
               {
                 text: 'Summarize a Youtube video',
-                prompt:
-                  'Can you help me summarize a youtube video? If you need more information, ask me a follow up question.',
+                prompt: 'Summarize a Youtube video: ',
                 isToolNeeded: true,
               },
               {
@@ -135,9 +96,23 @@ const EmptyMessage = () => {
               <Badge
                 className="cursor-pointer justify-between bg-gray-300 py-2 text-left font-normal normal-case text-gray-50 transition-colors hover:bg-gray-200"
                 key={suggestion.text}
-                onClick={() =>
-                  onCreateJob(suggestion.prompt, suggestion.isToolNeeded)
-                }
+                onClick={() => {
+                  setPromptSelected({
+                    name: '',
+                    prompt: suggestion.prompt,
+                    is_enabled: true,
+                    is_favorite: false,
+                    is_system: true,
+                    version: '1',
+                    isToolNeeded: suggestion.isToolNeeded,
+                  });
+                  const element = document.querySelector(
+                    '#chat-input',
+                  ) as HTMLDivElement;
+                  if (element) {
+                    element?.focus?.();
+                  }
+                }}
                 variant="outline"
               >
                 {suggestion.text}

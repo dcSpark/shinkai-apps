@@ -293,6 +293,13 @@ function ConversationEmptyFooter() {
   }, [chatForm, promptSelected]);
 
   useEffect(() => {
+    chatConfigForm.setValue(
+      'stream',
+      promptSelected?.isToolNeeded ? false : DEFAULT_CHAT_CONFIG.stream,
+    );
+  }, [chatConfigForm, chatForm, promptSelected]);
+
+  useEffect(() => {
     if (isWorkflowSelectedAndFilesPresent) {
       chatForm.setValue(
         'message',
