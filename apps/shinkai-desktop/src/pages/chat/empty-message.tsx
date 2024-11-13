@@ -117,33 +117,49 @@ const EmptyMessage = () => {
             {[
               {
                 text: 'Search in Perplexity',
-                prompt:
-                  'Can you search in Perplexity? If you need more information, ask me a follow up question.',
+                prompt: 'Search in Perplexity for: ',
                 isToolNeeded: true,
               },
               {
                 text: 'Summarize a Youtube video',
-                prompt:
-                  'Can you help me summarize a youtube video? If you need more information, ask me a follow up question.',
+                prompt: 'Summarize a Youtube video: ',
                 isToolNeeded: true,
-              },
-              {
-                text: 'Tell me about the Roman Empire',
-                prompt: 'Tell me about the Roman Empire',
               },
             ].map((suggestion) => (
               <Badge
                 className="cursor-pointer justify-between bg-gray-300 py-2 text-left font-normal normal-case text-gray-50 transition-colors hover:bg-gray-200"
                 key={suggestion.text}
-                onClick={() =>
-                  onCreateJob(suggestion.prompt, suggestion.isToolNeeded)
-                }
+                onClick={() => {
+                  setPromptSelected({
+                    name: '',
+                    prompt: suggestion.prompt,
+                    is_enabled: true,
+                    is_favorite: false,
+                    is_system: true,
+                    version: '1',
+                    isToolNeeded: suggestion.isToolNeeded,
+                  });
+                  const element = document.querySelector(
+                    '#chat-input',
+                  ) as HTMLDivElement;
+                  if (element) {
+                    element?.focus?.();
+                  }
+                }}
                 variant="outline"
               >
                 {suggestion.text}
                 <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
               </Badge>
             ))}
+            <Badge
+              className="cursor-pointer justify-between text-balance bg-gray-300 py-2 text-left font-normal normal-case text-gray-50 transition-colors hover:bg-gray-200"
+              onClick={() => onCreateJob('Tell me about the Roman Empire')}
+              variant="outline"
+            >
+              Tell me about the Roman Empire
+              <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
+            </Badge>
           </div>
 
           <div className="mt-4">
