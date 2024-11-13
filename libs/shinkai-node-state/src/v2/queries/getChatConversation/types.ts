@@ -90,6 +90,7 @@ export type UserMessage = BaseMessage & {
   role: 'user';
   content: string; // UserContentPart
   attachments: Attachment[];
+  workflowName?: string;
 };
 
 export type AssistantMessage = BaseMessage & {

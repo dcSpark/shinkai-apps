@@ -586,8 +586,6 @@ export const uploadFilesToVR = async (
       sender,
       sender_subidentity,
       receiver,
-      undefined,
-      undefined,
     );
 
     await fileUploader.createFolder();
