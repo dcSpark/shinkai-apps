@@ -57,6 +57,7 @@ const addAgentFormSchema = z.object({
   config: z
     .object({
       custom_prompt: z.string(),
+      custom_system_prompt: z.string(),
       temperature: z.number(),
       top_k: z.number(),
       top_p: z.number(),
@@ -88,6 +89,7 @@ function AddAgentPage() {
         top_p: DEFAULT_CHAT_CONFIG.top_p,
         top_k: DEFAULT_CHAT_CONFIG.top_k,
         custom_prompt: '',
+        custom_system_prompt: '',
         other_model_params: {},
       },
       llmProviderId: defaultAgentId,
@@ -308,7 +310,7 @@ function AddAgentPage() {
                 <div className="space-y-4">
                   <FormField
                     control={form.control}
-                    name="config.custom_prompt"
+                    name="config.custom_system_prompt"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>System Prompt</FormLabel>
