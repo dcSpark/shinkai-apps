@@ -9,6 +9,7 @@ import {
   CreateToolCodeRequest,
   CreateToolCodeResponse,
   CreateToolMetadataRequest,
+  CreateToolMetadataResponse,
   DeletePromptRequest,
   ExecuteToolCodeRequest,
   ExecuteToolCodeResponse,
@@ -266,7 +267,7 @@ export const toolMetadataImplementation = async (
       responseType: 'json',
     },
   );
-  return response.data as CreateToolMetadataRequest;
+  return response.data as CreateToolMetadataResponse;
 };
 
 export const executeToolCode = async (
