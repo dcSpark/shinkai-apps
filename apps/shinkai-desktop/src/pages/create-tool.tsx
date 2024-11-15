@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
+import { ReloadIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   buildInboxIdFromJobId,
@@ -234,7 +235,7 @@ function CreateToolPage() {
     defaultValues: {
       name: metadataValue?.name,
       description: metadataValue?.description,
-      author: metadataValue?.author,
+      author: auth?.shinkai_identity ?? '',
       keywords: metadataValue?.keywords ?? [],
       configurations: Object.keys(
         metadataValue?.configurations?.properties ?? {},
@@ -256,6 +257,10 @@ function CreateToolPage() {
       ),
     },
   });
+
+  useEffect(() => {
+    metadataForm.setValue('author', auth?.shinkai_identity ?? '');
+  }, [auth?.shinkai_identity, metadataForm]);
 
   const isToolGenerating = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
@@ -352,6 +357,8 @@ function CreateToolPage() {
     form.reset();
     return;
   };
+  console.log(metadataForm.formState);
+
   const handleSubmit = async (data: MetadataFormSchema) => {
     setTab('code');
     await executeCode({
@@ -664,71 +671,111 @@ function CreateToolPage() {
                           metadata?.status.type === 'complete' && (
                             <div className="text-gray-80 relative text-xs">
                               {config.isDev && (
-                                <Dialog>
-                                  <DialogTrigger asChild>
-                                    <Button
-                                      className="absolute -top-8 right-0 flex h-[30px] items-center gap-1 rounded-md text-xs"
-                                      size="auto"
-                                      variant="outline"
-                                    >
-                                      <ArrowUpRight className="h-4 w-4" />
-                                      Details
-                                    </Button>
-                                  </DialogTrigger>
-                                  <DialogContent className="flex max-w-5xl flex-col bg-gray-300 p-5 text-xs">
-                                    <DialogClose className="absolute right-4 top-4">
-                                      <XIcon className="text-gray-80 h-5 w-5" />
-                                    </DialogClose>
-                                    <DialogHeader className="flex justify-between">
-                                      <DialogTitle className="text-left text-sm font-bold">
-                                        Details
-                                      </DialogTitle>
-                                    </DialogHeader>
-                                    <div className="grid grid-cols-2 gap-10 space-y-3">
-                                      <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
-                                        <div className="flex h-12 items-center justify-between gap-2 pt-1.5">
-                                          <h2 className="text-gray-80 flex items-center pl-1 font-mono text-xs font-semibold">
-                                            Response
-                                          </h2>
-                                          <Tooltip>
-                                            <TooltipTrigger asChild>
-                                              <div>
-                                                <CopyToClipboardIcon
-                                                  className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"
-                                                  string={
-                                                    metadata.content ?? ''
-                                                  }
-                                                />
-                                              </div>
-                                            </TooltipTrigger>
-                                            <TooltipPortal>
-                                              <TooltipContent className="flex flex-col items-center gap-1">
-                                                <p>Copy Code</p>
-                                              </TooltipContent>
-                                            </TooltipPortal>
-                                          </Tooltip>
-                                        </div>
-                                        <MarkdownPreview
-                                          className="prose-h1:!text-gray-50 prose-h1:!text-sm !text-sm !text-gray-50"
-                                          source={metadata.content}
-                                        />
-                                      </div>
+                                <div className="absolute -top-8 right-0 flex items-center gap-2">
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        className="size-[30px] p-2"
+                                        onClick={async () => {
+                                          await createToolMetadata(
+                                            {
+                                              nodeAddress:
+                                                auth?.node_address ?? '',
+                                              token: auth?.api_v2_key ?? '',
+                                              message: '',
+                                              llmProviderId: defaultAgentId,
+                                              code: toolCode,
+                                            },
+                                            {
+                                              onSuccess: (data) => {
+                                                setChatInboxIdMetadata(
+                                                  buildInboxIdFromJobId(
+                                                    data.job_id,
+                                                  ),
+                                                );
+                                              },
+                                            },
+                                          );
+                                        }}
+                                        size="auto"
+                                        variant="outline"
+                                      >
+                                        <ReloadIcon className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipPortal>
+                                      <TooltipContent className="flex flex-col items-center gap-1">
+                                        <p>Regenerate Preview</p>
+                                      </TooltipContent>
+                                    </TooltipPortal>
+                                  </Tooltip>
 
-                                      <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
-                                        <div className="text-gray-80 flex-1 items-center gap-1 truncate text-left text-xs">
-                                          View JSON
+                                  <Dialog>
+                                    <DialogTrigger asChild>
+                                      <Button
+                                        className="flex h-[30px] items-center gap-1 rounded-md text-xs"
+                                        size="auto"
+                                        variant="outline"
+                                      >
+                                        <ArrowUpRight className="h-4 w-4" />
+                                        Details
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="flex max-w-5xl flex-col bg-gray-300 p-5 text-xs">
+                                      <DialogClose className="absolute right-4 top-4">
+                                        <XIcon className="text-gray-80 h-5 w-5" />
+                                      </DialogClose>
+                                      <DialogHeader className="flex justify-between">
+                                        <DialogTitle className="text-left text-sm font-bold">
+                                          Details
+                                        </DialogTitle>
+                                      </DialogHeader>
+                                      <div className="grid grid-cols-2 gap-10 space-y-3">
+                                        <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
+                                          <div className="flex h-12 items-center justify-between gap-2 pt-1.5">
+                                            <h2 className="text-gray-80 flex items-center pl-1 font-mono text-xs font-semibold">
+                                              Response
+                                            </h2>
+                                            <Tooltip>
+                                              <TooltipTrigger asChild>
+                                                <div>
+                                                  <CopyToClipboardIcon
+                                                    className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"
+                                                    string={
+                                                      metadata.content ?? ''
+                                                    }
+                                                  />
+                                                </div>
+                                              </TooltipTrigger>
+                                              <TooltipPortal>
+                                                <TooltipContent className="flex flex-col items-center gap-1">
+                                                  <p>Copy Code</p>
+                                                </TooltipContent>
+                                              </TooltipPortal>
+                                            </Tooltip>
+                                          </div>
+                                          <MarkdownPreview
+                                            className="prose-h1:!text-gray-50 prose-h1:!text-sm !text-sm !text-gray-50"
+                                            source={metadata.content}
+                                          />
                                         </div>
-                                        <JsonView
-                                          displayDataTypes={false}
-                                          displayObjectSize={false}
-                                          enableClipboard={false}
-                                          style={githubLightTheme}
-                                          value={metadataValue ?? {}}
-                                        />
+
+                                        <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
+                                          <div className="text-gray-80 flex-1 items-center gap-1 truncate text-left text-xs">
+                                            View JSON
+                                          </div>
+                                          <JsonView
+                                            displayDataTypes={false}
+                                            displayObjectSize={false}
+                                            enableClipboard={false}
+                                            style={githubLightTheme}
+                                            value={metadataValue ?? {}}
+                                          />
+                                        </div>
                                       </div>
-                                    </div>
-                                  </DialogContent>
-                                </Dialog>
+                                    </DialogContent>
+                                  </Dialog>
+                                </div>
                               )}
 
                               <Form {...metadataForm}>
