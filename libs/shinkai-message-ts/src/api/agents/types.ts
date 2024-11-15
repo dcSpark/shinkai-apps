@@ -18,9 +18,9 @@ export type CreateAgentResponse = Agent;
 export type RemoveAgentRequest = {
   agent_id: string;
 };
-export type RemoveAgentResponse = {};
+export type RemoveAgentResponse = string;
 export type UpdateAgentRequest = Agent;
-export type UpdateAgentResponse = {};
+export type UpdateAgentResponse = Agent;
 export type GetAgentRequest = {
   agentId: string;
 };
