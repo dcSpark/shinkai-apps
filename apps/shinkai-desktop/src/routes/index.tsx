@@ -5,6 +5,7 @@ import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
 import AddAgentPage from '../components/agent/add-agent';
+import EditAgentPage from '../components/agent/edit-agent';
 import { ChatProvider } from '../components/chat/context/chat-context';
 import { SetJobScopeProvider } from '../components/chat/context/set-job-scope-context';
 import { ToolsProvider } from '../components/chat/context/tools-context';
@@ -271,9 +272,10 @@ const AppRoutes = () => {
           }
         >
           <Route element={<LocalAisPage />} path="local-ais" />
-          <Route element={<AIsPage />} index path="ais" />
+          <Route element={<AIsPage />} path="ais" />
           <Route element={<AddAIPage />} path="add-ai" />
-          <Route element={<AddAgentPage />} index path="add-agent" />
+          <Route element={<AddAgentPage />} path="add-agent" />
+          <Route element={<EditAgentPage />} path="edit/:agentId" />
         </Route>
         <Route
           element={

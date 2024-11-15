@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
-import { useCreateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/createAgent/useCreateAgent';
+import { JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
+import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import {
@@ -32,16 +33,17 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
+import { PlusIcon } from 'lucide-react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { SubpageLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
-import { useSettings } from '../../store/settings';
 
-const addAgentFormSchema = z.object({
+const editAgentFormSchema = z.object({
   name: z
     .string()
     .regex(
@@ -57,24 +59,32 @@ const addAgentFormSchema = z.object({
   config: z
     .object({
       custom_prompt: z.string(),
-      temperature: z.number(),
-      top_k: z.number(),
-      top_p: z.number(),
-      stream: z.boolean(),
-      other_model_params: z.record(z.string()),
+      custom_system_prompt: z.string(),
+      temperature: z.number().optional(),
+      top_k: z.number().optional(),
+      top_p: z.number().optional(),
+      stream: z.boolean().nullish(),
+      other_model_params: z.record(z.string()).nullish(),
     })
     .nullable(),
 });
 
-type AddAgentFormValues = z.infer<typeof addAgentFormSchema>;
+type EditAgentFormValues = z.infer<typeof editAgentFormSchema>;
 
 function EditAgentPage() {
-  const defaultAgentId = useSettings((state) => state.defaultAgentId);
+  const { agentId } = useParams();
   const auth = useAuth((state) => state.auth);
+
+  const { data: agent } = useGetAgent({
+    agentId: agentId ?? '',
+    token: auth?.api_v2_key ?? '',
+    nodeAddress: auth?.node_address ?? '',
+  });
+
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const form = useForm<AddAgentFormValues>({
-    resolver: zodResolver(addAgentFormSchema),
+  const form = useForm<EditAgentFormValues>({
+    resolver: zodResolver(editAgentFormSchema),
     defaultValues: {
       name: '',
       uiDescription: '',
@@ -82,24 +92,28 @@ function EditAgentPage() {
       knowledge: [],
       tools: [],
       debugMode: false,
-      config: {
-        stream: false, // disable stream by default for tooling
-        temperature: DEFAULT_CHAT_CONFIG.temperature,
-        top_p: DEFAULT_CHAT_CONFIG.top_p,
-        top_k: DEFAULT_CHAT_CONFIG.top_k,
-        custom_prompt: '',
-        other_model_params: {},
-      },
-      llmProviderId: defaultAgentId,
     },
   });
+
+  useEffect(() => {
+    if (agent) {
+      form.setValue('name', agent.name);
+      form.setValue('uiDescription', agent.ui_description);
+      form.setValue('storage_path', agent.storage_path);
+      form.setValue('knowledge', agent.knowledge);
+      form.setValue('tools', agent.tools);
+      form.setValue('debugMode', agent.debug_mode);
+      form.setValue('config', agent.config as JobConfig);
+      form.setValue('llmProviderId', agent.llm_provider_id);
+    }
+  }, [agent, form]);
 
   const { data: toolsList } = useGetTools({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
 
-  const { mutateAsync: createAgent, isPending } = useCreateAgent({
+  const { mutateAsync: updateAgent, isPending } = useUpdateAgent({
     onError: (error) => {
       toast.error('Failed to create agent', {
         description: error.response?.data?.message ?? error.message,
@@ -115,8 +129,8 @@ function EditAgentPage() {
     token: auth?.api_v2_key ?? '',
   });
 
-  const submit = async (values: AddAgentFormValues) => {
-    await createAgent({
+  const submit = async (values: EditAgentFormValues) => {
+    await updateAgent({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       agent: {
@@ -128,14 +142,14 @@ function EditAgentPage() {
         knowledge: values.knowledge,
         tools: values.tools,
         debug_mode: values.debugMode,
-        config: values.config,
+        config: values.config as JobConfig,
         name: values.name,
       },
     });
   };
 
   return (
-    <SubpageLayout className="max-w-4xl" title="Create new Agent">
+    <SubpageLayout className="max-w-4xl" title="Edit Agent">
       <p className="text-gray-80 -mt-8 py-3 pb-6 text-center text-sm">
         Create and explore custom AI agents with tailored instructions and
         diverse skills.
@@ -230,6 +244,21 @@ function EditAgentPage() {
                   <span className="flex-1 items-center gap-1 truncate text-left text-xs font-semibold text-gray-50">
                     Tools
                   </span>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      className="h-[30px] text-xs"
+                      onClick={() => {
+                        navigate('/tools/create');
+                      }}
+                      size="auto"
+                      variant="outline"
+                    >
+                      <PlusIcon className="mr-1 size-3.5" />
+                      Create New Tool
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex max-h-[28vh] flex-col gap-2.5 overflow-auto">
                   <div className="flex items-center gap-3">
                     <Switch
                       checked={form.watch('tools').length === toolsList?.length}
@@ -246,8 +275,6 @@ function EditAgentPage() {
                     />
                     <span className="text-gray-80 text-xs">Enabled All</span>
                   </div>
-                </div>
-                <div className="flex max-h-[28vh] flex-col gap-2.5 overflow-auto">
                   {toolsList?.map((tool) => (
                     <FormField
                       control={form.control}
@@ -312,7 +339,7 @@ function EditAgentPage() {
                 <div className="space-y-4">
                   <FormField
                     control={form.control}
-                    name="config.custom_prompt"
+                    name="config.custom_system_prompt"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>System Prompt</FormLabel>
@@ -374,7 +401,7 @@ function EditAgentPage() {
                                     field.onChange(vals[0]);
                                   }}
                                   step={0.1}
-                                  value={[field.value]}
+                                  value={[field.value as number]}
                                 />
                               </div>
                             </HoverCardTrigger>
@@ -417,7 +444,7 @@ function EditAgentPage() {
                                     field.onChange(vals[0]);
                                   }}
                                   step={0.1}
-                                  value={[field.value]}
+                                  value={[field.value as number]}
                                 />
                               </div>
                             </HoverCardTrigger>
@@ -462,7 +489,7 @@ function EditAgentPage() {
                                     field.onChange(vals[0]);
                                   }}
                                   step={1}
-                                  value={[field.value]}
+                                  value={[field.value as number]}
                                 />
                               </div>
                             </HoverCardTrigger>
