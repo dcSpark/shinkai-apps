@@ -47,7 +47,14 @@ import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import JsonView from '@uiw/react-json-view';
 import { githubLightTheme } from '@uiw/react-json-view/githubLight';
-import { ArrowUpRight, Loader2, Play, Save, XIcon } from 'lucide-react';
+import {
+  ArrowUpRight,
+  Loader2,
+  Play,
+  Save,
+  XCircle,
+  XIcon,
+} from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
@@ -144,6 +151,10 @@ function extractAndParseJsonCode(message: string): ToolMetadata | null {
       );
       return null;
     }
+  } else {
+    toast.error('Failed to generate preview.', {
+      description: 'No JSON code found in the response. Try Regenerating.',
+    });
   }
   return null;
 }
@@ -192,6 +203,7 @@ function CreateToolPage() {
     mutateAsync: executeCode,
     isPending: isExecutingCode,
     isSuccess: isCodeExecutionSuccess,
+    isError: isCodeExecutionError,
   } = useExecuteToolCode({
     onSuccess: (data) => {
       setToolResult(data);
@@ -635,6 +647,13 @@ function CreateToolPage() {
                         <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
                           <Loader2 className="shrink-0 animate-spin" />
                           Running Tool...
+                        </div>
+                      )}
+                      {isCodeExecutionError && (
+                        <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
+                          <XCircle className="h-6 w-6 text-red-400" />
+                          <p>Tool code execution failed.</p>
+                          <p>Try generating the tool code again.</p>
                         </div>
                       )}
                       {isCodeExecutionSuccess && toolResult && (
