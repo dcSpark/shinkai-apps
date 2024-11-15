@@ -18,6 +18,8 @@ import {
   GetToolsResponse,
   ListAllWorkflowsResponse,
   PayInvoiceRequest,
+  SaveToolCodeRequest,
+  SaveToolCodeResponse,
   SearchPromptsResponse,
   SearchWorkflowsResponse,
   UpdatePromptRequest,
@@ -284,4 +286,20 @@ export const executeToolCode = async (
     },
   );
   return response.data as ExecuteToolCodeResponse;
+};
+
+export const saveToolCode = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: SaveToolCodeRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/set_playground_tool'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as SaveToolCodeResponse;
 };

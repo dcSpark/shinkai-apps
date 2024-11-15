@@ -129,7 +129,6 @@ function extractAndParseJsonCode(message: string): ToolMetadata | null {
     try {
       const parsedJson = JSON.parse(jsonCodeMatch[1].trim());
       return parsedJson;
-      // return ToolMetadataSchema.parse(parsedJson);
     } catch (error) {
       if (error instanceof Error) {
         toast.error('Failed to generate preview (json)', {
@@ -197,6 +196,7 @@ function CreateToolPage() {
       });
     },
   });
+
   const defaultAgentId = useSettings(
     (settingsStore) => settingsStore.defaultAgentId,
   );
@@ -489,6 +489,9 @@ function CreateToolPage() {
                         disabled={
                           !toolCode || !metadataValue || !isCodeExecutionSuccess
                         }
+                        // onClick={() => {
+                        //   await saveToolCode({});
+                        // }}
                         size="sm"
                         variant="outline"
                       >

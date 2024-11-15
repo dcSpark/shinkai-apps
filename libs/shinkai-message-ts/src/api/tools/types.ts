@@ -193,3 +193,14 @@ export type ExecuteToolCodeRequest = {
 };
 
 export type ExecuteToolCodeResponse = Record<string, any>;
+
+export type SaveToolCodeRequest = {
+  job_id: string;
+  metadata: Record<string, any>;
+  code: string;
+  tool_router_key?: string;
+};
+
+export type SaveToolCodeResponse = {
+  job_id: string;
+};
