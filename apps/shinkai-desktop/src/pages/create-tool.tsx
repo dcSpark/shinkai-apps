@@ -363,8 +363,11 @@ function CreateToolPage() {
   console.log(metadataForm.formState);
 
   const handleSubmit = async (data: MetadataFormSchema) => {
-    if (metadataForm.formState.errors) {
+    if (Object.keys(metadataForm.formState.errors).length > 0) {
       setTab('preview');
+      toast.error('Please fill in the required fields', {
+        description: Object.keys(metadataForm.formState.errors).join('\n'),
+      });
       return;
     }
 
