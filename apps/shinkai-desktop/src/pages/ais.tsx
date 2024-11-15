@@ -24,9 +24,19 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   TextField,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { ScrollArea } from '@shinkai_network/shinkai-ui';
+import { CreateAIIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BotIcon, Edit, Plus, TrashIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
@@ -34,12 +44,15 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import Agents from '../components/agent/agents';
+import { useURLQueryParams } from '../hooks/use-url-query-params';
 import { useAuth } from '../store/auth';
+import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
-import { getModelObject } from './create-agent';
+import { getModelObject } from './add-ai';
 import { SimpleLayout } from './layout/simple-layout';
 
-const AgentsPage = () => {
+const AIsPage = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
@@ -47,74 +60,118 @@ const AgentsPage = () => {
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
+  const optInExperimental = useSettings((state) => state.optInExperimental);
+
   const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
     (state) => state.isInUse,
   );
+  const query = useURLQueryParams();
+  const tabSelected = query.get('tab') ?? 'ais';
+
   const onAddAgentClick = () => {
     if (isLocalShinkaiNodeIsUse) {
-      navigate('/agents-locally');
+      navigate('/local-ais');
       return;
     }
-    navigate('/add-agent');
+    navigate('/add-ai');
   };
-  return (
-    <SimpleLayout classname="relative" title={t('llmProviders.label')}>
-      <div className="absolute right-3 top-[36px]">
-        <Button
-          className="h-[40px] gap-2"
-          onClick={onAddAgentClick}
-          size="auto"
-        >
-          <Plus className="h-4 w-4" />
-          <span>{t('llmProviders.add')}</span>
-        </Button>
-      </div>
-      <div className="flex h-full flex-col space-y-3">
-        {!llmProviders?.length ? (
-          <div className="flex grow flex-col items-center justify-center">
-            <div className="mb-8 space-y-3 text-center">
-              <span aria-hidden className="text-5xl">
-                🤖
-              </span>
-              <p className="text-2xl font-semibold">
-                {t('llmProviders.notFound.title')}
-              </p>
-              <p className="text-center text-sm font-medium text-gray-100">
-                {t('llmProviders.notFound.description')}
-              </p>
-            </div>
 
-            <Button onClick={onAddAgentClick}>{t('llmProviders.add')}</Button>
+  return (
+    <SimpleLayout>
+      <Tabs
+        className="relative flex h-full flex-col"
+        defaultValue={tabSelected}
+      >
+        <TabsList
+          className={cn(
+            'grid w-full overflow-auto rounded-lg border border-gray-400 bg-transparent p-0.5',
+
+            optInExperimental
+              ? 'max-w-[200px] grid-cols-2'
+              : 'max-w-[100px] grid-cols-1',
+          )}
+        >
+          <TabsTrigger
+            className="flex h-8 items-center gap-1.5 text-xs font-semibold"
+            value="ais"
+          >
+            AIs
+          </TabsTrigger>
+          {optInExperimental && (
+            <TabsTrigger
+              className="flex h-8 items-center gap-1.5 text-xs font-semibold"
+              value="agents"
+            >
+              Agents
+            </TabsTrigger>
+          )}
+        </TabsList>
+        <TabsContent className="h-full" value="ais">
+          <div className="absolute right-3 top-0">
+            <Button
+              className="h-[40px] gap-2"
+              onClick={onAddAgentClick}
+              size="auto"
+            >
+              <Plus className="h-4 w-4" />
+              <span>{t('llmProviders.add')}</span>
+            </Button>
           </div>
-        ) : (
-          <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
-            <div className="divide-y divide-gray-400">
-              {llmProviders?.map((agent) => (
-                <AgentCard
-                  agentApiKey={agent.api_key ?? ''}
-                  agentId={agent.id}
-                  externalUrl={agent.external_url ?? ''}
-                  key={agent.id}
-                  model={agent.model}
-                />
-              ))}
-            </div>
-          </ScrollArea>
+          <div className="flex h-full flex-col space-y-3">
+            {!llmProviders?.length ? (
+              <div className="flex grow flex-col items-center justify-center">
+                <div className="mb-8 space-y-3 text-center">
+                  <span aria-hidden className="text-5xl">
+                    🤖
+                  </span>
+                  <p className="text-2xl font-semibold">
+                    {t('llmProviders.notFound.title')}
+                  </p>
+                  <p className="text-center text-sm font-medium text-gray-100">
+                    {t('llmProviders.notFound.description')}
+                  </p>
+                </div>
+
+                <Button onClick={onAddAgentClick}>
+                  {t('llmProviders.add')}
+                </Button>
+              </div>
+            ) : (
+              <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
+                <div className="divide-y divide-gray-400">
+                  {llmProviders?.map((llmProvider) => (
+                    <LLMProviderCard
+                      agentApiKey={llmProvider.api_key ?? ''}
+                      externalUrl={llmProvider.external_url ?? ''}
+                      key={llmProvider.id}
+                      llmProviderId={llmProvider.id}
+                      model={llmProvider.model}
+                    />
+                  ))}
+                </div>
+              </ScrollArea>
+            )}
+          </div>
+        </TabsContent>
+        {optInExperimental && (
+          <TabsContent className="h-full" value="agents">
+            <Agents />
+          </TabsContent>
         )}
-      </div>
+      </Tabs>
     </SimpleLayout>
   );
 };
 
-export default AgentsPage;
+export default AIsPage;
 
-function AgentCard({
-  agentId,
+function LLMProviderCard({
+  llmProviderId,
   model,
   externalUrl,
   agentApiKey,
 }: {
-  agentId: string;
+  llmProviderId: string;
   model: string;
   externalUrl: string;
   agentApiKey: string;
@@ -129,97 +186,118 @@ function AgentCard({
 
   return (
     <React.Fragment>
-      <div
-        className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
-        data-testid={`${agentId}-agent-button`}
-        onClick={() => {
-          navigate(`/inboxes`, { state: { agentName: agentId } });
-        }}
-        role="button"
-      >
+      <div className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-2.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg">
             <BotIcon className="h-6 w-6" />
           </div>
           <div className="flex flex-col items-baseline gap-2">
             <span className="w-full truncate text-start text-sm">
-              {agentId}
+              {llmProviderId}
             </span>
             <Badge className="text-gray-80 truncate bg-gray-400 text-start text-xs font-normal shadow-none">
               {model}
             </Badge>
           </div>
         </div>
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <div
-              className={cn(
-                buttonVariants({
-                  variant: 'tertiary',
-                  size: 'icon',
-                }),
-                'border-0 hover:bg-gray-500/40',
-              )}
-              onClick={(event) => {
-                event.stopPropagation();
-              }}
-              role="button"
-              tabIndex={0}
-            >
-              <span className="sr-only">{t('common.moreOptions')}</span>
-              <DotsVerticalIcon className="text-gray-100" />
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="w-[160px] border bg-gray-500 px-2.5 py-2"
-          >
-            {[
-              {
-                name: t('common.edit'),
-                icon: <Edit className="mr-3 h-4 w-4" />,
-                onClick: () => {
-                  setIsEditAgentDrawerOpen(true);
-                },
-              },
-              {
-                name: t('common.delete'),
-                icon: <TrashIcon className="mr-3 h-4 w-4" />,
-                onClick: () => {
-                  setIsDeleteAgentDrawerOpen(true);
-                },
-              },
-            ].map((option) => (
-              <React.Fragment key={option.name}>
-                {option.name === 'Delete' && (
-                  <DropdownMenuSeparator className="bg-gray-300" />
-                )}
-                <DropdownMenuItem
-                  key={option.name}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    option.onClick();
+        <div className="flex items-center gap-4">
+          <TooltipProvider delayDuration={0}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={() => {
+                    navigate(`/inboxes`, { state: { llmProviderId } });
                   }}
+                  size="sm"
+                  variant="gradient"
                 >
-                  {option.icon}
-                  {option.name}
-                </DropdownMenuItem>
-              </React.Fragment>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+                  <CreateAIIcon className="size-4" />
+                  <span className="sr-only">New Chat</span>
+                </Button>
+              </TooltipTrigger>
+
+              <TooltipPortal>
+                <TooltipContent
+                  align="center"
+                  className="flex flex-col items-center gap-1"
+                  side="right"
+                >
+                  Create New Chat
+                </TooltipContent>
+              </TooltipPortal>
+            </Tooltip>
+          </TooltipProvider>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <div
+                className={cn(
+                  buttonVariants({
+                    variant: 'tertiary',
+                    size: 'icon',
+                  }),
+                  'border-0 hover:bg-gray-500/40',
+                )}
+                onClick={(event) => {
+                  event.stopPropagation();
+                }}
+                role="button"
+                tabIndex={0}
+              >
+                <span className="sr-only">{t('common.moreOptions')}</span>
+                <DotsVerticalIcon className="text-gray-100" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="w-[160px] border bg-gray-500 px-2.5 py-2"
+            >
+              {[
+                {
+                  name: t('common.edit'),
+                  icon: <Edit className="mr-3 h-4 w-4" />,
+                  onClick: () => {
+                    setIsEditAgentDrawerOpen(true);
+                  },
+                },
+                {
+                  name: t('common.delete'),
+                  icon: <TrashIcon className="mr-3 h-4 w-4" />,
+                  onClick: () => {
+                    setIsDeleteAgentDrawerOpen(true);
+                  },
+                },
+              ].map((option) => (
+                <React.Fragment key={option.name}>
+                  {option.name === 'Delete' && (
+                    <DropdownMenuSeparator className="bg-gray-300" />
+                  )}
+                  <DropdownMenuItem
+                    key={option.name}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      option.onClick();
+                    }}
+                  >
+                    {option.icon}
+                    {option.name}
+                  </DropdownMenuItem>
+                </React.Fragment>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
-      <EditAgentDrawer
+      <EditLLMProviderDrawer
         agentApiKey={agentApiKey}
         agentExternalUrl={externalUrl}
-        agentId={agentId}
+        agentId={llmProviderId}
         agentModelProvider={model.split(':')[0]}
         agentModelType={model.split(':')[1]}
         onOpenChange={setIsEditAgentDrawerOpen}
         open={isEditAgentDrawerOpen}
       />
-      <RemoveAgentDrawer
-        agentId={agentId}
+      <RemoveLLMProviderDrawer
+        agentId={llmProviderId}
         onOpenChange={setIsDeleteAgentDrawerOpen}
         open={isDeleteAgentDrawerOpen}
       />
@@ -227,7 +305,7 @@ function AgentCard({
   );
 }
 
-const EditAgentDrawer = ({
+const EditLLMProviderDrawer = ({
   open,
   onOpenChange,
   agentId,
@@ -383,7 +461,7 @@ const EditAgentDrawer = ({
     </Sheet>
   );
 };
-const RemoveAgentDrawer = ({
+const RemoveLLMProviderDrawer = ({
   open,
   onOpenChange,
   agentId,

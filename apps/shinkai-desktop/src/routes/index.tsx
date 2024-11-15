@@ -4,6 +4,8 @@ import { debug } from '@tauri-apps/plugin-log';
 import React, { useEffect, useRef } from 'react';
 import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 
+import AddAgentPage from '../components/agent/add-agent';
+import EditAgentPage from '../components/agent/edit-agent';
 import { ChatProvider } from '../components/chat/context/chat-context';
 import { SetJobScopeProvider } from '../components/chat/context/set-job-scope-context';
 import { ToolsProvider } from '../components/chat/context/tools-context';
@@ -25,17 +27,17 @@ import {
 } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { ShinkaiNodeRunningOverlay } from '../lib/shinkai-node-overlay';
-import AgentsPage from '../pages/agents';
+import AddAIPage from '../pages/add-ai';
 import AIModelInstallation from '../pages/ai-model-installation';
-import AgentsLocally from '../pages/ai-model-locally';
+import AIsPage from '../pages/ais';
 import AnalyticsPage from '../pages/analytics';
 import AnalyticsSettingsPage from '../pages/analytics-settings';
 import ChatConversation from '../pages/chat/chat-conversation';
 import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
 import { ConnectMethodQrCodePage } from '../pages/connect-method-qr-code';
-import CreateAgentPage from '../pages/create-agent';
 import CreateChatPage from '../pages/create-chat';
+import CreateToolPage from '../pages/create-tool';
 import CryptoWalletPage from '../pages/crypto-wallet';
 import { ExportConnection } from '../pages/export-connection';
 import FreeSubscriptionsPage from '../pages/free-subscription';
@@ -45,6 +47,7 @@ import GetStartedPage from '../pages/get-started';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
+import LocalAisPage from '../pages/local-ais';
 import { PromptLibrary } from '../pages/prompt-library';
 import { PublicKeys } from '../pages/public-keys';
 import QuickConnectionPage from '../pages/quick-connection';
@@ -268,9 +271,11 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         >
-          <Route element={<CreateAgentPage />} path="add-agent" />
-          <Route element={<AgentsLocally />} path="agents-locally" />
-          <Route element={<AgentsPage />} index path="agents" />
+          <Route element={<LocalAisPage />} path="local-ais" />
+          <Route element={<AIsPage />} path="ais" />
+          <Route element={<AddAIPage />} path="add-ai" />
+          <Route element={<AddAgentPage />} path="add-agent" />
+          <Route element={<EditAgentPage />} path="edit/:agentId" />
         </Route>
         <Route
           element={
@@ -327,6 +332,7 @@ const AppRoutes = () => {
         >
           <Route element={<Tools />} index />
           <Route element={<ToolDetails />} path={':toolKey'} />
+          <Route element={<CreateToolPage />} path={'create'} />
         </Route>
         <Route
           element={
