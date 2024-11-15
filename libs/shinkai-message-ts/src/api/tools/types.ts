@@ -184,6 +184,7 @@ export type ExecuteToolCodeRequest = {
   tool_type: string;
   tool_router_key: string;
   parameters: Record<string, any>;
+  code: string;
 };
 
 export type ExecuteToolCodeResponse = Record<string, any>;
