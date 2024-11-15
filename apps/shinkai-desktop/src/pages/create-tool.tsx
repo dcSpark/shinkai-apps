@@ -136,9 +136,12 @@ function extractAndParseJsonCode(message: string): ToolMetadata | null {
       const parsedJson = JSON.parse(jsonCodeMatch[1].trim());
       return parsedJson;
     } catch (error) {
-      toast.error('Failed to generate preview (json)', {
-        description: (error as Error)?.message,
-      });
+      toast.error(
+        'Failed to generate preview (json). Try regenerating the preview again.',
+        {
+          description: (error as Error)?.message,
+        },
+      );
       return null;
     }
   }
@@ -152,7 +155,7 @@ function CreateToolPage() {
   const toolResultBoxRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [toolCode, setToolCode] = useState<string>('');
-  // ''
+
   const [toolResult, setToolResult] = useState<object | null>(null);
   const [chatInboxId, setChatInboxId] = useState<string | null>(null);
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<string | null>(
@@ -360,6 +363,11 @@ function CreateToolPage() {
   console.log(metadataForm.formState);
 
   const handleSubmit = async (data: MetadataFormSchema) => {
+    if (metadataForm.formState.errors) {
+      setTab('preview');
+      return;
+    }
+
     setTab('code');
     await executeCode({
       code: toolCode,
