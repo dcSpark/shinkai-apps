@@ -59,7 +59,7 @@ const editAgentFormSchema = z.object({
   config: z
     .object({
       custom_prompt: z.string(),
-      custom_system_prompt: z.string(),
+      custom_system_prompt: z.string().optional(),
       temperature: z.number().optional(),
       top_k: z.number().optional(),
       top_p: z.number().optional(),
