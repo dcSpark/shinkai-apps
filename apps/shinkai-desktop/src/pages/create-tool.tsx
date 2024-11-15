@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   buildInboxIdFromJobId,
   extractJobIdFromInbox,
@@ -85,30 +86,6 @@ type MetadataFormSchema = z.infer<typeof metadataFormSchema>;
 
 export type CreateToolCodeFormSchema = z.infer<typeof createToolCodeFormSchema>;
 
-type ToolMetadata = {
-  id: string;
-  name: string;
-  description: string;
-  author: string;
-  keywords: string[];
-  configurations: {
-    type: 'object';
-    properties: Record<string, any>;
-    required: string[];
-  };
-  parameters: {
-    type: 'object';
-    properties: Record<string, any>;
-
-    required: string[];
-  };
-  result: {
-    type: 'object';
-    properties: Record<string, any>;
-    required: string[];
-  };
-};
-
 function ToolErrorFallback({ error }: { error: Error }) {
   return (
     <div
@@ -136,28 +113,28 @@ function extractTypeScriptCode(message: string) {
   return tsCodeMatch ? tsCodeMatch[1].trim() : null;
 }
 
-function extractAndParseJsonCode(message: string): ToolMetadata | null {
-  const jsonCodeMatch = message.match(/```json\n([\s\S]*?)\n```/);
-  if (jsonCodeMatch) {
-    try {
-      const parsedJson = JSON.parse(jsonCodeMatch[1].trim());
-      return parsedJson;
-    } catch (error) {
-      toast.error(
-        'Failed to generate preview (json). Try regenerating the preview again.',
-        {
-          description: (error as Error)?.message,
-        },
-      );
-      return null;
-    }
-  } else {
-    toast.error('Failed to generate preview.', {
-      description: 'No JSON code found in the response. Try Regenerating.',
-    });
-  }
-  return null;
-}
+// function extractAndParseJsonCode(message: string): ToolMetadata | null {
+//   const jsonCodeMatch = message.match(/```json\n([\s\S]*?)\n```/);
+//   if (jsonCodeMatch) {
+//     try {
+//       const parsedJson = JSON.parse(jsonCodeMatch[1].trim());
+//       return parsedJson;
+//     } catch (error) {
+//       toast.error(
+//         'Failed to generate preview (json). Try regenerating the preview again.',
+//         {
+//           description: (error as Error)?.message,
+//         },
+//       );
+//       return null;
+//     }
+//   } else {
+//     toast.error('Failed to generate preview.', {
+//       description: 'No JSON code found in the response. Try Regenerating.',
+//     });
+//   }
+//   return null;
+// }
 
 function CreateToolPage() {
   const [tab, setTab] = useState<'code' | 'preview'>('code');
@@ -220,10 +197,9 @@ function CreateToolPage() {
   });
 
   const { mutateAsync: saveToolCode } = useSaveToolCode({
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success('Tool code saved successfully');
-      // TODO: Redirect to the tool page
-      navigate('/tools');
+      navigate(`/tools/${data.metadata.tool_router_key}`);
     },
   });
 
@@ -240,10 +216,75 @@ function CreateToolPage() {
     if (!metadata) return null;
 
     if (metadata.role === 'assistant' && metadata.status.type === 'complete') {
-      return extractAndParseJsonCode(metadata.content);
+      const jsonCodeMatch = metadata.content.match(/```json\n([\s\S]*?)\n```/);
+      if (jsonCodeMatch) {
+        try {
+          const parsedJson = JSON.parse(jsonCodeMatch[1].trim());
+          return parsedJson as ToolMetadata;
+        } catch (error) {
+          toast.error(
+            'Failed to generate preview (json). Try regenerating the preview again.',
+            {
+              description: (error as Error)?.message,
+              action: {
+                label: 'Regenerate preview',
+                onClick: async () => {
+                  await createToolMetadata(
+                    {
+                      nodeAddress: auth?.node_address ?? '',
+                      token: auth?.api_v2_key ?? '',
+                      message: '',
+                      llmProviderId: defaultAgentId,
+                      code: toolCode,
+                    },
+                    {
+                      onSuccess: (data) => {
+                        setChatInboxIdMetadata(
+                          buildInboxIdFromJobId(data.job_id),
+                        );
+                      },
+                    },
+                  );
+                },
+              },
+            },
+          );
+          return null;
+        }
+      } else {
+        toast.error('Failed to generate preview.', {
+          description: 'No JSON code found. Try to generate preview again',
+          action: {
+            label: 'Regenerate preview',
+            onClick: async () => {
+              await createToolMetadata(
+                {
+                  nodeAddress: auth?.node_address ?? '',
+                  token: auth?.api_v2_key ?? '',
+                  message: '',
+                  llmProviderId: defaultAgentId,
+                  code: toolCode,
+                },
+                {
+                  onSuccess: (data) => {
+                    setChatInboxIdMetadata(buildInboxIdFromJobId(data.job_id));
+                  },
+                },
+              );
+            },
+          },
+        });
+        return null;
+      }
     }
-    return null;
-  }, [metadataData?.pages]);
+  }, [
+    auth?.api_v2_key,
+    auth?.node_address,
+    createToolMetadata,
+    defaultAgentId,
+    metadataData?.pages,
+    toolCode,
+  ]);
 
   const metadataForm = useForm<MetadataFormSchema>({
     resolver: zodResolver(metadataFormSchema),
@@ -349,6 +390,14 @@ function CreateToolPage() {
     defaultAgentId,
     toolCode,
   ]);
+
+  useEffect(() => {
+    if (!metadataValue) return;
+    metadataForm.setValue('name', metadataValue?.name);
+    metadataForm.setValue('description', metadataValue?.description);
+    metadataForm.setValue('author', auth?.shinkai_identity ?? '');
+    metadataForm.setValue('keywords', metadataValue?.keywords);
+  }, [auth?.shinkai_identity, metadataForm, metadataValue]);
 
   const onSubmit = async (data: CreateToolCodeFormSchema) => {
     if (!auth) return;
@@ -530,7 +579,7 @@ function CreateToolPage() {
                         disabled={
                           !toolCode ||
                           !metadataValue ||
-                          !isCodeExecutionSuccess ||
+                          // !isCodeExecutionSuccess ||
                           !chatInboxId
                         }
                         onClick={async () => {
@@ -538,7 +587,13 @@ function CreateToolPage() {
 
                           await saveToolCode({
                             code: toolCode,
-                            metadata: metadataValue,
+                            metadata: {
+                              ...metadataValue,
+                              name: metadataForm.getValues('name'),
+                              description:
+                                metadataForm.getValues('description'),
+                              author: auth?.shinkai_identity ?? '',
+                            },
                             jobId: extractJobIdFromInbox(chatInboxId),
                             token: auth?.api_v2_key ?? '',
                             nodeAddress: auth?.node_address ?? '',

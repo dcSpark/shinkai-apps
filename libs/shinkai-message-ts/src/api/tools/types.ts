@@ -195,7 +195,39 @@ export type SaveToolCodeRequest = {
   tool_router_key?: string;
 };
 
+export type ToolMetadata = {
+  id: string;
+  name: string;
+  description: string;
+  author: string;
+  keywords: string[];
+  configurations: {
+    type: 'object';
+    properties: Record<string, any>;
+    required: string[];
+  };
+  parameters: {
+    type: 'object';
+    properties: Record<string, any>;
+
+    required: string[];
+  };
+  result: {
+    type: 'object';
+    properties: Record<string, any>;
+    required: string[];
+  };
+};
+
 export type SaveToolCodeResponse = {
-  type: 'Deno';
-  content: [JSShinkaiTool, boolean];
+  shinkai_tool: {
+    type: 'Deno';
+    content: [ShinkaiTool, boolean];
+  };
+  metadata: {
+    metadata: ToolMetadata;
+    tool_router_key: string;
+    job_id: string;
+    code: string;
+  };
 };
