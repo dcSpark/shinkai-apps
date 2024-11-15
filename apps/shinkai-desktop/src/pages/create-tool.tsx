@@ -354,12 +354,6 @@ function CreateToolPage() {
   };
   const handleSubmit = async (data: MetadataFormSchema) => {
     setTab('code');
-    console.log(
-      Object.keys(data.parameters.properties).map((property) => ({
-        [property]: data.parameters.properties[property].value,
-      })),
-      'dta',
-    );
     await executeCode({
       code: toolCode,
       nodeAddress: auth?.node_address ?? '',
@@ -398,11 +392,6 @@ function CreateToolPage() {
                   </p>
                   <div className="grid grid-cols-1 items-center gap-3">
                     {[
-                      {
-                        text: 'Generate a tool that downloads https://jhftss.github.io/',
-                        prompt:
-                          'Generate a tool that downloads https://jhftss.github.io/',
-                      },
                       {
                         text: 'Generate a tool that downloads https://jhftss.github.io/',
                         prompt:
