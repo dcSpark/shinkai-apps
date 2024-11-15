@@ -53,6 +53,7 @@ type JSToolResult = {
 };
 export type JSShinkaiTool = {
   toolkit_name: string;
+  tool_router_key?: string;
   name: string;
   author: string;
   js_code: string;
@@ -180,13 +181,6 @@ export type CreateToolMetadataResponse = {
 };
 
 export type ExecuteToolCodeRequest = {
-  // "tool_type": "denodynamic",
-  // "tool_router_key": "deno:::ok" ,
-  // "parameters": {
-  //   "code": "import axios from \"npm:axios\";  async function shinkaiToolDownloadPages(urls: string[]): Promise<{   markdowns: string[]; }> {   const _url = \"http://localhost:9950/v2/tool_execution\";   const data = {       tool_router_key: \"local:::shinkai-tool-download-pages:::shinkai__download_pages\",       tool_type: \"js\",       parameters: {           urls: urls,       },   };   const response = await axios.post(_url, data, {       headers: {           \"Authorization\": `Bearer ${process.env.BEARER}`       }   });   return response.data; }  type CONFIG = {}; type INPUTS = {   urls: string[]; }; type OUTPUT = {   markdowns: string[]; };  async function run(config: CONFIG, inputs: INPUTS): Promise<OUTPUT> {    const urls = inputs.urls;   if (!urls || !urls.length) {     throw new Error(\"Nox URLs provided\" + JSON.stringify({config, inputs}));   }    try {     const result = await shinkaiToolDownloadPages(urls);     return {       markdowns: result.data.markdowns,     };   } catch (error) {     throw error;   } }",
-  //   "urls": ["https://jhftss.github.io/"]
-  //
-  // }
   tool_type: string;
   tool_router_key: string;
   parameters: Record<string, any>;
@@ -202,5 +196,6 @@ export type SaveToolCodeRequest = {
 };
 
 export type SaveToolCodeResponse = {
-  job_id: string;
+  type: 'Deno';
+  content: [JSShinkaiTool, boolean];
 };

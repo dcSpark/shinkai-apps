@@ -5,7 +5,7 @@ export type ExecuteToolCodeInput = Token & {
   nodeAddress: string;
   toolType?: string;
   toolRouterKey?: string;
-  params: Record<string, unknown>;
+  params: Record<string, any>;
   code: string;
 };
 

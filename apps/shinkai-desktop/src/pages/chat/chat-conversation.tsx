@@ -12,9 +12,12 @@ import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/c
 import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
-import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import {
+  ChatConversationInfiniteData,
+  GetChatConversationOutput,
+} from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
-import { useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -38,9 +41,18 @@ import { useSettings } from '../../store/settings';
 export const useChatConversationWithOptimisticUpdates = ({
   inboxId,
   forceRefetchInterval,
+  select,
 }: {
   inboxId: string;
   forceRefetchInterval?: boolean;
+  select?:
+    | ((
+        data: InfiniteData<
+          GetChatConversationOutput,
+          { lastKey: string | null }
+        >,
+      ) => ChatConversationInfiniteData)
+    | undefined;
 }) => {
   const queryClient = useQueryClient();
   const auth = useAuth((state) => state.auth);
@@ -78,6 +90,7 @@ export const useChatConversationWithOptimisticUpdates = ({
     profile: auth?.profile ?? '',
     refetchIntervalEnabled:
       !hasProviderEnableStreaming || chatConfig?.stream === false,
+    select,
   });
 
   useEffect(() => {

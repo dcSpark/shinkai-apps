@@ -1,10 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
+import {
+  buildInboxIdFromJobId,
+  extractJobIdFromInbox,
+} from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useCreateToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/createToolCode/useCreateToolCode';
 import { useCreateToolMetadata } from '@shinkai_network/shinkai-node-state/v2/mutations/createToolMetadata/useCreateToolMetadata';
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
+import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
 import {
   Badge,
   Button,
@@ -46,6 +50,7 @@ import { ArrowUpRight, Loader2, Play, Save, XIcon } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { toast } from 'sonner';
@@ -130,12 +135,10 @@ function extractAndParseJsonCode(message: string): ToolMetadata | null {
       const parsedJson = JSON.parse(jsonCodeMatch[1].trim());
       return parsedJson;
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error('Failed to generate preview (json)', {
-          description: error?.message,
-        });
-        return null;
-      }
+      toast.error('Failed to generate preview (json)', {
+        description: (error as Error)?.message,
+      });
+      return null;
     }
   }
   return null;
@@ -146,7 +149,9 @@ function CreateToolPage() {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
   const toolResultBoxRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
   const [toolCode, setToolCode] = useState<string>('');
+  // ''
   const [toolResult, setToolResult] = useState<object | null>(null);
   const [chatInboxId, setChatInboxId] = useState<string | null>(null);
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<string | null>(
@@ -171,6 +176,7 @@ function CreateToolPage() {
     inboxId: chatInboxId ?? '',
     forceRefetchInterval: true,
   });
+
   const { data: metadataData } = useChatConversationWithOptimisticUpdates({
     inboxId: chatInboxIdMetadata ?? '',
     forceRefetchInterval: true,
@@ -194,6 +200,14 @@ function CreateToolPage() {
       toast.error('Failed to run tool', {
         description: error.response?.data?.message ?? error.message,
       });
+    },
+  });
+
+  const { mutateAsync: saveToolCode } = useSaveToolCode({
+    onSuccess: () => {
+      toast.success('Tool code saved successfully');
+      // TODO: Redirect to the tool page
+      navigate('/tools');
     },
   });
 
@@ -339,11 +353,20 @@ function CreateToolPage() {
     return;
   };
   const handleSubmit = async (data: MetadataFormSchema) => {
+    setTab('code');
+    console.log(
+      Object.keys(data.parameters.properties).map((property) => ({
+        [property]: data.parameters.properties[property].value,
+      })),
+      'dta',
+    );
     await executeCode({
       code: toolCode,
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
-      params: data.parameters,
+      params: Object.keys(data.parameters.properties).map((property) => ({
+        [property]: data.parameters.properties[property].value,
+      })),
     });
   };
 
@@ -482,16 +505,26 @@ function CreateToolPage() {
                         Preview
                       </TabsTrigger>
                     </TabsList>
-                    {/*{tab === 'code' && (*/}
                     <div className="grid grid-cols-2 gap-2">
                       <Button
                         className="text-gray-80 h-[30px] rounded-md text-xs"
                         disabled={
-                          !toolCode || !metadataValue || !isCodeExecutionSuccess
+                          !toolCode ||
+                          !metadataValue ||
+                          !isCodeExecutionSuccess ||
+                          !chatInboxId
                         }
-                        // onClick={() => {
-                        //   await saveToolCode({});
-                        // }}
+                        onClick={async () => {
+                          if (!chatInboxId || !metadataValue) return;
+
+                          await saveToolCode({
+                            code: toolCode,
+                            metadata: metadataValue,
+                            jobId: extractJobIdFromInbox(chatInboxId),
+                            token: auth?.api_v2_key ?? '',
+                            nodeAddress: auth?.node_address ?? '',
+                          });
+                        }}
                         size="sm"
                         variant="outline"
                       >
@@ -501,6 +534,7 @@ function CreateToolPage() {
                       <Button
                         className="h-[30px] rounded-md text-xs"
                         disabled={!toolCode || !metadataValue}
+                        isLoading={isExecutingCode}
                         onClick={() => {
                           metadataForm.handleSubmit(handleSubmit)();
                         }}
@@ -510,19 +544,6 @@ function CreateToolPage() {
                         Run tool
                       </Button>
                     </div>
-                    {/*)}*/}
-                    {/*{tab === 'preview' && (*/}
-                    {/*  <div className="">*/}
-                    {/*    <Button*/}
-                    {/*      className="text-gray-80 h-[30px] rounded-md text-xs"*/}
-                    {/*      size="sm"*/}
-                    {/*      variant="outline"*/}
-                    {/*    >*/}
-                    {/*      <Share2 className="mr-2 h-4 w-4" />*/}
-                    {/*      Share*/}
-                    {/*    </Button>*/}
-                    {/*  </div>*/}
-                    {/*)}*/}
                   </div>
 
                   <TabsContent
@@ -657,12 +678,12 @@ function CreateToolPage() {
                                 <Dialog>
                                   <DialogTrigger asChild>
                                     <Button
-                                      className="absolute -top-10 right-0 flex h-[30px] items-center gap-1 rounded-md"
+                                      className="absolute -top-8 right-0 flex h-[30px] items-center gap-1 rounded-md text-xs"
                                       size="auto"
                                       variant="outline"
                                     >
                                       <ArrowUpRight className="h-4 w-4" />
-                                      View Details
+                                      Details
                                     </Button>
                                   </DialogTrigger>
                                   <DialogContent className="flex max-w-5xl flex-col bg-gray-300 p-5 text-xs">
@@ -845,16 +866,6 @@ function CreateToolPage() {
                                       ))}
                                     </div>
                                   )}
-                                  <Button
-                                    className="flex h-[30px] w-full justify-center rounded-md text-xs"
-                                    disabled={isExecutingCode}
-                                    isLoading={isExecutingCode}
-                                    size="sm"
-                                    type="submit"
-                                  >
-                                    <Play className="mr-2 h-4 w-4" />
-                                    Run tool
-                                  </Button>
                                 </form>
                               </Form>
                             </div>
