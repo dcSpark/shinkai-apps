@@ -182,7 +182,6 @@ export type CreateToolMetadataResponse = {
 
 export type ExecuteToolCodeRequest = {
   tool_type: string;
-  tool_router_key: string;
   parameters: Record<string, any>;
   code: string;
 };

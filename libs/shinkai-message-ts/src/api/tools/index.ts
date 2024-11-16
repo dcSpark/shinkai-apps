@@ -278,7 +278,7 @@ export const executeToolCode = async (
   payload: ExecuteToolCodeRequest,
 ) => {
   const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v2/tool_execution'),
+    urlJoin(nodeAddress, '/v2/code_execution'),
     payload,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },

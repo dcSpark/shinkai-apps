@@ -10,7 +10,6 @@ export const executeToolCode = async ({
 }: ExecuteToolCodeInput) => {
   return await executeToolCodeApi(nodeAddress, token, {
     tool_type: 'denodynamic',
-    tool_router_key: 'deno:::ok',
     code,
     parameters: params,
   });
