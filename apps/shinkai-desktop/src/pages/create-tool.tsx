@@ -65,6 +65,10 @@ import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import {
+  AIModelSelector,
+  AiUpdateSelectionActionBar,
+} from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import config from '../config';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
@@ -72,6 +76,7 @@ import { useChatConversationWithOptimisticUpdates } from './chat/chat-conversati
 
 export const createToolCodeFormSchema = z.object({
   message: z.string().min(1),
+  llmProviderId: z.string().min(1),
 });
 
 const metadataFormSchema = z.object({
@@ -202,6 +207,7 @@ function CreateToolPage() {
       navigate(`/tools/${data.metadata.tool_router_key}`);
     },
   });
+  console.log(form.watch('llmProviderId'), "form.getValues('llmProviderId')");
 
   const defaultAgentId = useSettings(
     (settingsStore) => settingsStore.defaultAgentId,
@@ -234,8 +240,8 @@ function CreateToolPage() {
                       nodeAddress: auth?.node_address ?? '',
                       token: auth?.api_v2_key ?? '',
                       message: '',
-                      llmProviderId: defaultAgentId,
-                      code: toolCode,
+                      llmProviderId: form.getValues('llmProviderId'),
+                      // code: toolCode,
                     },
                     {
                       onSuccess: (data) => {
@@ -261,9 +267,9 @@ function CreateToolPage() {
                 {
                   nodeAddress: auth?.node_address ?? '',
                   token: auth?.api_v2_key ?? '',
-                  message: '',
-                  llmProviderId: defaultAgentId,
-                  code: toolCode,
+                  message: toolCode,
+                  llmProviderId: form.getValues('llmProviderId'),
+                  // code: toolCode,
                 },
                 {
                   onSuccess: (data) => {
@@ -315,8 +321,8 @@ function CreateToolPage() {
   });
 
   useEffect(() => {
-    metadataForm.setValue('author', auth?.shinkai_identity ?? '');
-  }, [auth?.shinkai_identity, metadataForm]);
+    form.setValue('llmProviderId', defaultAgentId);
+  }, [form, defaultAgentId]);
 
   const isToolGenerating = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
@@ -371,9 +377,9 @@ function CreateToolPage() {
         {
           nodeAddress: auth?.node_address ?? '',
           token: auth?.api_v2_key ?? '',
-          message: '',
-          llmProviderId: defaultAgentId,
-          code: toolCode,
+          message: toolCode,
+          llmProviderId: form.getValues('llmProviderId'),
+          // code: toolCode,
         },
         {
           onSuccess: (data) => {
@@ -399,6 +405,8 @@ function CreateToolPage() {
     metadataForm.setValue('keywords', metadataValue?.keywords);
   }, [auth?.shinkai_identity, metadataForm, metadataValue]);
 
+  console.log(form.formState);
+
   const onSubmit = async (data: CreateToolCodeFormSchema) => {
     if (!auth) return;
 
@@ -407,11 +415,11 @@ function CreateToolPage() {
         nodeAddress: auth.node_address,
         token: auth.api_v2_key,
         message: data.message,
-        llmProviderId: defaultAgentId,
+        llmProviderId: data.llmProviderId,
       },
       {
         onSuccess: (data) => {
-          setChatInboxId(buildInboxIdFromJobId(data.job_id));
+          setChatInboxId(data.inbox);
           setTab('code');
           setToolCode('');
           setToolResult(null);
@@ -421,6 +429,7 @@ function CreateToolPage() {
     form.reset();
     return;
   };
+
   console.log(metadataForm.formState);
 
   const handleSubmit = async (data: MetadataFormSchema) => {
@@ -512,6 +521,16 @@ function CreateToolPage() {
                 className="space-y-2"
                 onSubmit={form.handleSubmit(onSubmit)}
               >
+                {chatInboxId ? (
+                  <AiUpdateSelectionActionBar inboxId={chatInboxId} />
+                ) : (
+                  <AIModelSelector
+                    onValueChange={(value) => {
+                      form.setValue('llmProviderId', value);
+                    }}
+                    value={form.watch('llmProviderId')}
+                  />
+                )}
                 <div className="flex shrink-0 items-center gap-1">
                   <FormField
                     control={form.control}
@@ -767,9 +786,10 @@ function CreateToolPage() {
                                               nodeAddress:
                                                 auth?.node_address ?? '',
                                               token: auth?.api_v2_key ?? '',
-                                              message: '',
-                                              llmProviderId: defaultAgentId,
-                                              code: toolCode,
+                                              message: toolCode,
+                                              llmProviderId:
+                                                form.getValues('llmProviderId'),
+                                              // code: toolCode,
                                             },
                                             {
                                               onSuccess: (data) => {

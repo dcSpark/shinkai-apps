@@ -123,15 +123,15 @@ export type NodeApiData = {
 };
 
 export type JobMessage = {
-  callback: null;
+  job_id: string;
   content: string;
   files_inbox: string;
-  job_id: string;
-  parent: string;
-  sheet_job_data: null;
-  workflow_code: null;
-  workflow_name: string;
-  metadata: null | {
+  callback?: null;
+  parent?: string;
+  sheet_job_data?: string;
+  workflow_code?: string;
+  workflow_name?: string;
+  metadata?: {
     tps: null;
     duration_ms: string;
     function_calls: {

@@ -5,7 +5,6 @@ export type CreateToolMetadataInput = Token & {
   nodeAddress: string;
   message: string;
   llmProviderId: string;
-  code?: string;
 };
 
 export type CreateToolMetadataOutput = CreateToolMetadataResponse;

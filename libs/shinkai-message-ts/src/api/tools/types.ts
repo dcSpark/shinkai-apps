@@ -1,3 +1,5 @@
+import { JobMessage } from '../jobs/types';
+
 export type WorkflowRaw = {
   name: string;
   version: string;
@@ -150,30 +152,28 @@ export type DeletePromptRequest = {
   prompt_name: string;
 };
 
+export enum CodeLanguage {
+  Typescript = 'Typescript',
+  Python = 'Python',
+}
+
 export type CreateToolCodeRequest = {
+  message: JobMessage;
+  language: CodeLanguage;
   raw?: boolean;
-  code?: string;
-  metadata?: string;
-  output?: string;
-  fetch_query?: boolean;
-  language: string;
-  prompt: string;
-  llm_provider: string;
 };
 
 export type CreateToolCodeResponse = {
-  job_id: string;
+  message_id: string;
+  parent_message_id?: string;
+  inbox: string;
+  scheduled_time: string;
 };
 
 export type CreateToolMetadataRequest = {
+  message: JobMessage;
+  language: CodeLanguage;
   raw?: boolean;
-  code?: string;
-  metadata?: string;
-  output?: string;
-  fetch_query?: boolean;
-  language: string;
-  prompt: string;
-  llm_provider: string;
 };
 
 export type CreateToolMetadataResponse = {
