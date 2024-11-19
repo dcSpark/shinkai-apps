@@ -7,14 +7,16 @@ import {
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import {
   Button,
+  buttonVariants,
   Form,
   FormField,
   Switch,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -35,11 +37,14 @@ type JsToolFormSchema = z.infer<typeof jsToolSchema>;
 export default function JsTool({
   tool,
   isEnabled,
+  isPlaygroundTool,
 }: {
   tool: JSShinkaiTool;
   isEnabled: boolean;
+  isPlaygroundTool?: boolean;
 }) {
   const auth = useAuth((state) => state.auth);
+
   const { t } = useTranslation();
   const { mutateAsync: updateTool, isPending } = useUpdateTool({
     onSuccess: (_, variables) => {
@@ -169,6 +174,19 @@ export default function JsTool({
               </form>
             </Form>
           </div>
+        )}
+        {isPlaygroundTool && (
+          <Link
+            className={cn(
+              buttonVariants({
+                size: 'sm',
+                variant: 'outline',
+              }),
+            )}
+            to={`/tools/edit/${toolKey}`}
+          >
+            Go Playground
+          </Link>
         )}
       </div>
     </SubpageLayout>

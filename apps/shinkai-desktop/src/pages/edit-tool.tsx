@@ -11,6 +11,7 @@ import { useCreateToolCode } from '@shinkai_network/shinkai-node-state/v2/mutati
 import { useCreateToolMetadata } from '@shinkai_network/shinkai-node-state/v2/mutations/createToolMetadata/useCreateToolMetadata';
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
+import { useGetPlaygroundTool } from '@shinkai_network/shinkai-node-state/v2/queries/getPlaygroundTool/useGetPlaygroundTool';
 import {
   Badge,
   Button,
@@ -59,7 +60,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { toast } from 'sonner';
@@ -118,9 +119,17 @@ function extractTypeScriptCode(message: string) {
   return tsCodeMatch ? tsCodeMatch[1].trim() : null;
 }
 
-function CreateToolPage() {
+function EditToolPage() {
   const [tab, setTab] = useState<'code' | 'preview'>('code');
   const auth = useAuth((state) => state.auth);
+  const { toolRouterKey } = useParams();
+  console.log('toolRouterKey', toolRouterKey);
+  const { data: playgroundTool } = useGetPlaygroundTool({
+    token: auth?.api_v2_key ?? '',
+    nodeAddress: auth?.node_address ?? '',
+    toolRouterKey: toolRouterKey ?? '',
+  });
+
   const { t } = useTranslation();
   const toolResultBoxRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -296,6 +305,17 @@ function CreateToolPage() {
     form.setValue('llmProviderId', defaultAgentId);
   }, [form, defaultAgentId]);
 
+  useEffect(() => {
+    if (playgroundTool) {
+      setToolCode(playgroundTool.code);
+      setChatInboxId(buildInboxIdFromJobId(playgroundTool.job_id));
+      metadataForm.setValue('name', playgroundTool.metadata.name);
+      metadataForm.setValue('description', playgroundTool.metadata.description);
+      metadataForm.setValue('author', playgroundTool.metadata.author);
+      metadataForm.setValue('keywords', playgroundTool.metadata.keywords);
+    }
+  }, [metadataForm, playgroundTool]);
+
   const isToolGenerating = useMemo(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
     return (
@@ -343,7 +363,7 @@ function CreateToolPage() {
   }, [data?.pages, chatInboxId]);
 
   useEffect(() => {
-    if (!toolCode) return;
+    if (!toolCode || !metadataValue) return;
     const run = async () => {
       await createToolMetadata(
         {
@@ -424,7 +444,7 @@ function CreateToolPage() {
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel className="flex h-full flex-col px-3 py-4 pt-6">
             <h1 className="py-2 text-lg font-semibold tracking-tight">
-              Create Tool
+              Playground Tool
             </h1>
             <div
               className={cn(
@@ -515,12 +535,7 @@ function CreateToolPage() {
 
                   <Button
                     className="aspect-square h-[90%] shrink-0 rounded-lg p-2"
-                    disabled={
-                      isLoadingMessage ||
-                      isToolGenerating ||
-                      (metadata?.role === 'assistant' &&
-                        metadata?.status.type === 'running')
-                    }
+                    disabled={isLoadingMessage}
                     size="auto"
                     type="submit"
                     variant="default"
@@ -1001,7 +1016,7 @@ function CreateToolPage() {
   );
 }
 
-export default CreateToolPage;
+export default EditToolPage;
 
 function PropertyInput({
   property,

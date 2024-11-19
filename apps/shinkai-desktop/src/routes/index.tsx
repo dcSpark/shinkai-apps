@@ -39,6 +39,7 @@ import { ConnectMethodQrCodePage } from '../pages/connect-method-qr-code';
 import CreateChatPage from '../pages/create-chat';
 import CreateToolPage from '../pages/create-tool';
 import CryptoWalletPage from '../pages/crypto-wallet';
+import EditToolPage from '../pages/edit-tool';
 import { ExportConnection } from '../pages/export-connection';
 import FreeSubscriptionsPage from '../pages/free-subscription';
 import { GalxeValidation } from '../pages/galxe-validation';
@@ -333,6 +334,7 @@ const AppRoutes = () => {
           <Route element={<Tools />} index />
           <Route element={<ToolDetails />} path={':toolKey'} />
           <Route element={<CreateToolPage />} path={'create'} />
+          <Route element={<EditToolPage />} path={'edit/:toolRouterKey'} />
         </Route>
         <Route
           element={

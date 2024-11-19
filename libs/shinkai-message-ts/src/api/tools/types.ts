@@ -237,3 +237,14 @@ export type SaveToolCodeResponse = {
     code: string;
   };
 };
+
+export type PlaygroundTool = {
+  metadata: ToolMetadata;
+  tool_router_key: string;
+  job_id: string;
+  job_id_history: string[];
+  code: string;
+};
+export type GetPlaygroundToolsResponse = PlaygroundTool[];
+export type GetPlaygroundToolRequest = { tool_key: string };
+export type GetPlaygroundToolResponse = PlaygroundTool;

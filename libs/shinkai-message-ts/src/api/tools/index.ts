@@ -14,6 +14,9 @@ import {
   ExecuteToolCodeRequest,
   ExecuteToolCodeResponse,
   GetAllPromptsResponse,
+  GetPlaygroundToolRequest,
+  GetPlaygroundToolResponse,
+  GetPlaygroundToolsResponse,
   GetToolResponse,
   GetToolsResponse,
   ListAllWorkflowsResponse,
@@ -302,4 +305,33 @@ export const saveToolCode = async (
     },
   );
   return response.data as SaveToolCodeResponse;
+};
+export const getPlaygroundTools = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/list_playground_tools'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetPlaygroundToolsResponse;
+};
+
+export const getPlaygroundTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetPlaygroundToolRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/get_playground_tool'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      params: { tool_key: payload.tool_key },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetPlaygroundToolResponse;
 };
