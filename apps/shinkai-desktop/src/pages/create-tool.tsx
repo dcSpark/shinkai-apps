@@ -67,7 +67,7 @@ import { z } from 'zod';
 
 import {
   AIModelSelector,
-  AiUpdateSelectionActionBar,
+  // AiUpdateSelectionActionBar,
 } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import config from '../config';
 import { useAuth } from '../store/auth';
@@ -421,7 +421,7 @@ function CreateToolPage() {
         },
       },
     );
-    form.reset();
+    form.setValue('message', '');
     return;
   };
 
@@ -516,16 +516,16 @@ function CreateToolPage() {
                 className="space-y-2"
                 onSubmit={form.handleSubmit(onSubmit)}
               >
-                {chatInboxId ? (
-                  <AiUpdateSelectionActionBar inboxId={chatInboxId} />
-                ) : (
-                  <AIModelSelector
-                    onValueChange={(value) => {
-                      form.setValue('llmProviderId', value);
-                    }}
-                    value={form.watch('llmProviderId')}
-                  />
-                )}
+                {/*{chatInboxId ? (*/}
+                {/*  <AiUpdateSelectionActionBar inboxId={chatInboxId} />*/}
+                {/*) : (*/}
+                <AIModelSelector
+                  onValueChange={(value) => {
+                    form.setValue('llmProviderId', value);
+                  }}
+                  value={form.watch('llmProviderId')}
+                />
+                {/*)}*/}
                 <div className="flex shrink-0 items-center gap-1">
                   <FormField
                     control={form.control}
