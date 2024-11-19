@@ -118,29 +118,6 @@ function extractTypeScriptCode(message: string) {
   return tsCodeMatch ? tsCodeMatch[1].trim() : null;
 }
 
-// function extractAndParseJsonCode(message: string): ToolMetadata | null {
-//   const jsonCodeMatch = message.match(/```json\n([\s\S]*?)\n```/);
-//   if (jsonCodeMatch) {
-//     try {
-//       const parsedJson = JSON.parse(jsonCodeMatch[1].trim());
-//       return parsedJson;
-//     } catch (error) {
-//       toast.error(
-//         'Failed to generate preview (json). Try regenerating the preview again.',
-//         {
-//           description: (error as Error)?.message,
-//         },
-//       );
-//       return null;
-//     }
-//   } else {
-//     toast.error('Failed to generate preview.', {
-//       description: 'No JSON code found in the response. Try Regenerating.',
-//     });
-//   }
-//   return null;
-// }
-
 function CreateToolPage() {
   const [tab, setTab] = useState<'code' | 'preview'>('code');
   const auth = useAuth((state) => state.auth);
@@ -233,7 +210,7 @@ function CreateToolPage() {
             {
               description: (error as Error)?.message,
               action: {
-                label: 'Regenerate preview',
+                label: 'Regenerate',
                 onClick: async () => {
                   await createToolMetadata(
                     {
@@ -259,7 +236,7 @@ function CreateToolPage() {
         toast.error('Failed to generate preview.', {
           description: 'No JSON code found. Try to generate preview again',
           action: {
-            label: 'Regenerate preview',
+            label: 'Regenerate',
             onClick: async () => {
               await createToolMetadata(
                 {
@@ -584,7 +561,7 @@ function CreateToolPage() {
                         className="flex h-8 items-center gap-1.5 text-xs font-semibold"
                         value="preview"
                       >
-                        Preview
+                        Metadata
                       </TabsTrigger>
                     </TabsList>
                     <div className="grid grid-cols-2 gap-2">
@@ -752,7 +729,7 @@ function CreateToolPage() {
                     <div className="flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
                       <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
                         <h2 className="flex font-mono font-semibold text-gray-50">
-                          Preview
+                          Metadata
                         </h2>
                         {metadataValue && (
                           <p>Fill in the options above to run your tool.</p>
@@ -762,7 +739,7 @@ function CreateToolPage() {
                         metadata?.status.type === 'running' && (
                           <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
                             <Loader2 className="shrink-0 animate-spin" />
-                            Generating Preview...
+                            Generating Metadata...
                           </div>
                         )}
                       <ErrorBoundary FallbackComponent={ToolErrorFallback}>
@@ -804,7 +781,7 @@ function CreateToolPage() {
                                     </TooltipTrigger>
                                     <TooltipPortal>
                                       <TooltipContent className="flex flex-col items-center gap-1">
-                                        <p>Regenerate Preview</p>
+                                        <p>Regenerate Metadata</p>
                                       </TooltipContent>
                                     </TooltipPortal>
                                   </Tooltip>
@@ -1009,7 +986,7 @@ function CreateToolPage() {
                       {metadata == null && (
                         <div>
                           <p className="text-gray-80 py-4 pt-6 text-center text-xs">
-                            No preview generated yet.
+                            No metadata generated yet.
                           </p>
                         </div>
                       )}
