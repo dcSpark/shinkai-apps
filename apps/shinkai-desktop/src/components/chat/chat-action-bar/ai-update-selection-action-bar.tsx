@@ -127,6 +127,7 @@ export function AiUpdateSelectionActionBar({ inboxId }: { inboxId?: string }) {
       });
     },
   });
+
   return (
     <AIModelSelector
       onValueChange={async (value) => {

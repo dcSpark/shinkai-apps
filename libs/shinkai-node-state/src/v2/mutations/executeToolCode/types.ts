@@ -3,8 +3,6 @@ import { ExecuteToolCodeResponse } from '@shinkai_network/shinkai-message-ts/api
 
 export type ExecuteToolCodeInput = Token & {
   nodeAddress: string;
-  toolType?: string;
-  toolRouterKey?: string;
   params: Record<string, any>;
   code: string;
 };

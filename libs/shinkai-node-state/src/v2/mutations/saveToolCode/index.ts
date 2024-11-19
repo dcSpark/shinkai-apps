@@ -11,7 +11,7 @@ export const saveToolCode = async ({
 }: SaveToolCodeInput) => {
   return await saveToolCodeApi(nodeAddress, token, {
     code: code ?? '',
-    metadata: metadata,
+    metadata,
     job_id: jobId,
   });
 };

@@ -171,19 +171,24 @@ export type CreateToolCodeResponse = {
 };
 
 export type CreateToolMetadataRequest = {
-  message: JobMessage;
   language: CodeLanguage;
-  raw?: boolean;
+  job_id: string;
 };
 
 export type CreateToolMetadataResponse = {
   job_id: string;
 };
 
+export enum DynamicToolType {
+  DenoDynamic = 'denodynamic',
+  PythonDynamic = 'pythondynamic',
+}
+
 export type ExecuteToolCodeRequest = {
-  tool_type: string;
+  tool_type: DynamicToolType;
   parameters: Record<string, any>;
   code: string;
+  extra_config?: string;
 };
 
 export type ExecuteToolCodeResponse = Record<string, any>;

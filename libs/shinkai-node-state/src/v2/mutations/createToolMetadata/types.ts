@@ -3,8 +3,7 @@ import { CreateToolMetadataResponse } from '@shinkai_network/shinkai-message-ts/
 
 export type CreateToolMetadataInput = Token & {
   nodeAddress: string;
-  message: string;
-  llmProviderId: string;
+  jobId: string;
 };
 
 export type CreateToolMetadataOutput = CreateToolMetadataResponse;

@@ -239,9 +239,7 @@ function CreateToolPage() {
                     {
                       nodeAddress: auth?.node_address ?? '',
                       token: auth?.api_v2_key ?? '',
-                      message: '',
-                      llmProviderId: form.getValues('llmProviderId'),
-                      // code: toolCode,
+                      jobId: extractJobIdFromInbox(chatInboxId ?? '') ?? '',
                     },
                     {
                       onSuccess: (data) => {
@@ -267,9 +265,7 @@ function CreateToolPage() {
                 {
                   nodeAddress: auth?.node_address ?? '',
                   token: auth?.api_v2_key ?? '',
-                  message: toolCode,
-                  llmProviderId: form.getValues('llmProviderId'),
-                  // code: toolCode,
+                  jobId: extractJobIdFromInbox(chatInboxId ?? ''),
                 },
                 {
                   onSuccess: (data) => {
@@ -373,13 +369,12 @@ function CreateToolPage() {
   useEffect(() => {
     if (!toolCode) return;
     const run = async () => {
+      console.log(chatInboxId, 'chatInboxId');
       await createToolMetadata(
         {
           nodeAddress: auth?.node_address ?? '',
           token: auth?.api_v2_key ?? '',
-          message: toolCode,
-          llmProviderId: form.getValues('llmProviderId'),
-          // code: toolCode,
+          jobId: extractJobIdFromInbox(chatInboxId ?? ''),
         },
         {
           onSuccess: (data) => {
@@ -786,10 +781,9 @@ function CreateToolPage() {
                                               nodeAddress:
                                                 auth?.node_address ?? '',
                                               token: auth?.api_v2_key ?? '',
-                                              message: toolCode,
-                                              llmProviderId:
-                                                form.getValues('llmProviderId'),
-                                              // code: toolCode,
+                                              jobId: extractJobIdFromInbox(
+                                                chatInboxId ?? '',
+                                              ),
                                             },
                                             {
                                               onSuccess: (data) => {
