@@ -1,3 +1,9 @@
+import 'prism-react-editor/prism/languages/typescript';
+import 'prism-react-editor/languages/typoscript';
+import 'prism-react-editor/layout.css';
+import 'prism-react-editor/themes/github-dark.css';
+import 'prism-react-editor/search.css';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { ReloadIcon } from '@radix-ui/react-icons';
@@ -56,12 +62,12 @@ import {
   XCircle,
   XIcon,
 } from 'lucide-react';
+import { Editor } from 'prism-react-editor';
+import { BasicSetup } from 'prism-react-editor/setups';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -124,6 +130,7 @@ function CreateToolPage() {
   const { t } = useTranslation();
   const toolResultBoxRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
   const [toolCode, setToolCode] = useState<string>('');
 
   const [toolResult, setToolResult] = useState<object | null>(null);
@@ -320,10 +327,9 @@ function CreateToolPage() {
       lastMessage?.role === 'assistant' &&
       lastMessage?.status.type === 'complete'
     ) {
-      setToolCode(extractTypeScriptCode(lastMessage?.content) ?? '');
-      setTimeout(() => {
-        setTab('preview');
-      }, 2000);
+      const generatedCode = extractTypeScriptCode(lastMessage?.content) ?? '';
+      setToolCode(generatedCode);
+
       return;
     }
   }, [data?.pages]);
@@ -390,6 +396,7 @@ function CreateToolPage() {
           setChatInboxId(data.inbox);
           setTab('code');
           setToolCode('');
+          // baseToolCodeRef.current = '';
           setToolResult(null);
         },
       },
@@ -662,21 +669,51 @@ function CreateToolPage() {
                             </p>
                           )}
                         {isToolGeneratedSuccess && toolCode && (
-                          <SyntaxHighlighter
-                            PreTag="div"
-                            codeTagProps={{ style: { fontSize: '0.8rem' } }}
-                            customStyle={{
-                              margin: 0,
-                              width: '100%',
-                              padding: '0.5rem 1rem',
-                              borderRadius: 0,
-                              maxHeight: '70vh',
+                          <form
+                            className="space-y-3"
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              const data = new FormData(e.currentTarget);
+                              const currentEditorValue = data.get('editor');
+                              setToolCode(currentEditorValue as string);
+                              setTab('preview');
                             }}
-                            language={'typescript'}
-                            style={oneDark}
                           >
-                            {toolCode}
-                          </SyntaxHighlighter>
+                            <Editor
+                              language="ts"
+                              style={{ fontSize: '0.875rem' }}
+                              textareaProps={{
+                                placeholder: 'Enter your code',
+                                name: 'editor',
+                                'aria-label': 'Code editor',
+                              }}
+                              value={toolCode}
+                            >
+                              {(editor) => <BasicSetup editor={editor} />}
+                            </Editor>
+
+                            <div className="flex items-center justify-end gap-2">
+                              {/*<Button*/}
+                              {/*  className="!h-[32px] min-w-[80px] rounded-xl"*/}
+                              {/*  onClick={async () => {*/}
+                              {/*    // setToolCode(toolCode);*/}
+                              {/*    setIsDirty(false);*/}
+                              {/*  }}*/}
+                              {/*  size="sm"*/}
+                              {/*  type="reset"*/}
+                              {/*  variant="outline"*/}
+                              {/*>*/}
+                              {/*  Reset*/}
+                              {/*</Button>*/}
+                              <Button
+                                className="!h-[32px] min-w-[80px] rounded-xl"
+                                size="sm"
+                                type="submit"
+                              >
+                                Apply Changes
+                              </Button>
+                            </div>
+                          </form>
                         )}
                       </div>
                     </div>
@@ -1041,4 +1078,12 @@ function PropertyInput({
     default:
       return <Input {...field} />;
   }
+}
+
+export function MyEditor(props: { code: string }) {
+  return (
+    <Editor language="tsx" value={props.code}>
+      {(editor) => <BasicSetup editor={editor} />}
+    </Editor>
+  );
 }
