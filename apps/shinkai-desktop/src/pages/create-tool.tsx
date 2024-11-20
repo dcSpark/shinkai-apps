@@ -57,6 +57,7 @@ import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import JsonView from '@uiw/react-json-view';
 import { githubLightTheme } from '@uiw/react-json-view/githubLight';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowUpRight,
   Loader2,
@@ -135,12 +136,15 @@ function CreateToolPage() {
   const navigate = useNavigate();
 
   const [toolCode, setToolCode] = useState<string>('');
-
+  const baseToolCodeRef = useRef<string>('');
+  const forceGenerateMetadata = useRef(false);
+  const [isDirty, setIsDirty] = useState(false);
   const [toolResult, setToolResult] = useState<object | null>(null);
   const [chatInboxId, setChatInboxId] = useState<string | null>(null);
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<string | null>(
     null,
   );
+  const [resetCounter, setResetCounter] = useState(0); // Add this state
 
   const form = useForm<CreateToolCodeFormSchema>({
     resolver: zodResolver(createToolCodeFormSchema),
@@ -331,6 +335,7 @@ function CreateToolPage() {
       lastMessage?.status.type === 'complete'
     ) {
       const generatedCode = extractTypeScriptCode(lastMessage?.content) ?? '';
+      baseToolCodeRef.current = generatedCode;
       setToolCode(generatedCode);
 
       return;
@@ -352,7 +357,7 @@ function CreateToolPage() {
   }, [data?.pages, chatInboxId]);
 
   useEffect(() => {
-    if (!toolCode) return;
+    if (!toolCode || !forceGenerateMetadata.current) return;
     const run = async () => {
       await createToolMetadata(
         {
@@ -363,6 +368,7 @@ function CreateToolPage() {
         {
           onSuccess: (data) => {
             setChatInboxIdMetadata(buildInboxIdFromJobId(data.job_id));
+            forceGenerateMetadata.current = false;
           },
         },
       );
@@ -386,7 +392,6 @@ function CreateToolPage() {
 
   const onSubmit = async (data: CreateToolCodeFormSchema) => {
     if (!auth) return;
-
     await createToolCode(
       {
         nodeAddress: auth.node_address,
@@ -399,11 +404,14 @@ function CreateToolPage() {
           setChatInboxId(data.inbox);
           setTab('code');
           setToolCode('');
-          // baseToolCodeRef.current = '';
+          forceGenerateMetadata.current = true;
+          // setOriginalToolCode('');
+          baseToolCodeRef.current = '';
           setToolResult(null);
         },
       },
     );
+
     form.setValue('message', '');
     return;
   };
@@ -573,7 +581,7 @@ function CreateToolPage() {
                         Metadata
                       </TabsTrigger>
                     </TabsList>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div>
                       <Button
                         className="text-gray-80 h-[30px] rounded-md text-xs"
                         disabled={
@@ -603,19 +611,7 @@ function CreateToolPage() {
                         variant="outline"
                       >
                         <Save className="mr-2 h-4 w-4" />
-                        Save
-                      </Button>
-                      <Button
-                        className="h-[30px] rounded-md text-xs"
-                        disabled={!toolCode || !metadataValue}
-                        isLoading={isExecutingCode}
-                        onClick={() => {
-                          metadataForm.handleSubmit(handleSubmit)();
-                        }}
-                        size="sm"
-                      >
-                        <Play className="mr-2 h-4 w-4" />
-                        Run tool
+                        Save Tool
                       </Button>
                     </div>
                   </div>
@@ -627,8 +623,8 @@ function CreateToolPage() {
                     <div className="flex min-h-[250px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
                       <div className="flex items-center justify-between gap-2">
                         <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
-                          <h2 className="flex font-mono font-semibold text-gray-50">
-                            Code
+                          <h2 className="flex items-center gap-2 font-mono font-semibold text-gray-50">
+                            Code{' '}
                           </h2>
                           {toolCode && (
                             <p>
@@ -638,23 +634,23 @@ function CreateToolPage() {
                             </p>
                           )}
                         </div>
-                        {toolCode && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div>
-                                <CopyToClipboardIcon
-                                  className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"
-                                  string={toolCode ?? ''}
-                                />
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipPortal>
-                              <TooltipContent className="flex flex-col items-center gap-1">
-                                <p>Copy Code</p>
-                              </TooltipContent>
-                            </TooltipPortal>
-                          </Tooltip>
-                        )}
+                        {/*{toolCode && (*/}
+                        {/*  <Tooltip>*/}
+                        {/*    <TooltipTrigger asChild>*/}
+                        {/*      <div>*/}
+                        {/*        <CopyToClipboardIcon*/}
+                        {/*          className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"*/}
+                        {/*          string={toolCode ?? ''}*/}
+                        {/*        />*/}
+                        {/*      </div>*/}
+                        {/*    </TooltipTrigger>*/}
+                        {/*    <TooltipPortal>*/}
+                        {/*      <TooltipContent className="flex flex-col items-center gap-1">*/}
+                        {/*        <p>Copy Code</p>*/}
+                        {/*      </TooltipContent>*/}
+                        {/*    </TooltipPortal>*/}
+                        {/*  </Tooltip>*/}
+                        {/*)}*/}
                       </div>
                       <div className="size-full">
                         {isToolGenerating && (
@@ -673,49 +669,81 @@ function CreateToolPage() {
                           )}
                         {isToolGeneratedSuccess && toolCode && (
                           <form
-                            className="space-y-3"
+                            key={resetCounter}
                             onSubmit={(e) => {
                               e.preventDefault();
                               const data = new FormData(e.currentTarget);
                               const currentEditorValue = data.get('editor');
-                              setToolCode(currentEditorValue as string);
+                              setResetCounter((prev) => prev + 1);
+                              setIsDirty(false);
+                              baseToolCodeRef.current =
+                                currentEditorValue as string;
+                              forceGenerateMetadata.current = true;
+                              setTimeout(() => {
+                                setToolCode(currentEditorValue as string);
+                              }, 0);
                             }}
                           >
+                            <div className="flex h-[45px] items-center justify-between rounded-t-lg border-b border-gray-400 bg-[#0d1117] px-3 py-2">
+                              <span className="inline-flex items-center gap-2 pl-3 text-xs font-medium text-gray-50">
+                                {' '}
+                                TypeScript
+                                {isDirty && (
+                                  <span className="size-2 shrink-0 rounded-full bg-orange-500" />
+                                )}
+                              </span>
+                              <AnimatePresence>
+                                {isDirty && (
+                                  <motion.div
+                                    animate={{ opacity: 1 }}
+                                    className="flex items-center justify-end gap-2"
+                                    exit={{ opacity: 0 }}
+                                    initial={{ opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                  >
+                                    <Button
+                                      className="!h-[32px] min-w-[80px] rounded-xl"
+                                      onClick={() => {
+                                        setIsDirty(false);
+                                        setResetCounter((prev) => prev + 1);
+                                        forceGenerateMetadata.current = true;
+                                        setTimeout(() => {
+                                          setToolCode(baseToolCodeRef.current);
+                                        }, 0);
+                                      }}
+                                      size="sm"
+                                      type="reset"
+                                      variant="outline"
+                                    >
+                                      Reset
+                                    </Button>
+                                    <Button
+                                      className="!h-[28px] min-w-[80px] rounded-xl"
+                                      size="sm"
+                                      type="submit"
+                                      variant="outline"
+                                    >
+                                      Apply Changes
+                                    </Button>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
                             <Editor
                               language="ts"
+                              onUpdate={(currentCode) => {
+                                setIsDirty(
+                                  currentCode !== baseToolCodeRef.current,
+                                );
+                              }}
                               style={{ fontSize: '0.875rem' }}
                               textareaProps={{
-                                placeholder: 'Enter your code',
                                 name: 'editor',
-                                'aria-label': 'Code editor',
                               }}
                               value={toolCode}
                             >
                               {(editor) => <BasicSetup editor={editor} />}
                             </Editor>
-
-                            <div className="flex items-center justify-end gap-2">
-                              {/*<Button*/}
-                              {/*  className="!h-[32px] min-w-[80px] rounded-xl"*/}
-                              {/*  onClick={async () => {*/}
-                              {/*    // setToolCode(toolCode);*/}
-                              {/*    setIsDirty(false);*/}
-                              {/*  }}*/}
-                              {/*  size="sm"*/}
-                              {/*  type="reset"*/}
-                              {/*  variant="outline"*/}
-                              {/*>*/}
-                              {/*  Reset*/}
-                              {/*</Button>*/}
-                              <Button
-                                className="!h-[32px] min-w-[80px] rounded-xl"
-                                size="sm"
-                                type="submit"
-                                variant="outline"
-                              >
-                                Apply Changes
-                              </Button>
-                            </div>
                           </form>
                         )}
                       </div>
@@ -921,6 +949,18 @@ function CreateToolPage() {
                                   )}
                                 </form>
                               </Form>
+                              <Button
+                                className="h-[30px] rounded-md text-xs"
+                                disabled={!toolCode || !metadataValue}
+                                isLoading={isExecutingCode}
+                                onClick={() => {
+                                  metadataForm.handleSubmit(handleSubmit)();
+                                }}
+                                size="sm"
+                              >
+                                <Play className="mr-2 h-4 w-4" />
+                                Run tool
+                              </Button>
                             </div>
                           )}
                       </ErrorBoundary>

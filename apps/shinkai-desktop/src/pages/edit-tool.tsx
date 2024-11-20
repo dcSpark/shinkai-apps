@@ -1,3 +1,9 @@
+import 'prism-react-editor/prism/languages/typescript';
+import 'prism-react-editor/languages/typoscript';
+import 'prism-react-editor/layout.css';
+import 'prism-react-editor/themes/github-dark.css';
+import 'prism-react-editor/search.css';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { ReloadIcon } from '@radix-ui/react-icons';
@@ -57,12 +63,12 @@ import {
   XCircle,
   XIcon,
 } from 'lucide-react';
+import { Editor } from 'prism-react-editor';
+import { BasicSetup } from 'prism-react-editor/setups';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -632,8 +638,9 @@ function EditToolPage() {
                     <div className="flex min-h-[250px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
                       <div className="flex items-center justify-between gap-2">
                         <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
-                          <h2 className="flex font-mono font-semibold text-gray-50">
-                            Code
+                          <h2 className="flex gap-2 font-mono font-semibold text-gray-50">
+                            Code{' '}
+                            <span className="size-1 shrink-0 text-orange-500" />
                           </h2>
                           {toolCode && (
                             <p>
@@ -677,21 +684,50 @@ function EditToolPage() {
                             </p>
                           )}
                         {isToolGeneratedSuccess && toolCode && (
-                          <SyntaxHighlighter
-                            PreTag="div"
-                            codeTagProps={{ style: { fontSize: '0.8rem' } }}
-                            customStyle={{
-                              margin: 0,
-                              width: '100%',
-                              padding: '0.5rem 1rem',
-                              borderRadius: 0,
-                              maxHeight: '70vh',
+                          <form
+                            className="space-y-3"
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              const data = new FormData(e.currentTarget);
+                              const currentEditorValue = data.get('editor');
+                              setToolCode(currentEditorValue as string);
                             }}
-                            language={'typescript'}
-                            style={oneDark}
                           >
-                            {toolCode}
-                          </SyntaxHighlighter>
+                            <Editor
+                              language="ts"
+                              style={{ fontSize: '0.875rem' }}
+                              textareaProps={{
+                                placeholder: 'Enter your code',
+                                name: 'editor',
+                                'aria-label': 'Code editor',
+                              }}
+                              value={toolCode}
+                            >
+                              {(editor) => <BasicSetup editor={editor} />}
+                            </Editor>
+
+                            <div className="flex items-center justify-end gap-2">
+                              <Button
+                                className="!h-[32px] min-w-[80px] rounded-xl"
+                                onClick={async () => {
+                                  // setToolCode(toolCode);
+                                }}
+                                size="sm"
+                                type="reset"
+                                variant="outline"
+                              >
+                                Reset
+                              </Button>
+                              <Button
+                                className="!h-[32px] min-w-[80px] rounded-xl"
+                                size="sm"
+                                type="submit"
+                                variant="outline"
+                              >
+                                Apply Changes
+                              </Button>
+                            </div>
+                          </form>
                         )}
                       </div>
                     </div>
