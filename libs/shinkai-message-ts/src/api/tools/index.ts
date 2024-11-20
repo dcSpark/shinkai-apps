@@ -284,7 +284,12 @@ export const executeToolCode = async (
     urlJoin(nodeAddress, '/v2/code_execution'),
     payload,
     {
-      headers: { Authorization: `Bearer ${bearerToken}` },
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+        // TODO: remove hardcoded values
+        'x-shinkai-app-id': 'app-test',
+        'x-shinkai-tool-id': 'tool-test',
+      },
       responseType: 'json',
     },
   );

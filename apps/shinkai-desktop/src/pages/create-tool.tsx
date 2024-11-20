@@ -7,6 +7,9 @@ import 'prism-react-editor/search.css';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { ReloadIcon } from '@radix-ui/react-icons';
+// import FormSchema from '@rjsf/core';
+// import { RJSFSchema } from '@rjsf/utils';
+// import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
@@ -676,7 +679,6 @@ function CreateToolPage() {
                               const data = new FormData(e.currentTarget);
                               const currentEditorValue = data.get('editor');
                               setToolCode(currentEditorValue as string);
-                              setTab('preview');
                             }}
                           >
                             <Editor
@@ -709,6 +711,7 @@ function CreateToolPage() {
                                 className="!h-[32px] min-w-[80px] rounded-xl"
                                 size="sm"
                                 type="submit"
+                                variant="outline"
                               >
                                 Apply Changes
                               </Button>
@@ -716,6 +719,218 @@ function CreateToolPage() {
                           </form>
                         )}
                       </div>
+                    </div>
+
+                    <div className="flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
+                      <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
+                        <h2 className="flex font-mono font-semibold text-gray-50">
+                          Inputs
+                        </h2>
+                        {metadataValue && (
+                          <p>Fill in the options above to run your tool.</p>
+                        )}
+                      </div>
+                      {metadata?.role === 'assistant' &&
+                        metadata?.status.type === 'running' && (
+                          <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
+                            <Loader2 className="shrink-0 animate-spin" />
+                            Generating Metadata...
+                          </div>
+                        )}
+                      <ErrorBoundary FallbackComponent={ToolErrorFallback}>
+                        {metadata?.role === 'assistant' &&
+                          metadata?.status.type === 'complete' && (
+                            <div className="text-gray-80 relative text-xs">
+                              {config.isDev && (
+                                <div className="absolute -top-6 right-0 flex items-center gap-2">
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        className="size-[30px] p-2"
+                                        onClick={async () => {
+                                          await createToolMetadata(
+                                            {
+                                              nodeAddress:
+                                                auth?.node_address ?? '',
+                                              token: auth?.api_v2_key ?? '',
+                                              jobId: extractJobIdFromInbox(
+                                                chatInboxId ?? '',
+                                              ),
+                                            },
+                                            {
+                                              onSuccess: (data) => {
+                                                setChatInboxIdMetadata(
+                                                  buildInboxIdFromJobId(
+                                                    data.job_id,
+                                                  ),
+                                                );
+                                              },
+                                            },
+                                          );
+                                        }}
+                                        size="auto"
+                                        variant="outline"
+                                      >
+                                        <ReloadIcon className="h-4 w-4" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipPortal>
+                                      <TooltipContent className="flex flex-col items-center gap-1">
+                                        <p>Regenerate Metadata</p>
+                                      </TooltipContent>
+                                    </TooltipPortal>
+                                  </Tooltip>
+
+                                  <Dialog>
+                                    <DialogTrigger asChild>
+                                      <Button
+                                        className="flex h-[30px] items-center gap-1 rounded-md text-xs"
+                                        size="auto"
+                                        variant="outline"
+                                      >
+                                        <ArrowUpRight className="h-4 w-4" />
+                                        Details
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="flex max-w-5xl flex-col bg-gray-300 p-5 text-xs">
+                                      <DialogClose className="absolute right-4 top-4">
+                                        <XIcon className="text-gray-80 h-5 w-5" />
+                                      </DialogClose>
+                                      <DialogHeader className="flex justify-between">
+                                        <DialogTitle className="text-left text-sm font-bold">
+                                          Details
+                                        </DialogTitle>
+                                      </DialogHeader>
+                                      <div className="grid grid-cols-2 gap-10 space-y-3">
+                                        <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
+                                          <div className="flex h-12 items-center justify-between gap-2 pt-1.5">
+                                            <h2 className="text-gray-80 flex items-center pl-1 font-mono text-xs font-semibold">
+                                              Response
+                                            </h2>
+                                            <Tooltip>
+                                              <TooltipTrigger asChild>
+                                                <div>
+                                                  <CopyToClipboardIcon
+                                                    className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"
+                                                    string={
+                                                      metadata.content ?? ''
+                                                    }
+                                                  />
+                                                </div>
+                                              </TooltipTrigger>
+                                              <TooltipPortal>
+                                                <TooltipContent className="flex flex-col items-center gap-1">
+                                                  <p>Copy Code</p>
+                                                </TooltipContent>
+                                              </TooltipPortal>
+                                            </Tooltip>
+                                          </div>
+                                          <MarkdownPreview
+                                            className="prose-h1:!text-gray-50 prose-h1:!text-sm !text-sm !text-gray-50"
+                                            source={metadata.content}
+                                          />
+                                        </div>
+
+                                        <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
+                                          <div className="text-gray-80 flex-1 items-center gap-1 truncate text-left text-xs">
+                                            View JSON
+                                          </div>
+                                          <JsonView
+                                            displayDataTypes={false}
+                                            displayObjectSize={false}
+                                            enableClipboard={false}
+                                            style={githubLightTheme}
+                                            value={metadataValue ?? {}}
+                                          />
+                                        </div>
+                                      </div>
+                                    </DialogContent>
+                                  </Dialog>
+                                </div>
+                              )}
+                              {/*TODO: send a valid json schema*/}
+                              {/*<FormSchema*/}
+                              {/*  schema={{*/}
+                              {/*    title: 'Todo',*/}
+                              {/*    type: 'object',*/}
+                              {/*    required: ['title'],*/}
+                              {/*    properties: {*/}
+                              {/*      title: {*/}
+                              {/*        type: 'string',*/}
+                              {/*        title: 'Title',*/}
+                              {/*        default: 'A new task',*/}
+                              {/*      },*/}
+                              {/*      done: {*/}
+                              {/*        type: 'boolean',*/}
+                              {/*        title: 'Done?',*/}
+                              {/*        default: false,*/}
+                              {/*      },*/}
+                              {/*    },*/}
+                              {/*  }}*/}
+                              {/*  validator={validator}*/}
+                              {/*/>*/}
+
+                              <Form {...metadataForm}>
+                                <form
+                                  className="space-y-4 pb-4 pt-4"
+                                  onSubmit={metadataForm.handleSubmit(
+                                    handleSubmit,
+                                  )}
+                                >
+                                  {Object.keys(
+                                    metadataValue?.parameters?.properties ?? {},
+                                  ).length > 0 && (
+                                    <div className="space-y-4">
+                                      {Object.entries(
+                                        metadataValue?.parameters?.properties ??
+                                          {},
+                                      ).map(([key, prop]) => (
+                                        <FormField
+                                          control={metadataForm.control}
+                                          key={key}
+                                          name={`parameters.properties.${key}.value`}
+                                          render={({ field }) => (
+                                            <FormItem>
+                                              <FormLabel className="capitalize">
+                                                {key.replace(/_/g, ' ')}
+                                                {metadataValue?.parameters?.required?.includes(
+                                                  key,
+                                                ) && (
+                                                  <span className="ml-1 text-gray-100">
+                                                    (required)
+                                                  </span>
+                                                )}
+                                              </FormLabel>
+                                              <FormControl>
+                                                <PropertyInput
+                                                  field={field}
+                                                  property={prop}
+                                                />
+                                              </FormControl>
+                                              <FormDescription>
+                                                {prop.type === 'array'
+                                                  ? `Enter ${key} (comma-separated ${prop.items?.type || 'values'})`
+                                                  : `Type: ${prop.type}`}
+                                              </FormDescription>
+                                              <FormMessage />
+                                            </FormItem>
+                                          )}
+                                        />
+                                      ))}
+                                    </div>
+                                  )}
+                                </form>
+                              </Form>
+                            </div>
+                          )}
+                      </ErrorBoundary>
+                      {metadata == null && (
+                        <div>
+                          <p className="text-gray-80 py-4 pt-6 text-center text-xs">
+                            No metadata generated yet.
+                          </p>
+                        </div>
+                      )}
                     </div>
 
                     <div
@@ -949,53 +1164,6 @@ function CreateToolPage() {
                                           render={({ field }) => (
                                             <FormItem>
                                               <FormLabel>{key}</FormLabel>
-                                              <FormControl>
-                                                <PropertyInput
-                                                  field={field}
-                                                  property={prop}
-                                                />
-                                              </FormControl>
-                                              <FormDescription>
-                                                {prop.type === 'array'
-                                                  ? `Enter ${key} (comma-separated ${prop.items?.type || 'values'})`
-                                                  : `Type: ${prop.type}`}
-                                              </FormDescription>
-                                              <FormMessage />
-                                            </FormItem>
-                                          )}
-                                        />
-                                      ))}
-                                    </div>
-                                  )}
-
-                                  {Object.keys(
-                                    metadataValue?.parameters?.properties ?? {},
-                                  ).length > 0 && (
-                                    <div className="space-y-4">
-                                      <h3 className="text-xs font-medium uppercase text-white">
-                                        Inputs
-                                      </h3>
-
-                                      {Object.entries(
-                                        metadataValue?.parameters?.properties ??
-                                          {},
-                                      ).map(([key, prop]) => (
-                                        <FormField
-                                          control={metadataForm.control}
-                                          key={key}
-                                          name={`parameters.properties.${key}.value`}
-                                          render={({ field }) => (
-                                            <FormItem>
-                                              <FormLabel className="capitalize">
-                                                {key.replace(/_/g, ' ')}
-                                                {metadataValue?.parameters?.required?.includes(
-                                                  key,
-                                                ) && (
-                                                  <span className="ml-1 text-gray-100">
-                                                    (required)
-                                                  </span>
-                                                )}
-                                              </FormLabel>
                                               <FormControl>
                                                 <PropertyInput
                                                   field={field}
