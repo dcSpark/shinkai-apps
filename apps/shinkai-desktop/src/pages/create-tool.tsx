@@ -439,13 +439,12 @@ function CreateToolPage() {
   const handleSaveTool = async () => {
     if (!isCodeExecutionSuccess) {
       setTab('code');
-      toast.error('Please run your tool before saving', {});
+      toast.error('Please run your tool before saving');
       return;
     }
 
     if (!chatInboxId) return;
 
-    setTab('code');
     await saveToolCode({
       code: toolCode,
       metadata: {
@@ -1196,6 +1195,24 @@ function CreateToolPage() {
                                       <h3 className="text-xs font-medium uppercase text-white">
                                         Tool Config
                                       </h3>
+
+                                      {/*<SchemaForm*/}
+                                      {/*  className="py-4"*/}
+                                      {/*  schema={*/}
+                                      {/*    metadataValue?.configurations as RJSFSchema*/}
+                                      {/*  }*/}
+                                      {/*  uiSchema={{*/}
+                                      {/*    'ui:submitButtonOptions': {*/}
+                                      {/*      props: {*/}
+                                      {/*        disabled: isExecutingCode,*/}
+                                      {/*        isLoading: isExecutingCode,*/}
+                                      {/*      },*/}
+                                      {/*      norender: true,*/}
+                                      {/*    },*/}
+                                      {/*  }}*/}
+                                      {/*  noHtml5Validate={true}*/}
+                                      {/*  validator={validator}*/}
+                                      {/*/>*/}
                                       {Object.entries(
                                         metadataValue?.configurations
                                           ?.properties ?? {},
