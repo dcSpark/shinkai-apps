@@ -9,16 +9,9 @@ export const executeToolCode = async ({
   code,
   params,
 }: ExecuteToolCodeInput) => {
-  const parameters = params.reduce(
-    (acc: Record<string, any>, obj: Record<string, any>) => {
-      return { ...acc, ...obj };
-    },
-    {} as Record<string, any>,
-  );
-
   return await executeToolCodeApi(nodeAddress, token, {
     tool_type: DynamicToolType.DenoDynamic,
     code,
-    parameters: parameters,
+    parameters: params,
   });
 };

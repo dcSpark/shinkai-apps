@@ -16,7 +16,7 @@ export default function TitleField<
   const uiOptions = getUiOptions<T, S, F>(uiSchema);
 
   return (
-    <div className="my-1" id={id}>
+    <div id={id}>
       <h5
         className={cn(
           'text-gray-80 mb-2 inline-block text-xs uppercase tracking-[2px]',

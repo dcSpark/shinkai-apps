@@ -7,9 +7,9 @@ import 'prism-react-editor/search.css';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { ReloadIcon } from '@radix-ui/react-icons';
-import SchemaForm from '@rjsf/core';
-import { UiSchema } from '@rjsf/utils';
-import { RegistryWidgetsType, RJSFSchema, WidgetProps } from '@rjsf/utils';
+
+import { RJSFSchema } from '@rjsf/utils';
+
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
@@ -24,7 +24,6 @@ import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutation
 import {
   Badge,
   Button,
-  Checkbox,
   CopyToClipboardIcon,
   Dialog,
   DialogContent,
@@ -39,7 +38,6 @@ import {
   FormLabel,
   FormMessage,
   Input,
-  Label,
   MarkdownPreview,
   MessageList,
   ResizableHandle,
@@ -50,7 +48,6 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-  TextField,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -72,7 +69,7 @@ import {
 } from 'lucide-react';
 import { Editor } from 'prism-react-editor';
 import { BasicSetup } from 'prism-react-editor/setups';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -88,15 +85,7 @@ import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useChatConversationWithOptimisticUpdates } from './chat/chat-conversation';
 import { JsonForm } from '../../../../libs/shinkai-ui/src/components/rjsf';
-
-const uiSchema: UiSchema = {
-  'ui:submitButtonOptions': {
-    props: {
-      className: 'btn btn-info',
-    },
-    submitText: 'Run Tool',
-  },
-};
+import { FormProps } from '@rjsf/core';
 
 export const createToolCodeFormSchema = z.object({
   message: z.string().min(1),
@@ -115,21 +104,28 @@ type MetadataFormSchema = z.infer<typeof metadataFormSchema>;
 
 export type CreateToolCodeFormSchema = z.infer<typeof createToolCodeFormSchema>;
 
-function ToolErrorFallback({ error }: { error: Error }) {
+function ToolErrorFallback({
+  error,
+  resetErrorBoundary,
+}: {
+  error: Error;
+  resetErrorBoundary: (...args: any[]) => void;
+}) {
   return (
     <div
-      className="flex flex-col items-center justify-center px-8 text-xs text-red-400"
+      className="flex flex-col items-center justify-center px-8 py-4 text-xs text-red-400"
       role="alert"
     >
-      <p>Something went wrong. Try refreshing the app.</p>
+      <p>Something went wrong. Try renegerating tool metadata.</p>
       <pre className="mb-4 whitespace-pre-wrap text-balance break-all text-center">
         {error.message}
       </pre>
       <Button
         className="h-[30px]"
-        onClick={() => window.location.reload()}
+        onClick={() => resetErrorBoundary()}
         size="auto"
         variant="outline"
+        type="button"
       >
         Try again
       </Button>
@@ -158,7 +154,7 @@ function CreateToolPage() {
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<string | null>(
     null,
   );
-  const [resetCounter, setResetCounter] = useState(0); // Add this state
+  const [resetCounter, setResetCounter] = useState(0);
 
   const form = useForm<CreateToolCodeFormSchema>({
     resolver: zodResolver(createToolCodeFormSchema),
@@ -430,23 +426,37 @@ function CreateToolPage() {
     return;
   };
 
-  const handleSubmit = async (data: MetadataFormSchema) => {
-    if (Object.keys(metadataForm.formState.errors).length > 0) {
-      setTab('preview');
-      toast.error('Please fill in the required fields', {
-        description: Object.keys(metadataForm.formState.errors).join('\n'),
-      });
-      return;
-    }
-
-    setTab('code');
+  const handleRunCode: FormProps['onSubmit'] = async (data) => {
+    const params = data.formData;
     await executeCode({
       code: toolCode,
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
-      params: Object.keys(data.parameters.properties).map((property) => ({
-        [property]: data.parameters.properties[property].value,
-      })),
+      params,
+    });
+  };
+
+  const handleSaveTool = async () => {
+    if (!isCodeExecutionSuccess) {
+      setTab('code');
+      toast.error('Please run your tool before saving', {});
+      return;
+    }
+
+    if (!chatInboxId) return;
+
+    setTab('code');
+    await saveToolCode({
+      code: toolCode,
+      metadata: {
+        ...metadataValue,
+        name: metadataForm.getValues('name'),
+        description: metadataForm.getValues('description'),
+        author: auth?.shinkai_identity ?? '',
+      },
+      jobId: extractJobIdFromInbox(chatInboxId),
+      token: auth?.api_v2_key ?? '',
+      nodeAddress: auth?.node_address ?? '',
     });
   };
 
@@ -456,7 +466,7 @@ function CreateToolPage() {
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel className="flex h-full flex-col px-3 py-4 pt-6">
             <h1 className="py-2 text-lg font-semibold tracking-tight">
-              Create Tool
+              Tool Playground
             </h1>
             <div
               className={cn(
@@ -751,9 +761,7 @@ function CreateToolPage() {
                                 );
                               }}
                               style={{ fontSize: '0.875rem' }}
-                              textareaProps={{
-                                name: 'editor',
-                              }}
+                              textareaProps={{ name: 'editor' }}
                               value={toolCode}
                             >
                               {(editor) => <BasicSetup editor={editor} />}
@@ -763,7 +771,7 @@ function CreateToolPage() {
                       </div>
                     </div>
 
-                    <div className="flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
+                    <div className="relative flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
                       <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
                         <h2 className="flex font-mono font-semibold text-gray-50">
                           Inputs
@@ -779,205 +787,168 @@ function CreateToolPage() {
                             Generating Metadata...
                           </div>
                         )}
-                      <ErrorBoundary FallbackComponent={ToolErrorFallback}>
-                        {metadata?.role === 'assistant' &&
-                          metadata?.status.type === 'complete' && (
-                            <div className="text-gray-80 relative text-xs">
-                              {config.isDev && (
-                                <div className="absolute -top-6 right-0 flex items-center gap-2">
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Button
-                                        className="size-[30px] p-2"
-                                        onClick={async () => {
-                                          await createToolMetadata(
-                                            {
-                                              nodeAddress:
-                                                auth?.node_address ?? '',
-                                              token: auth?.api_v2_key ?? '',
-                                              jobId: extractJobIdFromInbox(
-                                                chatInboxId ?? '',
-                                              ),
+                      {metadata?.role === 'assistant' &&
+                        metadata?.status.type === 'complete' && (
+                          <div className="text-gray-80 text-xs">
+                            {config.isDev && (
+                              <div className="absolute right-2 top-2 flex items-center gap-2">
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      className="size-[30px] p-2"
+                                      onClick={async () => {
+                                        await createToolMetadata(
+                                          {
+                                            nodeAddress:
+                                              auth?.node_address ?? '',
+                                            token: auth?.api_v2_key ?? '',
+                                            jobId: extractJobIdFromInbox(
+                                              chatInboxId ?? '',
+                                            ),
+                                          },
+                                          {
+                                            onSuccess: (data) => {
+                                              setChatInboxIdMetadata(
+                                                buildInboxIdFromJobId(
+                                                  data.job_id,
+                                                ),
+                                              );
                                             },
-                                            {
-                                              onSuccess: (data) => {
-                                                setChatInboxIdMetadata(
-                                                  buildInboxIdFromJobId(
-                                                    data.job_id,
-                                                  ),
-                                                );
-                                              },
-                                            },
-                                          );
-                                        }}
-                                        size="auto"
-                                        variant="outline"
-                                      >
-                                        <ReloadIcon className="h-4 w-4" />
-                                      </Button>
-                                    </TooltipTrigger>
-                                    <TooltipPortal>
-                                      <TooltipContent className="flex flex-col items-center gap-1">
-                                        <p>Regenerate Metadata</p>
-                                      </TooltipContent>
-                                    </TooltipPortal>
-                                  </Tooltip>
+                                          },
+                                        );
+                                      }}
+                                      size="auto"
+                                      variant="outline"
+                                    >
+                                      <ReloadIcon className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipPortal>
+                                    <TooltipContent className="flex flex-col items-center gap-1">
+                                      <p>Regenerate Metadata</p>
+                                    </TooltipContent>
+                                  </TooltipPortal>
+                                </Tooltip>
 
-                                  <Dialog>
-                                    <DialogTrigger asChild>
-                                      <Button
-                                        className="flex h-[30px] items-center gap-1 rounded-md text-xs"
-                                        size="auto"
-                                        variant="outline"
-                                      >
-                                        <ArrowUpRight className="h-4 w-4" />
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      className="flex h-[30px] items-center gap-1 rounded-md text-xs"
+                                      size="auto"
+                                      variant="outline"
+                                    >
+                                      <ArrowUpRight className="h-4 w-4" />
+                                      Details
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="flex max-w-5xl flex-col bg-gray-300 p-5 text-xs">
+                                    <DialogClose className="absolute right-4 top-4">
+                                      <XIcon className="text-gray-80 h-5 w-5" />
+                                    </DialogClose>
+                                    <DialogHeader className="flex justify-between">
+                                      <DialogTitle className="text-left text-sm font-bold">
                                         Details
-                                      </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="flex max-w-5xl flex-col bg-gray-300 p-5 text-xs">
-                                      <DialogClose className="absolute right-4 top-4">
-                                        <XIcon className="text-gray-80 h-5 w-5" />
-                                      </DialogClose>
-                                      <DialogHeader className="flex justify-between">
-                                        <DialogTitle className="text-left text-sm font-bold">
-                                          Details
-                                        </DialogTitle>
-                                      </DialogHeader>
-                                      <div className="grid grid-cols-2 gap-10 space-y-3">
-                                        <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
-                                          <div className="flex h-12 items-center justify-between gap-2 pt-1.5">
-                                            <h2 className="text-gray-80 flex items-center pl-1 font-mono text-xs font-semibold">
-                                              Response
-                                            </h2>
-                                            <Tooltip>
-                                              <TooltipTrigger asChild>
-                                                <div>
-                                                  <CopyToClipboardIcon
-                                                    className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"
-                                                    string={
-                                                      metadata.content ?? ''
-                                                    }
-                                                  />
-                                                </div>
-                                              </TooltipTrigger>
-                                              <TooltipPortal>
-                                                <TooltipContent className="flex flex-col items-center gap-1">
-                                                  <p>Copy Code</p>
-                                                </TooltipContent>
-                                              </TooltipPortal>
-                                            </Tooltip>
-                                          </div>
-                                          <MarkdownPreview
-                                            className="prose-h1:!text-gray-50 prose-h1:!text-sm !text-sm !text-gray-50"
-                                            source={metadata.content}
-                                          />
-                                        </div>
-
-                                        <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
-                                          <div className="text-gray-80 flex-1 items-center gap-1 truncate text-left text-xs">
-                                            View JSON
-                                          </div>
-                                          <JsonView
-                                            displayDataTypes={false}
-                                            displayObjectSize={false}
-                                            enableClipboard={false}
-                                            style={githubLightTheme}
-                                            value={metadataValue ?? {}}
-                                          />
-                                        </div>
-                                      </div>
-                                    </DialogContent>
-                                  </Dialog>
-                                </div>
-                              )}
-                              {/*TODO: send a valid json schema*/}
-                              {/*<FormSchema*/}
-                              {/*  schema={{*/}
-                              {/*    title: 'Todo',*/}
-                              {/*    type: 'object',*/}
-                              {/*    required: ['title'],*/}
-                              {/*    properties: {*/}
-                              {/*      title: {*/}
-                              {/*        type: 'string',*/}
-                              {/*        title: 'Title',*/}
-                              {/*        default: 'A new task',*/}
-                              {/*      },*/}
-                              {/*      done: {*/}
-                              {/*        type: 'boolean',*/}
-                              {/*        title: 'Done?',*/}
-                              {/*        default: false,*/}
-                              {/*      },*/}
-                              {/*    },*/}
-                              {/*  }}*/}
-                              {/*  validator={validator}*/}
-                              {/*/>*/}
-
-                              <Form {...metadataForm}>
-                                <form
-                                  className="space-y-4 pb-4 pt-4"
-                                  onSubmit={metadataForm.handleSubmit(
-                                    handleSubmit,
-                                  )}
-                                >
-                                  {Object.keys(
-                                    metadataValue?.parameters?.properties ?? {},
-                                  ).length > 0 && (
-                                    <div className="space-y-4">
-                                      {Object.entries(
-                                        metadataValue?.parameters?.properties ??
-                                          {},
-                                      ).map(([key, prop]) => (
-                                        <FormField
-                                          control={metadataForm.control}
-                                          key={key}
-                                          name={`parameters.properties.${key}.value`}
-                                          render={({ field }) => (
-                                            <FormItem>
-                                              <FormLabel className="capitalize">
-                                                {key.replace(/_/g, ' ')}
-                                                {metadataValue?.parameters?.required?.includes(
-                                                  key,
-                                                ) && (
-                                                  <span className="ml-1 text-gray-100">
-                                                    (required)
-                                                  </span>
-                                                )}
-                                              </FormLabel>
-                                              <FormControl>
-                                                <PropertyInput
-                                                  field={field}
-                                                  property={prop}
+                                      </DialogTitle>
+                                    </DialogHeader>
+                                    <div className="grid grid-cols-2 gap-10 space-y-3">
+                                      <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
+                                        <div className="flex h-12 items-center justify-between gap-2 pt-1.5">
+                                          <h2 className="text-gray-80 flex items-center pl-1 font-mono text-xs font-semibold">
+                                            Response
+                                          </h2>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <div>
+                                                <CopyToClipboardIcon
+                                                  className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"
+                                                  string={
+                                                    metadata.content ?? ''
+                                                  }
                                                 />
-                                              </FormControl>
-                                              <FormDescription>
-                                                {prop.type === 'array'
-                                                  ? `Enter ${key} (comma-separated ${prop.items?.type || 'values'})`
-                                                  : `Type: ${prop.type}`}
-                                              </FormDescription>
-                                              <FormMessage />
-                                            </FormItem>
-                                          )}
+                                              </div>
+                                            </TooltipTrigger>
+                                            <TooltipPortal>
+                                              <TooltipContent className="flex flex-col items-center gap-1">
+                                                <p>Copy Code</p>
+                                              </TooltipContent>
+                                            </TooltipPortal>
+                                          </Tooltip>
+                                        </div>
+                                        <MarkdownPreview
+                                          className="prose-h1:!text-gray-50 prose-h1:!text-sm !text-sm !text-gray-50"
+                                          source={metadata.content}
                                         />
-                                      ))}
+                                      </div>
+
+                                      <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
+                                        <div className="text-gray-80 flex-1 items-center gap-1 truncate text-left text-xs">
+                                          View JSON
+                                        </div>
+                                        <JsonView
+                                          displayDataTypes={false}
+                                          displayObjectSize={false}
+                                          enableClipboard={false}
+                                          style={githubLightTheme}
+                                          value={metadataValue ?? {}}
+                                        />
+                                      </div>
                                     </div>
-                                  )}
-                                </form>
-                              </Form>
-                              <Button
-                                className="h-[30px] rounded-md text-xs"
-                                disabled={!toolCode || !metadataValue}
-                                isLoading={isExecutingCode}
-                                onClick={() => {
-                                  metadataForm.handleSubmit(handleSubmit)();
+                                  </DialogContent>
+                                </Dialog>
+                              </div>
+                            )}
+                            <ErrorBoundary
+                              FallbackComponent={ToolErrorFallback}
+                              onReset={async () => {
+                                await createToolMetadata(
+                                  {
+                                    nodeAddress: auth?.node_address ?? '',
+                                    token: auth?.api_v2_key ?? '',
+                                    jobId: extractJobIdFromInbox(
+                                      chatInboxId ?? '',
+                                    ),
+                                  },
+                                  {
+                                    onSuccess: (data) => {
+                                      setChatInboxIdMetadata(
+                                        buildInboxIdFromJobId(data.job_id),
+                                      );
+                                    },
+                                  },
+                                );
+                              }}
+                            >
+                              <JsonForm
+                                className="py-4"
+                                schema={metadataValue?.parameters as RJSFSchema}
+                                onSubmit={handleRunCode}
+                                uiSchema={{
+                                  'ui:submitButtonOptions': {
+                                    props: {
+                                      disabled: isExecutingCode,
+                                      isLoading: isExecutingCode,
+                                    },
+                                    // @ts-expect-error string type
+                                    submitText: (
+                                      <div
+                                        className={
+                                          'inline-flex items-center justify-center gap-2'
+                                        }
+                                      >
+                                        {!isExecutingCode && (
+                                          <Play className="h-4 w-4" />
+                                        )}
+                                        Run tool
+                                      </div>
+                                    ),
+                                  },
                                 }}
-                                size="sm"
-                              >
-                                <Play className="mr-2 h-4 w-4" />
-                                Run tool
-                              </Button>
-                            </div>
-                          )}
-                      </ErrorBoundary>
+                                noHtml5Validate={true}
+                                validator={validator}
+                              />
+                            </ErrorBoundary>
+                          </div>
+                        )}
                       {metadata == null && (
                         <div>
                           <p className="text-gray-80 py-4 pt-6 text-center text-xs">
@@ -1031,150 +1002,6 @@ function CreateToolPage() {
                     className="mt-1 h-full space-y-4 overflow-y-auto whitespace-pre-line break-words py-4 pr-3"
                     value="preview"
                   >
-                    <JsonForm
-                      schema={{
-                        definitions: {
-                          Thing: {
-                            type: 'object',
-                            properties: {
-                              name: {
-                                type: 'string',
-                                default: 'Default name',
-                              },
-                            },
-                          },
-                        },
-                        type: 'object',
-                        properties: {
-                          listOfStrings: {
-                            type: 'array',
-                            title: 'A list of strings',
-                            items: {
-                              type: 'string',
-                              default: 'bazinga',
-                            },
-                          },
-                          multipleChoicesList: {
-                            type: 'array',
-                            title: 'A multiple choices list',
-                            items: {
-                              type: 'string',
-                              enum: ['foo', 'bar', 'fuzz', 'qux'],
-                            },
-                            uniqueItems: true,
-                          },
-                          fixedItemsList: {
-                            type: 'array',
-                            title: 'A list of fixed items',
-                            items: [
-                              {
-                                title: 'A string value',
-                                type: 'string',
-                                default: 'lorem ipsum',
-                              },
-                              {
-                                title: 'a boolean value',
-                                type: 'boolean',
-                              },
-                            ],
-                            additionalItems: {
-                              title: 'Additional item',
-                              type: 'number',
-                            },
-                          },
-                          minItemsList: {
-                            type: 'array',
-                            title: 'A list with a minimal number of items',
-                            minItems: 3,
-                            items: {
-                              $ref: '#/definitions/Thing',
-                            },
-                          },
-                          defaultsAndMinItems: {
-                            type: 'array',
-                            title: 'List and item level defaults',
-                            minItems: 5,
-                            default: ['carp', 'trout', 'bream'],
-                            items: {
-                              type: 'string',
-                              default: 'unidentified',
-                            },
-                          },
-                          nestedList: {
-                            type: 'array',
-                            title: 'Nested list',
-                            items: {
-                              type: 'array',
-                              title: 'Inner list',
-                              items: {
-                                type: 'string',
-                                default: 'lorem ipsum',
-                              },
-                            },
-                          },
-                          unorderable: {
-                            title: 'Unorderable items',
-                            type: 'array',
-                            items: {
-                              type: 'string',
-                              default: 'lorem ipsum',
-                            },
-                          },
-                          bio: {
-                            type: 'string',
-                            title: 'Bio',
-                          },
-                          copyable: {
-                            title: 'Copyable items',
-                            type: 'array',
-                            items: {
-                              type: 'string',
-                              default: 'lorem ipsum',
-                            },
-                          },
-                          unremovable: {
-                            title: 'Unremovable items',
-                            type: 'array',
-                            items: {
-                              type: 'string',
-                              default: 'lorem ipsum',
-                            },
-                          },
-                          noToolbar: {
-                            title: 'No add, remove and order buttons',
-                            type: 'array',
-                            items: {
-                              type: 'string',
-                              default: 'lorem ipsum',
-                            },
-                          },
-                          fixedNoToolbar: {
-                            title: 'Fixed array without buttons',
-                            type: 'array',
-                            items: [
-                              {
-                                title: 'A number',
-                                type: 'number',
-                                default: 42,
-                              },
-                              {
-                                title: 'A boolean',
-                                type: 'boolean',
-                                default: false,
-                              },
-                            ],
-                            additionalItems: {
-                              title: 'A string',
-                              type: 'string',
-                              default: 'lorem ipsum',
-                            },
-                          },
-                        },
-                      }}
-                      noHtml5Validate={true}
-                      // uiSchema={uiSchema}
-                      validator={validator}
-                    />
                     <div className="flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
                       <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
                         <h2 className="flex font-mono font-semibold text-gray-50">
@@ -1191,7 +1018,25 @@ function CreateToolPage() {
                             Generating Metadata...
                           </div>
                         )}
-                      <ErrorBoundary FallbackComponent={ToolErrorFallback}>
+                      <ErrorBoundary
+                        FallbackComponent={ToolErrorFallback}
+                        onReset={async () => {
+                          await createToolMetadata(
+                            {
+                              nodeAddress: auth?.node_address ?? '',
+                              token: auth?.api_v2_key ?? '',
+                              jobId: extractJobIdFromInbox(chatInboxId ?? ''),
+                            },
+                            {
+                              onSuccess: (data) => {
+                                setChatInboxIdMetadata(
+                                  buildInboxIdFromJobId(data.job_id),
+                                );
+                              },
+                            },
+                          );
+                        }}
+                      >
                         {metadata?.role === 'assistant' &&
                           metadata?.status.type === 'complete' && (
                             <div className="text-gray-80 relative text-xs">
@@ -1307,7 +1152,7 @@ function CreateToolPage() {
                                 <form
                                   className="space-y-4 pb-4 pt-4"
                                   onSubmit={metadataForm.handleSubmit(
-                                    handleSubmit,
+                                    handleSaveTool,
                                   )}
                                 >
                                   <div className="space-y-3">
@@ -1444,12 +1289,4 @@ function PropertyInput({
     default:
       return <Input {...field} />;
   }
-}
-
-export function MyEditor(props: { code: string }) {
-  return (
-    <Editor language="tsx" value={props.code}>
-      {(editor) => <BasicSetup editor={editor} />}
-    </Editor>
-  );
 }

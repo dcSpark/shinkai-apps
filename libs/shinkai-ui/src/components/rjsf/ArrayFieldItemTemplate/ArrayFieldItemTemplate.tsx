@@ -44,40 +44,40 @@ export default function ArrayFieldItemTemplate<
         <div className="w-1/4 flex-none px-4 py-6 lg:w-1/4">
           {hasToolbar && (
             <div className="flex gap-2">
-              {(hasMoveUp || hasMoveDown) && (
-                <div className="m-0 p-0">
-                  <MoveUpButton
-                    className="array-item-move-up"
-                    disabled={disabled || readonly || !hasMoveUp}
-                    onClick={onReorderClick(index, index - 1)}
-                    registry={registry}
-                    style={btnStyle}
-                    uiSchema={uiSchema}
-                  />
-                </div>
-              )}
-              {(hasMoveUp || hasMoveDown) && (
-                <div className="m-0 p-0">
-                  <MoveDownButton
-                    disabled={disabled || readonly || !hasMoveDown}
-                    onClick={onReorderClick(index, index + 1)}
-                    registry={registry}
-                    style={btnStyle}
-                    uiSchema={uiSchema}
-                  />
-                </div>
-              )}
-              {hasCopy && (
-                <div className="m-0 p-0">
-                  <CopyButton
-                    disabled={disabled || readonly}
-                    onClick={onCopyIndexClick(index)}
-                    registry={registry}
-                    style={btnStyle}
-                    uiSchema={uiSchema}
-                  />
-                </div>
-              )}
+              {/*{(hasMoveUp || hasMoveDown) && (*/}
+              {/*  <div className="m-0 p-0">*/}
+              {/*    <MoveUpButton*/}
+              {/*      className="array-item-move-up"*/}
+              {/*      disabled={disabled || readonly || !hasMoveUp}*/}
+              {/*      onClick={onReorderClick(index, index - 1)}*/}
+              {/*      registry={registry}*/}
+              {/*      style={btnStyle}*/}
+              {/*      uiSchema={uiSchema}*/}
+              {/*    />*/}
+              {/*  </div>*/}
+              {/*)}*/}
+              {/*{(hasMoveUp || hasMoveDown) && (*/}
+              {/*  <div className="m-0 p-0">*/}
+              {/*    <MoveDownButton*/}
+              {/*      disabled={disabled || readonly || !hasMoveDown}*/}
+              {/*      onClick={onReorderClick(index, index + 1)}*/}
+              {/*      registry={registry}*/}
+              {/*      style={btnStyle}*/}
+              {/*      uiSchema={uiSchema}*/}
+              {/*    />*/}
+              {/*  </div>*/}
+              {/*)}*/}
+              {/*{hasCopy && (*/}
+              {/*  <div className="m-0 p-0">*/}
+              {/*    <CopyButton*/}
+              {/*      disabled={disabled || readonly}*/}
+              {/*      onClick={onCopyIndexClick(index)}*/}
+              {/*      registry={registry}*/}
+              {/*      style={btnStyle}*/}
+              {/*      uiSchema={uiSchema}*/}
+              {/*    />*/}
+              {/*  </div>*/}
+              {/*)}*/}
               {hasRemove && (
                 <div className="m-0 p-0">
                   <RemoveButton
