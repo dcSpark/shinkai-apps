@@ -7,6 +7,9 @@ import 'prism-react-editor/search.css';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { ReloadIcon } from '@radix-ui/react-icons';
+import SchemaForm from '@rjsf/core';
+import { RJSFSchema } from '@rjsf/utils';
+import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
@@ -776,6 +779,16 @@ function EditToolPage() {
                     className="mt-1 h-full space-y-4 overflow-y-auto whitespace-pre-line break-words py-4 pr-3"
                     value="preview"
                   >
+                    <SchemaForm
+                      schema={{
+                        type: 'object',
+                        properties: {
+                          url: { type: 'string' },
+                        },
+                        required: ['url'],
+                      }}
+                      validator={validator}
+                    />
                     <div className="flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
                       <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
                         <h2 className="flex font-mono font-semibold text-gray-50">

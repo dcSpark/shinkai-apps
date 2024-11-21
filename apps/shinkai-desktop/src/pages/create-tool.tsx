@@ -7,9 +7,10 @@ import 'prism-react-editor/search.css';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { ReloadIcon } from '@radix-ui/react-icons';
-// import FormSchema from '@rjsf/core';
-// import { RJSFSchema } from '@rjsf/utils';
-// import validator from '@rjsf/validator-ajv8';
+import SchemaForm from '@rjsf/core';
+import { UiSchema } from '@rjsf/utils';
+import { RegistryWidgetsType, RJSFSchema, WidgetProps } from '@rjsf/utils';
+import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
@@ -23,6 +24,7 @@ import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutation
 import {
   Badge,
   Button,
+  Checkbox,
   CopyToClipboardIcon,
   Dialog,
   DialogContent,
@@ -37,6 +39,7 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  Label,
   MarkdownPreview,
   MessageList,
   ResizableHandle,
@@ -47,6 +50,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  TextField,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -68,7 +72,7 @@ import {
 } from 'lucide-react';
 import { Editor } from 'prism-react-editor';
 import { BasicSetup } from 'prism-react-editor/setups';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -83,6 +87,16 @@ import config from '../config';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useChatConversationWithOptimisticUpdates } from './chat/chat-conversation';
+import { JsonForm } from '../../../../libs/shinkai-ui/src/components/rjsf';
+
+const uiSchema: UiSchema = {
+  'ui:submitButtonOptions': {
+    props: {
+      className: 'btn btn-info',
+    },
+    submitText: 'Run Tool',
+  },
+};
 
 export const createToolCodeFormSchema = z.object({
   message: z.string().min(1),
@@ -1017,6 +1031,150 @@ function CreateToolPage() {
                     className="mt-1 h-full space-y-4 overflow-y-auto whitespace-pre-line break-words py-4 pr-3"
                     value="preview"
                   >
+                    <JsonForm
+                      schema={{
+                        definitions: {
+                          Thing: {
+                            type: 'object',
+                            properties: {
+                              name: {
+                                type: 'string',
+                                default: 'Default name',
+                              },
+                            },
+                          },
+                        },
+                        type: 'object',
+                        properties: {
+                          listOfStrings: {
+                            type: 'array',
+                            title: 'A list of strings',
+                            items: {
+                              type: 'string',
+                              default: 'bazinga',
+                            },
+                          },
+                          multipleChoicesList: {
+                            type: 'array',
+                            title: 'A multiple choices list',
+                            items: {
+                              type: 'string',
+                              enum: ['foo', 'bar', 'fuzz', 'qux'],
+                            },
+                            uniqueItems: true,
+                          },
+                          fixedItemsList: {
+                            type: 'array',
+                            title: 'A list of fixed items',
+                            items: [
+                              {
+                                title: 'A string value',
+                                type: 'string',
+                                default: 'lorem ipsum',
+                              },
+                              {
+                                title: 'a boolean value',
+                                type: 'boolean',
+                              },
+                            ],
+                            additionalItems: {
+                              title: 'Additional item',
+                              type: 'number',
+                            },
+                          },
+                          minItemsList: {
+                            type: 'array',
+                            title: 'A list with a minimal number of items',
+                            minItems: 3,
+                            items: {
+                              $ref: '#/definitions/Thing',
+                            },
+                          },
+                          defaultsAndMinItems: {
+                            type: 'array',
+                            title: 'List and item level defaults',
+                            minItems: 5,
+                            default: ['carp', 'trout', 'bream'],
+                            items: {
+                              type: 'string',
+                              default: 'unidentified',
+                            },
+                          },
+                          nestedList: {
+                            type: 'array',
+                            title: 'Nested list',
+                            items: {
+                              type: 'array',
+                              title: 'Inner list',
+                              items: {
+                                type: 'string',
+                                default: 'lorem ipsum',
+                              },
+                            },
+                          },
+                          unorderable: {
+                            title: 'Unorderable items',
+                            type: 'array',
+                            items: {
+                              type: 'string',
+                              default: 'lorem ipsum',
+                            },
+                          },
+                          bio: {
+                            type: 'string',
+                            title: 'Bio',
+                          },
+                          copyable: {
+                            title: 'Copyable items',
+                            type: 'array',
+                            items: {
+                              type: 'string',
+                              default: 'lorem ipsum',
+                            },
+                          },
+                          unremovable: {
+                            title: 'Unremovable items',
+                            type: 'array',
+                            items: {
+                              type: 'string',
+                              default: 'lorem ipsum',
+                            },
+                          },
+                          noToolbar: {
+                            title: 'No add, remove and order buttons',
+                            type: 'array',
+                            items: {
+                              type: 'string',
+                              default: 'lorem ipsum',
+                            },
+                          },
+                          fixedNoToolbar: {
+                            title: 'Fixed array without buttons',
+                            type: 'array',
+                            items: [
+                              {
+                                title: 'A number',
+                                type: 'number',
+                                default: 42,
+                              },
+                              {
+                                title: 'A boolean',
+                                type: 'boolean',
+                                default: false,
+                              },
+                            ],
+                            additionalItems: {
+                              title: 'A string',
+                              type: 'string',
+                              default: 'lorem ipsum',
+                            },
+                          },
+                        },
+                      }}
+                      noHtml5Validate={true}
+                      // uiSchema={uiSchema}
+                      validator={validator}
+                    />
                     <div className="flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
                       <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
                         <h2 className="flex font-mono font-semibold text-gray-50">
