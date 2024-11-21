@@ -35,4 +35,3 @@ export * from './tooltip';
 export * from './table';
 export * from './progress';
 export * from './card';
-export * from '../rjsf/index';
