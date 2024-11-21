@@ -6,6 +6,8 @@ import {
   TitleFieldProps,
 } from '@rjsf/utils';
 
+import { cn } from '../../../utils';
+
 export default function TitleField<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
@@ -15,10 +17,14 @@ export default function TitleField<
 
   return (
     <div className="my-1" id={id}>
-      <h5 className="mb-2 text-lg font-medium leading-tight">
+      <h5
+        className={cn(
+          'text-gray-80 mb-2 inline-block text-xs uppercase tracking-[2px]',
+        )}
+      >
         {uiOptions.title || title}
       </h5>
-      <hr className="border-muted my-4 border-t" />
+      {/*<hr className="my-1 border-t border-gray-200" />*/}
     </div>
   );
 }

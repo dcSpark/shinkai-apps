@@ -6,6 +6,7 @@ import {
   SubmitButtonProps,
 } from '@rjsf/utils';
 
+import { cn } from '../../../utils';
 import { Button } from '../../button';
 
 export default function SubmitButton<
@@ -26,10 +27,10 @@ export default function SubmitButton<
   return (
     <div>
       <Button
-        className="w-full rounded-xl"
+        {...submitButtonProps}
+        className={cn('h-[30px] rounded-lg', submitButtonProps?.className)}
         size="sm"
         type="submit"
-        {...submitButtonProps}
       >
         {submitText}
       </Button>

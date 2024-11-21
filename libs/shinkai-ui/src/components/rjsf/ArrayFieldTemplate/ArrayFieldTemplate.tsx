@@ -68,7 +68,7 @@ export default function ArrayFieldTemplate<
             schema={schema}
             uiSchema={uiSchema}
           />
-          <div className="m-0 w-full p-0">
+          <div className="m-0 w-full rounded-md border border-gray-200 bg-gray-400 p-4">
             {items &&
               items.map(
                 ({
@@ -78,10 +78,19 @@ export default function ArrayFieldTemplate<
                   <ArrayFieldItemTemplate key={key} {...itemProps} />
                 ),
               )}
-            {items.length === 0 && (
-              <p className="text-gray-80 text-sm">Press + to add a new item</p>
+            {items.length === 0 && canAdd && (
+              <div className="mx-auto flex w-full max-w-[160px] flex-col items-center justify-between gap-4 py-2.5">
+                <p className="text-gray-80 text-sm">No items found.</p>
+                <AddButton
+                  className="array-item-add"
+                  disabled={disabled || readonly}
+                  onClick={onAddClick}
+                  registry={registry}
+                  uiSchema={uiSchema}
+                />
+              </div>
             )}
-            {canAdd && (
+            {items.length > 0 && canAdd && (
               <div className="">
                 <div className="mt-2 flex">
                   <div className="w-3/4" />

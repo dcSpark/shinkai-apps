@@ -32,7 +32,7 @@ export default function IconButton<
 
   return (
     <button
-      className={`grid size-8 justify-items-center rounded-full p-1.5 text-base font-normal [&>svg]:size-full ${buttonClass} ${variantClass} ${className}`}
+      className={`grid size-8 justify-items-center rounded-full p-2 text-base font-normal [&>svg]:size-full ${buttonClass} ${variantClass} ${className}`}
       {...otherProps}
     >
       {icon}

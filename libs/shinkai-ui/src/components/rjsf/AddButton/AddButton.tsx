@@ -1,3 +1,4 @@
+import { PlusCircledIcon } from '@radix-ui/react-icons';
 import {
   FormContextType,
   IconButtonProps,
@@ -16,11 +17,10 @@ export default function AddButton<
   return (
     <button
       {...props}
-      className={`hover:bg-gray-350 ml-1 grid justify-items-center rounded-md border bg-gray-300 px-4 py-2 text-base font-normal text-white ${props.className}`}
-      style={{ width: '100%' }}
+      className={`hover:bg-gray-350 ml-1 flex items-center justify-center gap-2 rounded-md border bg-gray-300 px-4 py-2 text-base text-sm font-normal text-white ${props.className}`}
       title={translateString(TranslatableString.AddItemButton)}
     >
-      <PlusIcon />
+      <PlusCircledIcon /> New Item
     </button>
   );
 }
