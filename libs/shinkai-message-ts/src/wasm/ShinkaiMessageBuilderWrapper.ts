@@ -346,8 +346,6 @@ export class ShinkaiMessageBuilderWrapper {
     content: string,
     files_inbox: string,
     parent: string | null,
-    workflow_code: string | undefined,
-    workflow_name: string | undefined,
     my_encryption_secret_key: string,
     my_signature_secret_key: string,
     receiver_public_key: string,
@@ -361,8 +359,8 @@ export class ShinkaiMessageBuilderWrapper {
       content,
       files_inbox,
       parent === null ? '' : parent,
-      workflow_code,
-      workflow_name,
+      undefined,
+      undefined,
       my_encryption_secret_key,
       my_signature_secret_key,
       receiver_public_key,
@@ -1580,179 +1578,6 @@ export class ShinkaiMessageBuilderWrapper {
     return message;
   }
 
-  static getWorkflowSearch(
-    my_encryption_secret_key: string,
-    my_signature_secret_key: string,
-    receiver_public_key: string,
-    search: string,
-    sender: string,
-    sender_subidentity: string,
-    receiver: string,
-    receiver_subidentity: string,
-  ): string {
-    const body = JSON.stringify(search);
-
-    const builder = new ShinkaiMessageBuilderWrapper(
-      my_encryption_secret_key,
-      my_signature_secret_key,
-      receiver_public_key,
-    );
-
-    builder.message_raw_content(body);
-    builder.message_schema_type(MessageSchemaType.SearchWorkflows.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
-    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
-    builder.body_encryption('DiffieHellmanChaChaPoly1305');
-
-    const message = builder.build_to_string();
-    return message;
-  }
-  static getWorkflowList(
-    my_encryption_secret_key: string,
-    my_signature_secret_key: string,
-    receiver_public_key: string,
-    sender: string,
-    sender_subidentity: string,
-    receiver: string,
-    receiver_subidentity: string,
-  ): string {
-    const body = JSON.stringify('');
-
-    const builder = new ShinkaiMessageBuilderWrapper(
-      my_encryption_secret_key,
-      my_signature_secret_key,
-      receiver_public_key,
-    );
-
-    builder.message_raw_content(body);
-    builder.message_schema_type(MessageSchemaType.ListWorkflows.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
-    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
-    builder.body_encryption('DiffieHellmanChaChaPoly1305');
-
-    const message = builder.build_to_string();
-    return message;
-  }
-
-  static createWorkflow(
-    my_encryption_secret_key: string,
-    my_signature_secret_key: string,
-    receiver_public_key: string,
-    workflowRaw: string,
-    workflowDescription: string,
-    sender: string,
-    sender_subidentity: string,
-    receiver: string,
-    receiver_subidentity: string,
-  ): string {
-    const body = JSON.stringify({
-      workflow_raw: workflowRaw,
-      description: workflowDescription,
-    });
-
-    const builder = new ShinkaiMessageBuilderWrapper(
-      my_encryption_secret_key,
-      my_signature_secret_key,
-      receiver_public_key,
-    );
-
-    builder.message_raw_content(body);
-    builder.message_schema_type(MessageSchemaType.AddWorkflow.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
-    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
-    builder.body_encryption('DiffieHellmanChaChaPoly1305');
-
-    const message = builder.build_to_string();
-    return message;
-  }
-  static updateWorkflow(
-    my_encryption_secret_key: string,
-    my_signature_secret_key: string,
-    receiver_public_key: string,
-    workflowRaw: string,
-    workflowDescription: string,
-    sender: string,
-    sender_subidentity: string,
-    receiver: string,
-    receiver_subidentity: string,
-  ): string {
-    const body = JSON.stringify({
-      workflow_raw: workflowRaw,
-      description: workflowDescription,
-    });
-
-    const builder = new ShinkaiMessageBuilderWrapper(
-      my_encryption_secret_key,
-      my_signature_secret_key,
-      receiver_public_key,
-    );
-
-    builder.message_raw_content(body);
-    builder.message_schema_type(MessageSchemaType.UpdateWorkflow.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
-    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
-    builder.body_encryption('DiffieHellmanChaChaPoly1305');
-
-    const message = builder.build_to_string();
-    return message;
-  }
-  static removeWorkflow(
-    my_encryption_secret_key: string,
-    my_signature_secret_key: string,
-    receiver_public_key: string,
-    workflow_key: string,
-    sender: string,
-    sender_subidentity: string,
-    receiver: string,
-    receiver_subidentity: string,
-  ): string {
-    const workflowName = workflow_key.split(':::')[0];
-    const workflowVersion = workflow_key.split(':::')[1];
-    const body = JSON.stringify({
-      name: workflowName,
-      version: workflowVersion,
-    });
-
-    const builder = new ShinkaiMessageBuilderWrapper(
-      my_encryption_secret_key,
-      my_signature_secret_key,
-      receiver_public_key,
-    );
-
-    builder.message_raw_content(body);
-    builder.message_schema_type(MessageSchemaType.RemoveWorkflow.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      '',
-      'None',
-    );
-    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
-    builder.body_encryption('DiffieHellmanChaChaPoly1305');
-
-    const message = builder.build_to_string();
-    return message;
-  }
   static getUserSheets(
     my_encryption_secret_key: string,
     my_signature_secret_key: string,

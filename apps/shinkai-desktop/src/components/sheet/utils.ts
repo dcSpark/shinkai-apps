@@ -46,18 +46,6 @@ export const getAgentId = (columnBehavior?: ColumnBehavior): string => {
   return '';
 };
 
-export const getWorkflowKey = (
-  columnBehavior?: ColumnBehavior,
-): string | undefined => {
-  if (
-    typeof columnBehavior === 'object' &&
-    ColumnType.LLMCall in columnBehavior
-  ) {
-    return (Object.values(columnBehavior)[0] as LLMCallPayload)?.workflow_name;
-  }
-  return undefined;
-};
-
 export const getUploadFilesId = (columnBehavior?: ColumnBehavior): string => {
   if (
     typeof columnBehavior === 'object' &&

@@ -50,12 +50,6 @@ export enum MessageSchemaType {
   // ws
   WSMessage = 'WSMessage',
   GetLastNotifications = 'GetLastNotifications',
-  // workflows
-  SearchWorkflows = 'SearchWorkflows',
-  ListWorkflows = 'ListWorkflows',
-  AddWorkflow = 'AddWorkflow',
-  UpdateWorkflow = 'UpdateWorkflow',
-  RemoveWorkflow = 'RemoveWorkflow',
   // sheet
   UserSheets = 'UserSheets',
   SetColumn = 'SetColumn',
@@ -312,27 +306,6 @@ export interface APIAddAgentRequest {
   agent: SerializedLLMProvider;
 }
 
-export type WorkflowRaw = {
-  name: string;
-  version: string;
-  // steps: Vec<Step>;
-  raw: string;
-  description?: string;
-  author: string;
-  sticky: boolean;
-};
-export type Workflow = {
-  author: string;
-  config?: string;
-  description: string;
-  enabled: boolean;
-  formatted_tool_summary_for_ui: string;
-  name: string;
-  tool_router_key: string;
-  tool_type: ShinkaiToolType;
-  version: string;
-};
-
 export type ToolConfig = {
   BasicConfig: {
     description: string;
@@ -340,10 +313,6 @@ export type ToolConfig = {
     key_value: string | null;
     required: boolean;
   };
-};
-export type WorkflowShinkaiTool = {
-  workflow: WorkflowRaw;
-  embedding: Embedding[];
 };
 export type ToolArgument = {
   name: string;
@@ -376,8 +345,8 @@ export type JSShinkaiTool = {
   embedding?: Embedding;
   result: JSToolResult;
 };
-export type ShinkaiToolType = 'JS' | 'Workflow';
-export type ShinkaiTool = WorkflowShinkaiTool | JSShinkaiTool;
+export type ShinkaiToolType = 'JS';
+export type ShinkaiTool = JSShinkaiTool;
 
 export enum ColumnType {
   Text = 'Text',
@@ -394,8 +363,6 @@ export enum ColumnStatus {
 }
 export type LLMCallPayload = {
   input: string;
-  workflow?: WorkflowRaw;
-  workflow_name?: string;
   llm_provider_name: string;
   input_hash?: string;
 };

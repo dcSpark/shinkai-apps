@@ -12,8 +12,6 @@ export const sendMessageToJob = async ({
   message,
   parent,
   files,
-  workflowCode,
-  workflowName,
 }: SendMessageToJobInput) => {
   let folderId = '';
   if (files && files.length > 0) {
@@ -22,9 +20,7 @@ export const sendMessageToJob = async ({
 
   return await sendMessageToJobApi(nodeAddress, token, {
     job_message: {
-      workflow_code: workflowCode,
       content: message,
-      workflow_name: workflowName,
       job_id: jobId,
       files_inbox: folderId,
       parent: parent,

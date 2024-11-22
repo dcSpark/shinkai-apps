@@ -53,7 +53,6 @@ import ArtifactPreview from '../../components/chat/artifact-preview';
 import { useChatStore } from '../../components/chat/context/chat-context';
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
 import { usePromptSelectionStore } from '../../components/prompt/context/prompt-selection-context';
-import { useWorkflowSelectionStore } from '../../components/workflow/context/workflow-selection-context';
 import { handleSendNotification } from '../../lib/notifications';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -434,9 +433,6 @@ const ChatSidebar = () => {
   const setSelectedArtifact = useChatStore(
     (state) => state.setSelectedArtifact,
   );
-  const setWorkflowSelected = useWorkflowSelectionStore(
-    (state) => state.setWorkflowSelected,
-  );
   const setPromptSelected = usePromptSelectionStore(
     (state) => state.setPromptSelected,
   );
@@ -470,7 +466,6 @@ const ChatSidebar = () => {
               className="h-8 w-8"
               onClick={() => {
                 resetJobScope();
-                setWorkflowSelected(undefined);
                 setPromptSelected(undefined);
                 setSelectedArtifact(null);
 

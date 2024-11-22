@@ -1,14 +1,5 @@
 import { JobMessage } from '../jobs/types';
 
-export type WorkflowRaw = {
-  name: string;
-  version: string;
-  steps?: [];
-  raw: string;
-  description?: string;
-  author: string;
-  sticky: boolean;
-};
 export type ShinkaiToolHeader = {
   author: string;
   config?: string;
@@ -21,9 +12,6 @@ export type ShinkaiToolHeader = {
   version: string;
 };
 
-export type ListAllWorkflowsResponse = ShinkaiToolHeader[];
-export type SearchWorkflowsResponse = ShinkaiToolHeader[];
-
 export type ToolConfig = {
   BasicConfig: {
     description: string;
@@ -32,10 +20,7 @@ export type ToolConfig = {
     required: boolean;
   };
 };
-export type WorkflowShinkaiTool = {
-  workflow: WorkflowRaw;
-  embedding: Embedding[];
-};
+
 export type ToolArgument = {
   name: string;
   arg_type: string;
@@ -68,8 +53,8 @@ export type JSShinkaiTool = {
   embedding?: Embedding;
   result: JSToolResult;
 };
-export type ShinkaiToolType = 'JS' | 'Workflow';
-export type ShinkaiTool = WorkflowShinkaiTool | JSShinkaiTool;
+export type ShinkaiToolType = 'JS';
+export type ShinkaiTool = JSShinkaiTool;
 
 export type GetToolResponse = {
   content: [ShinkaiTool, boolean];
@@ -77,14 +62,6 @@ export type GetToolResponse = {
 };
 export type GetToolsResponse = ShinkaiToolHeader[];
 
-export type AddWorkflowRequest = {
-  workflow_raw: string;
-  description: string;
-};
-export type AddWorkflowResponse = {
-  status: string;
-  message: string;
-};
 export type AddToolRequest = {
   type: ShinkaiToolType;
   content: [ShinkaiTool, boolean];

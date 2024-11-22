@@ -53,7 +53,6 @@ export default {
       aiTasks: 'AI Tasks',
       vectorFs: 'My AI Files Explorer',
       vectorSearch: 'AI Files Content Search',
-      workflowPlayground: 'Workflow Playground',
       subscriptions: 'Browse Subscriptions',
       mySubscriptions: 'My Subscriptions',
       agents: 'AIs',
@@ -89,7 +88,6 @@ export default {
     form: {
       message: 'Tell us the job you want to do',
       messagePlaceholder: 'Eg: Explain me how internet works...',
-      workflows: 'Workflows',
       selectAI: 'Select your AI',
       setContext: 'Set Chat Context',
       setContextText:
@@ -543,9 +541,6 @@ export default {
       updateAgent: 'Error updating AI',
       deleteAgent: 'Error deleting AI',
     },
-  },
-  workflowPlayground: {
-    label: 'Workflow Playground',
   },
   ollama: {
     version: 'Ollama Version',

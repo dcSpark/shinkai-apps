@@ -59,8 +59,7 @@
       "selectAI": "AI'nizi Seçin",
       "selectedText": "Seçtiğiniz metin",
       "setContext": "Sohbet Bağlamını Ayarlayın",
-      "setContextText": "Sohbetiniz sırasında AI'nizin kullanması için dosya veya klasör ekleyin.",
-      "workflows": "İş Akışları"
+      "setContextText": "Sohbetiniz sırasında AI'nizin kullanması için dosya veya klasör ekleyin."
     },
     "limitReachedDescription": "Bu model/ajan için ay boyunca tüm sorgularınızı kullandınız. Lütfen başka bir ajan ile yeni bir sohbet başlatın.",
     "limitReachedTitle": "Limit Aşıldı",
@@ -226,8 +225,7 @@
       "settings": "Ayarlar",
       "subscriptions": "Abonelikleri Gözden Geçir",
       "vectorFs": "Yapay Zeka Dosya Gezgini",
-      "vectorSearch": "Yapay Zeka Dosya İçeriği Arama",
-      "workflowPlayground": "İş Akışı Oyun Alanı"
+      "vectorSearch": "Yapay Zeka Dosya İçeriği Arama"
     },
     "sidebar": {
       "toggle": "Yan Çubuğunu Aç/Kapat"
@@ -568,8 +566,5 @@
       "folderShared": "Klasör başarıyla paylaşıldı",
       "folderUnshared": "Klasörün paylaşımı başarıyla kaldırıldı"
     }
-  },
-  "workflowPlayground": {
-    "label": "İş Akışı Oyun Alanı"
   }
 }

@@ -245,7 +245,6 @@ const ChatConversation = () => {
   const editAndRegenerateMessage = async (
     content: string,
     parentHash: string,
-    workflowName?: string,
   ) => {
     if (!auth) return;
     const decodedInboxId = decodeURIComponent(inboxId);
@@ -257,7 +256,6 @@ const ChatConversation = () => {
       jobId,
       message: content,
       parent: parentHash,
-      workflowName,
     });
   };
 

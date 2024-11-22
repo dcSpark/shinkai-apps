@@ -95,8 +95,6 @@ export type JobMessageRequest = {
     content: string;
     files_inbox: string;
     parent: string | null;
-    workflow_code?: string;
-    workflow_name?: string;
   };
 };
 export type JobMessageResponse = {
@@ -124,14 +122,12 @@ export type NodeApiData = {
 
 export type JobMessage = {
   job_id: string;
+  callback: null;
   content: string;
   files_inbox: string;
-  callback?: null;
-  parent?: string;
-  sheet_job_data?: string;
-  workflow_code?: string;
-  workflow_name?: string;
-  metadata?: {
+  parent: string;
+  sheet_job_data: null;
+  metadata: null | {
     tps: null;
     duration_ms: string;
     function_calls: {

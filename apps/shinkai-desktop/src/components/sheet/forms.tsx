@@ -6,7 +6,6 @@ export const setColumnFormSchema = z
     columnName: z.string().min(1),
     columnType: z.nativeEnum(ColumnType),
     agentId: z.string().optional(),
-    workflowKey: z.string().optional(),
     formula: z.string().optional(),
     promptInput: z.string().optional(),
   })
