@@ -7,7 +7,7 @@ import 'prism-react-editor/search.css';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { ReloadIcon } from '@radix-ui/react-icons';
-import SchemaForm from '@rjsf/core';
+import { FormProps } from '@rjsf/core';
 import { RJSFSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
@@ -32,18 +32,17 @@ import {
   DialogTrigger,
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
   Input,
+  JsonForm,
   MarkdownPreview,
   MessageList,
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-  Switch,
   Tabs,
   TabsContent,
   TabsList,
@@ -58,6 +57,7 @@ import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import JsonView from '@uiw/react-json-view';
 import { githubLightTheme } from '@uiw/react-json-view/githubLight';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowUpRight,
   Loader2,
@@ -66,19 +66,15 @@ import {
   XCircle,
   XIcon,
 } from 'lucide-react';
-import { Editor } from 'prism-react-editor';
-import { BasicSetup } from 'prism-react-editor/setups';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import {
-  AIModelSelector,
-  // AiUpdateSelectionActionBar,
-} from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
+import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
+import ToolCodeEditor from '../components/playground-tool/tool-code-editor';
 import config from '../config';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
@@ -94,27 +90,32 @@ const metadataFormSchema = z.object({
   description: z.string().min(1, 'Description is required'),
   author: z.string().min(1, 'Author is required'),
   keywords: z.array(z.string()),
-  configurations: z.record(z.any()),
-  parameters: z.record(z.any()),
 });
 type MetadataFormSchema = z.infer<typeof metadataFormSchema>;
 
 export type CreateToolCodeFormSchema = z.infer<typeof createToolCodeFormSchema>;
 
-function ToolErrorFallback({ error }: { error: Error }) {
+function ToolErrorFallback({
+  error,
+  resetErrorBoundary,
+}: {
+  error: Error;
+  resetErrorBoundary: (...args: any[]) => void;
+}) {
   return (
     <div
-      className="flex flex-col items-center justify-center px-8 text-xs text-red-400"
+      className="flex flex-col items-center justify-center px-8 py-4 text-xs text-red-400"
       role="alert"
     >
-      <p>Something went wrong. Try refreshing the app.</p>
+      <p>Something went wrong. Try renegerating tool metadata.</p>
       <pre className="mb-4 whitespace-pre-wrap text-balance break-all text-center">
         {error.message}
       </pre>
       <Button
         className="h-[30px]"
-        onClick={() => window.location.reload()}
+        onClick={() => resetErrorBoundary()}
         size="auto"
+        type="button"
         variant="outline"
       >
         Try again
@@ -133,7 +134,11 @@ function EditToolPage() {
   const auth = useAuth((state) => state.auth);
   const { toolRouterKey } = useParams();
   console.log('toolRouterKey', toolRouterKey);
-  const { data: playgroundTool } = useGetPlaygroundTool({
+  const {
+    data: playgroundTool,
+    isPending: isPlaygroundToolPending,
+    isSuccess: isPlaygroundToolSuccess,
+  } = useGetPlaygroundTool({
     token: auth?.api_v2_key ?? '',
     nodeAddress: auth?.node_address ?? '',
     toolRouterKey: toolRouterKey ?? '',
@@ -142,13 +147,19 @@ function EditToolPage() {
   const { t } = useTranslation();
   const toolResultBoxRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const [toolCode, setToolCode] = useState<string>('');
+  const [formData, setFormData] = useState(null);
 
+  const [toolCode, setToolCode] = useState<string>('');
+  const baseToolCodeRef = useRef<string>('');
+  const forceGenerateMetadata = useRef(false);
+  const [isDirty, setIsDirty] = useState(false);
   const [toolResult, setToolResult] = useState<object | null>(null);
   const [chatInboxId, setChatInboxId] = useState<string | null>(null);
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<string | null>(
     null,
   );
+
+  const [resetCounter, setResetCounter] = useState(0);
 
   const form = useForm<CreateToolCodeFormSchema>({
     resolver: zodResolver(createToolCodeFormSchema),
@@ -192,6 +203,7 @@ function EditToolPage() {
     onError: (error) => {
       toast.error('Failed to run tool', {
         description: error.response?.data?.message ?? error.message,
+        position: 'top-right',
       });
     },
   });
@@ -208,105 +220,98 @@ function EditToolPage() {
   );
   const { mutateAsync: createToolCode } = useCreateToolCode();
 
-  const metadata = metadataData?.pages?.at(-1)?.at(-1);
+  const regenerateToolMetadata = useCallback(async () => {
+    return await createToolMetadata(
+      {
+        nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
+        jobId: extractJobIdFromInbox(chatInboxId ?? '') ?? '',
+      },
+      {
+        onSuccess: (data) => {
+          setChatInboxIdMetadata(buildInboxIdFromJobId(data.job_id));
+        },
+      },
+    );
+  }, [auth?.api_v2_key, auth?.node_address, chatInboxId, createToolMetadata]);
 
-  const metadataValue = useMemo(() => {
+  const {
+    metadataMessageContent,
+    isMetadataGenerationPending,
+    isMetadataGenerationSuccess,
+    isMetadataGenerationIdle,
+    metadataGenerationData,
+  } = useMemo(() => {
+    if (playgroundTool) {
+      return {
+        metadataMessageContent: '',
+        isMetadataGenerationPending: isPlaygroundToolPending,
+        isMetadataGenerationSuccess: isPlaygroundToolSuccess,
+        isMetadataGenerationIdle: false,
+        metadataGenerationData: playgroundTool.metadata,
+      };
+    }
+
     const metadata = metadataData?.pages?.at(-1)?.at(-1);
-
-    if (!metadata) return null;
-
-    if (metadata.role === 'assistant' && metadata.status.type === 'complete') {
+    const isMetadataGenerationIdle = metadata == null;
+    const isMetadataGenerationPending =
+      metadata?.role === 'assistant' && metadata?.status.type === 'running';
+    const isMetadataGenerationSuccess =
+      metadata?.role === 'assistant' && metadata?.status.type === 'complete';
+    let metadataGenerationData = null;
+    if (isMetadataGenerationSuccess) {
       const jsonCodeMatch = metadata.content.match(/```json\n([\s\S]*?)\n```/);
       if (jsonCodeMatch) {
         try {
           const parsedJson = JSON.parse(jsonCodeMatch[1].trim());
-          return parsedJson as ToolMetadata;
+          metadataGenerationData = parsedJson as ToolMetadata;
         } catch (error) {
           toast.error(
             'Failed to generate preview (json). Try regenerating the preview again.',
             {
+              position: 'top-right',
               description: (error as Error)?.message,
               action: {
                 label: 'Regenerate',
-                onClick: async () => {
-                  await createToolMetadata(
-                    {
-                      nodeAddress: auth?.node_address ?? '',
-                      token: auth?.api_v2_key ?? '',
-                      jobId: extractJobIdFromInbox(chatInboxId ?? '') ?? '',
-                    },
-                    {
-                      onSuccess: (data) => {
-                        setChatInboxIdMetadata(
-                          buildInboxIdFromJobId(data.job_id),
-                        );
-                      },
-                    },
-                  );
-                },
+                onClick: regenerateToolMetadata,
               },
             },
           );
-          return null;
         }
       } else {
         toast.error('Failed to generate preview.', {
+          position: 'top-right',
           description: 'No JSON code found. Try to generate preview again',
           action: {
             label: 'Regenerate',
-            onClick: async () => {
-              await createToolMetadata(
-                {
-                  nodeAddress: auth?.node_address ?? '',
-                  token: auth?.api_v2_key ?? '',
-                  jobId: extractJobIdFromInbox(chatInboxId ?? ''),
-                },
-                {
-                  onSuccess: (data) => {
-                    setChatInboxIdMetadata(buildInboxIdFromJobId(data.job_id));
-                  },
-                },
-              );
-            },
+            onClick: regenerateToolMetadata,
           },
         });
-        return null;
       }
     }
+
+    return {
+      metadataMessageContent: metadata?.content,
+      isMetadataGenerationPending,
+      isMetadataGenerationSuccess,
+      isMetadataGenerationIdle,
+      metadataGenerationData,
+    };
   }, [
-    auth?.api_v2_key,
-    auth?.node_address,
-    createToolMetadata,
-    defaultAgentId,
+    isPlaygroundToolPending,
+    isPlaygroundToolSuccess,
     metadataData?.pages,
-    toolCode,
+    playgroundTool,
+    regenerateToolMetadata,
   ]);
 
   const metadataForm = useForm<MetadataFormSchema>({
     resolver: zodResolver(metadataFormSchema),
     defaultValues: {
-      name: metadataValue?.name,
-      description: metadataValue?.description,
+      name: metadataGenerationData?.name,
+      description: metadataGenerationData?.description,
       author: auth?.shinkai_identity ?? '',
-      keywords: metadataValue?.keywords ?? [],
-      configurations: Object.keys(
-        metadataValue?.configurations?.properties ?? {},
-      ).reduce(
-        (acc, key) => ({
-          ...acc,
-          [key]: metadataValue?.configurations.properties[key] || '',
-        }),
-        {},
-      ),
-      parameters: Object.keys(
-        metadataValue?.parameters?.properties ?? {},
-      ).reduce(
-        (acc, key) => ({
-          ...acc,
-          [key]: metadataValue?.parameters.properties[key] || '',
-        }),
-        {},
-      ),
+      keywords: metadataGenerationData?.keywords ?? [],
     },
   });
 
@@ -349,10 +354,10 @@ function EditToolPage() {
       lastMessage?.role === 'assistant' &&
       lastMessage?.status.type === 'complete'
     ) {
-      setToolCode(extractTypeScriptCode(lastMessage?.content) ?? '');
-      setTimeout(() => {
-        setTab('preview');
-      }, 2000);
+      const generatedCode = extractTypeScriptCode(lastMessage?.content) ?? '';
+      baseToolCodeRef.current = generatedCode;
+      setToolCode(generatedCode);
+
       return;
     }
   }, [data?.pages]);
@@ -372,7 +377,7 @@ function EditToolPage() {
   }, [data?.pages, chatInboxId]);
 
   useEffect(() => {
-    if (!toolCode || !metadataValue) return;
+    if (!toolCode || !forceGenerateMetadata.current) return;
     const run = async () => {
       await createToolMetadata(
         {
@@ -383,6 +388,7 @@ function EditToolPage() {
         {
           onSuccess: (data) => {
             setChatInboxIdMetadata(buildInboxIdFromJobId(data.job_id));
+            forceGenerateMetadata.current = false;
           },
         },
       );
@@ -397,16 +403,15 @@ function EditToolPage() {
   ]);
 
   useEffect(() => {
-    if (!metadataValue) return;
-    metadataForm.setValue('name', metadataValue?.name);
-    metadataForm.setValue('description', metadataValue?.description);
+    if (!metadataGenerationData) return;
+    metadataForm.setValue('name', metadataGenerationData?.name);
+    metadataForm.setValue('description', metadataGenerationData?.description);
     metadataForm.setValue('author', auth?.shinkai_identity ?? '');
-    metadataForm.setValue('keywords', metadataValue?.keywords);
-  }, [auth?.shinkai_identity, metadataForm, metadataValue]);
+    metadataForm.setValue('keywords', metadataGenerationData?.keywords);
+  }, [auth?.shinkai_identity, metadataForm, metadataGenerationData]);
 
   const onSubmit = async (data: CreateToolCodeFormSchema) => {
     if (!auth) return;
-
     await createToolCode(
       {
         nodeAddress: auth.node_address,
@@ -419,31 +424,49 @@ function EditToolPage() {
           setChatInboxId(data.inbox);
           setTab('code');
           setToolCode('');
+          forceGenerateMetadata.current = true;
+          baseToolCodeRef.current = '';
           setToolResult(null);
         },
       },
     );
+
     form.setValue('message', '');
     return;
   };
 
-  const handleSubmit = async (data: MetadataFormSchema) => {
-    if (Object.keys(metadataForm.formState.errors).length > 0) {
-      setTab('preview');
-      toast.error('Please fill in the required fields', {
-        description: Object.keys(metadataForm.formState.errors).join('\n'),
-      });
-      return;
-    }
-
-    setTab('code');
+  const handleRunCode: FormProps['onSubmit'] = async (data) => {
+    const params = data.formData;
     await executeCode({
       code: toolCode,
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
-      params: Object.keys(data.parameters.properties).map((property) => ({
-        [property]: data.parameters.properties[property].value,
-      })),
+      params,
+    });
+  };
+
+  const handleSaveTool = async () => {
+    if (!isCodeExecutionSuccess) {
+      setTab('code');
+      toast.error('Please run your tool before saving', {
+        position: 'top-right',
+      });
+      return;
+    }
+
+    if (!chatInboxId) return;
+
+    await saveToolCode({
+      code: toolCode,
+      metadata: {
+        ...metadataGenerationData,
+        name: metadataForm.getValues('name'),
+        description: metadataForm.getValues('description'),
+        author: auth?.shinkai_identity ?? '',
+      },
+      jobId: extractJobIdFromInbox(chatInboxId),
+      token: auth?.api_v2_key ?? '',
+      nodeAddress: auth?.node_address ?? '',
     });
   };
 
@@ -453,7 +476,7 @@ function EditToolPage() {
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel className="flex h-full flex-col px-3 py-4 pt-6">
             <h1 className="py-2 text-lg font-semibold tracking-tight">
-              Playground Tool
+              Playground
             </h1>
             <div
               className={cn(
@@ -516,16 +539,12 @@ function EditToolPage() {
                 className="space-y-2"
                 onSubmit={form.handleSubmit(onSubmit)}
               >
-                {/*{chatInboxId ? (*/}
-                {/*  <AiUpdateSelectionActionBar inboxId={chatInboxId} />*/}
-                {/*) : (*/}
                 <AIModelSelector
                   onValueChange={(value) => {
                     form.setValue('llmProviderId', value);
                   }}
                   value={form.watch('llmProviderId')}
                 />
-                {/*)}*/}
                 <div className="flex shrink-0 items-center gap-1">
                   <FormField
                     control={form.control}
@@ -544,7 +563,11 @@ function EditToolPage() {
 
                   <Button
                     className="aspect-square h-[90%] shrink-0 rounded-lg p-2"
-                    disabled={isLoadingMessage}
+                    disabled={
+                      isLoadingMessage ||
+                      isToolGenerating ||
+                      isMetadataGenerationPending
+                    }
                     size="auto"
                     type="submit"
                     variant="default"
@@ -587,22 +610,22 @@ function EditToolPage() {
                         Metadata
                       </TabsTrigger>
                     </TabsList>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div>
                       <Button
                         className="text-gray-80 h-[30px] rounded-md text-xs"
                         disabled={
                           !toolCode ||
-                          !metadataValue ||
+                          !metadataGenerationData ||
                           // !isCodeExecutionSuccess ||
                           !chatInboxId
                         }
                         onClick={async () => {
-                          if (!chatInboxId || !metadataValue) return;
+                          if (!chatInboxId || !metadataGenerationData) return;
 
                           await saveToolCode({
                             code: toolCode,
                             metadata: {
-                              ...metadataValue,
+                              ...metadataGenerationData,
                               name: metadataForm.getValues('name'),
                               description:
                                 metadataForm.getValues('description'),
@@ -617,33 +640,20 @@ function EditToolPage() {
                         variant="outline"
                       >
                         <Save className="mr-2 h-4 w-4" />
-                        Save
-                      </Button>
-                      <Button
-                        className="h-[30px] rounded-md text-xs"
-                        disabled={!toolCode || !metadataValue}
-                        isLoading={isExecutingCode}
-                        onClick={() => {
-                          metadataForm.handleSubmit(handleSubmit)();
-                        }}
-                        size="sm"
-                      >
-                        <Play className="mr-2 h-4 w-4" />
-                        Run tool
+                        Save Tool
                       </Button>
                     </div>
                   </div>
 
                   <TabsContent
-                    className="mt-1 h-full space-y-4 overflow-y-auto whitespace-pre-line break-words py-4 pr-3"
+                    className="mt-1 h-full space-y-4 overflow-y-auto whitespace-pre-line break-words py-4 pb-8 pr-3"
                     value="code"
                   >
                     <div className="flex min-h-[250px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
                       <div className="flex items-center justify-between gap-2">
                         <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
-                          <h2 className="flex gap-2 font-mono font-semibold text-gray-50">
+                          <h2 className="flex items-center gap-2 font-mono font-semibold text-gray-50">
                             Code{' '}
-                            <span className="size-1 shrink-0 text-orange-500" />
                           </h2>
                           {toolCode && (
                             <p>
@@ -653,23 +663,23 @@ function EditToolPage() {
                             </p>
                           )}
                         </div>
-                        {toolCode && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div>
-                                <CopyToClipboardIcon
-                                  className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"
-                                  string={toolCode ?? ''}
-                                />
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipPortal>
-                              <TooltipContent className="flex flex-col items-center gap-1">
-                                <p>Copy Code</p>
-                              </TooltipContent>
-                            </TooltipPortal>
-                          </Tooltip>
-                        )}
+                        {/*{toolCode && (*/}
+                        {/*  <Tooltip>*/}
+                        {/*    <TooltipTrigger asChild>*/}
+                        {/*      <div>*/}
+                        {/*        <CopyToClipboardIcon*/}
+                        {/*          className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"*/}
+                        {/*          string={toolCode ?? ''}*/}
+                        {/*        />*/}
+                        {/*      </div>*/}
+                        {/*    </TooltipTrigger>*/}
+                        {/*    <TooltipPortal>*/}
+                        {/*      <TooltipContent className="flex flex-col items-center gap-1">*/}
+                        {/*        <p>Copy Code</p>*/}
+                        {/*      </TooltipContent>*/}
+                        {/*    </TooltipPortal>*/}
+                        {/*  </Tooltip>*/}
+                        {/*)}*/}
                       </div>
                       <div className="size-full">
                         {isToolGenerating && (
@@ -688,51 +698,144 @@ function EditToolPage() {
                           )}
                         {isToolGeneratedSuccess && toolCode && (
                           <form
-                            className="space-y-3"
+                            key={resetCounter}
                             onSubmit={(e) => {
                               e.preventDefault();
                               const data = new FormData(e.currentTarget);
                               const currentEditorValue = data.get('editor');
-                              setToolCode(currentEditorValue as string);
+                              setResetCounter((prev) => prev + 1);
+                              setIsDirty(false);
+                              baseToolCodeRef.current =
+                                currentEditorValue as string;
+                              forceGenerateMetadata.current = true;
+                              setTimeout(() => {
+                                setToolCode(currentEditorValue as string);
+                              }, 0);
                             }}
                           >
-                            <Editor
-                              language="ts"
-                              style={{ fontSize: '0.875rem' }}
-                              textareaProps={{
-                                placeholder: 'Enter your code',
-                                name: 'editor',
-                                'aria-label': 'Code editor',
-                              }}
-                              value={toolCode}
-                            >
-                              {(editor) => <BasicSetup editor={editor} />}
-                            </Editor>
-
-                            <div className="flex items-center justify-end gap-2">
-                              <Button
-                                className="!h-[32px] min-w-[80px] rounded-xl"
-                                onClick={async () => {
-                                  // setToolCode(toolCode);
-                                }}
-                                size="sm"
-                                type="reset"
-                                variant="outline"
-                              >
-                                Reset
-                              </Button>
-                              <Button
-                                className="!h-[32px] min-w-[80px] rounded-xl"
-                                size="sm"
-                                type="submit"
-                                variant="outline"
-                              >
-                                Apply Changes
-                              </Button>
+                            <div className="flex h-[45px] items-center justify-between rounded-t-lg border-b border-gray-400 bg-[#0d1117] px-3 py-2">
+                              <span className="inline-flex items-center gap-2 pl-3 text-xs font-medium text-gray-50">
+                                {' '}
+                                TypeScript
+                                {isDirty && (
+                                  <span className="size-2 shrink-0 rounded-full bg-orange-500" />
+                                )}
+                              </span>
+                              <AnimatePresence>
+                                {isDirty && (
+                                  <motion.div
+                                    animate={{ opacity: 1 }}
+                                    className="flex items-center justify-end gap-2"
+                                    exit={{ opacity: 0 }}
+                                    initial={{ opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                  >
+                                    <Button
+                                      className="!h-[32px] min-w-[80px] rounded-xl"
+                                      onClick={() => {
+                                        setIsDirty(false);
+                                        setResetCounter((prev) => prev + 1);
+                                        forceGenerateMetadata.current = true;
+                                        setTimeout(() => {
+                                          setToolCode(baseToolCodeRef.current);
+                                        }, 0);
+                                      }}
+                                      size="sm"
+                                      type="reset"
+                                      variant="outline"
+                                    >
+                                      Reset
+                                    </Button>
+                                    <Button
+                                      className="!h-[28px] min-w-[80px] rounded-xl"
+                                      size="sm"
+                                      type="submit"
+                                      variant="outline"
+                                    >
+                                      Apply Changes
+                                    </Button>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
                             </div>
+                            <ToolCodeEditor
+                              code={toolCode}
+                              language="ts"
+                              name="editor"
+                              onUpdate={(currentCode) => {
+                                setIsDirty(
+                                  currentCode !== baseToolCodeRef.current,
+                                );
+                              }}
+                            />
                           </form>
                         )}
                       </div>
+                    </div>
+
+                    <div className="relative flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
+                      <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
+                        <h2 className="flex font-mono font-semibold text-gray-50">
+                          Run
+                        </h2>
+                        {metadataGenerationData && (
+                          <p>Fill in the options above to run your tool.</p>
+                        )}
+                      </div>
+                      {isMetadataGenerationPending && (
+                        <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
+                          <Loader2 className="shrink-0 animate-spin" />
+                          Generating...
+                        </div>
+                      )}
+                      {isMetadataGenerationSuccess && (
+                        <div className="text-gray-80 text-xs">
+                          <ErrorBoundary
+                            FallbackComponent={ToolErrorFallback}
+                            onReset={regenerateToolMetadata}
+                          >
+                            <JsonForm
+                              className="py-4"
+                              formData={formData}
+                              noHtml5Validate={true}
+                              onChange={(e) => setFormData(e.formData)}
+                              onSubmit={handleRunCode}
+                              schema={
+                                metadataGenerationData?.parameters as RJSFSchema
+                              }
+                              uiSchema={{
+                                'ui:submitButtonOptions': {
+                                  props: {
+                                    disabled: isExecutingCode,
+                                    isLoading: isExecutingCode,
+                                  },
+                                  // @ts-expect-error string type
+                                  submitText: (
+                                    <div
+                                      className={
+                                        'inline-flex items-center justify-center gap-2 pl-2 pr-3'
+                                      }
+                                    >
+                                      {!isExecutingCode && (
+                                        <Play className="h-4 w-4" />
+                                      )}
+                                      Run
+                                    </div>
+                                  ),
+                                },
+                              }}
+                              validator={validator}
+                            />
+                          </ErrorBoundary>
+                        </div>
+                      )}
+                      {isMetadataGenerationIdle && (
+                        <div>
+                          <p className="text-gray-80 py-4 pt-6 text-center text-xs">
+                            No metadata generated yet.
+                          </p>
+                        </div>
+                      )}
                     </div>
 
                     <div
@@ -779,176 +882,133 @@ function EditToolPage() {
                     className="mt-1 h-full space-y-4 overflow-y-auto whitespace-pre-line break-words py-4 pr-3"
                     value="preview"
                   >
-                    <SchemaForm
-                      schema={{
-                        type: 'object',
-                        properties: {
-                          url: { type: 'string' },
-                        },
-                        required: ['url'],
-                      }}
-                      validator={validator}
-                    />
                     <div className="flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
                       <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
                         <h2 className="flex font-mono font-semibold text-gray-50">
                           Metadata
                         </h2>
-                        {metadataValue && (
+                        {metadataGenerationData && (
                           <p>Fill in the options above to run your tool.</p>
                         )}
                       </div>
-                      {metadata?.role === 'assistant' &&
-                        metadata?.status.type === 'running' && (
-                          <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-                            <Loader2 className="shrink-0 animate-spin" />
-                            Generating Metadata...
-                          </div>
-                        )}
-                      <ErrorBoundary FallbackComponent={ToolErrorFallback}>
-                        {metadata?.role === 'assistant' &&
-                          metadata?.status.type === 'complete' && (
-                            <div className="text-gray-80 relative text-xs">
-                              {config.isDev && (
-                                <div className="absolute -top-8 right-0 flex items-center gap-2">
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Button
-                                        className="size-[30px] p-2"
-                                        onClick={async () => {
-                                          await createToolMetadata(
-                                            {
-                                              nodeAddress:
-                                                auth?.node_address ?? '',
-                                              token: auth?.api_v2_key ?? '',
-                                              jobId: extractJobIdFromInbox(
-                                                chatInboxId ?? '',
-                                              ),
-                                            },
-                                            {
-                                              onSuccess: (data) => {
-                                                setChatInboxIdMetadata(
-                                                  buildInboxIdFromJobId(
-                                                    data.job_id,
-                                                  ),
-                                                );
-                                              },
-                                            },
-                                          );
-                                        }}
-                                        size="auto"
-                                        variant="outline"
-                                      >
-                                        <ReloadIcon className="h-4 w-4" />
-                                      </Button>
-                                    </TooltipTrigger>
-                                    <TooltipPortal>
-                                      <TooltipContent className="flex flex-col items-center gap-1">
-                                        <p>Regenerate Metadata</p>
-                                      </TooltipContent>
-                                    </TooltipPortal>
-                                  </Tooltip>
+                      {isMetadataGenerationPending && (
+                        <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
+                          <Loader2 className="shrink-0 animate-spin" />
+                          Generating Metadata...
+                        </div>
+                      )}
+                      <ErrorBoundary
+                        FallbackComponent={ToolErrorFallback}
+                        onReset={regenerateToolMetadata}
+                      >
+                        {isMetadataGenerationSuccess && (
+                          <div className="text-gray-80 relative text-xs">
+                            {config.isDev && (
+                              <div className="absolute -top-8 right-0 flex items-center gap-2">
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      className="size-[30px] p-2"
+                                      onClick={regenerateToolMetadata}
+                                      size="auto"
+                                      variant="outline"
+                                    >
+                                      <ReloadIcon className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipPortal>
+                                    <TooltipContent className="flex flex-col items-center gap-1">
+                                      <p>Regenerate Metadata</p>
+                                    </TooltipContent>
+                                  </TooltipPortal>
+                                </Tooltip>
 
-                                  <Dialog>
-                                    <DialogTrigger asChild>
-                                      <Button
-                                        className="flex h-[30px] items-center gap-1 rounded-md text-xs"
-                                        size="auto"
-                                        variant="outline"
-                                      >
-                                        <ArrowUpRight className="h-4 w-4" />
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      className="flex h-[30px] items-center gap-1 rounded-md text-xs"
+                                      size="auto"
+                                      variant="outline"
+                                    >
+                                      <ArrowUpRight className="h-4 w-4" />
+                                      Details
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="flex max-w-5xl flex-col bg-gray-300 p-5 text-xs">
+                                    <DialogClose className="absolute right-4 top-4">
+                                      <XIcon className="text-gray-80 h-5 w-5" />
+                                    </DialogClose>
+                                    <DialogHeader className="flex justify-between">
+                                      <DialogTitle className="text-left text-sm font-bold">
                                         Details
-                                      </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="flex max-w-5xl flex-col bg-gray-300 p-5 text-xs">
-                                      <DialogClose className="absolute right-4 top-4">
-                                        <XIcon className="text-gray-80 h-5 w-5" />
-                                      </DialogClose>
-                                      <DialogHeader className="flex justify-between">
-                                        <DialogTitle className="text-left text-sm font-bold">
-                                          Details
-                                        </DialogTitle>
-                                      </DialogHeader>
-                                      <div className="grid grid-cols-2 gap-10 space-y-3">
-                                        <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
-                                          <div className="flex h-12 items-center justify-between gap-2 pt-1.5">
-                                            <h2 className="text-gray-80 flex items-center pl-1 font-mono text-xs font-semibold">
-                                              Response
-                                            </h2>
-                                            <Tooltip>
-                                              <TooltipTrigger asChild>
-                                                <div>
-                                                  <CopyToClipboardIcon
-                                                    className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"
-                                                    string={
-                                                      metadata.content ?? ''
-                                                    }
-                                                  />
-                                                </div>
-                                              </TooltipTrigger>
-                                              <TooltipPortal>
-                                                <TooltipContent className="flex flex-col items-center gap-1">
-                                                  <p>Copy Code</p>
-                                                </TooltipContent>
-                                              </TooltipPortal>
-                                            </Tooltip>
-                                          </div>
-                                          <MarkdownPreview
-                                            className="prose-h1:!text-gray-50 prose-h1:!text-sm !text-sm !text-gray-50"
-                                            source={metadata.content}
-                                          />
+                                      </DialogTitle>
+                                    </DialogHeader>
+                                    <div className="grid grid-cols-2 gap-10 space-y-3">
+                                      <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
+                                        <div className="flex h-12 items-center justify-between gap-2 pt-1.5">
+                                          <h2 className="text-gray-80 flex items-center pl-1 font-mono text-xs font-semibold">
+                                            Response
+                                          </h2>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <div>
+                                                <CopyToClipboardIcon
+                                                  className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"
+                                                  string={
+                                                    metadataMessageContent
+                                                  }
+                                                />
+                                              </div>
+                                            </TooltipTrigger>
+                                            <TooltipPortal>
+                                              <TooltipContent className="flex flex-col items-center gap-1">
+                                                <p>Copy Code</p>
+                                              </TooltipContent>
+                                            </TooltipPortal>
+                                          </Tooltip>
                                         </div>
-
-                                        <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
-                                          <div className="text-gray-80 flex-1 items-center gap-1 truncate text-left text-xs">
-                                            View JSON
-                                          </div>
-                                          <JsonView
-                                            displayDataTypes={false}
-                                            displayObjectSize={false}
-                                            enableClipboard={false}
-                                            style={githubLightTheme}
-                                            value={metadataValue ?? {}}
-                                          />
-                                        </div>
+                                        <MarkdownPreview
+                                          className="prose-h1:!text-gray-50 prose-h1:!text-sm !text-sm !text-gray-50"
+                                          source={metadataMessageContent}
+                                        />
                                       </div>
-                                    </DialogContent>
-                                  </Dialog>
-                                </div>
-                              )}
 
-                              <Form {...metadataForm}>
-                                <form
-                                  className="space-y-4 pb-4 pt-4"
-                                  onSubmit={metadataForm.handleSubmit(
-                                    handleSubmit,
-                                  )}
-                                >
-                                  <div className="space-y-3">
-                                    <h3 className="text-xs font-medium uppercase text-white">
-                                      General
-                                    </h3>
+                                      <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
+                                        <div className="text-gray-80 flex-1 items-center gap-1 truncate text-left text-xs">
+                                          View JSON
+                                        </div>
+                                        <JsonView
+                                          displayDataTypes={false}
+                                          displayObjectSize={false}
+                                          enableClipboard={false}
+                                          style={githubLightTheme}
+                                          value={metadataGenerationData ?? {}}
+                                        />
+                                      </div>
+                                    </div>
+                                  </DialogContent>
+                                </Dialog>
+                              </div>
+                            )}
 
-                                    <FormField
-                                      control={metadataForm.control}
-                                      name="name"
-                                      render={({ field }) => (
-                                        <FormItem>
-                                          <FormLabel>Tool Name</FormLabel>
-                                          <FormControl>
-                                            <Input {...field} />
-                                          </FormControl>
-                                          <FormMessage />
-                                        </FormItem>
-                                      )}
-                                    />
-                                  </div>
+                            <Form {...metadataForm}>
+                              <form
+                                className="space-y-4 pb-4 pt-4"
+                                onSubmit={metadataForm.handleSubmit(
+                                  handleSaveTool,
+                                )}
+                              >
+                                <div className="space-y-3">
+                                  <h3 className="text-xs font-medium uppercase text-white">
+                                    General
+                                  </h3>
+
                                   <FormField
                                     control={metadataForm.control}
-                                    name="description"
+                                    name="name"
                                     render={({ field }) => (
                                       <FormItem>
-                                        <FormLabel>Tool Description</FormLabel>
+                                        <FormLabel>Tool Name</FormLabel>
                                         <FormControl>
                                           <Input {...field} />
                                         </FormControl>
@@ -956,97 +1016,51 @@ function EditToolPage() {
                                       </FormItem>
                                     )}
                                   />
-
-                                  {Object.keys(
-                                    metadataValue?.configurations?.properties ??
-                                      {},
-                                  ).length > 0 && (
-                                    <div className="space-y-4">
-                                      <h3 className="text-xs font-medium uppercase text-white">
-                                        Tool Config
-                                      </h3>
-                                      {Object.entries(
-                                        metadataValue?.configurations
-                                          ?.properties ?? {},
-                                      ).map(([key, prop]) => (
-                                        <FormField
-                                          control={metadataForm.control}
-                                          key={key}
-                                          name={`configurations.properties.${key}.value`}
-                                          render={({ field }) => (
-                                            <FormItem>
-                                              <FormLabel>{key}</FormLabel>
-                                              <FormControl>
-                                                <PropertyInput
-                                                  field={field}
-                                                  property={prop}
-                                                />
-                                              </FormControl>
-                                              <FormDescription>
-                                                {prop.type === 'array'
-                                                  ? `Enter ${key} (comma-separated ${prop.items?.type || 'values'})`
-                                                  : `Type: ${prop.type}`}
-                                              </FormDescription>
-                                              <FormMessage />
-                                            </FormItem>
-                                          )}
-                                        />
-                                      ))}
-                                    </div>
+                                </div>
+                                <FormField
+                                  control={metadataForm.control}
+                                  name="description"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Tool Description</FormLabel>
+                                      <FormControl>
+                                        <Input {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
                                   )}
+                                />
 
-                                  {Object.keys(
-                                    metadataValue?.parameters?.properties ?? {},
-                                  ).length > 0 && (
-                                    <div className="space-y-4">
-                                      <h3 className="text-xs font-medium uppercase text-white">
-                                        Inputs
-                                      </h3>
+                                {Object.keys(
+                                  metadataGenerationData?.configurations
+                                    ?.properties ?? {},
+                                ).length > 0 && (
+                                  <div className="space-y-4">
+                                    <h3 className="text-xs font-medium uppercase text-white">
+                                      Tool Config
+                                    </h3>
 
-                                      {Object.entries(
-                                        metadataValue?.parameters?.properties ??
-                                          {},
-                                      ).map(([key, prop]) => (
-                                        <FormField
-                                          control={metadataForm.control}
-                                          key={key}
-                                          name={`parameters.properties.${key}.value`}
-                                          render={({ field }) => (
-                                            <FormItem>
-                                              <FormLabel className="capitalize">
-                                                {key.replace(/_/g, ' ')}
-                                                {metadataValue?.parameters?.required?.includes(
-                                                  key,
-                                                ) && (
-                                                  <span className="ml-1 text-gray-100">
-                                                    (required)
-                                                  </span>
-                                                )}
-                                              </FormLabel>
-                                              <FormControl>
-                                                <PropertyInput
-                                                  field={field}
-                                                  property={prop}
-                                                />
-                                              </FormControl>
-                                              <FormDescription>
-                                                {prop.type === 'array'
-                                                  ? `Enter ${key} (comma-separated ${prop.items?.type || 'values'})`
-                                                  : `Type: ${prop.type}`}
-                                              </FormDescription>
-                                              <FormMessage />
-                                            </FormItem>
-                                          )}
-                                        />
-                                      ))}
-                                    </div>
-                                  )}
-                                </form>
-                              </Form>
-                            </div>
-                          )}
+                                    <JsonForm
+                                      className="py-4"
+                                      noHtml5Validate={true}
+                                      schema={
+                                        metadataGenerationData?.configurations as RJSFSchema
+                                      }
+                                      uiSchema={{
+                                        'ui:submitButtonOptions': {
+                                          norender: true,
+                                        },
+                                      }}
+                                      validator={validator}
+                                    />
+                                  </div>
+                                )}
+                              </form>
+                            </Form>
+                          </div>
+                        )}
                       </ErrorBoundary>
-                      {metadata == null && (
+                      {isMetadataGenerationIdle && (
                         <div>
                           <p className="text-gray-80 py-4 pt-6 text-center text-xs">
                             No metadata generated yet.
@@ -1066,43 +1080,3 @@ function EditToolPage() {
 }
 
 export default EditToolPage;
-
-function PropertyInput({
-  property,
-  field,
-}: {
-  property: { type: string; items?: { type: string } };
-  field: any;
-}) {
-  switch (property.type) {
-    case 'boolean':
-      return <Switch checked={field.value} onCheckedChange={field.onChange} />;
-
-    case 'number':
-      return (
-        <Input
-          {...field}
-          onChange={(e) => field.onChange(Number(e.target.value))}
-          type="number"
-        />
-      );
-
-    case 'array':
-      return (
-        <Input
-          {...field}
-          onChange={(e) => {
-            const values = e.target.value.split(',').map((item) => item.trim());
-            field.onChange(values);
-          }}
-          placeholder="Enter values separated by commas"
-          value={
-            Array.isArray(field.value) ? field.value.join(', ') : field.value
-          }
-        />
-      );
-
-    default:
-      return <Input {...field} />;
-  }
-}

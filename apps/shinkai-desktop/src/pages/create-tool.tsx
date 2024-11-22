@@ -415,7 +415,6 @@ function CreateToolPage() {
     }
 
     if (!chatInboxId) return;
-
     await saveToolCode({
       code: toolCode,
       metadata: {
