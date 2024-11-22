@@ -11,7 +11,10 @@ import { FormProps } from '@rjsf/core';
 import { RJSFSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import {
+  ShinkaiTool,
+  ToolMetadata,
+} from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   buildInboxIdFromJobId,
   extractJobIdFromInbox,
@@ -20,6 +23,8 @@ import { useCreateToolCode } from '@shinkai_network/shinkai-node-state/v2/mutati
 import { useCreateToolMetadata } from '@shinkai_network/shinkai-node-state/v2/mutations/createToolMetadata/useCreateToolMetadata';
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
+import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
+import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import {
   Badge,
   Button,
@@ -27,6 +32,7 @@ import {
   CopyToClipboardIcon,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -40,6 +46,7 @@ import {
   JsonForm,
   MarkdownPreview,
   MessageList,
+  Switch,
   Tabs,
   TabsContent,
   TabsList,
@@ -47,9 +54,11 @@ import {
   Tooltip,
   TooltipContent,
   TooltipPortal,
+  TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import JsonView from '@uiw/react-json-view';
 import { githubDarkTheme } from '@uiw/react-json-view/githubDark';
@@ -62,6 +71,7 @@ import {
   XCircle,
   XIcon,
 } from 'lucide-react';
+import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
@@ -70,6 +80,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
+import { actionButtonClassnames } from '../components/chat/conversation-footer';
 import { ToolErrorFallback } from '../components/playground-tool/error-boundary';
 import PlaygroundToolLayout from '../components/playground-tool/layout';
 import ToolCodeEditor from '../components/playground-tool/tool-code-editor';
@@ -464,7 +475,7 @@ function CreateToolPage() {
 
           <Form {...form}>
             <form
-              className="shrink-0 space-y-2"
+              className="shrink-0 space-y-2 pt-2"
               onSubmit={form.handleSubmit(onSubmit)}
             >
               <div className="flex shrink-0 items-center gap-1">
@@ -478,12 +489,15 @@ function CreateToolPage() {
                       </FormLabel>
                       <FormControl>
                         <div className="space-y-1.5">
-                          <AIModelSelector
-                            onValueChange={(value) => {
-                              form.setValue('llmProviderId', value);
-                            }}
-                            value={form.watch('llmProviderId')}
-                          />
+                          <div className="flex items-center gap-2">
+                            <AIModelSelector
+                              onValueChange={(value) => {
+                                form.setValue('llmProviderId', value);
+                              }}
+                              value={form.watch('llmProviderId')}
+                            />
+                            <ToolSelectionModal />
+                          </div>
                           <ChatInputArea
                             autoFocus
                             bottomAddons={
@@ -1015,3 +1029,83 @@ function CreateToolPage() {
 }
 
 export default CreateToolPage;
+
+function ToolSelectionModal() {
+  const auth = useAuth((state) => state.auth);
+
+  const { data: toolsList } = useGetTools({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+  const { mutateAsync: updateTool, isPending } = useUpdateTool();
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <div
+          className={cn(actionButtonClassnames, 'w-auto')}
+          role="button"
+          tabIndex={0}
+        >
+          Tools
+        </div>
+      </DialogTrigger>
+      <DialogContent className="flex max-w-xl flex-col bg-gray-300 p-5 text-xs">
+        <DialogTitle className="pb-0">Available tools</DialogTitle>
+        <DialogDescription>blaalalal</DialogDescription>
+        <div className="flex max-h-[28vh] flex-col gap-2.5 overflow-auto">
+          <div className="flex items-center gap-3">
+            <Switch checked={false} />
+            <span className="text-gray-80 text-xs">Enabled All</span>
+          </div>
+          {toolsList?.map((tool) => (
+            <div
+              className="flex w-full flex-col gap-3"
+              key={tool.tool_router_key}
+            >
+              <div className="flex items-center gap-3">
+                <Switch
+                  checked={tool.enabled}
+                  disabled={isPending}
+                  onCheckedChange={async () => {
+                    await updateTool({
+                      toolKey: tool.tool_router_key,
+                      toolType: tool.tool_type,
+                      toolPayload: {} as ShinkaiTool,
+                      isToolEnabled: !tool.enabled,
+                      nodeAddress: auth?.node_address ?? '',
+                      token: auth?.api_v2_key ?? '',
+                    });
+                  }}
+                />
+
+                <div className="space-y-1 leading-none">
+                  <TooltipProvider delayDuration={0}>
+                    <Tooltip>
+                      <TooltipTrigger className="flex items-center gap-1">
+                        <div className="text-gray-80 static space-y-1.5 text-xs">
+                          {formatText(tool.name)}
+                        </div>
+                        <InfoCircleIcon className="h-3 w-3 text-gray-100" />
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent
+                          align="start"
+                          alignOffset={-10}
+                          className="max-w-md"
+                          side="top"
+                        >
+                          {tool.description}
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

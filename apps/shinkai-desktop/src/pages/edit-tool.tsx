@@ -499,7 +499,7 @@ function EditToolPage() {
 
           <Form {...form}>
             <form
-              className="shrink-0 space-y-2"
+              className="shrink-0 space-y-2 pt-2"
               onSubmit={form.handleSubmit(onSubmit)}
             >
               <div className="flex shrink-0 items-center gap-1">
