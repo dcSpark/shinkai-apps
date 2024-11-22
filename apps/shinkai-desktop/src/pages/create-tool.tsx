@@ -1030,7 +1030,7 @@ function CreateToolPage() {
 
 export default CreateToolPage;
 
-function ToolSelectionModal() {
+export function ToolSelectionModal() {
   const auth = useAuth((state) => state.auth);
 
   const { data: toolsList } = useGetTools({

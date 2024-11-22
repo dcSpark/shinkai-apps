@@ -72,6 +72,7 @@ import config from '../config';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useChatConversationWithOptimisticUpdates } from './chat/chat-conversation';
+import { ToolSelectionModal } from './create-tool';
 
 export const createToolCodeFormSchema = z.object({
   message: z.string().min(1),
