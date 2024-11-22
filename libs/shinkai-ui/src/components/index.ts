@@ -47,3 +47,4 @@ export * from './progress';
 export * from './chat';
 export * from './text-link';
 export * from './card';
+export * from './rjsf/index';

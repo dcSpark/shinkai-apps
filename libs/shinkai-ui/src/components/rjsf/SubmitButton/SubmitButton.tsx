@@ -25,15 +25,16 @@ export default function SubmitButton<
   }
 
   return (
-    <div className="flex items-center justify-end">
+    <div className="flex items-center justify-start">
       <Button
         {...submitButtonProps}
         className={cn(
-          'h-[30px] w-[130px] rounded-lg',
+          'h-[30px] rounded-lg border-gray-200 text-white',
           submitButtonProps?.className,
         )}
         size="sm"
         type="submit"
+        variant="outline"
       >
         {submitText}
       </Button>
