@@ -39,9 +39,9 @@ export default function ArrayFieldItemTemplate<
 
   return (
     <div>
-      <div className="mb-2 flex items-center">
-        <div className="w-3/4 flex-none lg:w-3/4">{children}</div>
-        <div className="w-1/4 flex-none px-4 py-6 lg:w-1/4">
+      <div className="mb-2 flex items-center gap-2">
+        <div className="flex-1">{children}</div>
+        <div className="flex-none">
           {hasToolbar && (
             <div className="flex gap-2">
               {/*{(hasMoveUp || hasMoveDown) && (*/}

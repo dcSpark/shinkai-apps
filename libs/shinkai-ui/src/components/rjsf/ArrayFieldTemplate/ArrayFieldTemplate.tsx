@@ -78,33 +78,15 @@ export default function ArrayFieldTemplate<
                   <ArrayFieldItemTemplate key={key} {...itemProps} />
                 ),
               )}
-            {items.length === 0 && canAdd && (
-              <div className="mx-auto flex w-full max-w-[160px] flex-col items-center justify-between gap-4 py-2.5">
-                <p className="text-gray-80 text-sm">No items found.</p>
-                <AddButton
-                  className="array-item-add"
-                  disabled={disabled || readonly}
-                  onClick={onAddClick}
-                  registry={registry}
-                  uiSchema={uiSchema}
-                />
-              </div>
-            )}
-            {items.length > 0 && canAdd && (
-              <div className="">
-                <div className="mt-2 flex">
-                  <div className="w-3/4" />
-                  <div className="w-1/4 px-4 py-6">
-                    <AddButton
-                      className="array-item-add"
-                      disabled={disabled || readonly}
-                      onClick={onAddClick}
-                      registry={registry}
-                      uiSchema={uiSchema}
-                    />
-                  </div>
-                </div>
-              </div>
+
+            {canAdd && (
+              <AddButton
+                className="array-item-add"
+                disabled={disabled || readonly}
+                onClick={onAddClick}
+                registry={registry}
+                uiSchema={uiSchema}
+              />
             )}
           </div>
         </div>

@@ -25,7 +25,7 @@ export default function IconButton<
   const variantClass =
     // @ts-expect-error incomplete type from rjsf
     props.variant === 'danger'
-      ? 'bg-gray-450 hover:bg-gray-600 text-white'
+      ? 'bg-gray-400  text-gray-100 hover:text-gray-50'
       : disabled
         ? 'bg-gray-200 text-gray-100'
         : 'bg-gray-300 hover:bg-gray-400 text-white';
