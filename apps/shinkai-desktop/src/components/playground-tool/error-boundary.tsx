@@ -9,11 +9,11 @@ export function ToolErrorFallback({
 }) {
   return (
     <div
-      className="flex flex-col items-center justify-center px-8 py-4 text-xs text-red-400"
+      className="flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400"
       role="alert"
     >
-      <p>Something went wrong. Try renegerating tool metadata.</p>
-      <pre className="mb-4 whitespace-pre-wrap text-balance break-all text-center">
+      <p>Tool metadata failed. Try generating again.</p>
+      <pre className="max-w-sm whitespace-break-spaces text-center">
         {error.message}
       </pre>
       <Button

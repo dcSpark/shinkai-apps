@@ -166,6 +166,7 @@ export type ExecuteToolCodeRequest = {
   parameters: Record<string, any>;
   code: string;
   extra_config?: string;
+  llm_provider: string;
 };
 
 export type ExecuteToolCodeResponse = Record<string, any>;

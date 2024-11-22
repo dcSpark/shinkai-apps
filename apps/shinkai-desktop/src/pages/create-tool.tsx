@@ -63,14 +63,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import JsonView from '@uiw/react-json-view';
 import { githubDarkTheme } from '@uiw/react-json-view/githubDark';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  ArrowUpRight,
-  Loader2,
-  Play,
-  Save,
-  XCircle,
-  XIcon,
-} from 'lucide-react';
+import { ArrowUpRight, Loader2, Play, Save, XIcon } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -160,18 +153,13 @@ function CreateToolPage() {
     isPending: isExecutingCode,
     isSuccess: isCodeExecutionSuccess,
     isError: isCodeExecutionError,
+    error: codeExecutionError,
   } = useExecuteToolCode({
     onSuccess: (data) => {
       setToolResult(data);
       toolResultBoxRef.current?.scrollIntoView({
         behavior: 'smooth',
         block: 'end',
-      });
-    },
-    onError: (error) => {
-      toast.error('Failed to run tool', {
-        description: error.response?.data?.message ?? error.message,
-        position: 'top-right',
       });
     },
   });
@@ -383,6 +371,7 @@ function CreateToolPage() {
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       params,
+      llmProviderId: form.getValues('llmProviderId'),
     });
   };
 
@@ -806,10 +795,15 @@ function CreateToolPage() {
                     </div>
                   )}
                   {isCodeExecutionError && (
-                    <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-                      <XCircle className="h-6 w-6 text-red-400" />
-                      <p>Tool code execution failed.</p>
-                      <p>Try generating the tool code again.</p>
+                    <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
+                      <p>
+                        Tool execution failed. Try generating the tool code
+                        again.
+                      </p>
+                      <pre className="max-w-sm whitespace-break-spaces text-center">
+                        {codeExecutionError?.response?.data?.message ??
+                          codeExecutionError?.message}
+                      </pre>
                     </div>
                   )}
                   {isCodeExecutionSuccess && toolResult && (

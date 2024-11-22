@@ -24,7 +24,6 @@ const ToolCodeEditor = ({
   <Editor
     language={language}
     onUpdate={onUpdate}
-    readOnly
     style={{
       fontSize: '0.75rem',
       lineHeight: '1.5',
