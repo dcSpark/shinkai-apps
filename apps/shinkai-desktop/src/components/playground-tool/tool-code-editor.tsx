@@ -1,3 +1,13 @@
+import 'prism-react-editor/prism/languages/typescript';
+import 'prism-react-editor/prism/languages/json';
+import 'prism-react-editor/prism/languages/yaml';
+import 'prism-react-editor/languages/typoscript';
+import 'prism-react-editor/languages/json';
+import 'prism-react-editor/languages/yaml';
+import 'prism-react-editor/layout.css';
+import 'prism-react-editor/themes/github-dark.css';
+import 'prism-react-editor/search.css';
+
 import { Editor, EditorProps } from 'prism-react-editor';
 
 const ToolCodeEditor = ({
@@ -14,6 +24,7 @@ const ToolCodeEditor = ({
   <Editor
     language={language}
     onUpdate={onUpdate}
+    readOnly
     style={{
       fontSize: '0.75rem',
       lineHeight: '1.5',

@@ -55,6 +55,7 @@ const ChatInputBase = React.forwardRef<HTMLTextAreaElement, ChatInputProps>(
           }
         }}
         ref={textAreaRef}
+        spellCheck={false}
         {...props}
       />
     );

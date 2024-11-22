@@ -23,6 +23,7 @@ import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutation
 import {
   Badge,
   Button,
+  ChatInputArea,
   CopyToClipboardIcon,
   Dialog,
   DialogContent,
@@ -51,7 +52,7 @@ import {
 import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import JsonView from '@uiw/react-json-view';
-import { githubLightTheme } from '@uiw/react-json-view/githubLight';
+import { githubDarkTheme } from '@uiw/react-json-view/githubDark';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowUpRight,
@@ -69,6 +70,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
+import { ToolErrorFallback } from '../components/playground-tool/error-boundary';
 import PlaygroundToolLayout from '../components/playground-tool/layout';
 import ToolCodeEditor from '../components/playground-tool/tool-code-editor';
 import config from '../config';
@@ -90,35 +92,6 @@ const metadataFormSchema = z.object({
 type MetadataFormSchema = z.infer<typeof metadataFormSchema>;
 
 export type CreateToolCodeFormSchema = z.infer<typeof createToolCodeFormSchema>;
-
-function ToolErrorFallback({
-  error,
-  resetErrorBoundary,
-}: {
-  error: Error;
-  resetErrorBoundary: (...args: any[]) => void;
-}) {
-  return (
-    <div
-      className="flex flex-col items-center justify-center px-8 py-4 text-xs text-red-400"
-      role="alert"
-    >
-      <p>Something went wrong. Try renegerating tool metadata.</p>
-      <pre className="mb-4 whitespace-pre-wrap text-balance break-all text-center">
-        {error.message}
-      </pre>
-      <Button
-        className="h-[30px]"
-        onClick={() => resetErrorBoundary()}
-        size="auto"
-        type="button"
-        variant="outline"
-      >
-        Try again
-      </Button>
-    </div>
-  );
-}
 
 function extractTypeScriptCode(message: string) {
   const tsCodeMatch = message.match(/```typescript\n([\s\S]*?)\n```/);
@@ -490,46 +463,68 @@ function CreateToolPage() {
           </div>
 
           <Form {...form}>
-            <form className="space-y-2" onSubmit={form.handleSubmit(onSubmit)}>
-              {/*{chatInboxId ? (*/}
-              {/*  <AiUpdateSelectionActionBar inboxId={chatInboxId} />*/}
-              {/*) : (*/}
-              <AIModelSelector
-                onValueChange={(value) => {
-                  form.setValue('llmProviderId', value);
-                }}
-                value={form.watch('llmProviderId')}
-              />
-              {/*)}*/}
+            <form
+              className="shrink-0 space-y-2"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
               <div className="flex shrink-0 items-center gap-1">
                 <FormField
                   control={form.control}
                   name="message"
                   render={({ field }) => (
-                    <Input
-                      autoFocus
-                      className="placeholder-gray-80 !h-[50px] flex-1 bg-gray-200 px-3 py-2"
-                      disabled={isLoadingMessage}
-                      onChange={field.onChange}
-                      placeholder={'Ask Shinkai AI'}
-                      value={field.value}
-                    />
+                    <FormItem className="flex-1 space-y-0">
+                      <FormLabel className="sr-only">
+                        {t('chat.enterMessage')}
+                      </FormLabel>
+                      <FormControl>
+                        <div className="space-y-1.5">
+                          <AIModelSelector
+                            onValueChange={(value) => {
+                              form.setValue('llmProviderId', value);
+                            }}
+                            value={form.watch('llmProviderId')}
+                          />
+                          <ChatInputArea
+                            autoFocus
+                            bottomAddons={
+                              <div className="relative z-50 flex items-end gap-3 self-end">
+                                <span className="pb-1 text-xs font-light text-gray-100">
+                                  <span className="font-medium">Enter</span> to
+                                  send
+                                </span>
+                                <Button
+                                  className={cn(
+                                    'hover:bg-app-gradient h-[40px] w-[40px] cursor-pointer rounded-xl bg-gray-500 p-3 transition-colors',
+                                    'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
+                                  )}
+                                  disabled={
+                                    isLoadingMessage ||
+                                    isToolGenerating ||
+                                    isMetadataGenerationPending ||
+                                    !form.watch('message')
+                                  }
+                                  onClick={form.handleSubmit(onSubmit)}
+                                  size="icon"
+                                  variant="tertiary"
+                                >
+                                  <SendIcon className="h-full w-full" />
+                                  <span className="sr-only">
+                                    {t('chat.sendMessage')}
+                                  </span>
+                                </Button>
+                              </div>
+                            }
+                            disabled={isLoadingMessage}
+                            onChange={field.onChange}
+                            onSubmit={form.handleSubmit(onSubmit)}
+                            topAddons={<></>}
+                            value={field.value}
+                          />
+                        </div>
+                      </FormControl>
+                    </FormItem>
                   )}
                 />
-
-                <Button
-                  className="aspect-square h-[90%] shrink-0 rounded-lg p-2"
-                  disabled={
-                    isLoadingMessage ||
-                    isToolGenerating ||
-                    isMetadataGenerationPending
-                  }
-                  size="auto"
-                  type="submit"
-                  variant="default"
-                >
-                  <SendIcon className="h-4.5 w-4.5" />
-                </Button>
               </div>
             </form>
           </Form>
@@ -806,10 +801,11 @@ function CreateToolPage() {
                   {isCodeExecutionSuccess && toolResult && (
                     <div className="py-2">
                       <JsonView
+                        className="rounded-md p-4"
                         displayDataTypes={false}
                         displayObjectSize={false}
                         enableClipboard={false}
-                        style={githubLightTheme}
+                        style={githubDarkTheme}
                         value={toolResult}
                       />
                     </div>
@@ -924,7 +920,7 @@ function CreateToolPage() {
                                       displayDataTypes={false}
                                       displayObjectSize={false}
                                       enableClipboard={false}
-                                      style={githubLightTheme}
+                                      style={githubDarkTheme}
                                       value={metadataGenerationData ?? {}}
                                     />
                                   </div>
