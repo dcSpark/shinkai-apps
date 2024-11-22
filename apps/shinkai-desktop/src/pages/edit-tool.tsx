@@ -513,12 +513,15 @@ function EditToolPage() {
                       </FormLabel>
                       <FormControl>
                         <div className="space-y-1.5">
-                          <AIModelSelector
-                            onValueChange={(value) => {
-                              form.setValue('llmProviderId', value);
-                            }}
-                            value={form.watch('llmProviderId')}
-                          />
+                          <div className="flex items-center gap-2">
+                            <AIModelSelector
+                              onValueChange={(value) => {
+                                form.setValue('llmProviderId', value);
+                              }}
+                              value={form.watch('llmProviderId')}
+                            />
+                            <ToolSelectionModal />
+                          </div>
                           <ChatInputArea
                             autoFocus
                             bottomAddons={
