@@ -89,8 +89,6 @@ const metadataFormSchema = z.object({
   description: z.string().min(1, 'Description is required'),
   author: z.string().min(1, 'Author is required'),
   keywords: z.array(z.string()),
-  configurations: z.record(z.any()),
-  parameters: z.record(z.any()),
 });
 type MetadataFormSchema = z.infer<typeof metadataFormSchema>;
 
@@ -147,6 +145,7 @@ function CreateToolPage() {
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<string | null>(
     null,
   );
+
   const [resetCounter, setResetCounter] = useState(0);
 
   const form = useForm<CreateToolCodeFormSchema>({
@@ -208,8 +207,6 @@ function CreateToolPage() {
   );
   const { mutateAsync: createToolCode } = useCreateToolCode();
 
-  const metadata = metadataData?.pages?.at(-1)?.at(-1);
-
   const regenerateToolMetadata = useCallback(async () => {
     return await createToolMetadata(
       {
@@ -225,17 +222,26 @@ function CreateToolPage() {
     );
   }, [auth?.api_v2_key, auth?.node_address, chatInboxId, createToolMetadata]);
 
-  const metadataValue = useMemo(() => {
+  const {
+    metadataMessageContent,
+    isMetadataGenerationPending,
+    isMetadataGenerationSuccess,
+    isMetadataGenerationIdle,
+    metadataGenerationData,
+  } = useMemo(() => {
     const metadata = metadataData?.pages?.at(-1)?.at(-1);
-
-    if (!metadata) return null;
-
-    if (metadata.role === 'assistant' && metadata.status.type === 'complete') {
+    const isMetadataGenerationIdle = metadata == null;
+    const isMetadataGenerationPending =
+      metadata?.role === 'assistant' && metadata?.status.type === 'running';
+    const isMetadataGenerationSuccess =
+      metadata?.role === 'assistant' && metadata?.status.type === 'complete';
+    let metadataGenerationData = null;
+    if (isMetadataGenerationSuccess) {
       const jsonCodeMatch = metadata.content.match(/```json\n([\s\S]*?)\n```/);
       if (jsonCodeMatch) {
         try {
           const parsedJson = JSON.parse(jsonCodeMatch[1].trim());
-          return parsedJson as ToolMetadata;
+          metadataGenerationData = parsedJson as ToolMetadata;
         } catch (error) {
           toast.error(
             'Failed to generate preview (json). Try regenerating the preview again.',
@@ -248,7 +254,6 @@ function CreateToolPage() {
               },
             },
           );
-          return null;
         }
       } else {
         toast.error('Failed to generate preview.', {
@@ -259,36 +264,25 @@ function CreateToolPage() {
             onClick: regenerateToolMetadata,
           },
         });
-        return null;
       }
     }
+
+    return {
+      metadataMessageContent: metadata?.content,
+      isMetadataGenerationPending,
+      isMetadataGenerationSuccess,
+      isMetadataGenerationIdle,
+      metadataGenerationData,
+    };
   }, [metadataData?.pages, regenerateToolMetadata]);
 
   const metadataForm = useForm<MetadataFormSchema>({
     resolver: zodResolver(metadataFormSchema),
     defaultValues: {
-      name: metadataValue?.name,
-      description: metadataValue?.description,
+      name: metadataGenerationData?.name,
+      description: metadataGenerationData?.description,
       author: auth?.shinkai_identity ?? '',
-      keywords: metadataValue?.keywords ?? [],
-      configurations: Object.keys(
-        metadataValue?.configurations?.properties ?? {},
-      ).reduce(
-        (acc, key) => ({
-          ...acc,
-          [key]: metadataValue?.configurations.properties[key] || '',
-        }),
-        {},
-      ),
-      parameters: Object.keys(
-        metadataValue?.parameters?.properties ?? {},
-      ).reduce(
-        (acc, key) => ({
-          ...acc,
-          [key]: metadataValue?.parameters.properties[key] || '',
-        }),
-        {},
-      ),
+      keywords: metadataGenerationData?.keywords ?? [],
     },
   });
 
@@ -369,12 +363,12 @@ function CreateToolPage() {
   ]);
 
   useEffect(() => {
-    if (!metadataValue) return;
-    metadataForm.setValue('name', metadataValue?.name);
-    metadataForm.setValue('description', metadataValue?.description);
+    if (!metadataGenerationData) return;
+    metadataForm.setValue('name', metadataGenerationData?.name);
+    metadataForm.setValue('description', metadataGenerationData?.description);
     metadataForm.setValue('author', auth?.shinkai_identity ?? '');
-    metadataForm.setValue('keywords', metadataValue?.keywords);
-  }, [auth?.shinkai_identity, metadataForm, metadataValue]);
+    metadataForm.setValue('keywords', metadataGenerationData?.keywords);
+  }, [auth?.shinkai_identity, metadataForm, metadataGenerationData]);
 
   const onSubmit = async (data: CreateToolCodeFormSchema) => {
     if (!auth) return;
@@ -425,7 +419,7 @@ function CreateToolPage() {
     await saveToolCode({
       code: toolCode,
       metadata: {
-        ...metadataValue,
+        ...metadataGenerationData,
         name: metadataForm.getValues('name'),
         description: metadataForm.getValues('description'),
         author: auth?.shinkai_identity ?? '',
@@ -442,7 +436,7 @@ function CreateToolPage() {
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel className="flex h-full flex-col px-3 py-4 pt-6">
             <h1 className="py-2 text-lg font-semibold tracking-tight">
-              Tool Playground
+              Playground
             </h1>
             <div
               className={cn(
@@ -536,8 +530,7 @@ function CreateToolPage() {
                     disabled={
                       isLoadingMessage ||
                       isToolGenerating ||
-                      (metadata?.role === 'assistant' &&
-                        metadata?.status.type === 'running')
+                      isMetadataGenerationPending
                     }
                     size="auto"
                     type="submit"
@@ -586,17 +579,17 @@ function CreateToolPage() {
                         className="text-gray-80 h-[30px] rounded-md text-xs"
                         disabled={
                           !toolCode ||
-                          !metadataValue ||
+                          !metadataGenerationData ||
                           // !isCodeExecutionSuccess ||
                           !chatInboxId
                         }
                         onClick={async () => {
-                          if (!chatInboxId || !metadataValue) return;
+                          if (!chatInboxId || !metadataGenerationData) return;
 
                           await saveToolCode({
                             code: toolCode,
                             metadata: {
-                              ...metadataValue,
+                              ...metadataGenerationData,
                               name: metadataForm.getValues('name'),
                               description:
                                 metadataForm.getValues('description'),
@@ -749,58 +742,58 @@ function CreateToolPage() {
                         <h2 className="flex font-mono font-semibold text-gray-50">
                           Run
                         </h2>
-                        {metadataValue && (
+                        {metadataGenerationData && (
                           <p>Fill in the options above to run your tool.</p>
                         )}
                       </div>
-                      {metadata?.role === 'assistant' &&
-                        metadata?.status.type === 'running' && (
-                          <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-                            <Loader2 className="shrink-0 animate-spin" />
-                            Generating...
-                          </div>
-                        )}
-                      {metadata?.role === 'assistant' &&
-                        metadata?.status.type === 'complete' && (
-                          <div className="text-gray-80 text-xs">
-                            <ErrorBoundary
-                              FallbackComponent={ToolErrorFallback}
-                              onReset={regenerateToolMetadata}
-                            >
-                              <JsonForm
-                                className="py-4"
-                                formData={formData}
-                                noHtml5Validate={true}
-                                onChange={(e) => setFormData(e.formData)}
-                                onSubmit={handleRunCode}
-                                schema={metadataValue?.parameters as RJSFSchema}
-                                uiSchema={{
-                                  'ui:submitButtonOptions': {
-                                    props: {
-                                      disabled: isExecutingCode,
-                                      isLoading: isExecutingCode,
-                                    },
-                                    // @ts-expect-error string type
-                                    submitText: (
-                                      <div
-                                        className={
-                                          'inline-flex items-center justify-center gap-2 pl-2 pr-3'
-                                        }
-                                      >
-                                        {!isExecutingCode && (
-                                          <Play className="h-4 w-4" />
-                                        )}
-                                        Run
-                                      </div>
-                                    ),
+                      {isMetadataGenerationPending && (
+                        <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
+                          <Loader2 className="shrink-0 animate-spin" />
+                          Generating...
+                        </div>
+                      )}
+                      {isMetadataGenerationSuccess && (
+                        <div className="text-gray-80 text-xs">
+                          <ErrorBoundary
+                            FallbackComponent={ToolErrorFallback}
+                            onReset={regenerateToolMetadata}
+                          >
+                            <JsonForm
+                              className="py-4"
+                              formData={formData}
+                              noHtml5Validate={true}
+                              onChange={(e) => setFormData(e.formData)}
+                              onSubmit={handleRunCode}
+                              schema={
+                                metadataGenerationData?.parameters as RJSFSchema
+                              }
+                              uiSchema={{
+                                'ui:submitButtonOptions': {
+                                  props: {
+                                    disabled: isExecutingCode,
+                                    isLoading: isExecutingCode,
                                   },
-                                }}
-                                validator={validator}
-                              />
-                            </ErrorBoundary>
-                          </div>
-                        )}
-                      {metadata == null && (
+                                  // @ts-expect-error string type
+                                  submitText: (
+                                    <div
+                                      className={
+                                        'inline-flex items-center justify-center gap-2 pl-2 pr-3'
+                                      }
+                                    >
+                                      {!isExecutingCode && (
+                                        <Play className="h-4 w-4" />
+                                      )}
+                                      Run
+                                    </div>
+                                  ),
+                                },
+                              }}
+                              validator={validator}
+                            />
+                          </ErrorBoundary>
+                        </div>
+                      )}
+                      {isMetadataGenerationIdle && (
                         <div>
                           <p className="text-gray-80 py-4 pt-6 text-center text-xs">
                             No metadata generated yet.
@@ -858,144 +851,128 @@ function CreateToolPage() {
                         <h2 className="flex font-mono font-semibold text-gray-50">
                           Metadata
                         </h2>
-                        {metadataValue && (
+                        {metadataGenerationData && (
                           <p>Fill in the options above to run your tool.</p>
                         )}
                       </div>
-                      {metadata?.role === 'assistant' &&
-                        metadata?.status.type === 'running' && (
-                          <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-                            <Loader2 className="shrink-0 animate-spin" />
-                            Generating Metadata...
-                          </div>
-                        )}
+                      {isMetadataGenerationPending && (
+                        <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
+                          <Loader2 className="shrink-0 animate-spin" />
+                          Generating Metadata...
+                        </div>
+                      )}
                       <ErrorBoundary
                         FallbackComponent={ToolErrorFallback}
                         onReset={regenerateToolMetadata}
                       >
-                        {metadata?.role === 'assistant' &&
-                          metadata?.status.type === 'complete' && (
-                            <div className="text-gray-80 relative text-xs">
-                              {config.isDev && (
-                                <div className="absolute -top-8 right-0 flex items-center gap-2">
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Button
-                                        className="size-[30px] p-2"
-                                        onClick={regenerateToolMetadata}
-                                        size="auto"
-                                        variant="outline"
-                                      >
-                                        <ReloadIcon className="h-4 w-4" />
-                                      </Button>
-                                    </TooltipTrigger>
-                                    <TooltipPortal>
-                                      <TooltipContent className="flex flex-col items-center gap-1">
-                                        <p>Regenerate Metadata</p>
-                                      </TooltipContent>
-                                    </TooltipPortal>
-                                  </Tooltip>
+                        {isMetadataGenerationSuccess && (
+                          <div className="text-gray-80 relative text-xs">
+                            {config.isDev && (
+                              <div className="absolute -top-8 right-0 flex items-center gap-2">
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      className="size-[30px] p-2"
+                                      onClick={regenerateToolMetadata}
+                                      size="auto"
+                                      variant="outline"
+                                    >
+                                      <ReloadIcon className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipPortal>
+                                    <TooltipContent className="flex flex-col items-center gap-1">
+                                      <p>Regenerate Metadata</p>
+                                    </TooltipContent>
+                                  </TooltipPortal>
+                                </Tooltip>
 
-                                  <Dialog>
-                                    <DialogTrigger asChild>
-                                      <Button
-                                        className="flex h-[30px] items-center gap-1 rounded-md text-xs"
-                                        size="auto"
-                                        variant="outline"
-                                      >
-                                        <ArrowUpRight className="h-4 w-4" />
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      className="flex h-[30px] items-center gap-1 rounded-md text-xs"
+                                      size="auto"
+                                      variant="outline"
+                                    >
+                                      <ArrowUpRight className="h-4 w-4" />
+                                      Details
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="flex max-w-5xl flex-col bg-gray-300 p-5 text-xs">
+                                    <DialogClose className="absolute right-4 top-4">
+                                      <XIcon className="text-gray-80 h-5 w-5" />
+                                    </DialogClose>
+                                    <DialogHeader className="flex justify-between">
+                                      <DialogTitle className="text-left text-sm font-bold">
                                         Details
-                                      </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="flex max-w-5xl flex-col bg-gray-300 p-5 text-xs">
-                                      <DialogClose className="absolute right-4 top-4">
-                                        <XIcon className="text-gray-80 h-5 w-5" />
-                                      </DialogClose>
-                                      <DialogHeader className="flex justify-between">
-                                        <DialogTitle className="text-left text-sm font-bold">
-                                          Details
-                                        </DialogTitle>
-                                      </DialogHeader>
-                                      <div className="grid grid-cols-2 gap-10 space-y-3">
-                                        <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
-                                          <div className="flex h-12 items-center justify-between gap-2 pt-1.5">
-                                            <h2 className="text-gray-80 flex items-center pl-1 font-mono text-xs font-semibold">
-                                              Response
-                                            </h2>
-                                            <Tooltip>
-                                              <TooltipTrigger asChild>
-                                                <div>
-                                                  <CopyToClipboardIcon
-                                                    className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"
-                                                    string={
-                                                      metadata.content ?? ''
-                                                    }
-                                                  />
-                                                </div>
-                                              </TooltipTrigger>
-                                              <TooltipPortal>
-                                                <TooltipContent className="flex flex-col items-center gap-1">
-                                                  <p>Copy Code</p>
-                                                </TooltipContent>
-                                              </TooltipPortal>
-                                            </Tooltip>
-                                          </div>
-                                          <MarkdownPreview
-                                            className="prose-h1:!text-gray-50 prose-h1:!text-sm !text-sm !text-gray-50"
-                                            source={metadata.content}
-                                          />
+                                      </DialogTitle>
+                                    </DialogHeader>
+                                    <div className="grid grid-cols-2 gap-10 space-y-3">
+                                      <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
+                                        <div className="flex h-12 items-center justify-between gap-2 pt-1.5">
+                                          <h2 className="text-gray-80 flex items-center pl-1 font-mono text-xs font-semibold">
+                                            Response
+                                          </h2>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <div>
+                                                <CopyToClipboardIcon
+                                                  className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"
+                                                  string={
+                                                    metadataMessageContent
+                                                  }
+                                                />
+                                              </div>
+                                            </TooltipTrigger>
+                                            <TooltipPortal>
+                                              <TooltipContent className="flex flex-col items-center gap-1">
+                                                <p>Copy Code</p>
+                                              </TooltipContent>
+                                            </TooltipPortal>
+                                          </Tooltip>
                                         </div>
-
-                                        <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
-                                          <div className="text-gray-80 flex-1 items-center gap-1 truncate text-left text-xs">
-                                            View JSON
-                                          </div>
-                                          <JsonView
-                                            displayDataTypes={false}
-                                            displayObjectSize={false}
-                                            enableClipboard={false}
-                                            style={githubLightTheme}
-                                            value={metadataValue ?? {}}
-                                          />
-                                        </div>
+                                        <MarkdownPreview
+                                          className="prose-h1:!text-gray-50 prose-h1:!text-sm !text-sm !text-gray-50"
+                                          source={metadataMessageContent}
+                                        />
                                       </div>
-                                    </DialogContent>
-                                  </Dialog>
-                                </div>
-                              )}
 
-                              <Form {...metadataForm}>
-                                <form
-                                  className="space-y-4 pb-4 pt-4"
-                                  onSubmit={metadataForm.handleSubmit(
-                                    handleSaveTool,
-                                  )}
-                                >
-                                  <div className="space-y-3">
-                                    <h3 className="text-xs font-medium uppercase text-white">
-                                      General
-                                    </h3>
+                                      <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
+                                        <div className="text-gray-80 flex-1 items-center gap-1 truncate text-left text-xs">
+                                          View JSON
+                                        </div>
+                                        <JsonView
+                                          displayDataTypes={false}
+                                          displayObjectSize={false}
+                                          enableClipboard={false}
+                                          style={githubLightTheme}
+                                          value={metadataGenerationData ?? {}}
+                                        />
+                                      </div>
+                                    </div>
+                                  </DialogContent>
+                                </Dialog>
+                              </div>
+                            )}
 
-                                    <FormField
-                                      control={metadataForm.control}
-                                      name="name"
-                                      render={({ field }) => (
-                                        <FormItem>
-                                          <FormLabel>Tool Name</FormLabel>
-                                          <FormControl>
-                                            <Input {...field} />
-                                          </FormControl>
-                                          <FormMessage />
-                                        </FormItem>
-                                      )}
-                                    />
-                                  </div>
+                            <Form {...metadataForm}>
+                              <form
+                                className="space-y-4 pb-4 pt-4"
+                                onSubmit={metadataForm.handleSubmit(
+                                  handleSaveTool,
+                                )}
+                              >
+                                <div className="space-y-3">
+                                  <h3 className="text-xs font-medium uppercase text-white">
+                                    General
+                                  </h3>
+
                                   <FormField
                                     control={metadataForm.control}
-                                    name="description"
+                                    name="name"
                                     render={({ field }) => (
                                       <FormItem>
-                                        <FormLabel>Tool Description</FormLabel>
+                                        <FormLabel>Tool Name</FormLabel>
                                         <FormControl>
                                           <Input {...field} />
                                         </FormControl>
@@ -1003,37 +980,51 @@ function CreateToolPage() {
                                       </FormItem>
                                     )}
                                   />
-
-                                  {Object.keys(
-                                    metadataValue?.configurations?.properties ??
-                                      {},
-                                  ).length > 0 && (
-                                    <div className="space-y-4">
-                                      <h3 className="text-xs font-medium uppercase text-white">
-                                        Tool Config
-                                      </h3>
-
-                                      <JsonForm
-                                        className="py-4"
-                                        noHtml5Validate={true}
-                                        schema={
-                                          metadataValue?.configurations as RJSFSchema
-                                        }
-                                        uiSchema={{
-                                          'ui:submitButtonOptions': {
-                                            norender: true,
-                                          },
-                                        }}
-                                        validator={validator}
-                                      />
-                                    </div>
+                                </div>
+                                <FormField
+                                  control={metadataForm.control}
+                                  name="description"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Tool Description</FormLabel>
+                                      <FormControl>
+                                        <Input {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
                                   )}
-                                </form>
-                              </Form>
-                            </div>
-                          )}
+                                />
+
+                                {Object.keys(
+                                  metadataGenerationData?.configurations
+                                    ?.properties ?? {},
+                                ).length > 0 && (
+                                  <div className="space-y-4">
+                                    <h3 className="text-xs font-medium uppercase text-white">
+                                      Tool Config
+                                    </h3>
+
+                                    <JsonForm
+                                      className="py-4"
+                                      noHtml5Validate={true}
+                                      schema={
+                                        metadataGenerationData?.configurations as RJSFSchema
+                                      }
+                                      uiSchema={{
+                                        'ui:submitButtonOptions': {
+                                          norender: true,
+                                        },
+                                      }}
+                                      validator={validator}
+                                    />
+                                  </div>
+                                )}
+                              </form>
+                            </Form>
+                          </div>
+                        )}
                       </ErrorBoundary>
-                      {metadata == null && (
+                      {isMetadataGenerationIdle && (
                         <div>
                           <p className="text-gray-80 py-4 pt-6 text-center text-xs">
                             No metadata generated yet.
