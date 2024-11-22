@@ -1043,11 +1043,16 @@ function ToolSelectionModal() {
     <Dialog>
       <DialogTrigger asChild>
         <div
-          className={cn(actionButtonClassnames, 'w-auto')}
+          className={cn(actionButtonClassnames, 'w-[90px]')}
           role="button"
           tabIndex={0}
         >
-          Tools
+          Tools{' '}
+          {toolsList?.filter((tool) => tool.enabled).length && (
+            <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 p-0 text-center text-gray-50">
+              {toolsList?.filter((tool) => tool.enabled).length}
+            </Badge>
+          )}
         </div>
       </DialogTrigger>
       <DialogContent className="flex max-w-xl flex-col bg-gray-300 p-5 text-xs">
