@@ -48,13 +48,12 @@ import {
   SendIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
-import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Paperclip, X, XIcon } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Paperclip, X } from 'lucide-react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm, useWatch } from 'react-hook-form';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -82,11 +81,13 @@ import { useSetJobScope } from './context/set-job-scope-context';
 
 export const actionButtonClassnames =
   'shrink-0 bg-gray-350 inline-flex h-[30px] w-[30px] cursor-pointer items-center justify-center gap-1.5 truncate border border-gray-200 px-[7px] py-1.5 text-left text-xs rounded-lg font-normal text-gray-50 hover:bg-gray-300 hover:text-white';
+
 export type ChatConversationLocationState = {
   files: File[];
   agentName: string;
   selectedVRFiles: VRItem[];
   selectedVRFolders: VRFolder[];
+  llmProviderId: string;
 };
 
 function ConversationEmptyFooter() {
@@ -152,15 +153,22 @@ function ConversationEmptyFooter() {
   }, [llmProviders, chatForm, defaulAgentId]);
 
   useEffect(() => {
+    if (!locationState?.llmProviderId) {
+      return;
+    }
+    const llmProvider = llmProviders.find(
+      (agent) => agent.id === locationState.llmProviderId,
+    );
+    if (llmProvider) {
+      chatForm.setValue('agent', llmProvider.id);
+    }
+  }, [chatForm, locationState, llmProviders]);
+
+  useEffect(() => {
     if (!locationState?.agentName) {
       return;
     }
-    const agent = llmProviders.find(
-      (agent) => agent.id === locationState.agentName,
-    );
-    if (agent) {
-      chatForm.setValue('agent', agent.id);
-    }
+    chatForm.setValue('agent', locationState.agentName);
   }, [chatForm, locationState, llmProviders]);
 
   useEffect(() => {
@@ -262,6 +270,13 @@ function ConversationEmptyFooter() {
   useEffect(() => {
     chatForm.setValue('message', promptSelected?.prompt ?? '');
   }, [chatForm, promptSelected]);
+
+  useEffect(() => {
+    chatConfigForm.setValue(
+      'stream',
+      promptSelected?.isToolNeeded ? false : DEFAULT_CHAT_CONFIG.stream,
+    );
+  }, [chatConfigForm, chatForm, promptSelected]);
 
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth || data.message.trim() === '') return;
@@ -683,9 +698,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                           </Button>
                         </div>
                       }
-                      disabled={
-                        isLoadingMessage
-                      }
+                      disabled={isLoadingMessage}
                       onChange={field.onChange}
                       onSubmit={chatForm.handleSubmit(onSubmit)}
                       ref={textareaRef}

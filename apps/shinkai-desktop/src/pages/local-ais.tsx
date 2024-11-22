@@ -9,7 +9,7 @@ import { OllamaModels } from '../components/shinkai-node-manager/ollama-models';
 import { shinkaiNodeQueryClient } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { SubpageLayout } from './layout/simple-layout';
 
-const AgentsLocally = () => {
+const LocalAisPage = () => {
   const { t } = useTranslation();
   return (
     <QueryClientProvider client={shinkaiNodeQueryClient}>
@@ -29,7 +29,7 @@ const AgentsLocally = () => {
               }),
               'min-w-[120px] gap-2 py-2.5',
             )}
-            to={{ pathname: '/add-agent' }}
+            to={{ pathname: '/add-ai' }}
           >
             <Plus className="h-4 w-4" />
             {t('llmProviders.addManually')}
@@ -40,4 +40,4 @@ const AgentsLocally = () => {
   );
 };
 
-export default AgentsLocally;
+export default LocalAisPage;

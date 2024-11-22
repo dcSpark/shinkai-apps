@@ -22,7 +22,6 @@ export const useGetTools = (
     queryKey: [FunctionKeyV2.GET_LIST_TOOLS, input],
     queryFn: () => getTools(input),
     select: (data) => data?.sort((a, b) => a.name.localeCompare(b.name)),
-
     ...options,
   });
   return response;

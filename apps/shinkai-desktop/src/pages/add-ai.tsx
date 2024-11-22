@@ -95,7 +95,7 @@ export const getModelObject = (
   }
 };
 
-const CreateAgentPage = () => {
+const AddAIPage = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
@@ -441,4 +441,4 @@ const CreateAgentPage = () => {
     </SubpageLayout>
   );
 };
-export default CreateAgentPage;
+export default AddAIPage;

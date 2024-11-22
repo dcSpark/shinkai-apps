@@ -115,6 +115,7 @@ export type Prompt = {
   version: string;
   is_favorite: boolean;
   embedding?: string;
+  isToolNeeded?: boolean;
 };
 export type GetAllPromptsResponse = Prompt[];
 export type SearchPromptsResponse = Prompt[];

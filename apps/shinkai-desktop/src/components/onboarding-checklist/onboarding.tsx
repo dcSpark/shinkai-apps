@@ -64,7 +64,7 @@ export default function OnboardingStepper() {
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
-                  navigate('/agents-locally');
+                  navigate('/local-ais');
                 }}
                 size="sm"
                 variant="outline"
