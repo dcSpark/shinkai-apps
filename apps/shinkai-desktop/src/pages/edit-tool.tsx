@@ -14,6 +14,7 @@ import { useCreateToolCode } from '@shinkai_network/shinkai-node-state/v2/mutati
 import { useCreateToolMetadata } from '@shinkai_network/shinkai-node-state/v2/mutations/createToolMetadata/useCreateToolMetadata';
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
+import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetPlaygroundTool } from '@shinkai_network/shinkai-node-state/v2/queries/getPlaygroundTool/useGetPlaygroundTool';
 import {
   Badge,
@@ -137,6 +138,26 @@ function EditToolPage() {
     inboxId: chatInboxId ?? '',
     forceRefetchInterval: true,
   });
+
+  const chatConversationData: ChatConversationInfiniteData | undefined =
+    useMemo(() => {
+      if (!data) return;
+      const formattedData = data?.pages?.map((page) => {
+        return page.map((message) => {
+          return {
+            ...message,
+            content:
+              message.role === 'user'
+                ? message.content?.split('INPUT:\n\n')?.[1]
+                : message.content,
+          };
+        });
+      });
+      return {
+        ...data,
+        pages: formattedData,
+      };
+    }, [data]);
 
   const { data: metadataData } = useChatConversationWithOptimisticUpdates({
     inboxId: chatInboxIdMetadata ?? '',
@@ -482,7 +503,7 @@ function EditToolPage() {
                 isLoading={isChatConversationLoading}
                 isSuccess={isChatConversationSuccess}
                 noMoreMessageLabel={t('chat.allMessagesLoaded')}
-                paginatedMessages={data}
+                paginatedMessages={chatConversationData}
               />
             )}
           </div>

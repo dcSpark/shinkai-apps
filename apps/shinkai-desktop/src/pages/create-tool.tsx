@@ -24,6 +24,7 @@ import { useCreateToolMetadata } from '@shinkai_network/shinkai-node-state/v2/mu
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
+import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import {
   Badge,
@@ -140,6 +141,26 @@ function CreateToolPage() {
     inboxId: chatInboxId ?? '',
     forceRefetchInterval: true,
   });
+
+  const chatConversationData: ChatConversationInfiniteData | undefined =
+    useMemo(() => {
+      if (!data) return;
+      const formattedData = data?.pages?.map((page) => {
+        return page.map((message) => {
+          return {
+            ...message,
+            content:
+              message.role === 'user'
+                ? message.content?.split('INPUT:\n\n')?.[1]
+                : message.content,
+          };
+        });
+      });
+      return {
+        ...data,
+        pages: formattedData,
+      };
+    }, [data]);
 
   const { data: metadataData } = useChatConversationWithOptimisticUpdates({
     inboxId: chatInboxIdMetadata ?? '',
@@ -447,6 +468,7 @@ function CreateToolPage() {
                 </div>
               </>
             )}
+
             {chatInboxId && (
               <MessageList
                 containerClassName="px-5"
@@ -457,7 +479,7 @@ function CreateToolPage() {
                 isLoading={isChatConversationLoading}
                 isSuccess={isChatConversationSuccess}
                 noMoreMessageLabel={t('chat.allMessagesLoaded')}
-                paginatedMessages={data}
+                paginatedMessages={chatConversationData}
               />
             )}
           </div>
@@ -725,7 +747,7 @@ function CreateToolPage() {
                       <p>Fill in the options above to run your tool.</p>
                     )}
                   </div>
-                  {isMetadataGenerationPending && (
+                  {(isMetadataGenerationPending || isToolGenerating) && (
                     <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
                       <Loader2 className="shrink-0 animate-spin" />
                       Generating...
@@ -772,7 +794,7 @@ function CreateToolPage() {
                       </ErrorBoundary>
                     </div>
                   )}
-                  {isMetadataGenerationIdle && (
+                  {isMetadataGenerationIdle && !isToolGenerating && (
                     <div>
                       <p className="text-gray-80 py-4 pt-6 text-center text-xs">
                         No metadata generated yet.
