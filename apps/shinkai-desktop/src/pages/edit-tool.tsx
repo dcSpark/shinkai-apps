@@ -771,13 +771,13 @@ function EditToolPage() {
                       <p>Fill in the options above to run your tool.</p>
                     )}
                   </div>
-                  {isMetadataGenerationPending && (
+                  {(isMetadataGenerationPending || isToolGenerating) && (
                     <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
                       <Loader2 className="shrink-0 animate-spin" />
                       Generating...
                     </div>
                   )}
-                  {isMetadataGenerationSuccess && (
+                  {isMetadataGenerationSuccess && !isToolGenerating && (
                     <div className="text-gray-80 text-xs">
                       <ErrorBoundary
                         FallbackComponent={ToolErrorFallback}

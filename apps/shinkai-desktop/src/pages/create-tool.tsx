@@ -753,7 +753,7 @@ function CreateToolPage() {
                       Generating...
                     </div>
                   )}
-                  {isMetadataGenerationSuccess && (
+                  {isMetadataGenerationSuccess && !isToolGenerating && (
                     <div className="text-gray-80 text-xs">
                       <ErrorBoundary
                         FallbackComponent={ToolErrorFallback}
