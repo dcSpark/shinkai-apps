@@ -182,12 +182,19 @@ function EditToolPage() {
     },
   });
 
-  const { mutateAsync: saveToolCode } = useSaveToolCode({
-    onSuccess: (data) => {
-      toast.success('Tool code saved successfully');
-      navigate(`/tools/${data.metadata.tool_router_key}`);
-    },
-  });
+  const { mutateAsync: saveToolCode, isPending: isSavingTool } =
+    useSaveToolCode({
+      onSuccess: (data) => {
+        toast.success('Tool code saved successfully');
+        navigate(`/tools/${data.metadata.tool_router_key}`);
+      },
+      onError: (error) => {
+        toast.error('Failed to save tool code', {
+          position: 'top-right',
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
 
   const defaultAgentId = useSettings(
     (settingsStore) => settingsStore.defaultAgentId,
@@ -608,9 +615,10 @@ function EditToolPage() {
                     disabled={
                       !toolCode ||
                       !metadataGenerationData ||
-                      // !isCodeExecutionSuccess ||
-                      !chatInboxId
+                      !chatInboxId ||
+                      isSavingTool
                     }
+                    isLoading={isSavingTool}
                     onClick={async () => {
                       if (!chatInboxId || !metadataGenerationData) return;
 

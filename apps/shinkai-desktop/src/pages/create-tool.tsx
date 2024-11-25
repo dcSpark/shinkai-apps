@@ -185,12 +185,19 @@ function CreateToolPage() {
     },
   });
 
-  const { mutateAsync: saveToolCode } = useSaveToolCode({
-    onSuccess: (data) => {
-      toast.success('Tool code saved successfully');
-      navigate(`/tools/${data.metadata.tool_router_key}`);
-    },
-  });
+  const { mutateAsync: saveToolCode, isPending: isSavingTool } =
+    useSaveToolCode({
+      onSuccess: (data) => {
+        toast.success('Tool code saved successfully');
+        navigate(`/tools/${data.metadata.tool_router_key}`);
+      },
+      onError: (error) => {
+        toast.error('Failed to save tool code', {
+          position: 'top-right',
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
 
   const defaultAgentId = useSettings(
     (settingsStore) => settingsStore.defaultAgentId,
@@ -397,9 +404,9 @@ function CreateToolPage() {
   };
 
   const handleSaveTool = async () => {
-    if (!isCodeExecutionSuccess) {
-      setTab('code');
-      toast.error('Please run your tool before saving', {
+    if (Object.keys(metadataForm.formState.errors).length > 0) {
+      toast.error('Please fill in all the required fields', {
+        description: Object.values(metadataForm.formState.errors).join(', '),
         position: 'top-right',
       });
       return;
@@ -584,9 +591,10 @@ function CreateToolPage() {
                     disabled={
                       !toolCode ||
                       !metadataGenerationData ||
-                      // !isCodeExecutionSuccess ||
-                      !chatInboxId
+                      !chatInboxId ||
+                      isSavingTool
                     }
+                    isLoading={isSavingTool}
                     onClick={async () => {
                       if (!chatInboxId || !metadataGenerationData) return;
 
