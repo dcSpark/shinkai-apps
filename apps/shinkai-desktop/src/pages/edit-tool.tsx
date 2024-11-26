@@ -758,12 +758,12 @@ function EditToolPage() {
                           </AnimatePresence>
                         </div>
                         <ToolCodeEditor
-                          code={toolCode}
                           language="ts"
                           name="editor"
                           onUpdate={(currentCode) => {
                             setIsDirty(currentCode !== baseToolCodeRef.current);
                           }}
+                          value={toolCode}
                         />
                       </form>
                     )}
