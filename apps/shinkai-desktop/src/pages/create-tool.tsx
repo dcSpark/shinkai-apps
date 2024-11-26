@@ -169,7 +169,6 @@ function CreateToolPage() {
 
   const { mutateAsync: createToolMetadata } = useCreateToolMetadata();
   const {
-    isIdle: isCodeExecutionIdle,
     mutateAsync: executeCode,
     isPending: isExecutingCode,
     isSuccess: isCodeExecutionSuccess,
@@ -761,6 +760,7 @@ function CreateToolPage() {
                       Generating...
                     </div>
                   )}
+
                   {isMetadataGenerationSuccess && !isToolGenerating && (
                     <div className="text-gray-80 text-xs">
                       <ErrorBoundary
@@ -799,6 +799,48 @@ function CreateToolPage() {
                           }}
                           validator={validator}
                         />
+                        <AnimatePresence>
+                          {(isExecutingCode ||
+                            isCodeExecutionError ||
+                            isCodeExecutionSuccess) && (
+                            <motion.div
+                              animate={{ opacity: 1, x: 0 }}
+                              className="flex flex-col border-t border-gray-200 bg-gray-300 py-2 pb-4"
+                              exit={{ opacity: 0, x: 20 }}
+                              initial={{ opacity: 0, x: 20 }}
+                              ref={toolResultBoxRef}
+                            >
+                              {isExecutingCode && (
+                                <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
+                                  <Loader2 className="shrink-0 animate-spin" />
+                                  Running Tool...
+                                </div>
+                              )}
+                              {isCodeExecutionError && (
+                                <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
+                                  <p>
+                                    Tool execution failed. Try generating the
+                                    tool code again.
+                                  </p>
+                                  <pre className="max-w-sm whitespace-break-spaces text-center">
+                                    {codeExecutionError?.response?.data
+                                      ?.message ?? codeExecutionError?.message}
+                                  </pre>
+                                </div>
+                              )}
+                              {isCodeExecutionSuccess && toolResult && (
+                                <div className="py-2">
+                                  <ToolCodeEditor
+                                    language="json"
+                                    readOnly
+                                    style={{ height: '200px' }}
+                                    value={JSON.stringify(toolResult, null, 2)}
+                                  />
+                                </div>
+                              )}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </ErrorBoundary>
                     </div>
                   )}
@@ -808,50 +850,6 @@ function CreateToolPage() {
                         No metadata generated yet.
                       </p>
                     </div>
-                  )}
-                </div>
-
-                <div
-                  className="flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3"
-                  ref={toolResultBoxRef}
-                >
-                  <h2 className="flex items-center pb-1 pl-1 pt-3 font-mono text-xs font-semibold text-gray-50">
-                    Tool Output
-                  </h2>
-                  {isExecutingCode && (
-                    <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-                      <Loader2 className="shrink-0 animate-spin" />
-                      Running Tool...
-                    </div>
-                  )}
-                  {isCodeExecutionError && (
-                    <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
-                      <p>
-                        Tool execution failed. Try generating the tool code
-                        again.
-                      </p>
-                      <pre className="max-w-sm whitespace-break-spaces text-center">
-                        {codeExecutionError?.response?.data?.message ??
-                          codeExecutionError?.message}
-                      </pre>
-                    </div>
-                  )}
-                  {isCodeExecutionSuccess && toolResult && (
-                    <div className="py-2">
-                      <ToolCodeEditor
-                        language="json"
-                        readOnly
-                        style={{ height: '200px' }}
-                        value={JSON.stringify(toolResult, null, 2)}
-                      />
-                    </div>
-                  )}
-                  {isCodeExecutionIdle && (
-                    <p className="text-gray-80 py-4 pt-6 text-center text-xs">
-                      No tool results yet. <br />
-                      {/* eslint-disable-next-line react/no-unescaped-entities */}
-                      "Run tool" to see results.
-                    </p>
                   )}
                 </div>
               </TabsContent>
