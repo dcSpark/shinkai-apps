@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DialogClose } from '@radix-ui/react-dialog';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { FormProps } from '@rjsf/core';
 import { RJSFSchema } from '@rjsf/utils';
@@ -20,12 +19,6 @@ import {
   Badge,
   Button,
   ChatInputArea,
-  CopyToClipboardIcon,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
   Form,
   FormControl,
   FormField,
@@ -34,7 +27,6 @@ import {
   FormMessage,
   Input,
   JsonForm,
-  MarkdownPreview,
   MessageList,
   Tabs,
   TabsContent,
@@ -47,10 +39,8 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import JsonView from '@uiw/react-json-view';
-import { githubDarkTheme } from '@uiw/react-json-view/githubDark';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUpRight, Loader2, Play, Save, XIcon } from 'lucide-react';
+import { ArrowUpRight, Loader2, Play, Save } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
@@ -62,7 +52,6 @@ import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-se
 import { ToolErrorFallback } from '../components/playground-tool/error-boundary';
 import PlaygroundToolLayout from '../components/playground-tool/layout';
 import ToolCodeEditor from '../components/playground-tool/tool-code-editor';
-import config from '../config';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useChatConversationWithOptimisticUpdates } from './chat/chat-conversation';
@@ -216,7 +205,6 @@ function EditToolPage() {
   }, [auth?.api_v2_key, auth?.node_address, chatInboxId, createToolMetadata]);
 
   const {
-    metadataMessageContent,
     isMetadataGenerationPending,
     isMetadataGenerationSuccess,
     isMetadataGenerationIdle,
@@ -901,91 +889,25 @@ function EditToolPage() {
                   >
                     {isMetadataGenerationSuccess && (
                       <div className="text-gray-80 relative text-xs">
-                        {config.isDev && (
-                          <div className="absolute -top-8 right-0 flex items-center gap-2">
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  className="size-[30px] p-2"
-                                  onClick={regenerateToolMetadata}
-                                  size="auto"
-                                  variant="outline"
-                                >
-                                  <ReloadIcon className="h-4 w-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipPortal>
-                                <TooltipContent className="flex flex-col items-center gap-1">
-                                  <p>Regenerate Metadata</p>
-                                </TooltipContent>
-                              </TooltipPortal>
-                            </Tooltip>
-
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button
-                                  className="flex h-[30px] items-center gap-1 rounded-md text-xs"
-                                  size="auto"
-                                  variant="outline"
-                                >
-                                  <ArrowUpRight className="h-4 w-4" />
-                                  Details
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="flex max-w-5xl flex-col bg-gray-300 p-5 text-xs">
-                                <DialogClose className="absolute right-4 top-4">
-                                  <XIcon className="text-gray-80 h-5 w-5" />
-                                </DialogClose>
-                                <DialogHeader className="flex justify-between">
-                                  <DialogTitle className="text-left text-sm font-bold">
-                                    Details
-                                  </DialogTitle>
-                                </DialogHeader>
-                                <div className="grid grid-cols-2 gap-10 space-y-3">
-                                  <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
-                                    <div className="flex h-12 items-center justify-between gap-2 pt-1.5">
-                                      <h2 className="text-gray-80 flex items-center pl-1 font-mono text-xs font-semibold">
-                                        Response
-                                      </h2>
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <div>
-                                            <CopyToClipboardIcon
-                                              className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"
-                                              string={metadataMessageContent}
-                                            />
-                                          </div>
-                                        </TooltipTrigger>
-                                        <TooltipPortal>
-                                          <TooltipContent className="flex flex-col items-center gap-1">
-                                            <p>Copy Code</p>
-                                          </TooltipContent>
-                                        </TooltipPortal>
-                                      </Tooltip>
-                                    </div>
-                                    <MarkdownPreview
-                                      className="prose-h1:!text-gray-50 prose-h1:!text-sm !text-sm !text-gray-50"
-                                      source={metadataMessageContent}
-                                    />
-                                  </div>
-
-                                  <div className="max-h-[80vh] overflow-y-auto px-5 pb-2 pt-0.5">
-                                    <div className="text-gray-80 flex-1 items-center gap-1 truncate text-left text-xs">
-                                      View JSON
-                                    </div>
-                                    <JsonView
-                                      displayDataTypes={false}
-                                      displayObjectSize={false}
-                                      enableClipboard={false}
-                                      style={githubDarkTheme}
-                                      value={metadataGenerationData ?? {}}
-                                    />
-                                  </div>
-                                </div>
-                              </DialogContent>
-                            </Dialog>
-                          </div>
-                        )}
+                        <div className="absolute -top-8 right-0 flex items-center gap-2">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                className="size-[30px] p-2"
+                                onClick={regenerateToolMetadata}
+                                size="auto"
+                                variant="outline"
+                              >
+                                <ReloadIcon className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipPortal>
+                              <TooltipContent className="flex flex-col items-center gap-1">
+                                <p>Regenerate Metadata</p>
+                              </TooltipContent>
+                            </TooltipPortal>
+                          </Tooltip>
+                        </div>
 
                         <Form {...metadataForm}>
                           <form
