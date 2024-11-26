@@ -10,9 +10,9 @@ import 'prism-react-editor/autocomplete.css';
 import 'prism-react-editor/cursor';
 import 'prism-react-editor/themes/github-dark.css';
 import 'prism-react-editor/search.css';
-import 'prism-react-editor/guides';
 
 import { Editor, EditorProps, PrismEditor } from 'prism-react-editor';
+// import { addTextareaListener } from 'prism-react-editor';
 import {
   completeSnippets,
   fuzzyFilter,
@@ -31,6 +31,11 @@ import {
   // reactTags,
 } from 'prism-react-editor/autocomplete/javascript';
 import {
+  blockCommentFolding,
+  markdownFolding,
+  useReadOnlyCodeFolding,
+} from 'prism-react-editor/code-folding';
+import {
   useDefaultCommands,
   useEditHistory,
 } from 'prism-react-editor/commands';
@@ -48,6 +53,16 @@ import {
   useSearchWidget,
   useShowInvisibles,
 } from 'prism-react-editor/search';
+import { useReactTooltip } from 'prism-react-editor/tooltips';
+import React, { Suspense } from 'react';
+
+function ReadOnly({ editor }: { editor: PrismEditor }) {
+  const [portal] = useReactTooltip(editor, null, false);
+
+  useReadOnlyCodeFolding(editor, blockCommentFolding, markdownFolding);
+
+  return portal as unknown as React.ReactElement;
+}
 
 const Extensions = ({ editor }: { editor: PrismEditor }) => {
   useBracketMatcher(editor);
@@ -65,7 +80,16 @@ const Extensions = ({ editor }: { editor: PrismEditor }) => {
     filter: fuzzyFilter,
   });
 
-  return <IndentGuides editor={editor} />;
+  return (
+    <>
+      {editor.props.readOnly && (
+        <Suspense>
+          <ReadOnly editor={editor} />
+        </Suspense>
+      )}
+      <IndentGuides editor={editor} />
+    </>
+  );
 };
 
 registerCompletions(['javascript', 'js', 'jsx', 'tsx', 'typescript', 'ts'], {
@@ -86,12 +110,14 @@ const ToolCodeEditor = ({
   language,
   name,
   readOnly,
+  style,
 }: {
   value: EditorProps['value'];
-  onUpdate: EditorProps['onUpdate'];
+  onUpdate?: EditorProps['onUpdate'];
   language: EditorProps['language'];
-  name: string;
+  name?: string;
   readOnly?: boolean;
+  style?: React.CSSProperties;
 }) => (
   <Editor
     insertSpaces={false}
@@ -101,9 +127,9 @@ const ToolCodeEditor = ({
     style={{
       fontSize: '0.75rem',
       lineHeight: '1.5',
-      maxHeight: '40vh',
-      height: '100%',
+      height: 'min(20rem, 100vh - 16rem)',
       overflowY: 'auto',
+      ...style,
     }}
     textareaProps={{ name: name ?? 'editor' }}
     value={value}

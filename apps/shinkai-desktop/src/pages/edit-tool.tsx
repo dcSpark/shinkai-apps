@@ -862,13 +862,11 @@ function EditToolPage() {
                   )}
                   {isCodeExecutionSuccess && toolResult && (
                     <div className="py-2">
-                      <JsonView
-                        className="rounded-md p-4"
-                        displayDataTypes={false}
-                        displayObjectSize={false}
-                        enableClipboard={false}
-                        style={githubDarkTheme}
-                        value={toolResult}
+                      <ToolCodeEditor
+                        language="json"
+                        readOnly
+                        style={{ height: '200px' }}
+                        value={JSON.stringify(toolResult, null, 2)}
                       />
                     </div>
                   )}
