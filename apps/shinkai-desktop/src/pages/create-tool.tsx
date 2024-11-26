@@ -1,9 +1,3 @@
-import 'prism-react-editor/prism/languages/typescript';
-import 'prism-react-editor/languages/typoscript';
-import 'prism-react-editor/layout.css';
-import 'prism-react-editor/themes/github-dark.css';
-import 'prism-react-editor/search.css';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { FormProps } from '@rjsf/core';
@@ -31,7 +25,7 @@ import {
   ChatInputArea,
   Dialog,
   DialogContent,
-  DialogDescription,
+  // DialogDescription,
   DialogTitle,
   DialogTrigger,
   Form,
@@ -39,8 +33,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-  Input,
   JsonForm,
   MessageList,
   Switch,
@@ -60,7 +52,13 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, Loader2, Play, Save } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -71,6 +69,7 @@ import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-se
 import { actionButtonClassnames } from '../components/chat/conversation-footer';
 import { ToolErrorFallback } from '../components/playground-tool/error-boundary';
 import PlaygroundToolLayout from '../components/playground-tool/layout';
+import { ToolMetadataSchema } from '../components/playground-tool/schemas';
 import ToolCodeEditor from '../components/playground-tool/tool-code-editor';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
@@ -81,20 +80,85 @@ export const createToolCodeFormSchema = z.object({
   llmProviderId: z.string().min(1),
 });
 
-const metadataFormSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  description: z.string().min(1, 'Description is required'),
-  author: z.string().min(1, 'Author is required'),
-  keywords: z.array(z.string()),
-});
-type MetadataFormSchema = z.infer<typeof metadataFormSchema>;
-
 export type CreateToolCodeFormSchema = z.infer<typeof createToolCodeFormSchema>;
 
 function extractTypeScriptCode(message: string) {
   const tsCodeMatch = message.match(/```typescript\n([\s\S]*?)\n```/);
   return tsCodeMatch ? tsCodeMatch[1].trim() : null;
 }
+
+const useToolMetadata = ({
+  chatInboxIdMetadata,
+}: {
+  chatInboxIdMetadata?: string;
+}) => {
+  const forceGenerateMetadata = useRef(false);
+
+  const { data: metadataData } = useChatConversationWithOptimisticUpdates({
+    inboxId: chatInboxIdMetadata ?? '',
+    forceRefetchInterval: true,
+  });
+
+  const {
+    isMetadataGenerationPending,
+    isMetadataGenerationSuccess,
+    isMetadataGenerationIdle,
+    metadataGenerationData,
+    metadataGenerationError,
+    isMetadataGenerationError,
+  } = useMemo(() => {
+    const metadata = metadataData?.pages?.at(-1)?.at(-1);
+    const isMetadataGenerationIdle = metadata == null;
+    const isMetadataGenerationPending =
+      metadata?.role === 'assistant' && metadata?.status.type === 'running';
+    const isMetadataGenerationSuccess =
+      metadata?.role === 'assistant' && metadata?.status.type === 'complete';
+    let metadataGenerationData = null;
+    let metadataGenerationError: null | string = null;
+    if (isMetadataGenerationSuccess) {
+      const jsonCodeMatch = metadata.content.match(/```json\n([\s\S]*?)\n```/);
+      if (jsonCodeMatch) {
+        try {
+          const parsedJson = JSON.parse(jsonCodeMatch[1].trim());
+          metadataGenerationData = ToolMetadataSchema.parse(
+            parsedJson,
+          ) as ToolMetadata;
+        } catch (error) {
+          if (error instanceof Error) {
+            metadataGenerationError = 'Invalid Metadata: ' + error.message;
+          }
+          if (error instanceof z.ZodError) {
+            metadataGenerationError =
+              'Invalid Metadata: ' +
+              error.issues.map((issue) => issue.message).join(', ');
+          }
+        }
+      } else {
+        metadataGenerationError = 'No JSON code found';
+      }
+    }
+
+    return {
+      metadataMessageContent: metadata?.content,
+      isMetadataGenerationPending,
+      isMetadataGenerationSuccess,
+      isMetadataGenerationIdle,
+      metadataGenerationData,
+      isMetadataGenerationError: metadataGenerationError != null,
+      metadataGenerationError,
+    };
+  }, [metadataData?.pages]);
+
+  return {
+    isMetadataGenerationPending,
+    isMetadataGenerationSuccess,
+    isMetadataGenerationIdle,
+    metadataGenerationData,
+    metadataGenerationError,
+    isMetadataGenerationError,
+    forceGenerateMetadata,
+  };
+};
 
 function CreateToolPage() {
   const [tab, setTab] = useState<'code' | 'preview'>('code');
@@ -106,13 +170,23 @@ function CreateToolPage() {
 
   const [toolCode, setToolCode] = useState<string>('');
   const baseToolCodeRef = useRef<string>('');
-  const forceGenerateMetadata = useRef(false);
+
   const [isDirty, setIsDirty] = useState(false);
   const [toolResult, setToolResult] = useState<object | null>(null);
   const [chatInboxId, setChatInboxId] = useState<string | null>(null);
-  const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<string | null>(
-    null,
-  );
+  const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<
+    string | undefined
+  >(undefined);
+
+  const {
+    isMetadataGenerationPending,
+    isMetadataGenerationSuccess,
+    isMetadataGenerationIdle,
+    metadataGenerationData,
+    metadataGenerationError,
+    isMetadataGenerationError,
+    forceGenerateMetadata,
+  } = useToolMetadata({ chatInboxIdMetadata });
 
   const [resetCounter, setResetCounter] = useState(0);
 
@@ -155,11 +229,6 @@ function CreateToolPage() {
       };
     }, [data]);
 
-  const { data: metadataData } = useChatConversationWithOptimisticUpdates({
-    inboxId: chatInboxIdMetadata ?? '',
-    forceRefetchInterval: true,
-  });
-
   const { mutateAsync: createToolMetadata } = useCreateToolMetadata();
   const {
     mutateAsync: executeCode,
@@ -170,10 +239,12 @@ function CreateToolPage() {
   } = useExecuteToolCode({
     onSuccess: (data) => {
       setToolResult(data);
-      toolResultBoxRef.current?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'end',
-      });
+      setTimeout(() => {
+        if (toolResultBoxRef.current) {
+          toolResultBoxRef.current.scrollTop =
+            toolResultBoxRef.current.scrollHeight;
+        }
+      }, 300);
     },
   });
 
@@ -210,69 +281,6 @@ function CreateToolPage() {
       },
     );
   }, [auth?.api_v2_key, auth?.node_address, chatInboxId, createToolMetadata]);
-
-  const {
-    isMetadataGenerationPending,
-    isMetadataGenerationSuccess,
-    isMetadataGenerationIdle,
-    metadataGenerationData,
-  } = useMemo(() => {
-    const metadata = metadataData?.pages?.at(-1)?.at(-1);
-    const isMetadataGenerationIdle = metadata == null;
-    const isMetadataGenerationPending =
-      metadata?.role === 'assistant' && metadata?.status.type === 'running';
-    const isMetadataGenerationSuccess =
-      metadata?.role === 'assistant' && metadata?.status.type === 'complete';
-    let metadataGenerationData = null;
-    if (isMetadataGenerationSuccess) {
-      const jsonCodeMatch = metadata.content.match(/```json\n([\s\S]*?)\n```/);
-      if (jsonCodeMatch) {
-        try {
-          const parsedJson = JSON.parse(jsonCodeMatch[1].trim());
-          metadataGenerationData = parsedJson as ToolMetadata;
-        } catch (error) {
-          toast.error(
-            'Failed to generate preview (json). Try regenerating the preview again.',
-            {
-              position: 'top-right',
-              description: (error as Error)?.message,
-              action: {
-                label: 'Regenerate',
-                onClick: regenerateToolMetadata,
-              },
-            },
-          );
-        }
-      } else {
-        toast.error('Failed to generate preview.', {
-          position: 'top-right',
-          description: 'No JSON code found. Try to generate preview again',
-          action: {
-            label: 'Regenerate',
-            onClick: regenerateToolMetadata,
-          },
-        });
-      }
-    }
-
-    return {
-      metadataMessageContent: metadata?.content,
-      isMetadataGenerationPending,
-      isMetadataGenerationSuccess,
-      isMetadataGenerationIdle,
-      metadataGenerationData,
-    };
-  }, [metadataData?.pages, regenerateToolMetadata]);
-
-  const metadataForm = useForm<MetadataFormSchema>({
-    resolver: zodResolver(metadataFormSchema),
-    defaultValues: {
-      name: metadataGenerationData?.name,
-      description: metadataGenerationData?.description,
-      author: auth?.shinkai_identity ?? '',
-      keywords: metadataGenerationData?.keywords ?? [],
-    },
-  });
 
   useEffect(() => {
     form.setValue('llmProviderId', defaultAgentId);
@@ -350,14 +358,6 @@ function CreateToolPage() {
     toolCode,
   ]);
 
-  useEffect(() => {
-    if (!metadataGenerationData) return;
-    metadataForm.setValue('name', metadataGenerationData?.name);
-    metadataForm.setValue('description', metadataGenerationData?.description);
-    metadataForm.setValue('author', auth?.shinkai_identity ?? '');
-    metadataForm.setValue('keywords', metadataGenerationData?.keywords);
-  }, [auth?.shinkai_identity, metadataForm, metadataGenerationData]);
-
   const onSubmit = async (data: CreateToolCodeFormSchema) => {
     if (!auth) return;
     await createToolCode(
@@ -394,11 +394,25 @@ function CreateToolPage() {
     });
   };
 
-  const handleSaveTool = async () => {
-    if (Object.keys(metadataForm.formState.errors).length > 0) {
-      toast.error('Please fill in all the required fields', {
-        description: Object.values(metadataForm.formState.errors).join(', '),
+  const handleSaveTool = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const metadataCode = new FormData(e.currentTarget).get('editor');
+    let parsedMetadata: ToolMetadata;
+    try {
+      const parseResult = JSON.parse(metadataCode as string) as ToolMetadata;
+      parsedMetadata = ToolMetadataSchema.parse(parseResult);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast.error('Invalid Metadata JSON Value', {
+          description: error.issues.map((issue) => issue.message).join(', '),
+        });
+        return;
+      }
+
+      toast.error('Invalid Metadata JSON', {
         position: 'top-right',
+        description: (error as Error)?.message,
       });
       return;
     }
@@ -407,9 +421,7 @@ function CreateToolPage() {
     await saveToolCode({
       code: toolCode,
       metadata: {
-        ...metadataGenerationData,
-        name: metadataForm.getValues('name'),
-        description: metadataForm.getValues('description'),
+        ...parsedMetadata,
         author: auth?.shinkai_identity ?? '',
       },
       jobId: extractJobIdFromInbox(chatInboxId),
@@ -585,24 +597,10 @@ function CreateToolPage() {
                       !chatInboxId ||
                       isSavingTool
                     }
+                    form="metadata-form"
                     isLoading={isSavingTool}
-                    onClick={async () => {
-                      if (!chatInboxId || !metadataGenerationData) return;
-
-                      await saveToolCode({
-                        code: toolCode,
-                        metadata: {
-                          ...metadataGenerationData,
-                          name: metadataForm.getValues('name'),
-                          description: metadataForm.getValues('description'),
-                          author: auth?.shinkai_identity ?? '',
-                        },
-                        jobId: extractJobIdFromInbox(chatInboxId),
-                        token: auth?.api_v2_key ?? '',
-                        nodeAddress: auth?.node_address ?? '',
-                      });
-                    }}
                     size="sm"
+                    type="submit"
                     variant="outline"
                   >
                     <Save className="mr-2 h-4 w-4" />
@@ -613,6 +611,7 @@ function CreateToolPage() {
 
               <TabsContent
                 className="mt-1 h-full space-y-4 overflow-y-auto whitespace-pre-line break-words py-4 pb-8 pr-3"
+                ref={toolResultBoxRef}
                 value="code"
               >
                 <div className="flex min-h-[250px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
@@ -752,90 +751,101 @@ function CreateToolPage() {
                       Generating...
                     </div>
                   )}
-
-                  {isMetadataGenerationSuccess && !isToolGenerating && (
-                    <div className="text-gray-80 text-xs">
-                      <ErrorBoundary
-                        FallbackComponent={ToolErrorFallback}
-                        onReset={regenerateToolMetadata}
-                      >
-                        <JsonForm
-                          className="py-4"
-                          formData={formData}
-                          noHtml5Validate={true}
-                          onChange={(e) => setFormData(e.formData)}
-                          onSubmit={handleRunCode}
-                          schema={
-                            metadataGenerationData?.parameters as RJSFSchema
-                          }
-                          uiSchema={{
-                            'ui:submitButtonOptions': {
-                              props: {
-                                disabled: isExecutingCode,
-                                isLoading: isExecutingCode,
-                              },
-                              // @ts-expect-error string type
-                              submitText: (
-                                <div
-                                  className={
-                                    'inline-flex items-center justify-center gap-2 pl-2 pr-3'
-                                  }
-                                >
-                                  {!isExecutingCode && (
-                                    <Play className="h-4 w-4" />
-                                  )}
-                                  Run
-                                </div>
-                              ),
-                            },
-                          }}
-                          validator={validator}
-                        />
-                        <AnimatePresence>
-                          {(isExecutingCode ||
-                            isCodeExecutionError ||
-                            isCodeExecutionSuccess) && (
-                            <motion.div
-                              animate={{ opacity: 1, x: 0 }}
-                              className="flex flex-col border-t border-gray-200 bg-gray-300 py-2 pb-4"
-                              exit={{ opacity: 0, x: 20 }}
-                              initial={{ opacity: 0, x: 20 }}
-                              ref={toolResultBoxRef}
-                            >
-                              {isExecutingCode && (
-                                <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-                                  <Loader2 className="shrink-0 animate-spin" />
-                                  Running Tool...
-                                </div>
-                              )}
-                              {isCodeExecutionError && (
-                                <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
-                                  <p>
-                                    Tool execution failed. Try generating the
-                                    tool code again.
-                                  </p>
-                                  <pre className="max-w-sm whitespace-break-spaces text-center">
-                                    {codeExecutionError?.response?.data
-                                      ?.message ?? codeExecutionError?.message}
-                                  </pre>
-                                </div>
-                              )}
-                              {isCodeExecutionSuccess && toolResult && (
-                                <div className="py-2">
-                                  <ToolCodeEditor
-                                    language="json"
-                                    readOnly
-                                    style={{ height: '200px' }}
-                                    value={JSON.stringify(toolResult, null, 2)}
-                                  />
-                                </div>
-                              )}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </ErrorBoundary>
-                    </div>
+                  {isMetadataGenerationError && (
+                    <ToolErrorFallback
+                      error={new Error(metadataGenerationError ?? '')}
+                      resetErrorBoundary={regenerateToolMetadata}
+                    />
                   )}
+                  {isMetadataGenerationSuccess &&
+                    !isToolGenerating &&
+                    !isMetadataGenerationError && (
+                      <div className="text-gray-80 text-xs">
+                        <ErrorBoundary
+                          FallbackComponent={ToolErrorFallback}
+                          onReset={regenerateToolMetadata}
+                        >
+                          <JsonForm
+                            className="py-4"
+                            formData={formData}
+                            noHtml5Validate={true}
+                            onChange={(e) => setFormData(e.formData)}
+                            onSubmit={handleRunCode}
+                            schema={
+                              metadataGenerationData?.parameters as RJSFSchema
+                            }
+                            uiSchema={{
+                              'ui:submitButtonOptions': {
+                                props: {
+                                  disabled: isExecutingCode,
+                                  isLoading: isExecutingCode,
+                                },
+                                // @ts-expect-error string type
+                                submitText: (
+                                  <div
+                                    className={
+                                      'inline-flex items-center justify-center gap-2 pl-2 pr-3'
+                                    }
+                                  >
+                                    {!isExecutingCode && (
+                                      <Play className="h-4 w-4" />
+                                    )}
+                                    Run
+                                  </div>
+                                ),
+                              },
+                            }}
+                            validator={validator}
+                          />
+                          <AnimatePresence>
+                            {(isExecutingCode ||
+                              isCodeExecutionError ||
+                              isCodeExecutionSuccess) && (
+                              <motion.div
+                                animate={{ opacity: 1, x: 0 }}
+                                className="flex flex-col border-t border-gray-200 bg-gray-300 py-2 pb-4"
+                                exit={{ opacity: 0, x: 20 }}
+                                initial={{ opacity: 0, x: 20 }}
+                              >
+                                {isExecutingCode && (
+                                  <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
+                                    <Loader2 className="shrink-0 animate-spin" />
+                                    Running Tool...
+                                  </div>
+                                )}
+                                {isCodeExecutionError && (
+                                  <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
+                                    <p>
+                                      Tool execution failed. Try generating the
+                                      tool code again.
+                                    </p>
+                                    <pre className="max-w-sm whitespace-break-spaces text-center">
+                                      {codeExecutionError?.response?.data
+                                        ?.message ??
+                                        codeExecutionError?.message}
+                                    </pre>
+                                  </div>
+                                )}
+                                {isCodeExecutionSuccess && toolResult && (
+                                  <div className="py-2">
+                                    <ToolCodeEditor
+                                      language="json"
+                                      readOnly
+                                      style={{ height: '200px' }}
+                                      value={JSON.stringify(
+                                        toolResult,
+                                        null,
+                                        2,
+                                      )}
+                                    />
+                                  </div>
+                                )}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </ErrorBoundary>
+                      </div>
+                    )}
                   {isMetadataGenerationIdle && !isToolGenerating && (
                     <div>
                       <p className="text-gray-80 py-4 pt-6 text-center text-xs">
@@ -850,12 +860,25 @@ function CreateToolPage() {
                 value="preview"
               >
                 <div className="flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
-                  <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
-                    <h2 className="flex font-mono font-semibold text-gray-50">
-                      Metadata
-                    </h2>
-                    {metadataGenerationData && (
-                      <p>Fill in the options above to run your tool.</p>
+                  <div className="flex items-start justify-between gap-2 py-3">
+                    <div className="text-gray-80 flex flex-col gap-1 text-xs">
+                      <h2 className="flex font-mono font-semibold text-gray-50">
+                        Metadata
+                      </h2>
+                      {metadataGenerationData && (
+                        <p>Fill in the options above to run your tool.</p>
+                      )}
+                    </div>
+                    {isMetadataGenerationSuccess && (
+                      <Button
+                        className="text-gray-80 h-[30px] gap-2 rounded-md text-xs"
+                        onClick={regenerateToolMetadata}
+                        size="sm"
+                        variant="outline"
+                      >
+                        <ReloadIcon className="size-3.5" />
+                        Regenerate Metadata
+                      </Button>
                     )}
                   </div>
                   {isMetadataGenerationPending && (
@@ -864,99 +887,45 @@ function CreateToolPage() {
                       Generating Metadata...
                     </div>
                   )}
+                  {isMetadataGenerationError && (
+                    <ToolErrorFallback
+                      error={new Error(metadataGenerationError ?? '')}
+                      resetErrorBoundary={regenerateToolMetadata}
+                    />
+                  )}
                   <ErrorBoundary
                     FallbackComponent={ToolErrorFallback}
                     onReset={regenerateToolMetadata}
                   >
-                    {isMetadataGenerationSuccess && (
-                      <div className="text-gray-80 relative text-xs">
-                        <div className="absolute -top-10 right-0 flex items-center gap-2">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                className="text-gray-80 h-[30px] gap-2 rounded-md text-xs"
-                                onClick={regenerateToolMetadata}
-                                size="sm"
-                                variant="outline"
-                              >
-                                <ReloadIcon className="h-4 w-4" />
-                                Regenerate
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipPortal>
-                              <TooltipContent className="flex flex-col items-center gap-1">
-                                <p>Regenerate Metadata</p>
-                              </TooltipContent>
-                            </TooltipPortal>
-                          </Tooltip>
-                        </div>
-
-                        <Form {...metadataForm}>
+                    {isMetadataGenerationSuccess &&
+                      !isMetadataGenerationError && (
+                        <div className="text-gray-80 text-xs">
                           <form
-                            className="space-y-4 pb-4 pt-4"
-                            onSubmit={metadataForm.handleSubmit(handleSaveTool)}
+                            className="space-y-4"
+                            id="metadata-form"
+                            onSubmit={handleSaveTool}
                           >
-                            <div className="space-y-3">
-                              <h3 className="text-xs font-medium uppercase text-white">
-                                General
-                              </h3>
-
-                              <FormField
-                                control={metadataForm.control}
-                                name="name"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Tool Name</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
+                            <div className="py-2">
+                              <ToolCodeEditor
+                                language="json"
+                                style={{ height: '80vh' }}
+                                value={
+                                  metadataGenerationData != null
+                                    ? JSON.stringify(
+                                        {
+                                          ...metadataGenerationData,
+                                          author: auth?.shinkai_identity ?? '',
+                                        },
+                                        null,
+                                        2,
+                                      )
+                                    : 'Invalid metadata'
+                                }
                               />
                             </div>
-                            <FormField
-                              control={metadataForm.control}
-                              name="description"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Tool Description</FormLabel>
-                                  <FormControl>
-                                    <Input {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-
-                            {Object.keys(
-                              metadataGenerationData?.configurations
-                                ?.properties ?? {},
-                            ).length > 0 && (
-                              <div className="space-y-4">
-                                <h3 className="text-xs font-medium uppercase text-white">
-                                  Tool Config
-                                </h3>
-
-                                <JsonForm
-                                  className="py-4"
-                                  noHtml5Validate={true}
-                                  schema={
-                                    metadataGenerationData?.configurations as RJSFSchema
-                                  }
-                                  uiSchema={{
-                                    'ui:submitButtonOptions': {
-                                      norender: true,
-                                    },
-                                  }}
-                                  validator={validator}
-                                />
-                              </div>
-                            )}
                           </form>
-                        </Form>
-                      </div>
-                    )}
+                        </div>
+                      )}
                   </ErrorBoundary>
                   {isMetadataGenerationIdle && (
                     <div>
@@ -1004,7 +973,7 @@ export function ToolSelectionModal() {
       </DialogTrigger>
       <DialogContent className="flex max-w-xl flex-col bg-gray-300 p-5 text-xs">
         <DialogTitle className="pb-0">Available tools</DialogTitle>
-        <DialogDescription>blaalalal</DialogDescription>
+        {/*<DialogDescription>blaalalal</DialogDescription>*/}
         <div className="flex max-h-[28vh] flex-col gap-2.5 overflow-auto">
           <div className="flex items-center gap-3">
             <Switch checked={false} />

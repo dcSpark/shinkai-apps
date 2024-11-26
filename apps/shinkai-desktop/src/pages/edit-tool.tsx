@@ -914,25 +914,19 @@ function EditToolPage() {
                             className="space-y-4 pb-4 pt-4"
                             onSubmit={metadataForm.handleSubmit(handleSaveTool)}
                           >
-                            <div className="space-y-3">
-                              <h3 className="text-xs font-medium uppercase text-white">
-                                General
-                              </h3>
-
-                              <FormField
-                                control={metadataForm.control}
-                                name="name"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Tool Name</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
+                            <FormField
+                              control={metadataForm.control}
+                              name="name"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Tool Name</FormLabel>
+                                  <FormControl>
+                                    <Input {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                             <FormField
                               control={metadataForm.control}
                               name="description"
