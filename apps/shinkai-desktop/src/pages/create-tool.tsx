@@ -49,6 +49,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowUpRight,
   Loader2,
+  LucideArrowLeft,
   Play,
   // RedoIcon,
   Save,
@@ -62,7 +63,7 @@ import React, {
   useState,
 } from 'react';
 import { useForm, UseFormReturn } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { Link, To, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -497,9 +498,15 @@ function CreateToolPage() {
     <PlaygroundToolLayout
       leftElement={
         <>
-          <h1 className="py-2 text-lg font-semibold tracking-tight">
-            Playground
-          </h1>
+          <div className="flex items-center gap-3 px-2">
+            <Link to={-1 as To}>
+              <LucideArrowLeft className="text-gray-80 size-[18px]" />
+              <span className="sr-only">{t('common.back')}</span>
+            </Link>
+            <h1 className="py-2 text-base font-semibold tracking-tight">
+              Tool Playground
+            </h1>
+          </div>
           <div
             className={cn(
               'flex flex-1 flex-col overflow-y-auto',
