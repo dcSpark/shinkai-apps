@@ -59,8 +59,7 @@
       "selectAI": "Pilih AI Anda",
       "selectedText": "Teks yang dipilih Anda",
       "setContext": "Atur Konteks Obrolan",
-      "setContextText": "Tambahkan berkas atau folder untuk AI Anda gunakan sebagai konteks selama percakapan Anda.",
-      "workflows": "Alur Kerja"
+      "setContextText": "Tambahkan berkas atau folder untuk AI Anda gunakan sebagai konteks selama percakapan Anda."
     },
     "limitReachedDescription": "Anda telah menggunakan semua kueri Anda untuk bulan ini pada model/agen ini. Silakan mulai obrolan baru dengan agen lain.",
     "limitReachedTitle": "Batas Telah Tercapai",
@@ -226,8 +225,7 @@
       "settings": "Pengaturan",
       "subscriptions": "Jelajahi Langganan",
       "vectorFs": "Pencari Berkas AI Saya",
-      "vectorSearch": "Pencarian Konten Berkas AI",
-      "workflowPlayground": "Lapangan Permainan Alur Kerja"
+      "vectorSearch": "Pencarian Konten Berkas AI"
     },
     "sidebar": {
       "toggle": "Alihkan Sidebar"
@@ -569,8 +567,5 @@
       "folderShared": "Folder berhasil dibagikan",
       "folderUnshared": "Folder berhasil tidak dibagikan"
     }
-  },
-  "workflowPlayground": {
-    "label": "Taman Bermain Alur Kerja"
   }
 }

@@ -117,8 +117,6 @@ export default function ChatTable() {
         llmProvider: data.agent,
         sheetId,
         content: data.message,
-        workflowName: '',
-        workflowCode: undefined,
         isHidden: true,
         chatConfig: {
           stream: false,
@@ -137,7 +135,6 @@ export default function ChatTable() {
       token: auth.api_v2_key,
       jobId: extractJobIdFromInbox(chatInboxId),
       message: data.message,
-      workflowName: '',
       parent: '',
     });
     createJobForm.reset();

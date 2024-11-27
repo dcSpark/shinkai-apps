@@ -95,8 +95,6 @@ export type JobMessageRequest = {
     content: string;
     files_inbox: string;
     parent: string | null;
-    workflow_code?: string;
-    workflow_name?: string;
   };
 };
 export type JobMessageResponse = {
@@ -129,8 +127,6 @@ export type JobMessage = {
   job_id: string;
   parent: string;
   sheet_job_data: null;
-  workflow_code: null;
-  workflow_name: string;
   metadata: null | {
     tps: null;
     duration_ms: string;

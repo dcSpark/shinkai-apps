@@ -59,8 +59,7 @@
       "selectAI": "AIを選択",
       "selectedText": "選択したテキスト",
       "setContext": "チャットコンテキストを設定",
-      "setContextText": "会話中にAIが使用するコンテキストとしてファイルやフォルダーを追加してください",
-      "workflows": "ワークフロー"
+      "setContextText": "会話中にAIが使用するコンテキストとしてファイルやフォルダーを追加してください"
     },
     "limitReachedDescription": "今月のこのモデル/エージェントでのクエリをすべて使用しました。別のエージェントと新しいチャットを開始してください。",
     "limitReachedTitle": "制限に達しました",
@@ -226,8 +225,7 @@
       "settings": "設定",
       "subscriptions": "サブスクリプションを閲覧",
       "vectorFs": "私のAIファイルエクスプローラ",
-      "vectorSearch": "AIファイルコンテンツ検索",
-      "workflowPlayground": "ワークフロープレイグラウンド"
+      "vectorSearch": "AIファイルコンテンツ検索"
     },
     "sidebar": {
       "toggle": "サイドバーの切り替え"
@@ -569,8 +567,5 @@
       "folderShared": "フォルダが正常に共有されました",
       "folderUnshared": "フォルダが正常に共有解除されました"
     }
-  },
-  "workflowPlayground": {
-    "label": "ワークフロープレイグラウンド"
   }
 }

@@ -23,8 +23,6 @@ export enum FunctionKeyV2 {
   GET_SUBSCRIPTION_NOTIFICATIONS = 'GET_SUBSCRIPTION_NOTIFICATIONS',
   GET_MY_SHARED_FOLDERS = 'GET_MY_SHARED_FOLDERS',
   SCAN_OLLAMA_MODELS = 'SCAN_OLLAMA_MODELS',
-  GET_SEARCH_WORKFLOW = 'GET_SEARCH_WORKFLOW',
-  GET_LIST_WORKFLOW = 'GET_LIST_WORKFLOW',
   GET_USER_SHEETS = 'GET_USER_SHEETS',
   GET_SHEET = 'GET_SHEET',
   GET_LIST_TOOLS = 'GET_LIST_TOOLS',
@@ -52,7 +50,6 @@ export const OPTIMISTIC_ASSISTANT_MESSAGE_ID =
 export const generateOptimisticUserMessage = (
   content: string,
   attachments?: Attachment[],
-  workflowName?: string,
 ): UserMessage => ({
   messageId: OPTIMISTIC_USER_MESSAGE_ID,
   createdAt: new Date().toISOString(),
@@ -60,7 +57,6 @@ export const generateOptimisticUserMessage = (
   role: 'user',
   metadata: { parentMessageId: '', inboxId: '' },
   attachments: attachments ?? [],
-  workflowName: workflowName,
 });
 
 export const generateOptimisticAssistantMessage = (): AssistantMessage => ({

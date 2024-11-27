@@ -52,7 +52,6 @@ export const useSendMessageToJob = (options?: Options) => {
                 preview: URL.createObjectURL(file),
                 file,
               })),
-              variables.workflowName,
             ),
           ];
 

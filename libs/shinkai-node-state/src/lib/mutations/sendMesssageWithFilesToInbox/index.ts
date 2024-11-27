@@ -10,8 +10,6 @@ export const sendMessageWithFilesToInbox = async ({
   message,
   inboxId,
   files,
-  workflow,
-  workflowName,
   my_device_encryption_sk,
   my_device_identity_sk,
   node_encryption_pk,
@@ -33,7 +31,5 @@ export const sendMessageWithFilesToInbox = async ({
       profile_encryption_sk,
       profile_identity_sk,
     },
-    workflow,
-    workflowName,
   );
 };

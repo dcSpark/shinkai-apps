@@ -69,7 +69,7 @@ type MessageProps = {
   handleRetryMessage?: () => void;
   disabledRetry?: boolean;
   disabledEdit?: boolean;
-  handleEditMessage?: (message: string, workflowName?: string) => void;
+  handleEditMessage?: (message: string) => void;
   messageExtra?: React.ReactNode;
   setArtifact?: (artifact: Artifact | null) => void;
   setArtifactPanel?: (open: boolean) => void;
@@ -179,7 +179,7 @@ const MessageBase = ({
 
   const onSubmit = async (data: z.infer<typeof editMessageFormSchema>) => {
     if (message.role === 'user') {
-      handleEditMessage?.(data.message, message.workflowName);
+      handleEditMessage?.(data.message);
       setEditing(false);
     }
   };
@@ -408,14 +408,6 @@ const MessageBase = ({
                     className="mt-2 min-w-[200px] max-w-[70vw]"
                     files={message.attachments}
                   />
-                )}
-                {message.role === 'user' && message.workflowName && (
-                  <div className="mt-2 flex items-center gap-1.5 border-t pt-1.5">
-                    <span className="text-gray-80 text-xs">Workflow:</span>
-                    <span className="text-gray-80 text-xs">
-                      {message.workflowName}
-                    </span>
-                  </div>
                 )}
               </div>
               {!isPending && (

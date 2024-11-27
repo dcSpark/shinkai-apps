@@ -59,8 +59,7 @@
       "selectAI": "Selecciona tu IA",
       "selectedText": "Tu texto seleccionado",
       "setContext": "Establecer Contexto del Chat",
-      "setContextText": "Añade archivos o carpetas para que tu IA los utilice como contexto durante la conversación.",
-      "workflows": "Procesos"
+      "setContextText": "Añade archivos o carpetas para que tu IA los utilice como contexto durante la conversación."
     },
     "limitReachedDescription": "Has utilizado todas tus consultas del mes en este modelo/agente. Por favor, inicia un nuevo chat con otro agente.",
     "limitReachedTitle": "Límite Alcanzado",
@@ -226,8 +225,7 @@
       "settings": "Ajustes",
       "subscriptions": "Explorar Suscripciones",
       "vectorFs": "Explorador de Mis Archivos de IA",
-      "vectorSearch": "Búsqueda de Contenido de Archivos de IA",
-      "workflowPlayground": "Área de Juegos de Procesos"
+      "vectorSearch": "Búsqueda de Contenido de Archivos de IA"
     },
     "sidebar": {
       "toggle": "Alternar barra lateral"
@@ -569,8 +567,5 @@
       "folderShared": "Carpeta compartida exitosamente",
       "folderUnshared": "Carpeta dejó de compartirse exitosamente"
     }
-  },
-  "workflowPlayground": {
-    "label": "Área de Juego de Flujo de Trabajo"
   }
 }

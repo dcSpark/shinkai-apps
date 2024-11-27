@@ -59,8 +59,7 @@
       "selectAI": "选择您的 AI",
       "selectedText": "您选择的文本",
       "setContext": "设置聊天上下文",
-      "setContextText": "添加文件或文件夹，供您的 AI 在对话中使用。",
-      "workflows": "工作流"
+      "setContextText": "添加文件或文件夹，供您的 AI 在对话中使用。"
     },
     "limitReachedDescription": "您已用尽本月对此模型/代理的所有查询。请开始与其他代理的新聊天。",
     "limitReachedTitle": "已达到限制",
@@ -226,8 +225,7 @@
       "settings": "设置",
       "subscriptions": "浏览订阅",
       "vectorFs": "我的 AI 文件浏览器",
-      "vectorSearch": "AI 文件内容搜索",
-      "workflowPlayground": "工作流播放器"
+      "vectorSearch": "AI 文件内容搜索"
     },
     "sidebar": {
       "toggle": "切换侧边栏"
@@ -569,8 +567,5 @@
       "folderShared": "文件夹分享成功",
       "folderUnshared": "文件夹取消分享成功"
     }
-  },
-  "workflowPlayground": {
-    "label": "工作流程游乐场"
   }
 }
