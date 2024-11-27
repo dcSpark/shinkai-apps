@@ -35,6 +35,11 @@ import {
   FormLabel,
   JsonForm,
   MessageList,
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
   Switch,
   Tabs,
   TabsContent,
@@ -50,7 +55,14 @@ import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUpRight, Loader2, Play, Save } from 'lucide-react';
+import {
+  ArrowUpRight,
+  Loader2,
+  Play,
+  RedoIcon,
+  Save,
+  UndoIcon,
+} from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import React, {
   useCallback,
@@ -88,9 +100,22 @@ function extractTypeScriptCode(message: string) {
 
 const useToolMetadata = ({
   chatInboxIdMetadata,
+  code,
 }: {
   chatInboxIdMetadata?: string;
+  code?: string;
 }) => {
+  const [toolHistory, setToolHistory] = useState<
+    { code: string; metadata: any }[]
+  >([]);
+  const saveToHistory = (code: string, metadata: any) => {
+    setToolHistory((prevHistory) => {
+      if (prevHistory.some((history) => history.code === code)) {
+        return prevHistory;
+      }
+      return [...prevHistory, { code, metadata }];
+    });
+  };
   const forceGenerateMetadata = useRef(false);
 
   const { data: metadataData } = useChatConversationWithOptimisticUpdates({
@@ -122,6 +147,9 @@ const useToolMetadata = ({
           metadataGenerationData = ToolMetadataSchema.parse(
             parsedJson,
           ) as ToolMetadata;
+          if (code) {
+            saveToHistory(code, metadataGenerationData);
+          }
         } catch (error) {
           if (error instanceof Error) {
             metadataGenerationError = 'Invalid Metadata: ' + error.message;
@@ -156,45 +184,13 @@ const useToolMetadata = ({
     metadataGenerationError,
     isMetadataGenerationError,
     forceGenerateMetadata,
+    toolHistory,
   };
 };
 
-function CreateToolPage() {
-  const [tab, setTab] = useState<'code' | 'preview'>('code');
-  const auth = useAuth((state) => state.auth);
-  const { t } = useTranslation();
-  const toolResultBoxRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState(null);
-
+const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
   const [toolCode, setToolCode] = useState<string>('');
   const baseToolCodeRef = useRef<string>('');
-
-  const [isDirty, setIsDirty] = useState(false);
-  const [toolResult, setToolResult] = useState<object | null>(null);
-  const [chatInboxId, setChatInboxId] = useState<string | null>(null);
-  const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<
-    string | undefined
-  >(undefined);
-
-  const {
-    isMetadataGenerationPending,
-    isMetadataGenerationSuccess,
-    isMetadataGenerationIdle,
-    metadataGenerationData,
-    metadataGenerationError,
-    isMetadataGenerationError,
-    forceGenerateMetadata,
-  } = useToolMetadata({ chatInboxIdMetadata });
-
-  const [resetCounter, setResetCounter] = useState(0);
-
-  const form = useForm<CreateToolCodeFormSchema>({
-    resolver: zodResolver(createToolCodeFormSchema),
-    defaultValues: {
-      message: '',
-    },
-  });
 
   const {
     data,
@@ -227,6 +223,125 @@ function CreateToolPage() {
         pages: formattedData,
       };
     }, [data]);
+
+  const {
+    isToolCodeGenerationPending,
+    isToolCodeGenerationSuccess,
+    isToolCodeGenerationError,
+    isToolCodeGenerationIdle,
+    toolCodeGenerationData,
+  } = useMemo(() => {
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
+    if (!lastMessage)
+      return {
+        isToolCodeGenerationPending: false,
+        isToolCodeGenerationSuccess: false,
+        isToolCodeGenerationIdle: false,
+        toolCodeGenerationData: '',
+        isToolCodeGenerationError: true,
+      };
+
+    let status: 'idle' | 'error' | 'success' | 'pending' = 'idle';
+    let toolCode = '';
+    if (
+      lastMessage.role === 'assistant' &&
+      lastMessage.status.type === 'running'
+    ) {
+      status = 'pending';
+    }
+    if (
+      lastMessage.role === 'assistant' &&
+      lastMessage.status.type === 'complete'
+    ) {
+      status = 'success';
+      const generatedCode = extractTypeScriptCode(lastMessage?.content) ?? '';
+      if (generatedCode) {
+        baseToolCodeRef.current = generatedCode;
+        toolCode = generatedCode;
+        setToolCode(generatedCode);
+      } else {
+        status = 'error';
+      }
+    }
+
+    return {
+      isToolCodeGenerationPending: status === 'pending',
+      isToolCodeGenerationSuccess: status === 'success',
+      isToolCodeGenerationIdle: status === 'idle',
+      toolCodeGenerationData: toolCode,
+      isToolCodeGenerationError: status === 'error',
+    };
+  }, [data?.pages]);
+
+  return {
+    toolCode,
+    setToolCode,
+    baseToolCodeRef,
+    isToolCodeGenerationPending,
+    isToolCodeGenerationSuccess,
+    isToolCodeGenerationIdle,
+    isToolCodeGenerationError,
+    toolCodeGenerationData,
+    fetchPreviousPage,
+    hasPreviousPage,
+    isChatConversationLoading,
+    isFetchingPreviousPage,
+    isChatConversationSuccess,
+    chatConversationData,
+  };
+};
+
+function CreateToolPage() {
+  const [tab, setTab] = useState<'code' | 'preview'>('code');
+  const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
+  const toolResultBoxRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState(null);
+
+  const [isDirty, setIsDirty] = useState(false);
+  const [toolResult, setToolResult] = useState<object | null>(null);
+  const [chatInboxId, setChatInboxId] = useState<string | undefined>(undefined);
+  const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<
+    string | undefined
+  >(undefined);
+
+  const {
+    toolCode,
+    setToolCode,
+    baseToolCodeRef,
+    isToolCodeGenerationPending,
+    isToolCodeGenerationSuccess,
+    // isToolCodeGenerationIdle,
+    // isToolCodeGenerationError,
+    // toolCodeGenerationData,
+    fetchPreviousPage,
+    hasPreviousPage,
+    isChatConversationLoading,
+    isFetchingPreviousPage,
+    isChatConversationSuccess,
+    chatConversationData,
+  } = useToolCode({ chatInboxId });
+
+  const {
+    isMetadataGenerationPending,
+    isMetadataGenerationSuccess,
+    isMetadataGenerationIdle,
+    metadataGenerationData,
+    metadataGenerationError,
+    isMetadataGenerationError,
+    forceGenerateMetadata,
+    toolHistory,
+  } = useToolMetadata({ chatInboxIdMetadata, code: toolCode });
+
+  const [resetCounter, setResetCounter] = useState(0);
+
+  const form = useForm<CreateToolCodeFormSchema>({
+    resolver: zodResolver(createToolCodeFormSchema),
+    defaultValues: {
+      message: '',
+    },
+  });
 
   const { mutateAsync: createToolMetadata } = useCreateToolMetadata();
   const {
@@ -264,6 +379,7 @@ function CreateToolPage() {
   const defaultAgentId = useSettings(
     (settingsStore) => settingsStore.defaultAgentId,
   );
+
   const { mutateAsync: createToolCode } = useCreateToolCode({
     onSuccess: (data) => {
       setChatInboxId(data.inbox);
@@ -292,47 +408,6 @@ function CreateToolPage() {
   useEffect(() => {
     form.setValue('llmProviderId', defaultAgentId);
   }, [form, defaultAgentId]);
-
-  const isToolGenerating = useMemo(() => {
-    const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return (
-      !!chatInboxId &&
-      lastMessage?.role === 'assistant' &&
-      lastMessage?.status.type === 'running'
-    );
-  }, [chatInboxId, data?.pages]);
-
-  const isToolGeneratedSuccess = useMemo(() => {
-    const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return (
-      !!chatInboxId &&
-      lastMessage?.role === 'assistant' &&
-      lastMessage?.status.type === 'complete'
-    );
-  }, [chatInboxId, data?.pages]);
-
-  useEffect(() => {
-    const lastMessage = data?.pages?.at(-1)?.at(-1);
-    if (
-      lastMessage?.role === 'assistant' &&
-      lastMessage?.status.type === 'complete'
-    ) {
-      const generatedCode = extractTypeScriptCode(lastMessage?.content) ?? '';
-      baseToolCodeRef.current = generatedCode;
-      setToolCode(generatedCode);
-
-      return;
-    }
-  }, [data?.pages]);
-
-  const isLoadingMessage = useMemo(() => {
-    const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return (
-      !!chatInboxId &&
-      lastMessage?.role === 'assistant' &&
-      lastMessage?.status.type === 'running'
-    );
-  }, [data?.pages, chatInboxId]);
 
   useEffect(() => {
     if (!toolCode || !forceGenerateMetadata.current) return;
@@ -524,8 +599,7 @@ function CreateToolPage() {
                                     'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
                                   )}
                                   disabled={
-                                    isLoadingMessage ||
-                                    isToolGenerating ||
+                                    isToolCodeGenerationPending ||
                                     isMetadataGenerationPending ||
                                     !form.watch('message')
                                   }
@@ -540,7 +614,10 @@ function CreateToolPage() {
                                 </Button>
                               </div>
                             }
-                            disabled={isLoadingMessage}
+                            disabled={
+                              isToolCodeGenerationPending ||
+                              isMetadataGenerationPending
+                            }
                             onChange={field.onChange}
                             onSubmit={form.handleSubmit(onSubmit)}
                             topAddons={<></>}
@@ -579,9 +656,66 @@ function CreateToolPage() {
                     Metadata
                   </TabsTrigger>
                 </TabsList>
-                <div>
+                <div className="flex items-center gap-3">
+                  {toolHistory.length > 1 && (
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem className="cursor-pointer">
+                          <PaginationPrevious
+                            aria-disabled={
+                              toolHistory.length === 0 ||
+                              toolHistory.findIndex(
+                                (history) => history.code === toolCode,
+                              ) > 0
+                            }
+                            onClick={() => {
+                              const currentIdx = toolHistory.findIndex(
+                                (history) => history.code === toolCode,
+                              );
+                              // if (!currentIdx) return;
+                              console.log(
+                                'currentIdx',
+                                currentIdx,
+                                toolHistory,
+                              );
+                              baseToolCodeRef.current =
+                                toolHistory[currentIdx - 1].code;
+
+                              setToolCode(toolHistory[currentIdx - 1].code);
+                              setResetCounter((prev) => prev + 1);
+                            }}
+                          >
+                            <UndoIcon className="h-4 w-4" />
+                          </PaginationPrevious>
+                        </PaginationItem>
+                        <PaginationItem className="cursor-pointer">
+                          <PaginationNext
+                            aria-disabled={
+                              toolHistory.length === 0 ||
+                              toolHistory.findIndex(
+                                (history) => history.code === toolCode,
+                              ) ===
+                                toolHistory.length - 1
+                            }
+                            onClick={() => {
+                              const currentIdx = toolHistory.findIndex(
+                                (history) => history.code === toolCode,
+                              );
+                              // if (currentIdx === toolHistory.length - 1) return;
+                              baseToolCodeRef.current =
+                                toolHistory[currentIdx + 1].code;
+                              setToolCode(toolHistory[currentIdx + 1].code);
+                              setResetCounter((prev) => prev + 1);
+                            }}
+                          >
+                            <RedoIcon className="h-4 w-4" />
+                          </PaginationNext>
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  )}
                   <Button
-                    className="text-gray-80 h-[30px] rounded-md text-xs"
+                    className="text-gray-80 h-[30px] shrink-0 rounded-md text-xs"
                     disabled={
                       !toolCode ||
                       !metadataGenerationData ||
@@ -619,6 +753,7 @@ function CreateToolPage() {
                         </p>
                       )}
                     </div>
+
                     {/*{toolCode && (*/}
                     {/*  <Tooltip>*/}
                     {/*    <TooltipTrigger asChild>*/}
@@ -638,21 +773,21 @@ function CreateToolPage() {
                     {/*)}*/}
                   </div>
                   <div className="size-full">
-                    {isToolGenerating && (
+                    {isToolCodeGenerationPending && (
                       <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
                         <Loader2 className="shrink-0 animate-spin" />
                         Generating Code...
                       </div>
                     )}
-                    {!isToolGenerating &&
+                    {!isToolCodeGenerationPending &&
                       !toolCode &&
-                      !isToolGeneratedSuccess && (
+                      !isToolCodeGenerationSuccess && (
                         <p className="text-gray-80 pt-6 text-center text-xs">
                           No code generated yet. <br />
                           Ask Shinkai AI to generate your tool code.
                         </p>
                       )}
-                    {isToolGeneratedSuccess && toolCode && (
+                    {isToolCodeGenerationSuccess && toolCode && (
                       <form
                         key={resetCounter}
                         onSubmit={(e) => {
@@ -736,14 +871,15 @@ function CreateToolPage() {
                       <p>Fill in the options above to run your tool.</p>
                     )}
                   </div>
-                  {(isMetadataGenerationPending || isToolGenerating) && (
+                  {(isMetadataGenerationPending ||
+                    isToolCodeGenerationPending) && (
                     <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
                       <Loader2 className="shrink-0 animate-spin" />
                       Generating...
                     </div>
                   )}
                   {!isMetadataGenerationPending &&
-                    !isToolGenerating &&
+                    !isToolCodeGenerationPending &&
                     isMetadataGenerationError && (
                       <ToolErrorFallback
                         error={new Error(metadataGenerationError ?? '')}
@@ -751,7 +887,7 @@ function CreateToolPage() {
                       />
                     )}
                   {isMetadataGenerationSuccess &&
-                    !isToolGenerating &&
+                    !isToolCodeGenerationPending &&
                     !isMetadataGenerationError && (
                       <div className="text-gray-80 text-xs">
                         <JsonForm
@@ -829,7 +965,7 @@ function CreateToolPage() {
                         </AnimatePresence>
                       </div>
                     )}
-                  {isMetadataGenerationIdle && !isToolGenerating && (
+                  {isMetadataGenerationIdle && !isToolCodeGenerationPending && (
                     <div>
                       <p className="text-gray-80 py-4 pt-6 text-center text-xs">
                         No metadata generated yet.
@@ -871,7 +1007,7 @@ function CreateToolPage() {
                     </div>
                   )}
                   {!isMetadataGenerationPending &&
-                    !isToolGenerating &&
+                    !isToolCodeGenerationPending &&
                     isMetadataGenerationError && (
                       <ToolErrorFallback
                         error={new Error(metadataGenerationError ?? '')}
