@@ -50,9 +50,9 @@ import {
   ArrowUpRight,
   Loader2,
   Play,
-  RedoIcon,
+  // RedoIcon,
   Save,
-  UndoIcon,
+  // UndoIcon,
 } from 'lucide-react';
 import React, {
   useCallback,
@@ -91,22 +91,22 @@ function extractTypeScriptCode(message: string) {
 
 const useToolMetadata = ({
   chatInboxIdMetadata,
-  code,
+  // code,
 }: {
   chatInboxIdMetadata?: string;
   code?: string;
 }) => {
-  const [toolHistory, setToolHistory] = useState<
-    { code: string; metadata: any }[]
-  >([]);
-  const saveToHistory = (code: string, metadata: any) => {
-    setToolHistory((prevHistory) => {
-      if (prevHistory.some((history) => history.code === code)) {
-        return prevHistory;
-      }
-      return [...prevHistory, { code, metadata }];
-    });
-  };
+  // const [toolHistory, setToolHistory] = useState<
+  //   { code: string; metadata: any }[]
+  // >([]);
+  // const saveToHistory = (code: string, metadata: any) => {
+  //   setToolHistory((prevHistory) => {
+  //     if (prevHistory.some((history) => history.code === code)) {
+  //       return prevHistory;
+  //     }
+  //     return [...prevHistory, { code, metadata }];
+  //   });
+  // };
   const forceGenerateMetadata = useRef(false);
 
   const { data: metadataData } = useChatConversationWithOptimisticUpdates({
@@ -138,9 +138,9 @@ const useToolMetadata = ({
           metadataGenerationData = ToolMetadataSchema.parse(
             parsedJson,
           ) as ToolMetadata;
-          if (code) {
-            saveToHistory(code, metadataGenerationData);
-          }
+          // if (code) {
+          //   saveToHistory(code, metadataGenerationData);
+          // }
         } catch (error) {
           if (error instanceof Error) {
             metadataGenerationError = 'Invalid Metadata: ' + error.message;
@@ -175,7 +175,7 @@ const useToolMetadata = ({
     metadataGenerationError,
     isMetadataGenerationError,
     forceGenerateMetadata,
-    toolHistory,
+    // toolHistory,
   };
 };
 
@@ -322,7 +322,7 @@ function CreateToolPage() {
     metadataGenerationError,
     isMetadataGenerationError,
     forceGenerateMetadata,
-    toolHistory,
+    // toolHistory,
   } = useToolMetadata({ chatInboxIdMetadata, code: toolCode });
 
   const [resetCounter, setResetCounter] = useState(0);
@@ -654,62 +654,61 @@ function CreateToolPage() {
                   </TabsTrigger>
                 </TabsList>
                 <div className="flex items-center gap-6">
-                  {toolHistory.length > 1 && (
-                    <div className="flex items-center gap-2">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            onClick={() => {
-                              //  find an item inside of it to scroll into view bsased on the content
-                              const currentIdx = toolHistory.findIndex(
-                                (history) => history.code === toolCode,
-                              );
+                  {/*{toolHistory.length > 1 && (*/}
+                  {/*  <div className="flex items-center gap-2">*/}
+                  {/*    <Tooltip>*/}
+                  {/*      <TooltipTrigger asChild>*/}
+                  {/*        <Button*/}
+                  {/*          onClick={() => {*/}
+                  {/*            //  find an item inside of it to scroll into view bsased on the content*/}
+                  {/*            const currentIdx = toolHistory.findIndex(*/}
+                  {/*              (history) => history.code === toolCode,*/}
+                  {/*            );*/}
 
-                              baseToolCodeRef.current =
-                                toolHistory[currentIdx - 1].code;
+                  {/*            baseToolCodeRef.current =*/}
+                  {/*              toolHistory[currentIdx - 1].code;*/}
 
-                              setToolCode(toolHistory[currentIdx - 1].code);
-                              setResetCounter((prev) => prev + 1);
-                            }}
-                            size="icon"
-                            variant="outline"
-                          >
-                            <UndoIcon className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipPortal>
-                          <TooltipContent>
-                            <p>Undo</p>
-                          </TooltipContent>
-                        </TooltipPortal>
-                      </Tooltip>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            onClick={() => {
-                              const currentIdx = toolHistory.findIndex(
-                                (history) => history.code === toolCode,
-                              );
-                              // if (currentIdx === toolHistory.length - 1) return;
-                              baseToolCodeRef.current =
-                                toolHistory[currentIdx + 1].code;
-                              setToolCode(toolHistory[currentIdx + 1].code);
-                              setResetCounter((prev) => prev + 1);
-                            }}
-                            size="icon"
-                            variant="outline"
-                          >
-                            <RedoIcon className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipPortal>
-                          <TooltipContent>
-                            <p>Redo</p>
-                          </TooltipContent>
-                        </TooltipPortal>
-                      </Tooltip>
-                    </div>
-                  )}
+                  {/*            setToolCode(toolHistory[currentIdx - 1].code);*/}
+                  {/*            setResetCounter((prev) => prev + 1);*/}
+                  {/*          }}*/}
+                  {/*          size="icon"*/}
+                  {/*          variant="outline"*/}
+                  {/*        >*/}
+                  {/*          <UndoIcon className="h-4 w-4" />*/}
+                  {/*        </Button>*/}
+                  {/*      </TooltipTrigger>*/}
+                  {/*      <TooltipPortal>*/}
+                  {/*        <TooltipContent>*/}
+                  {/*          <p>Undo</p>*/}
+                  {/*        </TooltipContent>*/}
+                  {/*      </TooltipPortal>*/}
+                  {/*    </Tooltip>*/}
+                  {/*    <Tooltip>*/}
+                  {/*      <TooltipTrigger asChild>*/}
+                  {/*        <Button*/}
+                  {/*          onClick={() => {*/}
+                  {/*            const currentIdx = toolHistory.findIndex(*/}
+                  {/*              (history) => history.code === toolCode,*/}
+                  {/*            );*/}
+                  {/*            baseToolCodeRef.current =*/}
+                  {/*              toolHistory[currentIdx + 1].code;*/}
+                  {/*            setToolCode(toolHistory[currentIdx + 1].code);*/}
+                  {/*            setResetCounter((prev) => prev + 1);*/}
+                  {/*          }}*/}
+                  {/*          size="icon"*/}
+                  {/*          variant="outline"*/}
+                  {/*        >*/}
+                  {/*          <RedoIcon className="h-4 w-4" />*/}
+                  {/*        </Button>*/}
+                  {/*      </TooltipTrigger>*/}
+                  {/*      <TooltipPortal>*/}
+                  {/*        <TooltipContent>*/}
+                  {/*          <p>Redo</p>*/}
+                  {/*        </TooltipContent>*/}
+                  {/*      </TooltipPortal>*/}
+                  {/*    </Tooltip>*/}
+                  {/*  </div>*/}
+                  {/*)}*/}
                   <Button
                     className="text-gray-80 h-[30px] shrink-0 rounded-md text-xs"
                     disabled={
