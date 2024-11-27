@@ -5,6 +5,7 @@ export type CreateToolCodeInput = Token & {
   nodeAddress: string;
   message: string;
   llmProviderId: string;
+  jobId?: string;
 };
 
 export type CreateToolCodeOutput = CreateToolCodeResponse;
