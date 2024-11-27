@@ -60,6 +60,7 @@ import { ToolSelectionModal } from './create-tool';
 export const createToolCodeFormSchema = z.object({
   message: z.string().min(1),
   llmProviderId: z.string().min(1),
+  tools: z.array(z.string()),
 });
 
 const metadataFormSchema = z.object({
@@ -113,6 +114,7 @@ function EditToolPage() {
     resolver: zodResolver(createToolCodeFormSchema),
     defaultValues: {
       message: '',
+      tools: [],
     },
   });
 
@@ -195,6 +197,7 @@ function EditToolPage() {
         nodeAddress: auth?.node_address ?? '',
         token: auth?.api_v2_key ?? '',
         jobId: extractJobIdFromInbox(chatInboxId ?? '') ?? '',
+        tools: form.getValues('tools'),
       },
       {
         onSuccess: (data) => {
@@ -352,6 +355,7 @@ function EditToolPage() {
           nodeAddress: auth?.node_address ?? '',
           token: auth?.api_v2_key ?? '',
           jobId: extractJobIdFromInbox(chatInboxId ?? ''),
+          tools: form.getValues('tools'),
         },
         {
           onSuccess: (data) => {
@@ -386,6 +390,7 @@ function EditToolPage() {
         token: auth.api_v2_key,
         message: data.message,
         llmProviderId: data.llmProviderId,
+        tools: data.tools,
       },
       {
         onSuccess: (data) => {
@@ -411,6 +416,7 @@ function EditToolPage() {
       token: auth?.api_v2_key ?? '',
       params,
       llmProviderId: form.getValues('llmProviderId'),
+      tools: form.getValues('tools'),
     });
   };
 
@@ -525,7 +531,7 @@ function EditToolPage() {
                               }}
                               value={form.watch('llmProviderId')}
                             />
-                            <ToolSelectionModal />
+                            <ToolSelectionModal form={form} />
                           </div>
                           <ChatInputArea
                             autoFocus

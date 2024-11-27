@@ -6,6 +6,7 @@ export type ExecuteToolCodeInput = Token & {
   params: Record<string, any>;
   code: string;
   llmProviderId: string;
+  tools: string[];
 };
 
 export type ExecuteToolCodeOutput = ExecuteToolCodeResponse;

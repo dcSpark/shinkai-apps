@@ -138,6 +138,7 @@ export type CreateToolCodeRequest = {
   message: JobMessage;
   language: CodeLanguage;
   raw?: boolean;
+  tools: string[];
 };
 
 export type CreateToolCodeResponse = {
@@ -150,6 +151,7 @@ export type CreateToolCodeResponse = {
 export type CreateToolMetadataRequest = {
   language: CodeLanguage;
   job_id: string;
+  tools: string[];
 };
 
 export type CreateToolMetadataResponse = {
@@ -167,6 +169,7 @@ export type ExecuteToolCodeRequest = {
   code: string;
   extra_config?: string;
   llm_provider: string;
+  tools: string[];
 };
 
 export type ExecuteToolCodeResponse = Record<string, any>;

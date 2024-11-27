@@ -14,6 +14,7 @@ export const createToolCode = async ({
   llmProviderId,
   message,
   jobId,
+  tools,
 }: CreateToolCodeInput) => {
   let currentJobId = jobId;
   if (!currentJobId) {
@@ -53,6 +54,7 @@ export const createToolCode = async ({
       content: message,
       files_inbox: '',
     },
+    tools,
     language: CodeLanguage.Typescript,
   });
 };

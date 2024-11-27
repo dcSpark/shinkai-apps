@@ -4,6 +4,7 @@ import { CreateToolMetadataResponse } from '@shinkai_network/shinkai-message-ts/
 export type CreateToolMetadataInput = Token & {
   nodeAddress: string;
   jobId: string;
+  tools: string[];
 };
 
 export type CreateToolMetadataOutput = CreateToolMetadataResponse;

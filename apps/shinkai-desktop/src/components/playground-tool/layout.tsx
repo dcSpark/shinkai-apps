@@ -15,7 +15,7 @@ export default function PlaygroundToolLayout({
   rightElement,
 }: PlaygroundToolLayoutProps) {
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={0}>
       <div className="flex h-full">
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel className="flex h-full flex-col px-3 py-4 pt-6">

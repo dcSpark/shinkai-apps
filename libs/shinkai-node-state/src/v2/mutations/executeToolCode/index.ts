@@ -9,11 +9,13 @@ export const executeToolCode = async ({
   code,
   params,
   llmProviderId,
+  tools,
 }: ExecuteToolCodeInput) => {
   return await executeToolCodeApi(nodeAddress, token, {
     tool_type: DynamicToolType.DenoDynamic,
     code,
     parameters: params,
     llm_provider: llmProviderId,
+    tools,
   });
 };

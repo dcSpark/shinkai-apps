@@ -1,7 +1,3 @@
-import {
-  createJob as createJobApi,
-  updateChatConfig,
-} from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 import { toolMetadataImplementation as createToolMetadataApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
@@ -11,9 +7,11 @@ export const createToolMetadata = async ({
   nodeAddress,
   token,
   jobId,
+  tools,
 }: CreateToolMetadataInput) => {
   return await createToolMetadataApi(nodeAddress, token, {
     job_id: jobId,
     language: CodeLanguage.Typescript,
+    tools,
   });
 };

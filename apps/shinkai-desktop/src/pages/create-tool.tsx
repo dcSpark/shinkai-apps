@@ -4,10 +4,7 @@ import { FormProps } from '@rjsf/core';
 import { RJSFSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import {
-  ShinkaiTool,
-  ToolMetadata,
-} from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   buildInboxIdFromJobId,
   extractJobIdFromInbox,
@@ -16,7 +13,6 @@ import { useCreateToolCode } from '@shinkai_network/shinkai-node-state/v2/mutati
 import { useCreateToolMetadata } from '@shinkai_network/shinkai-node-state/v2/mutations/createToolMetadata/useCreateToolMetadata';
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
-import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import {
@@ -35,11 +31,6 @@ import {
   FormLabel,
   JsonForm,
   MessageList,
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
   Switch,
   Tabs,
   TabsContent,
@@ -63,7 +54,6 @@ import {
   Save,
   UndoIcon,
 } from 'lucide-react';
-import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import React, {
   useCallback,
   useEffect,
@@ -71,7 +61,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -89,6 +79,7 @@ import { useChatConversationWithOptimisticUpdates } from './chat/chat-conversati
 export const createToolCodeFormSchema = z.object({
   message: z.string().min(1),
   llmProviderId: z.string().min(1),
+  tools: z.array(z.string()),
 });
 
 export type CreateToolCodeFormSchema = z.infer<typeof createToolCodeFormSchema>;
@@ -340,6 +331,7 @@ function CreateToolPage() {
     resolver: zodResolver(createToolCodeFormSchema),
     defaultValues: {
       message: '',
+      tools: [],
     },
   });
 
@@ -396,6 +388,7 @@ function CreateToolPage() {
         nodeAddress: auth?.node_address ?? '',
         token: auth?.api_v2_key ?? '',
         jobId: extractJobIdFromInbox(chatInboxId ?? '') ?? '',
+        tools: form.getValues('tools'),
       },
       {
         onSuccess: (data) => {
@@ -417,6 +410,7 @@ function CreateToolPage() {
           nodeAddress: auth?.node_address ?? '',
           token: auth?.api_v2_key ?? '',
           jobId: extractJobIdFromInbox(chatInboxId ?? ''),
+          tools: form.getValues('tools'),
         },
         {
           onSuccess: (data) => {
@@ -437,12 +431,14 @@ function CreateToolPage() {
 
   const onSubmit = async (data: CreateToolCodeFormSchema) => {
     if (!auth) return;
+
     await createToolCode({
       nodeAddress: auth.node_address,
       token: auth.api_v2_key,
       message: data.message,
       llmProviderId: data.llmProviderId,
       jobId: chatInboxId ? extractJobIdFromInbox(chatInboxId ?? '') : undefined,
+      tools: data.tools,
     });
 
     form.setValue('message', '');
@@ -457,6 +453,7 @@ function CreateToolPage() {
       token: auth?.api_v2_key ?? '',
       params,
       llmProviderId: form.getValues('llmProviderId'),
+      tools: form.getValues('tools'),
     });
   };
 
@@ -583,7 +580,7 @@ function CreateToolPage() {
                               }}
                               value={form.watch('llmProviderId')}
                             />
-                            <ToolSelectionModal />
+                            <ToolSelectionModal form={form} />
                           </div>
                           <ChatInputArea
                             autoFocus
@@ -656,47 +653,39 @@ function CreateToolPage() {
                     Metadata
                   </TabsTrigger>
                 </TabsList>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-6">
                   {toolHistory.length > 1 && (
-                    <Pagination>
-                      <PaginationContent>
-                        <PaginationItem className="cursor-pointer">
-                          <PaginationPrevious
-                            aria-disabled={
-                              toolHistory.length === 0 ||
-                              toolHistory.findIndex(
-                                (history) => history.code === toolCode,
-                              ) > 0
-                            }
+                    <div className="flex items-center gap-2">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
                             onClick={() => {
+                              //  find an item inside of it to scroll into view bsased on the content
                               const currentIdx = toolHistory.findIndex(
                                 (history) => history.code === toolCode,
                               );
-                              // if (!currentIdx) return;
-                              console.log(
-                                'currentIdx',
-                                currentIdx,
-                                toolHistory,
-                              );
+
                               baseToolCodeRef.current =
                                 toolHistory[currentIdx - 1].code;
 
                               setToolCode(toolHistory[currentIdx - 1].code);
                               setResetCounter((prev) => prev + 1);
                             }}
+                            size="icon"
+                            variant="outline"
                           >
                             <UndoIcon className="h-4 w-4" />
-                          </PaginationPrevious>
-                        </PaginationItem>
-                        <PaginationItem className="cursor-pointer">
-                          <PaginationNext
-                            aria-disabled={
-                              toolHistory.length === 0 ||
-                              toolHistory.findIndex(
-                                (history) => history.code === toolCode,
-                              ) ===
-                                toolHistory.length - 1
-                            }
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipPortal>
+                          <TooltipContent>
+                            <p>Undo</p>
+                          </TooltipContent>
+                        </TooltipPortal>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
                             onClick={() => {
                               const currentIdx = toolHistory.findIndex(
                                 (history) => history.code === toolCode,
@@ -707,12 +696,19 @@ function CreateToolPage() {
                               setToolCode(toolHistory[currentIdx + 1].code);
                               setResetCounter((prev) => prev + 1);
                             }}
+                            size="icon"
+                            variant="outline"
                           >
                             <RedoIcon className="h-4 w-4" />
-                          </PaginationNext>
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipPortal>
+                          <TooltipContent>
+                            <p>Redo</p>
+                          </TooltipContent>
+                        </TooltipPortal>
+                      </Tooltip>
+                    </div>
                   )}
                   <Button
                     className="text-gray-80 h-[30px] shrink-0 rounded-md text-xs"
@@ -1063,14 +1059,17 @@ function CreateToolPage() {
 
 export default CreateToolPage;
 
-export function ToolSelectionModal() {
+export function ToolSelectionModal({
+  form,
+}: {
+  form: UseFormReturn<CreateToolCodeFormSchema>;
+}) {
   const auth = useAuth((state) => state.auth);
 
   const { data: toolsList } = useGetTools({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
-  const { mutateAsync: updateTool, isPending } = useUpdateTool();
 
   return (
     <Dialog>
@@ -1081,11 +1080,9 @@ export function ToolSelectionModal() {
           tabIndex={0}
         >
           Tools{' '}
-          {toolsList?.filter((tool) => tool.enabled).length && (
-            <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 p-0 text-center text-gray-50">
-              {toolsList?.filter((tool) => tool.enabled).length}
-            </Badge>
-          )}
+          <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 p-0 text-center text-gray-50">
+            {form.watch('tools').length}
+          </Badge>
         </div>
       </DialogTrigger>
       <DialogContent className="flex max-w-xl flex-col bg-gray-300 p-5 text-xs">
@@ -1093,54 +1090,68 @@ export function ToolSelectionModal() {
         {/*<DialogDescription>blaalalal</DialogDescription>*/}
         <div className="flex max-h-[28vh] flex-col gap-2.5 overflow-auto">
           <div className="flex items-center gap-3">
-            <Switch checked={false} />
+            <Switch
+              checked={form.watch('tools').length === toolsList?.length}
+              onCheckedChange={(checked) => {
+                if (checked && toolsList) {
+                  form.setValue(
+                    'tools',
+                    toolsList.map((tool) => tool.tool_router_key),
+                  );
+                } else {
+                  form.setValue('tools', []);
+                }
+              }}
+            />
             <span className="text-gray-80 text-xs">Enabled All</span>
           </div>
           {toolsList?.map((tool) => (
-            <div
-              className="flex w-full flex-col gap-3"
+            <FormField
+              control={form.control}
               key={tool.tool_router_key}
-            >
-              <div className="flex items-center gap-3">
-                <Switch
-                  checked={tool.enabled}
-                  disabled={isPending}
-                  onCheckedChange={async () => {
-                    await updateTool({
-                      toolKey: tool.tool_router_key,
-                      toolType: tool.tool_type,
-                      toolPayload: {} as ShinkaiTool,
-                      isToolEnabled: !tool.enabled,
-                      nodeAddress: auth?.node_address ?? '',
-                      token: auth?.api_v2_key ?? '',
-                    });
-                  }}
-                />
-
-                <div className="space-y-1 leading-none">
-                  <TooltipProvider delayDuration={0}>
-                    <Tooltip>
-                      <TooltipTrigger className="flex items-center gap-1">
-                        <div className="text-gray-80 static space-y-1.5 text-xs">
-                          {formatText(tool.name)}
-                        </div>
-                        <InfoCircleIcon className="h-3 w-3 text-gray-100" />
-                      </TooltipTrigger>
-                      <TooltipPortal>
-                        <TooltipContent
-                          align="start"
-                          alignOffset={-10}
-                          className="max-w-md"
-                          side="top"
-                        >
-                          {tool.description}
-                        </TooltipContent>
-                      </TooltipPortal>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </div>
-            </div>
+              name="tools"
+              render={({ field }) => (
+                <FormItem className="flex w-full flex-col gap-3">
+                  <div className="flex items-center gap-3">
+                    <FormControl>
+                      <Switch
+                        checked={field.value.includes(tool.tool_router_key)}
+                        onCheckedChange={() => {
+                          field.onChange(
+                            field.value.includes(tool.tool_router_key)
+                              ? field.value.filter(
+                                  (value) => value !== tool.tool_router_key,
+                                )
+                              : [...field.value, tool.tool_router_key],
+                          );
+                        }}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                          <TooltipTrigger className="flex items-center gap-1">
+                            <FormLabel className="text-gray-80 static space-y-1.5 text-xs">
+                              {formatText(tool.name)}
+                            </FormLabel>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent
+                              align="start"
+                              alignOffset={-10}
+                              className="max-w-md"
+                              side="top"
+                            >
+                              {tool.description}
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </div>
+                </FormItem>
+              )}
+            />
           ))}
         </div>
       </DialogContent>
