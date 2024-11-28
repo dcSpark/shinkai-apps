@@ -72,6 +72,7 @@ type BaseMessage = {
   metadata: {
     parentMessageId: string;
     inboxId: string;
+    tps?: string;
   };
 };
 export type TextContentPart = { type: 'text'; text: string };
