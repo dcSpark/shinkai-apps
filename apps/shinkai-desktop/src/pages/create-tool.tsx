@@ -84,17 +84,26 @@ export const createToolCodeFormSchema = z.object({
 
 export type CreateToolCodeFormSchema = z.infer<typeof createToolCodeFormSchema>;
 
-function extractTypeScriptCode(message: string) {
+export function extractTypeScriptCode(message: string) {
   const tsCodeMatch = message.match(/```typescript\n([\s\S]*?)\n```/);
   return tsCodeMatch ? tsCodeMatch[1].trim() : null;
 }
 
-const useToolMetadata = ({
+export const useToolMetadata = ({
   chatInboxIdMetadata,
   // code,
+  initialState,
 }: {
   chatInboxIdMetadata?: string;
   code?: string;
+  initialState?: {
+    metadata: ToolMetadata | null;
+    isMetadataGenerationPending?: boolean;
+    isMetadataGenerationSuccess?: boolean;
+    isMetadataGenerationIdle?: boolean;
+    isMetadataGenerationError?: boolean;
+    metadataGenerationError?: string | null;
+  };
 }) => {
   // const [toolHistory, setToolHistory] = useState<
   //   { code: string; metadata: any }[]
@@ -107,12 +116,17 @@ const useToolMetadata = ({
   //     return [...prevHistory, { code, metadata }];
   //   });
   // };
-  const forceGenerateMetadata = useRef(false);
+  const [metadataData, setMetadataData] = useState<ToolMetadata | null>(
+    initialState?.metadata ?? null,
+  );
 
-  const { data: metadataData } = useChatConversationWithOptimisticUpdates({
-    inboxId: chatInboxIdMetadata ?? '',
-    forceRefetchInterval: true,
-  });
+  const forceGenerateMetadata = useRef(false);
+  console.log(metadataData, 'metadataData');
+  const { data: metadataChatConversation } =
+    useChatConversationWithOptimisticUpdates({
+      inboxId: chatInboxIdMetadata ?? '',
+      forceRefetchInterval: true,
+    });
 
   const {
     isMetadataGenerationPending,
@@ -122,7 +136,21 @@ const useToolMetadata = ({
     metadataGenerationError,
     isMetadataGenerationError,
   } = useMemo(() => {
-    const metadata = metadataData?.pages?.at(-1)?.at(-1);
+    const metadata = metadataChatConversation?.pages?.at(-1)?.at(-1);
+
+    if (initialState && !metadata) {
+      return {
+        isMetadataGenerationPending:
+          initialState.isMetadataGenerationPending ?? false,
+        isMetadataGenerationSuccess:
+          initialState.isMetadataGenerationSuccess ?? false,
+        isMetadataGenerationIdle: initialState.isMetadataGenerationIdle ?? true,
+        metadataGenerationData: metadataData,
+        isMetadataGenerationError:
+          initialState.isMetadataGenerationError ?? false,
+        metadataGenerationError: initialState.metadataGenerationError ?? null,
+      };
+    }
     const isMetadataGenerationIdle = metadata == null;
     const isMetadataGenerationPending =
       metadata?.role === 'assistant' && metadata?.status.type === 'running';
@@ -138,6 +166,8 @@ const useToolMetadata = ({
           metadataGenerationData = ToolMetadataSchema.parse(
             parsedJson,
           ) as ToolMetadata;
+
+          setMetadataData(metadataGenerationData);
           // if (code) {
           //   saveToHistory(code, metadataGenerationData);
           // }
@@ -161,11 +191,11 @@ const useToolMetadata = ({
       isMetadataGenerationPending,
       isMetadataGenerationSuccess,
       isMetadataGenerationIdle,
-      metadataGenerationData,
+      metadataGenerationData: metadataData,
       isMetadataGenerationError: metadataGenerationError != null,
       metadataGenerationError,
     };
-  }, [metadataData?.pages]);
+  }, [initialState, metadataChatConversation?.pages, metadataData]);
 
   return {
     isMetadataGenerationPending,
@@ -175,11 +205,12 @@ const useToolMetadata = ({
     metadataGenerationError,
     isMetadataGenerationError,
     forceGenerateMetadata,
+    setMetadataData,
     // toolHistory,
   };
 };
 
-const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
+export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
   const [toolCode, setToolCode] = useState<string>('');
   const baseToolCodeRef = useRef<string>('');
 
