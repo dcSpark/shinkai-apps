@@ -1117,7 +1117,7 @@ export function ToolSelectionModal({
           </div>
         </div>
 
-        <div className="flex max-h-[28vh] flex-col gap-2.5 overflow-auto">
+        <div className="flex max-h-[28vh] flex-col gap-2.5 overflow-auto pr-2">
           {toolsList?.map((tool) => (
             <FormField
               control={form.control}
@@ -1149,7 +1149,7 @@ export function ToolSelectionModal({
                         </label>
                         <TooltipProvider delayDuration={0}>
                           <Tooltip>
-                            <TooltipTrigger className="flex items-center gap-1">
+                            <TooltipTrigger className="flex shrink-0 items-center gap-1">
                               <InfoCircleIcon className="h-3 w-3 text-gray-100" />
                             </TooltipTrigger>
                             <TooltipPortal>
