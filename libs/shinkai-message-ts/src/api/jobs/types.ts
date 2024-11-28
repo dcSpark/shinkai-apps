@@ -128,7 +128,7 @@ export type JobMessage = {
   parent?: string;
   sheet_job_data?: null;
   metadata?: {
-    tps: null;
+    tps?: string;
     duration_ms: string;
     function_calls: {
       name: string;

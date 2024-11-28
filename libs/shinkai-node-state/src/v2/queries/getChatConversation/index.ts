@@ -119,6 +119,7 @@ const createAssistantMessage = (message: ChatMessage): AssistantMessage => {
     metadata: {
       parentMessageId: message.node_api_data.parent_hash,
       inboxId: message.inbox,
+      tps: message.job_message.metadata?.tps,
     },
     content: text.replace(/<antartifact[^>]*>[\s\S]*?<\/antartifact>/g, ''),
     role: 'assistant',

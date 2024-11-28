@@ -287,7 +287,17 @@ export const MessageBase = ({
                   )}
                   variants={actionBar}
                 >
-                  {format(new Date(message?.createdAt ?? ''), 'p')}
+                  <span>{format(new Date(message?.createdAt ?? ''), 'p')}</span>
+                  {message.role === 'assistant' && message?.metadata?.tps && (
+                    <>
+                      {' '}
+                      ⋅
+                      <span>
+                        {Math.round(Number(message?.metadata?.tps) * 10) / 10}{' '}
+                        tokens/s
+                      </span>
+                    </>
+                  )}
                 </motion.div>
               )}
 
