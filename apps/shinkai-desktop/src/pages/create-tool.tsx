@@ -121,7 +121,7 @@ export const useToolMetadata = ({
   );
 
   const forceGenerateMetadata = useRef(false);
-  console.log(metadataData, 'metadataData');
+
   const { data: metadataChatConversation } =
     useChatConversationWithOptimisticUpdates({
       inboxId: chatInboxIdMetadata ?? '',
