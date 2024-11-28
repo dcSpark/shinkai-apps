@@ -607,7 +607,7 @@ const MainLayout = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const auth = useAuth((state) => state.auth);
-
+  const [needsResetApp, setNeedsResetApp] = useState(false);
   const { nodeInfo, isSuccess, isFetching } = useGetHealth(
     { nodeAddress: auth?.node_address ?? '' },
     { refetchInterval: 35000, enabled: !!auth },
@@ -624,6 +624,9 @@ const MainLayout = () => {
     }
     if (isSuccess && nodeInfo?.status === 'ok') {
       toast.dismiss('node-unavailable');
+    }
+    if (isSuccess && nodeInfo?.update_needs_reset) {
+      setNeedsResetApp(true);
     }
   }, [isSuccess, nodeInfo?.status, isFetching]);
 
@@ -651,6 +654,10 @@ const MainLayout = () => {
           <Outlet />
         </div>
       </div>
+      <ResetConnectionDialog
+        isOpen={needsResetApp}
+        onOpenChange={setNeedsResetApp}
+      />
     </div>
   );
 };
