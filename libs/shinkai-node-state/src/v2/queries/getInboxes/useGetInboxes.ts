@@ -13,7 +13,11 @@ export const useGetInboxes = (
     queryFn: async () => getInboxes(input),
     select: (data) =>
       // display only job inboxes
-      data.filter((inbox) => inbox?.inbox_id?.split('::')?.[0] === 'job_inbox'),
+      data.filter(
+        (inbox) =>
+          inbox?.inbox_id?.split('::')?.[0] === 'job_inbox' &&
+          inbox.is_finished === false,
+      ),
     ...options,
   });
   return {

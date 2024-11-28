@@ -182,6 +182,7 @@ export const MessageList = ({
         'flex-1 overflow-y-auto',
         containerClassName,
       )}
+      id="chat-container-list"
       ref={chatContainerRef}
     >
       {isSuccess &&

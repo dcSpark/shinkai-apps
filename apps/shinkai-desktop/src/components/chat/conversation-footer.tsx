@@ -117,7 +117,7 @@ function ConversationEmptyFooter() {
   const location = useLocation();
 
   const locationState = location.state as ChatConversationLocationState;
-
+  const isAgentInbox = locationState?.agentName;
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
 
   const chatForm = useForm<CreateJobFormSchema>({
@@ -298,13 +298,15 @@ function ConversationEmptyFooter() {
       isHidden: false,
       selectedVRFiles,
       selectedVRFolders,
-      chatConfig: {
-        stream: chatConfigForm.getValues('stream'),
-        custom_prompt: chatConfigForm.getValues('customPrompt') ?? '',
-        temperature: chatConfigForm.getValues('temperature'),
-        top_p: chatConfigForm.getValues('topP'),
-        top_k: chatConfigForm.getValues('topK'),
-      },
+      ...(!isAgentInbox && {
+        chatConfig: {
+          stream: chatConfigForm.getValues('stream'),
+          custom_prompt: chatConfigForm.getValues('customPrompt') ?? '',
+          temperature: chatConfigForm.getValues('temperature'),
+          top_p: chatConfigForm.getValues('topP'),
+          top_k: chatConfigForm.getValues('topK'),
+        },
+      }),
     });
 
     chatForm.reset();
@@ -366,7 +368,9 @@ function ConversationEmptyFooter() {
                         </TooltipProvider>
                         <PromptSelectionActionBar />
                       </div>
-                      <CreateChatConfigActionBar form={chatConfigForm} />
+                      {!isAgentInbox && (
+                        <CreateChatConfigActionBar form={chatConfigForm} />
+                      )}
                     </div>
 
                     <ChatInputArea
@@ -495,6 +499,8 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
   );
 
   const currentInbox = useGetCurrentInbox();
+  const isAgentInbox = currentInbox?.agent?.type === 'Agent';
+
   const { data: chatConfig } = useGetChatConfig(
     {
       nodeAddress: auth?.node_address ?? '',
@@ -667,7 +673,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                         <PromptSelectionActionBar />
                       </div>
 
-                      <UpdateChatConfigActionBar />
+                      {!isAgentInbox && <UpdateChatConfigActionBar />}
                     </div>
 
                     <ChatInputArea

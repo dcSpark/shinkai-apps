@@ -4,11 +4,22 @@ import {
   AddToolRequest,
   CreatePromptRequest,
   CreatePromptResponse,
+  CreateToolCodeRequest,
+  CreateToolCodeResponse,
+  CreateToolMetadataRequest,
+  CreateToolMetadataResponse,
   DeletePromptRequest,
+  ExecuteToolCodeRequest,
+  ExecuteToolCodeResponse,
   GetAllPromptsResponse,
+  GetPlaygroundToolRequest,
+  GetPlaygroundToolResponse,
+  GetPlaygroundToolsResponse,
   GetToolResponse,
   GetToolsResponse,
   PayInvoiceRequest,
+  SaveToolCodeRequest,
+  SaveToolCodeResponse,
   SearchPromptsResponse,
   UpdatePromptRequest,
   UpdateToolRequest,
@@ -182,4 +193,101 @@ export const removePrompt = async (
     },
   );
   return response.data;
+};
+
+export const toolImplementation = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: CreateToolCodeRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/tool_implementation'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as CreateToolCodeResponse;
+};
+export const toolMetadataImplementation = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: CreateToolMetadataRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/tool_metadata_implementation'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as CreateToolMetadataResponse;
+};
+
+export const executeToolCode = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: ExecuteToolCodeRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/code_execution'),
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+        // TODO: remove hardcoded values
+        'x-shinkai-app-id': 'app-test',
+        'x-shinkai-tool-id': 'tool-test',
+      },
+      responseType: 'json',
+    },
+  );
+  return response.data as ExecuteToolCodeResponse;
+};
+
+export const saveToolCode = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: SaveToolCodeRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/set_playground_tool'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as SaveToolCodeResponse;
+};
+export const getPlaygroundTools = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/list_playground_tools'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetPlaygroundToolsResponse;
+};
+
+export const getPlaygroundTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetPlaygroundToolRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/get_playground_tool'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      params: { tool_key: payload.tool_key },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetPlaygroundToolResponse;
 };

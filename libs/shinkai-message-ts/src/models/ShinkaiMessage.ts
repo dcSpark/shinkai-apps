@@ -66,6 +66,7 @@ export type AgentInbox = {
   full_identity_name: string;
   id: string;
   model: string;
+  type: 'Agent' | 'LLMProvider';
 };
 
 export type SmartInbox = {

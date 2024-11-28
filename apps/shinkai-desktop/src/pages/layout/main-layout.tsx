@@ -36,12 +36,7 @@ import {
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
-import {
-  ArrowLeftToLine,
-  ArrowRightToLine,
-  BotIcon,
-  SquareTerminal,
-} from 'lucide-react';
+import { ArrowLeftToLine, ArrowRightToLine, BotIcon } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
 import {
   Link,
@@ -469,7 +464,7 @@ export function MainNav() {
           {navigationLinks.map((item) => {
             return (
               <Fragment key={item.title}>
-                {optInExperimental && (
+                {optInExperimental && item.href === '/tools' && (
                   <Separator className="my-0.5 w-full bg-gray-200" />
                 )}
                 <TooltipProvider

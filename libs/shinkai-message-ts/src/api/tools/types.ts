@@ -1,3 +1,5 @@
+import { JobMessage } from '../jobs/types';
+
 export type ShinkaiToolHeader = {
   author: string;
   config?: string;
@@ -38,6 +40,7 @@ type JSToolResult = {
 };
 export type JSShinkaiTool = {
   toolkit_name: string;
+  tool_router_key?: string;
   name: string;
   author: string;
   js_code: string;
@@ -125,3 +128,103 @@ export type UpdatePromptRequest = Prompt;
 export type DeletePromptRequest = {
   prompt_name: string;
 };
+
+export enum CodeLanguage {
+  Typescript = 'Typescript',
+  Python = 'Python',
+}
+
+export type CreateToolCodeRequest = {
+  message: JobMessage;
+  language: CodeLanguage;
+  raw?: boolean;
+  tools: string[];
+};
+
+export type CreateToolCodeResponse = {
+  message_id: string;
+  parent_message_id?: string;
+  inbox: string;
+  scheduled_time: string;
+};
+
+export type CreateToolMetadataRequest = {
+  language: CodeLanguage;
+  job_id: string;
+  tools: string[];
+};
+
+export type CreateToolMetadataResponse = {
+  job_id: string;
+};
+
+export enum DynamicToolType {
+  DenoDynamic = 'denodynamic',
+  PythonDynamic = 'pythondynamic',
+}
+
+export type ExecuteToolCodeRequest = {
+  tool_type: DynamicToolType;
+  parameters: Record<string, any>;
+  code: string;
+  extra_config?: string;
+  llm_provider: string;
+  tools: string[];
+};
+
+export type ExecuteToolCodeResponse = Record<string, any>;
+
+export type SaveToolCodeRequest = {
+  tool_router_key?: string;
+  metadata: Record<string, any>;
+  job_id: string;
+  job_id_history?: string[];
+  code: string;
+};
+
+export type ToolMetadata = {
+  id: string;
+  name: string;
+  description: string;
+  author: string;
+  keywords: string[];
+  configurations: {
+    type: 'object';
+    properties: Record<string, any>;
+    required: string[];
+  };
+  parameters: {
+    type: 'object';
+    properties: Record<string, any>;
+    required: string[];
+  };
+  result: {
+    type: 'object';
+    properties: Record<string, any>;
+    required: string[];
+  };
+};
+
+export type SaveToolCodeResponse = {
+  shinkai_tool: {
+    type: 'Deno';
+    content: [ShinkaiTool, boolean];
+  };
+  metadata: {
+    metadata: ToolMetadata;
+    tool_router_key: string;
+    job_id: string;
+    code: string;
+  };
+};
+
+export type PlaygroundTool = {
+  metadata: ToolMetadata;
+  tool_router_key: string;
+  job_id: string;
+  job_id_history: string[];
+  code: string;
+};
+export type GetPlaygroundToolsResponse = PlaygroundTool[];
+export type GetPlaygroundToolRequest = { tool_key: string };
+export type GetPlaygroundToolResponse = PlaygroundTool;
