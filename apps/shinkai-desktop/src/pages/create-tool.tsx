@@ -166,7 +166,6 @@ export const useToolMetadata = ({
           metadataGenerationData = ToolMetadataSchema.parse(
             parsedJson,
           ) as ToolMetadata;
-
           setMetadataData(metadataGenerationData);
           // if (code) {
           //   saveToHistory(code, metadataGenerationData);
@@ -191,11 +190,11 @@ export const useToolMetadata = ({
       isMetadataGenerationPending,
       isMetadataGenerationSuccess,
       isMetadataGenerationIdle,
-      metadataGenerationData: metadataData,
+      metadataGenerationData,
       isMetadataGenerationError: metadataGenerationError != null,
       metadataGenerationError,
     };
-  }, [initialState, metadataChatConversation?.pages, metadataData]);
+  }, [initialState, metadataChatConversation?.pages]);
 
   return {
     isMetadataGenerationPending,
@@ -264,7 +263,7 @@ export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
       };
 
     let status: 'idle' | 'error' | 'success' | 'pending' = 'idle';
-    let toolCode = '';
+    let toolCodeGeneration = '';
     if (
       lastMessage.role === 'assistant' &&
       lastMessage.status.type === 'running'
@@ -279,7 +278,7 @@ export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
       const generatedCode = extractTypeScriptCode(lastMessage?.content) ?? '';
       if (generatedCode) {
         baseToolCodeRef.current = generatedCode;
-        toolCode = generatedCode;
+        toolCodeGeneration = generatedCode;
         setToolCode(generatedCode);
       } else {
         status = 'error';
@@ -290,7 +289,7 @@ export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
       isToolCodeGenerationPending: status === 'pending',
       isToolCodeGenerationSuccess: status === 'success',
       isToolCodeGenerationIdle: status === 'idle',
-      toolCodeGenerationData: toolCode,
+      toolCodeGenerationData: toolCodeGeneration,
       isToolCodeGenerationError: status === 'error',
     };
   }, [data?.pages]);
