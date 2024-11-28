@@ -19,11 +19,6 @@ import {
   Badge,
   Button,
   ChatInputArea,
-  Dialog,
-  DialogContent,
-  // DialogDescription,
-  DialogTitle,
-  DialogTrigger,
   Form,
   FormControl,
   FormField,
@@ -31,6 +26,9 @@ import {
   FormLabel,
   JsonForm,
   MessageList,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Switch,
   Tabs,
   TabsContent,
@@ -55,6 +53,7 @@ import {
   Save,
   // UndoIcon,
 } from 'lucide-react';
+import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import React, {
   useCallback,
   useEffect,
@@ -1078,8 +1077,8 @@ export function ToolSelectionModal({
   });
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Popover>
+      <PopoverTrigger asChild>
         <div
           className={cn(actionButtonClassnames, 'w-[90px]')}
           role="button"
@@ -1090,14 +1089,17 @@ export function ToolSelectionModal({
             {form.watch('tools').length}
           </Badge>
         </div>
-      </DialogTrigger>
-      <DialogContent className="flex max-w-xl flex-col bg-gray-300 p-5 text-xs">
-        <DialogTitle className="pb-0">Available tools</DialogTitle>
-        {/*<DialogDescription>blaalalal</DialogDescription>*/}
-        <div className="flex max-h-[28vh] flex-col gap-2.5 overflow-auto">
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="flex w-full max-w-xl flex-col gap-3 bg-gray-300 p-4 pr-1 text-xs"
+      >
+        <div className="flex items-center justify-between pr-3">
+          <p className="font-semibold text-white">Available tools</p>
           <div className="flex items-center gap-3">
             <Switch
               checked={form.watch('tools').length === toolsList?.length}
+              id="all"
               onCheckedChange={(checked) => {
                 if (checked && toolsList) {
                   form.setValue(
@@ -1109,8 +1111,13 @@ export function ToolSelectionModal({
                 }
               }}
             />
-            <span className="text-gray-80 text-xs">Enabled All</span>
+            <label className="text-xs text-gray-50" htmlFor="all">
+              Enabled All
+            </label>
           </div>
+        </div>
+
+        <div className="flex max-h-[28vh] flex-col gap-2.5 overflow-auto">
           {toolsList?.map((tool) => (
             <FormField
               control={form.control}
@@ -1118,10 +1125,11 @@ export function ToolSelectionModal({
               name="tools"
               render={({ field }) => (
                 <FormItem className="flex w-full flex-col gap-3">
-                  <div className="flex items-center gap-3">
-                    <FormControl>
+                  <FormControl>
+                    <div className="flex items-center gap-3">
                       <Switch
                         checked={field.value.includes(tool.tool_router_key)}
+                        id={tool.tool_router_key}
                         onCheckedChange={() => {
                           field.onChange(
                             field.value.includes(tool.tool_router_key)
@@ -1132,35 +1140,39 @@ export function ToolSelectionModal({
                           );
                         }}
                       />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <TooltipProvider delayDuration={0}>
-                        <Tooltip>
-                          <TooltipTrigger className="flex items-center gap-1">
-                            <FormLabel className="text-gray-80 static space-y-1.5 text-xs">
-                              {formatText(tool.name)}
-                            </FormLabel>
-                          </TooltipTrigger>
-                          <TooltipPortal>
-                            <TooltipContent
-                              align="start"
-                              alignOffset={-10}
-                              className="max-w-md"
-                              side="top"
-                            >
-                              {tool.description}
-                            </TooltipContent>
-                          </TooltipPortal>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <div className="inline-flex items-center gap-2 leading-none">
+                        <label
+                          className="truncate text-xs text-gray-50"
+                          htmlFor={tool.tool_router_key}
+                        >
+                          {formatText(tool.name)}
+                        </label>
+                        <TooltipProvider delayDuration={0}>
+                          <Tooltip>
+                            <TooltipTrigger className="flex items-center gap-1">
+                              <InfoCircleIcon className="h-3 w-3 text-gray-100" />
+                            </TooltipTrigger>
+                            <TooltipPortal>
+                              <TooltipContent
+                                align="center"
+                                alignOffset={-10}
+                                className="max-w-md"
+                                side="top"
+                              >
+                                {tool.description}
+                              </TooltipContent>
+                            </TooltipPortal>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                     </div>
-                  </div>
+                  </FormControl>
                 </FormItem>
               )}
             />
           ))}
         </div>
-      </DialogContent>
-    </Dialog>
+      </PopoverContent>
+    </Popover>
   );
 }
