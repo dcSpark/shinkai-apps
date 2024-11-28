@@ -557,9 +557,14 @@ function CreateToolPage() {
                 <div className="grid grid-cols-1 items-center gap-3">
                   {[
                     {
-                      text: 'Generate a tool that downloads https://jhftss.github.io/',
+                      text: 'Tool for downloading a website content in markdown',
                       prompt:
-                        'Generate a tool that downloads https://jhftss.github.io/',
+                        'Generate a tool for downloading a website into markdown',
+                    },
+                    {
+                      text: 'Tool for getting tech-related stories from Hacker News',
+                      prompt:
+                        'Generate a tool for getting top tech-related stories from Hacker News, include the title, author, and URL of the story',
                     },
                   ].map((suggestion) => (
                     <Badge
