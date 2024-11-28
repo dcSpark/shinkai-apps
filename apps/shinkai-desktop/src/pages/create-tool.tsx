@@ -1126,7 +1126,7 @@ export function ToolSelectionModal({
               render={({ field }) => (
                 <FormItem className="flex w-full flex-col gap-3">
                   <FormControl>
-                    <div className="flex items-center gap-3">
+                    <div className="flex w-full items-center gap-3">
                       <Switch
                         checked={field.value.includes(tool.tool_router_key)}
                         id={tool.tool_router_key}
@@ -1140,9 +1140,9 @@ export function ToolSelectionModal({
                           );
                         }}
                       />
-                      <div className="inline-flex items-center gap-2 leading-none">
+                      <div className="inline-flex flex-1 items-center gap-2 leading-none">
                         <label
-                          className="truncate text-xs text-gray-50"
+                          className="max-w-[40ch] truncate text-xs text-gray-50"
                           htmlFor={tool.tool_router_key}
                         >
                           {formatText(tool.name)}
