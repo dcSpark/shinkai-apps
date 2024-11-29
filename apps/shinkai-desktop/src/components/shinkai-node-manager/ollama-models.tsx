@@ -43,16 +43,25 @@ import { OllamaModelsRepository } from './components/ollama-models-repository';
 
 export const OllamaModels = ({
   rightBottomElement,
+  parentShowAllOllamaModels,
+  parentSetShowAllOllamaModels,
 }: {
   rightBottomElement?: React.ReactNode;
+  parentShowAllOllamaModels?: boolean;
+  parentSetShowAllOllamaModels?: (value: boolean) => void;
 }) => {
   const { t } = useTranslation();
   const { data: defaultModel } = useShinkaiNodeGetDefaultModel();
 
   const { data: isShinkaiNodeRunning } = useShinkaiNodeIsRunningQuery();
   const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({});
+  const [internalShowAllOllamaModels, setInternalShowAllOllamaModels] =
+    useState(false);
 
-  const [showAllOllamaModels, setShowAllOllamaModels] = useState(false);
+  const showAllOllamaModels =
+    parentShowAllOllamaModels ?? internalShowAllOllamaModels;
+  const setShowAllOllamaModels =
+    parentSetShowAllOllamaModels ?? setInternalShowAllOllamaModels;
 
   const isDefaultModel = (model: string): boolean => {
     return defaultModel === model;
@@ -194,27 +203,30 @@ export const OllamaModels = ({
       <span className="text-gray-80 w-full text-right text-xs">
         {t('shinkaiNode.models.poweredByOllama')}
       </span>
-      <div
-        className={cn(
-          'flex w-full items-center justify-center gap-4 pb-4 pt-8',
-          rightBottomElement && 'justify-between',
-        )}
-      >
-        <Button
-          className={cn('gap-2 rounded-lg px-6')}
-          onClick={() => setShowAllOllamaModels(!showAllOllamaModels)}
-          size="sm"
-          variant="outline"
+      {parentShowAllOllamaModels == null && (
+        <div
+          className={cn(
+            'flex w-full items-center justify-center gap-4 pb-4 pt-8',
+            rightBottomElement && 'justify-between',
+          )}
         >
-          <Sparkles className="h-4 w-4" />
-          <span>
-            {showAllOllamaModels
-              ? t('shinkaiNode.models.labels.showRecommended')
-              : t('shinkaiNode.models.labels.showAll')}
-          </span>
-        </Button>
-        {rightBottomElement}
-      </div>
+          {rightBottomElement && <div className="w-[124px]" />}
+          <Button
+            className={cn('gap-2 rounded-lg px-6')}
+            onClick={() => setShowAllOllamaModels(!showAllOllamaModels)}
+            size="sm"
+            variant="outline"
+          >
+            <Sparkles className="h-4 w-4" />
+            <span className="capitalize">
+              {showAllOllamaModels
+                ? t('shinkaiNode.models.labels.showRecommended')
+                : t('shinkaiNode.models.labels.showAll')}
+            </span>
+          </Button>
+          {rightBottomElement}
+        </div>
+      )}
     </div>
   );
 };
