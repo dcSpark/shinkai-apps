@@ -68,7 +68,7 @@ const EmptyMessage = () => {
       content: message,
       isHidden: false,
       chatConfig: {
-        stream: isToolNeeded ? false : DEFAULT_CHAT_CONFIG.stream,
+        stream: DEFAULT_CHAT_CONFIG.stream,
         custom_prompt: '',
         temperature: DEFAULT_CHAT_CONFIG.temperature,
         top_p: DEFAULT_CHAT_CONFIG.top_p,
