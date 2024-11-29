@@ -59,7 +59,7 @@ const EmptyMessage = () => {
     setPromptSelected(undefined);
   }, []);
 
-  const onCreateJob = async (message: string, isToolNeeded = false) => {
+  const onCreateJob = async (message: string) => {
     if (!auth) return;
     await createJob({
       nodeAddress: auth.node_address,
@@ -113,12 +113,10 @@ const EmptyMessage = () => {
               {
                 text: 'Search in Perplexity',
                 prompt: 'Search in Perplexity for: ',
-                isToolNeeded: true,
               },
               {
                 text: 'Summarize a Youtube video',
                 prompt: 'Summarize a Youtube video: ',
-                isToolNeeded: true,
               },
             ].map((suggestion) => (
               <Badge
@@ -132,7 +130,6 @@ const EmptyMessage = () => {
                     is_favorite: false,
                     is_system: true,
                     version: '1',
-                    isToolNeeded: suggestion.isToolNeeded,
                   });
                   const element = document.querySelector(
                     '#chat-input',
