@@ -119,7 +119,7 @@ export default function ChatTable() {
         content: data.message,
         isHidden: true,
         chatConfig: {
-          stream: false,
+          stream: DEFAULT_CHAT_CONFIG.stream,
           custom_prompt: '',
           temperature: DEFAULT_CHAT_CONFIG.temperature,
           top_p: DEFAULT_CHAT_CONFIG.top_p,
