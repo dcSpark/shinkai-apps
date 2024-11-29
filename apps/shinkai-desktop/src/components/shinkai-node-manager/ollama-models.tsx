@@ -25,8 +25,8 @@ import {
   OpenBMBIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { BookOpenText, Database, Star, StarIcon } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { BookOpenText, Database, Sparkles, StarIcon } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 import { OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama-models';
@@ -41,7 +41,11 @@ import { ModelSpeedTag } from './components/model-speed-tag';
 import { OllamaModelInstallButton } from './components/ollama-model-install-button';
 import { OllamaModelsRepository } from './components/ollama-models-repository';
 
-export const OllamaModels = () => {
+export const OllamaModels = ({
+  rightBottomElement,
+}: {
+  rightBottomElement?: React.ReactNode;
+}) => {
   const { t } = useTranslation();
   const { data: defaultModel } = useShinkaiNodeGetDefaultModel();
 
@@ -138,7 +142,7 @@ export const OllamaModels = () => {
                         )}
                       </span>
                     </CardTitle>
-                    <CardDescription className="overflow-hidden text-ellipsis">
+                    <CardDescription className="overflow-hidden text-ellipsis text-xs">
                       {model.description}
                     </CardDescription>
                   </CardHeader>
@@ -190,17 +194,27 @@ export const OllamaModels = () => {
       <span className="text-gray-80 w-full text-right text-xs">
         {t('shinkaiNode.models.poweredByOllama')}
       </span>
-
-      <Button
-        className="gap-2 underline"
-        onClick={async () => setShowAllOllamaModels(!showAllOllamaModels)}
-        variant={'link'}
+      <div
+        className={cn(
+          'flex w-full items-center justify-center gap-4 pb-4 pt-8',
+          rightBottomElement && 'justify-between',
+        )}
       >
-        {!showAllOllamaModels ? null : <Star className="ml-2 h-4 w-4" />}
-        {!showAllOllamaModels
-          ? t('shinkaiNode.models.labels.showAll')
-          : t('shinkaiNode.models.labels.showRecommended')}
-      </Button>
+        <Button
+          className={cn('gap-2 rounded-lg px-6')}
+          onClick={() => setShowAllOllamaModels(!showAllOllamaModels)}
+          size="sm"
+          variant="outline"
+        >
+          <Sparkles className="h-4 w-4" />
+          <span>
+            {showAllOllamaModels
+              ? t('shinkaiNode.models.labels.showRecommended')
+              : t('shinkaiNode.models.labels.showAll')}
+          </span>
+        </Button>
+        {rightBottomElement}
+      </div>
     </div>
   );
 };

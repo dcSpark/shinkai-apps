@@ -40,18 +40,18 @@ export const ALLOWED_OLLAMA_MODELS = FILTERED_OLLAMA_MODELS_REPOSITORY.flatMap(
 );
 export const OLLAMA_MODELS: OllamaModel[] = [
   {
-    model: 'gemma2',
-    tag: '2b-instruct-q4_1',
-    name: 'Gemma2 2b',
+    model: 'llama3.2',
+    tag: 'latest',
+    name: 'Llama 3.2 3b',
     description:
-      'Google Gemma 2 is a high-performing and efficient model for generating text',
-    contextLength: 8000,
+      'Meta\'s Llama 3.2 is a multilingual large language model optimized for multilingual dialogue use cases, including agentic retrieval and summarization tasks.',
+    contextLength: 128000,
     quality: OllamaModelQuality.Low,
     speed: OllamaModelSpeed.VeryFast,
     capabilities: [OllamaModelCapability.TextGeneration],
     size: 1.8,
     fullName: '',
-    provider: 'Google',
+    provider: 'Meta',
   },
   {
     model: 'llama3.1',
@@ -59,7 +59,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     name: 'Llama 3.1 8b',
     description:
       'A powerful AI model for understanding and generating text, optimized for tasks like writing and processing language',
-    contextLength: 8000,
+    contextLength: 128000,
     quality: OllamaModelQuality.Medium,
     speed: OllamaModelSpeed.Fast,
     capabilities: [OllamaModelCapability.TextGeneration],
@@ -82,21 +82,20 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     provider: 'Mistral',
   },
   {
-    model: 'minicpm-v',
-    tag: '8b-2.6-fp16',
-    name: 'MiniCPM-V 2.6',
-    description:
-      'With only 8B parameters, it surpasses widely used proprietary models like GPT-4o mini, GPT-4V, Gemini 1.5 Pro, and Claude 3.5 Sonnet for single image understanding (OpenCompass).',
-    contextLength: 4000,
+    model: 'llama3.2-vision',
+    tag: 'latest',
+    name: 'Llama 3.2 Vision 11b',
+    description: 'Llama 3.2 Vision is an instruction-tuned image reasoning generative model optimized for visual recognition, image reasoning, captioning, and answering general questions about images.',
+    contextLength: 128000,
     quality: OllamaModelQuality.Good,
     speed: OllamaModelSpeed.Average,
     capabilities: [
       OllamaModelCapability.TextGeneration,
       OllamaModelCapability.ImageToText,
     ],
-    size: 2.9,
+    size: 7.9,
     fullName: '',
-    provider: 'OpenBMB',
+    provider: 'Meta',
   },
 ].map((model) => {
   model.fullName = `${model.model}:${model.tag}` as const;
