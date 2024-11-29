@@ -271,13 +271,6 @@ function ConversationEmptyFooter() {
     chatForm.setValue('message', promptSelected?.prompt ?? '');
   }, [chatForm, promptSelected]);
 
-  useEffect(() => {
-    chatConfigForm.setValue(
-      'stream',
-      promptSelected?.isToolNeeded ? false : DEFAULT_CHAT_CONFIG.stream,
-    );
-  }, [chatConfigForm, chatForm, promptSelected]);
-
   const onSubmit = async (data: CreateJobFormSchema) => {
     if (!auth || data.message.trim() === '') return;
     const selectedVRFiles =

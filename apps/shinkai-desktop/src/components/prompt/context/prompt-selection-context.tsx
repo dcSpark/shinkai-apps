@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Prompt } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useCreatePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/createPrompt/useCreatePrompt';
 import { useRemovePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/removePrompt/useRemovePrompt';
-import { useUpdatePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/updatePrompt/useUpdatePrompt';
+// import { useUpdatePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/updatePrompt/useUpdatePrompt';
 import { useGetPromptList } from '@shinkai_network/shinkai-node-state/v2/queries/getPromptList/useGetPromptList';
 import { useGetPromptSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getPromptSearch/useGetPromptSearch';
 import {
@@ -88,9 +88,9 @@ const PromptSearchDrawer = () => {
   const setPromptSelected = usePromptSelectionStore(
     (state) => state.setPromptSelected,
   );
-  const selectedPromptEdit = usePromptSelectionStore(
-    (state) => state.selectedPromptEdit,
-  );
+  // const selectedPromptEdit = usePromptSelectionStore(
+  //   (state) => state.selectedPromptEdit,
+  // );
   const setSelectedPromptEdit = usePromptSelectionStore(
     (state) => state.setSelectedPromptEdit,
   );
