@@ -192,14 +192,17 @@ export const OllamaModels = () => {
       </span>
 
       <Button
-        className="gap-2 underline"
+        className={cn(
+          "gap-2 px-6 py-3 rounded-xl transition-all text-white bg-[hsla(360,99%,69%,1)] hover:bg-[hsla(360,99%,75%,1)]"
+        )}
         onClick={async () => setShowAllOllamaModels(!showAllOllamaModels)}
-        variant={'link'}
       >
-        {!showAllOllamaModels ? null : <Star className="ml-2 h-4 w-4" />}
-        {!showAllOllamaModels
-          ? t('shinkaiNode.models.labels.showAll')
-          : t('shinkaiNode.models.labels.showRecommended')}
+        <Star className="h-4 w-4" />
+        <span className="text-sm font-medium">
+          {showAllOllamaModels
+            ? t('shinkaiNode.models.labels.showRecommended')
+            : t('shinkaiNode.models.labels.showAll')}
+        </span>
       </Button>
     </div>
   );
