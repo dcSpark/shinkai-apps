@@ -12,7 +12,7 @@ import { useShinkaiNodeManager } from './shinkai-node-manager';
 
 export type RehydrateStorageEvent = {
   triggeredBy: string;
-  store: string;
+  stores: string[];
 };
 
 const stores = new Map(
@@ -22,8 +22,10 @@ const stores = new Map(
   ]),
 );
 
-const rehydrateStore = (store: string) => {
-  stores.get(store)?.persist.rehydrate();
+const rehydrateStore = (targetStores: string[]) => {
+  targetStores.forEach((storeName) =>
+    stores.get(storeName)?.persist.rehydrate(),
+  );
 };
 
 export const useSyncStorageSecondary = () => {
@@ -32,17 +34,17 @@ export const useSyncStorageSecondary = () => {
 
     debug('using sync storage secondary');
 
-    const handleRehydrate = (triggeredBy: string, store: string) => {
+    const handleRehydrate = (triggeredBy: string, targetStores: string[]) => {
       debug(
-        `${currentWindowLabel} rehydrating store:${store} triggeredBy:${triggeredBy}`,
+        `${currentWindowLabel} rehydrating stores:${targetStores?.join(',')} triggeredBy:${triggeredBy}`,
       );
-      rehydrateStore(store);
+      rehydrateStore(targetStores);
     };
 
     const unlistenRehydrateStorage = listen<RehydrateStorageEvent>(
       'rehydrate-storage',
       (event) =>
-        handleRehydrate(event.payload.triggeredBy, event.payload.store),
+        handleRehydrate(event.payload.triggeredBy, event.payload.stores),
     );
 
     return () => {
@@ -56,6 +58,7 @@ const handleAuthSideEffect = async (
   prevAuth: SetupData | null,
 ) => {
   debug(`prev auth: ${prevAuth} --- new auth ${auth}`);
+  const currentWindowLabel = getCurrentWindow().label;
   // SignOut case
   if (prevAuth && !auth) {
     debug(
@@ -64,6 +67,10 @@ const handleAuthSideEffect = async (
     useSettings.getState().setDefaultAgentId('');
     useSettings.getState().setDefaultSpotlightAiId('');
     useShinkaiNodeManager.getState().setIsInUse(false);
+    emit('rehydrate-storage', {
+      triggeredBy: currentWindowLabel,
+      stores: ['settings', 'shinkai-node-options'],
+    });
     return;
   }
 
@@ -72,6 +79,10 @@ const handleAuthSideEffect = async (
     const isRunning: boolean = await invoke('shinkai_node_is_running');
     debug(`setting is in use isLocal:${isLocal} isRunning:${isRunning}`);
     useShinkaiNodeManager.getState().setIsInUse(isLocal && isRunning);
+    emit('rehydrate-storage', {
+      triggeredBy: currentWindowLabel,
+      stores: ['shinkai-node-options'],
+    });
   }
 };
 
@@ -98,7 +109,7 @@ export const useSyncStorageMain = () => {
       );
       emit('rehydrate-storage', {
         triggeredBy: currentWindowLabel,
-        store: event.key,
+        stores: [event.key],
       });
     };
 
