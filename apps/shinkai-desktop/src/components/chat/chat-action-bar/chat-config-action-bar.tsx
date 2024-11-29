@@ -452,8 +452,8 @@ const useSelectedAIModel = () => {
 const ToolsDisabledAlert = ({ streamActive }: { streamActive?: boolean }) => {
   const selectedAIModel = useSelectedAIModel();
 
-  const isOllamaProvider =
-    selectedAIModel?.model?.split(':')?.[0] === 'ollama' && streamActive;
+  // TODO: make this depend on a feature flag for tools instead
+  const isOllamaProvider = false;
 
   return isOllamaProvider ? (
     <TooltipProvider delayDuration={0}>

@@ -85,7 +85,7 @@ function AddAgentPage() {
       tools: [],
       debugMode: false,
       config: {
-        stream: false, // disable stream by default for tooling
+        stream: DEFAULT_CHAT_CONFIG.stream,
         temperature: DEFAULT_CHAT_CONFIG.temperature,
         top_p: DEFAULT_CHAT_CONFIG.top_p,
         top_k: DEFAULT_CHAT_CONFIG.top_k,
@@ -176,6 +176,7 @@ function AddAgentPage() {
                   />
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="uiDescription"
@@ -343,27 +344,27 @@ function AddAgentPage() {
                     )}
                   />
 
-                  {/*<FormField*/}
-                  {/*  control={form.control}*/}
-                  {/*  name="config.stream"*/}
-                  {/*  render={({ field }) => (*/}
-                  {/*    <FormItem className="flex w-full flex-col gap-3">*/}
-                  {/*      <div className="flex gap-3">*/}
-                  {/*        <FormControl>*/}
-                  {/*          <Switch*/}
-                  {/*            checked={field.value}*/}
-                  {/*            onCheckedChange={field.onChange}*/}
-                  {/*          />*/}
-                  {/*        </FormControl>*/}
-                  {/*        <div className="space-y-1 leading-none">*/}
-                  {/*          <FormLabel className="static space-y-1.5 text-sm text-white">*/}
-                  {/*            Enable Stream*/}
-                  {/*          </FormLabel>*/}
-                  {/*        </div>*/}
-                  {/*      </div>*/}
-                  {/*    </FormItem>*/}
-                  {/*  )}*/}
-                  {/*/>*/}
+                  <FormField
+                    control={form.control}
+                    name="config.stream"
+                    render={({ field }) => (
+                      <FormItem className="flex w-full flex-col gap-3">
+                        <div className="flex gap-3">
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel className="static space-y-1.5 text-sm text-white">
+                              Enable Stream
+                            </FormLabel>
+                          </div>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="config.temperature"
