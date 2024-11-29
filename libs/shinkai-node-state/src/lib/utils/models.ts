@@ -87,6 +87,14 @@ export const modelsConfig = {
     apiUrl: 'https://api.groq.com/openai/v1',
     modelTypes: [
       {
+        name: 'Llama 3.2 90B Vision (Preview)',
+        value: 'llama-3.2-90b-vision-preview',
+      },
+      {
+        name: 'Llama 3.2 11B Vision (Preview)',
+        value: 'llama-3.2-11b-vision-preview',
+      },
+      {
         name: 'Llama3 Groq 70B (Tool Use Preview)',
         value: 'llama3-groq-70b-8192-tool-use-preview',
       },
