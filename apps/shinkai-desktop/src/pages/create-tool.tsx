@@ -49,9 +49,9 @@ import {
   Loader2,
   LucideArrowLeft,
   Play,
-  // RedoIcon,
+  RedoIcon,
   Save,
-  // UndoIcon,
+  UndoIcon,
 } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import React, {
@@ -105,17 +105,6 @@ export const useToolMetadata = ({
     metadataGenerationError?: string | null;
   };
 }) => {
-  // const [toolHistory, setToolHistory] = useState<
-  //   { code: string; metadata: any }[]
-  // >([]);
-  // const saveToHistory = (code: string, metadata: any) => {
-  //   setToolHistory((prevHistory) => {
-  //     if (prevHistory.some((history) => history.code === code)) {
-  //       return prevHistory;
-  //     }
-  //     return [...prevHistory, { code, metadata }];
-  //   });
-  // };
   const [metadataData, setMetadataData] = useState<ToolMetadata | null>(
     initialState?.metadata ?? null,
   );
@@ -247,6 +236,44 @@ export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
       };
     }, [data]);
 
+  const toolHistory = useMemo(() => {
+    const messageList = chatConversationData?.pages.flat() ?? [];
+    const toolCodesFound = messageList
+      .map((message) => {
+        if (
+          message.role === 'assistant' &&
+          message.status.type === 'complete'
+        ) {
+          return {
+            messageId: message.messageId,
+            code: extractTypeScriptCode(message.content) ?? '',
+          };
+        }
+      })
+      .filter((item) => !!item);
+    return toolCodesFound;
+  }, [chatConversationData?.pages]);
+
+  console.log(toolHistory, 'toolHistory');
+  // useEffect(() => {
+  //   const messageList = chatConversationData?.pages.flat() ?? [];
+  //
+  //   const toolCodesFound = messageList
+  //     .map((message) => {
+  //       if (
+  //         message.role === 'assistant' &&
+  //         message.status.type === 'complete'
+  //       ) {
+  //         return {
+  //           messageId: message.messageId,
+  //           code: extractTypeScriptCode(message.content) ?? '',
+  //         };
+  //       }
+  //     })
+  //     .filter((item) => !!item);
+  //   setToolCodeHistory(toolCodesFound);
+  // }, [chatConversationData]);
+
   const {
     isToolCodeGenerationPending,
     isToolCodeGenerationSuccess,
@@ -311,6 +338,7 @@ export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
     isFetchingPreviousPage,
     isChatConversationSuccess,
     chatConversationData,
+    toolHistory,
   };
 };
 
@@ -344,6 +372,7 @@ function CreateToolPage() {
     isFetchingPreviousPage,
     isChatConversationSuccess,
     chatConversationData,
+    toolHistory,
   } = useToolCode({ chatInboxId });
 
   const {
@@ -697,61 +726,61 @@ function CreateToolPage() {
                   </TabsTrigger>
                 </TabsList>
                 <div className="flex items-center gap-6">
-                  {/*{toolHistory.length > 1 && (*/}
-                  {/*  <div className="flex items-center gap-2">*/}
-                  {/*    <Tooltip>*/}
-                  {/*      <TooltipTrigger asChild>*/}
-                  {/*        <Button*/}
-                  {/*          onClick={() => {*/}
-                  {/*            //  find an item inside of it to scroll into view bsased on the content*/}
-                  {/*            const currentIdx = toolHistory.findIndex(*/}
-                  {/*              (history) => history.code === toolCode,*/}
-                  {/*            );*/}
+                  {toolHistory.length > 1 && (
+                    <div className="flex items-center gap-2">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            onClick={() => {
+                              //  find an item inside of it to scroll into view bsased on the content
+                              const currentIdx = toolHistory.findIndex(
+                                (history) => history.code === toolCode,
+                              );
 
-                  {/*            baseToolCodeRef.current =*/}
-                  {/*              toolHistory[currentIdx - 1].code;*/}
+                              baseToolCodeRef.current =
+                                toolHistory[currentIdx - 1].code;
 
-                  {/*            setToolCode(toolHistory[currentIdx - 1].code);*/}
-                  {/*            setResetCounter((prev) => prev + 1);*/}
-                  {/*          }}*/}
-                  {/*          size="icon"*/}
-                  {/*          variant="outline"*/}
-                  {/*        >*/}
-                  {/*          <UndoIcon className="h-4 w-4" />*/}
-                  {/*        </Button>*/}
-                  {/*      </TooltipTrigger>*/}
-                  {/*      <TooltipPortal>*/}
-                  {/*        <TooltipContent>*/}
-                  {/*          <p>Undo</p>*/}
-                  {/*        </TooltipContent>*/}
-                  {/*      </TooltipPortal>*/}
-                  {/*    </Tooltip>*/}
-                  {/*    <Tooltip>*/}
-                  {/*      <TooltipTrigger asChild>*/}
-                  {/*        <Button*/}
-                  {/*          onClick={() => {*/}
-                  {/*            const currentIdx = toolHistory.findIndex(*/}
-                  {/*              (history) => history.code === toolCode,*/}
-                  {/*            );*/}
-                  {/*            baseToolCodeRef.current =*/}
-                  {/*              toolHistory[currentIdx + 1].code;*/}
-                  {/*            setToolCode(toolHistory[currentIdx + 1].code);*/}
-                  {/*            setResetCounter((prev) => prev + 1);*/}
-                  {/*          }}*/}
-                  {/*          size="icon"*/}
-                  {/*          variant="outline"*/}
-                  {/*        >*/}
-                  {/*          <RedoIcon className="h-4 w-4" />*/}
-                  {/*        </Button>*/}
-                  {/*      </TooltipTrigger>*/}
-                  {/*      <TooltipPortal>*/}
-                  {/*        <TooltipContent>*/}
-                  {/*          <p>Redo</p>*/}
-                  {/*        </TooltipContent>*/}
-                  {/*      </TooltipPortal>*/}
-                  {/*    </Tooltip>*/}
-                  {/*  </div>*/}
-                  {/*)}*/}
+                              setToolCode(toolHistory[currentIdx - 1].code);
+                              setResetCounter((prev) => prev + 1);
+                            }}
+                            size="icon"
+                            variant="outline"
+                          >
+                            <UndoIcon className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipPortal>
+                          <TooltipContent>
+                            <p>Undo</p>
+                          </TooltipContent>
+                        </TooltipPortal>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            onClick={() => {
+                              const currentIdx = toolHistory.findIndex(
+                                (history) => history.code === toolCode,
+                              );
+                              baseToolCodeRef.current =
+                                toolHistory[currentIdx + 1].code;
+                              setToolCode(toolHistory[currentIdx + 1].code);
+                              setResetCounter((prev) => prev + 1);
+                            }}
+                            size="icon"
+                            variant="outline"
+                          >
+                            <RedoIcon className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipPortal>
+                          <TooltipContent>
+                            <p>Redo</p>
+                          </TooltipContent>
+                        </TooltipPortal>
+                      </Tooltip>
+                    </div>
+                  )}
                   <Button
                     className="text-gray-80 h-[30px] shrink-0 rounded-md text-xs"
                     disabled={
