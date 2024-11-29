@@ -258,3 +258,7 @@ export type PlaygroundTool = {
 export type GetPlaygroundToolsResponse = PlaygroundTool[];
 export type GetPlaygroundToolRequest = { tool_key: string };
 export type GetPlaygroundToolResponse = PlaygroundTool;
+export type UndoToolImplementationRequest = {
+  message_hash: string;
+  job_id: string;
+};
