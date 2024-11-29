@@ -20,21 +20,22 @@ const AIModelInstallation = () => {
         title={t('llmProviders.localAI.installTitle')}
       >
         <ResourcesBanner />
-        <OllamaModels />
-        <div className="flex justify-center pt-3">
-          <Link
-            className={cn(
-              buttonVariants({
-                size: 'lg',
-              }),
-              'min-w-[200px] gap-2 px-6 py-2.5',
-            )}
-            to={{ pathname: '/' }}
-          >
-            {t('common.continue')}
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
+        <OllamaModels
+          rightBottomElement={
+            <Link
+              className={cn(
+                buttonVariants({
+                  size: 'sm',
+                }),
+                'gap-2 rounded-lg px-6',
+              )}
+              to={{ pathname: '/' }}
+            >
+              {t('common.continue')}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          }
+        />
       </FixedHeaderLayout>
     </QueryClientProvider>
   );
