@@ -47,10 +47,10 @@ const App = () => {
 
 ReactDOM.createRoot(document.querySelector('#root') as HTMLElement).render(
   <React.StrictMode>
-    <QueryProvider>
-      <QueryClientProvider client={shinkaiNodeQueryClient}>
+    <QueryClientProvider client={shinkaiNodeQueryClient}>
+      <QueryProvider>
         <App />
-      </QueryClientProvider>
-    </QueryProvider>
+      </QueryProvider>
+    </QueryClientProvider>
   </React.StrictMode>,
 );
