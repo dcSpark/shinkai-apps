@@ -4,7 +4,6 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
-import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
   Alert,
   Button,
@@ -348,7 +347,7 @@ export function UpdateChatConfigActionBar() {
 
   return (
     <div className="flex items-center gap-2">
-      <ToolsDisabledAlert streamActive={form.watch('stream')} />
+      <ToolsDisabledAlert isToolsDisabled={!form.watch('useTools')} />
       <Popover
         onOpenChange={(open) => {
           if (open) {
@@ -424,7 +423,7 @@ export function CreateChatConfigActionBar({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <ToolsDisabledAlert streamActive={form.watch('stream')} />
+      <ToolsDisabledAlert isToolsDisabled={!form.watch('useTools')} />
       <Popover>
         <TooltipProvider delayDuration={0}>
           <Tooltip>
@@ -461,27 +460,26 @@ export function CreateChatConfigActionBar({
   );
 }
 
-const useSelectedAIModel = () => {
-  const defaultAgentId = useSettings((state) => state.defaultAgentId);
-  const auth = useAuth((state) => state.auth);
+// const useSelectedAIModel = () => {
+//   const defaultAgentId = useSettings((state) => state.defaultAgentId);
+//   const auth = useAuth((state) => state.auth);
+//
+//   const { llmProviders } = useGetLLMProviders({
+//     nodeAddress: auth?.node_address ?? '',
+//     token: auth?.api_v2_key ?? '',
+//   });
+//   const selectedProvider = llmProviders?.find(
+//     (provider) => provider.id === defaultAgentId,
+//   );
+//   return selectedProvider;
+// };
 
-  const { llmProviders } = useGetLLMProviders({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
-  const selectedProvider = llmProviders?.find(
-    (provider) => provider.id === defaultAgentId,
-  );
-  return selectedProvider;
-};
-
-const ToolsDisabledAlert = ({ streamActive }: { streamActive?: boolean }) => {
-  const selectedAIModel = useSelectedAIModel();
-
-  // TODO: make this depend on a feature flag for tools instead
-  const isOllamaProvider = false;
-
-  return isOllamaProvider ? (
+const ToolsDisabledAlert = ({
+  isToolsDisabled,
+}: {
+  isToolsDisabled?: boolean;
+}) => {
+  return isToolsDisabled ? (
     <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -498,10 +496,7 @@ const ToolsDisabledAlert = ({ streamActive }: { streamActive?: boolean }) => {
         </TooltipTrigger>
         <TooltipPortal>
           <TooltipContent>
-            <p>
-              Turn off streaming in chat config to allow tool usage (Ollama
-              limitation).
-            </p>
+            <p>Turn on Enable Tools in chat config to allow tool usage.</p>
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>
