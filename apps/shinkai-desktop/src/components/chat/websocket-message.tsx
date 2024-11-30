@@ -466,9 +466,10 @@ export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
                 } else {
                   lastMessage.toolCalls.push({
                     name: tool.tool_name,
-                    args: tool.args.arguments,
+                    // TODO: fix this based on backend
+                    args: tool?.args ?? tool?.args?.arguments,
                     status: tool.status.type_,
-                    toolRouterKey: '',
+                    toolRouterKey: tool?.tool_router_key ?? '',
                     result: tool.result?.data.message,
                   });
                 }
