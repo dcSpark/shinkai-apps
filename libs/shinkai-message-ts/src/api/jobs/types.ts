@@ -265,6 +265,7 @@ export type JobConfig = {
   top_k?: number;
   top_p?: number;
   stream?: boolean;
+  use_tools?: boolean;
   other_model_params?: Record<string, string>;
 };
 export type GetChatConfigRequest = {
