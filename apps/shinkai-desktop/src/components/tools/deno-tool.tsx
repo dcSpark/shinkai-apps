@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  JSShinkaiTool,
+  DenoShinkaiTool,
   ShinkaiTool,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
@@ -34,12 +34,12 @@ const jsToolSchema = z.object({
 });
 type JsToolFormSchema = z.infer<typeof jsToolSchema>;
 
-export default function JsTool({
+export default function DenoTool({
   tool,
   isEnabled,
   isPlaygroundTool,
 }: {
-  tool: JSShinkaiTool;
+  tool: DenoShinkaiTool;
   isEnabled: boolean;
   isPlaygroundTool?: boolean;
 }) {
@@ -82,7 +82,7 @@ export default function JsTool({
 
     await updateTool({
       toolKey: toolKey ?? '',
-      toolType: 'JS',
+      toolType: 'Deno',
       toolPayload: {
         config: data.config.map((conf) => ({
           BasicConfig: {
@@ -107,7 +107,7 @@ export default function JsTool({
             onCheckedChange={async () => {
               await updateTool({
                 toolKey: toolKey ?? '',
-                toolType: 'JS',
+                toolType: 'Deno',
                 toolPayload: {} as ShinkaiTool,
                 isToolEnabled: !isEnabled,
                 nodeAddress: auth?.node_address ?? '',

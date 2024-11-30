@@ -38,7 +38,7 @@ type JSToolResult = {
   properties: Record<string, string>;
   required: string[];
 };
-export type JSShinkaiTool = {
+export type DenoShinkaiTool = {
   toolkit_name: string;
   tool_router_key?: string;
   name: string;
@@ -53,8 +53,39 @@ export type JSShinkaiTool = {
   embedding?: Embedding;
   result: JSToolResult;
 };
-export type ShinkaiToolType = 'JS';
-export type ShinkaiTool = JSShinkaiTool;
+export type RustShinkaiTool = {
+  description: string;
+  input_args: ToolArgument[];
+  name: string;
+  output_arg: {
+    json: string;
+  };
+  tool_embedding?: Embedding;
+  tool_router_key: string;
+};
+
+export type NetworkShinkaiTool = {
+  activated: boolean;
+  config: ToolConfig[];
+  description: string;
+  embedding: null | string;
+  input_args: ToolArgument[];
+  name: string;
+  output_arg: {
+    json: string;
+  };
+  provider: string;
+  restrictions?: string;
+  toolkit_name: string;
+  usage_type: ToolUsageType;
+  version: string;
+};
+
+export type ShinkaiToolType = 'Deno' | 'Rust' | 'Network';
+export type ShinkaiTool =
+  | DenoShinkaiTool
+  | RustShinkaiTool
+  | NetworkShinkaiTool;
 
 export type GetToolResponse = {
   content: [ShinkaiTool, boolean];

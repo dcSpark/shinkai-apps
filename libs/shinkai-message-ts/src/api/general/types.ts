@@ -84,6 +84,7 @@ export type ToolState = {
 
 export type Tool = {
   tool_name: ToolName;
+  tool_router_key: string;
   args: {
     name: string;
     arguments: ToolArgs;

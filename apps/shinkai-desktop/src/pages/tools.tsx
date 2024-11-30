@@ -128,7 +128,7 @@ export const Tools = () => {
               >
                 <div className="flex flex-col gap-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-white">
+                    <span className="text-sm font-medium capitalize text-white">
                       {formatText(tool.name)}{' '}
                     </span>
                     {tool.author !== '@@official.shinkai' && (

@@ -97,7 +97,8 @@ export function AIModelSelector({
                 AI Models
               </DropdownMenuLabel>
               {isLlmProviderSuccess &&
-                llmProviders.map((llmProvider) => (
+                llmProviders?.length > 0 &&
+                llmProviders?.map((llmProvider) => (
                   <DropdownMenuRadioItem
                     className="flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
                     key={llmProvider.id}

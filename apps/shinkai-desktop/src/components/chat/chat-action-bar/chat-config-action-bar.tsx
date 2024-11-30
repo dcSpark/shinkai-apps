@@ -4,7 +4,6 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
-import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
   Alert,
   Button,
@@ -48,6 +47,7 @@ import { actionButtonClassnames } from '../conversation-footer';
 
 export const chatConfigFormSchema = z.object({
   stream: z.boolean(),
+  useTools: z.boolean(),
   customPrompt: z.string().optional(),
   temperature: z.number(),
   topP: z.number(),
@@ -80,6 +80,27 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
               <div className="space-y-1 leading-none">
                 <FormLabel className="static space-y-1.5 text-sm text-white">
                   Enable Stream
+                </FormLabel>
+              </div>
+            </div>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="useTools"
+        render={({ field }) => (
+          <FormItem className="flex w-full flex-col gap-3">
+            <div className="flex gap-3">
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel className="static space-y-1.5 text-sm text-white">
+                  Enable Tools
                 </FormLabel>
               </div>
             </div>
@@ -279,6 +300,7 @@ export function UpdateChatConfigActionBar() {
       temperature: chatConfig?.temperature,
       topP: chatConfig?.top_p,
       topK: chatConfig?.top_k,
+      useTools: chatConfig?.use_tools,
     },
   });
 
@@ -301,6 +323,7 @@ export function UpdateChatConfigActionBar() {
         temperature: chatConfig.temperature,
         topP: chatConfig.top_p,
         topK: chatConfig.top_k,
+        useTools: chatConfig.use_tools,
       });
     }
   }, [chatConfig, form]);
@@ -317,13 +340,14 @@ export function UpdateChatConfigActionBar() {
         temperature: data.temperature,
         top_p: data.topP,
         top_k: data.topK,
+        use_tools: data.useTools,
       },
     });
   };
 
   return (
     <div className="flex items-center gap-2">
-      <ToolsDisabledAlert streamActive={form.watch('stream')} />
+      <ToolsDisabledAlert isToolsDisabled={!form.watch('useTools')} />
       <Popover
         onOpenChange={(open) => {
           if (open) {
@@ -333,6 +357,7 @@ export function UpdateChatConfigActionBar() {
               temperature: chatConfig?.temperature,
               topP: chatConfig?.top_p,
               topK: chatConfig?.top_k,
+              useTools: chatConfig?.use_tools,
             });
           }
         }}
@@ -398,7 +423,7 @@ export function CreateChatConfigActionBar({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <ToolsDisabledAlert streamActive={form.watch('stream')} />
+      <ToolsDisabledAlert isToolsDisabled={!form.watch('useTools')} />
       <Popover>
         <TooltipProvider delayDuration={0}>
           <Tooltip>
@@ -435,27 +460,26 @@ export function CreateChatConfigActionBar({
   );
 }
 
-const useSelectedAIModel = () => {
-  const defaultAgentId = useSettings((state) => state.defaultAgentId);
-  const auth = useAuth((state) => state.auth);
+// const useSelectedAIModel = () => {
+//   const defaultAgentId = useSettings((state) => state.defaultAgentId);
+//   const auth = useAuth((state) => state.auth);
+//
+//   const { llmProviders } = useGetLLMProviders({
+//     nodeAddress: auth?.node_address ?? '',
+//     token: auth?.api_v2_key ?? '',
+//   });
+//   const selectedProvider = llmProviders?.find(
+//     (provider) => provider.id === defaultAgentId,
+//   );
+//   return selectedProvider;
+// };
 
-  const { llmProviders } = useGetLLMProviders({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
-  const selectedProvider = llmProviders?.find(
-    (provider) => provider.id === defaultAgentId,
-  );
-  return selectedProvider;
-};
-
-const ToolsDisabledAlert = ({ streamActive }: { streamActive?: boolean }) => {
-  const selectedAIModel = useSelectedAIModel();
-
-  // TODO: make this depend on a feature flag for tools instead
-  const isOllamaProvider = false;
-
-  return isOllamaProvider ? (
+const ToolsDisabledAlert = ({
+  isToolsDisabled,
+}: {
+  isToolsDisabled?: boolean;
+}) => {
+  return isToolsDisabled ? (
     <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -472,10 +496,7 @@ const ToolsDisabledAlert = ({ streamActive }: { streamActive?: boolean }) => {
         </TooltipTrigger>
         <TooltipPortal>
           <TooltipContent>
-            <p>
-              Turn off streaming in chat config to allow tool usage (Ollama
-              limitation).
-            </p>
+            <p>Turn on Enable Tools in chat config to allow tool usage.</p>
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>

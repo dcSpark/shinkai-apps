@@ -1,5 +1,7 @@
 import {
-  JSShinkaiTool,
+  DenoShinkaiTool,
+  NetworkShinkaiTool,
+  RustShinkaiTool,
   ShinkaiTool,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useGetPlaygroundTools } from '@shinkai_network/shinkai-node-state/v2/queries/getPlaygroundTools/useGetPlaygroundTools';
@@ -9,10 +11,12 @@ import { useParams } from 'react-router-dom';
 
 import { SubpageLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
-import JsTool from './js-tool';
+import DenoTool from './deno-tool';
+import NetworkTool from './network-tool';
+import RustTool from './rust-tool';
 
-function isJSShinkaiTool(tool: ShinkaiTool): tool is JSShinkaiTool {
-  return (tool as JSShinkaiTool).js_code !== undefined;
+export function isDenoShinkaiTool(tool: ShinkaiTool): tool is DenoShinkaiTool {
+  return (tool as DenoShinkaiTool).js_code !== undefined;
 }
 
 export default function ToolDetails() {
@@ -34,6 +38,8 @@ export default function ToolDetails() {
   const tool = data?.content[0] as ShinkaiTool;
   const isEnabled = data?.content[1] as boolean;
 
+  const toolType = data?.type;
+
   if (isPending) {
     return (
       <SubpageLayout
@@ -54,15 +60,21 @@ export default function ToolDetails() {
     );
   }
 
-  if (isSuccess && isJSShinkaiTool(tool)) {
+  if (isSuccess && toolType === 'Deno') {
     return (
-      <JsTool
+      <DenoTool
         isEnabled={isEnabled}
         isPlaygroundTool={playgroundTools?.some(
           (playgroundTool) => playgroundTool.tool_router_key === toolKey,
         )}
-        tool={tool}
+        tool={tool as DenoShinkaiTool}
       />
+    );
+  } else if (isSuccess && toolType === 'Rust') {
+    return <RustTool isEnabled={isEnabled} tool={tool as RustShinkaiTool} />;
+  } else if (isSuccess && toolType === 'Network') {
+    return (
+      <NetworkTool isEnabled={isEnabled} tool={tool as NetworkShinkaiTool} />
     );
   } else {
     return <div>Tool not found</div>;

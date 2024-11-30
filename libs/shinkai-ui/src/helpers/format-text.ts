@@ -2,13 +2,10 @@ export const formatText = (text: string) => {
   const words = text.split('_');
 
   const formattedWords = words.map((word) => {
-    return word
-      .split(/(?=[A-Z])/)
-      .map((part) => {
-        return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
-      })
-      .join(' ');
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
   });
 
-  return formattedWords.join(' ');
+  const result = formattedWords.join(' ');
+
+  return result.charAt(0).toUpperCase() + result.slice(1);
 };

@@ -29,18 +29,16 @@ const App = () => {
     <I18nProvider>
       <ErrorBoundary FallbackComponent={FullPageErrorFallback}>
         <QuickAskProvider>
-          <QueryProvider>
-            <ToolsProvider>
-              <TooltipProvider delayDuration={0}>
-                <Router>
-                  {/*<Routes>*/}
-                  <QuickAsk />
-                  {/*</Routes>*/}
-                </Router>
-                <Toaster />
-              </TooltipProvider>
-            </ToolsProvider>
-          </QueryProvider>
+          <ToolsProvider>
+            <TooltipProvider delayDuration={0}>
+              <Router>
+                {/*<Routes>*/}
+                <QuickAsk />
+                {/*</Routes>*/}
+              </Router>
+              <Toaster />
+            </TooltipProvider>
+          </ToolsProvider>
         </QuickAskProvider>
       </ErrorBoundary>
     </I18nProvider>
@@ -48,9 +46,11 @@ const App = () => {
 };
 
 ReactDOM.createRoot(document.querySelector('#root') as HTMLElement).render(
-  <QueryClientProvider client={shinkaiNodeQueryClient}>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  </QueryClientProvider>,
+  <React.StrictMode>
+    <QueryClientProvider client={shinkaiNodeQueryClient}>
+      <QueryProvider>
+        <App />
+      </QueryProvider>
+    </QueryClientProvider>
+  </React.StrictMode>,
 );
