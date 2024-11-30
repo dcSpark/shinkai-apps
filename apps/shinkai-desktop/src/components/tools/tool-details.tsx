@@ -35,7 +35,6 @@ export default function ToolDetails() {
     token: auth?.api_v2_key ?? '',
   });
 
-  console.log(data, 'data');
   const tool = data?.content[0] as ShinkaiTool;
   const isEnabled = data?.content[1] as boolean;
 
