@@ -383,6 +383,10 @@ const MessageBase = ({
                           type={type}
                         />
                       ),
+                      // @ts-expect-error custom element
+                      input_command: ({ children }) => (
+                        <p className="text-gray-80">{children}</p>
+                      ),
                     }}
                     source={extractErrorPropertyOrContent(
                       message.content,
