@@ -334,9 +334,7 @@ function CreateToolPage() {
 
   const [isDirty, setIsDirty] = useState(false);
   const [toolResult, setToolResult] = useState<object | null>(null);
-  const [chatInboxId, setChatInboxId] = useState<string | undefined>(
-    'job_inbox::jobid_ff3d435d-9c24-4b75-b4dc-a0b747e853b2::false',
-  );
+  const [chatInboxId, setChatInboxId] = useState<string | undefined>(undefined);
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<
     string | undefined
   >(undefined);
@@ -416,7 +414,17 @@ function CreateToolPage() {
       },
     });
 
-  const { mutateAsync: restoreToolConversation } = useRestoreToolConversation();
+  const {
+    mutateAsync: restoreToolConversation,
+    isPending: isRestoringToolConversation,
+  } = useRestoreToolConversation({
+    onError: (error) => {
+      toast.error('Failed to restore tool conversation', {
+        position: 'top-right',
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
 
   const defaultAgentId = useSettings(
     (settingsStore) => settingsStore.defaultAgentId,
@@ -721,7 +729,7 @@ function CreateToolPage() {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Badge
-                              className="font-normal text-gray-50"
+                              className="border-cyan-600 bg-cyan-900/20 font-normal text-cyan-400"
                               variant="inputAdornment"
                             >
                               Latest
@@ -737,7 +745,7 @@ function CreateToolPage() {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Badge
-                              className="bg-gray-350 cursor-pointer border-0 px-2 py-1.5 hover:bg-gray-400"
+                              className="bg-gray-350 cursor-pointer border-0 px-2.5 py-2 hover:bg-gray-400"
                               onClick={async () => {
                                 const currentIdx = toolHistory.findIndex(
                                   (history) => history.code === toolCode,
@@ -754,7 +762,12 @@ function CreateToolPage() {
                               }}
                               variant="secondary"
                             >
-                              Restore
+                              {isRestoringToolConversation ? (
+                                <Loader2
+                                  className={cn('h-4 w-4 animate-spin')}
+                                />
+                              ) : null}
+                              <span>Restore</span>
                             </Badge>
                           </TooltipTrigger>
                           <TooltipPortal>
@@ -937,9 +950,6 @@ function CreateToolPage() {
                           baseToolCodeRef.current =
                             currentEditorValue as string;
                           forceGenerateMetadata.current = true;
-                          setTimeout(() => {
-                            setToolCode(currentEditorValue as string);
-                          }, 0);
 
                           await updateToolCodeImplementation({
                             token: auth?.api_v2_key ?? '',
@@ -947,6 +957,10 @@ function CreateToolPage() {
                             jobId: extractJobIdFromInbox(chatInboxId ?? ''),
                             code: currentEditorValue as string,
                           });
+
+                          setTimeout(() => {
+                            setToolCode(currentEditorValue as string);
+                          }, 0);
                         }}
                       >
                         <div className="flex h-[45px] items-center justify-between rounded-t-lg border-b border-gray-400 bg-[#0d1117] px-3 py-2">
