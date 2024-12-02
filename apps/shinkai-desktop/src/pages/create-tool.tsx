@@ -234,7 +234,9 @@ export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
             ...message,
             content:
               message.role === 'user'
-                ? message.content?.split('INPUT:\n\n')?.[1]
+                ? message.content.match(
+                    /<input_command>\n([\s\S]*?)<\/input_command>/,
+                  )?.[1] ?? ''
                 : message.content,
           };
         });
