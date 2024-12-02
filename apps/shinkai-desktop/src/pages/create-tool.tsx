@@ -333,9 +333,7 @@ function CreateToolPage() {
 
   const [isDirty, setIsDirty] = useState(false);
   const [toolResult, setToolResult] = useState<object | null>(null);
-  const [chatInboxId, setChatInboxId] = useState<string | undefined>(
-    'job_inbox::jobid_5955f987-d5a4-4f53-b60b-e1e21b6edcd7::false',
-  );
+  const [chatInboxId, setChatInboxId] = useState<string | undefined>('');
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<
     string | undefined
   >(undefined);
