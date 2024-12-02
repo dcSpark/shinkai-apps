@@ -205,6 +205,7 @@ const MessageBase = ({
       data-testid={`message-${
         message.role === 'user' ? 'local' : 'remote'
       }-${message.messageId}`}
+      id={message.messageId}
       initial="rest"
       whileHover="hover"
     >
@@ -216,15 +217,17 @@ const MessageBase = ({
           message.role === 'assistant' && 'ml-0 mr-auto flex-row items-end',
         )}
       >
-        <Avatar className={cn('mt-1 h-8 w-8')}>
-          {message.role === 'assistant' ? (
-            <img alt="Shinkai AI" src={appIcon} />
-          ) : (
-            <AvatarFallback className="h-8 w-8 bg-[#313336] text-xs text-[#b0b0b0]">
-              U
-            </AvatarFallback>
-          )}
-        </Avatar>
+        <a href={`#${messageId}`}>
+          <Avatar className={cn('mt-1 h-8 w-8')}>
+            {message.role === 'assistant' ? (
+              <img alt="Shinkai AI" src={appIcon} />
+            ) : (
+              <AvatarFallback className="h-8 w-8 bg-[#313336] text-xs text-[#b0b0b0]">
+                U
+              </AvatarFallback>
+            )}
+          </Avatar>
+        </a>
         <div
           className={cn(
             'flex flex-col overflow-hidden bg-transparent text-sm text-white',

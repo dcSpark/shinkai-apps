@@ -21,7 +21,11 @@ import {
   SaveToolCodeRequest,
   SaveToolCodeResponse,
   SearchPromptsResponse,
+  UndoToolImplementationRequest,
+  UndoToolImplementationResponse,
   UpdatePromptRequest,
+  UpdateToolCodeImplementationRequest,
+  UpdateToolCodeImplementationResponse,
   UpdateToolRequest,
   UpdateToolResponse,
 } from './types';
@@ -290,4 +294,36 @@ export const getPlaygroundTool = async (
     },
   );
   return response.data as GetPlaygroundToolResponse;
+};
+
+export const restoreToolConversation = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: UndoToolImplementationRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/tool_implementation_undo_to'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as UndoToolImplementationResponse;
+};
+
+export const updateToolCodeImplementation = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: UpdateToolCodeImplementationRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/tool_implementation_code_update'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as UpdateToolCodeImplementationResponse;
 };

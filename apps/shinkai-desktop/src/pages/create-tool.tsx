@@ -12,7 +12,9 @@ import {
 import { useCreateToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/createToolCode/useCreateToolCode';
 import { useCreateToolMetadata } from '@shinkai_network/shinkai-node-state/v2/mutations/createToolMetadata/useCreateToolMetadata';
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
+import { useRestoreToolConversation } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreToolConversation/useRestoreToolConversation';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
+import { useUpdateToolCodeImplementation } from '@shinkai_network/shinkai-node-state/v2/mutations/updateToolCodeImplementation/useUpdateToolCodeImplementation';
 import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import {
@@ -49,9 +51,9 @@ import {
   Loader2,
   LucideArrowLeft,
   Play,
-  // RedoIcon,
+  Redo2Icon,
   Save,
-  // UndoIcon,
+  Undo2Icon,
 } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import React, {
@@ -105,17 +107,6 @@ export const useToolMetadata = ({
     metadataGenerationError?: string | null;
   };
 }) => {
-  // const [toolHistory, setToolHistory] = useState<
-  //   { code: string; metadata: any }[]
-  // >([]);
-  // const saveToHistory = (code: string, metadata: any) => {
-  //   setToolHistory((prevHistory) => {
-  //     if (prevHistory.some((history) => history.code === code)) {
-  //       return prevHistory;
-  //     }
-  //     return [...prevHistory, { code, metadata }];
-  //   });
-  // };
   const [metadataData, setMetadataData] = useState<ToolMetadata | null>(
     initialState?.metadata ?? null,
   );
@@ -234,9 +225,9 @@ export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
             ...message,
             content:
               message.role === 'user'
-                ? message.content.match(
-                    /<input_command>\n([\s\S]*?)<\/input_command>/,
-                  )?.[1] ?? ''
+                ? message.content
+                    .match(/<input_command>([\s\S]*?)<\/input_command>/)?.[1]
+                    ?.trim() ?? ''
                 : message.content,
           };
         });
@@ -246,6 +237,24 @@ export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
         pages: formattedData,
       };
     }, [data]);
+
+  const toolHistory = useMemo(() => {
+    const messageList = chatConversationData?.pages.flat() ?? [];
+    const toolCodesFound = messageList
+      .map((message) => {
+        if (
+          message.role === 'assistant' &&
+          message.status.type === 'complete'
+        ) {
+          return {
+            messageId: message.messageId,
+            code: extractTypeScriptCode(message.content) ?? '',
+          };
+        }
+      })
+      .filter((item) => !!item);
+    return toolCodesFound;
+  }, [chatConversationData?.pages]);
 
   const {
     isToolCodeGenerationPending,
@@ -311,6 +320,7 @@ export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
     isFetchingPreviousPage,
     isChatConversationSuccess,
     chatConversationData,
+    toolHistory,
   };
 };
 
@@ -344,6 +354,7 @@ function CreateToolPage() {
     isFetchingPreviousPage,
     isChatConversationSuccess,
     chatConversationData,
+    toolHistory,
   } = useToolCode({ chatInboxId });
 
   const {
@@ -386,6 +397,9 @@ function CreateToolPage() {
     },
   });
 
+  const { mutateAsync: updateToolCodeImplementation } =
+    useUpdateToolCodeImplementation();
+
   const { mutateAsync: saveToolCode, isPending: isSavingTool } =
     useSaveToolCode({
       onSuccess: (data) => {
@@ -399,6 +413,21 @@ function CreateToolPage() {
         });
       },
     });
+
+  const {
+    mutateAsync: restoreToolConversation,
+    isPending: isRestoringToolConversation,
+  } = useRestoreToolConversation({
+    onSuccess: () => {
+      toast.success('Successfully restore changes');
+    },
+    onError: (error) => {
+      toast.error('Failed to restore tool conversation', {
+        position: 'top-right',
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
 
   const defaultAgentId = useSettings(
     (settingsStore) => settingsStore.defaultAgentId,
@@ -697,61 +726,148 @@ function CreateToolPage() {
                   </TabsTrigger>
                 </TabsList>
                 <div className="flex items-center gap-6">
-                  {/*{toolHistory.length > 1 && (*/}
-                  {/*  <div className="flex items-center gap-2">*/}
-                  {/*    <Tooltip>*/}
-                  {/*      <TooltipTrigger asChild>*/}
-                  {/*        <Button*/}
-                  {/*          onClick={() => {*/}
-                  {/*            //  find an item inside of it to scroll into view bsased on the content*/}
-                  {/*            const currentIdx = toolHistory.findIndex(*/}
-                  {/*              (history) => history.code === toolCode,*/}
-                  {/*            );*/}
+                  {toolHistory.length > 1 && (
+                    <div className="flex items-center gap-4">
+                      {toolCode === toolHistory?.at(-1)?.code ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge
+                              className="border-cyan-600 bg-cyan-900/20 font-normal text-cyan-400"
+                              variant="inputAdornment"
+                            >
+                              Latest
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent side="bottom">
+                              <p>This is your latest version</p>
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+                      ) : (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge
+                              className="bg-gray-350 cursor-pointer border-0 px-2.5 py-2 hover:bg-gray-400"
+                              onClick={async () => {
+                                const currentIdx = toolHistory.findIndex(
+                                  (history) => history.code === toolCode,
+                                );
 
-                  {/*            baseToolCodeRef.current =*/}
-                  {/*              toolHistory[currentIdx - 1].code;*/}
+                                await restoreToolConversation({
+                                  token: auth?.api_v2_key ?? '',
+                                  nodeAddress: auth?.node_address ?? '',
+                                  jobId: extractJobIdFromInbox(
+                                    chatInboxId ?? '',
+                                  ),
+                                  messageId: toolHistory[currentIdx].messageId,
+                                });
+                              }}
+                              variant="secondary"
+                            >
+                              {isRestoringToolConversation ? (
+                                <Loader2
+                                  className={cn('mr-2 h-4 w-4 animate-spin')}
+                                />
+                              ) : null}
+                              <span>Restore</span>
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent className="max-w-sm" side="bottom">
+                              <p>
+                                Restore to this version. This action will undo
+                                all changes made since the selected version
+                              </p>
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+                      )}
+                      <div className="flex items-center gap-2">
+                        <Tooltip>
+                          <TooltipTrigger
+                            asChild
+                            disabled={toolCode === toolHistory?.at(0)?.code}
+                          >
+                            <Button
+                              className="size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent disabled:text-gray-100"
+                              onClick={async () => {
+                                const currentIdx = toolHistory.findIndex(
+                                  (history) => history.code === toolCode,
+                                );
+                                const prevTool = toolHistory[currentIdx - 1];
 
-                  {/*            setToolCode(toolHistory[currentIdx - 1].code);*/}
-                  {/*            setResetCounter((prev) => prev + 1);*/}
-                  {/*          }}*/}
-                  {/*          size="icon"*/}
-                  {/*          variant="outline"*/}
-                  {/*        >*/}
-                  {/*          <UndoIcon className="h-4 w-4" />*/}
-                  {/*        </Button>*/}
-                  {/*      </TooltipTrigger>*/}
-                  {/*      <TooltipPortal>*/}
-                  {/*        <TooltipContent>*/}
-                  {/*          <p>Undo</p>*/}
-                  {/*        </TooltipContent>*/}
-                  {/*      </TooltipPortal>*/}
-                  {/*    </Tooltip>*/}
-                  {/*    <Tooltip>*/}
-                  {/*      <TooltipTrigger asChild>*/}
-                  {/*        <Button*/}
-                  {/*          onClick={() => {*/}
-                  {/*            const currentIdx = toolHistory.findIndex(*/}
-                  {/*              (history) => history.code === toolCode,*/}
-                  {/*            );*/}
-                  {/*            baseToolCodeRef.current =*/}
-                  {/*              toolHistory[currentIdx + 1].code;*/}
-                  {/*            setToolCode(toolHistory[currentIdx + 1].code);*/}
-                  {/*            setResetCounter((prev) => prev + 1);*/}
-                  {/*          }}*/}
-                  {/*          size="icon"*/}
-                  {/*          variant="outline"*/}
-                  {/*        >*/}
-                  {/*          <RedoIcon className="h-4 w-4" />*/}
-                  {/*        </Button>*/}
-                  {/*      </TooltipTrigger>*/}
-                  {/*      <TooltipPortal>*/}
-                  {/*        <TooltipContent>*/}
-                  {/*          <p>Redo</p>*/}
-                  {/*        </TooltipContent>*/}
-                  {/*      </TooltipPortal>*/}
-                  {/*    </Tooltip>*/}
-                  {/*  </div>*/}
-                  {/*)}*/}
+                                const messageEl = document.getElementById(
+                                  `${prevTool.messageId}`,
+                                );
+                                baseToolCodeRef.current = prevTool.code;
+                                setToolCode(prevTool.code);
+                                setResetCounter((prev) => prev + 1);
+                                if (messageEl) {
+                                  // wait til requestAnimationFrame for scrolling
+                                  setTimeout(() => {
+                                    messageEl.scrollIntoView({
+                                      behavior: 'smooth',
+                                      block: 'start',
+                                    });
+                                  }, 100);
+                                }
+                              }}
+                              size="auto"
+                              variant="ghost"
+                            >
+                              <Undo2Icon className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent side="bottom">
+                              <p>View previous version</p>
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger
+                            asChild
+                            disabled={toolCode === toolHistory?.at(-1)?.code}
+                          >
+                            <Button
+                              className="size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent disabled:text-gray-100"
+                              onClick={() => {
+                                const currentIdx = toolHistory.findIndex(
+                                  (history) => history.code === toolCode,
+                                );
+                                const nextTool = toolHistory[currentIdx + 1];
+                                baseToolCodeRef.current = nextTool.code;
+                                setToolCode(nextTool.code);
+                                setResetCounter((prev) => prev + 1);
+
+                                const messageEl = document.getElementById(
+                                  `${nextTool.messageId}`,
+                                );
+                                if (messageEl) {
+                                  setTimeout(() => {
+                                    messageEl.scrollIntoView({
+                                      behavior: 'smooth',
+                                      block: 'start',
+                                    });
+                                  }, 100);
+                                }
+                              }}
+                              size="auto"
+                              variant="ghost"
+                            >
+                              <Redo2Icon className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent side="bottom">
+                              <p>View next version</p>
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+                      </div>
+                    </div>
+                  )}
                   <Button
                     className="text-gray-80 h-[30px] shrink-0 rounded-md text-xs"
                     disabled={
@@ -828,7 +944,7 @@ function CreateToolPage() {
                     {isToolCodeGenerationSuccess && toolCode && (
                       <form
                         key={resetCounter}
-                        onSubmit={(e) => {
+                        onSubmit={async (e) => {
                           e.preventDefault();
                           const data = new FormData(e.currentTarget);
                           const currentEditorValue = data.get('editor');
@@ -837,6 +953,14 @@ function CreateToolPage() {
                           baseToolCodeRef.current =
                             currentEditorValue as string;
                           forceGenerateMetadata.current = true;
+
+                          await updateToolCodeImplementation({
+                            token: auth?.api_v2_key ?? '',
+                            nodeAddress: auth?.node_address ?? '',
+                            jobId: extractJobIdFromInbox(chatInboxId ?? ''),
+                            code: currentEditorValue as string,
+                          });
+
                           setTimeout(() => {
                             setToolCode(currentEditorValue as string);
                           }, 0);

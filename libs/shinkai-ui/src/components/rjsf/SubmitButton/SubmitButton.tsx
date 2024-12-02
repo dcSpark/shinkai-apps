@@ -25,7 +25,7 @@ export default function SubmitButton<
   }
 
   return (
-    <div className="flex items-center justify-start">
+    <div className="flex items-center justify-end">
       <Button
         {...submitButtonProps}
         className={cn(
@@ -34,7 +34,7 @@ export default function SubmitButton<
         )}
         size="sm"
         type="submit"
-        variant="outline"
+        variant="ghost"
       >
         {submitText}
       </Button>

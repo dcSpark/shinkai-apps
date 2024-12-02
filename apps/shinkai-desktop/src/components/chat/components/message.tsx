@@ -204,6 +204,7 @@ export const MessageBase = ({
       data-testid={`message-${
         message.role === 'user' ? 'local' : 'remote'
       }-${message.messageId}`}
+      id={message.messageId}
       initial="rest"
       whileHover="hover"
     >

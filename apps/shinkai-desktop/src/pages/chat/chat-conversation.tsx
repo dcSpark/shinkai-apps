@@ -78,6 +78,7 @@ export const useChatConversationWithOptimisticUpdates = ({
     profile: auth?.profile ?? '',
     refetchIntervalEnabled:
       !hasProviderEnableStreaming || chatConfig?.stream === false,
+    enabled: !!inboxId,
   });
 
   useEffect(() => {
