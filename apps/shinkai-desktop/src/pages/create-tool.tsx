@@ -324,7 +324,7 @@ function CreateToolPage() {
 
   const [isDirty, setIsDirty] = useState(false);
   const [toolResult, setToolResult] = useState<object | null>(null);
-  const [chatInboxId, setChatInboxId] = useState<string | undefined>('');
+  const [chatInboxId, setChatInboxId] = useState<string | undefined>(undefined);
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<
     string | undefined
   >(undefined);
