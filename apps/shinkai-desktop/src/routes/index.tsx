@@ -206,9 +206,9 @@ const AppRoutes = () => {
             <ProtectedRoute>
               <ChatProvider>
                 <SetJobScopeProvider>
-                    <PromptSelectionProvider>
-                      <ChatLayout />
-                    </PromptSelectionProvider>
+                  <PromptSelectionProvider>
+                    <ChatLayout />
+                  </PromptSelectionProvider>
                 </SetJobScopeProvider>
               </ChatProvider>
             </ProtectedRoute>

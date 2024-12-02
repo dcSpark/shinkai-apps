@@ -400,11 +400,9 @@ export const MessageBase = ({
                       ))}
                     </div>
                   )}
-
                 {message.role === 'user' && (
                   <div className="whitespace-pre-line">{message.content}</div>
                 )}
-
                 {message.role === 'assistant' &&
                   message.status.type === 'running' &&
                   message.content === '' && (

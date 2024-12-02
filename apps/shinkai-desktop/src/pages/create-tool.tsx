@@ -234,7 +234,9 @@ export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
             ...message,
             content:
               message.role === 'user'
-                ? message.content?.split('INPUT:\n\n')?.[1]
+                ? message.content.match(
+                    /<input_command>\n([\s\S]*?)<\/input_command>/,
+                  )?.[1] ?? ''
                 : message.content,
           };
         });
@@ -322,7 +324,7 @@ function CreateToolPage() {
 
   const [isDirty, setIsDirty] = useState(false);
   const [toolResult, setToolResult] = useState<object | null>(null);
-  const [chatInboxId, setChatInboxId] = useState<string | undefined>(undefined);
+  const [chatInboxId, setChatInboxId] = useState<string | undefined>('');
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<
     string | undefined
   >(undefined);
