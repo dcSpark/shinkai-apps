@@ -14,6 +14,7 @@ import { useCreateToolMetadata } from '@shinkai_network/shinkai-node-state/v2/mu
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import { useRestoreToolConversation } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreToolConversation/useRestoreToolConversation';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
+import { useUpdateToolCodeImplementation } from '@shinkai_network/shinkai-node-state/v2/mutations/updateToolCodeImplementation/useUpdateToolCodeImplementation';
 import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import {
@@ -224,9 +225,9 @@ export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
             ...message,
             content:
               message.role === 'user'
-                ? message.content.match(
-                    /<input_command>\n([\s\S]*?)<\/input_command>/,
-                  )?.[1] ?? ''
+                ? message.content
+                    .match(/<input_command>([\s\S]*?)<\/input_command>/)?.[1]
+                    ?.trim() ?? ''
                 : message.content,
           };
         });
@@ -333,7 +334,9 @@ function CreateToolPage() {
 
   const [isDirty, setIsDirty] = useState(false);
   const [toolResult, setToolResult] = useState<object | null>(null);
-  const [chatInboxId, setChatInboxId] = useState<string | undefined>('');
+  const [chatInboxId, setChatInboxId] = useState<string | undefined>(
+    'job_inbox::jobid_ff3d435d-9c24-4b75-b4dc-a0b747e853b2::false',
+  );
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<
     string | undefined
   >(undefined);
@@ -395,6 +398,9 @@ function CreateToolPage() {
       }, 300);
     },
   });
+
+  const { mutateAsync: updateToolCodeImplementation } =
+    useUpdateToolCodeImplementation();
 
   const { mutateAsync: saveToolCode, isPending: isSavingTool } =
     useSaveToolCode({
@@ -736,14 +742,14 @@ function CreateToolPage() {
                                 const currentIdx = toolHistory.findIndex(
                                   (history) => history.code === toolCode,
                                 );
+
                                 await restoreToolConversation({
                                   token: auth?.api_v2_key ?? '',
                                   nodeAddress: auth?.node_address ?? '',
                                   jobId: extractJobIdFromInbox(
                                     chatInboxId ?? '',
                                   ),
-                                  messageId:
-                                    toolHistory[currentIdx - 1].messageId,
+                                  messageId: toolHistory[currentIdx].messageId,
                                 });
                               }}
                               variant="secondary"
@@ -752,8 +758,11 @@ function CreateToolPage() {
                             </Badge>
                           </TooltipTrigger>
                           <TooltipPortal>
-                            <TooltipContent side="bottom">
-                              <p>Restore code to this selected version</p>
+                            <TooltipContent className="max-w-sm" side="bottom">
+                              <p>
+                                Restore to this version. This action will undo
+                                all changes made since the selected version
+                              </p>
                             </TooltipContent>
                           </TooltipPortal>
                         </Tooltip>
@@ -779,11 +788,13 @@ function CreateToolPage() {
                                 setToolCode(prevTool.code);
                                 setResetCounter((prev) => prev + 1);
                                 if (messageEl) {
-                                  console.log(messageEl, 'messageEl');
-                                  messageEl.scrollIntoView({
-                                    behavior: 'smooth',
-                                    block: 'start',
-                                  });
+                                  // wait til requestAnimationFrame for scrolling
+                                  setTimeout(() => {
+                                    messageEl.scrollIntoView({
+                                      behavior: 'smooth',
+                                      block: 'start',
+                                    });
+                                  }, 100);
                                 }
                               }}
                               size="auto"
@@ -818,10 +829,12 @@ function CreateToolPage() {
                                   `${nextTool.messageId}`,
                                 );
                                 if (messageEl) {
-                                  messageEl.scrollIntoView({
-                                    behavior: 'smooth',
-                                    block: 'start',
-                                  });
+                                  setTimeout(() => {
+                                    messageEl.scrollIntoView({
+                                      behavior: 'smooth',
+                                      block: 'start',
+                                    });
+                                  }, 100);
                                 }
                               }}
                               size="auto"
@@ -915,7 +928,7 @@ function CreateToolPage() {
                     {isToolCodeGenerationSuccess && toolCode && (
                       <form
                         key={resetCounter}
-                        onSubmit={(e) => {
+                        onSubmit={async (e) => {
                           e.preventDefault();
                           const data = new FormData(e.currentTarget);
                           const currentEditorValue = data.get('editor');
@@ -927,6 +940,13 @@ function CreateToolPage() {
                           setTimeout(() => {
                             setToolCode(currentEditorValue as string);
                           }, 0);
+
+                          await updateToolCodeImplementation({
+                            token: auth?.api_v2_key ?? '',
+                            nodeAddress: auth?.node_address ?? '',
+                            jobId: extractJobIdFromInbox(chatInboxId ?? ''),
+                            code: currentEditorValue as string,
+                          });
                         }}
                       >
                         <div className="flex h-[45px] items-center justify-between rounded-t-lg border-b border-gray-400 bg-[#0d1117] px-3 py-2">

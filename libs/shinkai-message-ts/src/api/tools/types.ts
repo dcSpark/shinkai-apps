@@ -262,3 +262,15 @@ export type UndoToolImplementationRequest = {
   message_hash: string;
   job_id: string;
 };
+export type UndoToolImplementationResponse = {
+  message: string;
+  status: string;
+};
+export type UpdateToolCodeImplementationRequest = {
+  code: string;
+  job_id: string;
+};
+export type UpdateToolCodeImplementationResponse = {
+  message: string;
+  status: string;
+};

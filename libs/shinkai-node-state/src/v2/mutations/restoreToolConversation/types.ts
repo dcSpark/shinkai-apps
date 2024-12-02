@@ -1,5 +1,5 @@
 import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { SaveToolCodeResponse } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { UndoToolImplementationResponse } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
 export type RestoreToolConversationInput = Token & {
   nodeAddress: string;
@@ -7,4 +7,4 @@ export type RestoreToolConversationInput = Token & {
   messageId: string;
 };
 
-export type RestoreToolConversationOutput = SaveToolCodeResponse;
+export type RestoreToolConversationOutput = UndoToolImplementationResponse;

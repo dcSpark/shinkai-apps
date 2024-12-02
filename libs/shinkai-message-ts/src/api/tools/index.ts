@@ -22,7 +22,10 @@ import {
   SaveToolCodeResponse,
   SearchPromptsResponse,
   UndoToolImplementationRequest,
+  UndoToolImplementationResponse,
   UpdatePromptRequest,
+  UpdateToolCodeImplementationRequest,
+  UpdateToolCodeImplementationResponse,
   UpdateToolRequest,
   UpdateToolResponse,
 } from './types';
@@ -306,5 +309,21 @@ export const restoreToolConversation = async (
       responseType: 'json',
     },
   );
-  return response.data;
+  return response.data as UndoToolImplementationResponse;
+};
+
+export const updateToolCodeImplementation = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: UpdateToolCodeImplementationRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/tool_implementation_code_update'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as UpdateToolCodeImplementationResponse;
 };
