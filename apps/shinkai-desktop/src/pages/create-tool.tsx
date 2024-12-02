@@ -767,7 +767,7 @@ function CreateToolPage() {
                             >
                               {isRestoringToolConversation ? (
                                 <Loader2
-                                  className={cn('h-4 w-4 animate-spin')}
+                                  className={cn('mr-2 h-4 w-4 animate-spin')}
                                 />
                               ) : null}
                               <span>Restore</span>
