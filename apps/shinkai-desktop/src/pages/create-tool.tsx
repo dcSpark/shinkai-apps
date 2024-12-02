@@ -418,6 +418,9 @@ function CreateToolPage() {
     mutateAsync: restoreToolConversation,
     isPending: isRestoringToolConversation,
   } = useRestoreToolConversation({
+    onSuccess: () => {
+      toast.success('Successfully restore changes');
+    },
     onError: (error) => {
       toast.error('Failed to restore tool conversation', {
         position: 'top-right',
