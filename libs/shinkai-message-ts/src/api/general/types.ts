@@ -5,7 +5,7 @@ export type CheckHealthResponse = {
   node_name: string;
   is_pristine: boolean;
   version: string;
-  update_needs_reset: boolean;
+  update_requires_reset: boolean;
 };
 
 export type Token = { token: string };
