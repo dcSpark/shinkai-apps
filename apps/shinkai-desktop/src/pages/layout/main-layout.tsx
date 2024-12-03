@@ -183,8 +183,12 @@ const ResetConnectionDialog = ({
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }) => {
-  const { mutateAsync: shinkaiNodeKill } = useShinkaiNodeKillMutation();
-  const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({
+  const { mutateAsync: shinkaiNodeKill, isPending: isShinkaiNodeKillPending } =
+    useShinkaiNodeKillMutation();
+  const {
+    mutateAsync: shinkaiNodeSpawn,
+    isPending: isShinkaiNodeSpawnPending,
+  } = useShinkaiNodeSpawnMutation({
     onSuccess: async () => {
       if (!encryptionKeys) return;
       await submitRegistrationNoCode({
@@ -195,12 +199,19 @@ const ResetConnectionDialog = ({
       });
     },
   });
-  const { mutateAsync: shinkaiNodeRemoveStorage } =
-    useShinkaiNodeRemoveStorageMutation();
+  const {
+    mutateAsync: shinkaiNodeRemoveStorage,
+    isPending: isShinkaiNodeRemoveStoragePending,
+  } = useShinkaiNodeRemoveStorageMutation();
   const { setShinkaiNodeOptions } = useShinkaiNodeManager();
   const { encryptionKeys } = useGetEncryptionKeys();
   const setAuth = useAuth((state) => state.setAuth);
   const navigate = useNavigate();
+
+  const isResetLoading =
+    isShinkaiNodeKillPending ||
+    isShinkaiNodeRemoveStoragePending ||
+    isShinkaiNodeSpawnPending;
 
   const { mutateAsync: submitRegistrationNoCode } = useSubmitRegistrationNoCode(
     {
@@ -254,6 +265,8 @@ const ResetConnectionDialog = ({
         <AlertDialogFooter className="mt-4 flex items-center justify-end gap-2.5">
           <Button
             className="min-w-32 text-sm"
+            disabled={isResetLoading}
+            isLoading={isResetLoading}
             onClick={handleReset}
             size="sm"
             variant={'destructive'}
@@ -627,6 +640,8 @@ const MainLayout = () => {
     }
     if (isSuccess && nodeInfo?.update_requires_reset) {
       setNeedsResetApp(true);
+    } else {
+      setNeedsResetApp(false);
     }
   }, [isSuccess, nodeInfo?.status, isFetching]);
 
