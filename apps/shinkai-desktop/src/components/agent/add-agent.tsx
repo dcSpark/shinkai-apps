@@ -93,7 +93,7 @@ function AddAgentPage() {
         custom_prompt: '',
         custom_system_prompt: '',
         other_model_params: {},
-        use_tools: DEFAULT_CHAT_CONFIG.use_tools,
+        use_tools: true,
       },
       llmProviderId: defaultAgentId,
     },
