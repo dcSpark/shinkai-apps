@@ -627,6 +627,8 @@ const MainLayout = () => {
     }
     if (isSuccess && nodeInfo?.update_requires_reset) {
       setNeedsResetApp(true);
+    } else {
+      setNeedsResetApp(false);
     }
   }, [isSuccess, nodeInfo?.status, isFetching]);
 
