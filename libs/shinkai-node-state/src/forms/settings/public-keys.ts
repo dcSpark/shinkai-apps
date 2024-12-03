@@ -7,6 +7,7 @@ export const publicKeysSchema = z.object({
   profile_identity_pk: z.string().optional(),
   my_device_encryption_pk: z.string().optional(),
   my_device_identity_pk: z.string().optional(),
+  api_v2_key: z.string().optional(),
 });
 
 export type PublicKeysFormSchema = z.infer<typeof publicKeysSchema>;
