@@ -27,6 +27,7 @@ export const PublicKeys = () => {
       profile_identity_pk: auth?.profile_identity_pk,
       my_device_encryption_pk: auth?.my_device_encryption_pk,
       my_device_identity_pk: auth?.my_device_identity_pk,
+      api_v2_key: auth?.api_v2_key,
     },
   });
 
@@ -182,6 +183,32 @@ export const PublicKeys = () => {
                     )}
                   />
                 </div>
+              </div>
+            </div>
+            <div>
+              <h2 className="text-gray-80 mb-2 text-sm">API Bearer Token</h2>
+              <div className="space-y-3">
+                <FormField
+                  control={form.control}
+                  name="api_v2_key"
+                  render={({ field }) => (
+                    <TextField
+                      classes={{
+                        input: 'font-mono',
+                      }}
+                      endAdornment={
+                        <div className="w-8">
+                          <CopyToClipboardIcon
+                            className="peer/adornment adornment absolute right-1 top-4 rounded-md border border-gray-200 bg-gray-300 px-2"
+                            string={field.value}
+                          />
+                        </div>
+                      }
+                      field={{ ...field, readOnly: true }}
+                      label={'Bearer Token'}
+                    />
+                  )}
+                />
               </div>
             </div>
           </form>
