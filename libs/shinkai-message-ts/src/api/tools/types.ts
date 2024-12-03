@@ -92,6 +92,7 @@ export type GetToolResponse = {
   type: ShinkaiToolType;
 };
 export type GetToolsResponse = ShinkaiToolHeader[];
+export type GetToolsSearchResponse = [ShinkaiToolHeader, number][];
 
 export type AddToolRequest = {
   type: ShinkaiToolType;
