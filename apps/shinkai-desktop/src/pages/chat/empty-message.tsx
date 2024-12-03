@@ -111,8 +111,8 @@ const EmptyMessage = () => {
             </Badge>
             {[
               {
-                text: 'Search in Perplexity',
-                prompt: 'Search in Perplexity for: ',
+                text: 'Search in DuckDuckGo',
+                prompt: 'Search in DuckDuckGo for: ',
               },
               {
                 text: 'Summarize a Youtube video',
