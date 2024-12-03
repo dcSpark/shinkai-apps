@@ -625,7 +625,7 @@ const MainLayout = () => {
     if (isSuccess && nodeInfo?.status === 'ok') {
       toast.dismiss('node-unavailable');
     }
-    if (isSuccess && nodeInfo?.update_needs_reset) {
+    if (isSuccess && nodeInfo?.update_requires_reset) {
       setNeedsResetApp(true);
     }
   }, [isSuccess, nodeInfo?.status, isFetching]);
