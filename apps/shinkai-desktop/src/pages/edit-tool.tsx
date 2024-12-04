@@ -51,16 +51,14 @@ import { z } from 'zod';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import { ToolErrorFallback } from '../components/playground-tool/error-boundary';
+import { useToolCode } from '../components/playground-tool/hooks/use-tool-code';
+import { useToolMetadata } from '../components/playground-tool/hooks/use-tool-metadata';
 import PlaygroundToolLayout from '../components/playground-tool/layout';
 import { ToolMetadataSchema } from '../components/playground-tool/schemas';
 import ToolCodeEditor from '../components/playground-tool/tool-code-editor';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
-import {
-  ToolSelectionModal,
-  useToolCode,
-  useToolMetadata,
-} from './create-tool';
+import { ToolSelectionModal } from './create-tool';
 
 export const createToolCodeFormSchema = z.object({
   message: z.string().min(1),
@@ -130,7 +128,6 @@ function EditToolPage() {
     isMetadataGenerationError,
     forceGenerateMetadata,
     // setMetadataData,
-    // toolHistory,
   } = useToolMetadata({
     chatInboxIdMetadata,
     code: toolCode,

@@ -15,7 +15,6 @@ import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutat
 import { useRestoreToolConversation } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreToolConversation/useRestoreToolConversation';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
 import { useUpdateToolCodeImplementation } from '@shinkai_network/shinkai-node-state/v2/mutations/updateToolCodeImplementation/useUpdateToolCodeImplementation';
-import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import {
   Badge,
@@ -60,13 +59,7 @@ import {
 } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { PrismEditor } from 'prism-react-editor';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { Link, To, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -75,12 +68,13 @@ import { z } from 'zod';
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import { actionButtonClassnames } from '../components/chat/conversation-footer';
 import { ToolErrorFallback } from '../components/playground-tool/error-boundary';
+import { useToolCode } from '../components/playground-tool/hooks/use-tool-code';
+import { useToolMetadata } from '../components/playground-tool/hooks/use-tool-metadata';
 import PlaygroundToolLayout from '../components/playground-tool/layout';
 import { ToolMetadataSchema } from '../components/playground-tool/schemas';
 import ToolCodeEditor from '../components/playground-tool/tool-code-editor';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
-import { useChatConversationWithOptimisticUpdates } from './chat/chat-conversation';
 
 export const createToolCodeFormSchema = z.object({
   message: z.string().min(1),
@@ -94,236 +88,6 @@ export function extractTypeScriptCode(message: string) {
   const tsCodeMatch = message.match(/```typescript\n([\s\S]*?)\n```/);
   return tsCodeMatch ? tsCodeMatch[1].trim() : null;
 }
-
-export const useToolMetadata = ({
-  chatInboxIdMetadata,
-  // code,
-  initialState,
-}: {
-  chatInboxIdMetadata?: string;
-  code?: string;
-  initialState?: {
-    metadata: ToolMetadata | null;
-    isMetadataGenerationPending?: boolean;
-    isMetadataGenerationSuccess?: boolean;
-    isMetadataGenerationIdle?: boolean;
-    isMetadataGenerationError?: boolean;
-    metadataGenerationError?: string | null;
-  };
-}) => {
-  const [metadataData, setMetadataData] = useState<ToolMetadata | null>(
-    initialState?.metadata ?? null,
-  );
-
-  const forceGenerateMetadata = useRef(false);
-
-  const { data: metadataChatConversation } =
-    useChatConversationWithOptimisticUpdates({
-      inboxId: chatInboxIdMetadata ?? '',
-      forceRefetchInterval: true,
-    });
-
-  const {
-    isMetadataGenerationPending,
-    isMetadataGenerationSuccess,
-    isMetadataGenerationIdle,
-    metadataGenerationData,
-    metadataGenerationError,
-    isMetadataGenerationError,
-  } = useMemo(() => {
-    const metadata = metadataChatConversation?.pages?.at(-1)?.at(-1);
-
-    if (initialState && !metadata) {
-      return {
-        isMetadataGenerationPending:
-          initialState.isMetadataGenerationPending ?? false,
-        isMetadataGenerationSuccess:
-          initialState.isMetadataGenerationSuccess ?? false,
-        isMetadataGenerationIdle: initialState.isMetadataGenerationIdle ?? true,
-        metadataGenerationData: metadataData,
-        isMetadataGenerationError:
-          initialState.isMetadataGenerationError ?? false,
-        metadataGenerationError: initialState.metadataGenerationError ?? null,
-      };
-    }
-    const isMetadataGenerationIdle = metadata == null;
-    const isMetadataGenerationPending =
-      metadata?.role === 'assistant' && metadata?.status.type === 'running';
-    const isMetadataGenerationSuccess =
-      metadata?.role === 'assistant' && metadata?.status.type === 'complete';
-    let metadataGenerationData = null;
-    let metadataGenerationError: null | string = null;
-    if (isMetadataGenerationSuccess) {
-      const jsonCodeMatch = metadata.content.match(/```json\n([\s\S]*?)\n```/);
-      if (jsonCodeMatch) {
-        try {
-          const parsedJson = JSON.parse(jsonCodeMatch[1].trim());
-          metadataGenerationData = ToolMetadataSchema.parse(
-            parsedJson,
-          ) as ToolMetadata;
-          setMetadataData(metadataGenerationData);
-        } catch (error) {
-          if (error instanceof Error) {
-            metadataGenerationError = 'Invalid Metadata: ' + error.message;
-          }
-          if (error instanceof z.ZodError) {
-            metadataGenerationError =
-              'Invalid Metadata: ' +
-              error.issues.map((issue) => issue.message).join(', ');
-          }
-        }
-      } else {
-        metadataGenerationError = 'No JSON code found';
-      }
-    }
-
-    return {
-      metadataMessageContent: metadata?.content,
-      isMetadataGenerationPending,
-      isMetadataGenerationSuccess,
-      isMetadataGenerationIdle,
-      metadataGenerationData,
-      isMetadataGenerationError: metadataGenerationError != null,
-      metadataGenerationError,
-    };
-  }, [initialState, metadataChatConversation?.pages]);
-
-  return {
-    isMetadataGenerationPending,
-    isMetadataGenerationSuccess,
-    isMetadataGenerationIdle,
-    metadataGenerationData,
-    metadataGenerationError,
-    isMetadataGenerationError,
-    forceGenerateMetadata,
-    setMetadataData,
-    // toolHistory,
-  };
-};
-
-export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
-  const [toolCode, setToolCode] = useState<string>('');
-  const baseToolCodeRef = useRef<string>('');
-
-  const {
-    data,
-    fetchPreviousPage,
-    hasPreviousPage,
-    isChatConversationLoading,
-    isFetchingPreviousPage,
-    isChatConversationSuccess,
-  } = useChatConversationWithOptimisticUpdates({
-    inboxId: chatInboxId ?? '',
-    forceRefetchInterval: true,
-  });
-
-  const chatConversationData: ChatConversationInfiniteData | undefined =
-    useMemo(() => {
-      if (!data) return;
-      const formattedData = data?.pages?.map((page) => {
-        return page.map((message) => {
-          return {
-            ...message,
-            content:
-              message.role === 'user'
-                ? message.content
-                    .match(/<input_command>([\s\S]*?)<\/input_command>/)?.[1]
-                    ?.trim() ?? ''
-                : message.content,
-          };
-        });
-      });
-      return {
-        ...data,
-        pages: formattedData,
-      };
-    }, [data]);
-
-  const toolHistory = useMemo(() => {
-    const messageList = chatConversationData?.pages.flat() ?? [];
-    const toolCodesFound = messageList
-      .map((message) => {
-        if (
-          message.role === 'assistant' &&
-          message.status.type === 'complete'
-        ) {
-          return {
-            messageId: message.messageId,
-            code: extractTypeScriptCode(message.content) ?? '',
-          };
-        }
-      })
-      .filter((item) => !!item);
-    return toolCodesFound;
-  }, [chatConversationData?.pages]);
-
-  const {
-    isToolCodeGenerationPending,
-    isToolCodeGenerationSuccess,
-    isToolCodeGenerationError,
-    isToolCodeGenerationIdle,
-    toolCodeGenerationData,
-  } = useMemo(() => {
-    const lastMessage = data?.pages?.at(-1)?.at(-1);
-    if (!lastMessage)
-      return {
-        isToolCodeGenerationPending: false,
-        isToolCodeGenerationSuccess: false,
-        isToolCodeGenerationIdle: false,
-        toolCodeGenerationData: '',
-        isToolCodeGenerationError: true,
-      };
-
-    let status: 'idle' | 'error' | 'success' | 'pending' = 'idle';
-    let toolCodeGeneration = '';
-    if (
-      lastMessage.role === 'assistant' &&
-      lastMessage.status.type === 'running'
-    ) {
-      status = 'pending';
-    }
-    if (
-      lastMessage.role === 'assistant' &&
-      lastMessage.status.type === 'complete'
-    ) {
-      status = 'success';
-      const generatedCode = extractTypeScriptCode(lastMessage?.content) ?? '';
-      if (generatedCode) {
-        baseToolCodeRef.current = generatedCode;
-        toolCodeGeneration = generatedCode;
-        setToolCode(generatedCode);
-      } else {
-        status = 'error';
-      }
-    }
-
-    return {
-      isToolCodeGenerationPending: status === 'pending',
-      isToolCodeGenerationSuccess: status === 'success',
-      isToolCodeGenerationIdle: status === 'idle',
-      toolCodeGenerationData: toolCodeGeneration,
-      isToolCodeGenerationError: status === 'error',
-    };
-  }, [data?.pages]);
-
-  return {
-    toolCode,
-    setToolCode,
-    baseToolCodeRef,
-    isToolCodeGenerationPending,
-    isToolCodeGenerationSuccess,
-    isToolCodeGenerationIdle,
-    isToolCodeGenerationError,
-    toolCodeGenerationData,
-    fetchPreviousPage,
-    hasPreviousPage,
-    isChatConversationLoading,
-    isFetchingPreviousPage,
-    isChatConversationSuccess,
-    chatConversationData,
-    toolHistory,
-  };
-};
 
 function CreateToolPage() {
   const [tab, setTab] = useState<'code' | 'preview'>('code');
@@ -366,7 +130,6 @@ function CreateToolPage() {
     metadataGenerationError,
     isMetadataGenerationError,
     forceGenerateMetadata,
-    // toolHistory,
   } = useToolMetadata({ chatInboxIdMetadata, code: toolCode });
 
   const codeEditorRef = useRef<PrismEditor | null>(null);
