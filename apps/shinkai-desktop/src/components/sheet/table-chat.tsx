@@ -124,6 +124,7 @@ export default function ChatTable() {
           temperature: DEFAULT_CHAT_CONFIG.temperature,
           top_p: DEFAULT_CHAT_CONFIG.top_p,
           top_k: DEFAULT_CHAT_CONFIG.top_k,
+          use_tools: DEFAULT_CHAT_CONFIG.use_tools,
         },
       });
       createJobForm.reset();
