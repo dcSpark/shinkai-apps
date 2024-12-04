@@ -21,7 +21,7 @@ import {
   FileList,
   Form,
   FormField,
-  MarkdownPreview,
+  MarkdownTextPrimitive,
   PythonCodeRunner,
   Tooltip,
   TooltipContent,
@@ -339,13 +339,13 @@ export const MessageBase = ({
                     </Accordion>
                   )}
                 {message.role === 'assistant' && (
-                  <MarkdownPreview
+                  <MarkdownTextPrimitive
                     className={cn(
                       message.content &&
                         message.status.type === 'running' &&
                         'md-running',
                     )}
-                    source={extractErrorPropertyOrContent(
+                    text={extractErrorPropertyOrContent(
                       message.content,
                       'error_message',
                     )}

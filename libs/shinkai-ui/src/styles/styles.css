@@ -111,7 +111,7 @@
 }
 
 .md-p {
-  @apply mb-5 mt-5 text-xs leading-7 first:mt-0 last:mb-0;
+  @apply mb-1 mt-1 text-sm  first:mt-0 last:mb-0;
 }
 
 .md-a {
@@ -123,11 +123,11 @@
 }
 
 .md-ul {
-  @apply my-5 ml-6 list-disc [&>li]:mt-2 text-xs;
+  @apply my-2 ml-6 list-disc [&>li]:mt-2 text-sm;
 }
 
 .md-ol {
-  @apply my-5 ml-6 list-decimal [&>li]:mt-2 text-xs;
+  @apply my-5 ml-6 list-decimal [&>li]:mt-2 text-sm;
 }
 
 .md-hr {
@@ -159,7 +159,7 @@
 }
 
 .md-inline-code {
-  @apply bg-gray-200 rounded border font-semibold;
+  @apply bg-gray-200 rounded border text-xs font-semibold;
 }
 
 .code-header-root {
