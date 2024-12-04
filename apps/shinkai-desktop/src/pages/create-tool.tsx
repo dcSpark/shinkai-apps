@@ -153,12 +153,10 @@ function CreateToolPage() {
   } = useExecuteToolCode({
     onSuccess: (data) => {
       setToolResult(data);
-      setTimeout(() => {
-        if (toolResultBoxRef.current) {
-          toolResultBoxRef.current.scrollTop =
-            toolResultBoxRef.current.scrollHeight;
-        }
-      }, 300);
+      toolResultBoxRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      });
     },
   });
 
@@ -655,7 +653,6 @@ function CreateToolPage() {
               </div>
               <TabsContent
                 className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words"
-                ref={toolResultBoxRef}
                 value="code"
               >
                 <ResizablePanelGroup direction="vertical">
@@ -798,11 +795,6 @@ function CreateToolPage() {
                                   );
                                 }}
                                 ref={codeEditorRef}
-                                style={
-                                  {
-                                    // height: 'calc(60vh - 90px)',
-                                  }
-                                }
                                 value={toolCode}
                               />
                             </form>
@@ -904,17 +896,19 @@ function CreateToolPage() {
                                         </pre>
                                       </div>
                                     )}
-                                    {isCodeExecutionSuccess && toolResult && (
-                                      <ToolCodeEditor
-                                        language="json"
-                                        readOnly
-                                        value={JSON.stringify(
-                                          toolResult,
-                                          null,
-                                          2,
-                                        )}
-                                      />
-                                    )}
+                                    <div ref={toolResultBoxRef}>
+                                      {isCodeExecutionSuccess && toolResult && (
+                                        <ToolCodeEditor
+                                          language="json"
+                                          readOnly
+                                          value={JSON.stringify(
+                                            toolResult,
+                                            null,
+                                            2,
+                                          )}
+                                        />
+                                      )}
+                                    </div>
                                   </motion.div>
                                 )}
                               </AnimatePresence>
