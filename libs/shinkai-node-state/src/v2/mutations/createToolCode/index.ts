@@ -42,6 +42,7 @@ export const createToolCode = async ({
         top_k: DEFAULT_CHAT_CONFIG.top_k,
         top_p: DEFAULT_CHAT_CONFIG.top_p,
         temperature: DEFAULT_CHAT_CONFIG.temperature,
+        use_tools: DEFAULT_CHAT_CONFIG.use_tools,
       },
     });
     currentJobId = newJobId;
