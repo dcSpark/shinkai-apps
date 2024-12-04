@@ -56,6 +56,7 @@ import {
   Undo2Icon,
 } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
+import { PrismEditor } from 'prism-react-editor';
 import React, {
   useCallback,
   useEffect,
@@ -158,9 +159,6 @@ export const useToolMetadata = ({
             parsedJson,
           ) as ToolMetadata;
           setMetadataData(metadataGenerationData);
-          // if (code) {
-          //   saveToHistory(code, metadataGenerationData);
-          // }
         } catch (error) {
           if (error instanceof Error) {
             metadataGenerationError = 'Invalid Metadata: ' + error.message;
@@ -368,6 +366,7 @@ function CreateToolPage() {
     // toolHistory,
   } = useToolMetadata({ chatInboxIdMetadata, code: toolCode });
 
+  const codeEditorRef = useRef<PrismEditor | null>(null);
   const [resetCounter, setResetCounter] = useState(0);
 
   const form = useForm<CreateToolCodeFormSchema>({
@@ -508,8 +507,9 @@ function CreateToolPage() {
 
   const handleRunCode: FormProps['onSubmit'] = async (data) => {
     const params = data.formData;
+    const updatedCodeWithoutSave = codeEditorRef.current?.value ?? '';
     await executeCode({
-      code: toolCode,
+      code: isDirty ? updatedCodeWithoutSave : toolCode,
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       params,
@@ -798,7 +798,7 @@ function CreateToolPage() {
                                 const prevTool = toolHistory[currentIdx - 1];
 
                                 const messageEl = document.getElementById(
-                                  `${prevTool.messageId}`,
+                                  prevTool.messageId,
                                 );
                                 baseToolCodeRef.current = prevTool.code;
                                 setToolCode(prevTool.code);
@@ -842,7 +842,7 @@ function CreateToolPage() {
                                 setResetCounter((prev) => prev + 1);
 
                                 const messageEl = document.getElementById(
-                                  `${nextTool.messageId}`,
+                                  nextTool.messageId,
                                 );
                                 if (messageEl) {
                                   setTimeout(() => {
@@ -952,7 +952,7 @@ function CreateToolPage() {
                           setIsDirty(false);
                           baseToolCodeRef.current =
                             currentEditorValue as string;
-                          forceGenerateMetadata.current = true;
+                          // forceGenerateMetadata.current = true;
 
                           await updateToolCodeImplementation({
                             token: auth?.api_v2_key ?? '',
@@ -1016,6 +1016,10 @@ function CreateToolPage() {
                           name="editor"
                           onUpdate={(currentCode) => {
                             setIsDirty(currentCode !== baseToolCodeRef.current);
+                          }}
+                          ref={codeEditorRef}
+                          style={{
+                            height: 'calc(60vh - 90px)',
                           }}
                           value={toolCode}
                         />
@@ -1113,11 +1117,14 @@ function CreateToolPage() {
                                 </div>
                               )}
                               {isCodeExecutionSuccess && toolResult && (
-                                <div className="py-2">
+                                <div className="overflow-hidden rounded-lg">
                                   <ToolCodeEditor
                                     language="json"
                                     readOnly
-                                    style={{ height: '200px' }}
+                                    style={{
+                                      height: '40vh',
+                                      marginTop: '0.5rem',
+                                    }}
                                     value={JSON.stringify(toolResult, null, 2)}
                                   />
                                 </div>

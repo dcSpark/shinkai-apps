@@ -61,6 +61,7 @@ export const ToolMetadataSchema = z.object({
 
   sqlTables: z.array(z.string()).default([]),
   sqlQueries: z.array(z.string()).default([]),
+  tools: z.array(z.string()).default([]),
 });
 
 export type ToolMetadataSchemaType = z.infer<typeof ToolMetadataSchema>;
