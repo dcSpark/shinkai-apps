@@ -47,7 +47,7 @@ import {
   useHighlightMatchingTags,
   useTagMatcher,
 } from 'prism-react-editor/match-tags';
-import { useOverscroll } from 'prism-react-editor/overscroll';
+// import { useOverscroll } from 'prism-react-editor/overscroll';
 import {
   useHighlightSelectionMatches,
   useSearchWidget,
@@ -67,7 +67,7 @@ function ReadOnly({ editor }: { editor: PrismEditor }) {
 const Extensions = ({ editor }: { editor: PrismEditor }) => {
   useBracketMatcher(editor);
   useHightlightBracketPairs(editor);
-  useOverscroll(editor);
+  // useOverscroll(editor);
   useTagMatcher(editor);
   useHighlightMatchingTags(editor);
   useDefaultCommands(editor);
@@ -124,8 +124,8 @@ const ToolCodeEditor = forwardRef<
     style={{
       fontSize: '0.75rem',
       lineHeight: '1.5',
-      height: 'min(20rem, 100vh - 16rem)',
-      overflowY: 'auto',
+      height: '100%',
+      overflow: 'auto',
       ...style,
     }}
     textareaProps={{ name: name ?? 'editor' }}
