@@ -28,7 +28,7 @@ export const createToolCode = async ({
           local_vrkai: [],
           network_folders: [],
         },
-        associated_ui: null,
+        associated_ui: 'Playground',
         is_hidden: true,
       },
     });
