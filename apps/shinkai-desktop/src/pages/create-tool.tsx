@@ -1048,7 +1048,7 @@ function CreateToolPage() {
                       </div>
                     </div>
                   </ResizablePanel>
-                  <ResizableHandle className="my-4 bg-gray-300" />
+                  <ResizableHandle className="my-4 bg-gray-300" withHandle />
 
                   <ResizablePanel className="flex flex-col">
                     <div className="flex size-full min-h-[220px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
