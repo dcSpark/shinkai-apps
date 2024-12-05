@@ -43,7 +43,8 @@ import {
   Play,
   Save,
 } from 'lucide-react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { PrismEditor } from 'prism-react-editor';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, To, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -69,7 +70,6 @@ export const createToolCodeFormSchema = z.object({
 export type CreateToolCodeFormSchema = z.infer<typeof createToolCodeFormSchema>;
 
 function EditToolPage() {
-  const [tab, setTab] = useState<'code' | 'preview'>('code');
   const auth = useAuth((state) => state.auth);
   const { toolRouterKey } = useParams();
 
@@ -95,6 +95,8 @@ function EditToolPage() {
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<
     string | undefined
   >(undefined);
+  const codeEditorRef = useRef<PrismEditor | null>(null);
+  const metadataEditorRef = useRef<PrismEditor | null>(null);
 
   const [resetCounter, setResetCounter] = useState(0);
 
@@ -260,7 +262,6 @@ function EditToolPage() {
       {
         onSuccess: (data) => {
           setChatInboxId(data.inbox);
-          setTab('code');
           setToolCode('');
           forceGenerateMetadata.current = true;
           baseToolCodeRef.current = '';
@@ -285,10 +286,12 @@ function EditToolPage() {
     });
   };
 
-  const handleSaveTool = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSaveTool = async () => {
+    if (!chatInboxId) return;
 
-    const metadataCode = new FormData(e.currentTarget).get('editor');
+    const metadataCode = metadataEditorRef.current?.value;
+    const toolCode = codeEditorRef.current?.value;
+
     let parsedMetadata: ToolMetadata;
     try {
       const parseResult = JSON.parse(metadataCode as string) as ToolMetadata;
@@ -308,14 +311,9 @@ function EditToolPage() {
       return;
     }
 
-    if (!chatInboxId) return;
-
     await saveToolCode({
       code: toolCode,
-      metadata: {
-        ...parsedMetadata,
-        author: auth?.shinkai_identity ?? '',
-      },
+      metadata: parsedMetadata,
       jobId: extractJobIdFromInbox(chatInboxId),
       token: auth?.api_v2_key ?? '',
       nodeAddress: auth?.node_address ?? '',
@@ -467,8 +465,7 @@ function EditToolPage() {
       rightElement={
         <Tabs
           className="flex h-screen w-full flex-col overflow-hidden"
-          onValueChange={(value) => setTab(value as 'preview' | 'code')}
-          value={tab}
+          defaultValue="code"
         >
           <div className={'flex flex-grow justify-stretch'}>
             <div className="flex size-full flex-col gap-2">
@@ -496,10 +493,9 @@ function EditToolPage() {
                       !chatInboxId ||
                       isSavingTool
                     }
-                    form="metadata-form"
                     isLoading={isSavingTool}
+                    onClick={handleSaveTool}
                     size="sm"
-                    type="submit"
                     variant="outline"
                   >
                     <Save className="mr-2 h-4 w-4" />
@@ -509,7 +505,8 @@ function EditToolPage() {
               </div>
 
               <TabsContent
-                className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words"
+                className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words data-[state=inactive]:hidden"
+                forceMount
                 value="code"
               >
                 <ResizablePanelGroup direction="vertical">
@@ -773,7 +770,8 @@ function EditToolPage() {
                 </ResizablePanelGroup>
               </TabsContent>
               <TabsContent
-                className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words"
+                className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words data-[state=inactive]:hidden"
+                forceMount
                 value="preview"
               >
                 <div className="flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
@@ -815,30 +813,22 @@ function EditToolPage() {
                   {isMetadataGenerationSuccess &&
                     !isMetadataGenerationError && (
                       <div className="text-gray-80 text-xs">
-                        <form
-                          className="space-y-4"
-                          id="metadata-form"
-                          onSubmit={handleSaveTool}
-                        >
-                          <div className="py-2">
-                            <ToolCodeEditor
-                              language="json"
-                              style={{ height: '80vh' }}
-                              value={
-                                metadataGenerationData != null
-                                  ? JSON.stringify(
-                                      {
-                                        ...metadataGenerationData,
-                                        author: auth?.shinkai_identity ?? '',
-                                      },
-                                      null,
-                                      2,
-                                    )
-                                  : 'Invalid metadata'
-                              }
-                            />
-                          </div>
-                        </form>
+                        <div className="py-2">
+                          <ToolCodeEditor
+                            language="json"
+                            ref={metadataEditorRef}
+                            style={{ height: '80vh' }}
+                            value={
+                              metadataGenerationData != null
+                                ? JSON.stringify(
+                                    metadataGenerationData,
+                                    null,
+                                    2,
+                                  )
+                                : 'Invalid metadata'
+                            }
+                          />
+                        </div>
                       </div>
                     )}
 

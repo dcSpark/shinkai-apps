@@ -60,7 +60,7 @@ import {
 } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { PrismEditor } from 'prism-react-editor';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { Link, To, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -91,7 +91,6 @@ export function extractTypeScriptCode(message: string) {
 }
 
 function CreateToolPage() {
-  const [tab, setTab] = useState<'code' | 'preview'>('code');
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
   const toolResultBoxRef = useRef<HTMLDivElement>(null);
@@ -134,6 +133,7 @@ function CreateToolPage() {
   } = useToolMetadata({ chatInboxIdMetadata, code: toolCode });
 
   const codeEditorRef = useRef<PrismEditor | null>(null);
+  const metadataEditorRef = useRef<PrismEditor | null>(null);
   const [resetCounter, setResetCounter] = useState(0);
 
   const form = useForm<CreateToolCodeFormSchema>({
@@ -283,11 +283,14 @@ function CreateToolPage() {
     });
   };
 
-  const handleSaveTool = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSaveTool = async () => {
+    if (!chatInboxId) return;
 
-    const metadataCode = new FormData(e.currentTarget).get('editor');
+    const metadataCode = metadataEditorRef.current?.value;
+    const toolCode = codeEditorRef.current?.value;
+
     let parsedMetadata: ToolMetadata;
+
     try {
       const parseResult = JSON.parse(metadataCode as string) as ToolMetadata;
       parsedMetadata = ToolMetadataSchema.parse(parseResult);
@@ -306,13 +309,9 @@ function CreateToolPage() {
       return;
     }
 
-    if (!chatInboxId) return;
     await saveToolCode({
       code: toolCode,
-      metadata: {
-        ...parsedMetadata,
-        author: auth?.shinkai_identity ?? '',
-      },
+      metadata: parsedMetadata,
       jobId: extractJobIdFromInbox(chatInboxId),
       token: auth?.api_v2_key ?? '',
       nodeAddress: auth?.node_address ?? '',
@@ -470,8 +469,7 @@ function CreateToolPage() {
       rightElement={
         <Tabs
           className="flex h-screen w-full flex-col overflow-hidden"
-          onValueChange={(value) => setTab(value as 'preview' | 'code')}
-          value={tab}
+          defaultValue="code"
         >
           <div className={'flex flex-grow justify-stretch'}>
             <div className="flex size-full flex-col gap-2">
@@ -641,10 +639,9 @@ function CreateToolPage() {
                       !chatInboxId ||
                       isSavingTool
                     }
-                    form="metadata-form"
                     isLoading={isSavingTool}
+                    onClick={handleSaveTool}
                     size="sm"
-                    type="submit"
                     variant="outline"
                   >
                     <Save className="mr-2 h-4 w-4" />
@@ -653,7 +650,8 @@ function CreateToolPage() {
                 </div>
               </div>
               <TabsContent
-                className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words"
+                className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words data-[state=inactive]:hidden"
+                forceMount
                 value="code"
               >
                 <ResizablePanelGroup direction="vertical">
@@ -929,7 +927,8 @@ function CreateToolPage() {
                 </ResizablePanelGroup>
               </TabsContent>
               <TabsContent
-                className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words"
+                className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words data-[state=inactive]:hidden"
+                forceMount
                 value="preview"
               >
                 <div className="flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
@@ -972,30 +971,22 @@ function CreateToolPage() {
                   {isMetadataGenerationSuccess &&
                     !isMetadataGenerationError && (
                       <div className="text-gray-80 text-xs">
-                        <form
-                          className="space-y-4"
-                          id="metadata-form"
-                          onSubmit={handleSaveTool}
-                        >
-                          <div className="py-2">
-                            <ToolCodeEditor
-                              language="json"
-                              style={{ height: '80vh' }}
-                              value={
-                                metadataGenerationData != null
-                                  ? JSON.stringify(
-                                      {
-                                        ...metadataGenerationData,
-                                        author: auth?.shinkai_identity ?? '',
-                                      },
-                                      null,
-                                      2,
-                                    )
-                                  : 'Invalid metadata'
-                              }
-                            />
-                          </div>
-                        </form>
+                        <div className="py-2">
+                          <ToolCodeEditor
+                            language="json"
+                            ref={metadataEditorRef}
+                            style={{ height: '80vh' }}
+                            value={
+                              metadataGenerationData != null
+                                ? JSON.stringify(
+                                    metadataGenerationData,
+                                    null,
+                                    2,
+                                  )
+                                : 'Invalid metadata'
+                            }
+                          />
+                        </div>
                       </div>
                     )}
                   {isMetadataGenerationIdle && (

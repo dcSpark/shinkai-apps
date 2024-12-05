@@ -215,7 +215,6 @@ export type SaveToolCodeRequest = {
 };
 
 export type ToolMetadata = {
-  id: string;
   name: string;
   description: string;
   author: string;
