@@ -32,9 +32,10 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
-import { PlusIcon } from 'lucide-react';
+import { BoltIcon, PlusIcon } from 'lucide-react';
+import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -140,417 +141,512 @@ function AddAgentPage() {
   };
 
   return (
-    <SubpageLayout className="max-w-4xl" title="Create new Agent">
-      <p className="text-gray-80 -mt-8 py-3 pb-6 text-center text-sm">
-        Create and explore custom AI agents with tailored instructions and
-        diverse skills.
-      </p>
-      <Form {...form}>
-        <form
-          className="flex flex-col justify-between space-y-6"
-          onSubmit={form.handleSubmit(submit)}
-        >
-          <div className="grid grid-cols-[1fr_360px] gap-6">
-            <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <TextField
-                    autoFocus
-                    field={{
-                      ...field,
-                      onChange: (e) => {
-                        const value = e.target.value;
-                        const alphanumericValue = value.replace(
-                          /[^a-zA-Z0-9_]/g,
-                          '_',
-                        );
-                        field.onChange({
-                          ...e,
-                          target: {
-                            value: alphanumericValue,
-                          },
-                        });
-                      },
-                    }}
-                    label="Agent Name"
-                  />
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="uiDescription"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        className="!min-h-[100px] resize-none text-sm"
-                        onChange={field.onChange}
-                        spellCheck={false}
-                        value={field.value}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="llmProviderId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('chat.form.selectAI')}</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder={t('chat.form.selectAI')} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {llmProviders?.length &&
-                          llmProviders.map((llmProvider) => (
-                            <SelectItem
-                              key={llmProvider.id}
-                              value={llmProvider.id}
-                            >
-                              <span>{llmProvider.id} </span>
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
-              {/*<div className="space-y-6 rounded-lg bg-gray-400 px-4 py-4">*/}
-              {/*  <span className="flex-1 items-center gap-1 truncate py-2 text-left text-xs font-semibold text-gray-50">*/}
-              {/*    Knowledge*/}
-              {/*  </span>*/}
-              {/*  <div>TODO: kwnoledge</div>*/}
-              {/*</div>*/}
-              <div className="space-y-6 rounded-lg bg-gray-400 px-4 py-4">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="flex-1 items-center gap-1 truncate text-left text-xs font-semibold text-gray-50">
-                    Tools
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      className="h-[30px] text-xs"
-                      onClick={() => {
-                        navigate('/tools/create');
+    <TooltipProvider>
+      <SubpageLayout className="max-w-4xl" title="Create new Agent">
+        <p className="text-gray-80 -mt-8 py-3 pb-6 text-center text-sm">
+          Create and explore custom AI agents with tailored instructions and
+          diverse skills.
+        </p>
+        <Form {...form}>
+          <form
+            className="flex flex-col justify-between space-y-6"
+            onSubmit={form.handleSubmit(submit)}
+          >
+            <div className="grid grid-cols-[1fr_360px] gap-6">
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <TextField
+                      autoFocus
+                      field={{
+                        ...field,
+                        onChange: (e) => {
+                          const value = e.target.value;
+                          const alphanumericValue = value.replace(
+                            /[^a-zA-Z0-9_]/g,
+                            '_',
+                          );
+                          field.onChange({
+                            ...e,
+                            target: {
+                              value: alphanumericValue,
+                            },
+                          });
+                        },
                       }}
-                      size="auto"
-                      variant="outline"
-                    >
-                      <PlusIcon className="mr-1 size-3.5" />
-                      Create New Tool
-                    </Button>
+                      label="Agent Name"
+                    />
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="uiDescription"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          className="!min-h-[100px] resize-none text-sm"
+                          onChange={field.onChange}
+                          spellCheck={false}
+                          value={field.value}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="llmProviderId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('chat.form.selectAI')}</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={t('chat.form.selectAI')}
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {llmProviders?.length &&
+                            llmProviders.map((llmProvider) => (
+                              <SelectItem
+                                key={llmProvider.id}
+                                value={llmProvider.id}
+                              >
+                                <span>{llmProvider.id} </span>
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+                {/*<div className="space-y-6 rounded-lg bg-gray-400 px-4 py-4">*/}
+                {/*  <span className="flex-1 items-center gap-1 truncate py-2 text-left text-xs font-semibold text-gray-50">*/}
+                {/*    Knowledge*/}
+                {/*  </span>*/}
+                {/*  <div>TODO: kwnoledge</div>*/}
+                {/*</div>*/}
+                <div className="space-y-6 rounded-lg bg-gray-400 px-4 py-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="flex-1 items-center gap-1 truncate text-left text-xs font-semibold text-gray-50">
+                      Tools
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        className="h-[30px] text-xs"
+                        onClick={() => {
+                          navigate('/tools/create');
+                        }}
+                        size="auto"
+                        variant="outline"
+                      >
+                        <PlusIcon className="mr-1 size-3.5" />
+                        Create New Tool
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex max-h-[28vh] flex-col gap-2.5 overflow-auto">
+                    <div className="flex items-center gap-3">
+                      <Switch
+                        checked={
+                          form.watch('tools').length === toolsList?.length
+                        }
+                        id="all"
+                        onCheckedChange={(checked) => {
+                          const isAllConfigFilled = toolsList
+                            ?.map((tool) => tool.config)
+                            .filter((item) => !!item)
+                            .flat()
+                            ?.map((conf) => ({
+                              key_name: conf.BasicConfig.key_name,
+                              key_value: conf.BasicConfig.key_value ?? '',
+                              required: conf.BasicConfig.required,
+                            }))
+                            .every(
+                              (conf) =>
+                                !conf.required ||
+                                (conf.required && conf.key_value !== ''),
+                            );
+                          if (!isAllConfigFilled) {
+                            toast.error('Tool configuration', {
+                              description:
+                                'Please fill in the config required in tool details',
+                            });
+                            return;
+                          }
+                          if (checked && toolsList) {
+                            form.setValue(
+                              'tools',
+                              toolsList.map((tool) => tool.tool_router_key),
+                            );
+                          } else {
+                            form.setValue('tools', []);
+                          }
+                        }}
+                      />
+                      <label className="text-xs text-gray-50" htmlFor="all">
+                        Enabled All
+                      </label>
+                    </div>
+                    {toolsList?.map((tool) => (
+                      <FormField
+                        control={form.control}
+                        key={tool.tool_router_key}
+                        name="tools"
+                        render={({ field }) => (
+                          <FormItem className="flex w-full flex-col gap-3">
+                            <div className="flex items-center gap-3">
+                              <FormControl>
+                                <div className="flex w-full items-center gap-3">
+                                  <Switch
+                                    checked={field.value.includes(
+                                      tool.tool_router_key,
+                                    )}
+                                    id={tool.tool_router_key}
+                                    onCheckedChange={() => {
+                                      const configs = tool?.config ?? [];
+                                      if (
+                                        configs
+                                          .map((conf) => ({
+                                            key_name: conf.BasicConfig.key_name,
+                                            key_value:
+                                              conf.BasicConfig.key_value ?? '',
+                                            required: conf.BasicConfig.required,
+                                          }))
+                                          .every(
+                                            (conf) =>
+                                              !conf.required ||
+                                              (conf.required &&
+                                                conf.key_value !== ''),
+                                          )
+                                      ) {
+                                        field.onChange(
+                                          field.value.includes(
+                                            tool.tool_router_key,
+                                          )
+                                            ? field.value.filter(
+                                                (value) =>
+                                                  value !==
+                                                  tool.tool_router_key,
+                                              )
+                                            : [
+                                                ...field.value,
+                                                tool.tool_router_key,
+                                              ],
+                                        );
+                                        console.log(tool.config, 'tool.config');
+                                        return;
+                                      }
+                                      toast.error(
+                                        'Tool configuration is required',
+                                        {
+                                          description:
+                                            'Please fill in the config required in tool details',
+                                        },
+                                      );
+                                    }}
+                                  />
+                                  <div className="inline-flex flex-1 items-center gap-2 leading-none">
+                                    <label
+                                      className="max-w-[40ch] truncate text-xs text-gray-50"
+                                      htmlFor={tool.tool_router_key}
+                                    >
+                                      {formatText(tool.name)}
+                                    </label>
+                                    <Tooltip>
+                                      <TooltipTrigger className="flex shrink-0 items-center gap-1">
+                                        <InfoCircleIcon className="h-3 w-3 text-gray-100" />
+                                      </TooltipTrigger>
+                                      <TooltipPortal>
+                                        <TooltipContent
+                                          align="center"
+                                          alignOffset={-10}
+                                          className="max-w-md"
+                                          side="top"
+                                        >
+                                          {tool.description}
+                                        </TooltipContent>
+                                      </TooltipPortal>
+                                    </Tooltip>
+                                  </div>
+                                  {(tool.config ?? []).length > 0 && (
+                                    <Tooltip>
+                                      <TooltipTrigger
+                                        asChild
+                                        className="flex shrink-0 items-center gap-1"
+                                      >
+                                        <Link
+                                          className="text-gray-80 size-3.5 rounded-lg hover:text-white"
+                                          to={`/tools/${tool.tool_router_key}`}
+                                        >
+                                          <BoltIcon className="size-full" />
+                                        </Link>
+                                      </TooltipTrigger>
+                                      <TooltipPortal>
+                                        <TooltipContent
+                                          align="center"
+                                          alignOffset={-10}
+                                          className="max-w-md"
+                                          side="top"
+                                        >
+                                          <p>Configure tool</p>
+                                        </TooltipContent>
+                                      </TooltipPortal>
+                                    </Tooltip>
+                                  )}
+                                </div>
+                              </FormControl>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    ))}
                   </div>
                 </div>
-                <div className="flex max-h-[28vh] flex-col gap-2.5 overflow-auto">
-                  <div className="flex items-center gap-3">
-                    <Switch
-                      checked={form.watch('tools').length === toolsList?.length}
-                      onCheckedChange={(checked) => {
-                        if (checked && toolsList) {
-                          form.setValue(
-                            'tools',
-                            toolsList.map((tool) => tool.tool_router_key),
-                          );
-                        } else {
-                          form.setValue('tools', []);
-                        }
-                      }}
-                    />
-                    <span className="text-gray-80 text-xs">Enabled All</span>
-                  </div>
-                  {toolsList?.map((tool) => (
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-6 rounded-lg bg-gray-400 px-4 py-4 pb-7">
+                  <span className="flex-1 items-center gap-1 truncate py-2 text-left text-xs font-semibold text-gray-50">
+                    AI Model Configuration
+                  </span>
+
+                  <div className="space-y-4">
                     <FormField
                       control={form.control}
-                      key={tool.tool_router_key}
-                      name="tools"
+                      name="config.custom_system_prompt"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>System Prompt</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              className="!min-h-[130px] resize-none text-sm"
+                              spellCheck={false}
+                              {...field}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="config.stream"
                       render={({ field }) => (
                         <FormItem className="flex w-full flex-col gap-3">
-                          <div className="flex items-center gap-3">
+                          <div className="flex gap-3">
                             <FormControl>
                               <Switch
-                                checked={field.value.includes(
-                                  tool.tool_router_key,
-                                )}
-                                onCheckedChange={() => {
-                                  field.onChange(
-                                    field.value.includes(tool.tool_router_key)
-                                      ? field.value.filter(
-                                          (value) =>
-                                            value !== tool.tool_router_key,
-                                        )
-                                      : [...field.value, tool.tool_router_key],
-                                  );
-                                }}
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
-                              <TooltipProvider delayDuration={0}>
-                                <Tooltip>
-                                  <TooltipTrigger className="flex items-center gap-1">
-                                    <FormLabel className="text-gray-80 static space-y-1.5 text-xs">
-                                      {formatText(tool.name)}
-                                    </FormLabel>
-                                  </TooltipTrigger>
-                                  <TooltipPortal>
-                                    <TooltipContent
-                                      align="start"
-                                      alignOffset={-10}
-                                      className="max-w-md"
-                                      side="top"
-                                    >
-                                      {tool.description}
-                                    </TooltipContent>
-                                  </TooltipPortal>
-                                </Tooltip>
-                              </TooltipProvider>
+                              <FormLabel className="static space-y-1.5 text-sm text-white">
+                                Enable Stream
+                              </FormLabel>
                             </div>
                           </div>
                         </FormItem>
                       )}
                     />
-                  ))}
+                    <FormField
+                      control={form.control}
+                      name="config.use_tools"
+                      render={({ field }) => (
+                        <FormItem className="flex w-full flex-col gap-3">
+                          <div className="flex gap-3">
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="static space-y-1.5 text-sm text-white">
+                                Enable Tools
+                              </FormLabel>
+                            </div>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="config.temperature"
+                      render={({ field }) => (
+                        <FormItem className="flex gap-2.5">
+                          <FormControl>
+                            <HoverCard openDelay={200}>
+                              <HoverCardTrigger asChild>
+                                <div className="grid w-full gap-4">
+                                  <div className="flex items-center justify-between">
+                                    <Label htmlFor="temperature">
+                                      Temperature
+                                    </Label>
+                                    <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                                      {field.value}
+                                    </span>
+                                  </div>
+                                  <Slider
+                                    aria-label="Temperature"
+                                    className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
+                                    id="temperature"
+                                    max={1}
+                                    onValueChange={(vals) => {
+                                      field.onChange(vals[0]);
+                                    }}
+                                    step={0.1}
+                                    value={[field.value]}
+                                  />
+                                </div>
+                              </HoverCardTrigger>
+                              <HoverCardContent
+                                align="start"
+                                className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
+                                side="left"
+                              >
+                                Temperature is a parameter that affects the
+                                randomness of AI outputs. Higher temp = more
+                                unexpected, lower temp = more predictable.
+                              </HoverCardContent>
+                            </HoverCard>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="config.top_p"
+                      render={({ field }) => (
+                        <FormItem className="flex gap-2.5">
+                          <FormControl>
+                            <HoverCard openDelay={200}>
+                              <HoverCardTrigger asChild>
+                                <div className="grid w-full gap-4">
+                                  <div className="flex items-center justify-between">
+                                    <Label htmlFor="topP">Top P</Label>
+                                    <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                                      {field.value}
+                                    </span>
+                                  </div>
+                                  <Slider
+                                    aria-label="Top P"
+                                    className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
+                                    id="topP"
+                                    max={1}
+                                    min={0}
+                                    onValueChange={(vals) => {
+                                      field.onChange(vals[0]);
+                                    }}
+                                    step={0.1}
+                                    value={[field.value]}
+                                  />
+                                </div>
+                              </HoverCardTrigger>
+                              <HoverCardContent
+                                align="start"
+                                className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
+                                side="left"
+                              >
+                                Adjust the probability threshold to increase the
+                                relevance of results. For example, a threshold
+                                of 0.9 could be optimal for targeted, specific
+                                applications, whereas a threshold of 0.95 or
+                                0.97 might be preferred for tasks that require
+                                broader, more creative responses.
+                              </HoverCardContent>
+                            </HoverCard>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="config.top_k"
+                      render={({ field }) => (
+                        <FormItem className="flex gap-2.5">
+                          <FormControl>
+                            <HoverCard openDelay={200}>
+                              <HoverCardTrigger asChild>
+                                <div className="grid w-full gap-4">
+                                  <div className="flex items-center justify-between">
+                                    <Label htmlFor="topK">Top K</Label>
+                                    <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                                      {field.value}
+                                    </span>
+                                  </div>
+                                  <Slider
+                                    aria-label="Top K"
+                                    className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
+                                    id="topK"
+                                    max={100}
+                                    onValueChange={(vals) => {
+                                      field.onChange(vals[0]);
+                                    }}
+                                    step={1}
+                                    value={[field.value]}
+                                  />
+                                </div>
+                              </HoverCardTrigger>
+                              <HoverCardContent
+                                align="start"
+                                className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
+                                side="left"
+                              >
+                                Adjust the count of key words for creating
+                                sequences. This parameter governs the extent of
+                                the generated passage, forestalling too much
+                                repetition. Selecting a higher figure yields
+                                longer narratives, whereas a smaller figure
+                                keeps the text brief.
+                              </HoverCardContent>
+                            </HoverCard>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-
-            <div className="space-y-4">
-              <div className="space-y-6 rounded-lg bg-gray-400 px-4 py-4 pb-7">
-                <span className="flex-1 items-center gap-1 truncate py-2 text-left text-xs font-semibold text-gray-50">
-                  AI Model Configuration
-                </span>
-
-                <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="config.custom_system_prompt"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>System Prompt</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            className="!min-h-[130px] resize-none text-sm"
-                            spellCheck={false}
-                            {...field}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="config.stream"
-                    render={({ field }) => (
-                      <FormItem className="flex w-full flex-col gap-3">
-                        <div className="flex gap-3">
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel className="static space-y-1.5 text-sm text-white">
-                              Enable Stream
-                            </FormLabel>
-                          </div>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="config.use_tools"
-                    render={({ field }) => (
-                      <FormItem className="flex w-full flex-col gap-3">
-                        <div className="flex gap-3">
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel className="static space-y-1.5 text-sm text-white">
-                              Enable Tools
-                            </FormLabel>
-                          </div>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="config.temperature"
-                    render={({ field }) => (
-                      <FormItem className="flex gap-2.5">
-                        <FormControl>
-                          <HoverCard openDelay={200}>
-                            <HoverCardTrigger asChild>
-                              <div className="grid w-full gap-4">
-                                <div className="flex items-center justify-between">
-                                  <Label htmlFor="temperature">
-                                    Temperature
-                                  </Label>
-                                  <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
-                                    {field.value}
-                                  </span>
-                                </div>
-                                <Slider
-                                  aria-label="Temperature"
-                                  className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
-                                  id="temperature"
-                                  max={1}
-                                  onValueChange={(vals) => {
-                                    field.onChange(vals[0]);
-                                  }}
-                                  step={0.1}
-                                  value={[field.value]}
-                                />
-                              </div>
-                            </HoverCardTrigger>
-                            <HoverCardContent
-                              align="start"
-                              className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
-                              side="left"
-                            >
-                              Temperature is a parameter that affects the
-                              randomness of AI outputs. Higher temp = more
-                              unexpected, lower temp = more predictable.
-                            </HoverCardContent>
-                          </HoverCard>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="config.top_p"
-                    render={({ field }) => (
-                      <FormItem className="flex gap-2.5">
-                        <FormControl>
-                          <HoverCard openDelay={200}>
-                            <HoverCardTrigger asChild>
-                              <div className="grid w-full gap-4">
-                                <div className="flex items-center justify-between">
-                                  <Label htmlFor="topP">Top P</Label>
-                                  <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
-                                    {field.value}
-                                  </span>
-                                </div>
-                                <Slider
-                                  aria-label="Top P"
-                                  className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
-                                  id="topP"
-                                  max={1}
-                                  min={0}
-                                  onValueChange={(vals) => {
-                                    field.onChange(vals[0]);
-                                  }}
-                                  step={0.1}
-                                  value={[field.value]}
-                                />
-                              </div>
-                            </HoverCardTrigger>
-                            <HoverCardContent
-                              align="start"
-                              className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
-                              side="left"
-                            >
-                              Adjust the probability threshold to increase the
-                              relevance of results. For example, a threshold of
-                              0.9 could be optimal for targeted, specific
-                              applications, whereas a threshold of 0.95 or 0.97
-                              might be preferred for tasks that require broader,
-                              more creative responses.
-                            </HoverCardContent>
-                          </HoverCard>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="config.top_k"
-                    render={({ field }) => (
-                      <FormItem className="flex gap-2.5">
-                        <FormControl>
-                          <HoverCard openDelay={200}>
-                            <HoverCardTrigger asChild>
-                              <div className="grid w-full gap-4">
-                                <div className="flex items-center justify-between">
-                                  <Label htmlFor="topK">Top K</Label>
-                                  <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
-                                    {field.value}
-                                  </span>
-                                </div>
-                                <Slider
-                                  aria-label="Top K"
-                                  className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
-                                  id="topK"
-                                  max={100}
-                                  onValueChange={(vals) => {
-                                    field.onChange(vals[0]);
-                                  }}
-                                  step={1}
-                                  value={[field.value]}
-                                />
-                              </div>
-                            </HoverCardTrigger>
-                            <HoverCardContent
-                              align="start"
-                              className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
-                              side="left"
-                            >
-                              Adjust the count of key words for creating
-                              sequences. This parameter governs the extent of
-                              the generated passage, forestalling too much
-                              repetition. Selecting a higher figure yields
-                              longer narratives, whereas a smaller figure keeps
-                              the text brief.
-                            </HoverCardContent>
-                          </HoverCard>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
+            <div className="flex items-center justify-end gap-2">
+              <Button
+                className="min-w-[120px]"
+                disabled={isPending}
+                onClick={() => navigate('/ais?tab=agents')}
+                size="sm"
+                type="button"
+                variant="outline"
+              >
+                {t('common.cancel')}
+              </Button>
+              <Button
+                className="min-w-[120px]"
+                disabled={isPending}
+                isLoading={isPending}
+                size="sm"
+                type="submit"
+              >
+                {t('common.save')}
+              </Button>
             </div>
-          </div>
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              className="min-w-[120px]"
-              disabled={isPending}
-              onClick={() => navigate('/ais?tab=agents')}
-              size="sm"
-              type="button"
-              variant="outline"
-            >
-              {t('common.cancel')}
-            </Button>
-            <Button
-              className="min-w-[120px]"
-              disabled={isPending}
-              isLoading={isPending}
-              size="sm"
-              type="submit"
-            >
-              {t('common.save')}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </SubpageLayout>
+          </form>
+        </Form>
+      </SubpageLayout>
+    </TooltipProvider>
   );
 }
 
