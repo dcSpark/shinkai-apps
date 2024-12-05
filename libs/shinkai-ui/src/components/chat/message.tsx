@@ -404,7 +404,7 @@ const MessageBase = ({
               {!isPending && (
                 <motion.div
                   className={cn(
-                    'absolute -bottom-[34px] flex items-end justify-end gap-3',
+                    'absolute -bottom-[34px] flex items-center justify-end gap-3',
                     message.role === 'user'
                       ? 'right-10 flex-row-reverse'
                       : 'left-10 flex-row',
