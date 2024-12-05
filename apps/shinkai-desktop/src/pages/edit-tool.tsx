@@ -515,7 +515,7 @@ function EditToolPage() {
                 <ResizablePanelGroup direction="vertical">
                   <ResizablePanel
                     className="flex flex-col"
-                    defaultSize={65}
+                    defaultSize={60}
                     maxSize={70}
                     minSize={30}
                   >

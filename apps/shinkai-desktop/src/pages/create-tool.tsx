@@ -658,7 +658,7 @@ function CreateToolPage() {
                 <ResizablePanelGroup direction="vertical">
                   <ResizablePanel
                     className="flex flex-col"
-                    defaultSize={65}
+                    defaultSize={60}
                     maxSize={70}
                     minSize={30}
                   >
@@ -1083,13 +1083,35 @@ export function ToolSelectionModal({
                         checked={field.value.includes(tool.tool_router_key)}
                         id={tool.tool_router_key}
                         onCheckedChange={() => {
-                          field.onChange(
-                            field.value.includes(tool.tool_router_key)
-                              ? field.value.filter(
-                                  (value) => value !== tool.tool_router_key,
-                                )
-                              : [...field.value, tool.tool_router_key],
-                          );
+                          const configs = tool?.config ?? [];
+                          if (
+                            configs.length > 0 &&
+                            configs
+                              .map((conf) => ({
+                                key_name: conf.BasicConfig.key_name,
+                                key_value: conf.BasicConfig.key_value ?? '',
+                                required: conf.BasicConfig.required,
+                              }))
+                              .every(
+                                (conf) =>
+                                  !conf.required ||
+                                  (conf.required && conf.key_value !== ''),
+                              )
+                          ) {
+                            field.onChange(
+                              field.value.includes(tool.tool_router_key)
+                                ? field.value.filter(
+                                    (value) => value !== tool.tool_router_key,
+                                  )
+                                : [...field.value, tool.tool_router_key],
+                            );
+                            console.log(tool.config, 'tool.config');
+                            return;
+                          }
+                          toast.error('Tool configuration is required', {
+                            description:
+                              'Please fill in the config required in tool details',
+                          });
                         }}
                       />
                       <div className="inline-flex flex-1 items-center gap-2 leading-none">
