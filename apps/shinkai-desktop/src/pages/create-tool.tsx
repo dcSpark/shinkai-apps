@@ -151,6 +151,7 @@ function CreateToolPage() {
     isSuccess: isCodeExecutionSuccess,
     isError: isCodeExecutionError,
     error: codeExecutionError,
+    reset: resetCodeExecution,
   } = useExecuteToolCode({
     onSuccess: (data) => {
       setToolResult(data);
@@ -204,6 +205,7 @@ function CreateToolPage() {
       forceGenerateMetadata.current = true;
       baseToolCodeRef.current = '';
       setToolResult(null);
+      resetCodeExecution();
     },
   });
 
@@ -806,13 +808,31 @@ function CreateToolPage() {
 
                   <ResizablePanel className="flex flex-col">
                     <div className="flex size-full min-h-[220px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
-                      <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
-                        <h2 className="flex font-mono font-semibold text-gray-50">
-                          Run
-                        </h2>
-                        {metadataGenerationData && (
-                          <p>Fill in the options above to run your tool.</p>
-                        )}
+                      <div className="flex items-center justify-between">
+                        <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
+                          <h2 className="flex font-mono font-semibold text-gray-50">
+                            Run
+                          </h2>
+                          {metadataGenerationData && (
+                            <p>Fill in the options above to run your tool.</p>
+                          )}
+                        </div>
+                        {isMetadataGenerationSuccess &&
+                          !isToolCodeGenerationPending &&
+                          !isMetadataGenerationError && (
+                            <Button
+                              className="h-[30px] rounded-lg border-gray-200 text-white"
+                              form="parameters-form"
+                              isLoading={isExecutingCode}
+                              size="sm"
+                              variant="ghost"
+                            >
+                              {!isExecutingCode && (
+                                <Play className="mr-2 h-4 w-4" />
+                              )}
+                              Run
+                            </Button>
+                          )}
                       </div>
                       <div className="flex-1 overflow-auto">
                         {(isMetadataGenerationPending ||
@@ -837,6 +857,7 @@ function CreateToolPage() {
                               <JsonForm
                                 className="py-4"
                                 formData={formData}
+                                id="parameters-form"
                                 noHtml5Validate={true}
                                 onChange={(e) => setFormData(e.formData)}
                                 onSubmit={handleRunCode}
@@ -845,23 +866,7 @@ function CreateToolPage() {
                                 }
                                 uiSchema={{
                                   'ui:submitButtonOptions': {
-                                    props: {
-                                      disabled: isExecutingCode,
-                                      isLoading: isExecutingCode,
-                                    },
-                                    // @ts-expect-error string type
-                                    submitText: (
-                                      <div
-                                        className={
-                                          'inline-flex items-center justify-center gap-2 pl-2 pr-3'
-                                        }
-                                      >
-                                        {!isExecutingCode && (
-                                          <Play className="h-4 w-4" />
-                                        )}
-                                        Run
-                                      </div>
-                                    ),
+                                    norender: true,
                                   },
                                 }}
                                 validator={validator}
