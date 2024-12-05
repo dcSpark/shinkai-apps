@@ -43,7 +43,8 @@ import {
   Play,
   Save,
 } from 'lucide-react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { PrismEditor } from 'prism-react-editor';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, To, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -69,7 +70,6 @@ export const createToolCodeFormSchema = z.object({
 export type CreateToolCodeFormSchema = z.infer<typeof createToolCodeFormSchema>;
 
 function EditToolPage() {
-  const [tab, setTab] = useState<'code' | 'preview'>('code');
   const auth = useAuth((state) => state.auth);
   const { toolRouterKey } = useParams();
 
@@ -95,6 +95,8 @@ function EditToolPage() {
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<
     string | undefined
   >(undefined);
+  const codeEditorRef = useRef<PrismEditor | null>(null);
+  const metadataEditorRef = useRef<PrismEditor | null>(null);
 
   const [resetCounter, setResetCounter] = useState(0);
 
@@ -260,7 +262,6 @@ function EditToolPage() {
       {
         onSuccess: (data) => {
           setChatInboxId(data.inbox);
-          setTab('code');
           setToolCode('');
           forceGenerateMetadata.current = true;
           baseToolCodeRef.current = '';
@@ -285,10 +286,12 @@ function EditToolPage() {
     });
   };
 
-  const handleSaveTool = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSaveTool = async () => {
+    if (!chatInboxId) return;
 
-    const metadataCode = new FormData(e.currentTarget).get('editor');
+    const metadataCode = metadataEditorRef.current?.value;
+    const toolCode = codeEditorRef.current?.value;
+
     let parsedMetadata: ToolMetadata;
     try {
       const parseResult = JSON.parse(metadataCode as string) as ToolMetadata;
@@ -308,14 +311,9 @@ function EditToolPage() {
       return;
     }
 
-    if (!chatInboxId) return;
-
     await saveToolCode({
       code: toolCode,
-      metadata: {
-        ...parsedMetadata,
-        author: auth?.shinkai_identity ?? '',
-      },
+      metadata: parsedMetadata,
       jobId: extractJobIdFromInbox(chatInboxId),
       token: auth?.api_v2_key ?? '',
       nodeAddress: auth?.node_address ?? '',
@@ -467,8 +465,7 @@ function EditToolPage() {
       rightElement={
         <Tabs
           className="flex h-screen w-full flex-col overflow-hidden"
-          onValueChange={(value) => setTab(value as 'preview' | 'code')}
-          value={tab}
+          defaultValue="code"
         >
           <div className={'flex flex-grow justify-stretch'}>
             <div className="flex size-full flex-col gap-2">
@@ -496,10 +493,9 @@ function EditToolPage() {
                       !chatInboxId ||
                       isSavingTool
                     }
-                    form="metadata-form"
                     isLoading={isSavingTool}
+                    onClick={handleSaveTool}
                     size="sm"
-                    type="submit"
                     variant="outline"
                   >
                     <Save className="mr-2 h-4 w-4" />
@@ -509,7 +505,8 @@ function EditToolPage() {
               </div>
 
               <TabsContent
-                className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words"
+                className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words data-[state=inactive]:hidden"
+                forceMount
                 value="code"
               >
                 <ResizablePanelGroup direction="vertical">
@@ -651,129 +648,135 @@ function EditToolPage() {
                   <ResizablePanel className="flex flex-col">
                     <div className="flex size-full min-h-[220px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
                       <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
-                        <h2 className="flex font-mono font-semibold text-gray-50">
-                          Run
-                        </h2>
-                        <div className="flex-1 overflow-auto">
-                          {metadataGenerationData && (
-                            <p>Fill in the options above to run your tool.</p>
-                          )}
-                        </div>
-                        {(isMetadataGenerationPending ||
-                          isToolCodeGenerationPending) && (
-                          <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-                            <Loader2 className="shrink-0 animate-spin" />
-                            Generating...
+                        <div className="flex items-center justify-between">
+                          <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
+                            <h2 className="flex font-mono font-semibold text-gray-50">
+                              Run
+                            </h2>
+                            {metadataGenerationData && (
+                              <p>Fill in the options above to run your tool.</p>
+                            )}
                           </div>
-                        )}
-                        {!isMetadataGenerationPending &&
-                          !isToolCodeGenerationPending &&
-                          isMetadataGenerationError && (
-                            <ToolErrorFallback
-                              error={new Error(metadataGenerationError ?? '')}
-                              resetErrorBoundary={regenerateToolMetadata}
-                            />
-                          )}
-                        {isMetadataGenerationSuccess &&
-                          !isToolCodeGenerationPending &&
-                          !isMetadataGenerationError &&
-                          isValidSchema && (
-                            <div className="text-gray-80 text-xs">
-                              <JsonForm
-                                className="py-4"
-                                formData={formData}
-                                noHtml5Validate={true}
-                                onChange={(e) => setFormData(e.formData)}
-                                onSubmit={handleRunCode}
-                                schema={
-                                  metadataGenerationData?.parameters as RJSFSchema
-                                }
-                                uiSchema={{
-                                  'ui:submitButtonOptions': {
-                                    props: {
-                                      disabled: isExecutingCode,
-                                      isLoading: isExecutingCode,
-                                    },
-                                    // @ts-expect-error string type
-                                    submitText: (
-                                      <div
-                                        className={
-                                          'inline-flex items-center justify-center gap-2 pl-2 pr-3'
-                                        }
-                                      >
-                                        {!isExecutingCode && (
-                                          <Play className="h-4 w-4" />
-                                        )}
-                                        Run
-                                      </div>
-                                    ),
-                                  },
-                                }}
-                                validator={validator}
-                              />
-                              <AnimatePresence>
-                                {(isExecutingCode ||
-                                  isCodeExecutionError ||
-                                  isCodeExecutionSuccess) && (
-                                  <motion.div
-                                    animate={{ opacity: 1, x: 0 }}
-                                    className="flex flex-col border-t border-gray-200 bg-gray-300 py-2 pb-4"
-                                    exit={{ opacity: 0, x: 20 }}
-                                    initial={{ opacity: 0, x: 20 }}
-                                  >
-                                    {isExecutingCode && (
-                                      <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-                                        <Loader2 className="shrink-0 animate-spin" />
-                                        Running Tool...
-                                      </div>
-                                    )}
-                                    {isCodeExecutionError && (
-                                      <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
-                                        <p>
-                                          Tool execution failed. Try generating
-                                          the tool code again.
-                                        </p>
-                                        <pre className="whitespace-break-spaces px-4 text-center">
-                                          {codeExecutionError?.response?.data
-                                            ?.message ??
-                                            codeExecutionError?.message}
-                                        </pre>
-                                      </div>
-                                    )}
-                                    {isCodeExecutionSuccess && toolResult && (
-                                      <div className="py-2">
-                                        <ToolCodeEditor
-                                          language="json"
-                                          readOnly
-                                          style={{ height: '200px' }}
-                                          value={JSON.stringify(
-                                            toolResult,
-                                            null,
-                                            2,
-                                          )}
-                                        />
-                                      </div>
-                                    )}
-                                  </motion.div>
+                          {isMetadataGenerationSuccess &&
+                            !isToolCodeGenerationPending &&
+                            !isMetadataGenerationError && (
+                              <Button
+                                className="h-[30px] rounded-lg border-gray-200 text-white"
+                                form="parameters-form"
+                                isLoading={isExecutingCode}
+                                size="sm"
+                                variant="ghost"
+                              >
+                                {!isExecutingCode && (
+                                  <Play className="mr-2 h-4 w-4" />
                                 )}
-                              </AnimatePresence>
+                                Run
+                              </Button>
+                            )}
+                        </div>
+                        <div className="flex-1 overflow-auto">
+                          {(isMetadataGenerationPending ||
+                            isToolCodeGenerationPending) && (
+                            <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
+                              <Loader2 className="shrink-0 animate-spin" />
+                              Generating...
                             </div>
                           )}
-                        {isMetadataGenerationIdle &&
-                          !isToolCodeGenerationPending && (
-                            <div>
-                              <p className="text-gray-80 py-4 pt-6 text-center text-xs">
-                                No metadata generated yet.
-                              </p>
-                            </div>
-                          )}
+                          {!isMetadataGenerationPending &&
+                            !isToolCodeGenerationPending &&
+                            isMetadataGenerationError && (
+                              <ToolErrorFallback
+                                error={new Error(metadataGenerationError ?? '')}
+                                resetErrorBoundary={regenerateToolMetadata}
+                              />
+                            )}
+                          {isMetadataGenerationSuccess &&
+                            !isToolCodeGenerationPending &&
+                            !isMetadataGenerationError &&
+                            isValidSchema && (
+                              <div className="text-gray-80 text-xs">
+                                <JsonForm
+                                  className="py-4"
+                                  formData={formData}
+                                  id="parameters-form"
+                                  noHtml5Validate={true}
+                                  onChange={(e) => setFormData(e.formData)}
+                                  onSubmit={handleRunCode}
+                                  schema={
+                                    metadataGenerationData?.parameters as RJSFSchema
+                                  }
+                                  uiSchema={{
+                                    'ui:submitButtonOptions': {
+                                      norender: true,
+                                    },
+                                  }}
+                                  validator={validator}
+                                />
+                                <AnimatePresence>
+                                  {(isExecutingCode ||
+                                    isCodeExecutionError ||
+                                    isCodeExecutionSuccess) && (
+                                    <motion.div
+                                      animate={{ opacity: 1, x: 0 }}
+                                      className="flex flex-col border-t border-gray-200 bg-gray-300 py-2 pb-4"
+                                      exit={{ opacity: 0, x: 20 }}
+                                      initial={{ opacity: 0, x: 20 }}
+                                    >
+                                      {isExecutingCode && (
+                                        <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
+                                          <Loader2 className="shrink-0 animate-spin" />
+                                          Running Tool...
+                                        </div>
+                                      )}
+                                      {isCodeExecutionError && (
+                                        <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
+                                          <p>
+                                            Tool execution failed. Try
+                                            generating the tool code again.
+                                          </p>
+                                          <pre className="whitespace-break-spaces px-4 text-center">
+                                            {codeExecutionError?.response?.data
+                                              ?.message ??
+                                              codeExecutionError?.message}
+                                          </pre>
+                                        </div>
+                                      )}
+                                      {isCodeExecutionSuccess && toolResult && (
+                                        <div className="py-2">
+                                          <ToolCodeEditor
+                                            language="json"
+                                            readOnly
+                                            style={{ height: '200px' }}
+                                            value={JSON.stringify(
+                                              toolResult,
+                                              null,
+                                              2,
+                                            )}
+                                          />
+                                        </div>
+                                      )}
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+                              </div>
+                            )}
+                          {isMetadataGenerationIdle &&
+                            !isToolCodeGenerationPending && (
+                              <div>
+                                <p className="text-gray-80 py-4 pt-6 text-center text-xs">
+                                  No metadata generated yet.
+                                </p>
+                              </div>
+                            )}
+                        </div>
                       </div>
                     </div>
                   </ResizablePanel>
                 </ResizablePanelGroup>
               </TabsContent>
               <TabsContent
-                className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words"
+                className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words data-[state=inactive]:hidden"
+                forceMount
                 value="preview"
               >
                 <div className="flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
@@ -815,30 +818,22 @@ function EditToolPage() {
                   {isMetadataGenerationSuccess &&
                     !isMetadataGenerationError && (
                       <div className="text-gray-80 text-xs">
-                        <form
-                          className="space-y-4"
-                          id="metadata-form"
-                          onSubmit={handleSaveTool}
-                        >
-                          <div className="py-2">
-                            <ToolCodeEditor
-                              language="json"
-                              style={{ height: '80vh' }}
-                              value={
-                                metadataGenerationData != null
-                                  ? JSON.stringify(
-                                      {
-                                        ...metadataGenerationData,
-                                        author: auth?.shinkai_identity ?? '',
-                                      },
-                                      null,
-                                      2,
-                                    )
-                                  : 'Invalid metadata'
-                              }
-                            />
-                          </div>
-                        </form>
+                        <div className="py-2">
+                          <ToolCodeEditor
+                            language="json"
+                            ref={metadataEditorRef}
+                            style={{ height: '80vh' }}
+                            value={
+                              metadataGenerationData != null
+                                ? JSON.stringify(
+                                    metadataGenerationData,
+                                    null,
+                                    2,
+                                  )
+                                : 'Invalid metadata'
+                            }
+                          />
+                        </div>
                       </div>
                     )}
 

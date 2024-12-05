@@ -1,14 +1,6 @@
 import { z } from 'zod';
 
 export const ToolMetadataSchema = z.object({
-  id: z
-    .string({ message: 'Tool ID is required' })
-    .min(1, 'Tool ID is required')
-    .regex(
-      /^[a-z0-9-]+$/,
-      'Tool ID must contain only lowercase letters, numbers, and hyphens',
-    ),
-
   name: z
     .string({ message: 'Tool name is required' })
     .min(1, 'Tool name is required')
@@ -19,14 +11,9 @@ export const ToolMetadataSchema = z.object({
     .min(1, 'Tool description is required')
     .max(500, 'Tool description must be less than 500 characters'),
 
-  author: z
-    .string({ message: 'Author is required' })
-    .min(1, 'Author is required'),
+  author: z.string(),
 
-  keywords: z
-    .array(z.string(), { message: 'Keywords is required' })
-    .min(1, { message: 'At least one keyword is required' })
-    .max(10, { message: 'Maximum 10 keywords allowed' }),
+  keywords: z.array(z.string()).default([]),
 
   configurations: z
     .object(

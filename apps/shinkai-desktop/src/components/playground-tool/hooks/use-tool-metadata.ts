@@ -3,6 +3,7 @@ import { useMemo, useRef, useState } from 'react';
 import { z } from 'zod';
 
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
+import { useAuth } from '../../../store/auth';
 import { ToolMetadataSchema } from '../schemas';
 
 export const useToolMetadata = ({
@@ -23,6 +24,7 @@ export const useToolMetadata = ({
   const [metadataData, setMetadataData] = useState<ToolMetadata | null>(
     initialState?.metadata ?? null,
   );
+  const auth = useAuth((state) => state.auth);
 
   const forceGenerateMetadata = useRef(false);
 
@@ -67,9 +69,13 @@ export const useToolMetadata = ({
       if (jsonCodeMatch) {
         try {
           const parsedJson = JSON.parse(jsonCodeMatch[1].trim());
-          metadataGenerationData = ToolMetadataSchema.parse(
+          const parsedmetadataGenerationData = ToolMetadataSchema.parse(
             parsedJson,
           ) as ToolMetadata;
+          metadataGenerationData = {
+            ...parsedmetadataGenerationData,
+            author: auth?.shinkai_identity ?? '',
+          };
           setMetadataData(metadataGenerationData);
         } catch (error) {
           if (error instanceof Error) {
