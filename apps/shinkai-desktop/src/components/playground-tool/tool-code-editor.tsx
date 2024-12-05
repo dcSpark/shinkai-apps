@@ -47,14 +47,14 @@ import {
   useHighlightMatchingTags,
   useTagMatcher,
 } from 'prism-react-editor/match-tags';
-import { useOverscroll } from 'prism-react-editor/overscroll';
+// import { useOverscroll } from 'prism-react-editor/overscroll';
 import {
   useHighlightSelectionMatches,
   useSearchWidget,
   useShowInvisibles,
 } from 'prism-react-editor/search';
 import { useReactTooltip } from 'prism-react-editor/tooltips';
-import React, { Suspense } from 'react';
+import React, { forwardRef, Suspense } from 'react';
 
 function ReadOnly({ editor }: { editor: PrismEditor }) {
   const [portal] = useReactTooltip(editor, null, false);
@@ -67,7 +67,7 @@ function ReadOnly({ editor }: { editor: PrismEditor }) {
 const Extensions = ({ editor }: { editor: PrismEditor }) => {
   useBracketMatcher(editor);
   useHightlightBracketPairs(editor);
-  useOverscroll(editor);
+  // useOverscroll(editor);
   useTagMatcher(editor);
   useHighlightMatchingTags(editor);
   useDefaultCommands(editor);
@@ -104,31 +104,28 @@ registerCompletions(['javascript', 'js', 'jsx', 'tsx', 'typescript', 'ts'], {
   ],
 });
 
-const ToolCodeEditor = ({
-  value,
-  onUpdate,
-  language,
-  name,
-  readOnly,
-  style,
-}: {
-  value: EditorProps['value'];
-  onUpdate?: EditorProps['onUpdate'];
-  language: EditorProps['language'];
-  name?: string;
-  readOnly?: boolean;
-  style?: React.CSSProperties;
-}) => (
+const ToolCodeEditor = forwardRef<
+  PrismEditor,
+  {
+    value: EditorProps['value'];
+    onUpdate?: EditorProps['onUpdate'];
+    language: EditorProps['language'];
+    name?: string;
+    readOnly?: boolean;
+    style?: React.CSSProperties;
+  }
+>(({ value, onUpdate, language, name, readOnly, style }, ref) => (
   <Editor
     insertSpaces={false}
     language={language}
     onUpdate={onUpdate}
     readOnly={readOnly}
+    ref={ref}
     style={{
       fontSize: '0.75rem',
       lineHeight: '1.5',
-      height: 'min(20rem, 100vh - 16rem)',
-      overflowY: 'auto',
+      height: '100%',
+      overflow: 'auto',
       ...style,
     }}
     textareaProps={{ name: name ?? 'editor' }}
@@ -136,6 +133,7 @@ const ToolCodeEditor = ({
   >
     {(editor) => <Extensions editor={editor} />}
   </Editor>
-);
+));
 
+ToolCodeEditor.displayName = 'ToolCodeEditor';
 export default ToolCodeEditor;

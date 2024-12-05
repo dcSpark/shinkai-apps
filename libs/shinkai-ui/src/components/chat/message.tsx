@@ -283,18 +283,6 @@ const MessageBase = ({
             </Form>
           ) : (
             <Fragment>
-              {!isPending && (
-                <motion.div
-                  className={cn(
-                    'absolute -top-[14px] flex items-center justify-end gap-1.5 text-xs text-gray-100',
-                    message.role === 'user' ? 'right-10' : 'left-10',
-                  )}
-                  variants={actionBar}
-                >
-                  {format(new Date(message?.createdAt ?? ''), 'p')}
-                </motion.div>
-              )}
-
               <div
                 className={cn(
                   'relative mt-1 flex flex-col rounded-lg bg-black/40 px-3.5 pt-3 text-sm text-white',
@@ -416,77 +404,100 @@ const MessageBase = ({
               {!isPending && (
                 <motion.div
                   className={cn(
-                    'absolute -bottom-[34px] flex items-end justify-end gap-1.5',
-                    message.role === 'user' ? 'right-10' : 'left-10',
+                    'absolute -bottom-[34px] flex items-center justify-end gap-3',
+                    message.role === 'user'
+                      ? 'right-10 flex-row-reverse'
+                      : 'left-10 flex-row',
                   )}
                   variants={actionBar}
                 >
-                  {message.role === 'user' && !disabledEdit && (
+                  <div className="flex items-center gap-1.5">
+                    {message.role === 'user' && !disabledEdit && (
+                      <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              className={cn(
+                                'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                              )}
+                              onClick={() => {
+                                setEditing(true);
+                              }}
+                            >
+                              <Edit3 />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent>
+                              <p>{t('common.editMessage')}</p>
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                    {message.role === 'assistant' && !disabledRetry && (
+                      <TooltipProvider delayDuration={0}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              className={cn(
+                                'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                              )}
+                              onClick={handleRetryMessage}
+                            >
+                              <RotateCcw />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent>
+                              <p>{t('common.retry')}</p>
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
                     <TooltipProvider delayDuration={0}>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <button
-                            className={cn(
-                              'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
-                            )}
-                            onClick={() => {
-                              setEditing(true);
-                            }}
-                          >
-                            <Edit3 />
-                          </button>
+                          <div>
+                            <CopyToClipboardIcon
+                              className={cn(
+                                'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                              )}
+                              string={extractErrorPropertyOrContent(
+                                message.content,
+                                'error_message',
+                              )}
+                            />
+                          </div>
                         </TooltipTrigger>
                         <TooltipPortal>
                           <TooltipContent>
-                            <p>{t('common.editMessage')}</p>
+                            <p>{t('common.copy')}</p>
                           </TooltipContent>
                         </TooltipPortal>
                       </Tooltip>
                     </TooltipProvider>
-                  )}
-                  {message.role === 'assistant' && !disabledRetry && (
-                    <TooltipProvider delayDuration={0}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            className={cn(
-                              'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
-                            )}
-                            onClick={handleRetryMessage}
-                          >
-                            <RotateCcw />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipPortal>
-                          <TooltipContent>
-                            <p>{t('common.retry')}</p>
-                          </TooltipContent>
-                        </TooltipPortal>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )}
-                  <TooltipProvider delayDuration={0}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div>
-                          <CopyToClipboardIcon
-                            className={cn(
-                              'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
-                            )}
-                            string={extractErrorPropertyOrContent(
-                              message.content,
-                              'error_message',
-                            )}
-                          />
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipPortal>
-                        <TooltipContent>
-                          <p>{t('common.copy')}</p>
-                        </TooltipContent>
-                      </TooltipPortal>
-                    </Tooltip>
-                  </TooltipProvider>
+                  </div>
+                  <div
+                    className={cn(
+                      'flex items-center gap-1.5 text-xs text-gray-100',
+                    )}
+                  >
+                    <span>
+                      {format(new Date(message?.createdAt ?? ''), 'p')}
+                    </span>
+                    {message.role === 'assistant' && message?.metadata?.tps && (
+                      <>
+                        {' '}
+                        ⋅
+                        <span>
+                          {Math.round(Number(message?.metadata?.tps) * 10) / 10}{' '}
+                          tokens/s
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </motion.div>
               )}
             </Fragment>

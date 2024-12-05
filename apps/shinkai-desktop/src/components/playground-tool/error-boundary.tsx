@@ -15,7 +15,7 @@ export function ToolErrorFallback({
     >
       <div className="space-y-2 text-center">
         <p>Tool metadata failed. Try generating again.</p>
-        <pre className="max-w-sm whitespace-break-spaces">{error.message}</pre>
+        <pre className="whitespace-break-spaces px-4">{error.message}</pre>
       </div>
       <Button
         className="h-[30px] gap-2 bg-gray-400 text-white"

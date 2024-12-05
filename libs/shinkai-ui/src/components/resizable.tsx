@@ -33,7 +33,7 @@ const ResizableHandle = ({
     {...props}
   >
     {withHandle && (
-      <div className="bg-gray-80 z-10 flex h-4 w-3 items-center justify-center rounded-sm border">
+      <div className="z-10 flex h-4 w-3 items-center justify-center rounded-sm border bg-gray-200">
         <GripVertical className="h-2.5 w-2.5" />
       </div>
     )}
