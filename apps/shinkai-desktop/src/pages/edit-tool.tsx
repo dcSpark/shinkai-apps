@@ -733,7 +733,7 @@ function EditToolPage() {
                                           Tool execution failed. Try generating
                                           the tool code again.
                                         </p>
-                                        <pre className="max-w-sm whitespace-break-spaces text-center">
+                                        <pre className="whitespace-break-spaces px-4 text-center">
                                           {codeExecutionError?.response?.data
                                             ?.message ??
                                             codeExecutionError?.message}
