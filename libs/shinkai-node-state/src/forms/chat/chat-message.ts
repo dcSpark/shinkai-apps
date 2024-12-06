@@ -3,6 +3,13 @@ import { z } from 'zod';
 export const chatMessageFormSchema = z.object({
   message: z.string().min(1),
   files: z.array(z.any()).max(3).optional(),
+  tool: z
+    .object({
+      key: z.string().min(1),
+      name: z.string().min(1),
+      description: z.string().min(1),
+    })
+    .optional(),
 });
 
 export const chatMessageFormSchemaWithOneFile = z.object({

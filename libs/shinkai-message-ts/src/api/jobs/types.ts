@@ -98,6 +98,7 @@ export type JobMessageRequest = {
     content: string;
     files_inbox: string;
     parent: string | null;
+    tool_key?: string;
   };
 };
 export type JobMessageResponse = {

@@ -55,6 +55,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Paperclip, X, XIcon } from 'lucide-react';
+import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { useEffect, useMemo, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm, useWatch } from 'react-hook-form';
@@ -80,7 +81,6 @@ import {
 import PromptSelectionActionBar from './chat-action-bar/prompt-selection-action-bar';
 import { streamingSupportedModels } from './constants';
 import { useSetJobScope } from './context/set-job-scope-context';
-import { useToolsStore } from './context/tools-context';
 
 export const actionButtonClassnames =
   'shrink-0 bg-gray-350 inline-flex h-[30px] w-[30px] cursor-pointer items-center justify-center gap-1.5 truncate border border-gray-200 px-[7px] py-1.5 text-left text-xs rounded-lg font-normal text-gray-50 hover:bg-gray-300 hover:text-white';
@@ -103,9 +103,6 @@ function ConversationEmptyFooter() {
   const onSelectedKeysChange = useSetJobScope(
     (state) => state.onSelectedKeysChange,
   );
-
-  const selectedTool = useToolsStore((state) => state.selectedTool);
-  const setSelectedTool = useToolsStore((state) => state.setSelectedTool);
 
   const selectedFileKeysRef = useSetJobScope(
     (state) => state.selectedFileKeysRef,
@@ -133,6 +130,7 @@ function ConversationEmptyFooter() {
       files: [],
     },
   });
+  const selectedTool = chatForm.watch('tool');
 
   const chatConfigForm = useForm<ChatConfigFormSchemaType>({
     resolver: zodResolver(chatConfigFormSchema),
@@ -237,7 +235,7 @@ function ConversationEmptyFooter() {
         search: debounceMessage,
       },
       {
-        enabled: !!debounceMessage && !!currentMessage,
+        enabled: !!debounceMessage && !!currentMessage && !selectedTool,
         select: (data) => data.slice(0, 3),
       },
     );
@@ -316,6 +314,7 @@ function ConversationEmptyFooter() {
       content: data.message,
       files: currentFiles,
       isHidden: false,
+      toolKey: data.tool?.key,
       selectedVRFiles,
       selectedVRFolders,
       ...(!isAgentInbox && {
@@ -426,26 +425,23 @@ function ConversationEmptyFooter() {
                       topAddons={
                         <>
                           {selectedTool && (
-                            <div className="relative max-w-full rounded-lg border border-gray-200 p-1.5 px-2">
+                            <div className="bg-gray-375 relative max-w-full rounded-lg p-1.5 px-2">
                               <TooltipProvider delayDuration={0}>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <div className="flex items-center gap-2 pr-6">
                                       <ToolsIcon className="h-3.5 w-3.5" />
-                                      <div className="text-gray-80 line-clamp-1 text-xs">
+                                      <div className="line-clamp-1 inline-flex items-center gap-2 text-xs text-gray-100">
                                         <span className="text-white">
                                           {formatText(selectedTool.name)}{' '}
                                         </span>
-                                        -{' '}
-                                        <span className="">
-                                          {selectedTool.description}
-                                        </span>
+                                        <InfoCircleIcon className="h-3 w-3 shrink-0" />
                                       </div>
                                     </div>
                                   </TooltipTrigger>
                                   <TooltipPortal>
                                     <TooltipContent
-                                      align="end"
+                                      align="start"
                                       alignOffset={-10}
                                       className="max-w-[400px]"
                                       side="top"
@@ -459,7 +455,7 @@ function ConversationEmptyFooter() {
                               <button
                                 className="absolute right-2 top-1.5 text-gray-100 hover:text-white"
                                 onClick={() => {
-                                  setSelectedTool(null);
+                                  chatForm.setValue('tool', undefined);
                                 }}
                                 type="button"
                               >
@@ -530,16 +526,16 @@ function ConversationEmptyFooter() {
                             <motion.button
                               animate={{ opacity: 1, x: 0 }}
                               className={cn(
-                                'hover:bg-brand-gradient bg-gray-350 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white',
+                                'bg-gray-375 hover:bg-gray-450 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
                               )}
                               exit={{ opacity: 0, x: -10 }}
                               initial={{ opacity: 0, x: -10 }}
                               key={tool.tool_router_key}
                               onClick={() => {
-                                setSelectedTool({
+                                chatForm.setValue('tool', {
+                                  key: tool.tool_router_key,
                                   name: tool.name,
                                   description: tool.description,
-                                  key: tool.tool_router_key,
                                 });
                               }}
                               type="button"
@@ -583,6 +579,8 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     },
   });
 
+  const selectedTool = chatForm.watch('tool');
+
   const promptSelected = usePromptSelectionStore(
     (state) => state.promptSelected,
   );
@@ -618,6 +616,19 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     name: 'message',
   });
   const debounceMessage = useDebounce(currentMessage, 500);
+
+  const { data: searchToolList, isSuccess: isSearchToolListSuccess } =
+    useGetSearchTools(
+      {
+        nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
+        search: debounceMessage,
+      },
+      {
+        enabled: !!debounceMessage && !!currentMessage && !selectedTool,
+        select: (data) => data.slice(0, 3),
+      },
+    );
 
   const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
     useDropzone({
@@ -799,6 +810,45 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                       ref={textareaRef}
                       topAddons={
                         <>
+                          {selectedTool && (
+                            <div className="bg-gray-375 relative max-w-full rounded-lg p-1.5 px-2">
+                              <TooltipProvider delayDuration={0}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="flex items-center gap-2 pr-6">
+                                      <ToolsIcon className="h-3.5 w-3.5" />
+                                      <div className="line-clamp-1 inline-flex items-center gap-2 text-xs text-gray-100">
+                                        <span className="text-white">
+                                          {formatText(selectedTool.name)}{' '}
+                                        </span>
+                                        <InfoCircleIcon className="h-3 w-3 shrink-0" />
+                                      </div>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipPortal>
+                                    <TooltipContent
+                                      align="start"
+                                      alignOffset={-10}
+                                      className="max-w-[400px]"
+                                      side="top"
+                                      sideOffset={10}
+                                    >
+                                      {selectedTool.description}
+                                    </TooltipContent>
+                                  </TooltipPortal>
+                                </Tooltip>
+                              </TooltipProvider>
+                              <button
+                                className="absolute right-2 top-1.5 text-gray-100 hover:text-white"
+                                onClick={() => {
+                                  chatForm.setValue('tool', undefined);
+                                }}
+                                type="button"
+                              >
+                                <XIcon className="h-4 w-4" />
+                              </button>
+                            </div>
+                          )}
                           {currentFiles && currentFiles.length > 0 && (
                             <div className="flex flex-wrap gap-2">
                               {currentFiles.map((file, index) => (
@@ -854,6 +904,32 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                       transition={{ duration: 0.2 }}
                     >
                       <div className="flex gap-2">
+                        {!!debounceMessage &&
+                          !selectedTool &&
+                          isSearchToolListSuccess &&
+                          searchToolList?.length > 0 &&
+                          searchToolList?.map((tool) => (
+                            <motion.button
+                              animate={{ opacity: 1, x: 0 }}
+                              className={cn(
+                                'bg-gray-375 hover:bg-gray-450 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
+                              )}
+                              exit={{ opacity: 0, x: -10 }}
+                              initial={{ opacity: 0, x: -10 }}
+                              key={tool.tool_router_key}
+                              onClick={() => {
+                                chatForm.setValue('tool', {
+                                  key: tool.tool_router_key,
+                                  name: tool.name,
+                                  description: tool.description,
+                                });
+                              }}
+                              type="button"
+                            >
+                              <ToolsIcon className="h-3 w-3" />
+                              {formatText(tool.name)}
+                            </motion.button>
+                          ))}
                         {!debounceMessage && (
                           <span className="text-xs font-light text-gray-100">
                             <span className="font-medium">Shift + Enter</span>{' '}
@@ -872,6 +948,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     </div>
   );
 }
+
 export default function ConversationFooter() {
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);

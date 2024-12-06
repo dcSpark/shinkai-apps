@@ -7,6 +7,7 @@ export type SendMessageToJobInput = Token & {
   message: string;
   files?: File[];
   parent: string | null;
+  toolKey?: string;
 };
 
 export type SendMessageToJobOutput = JobMessageResponse;
