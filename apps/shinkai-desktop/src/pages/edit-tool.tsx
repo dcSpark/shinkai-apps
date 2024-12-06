@@ -44,7 +44,7 @@ import {
   Save,
 } from 'lucide-react';
 import { PrismEditor } from 'prism-react-editor';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, To, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -91,7 +91,11 @@ function EditToolPage() {
 
   const [isDirty, setIsDirty] = useState(false);
   const [toolResult, setToolResult] = useState<object | null>(null);
-  const [chatInboxId, setChatInboxId] = useState<string | undefined>(undefined);
+
+  const chatInboxId = playgroundTool
+    ? buildInboxIdFromJobId(playgroundTool.job_id)
+    : '';
+
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<
     string | undefined
   >(undefined);
@@ -121,6 +125,27 @@ function EditToolPage() {
     playgroundTool?.metadata?.parameters ?? {},
   );
 
+  const initialState = useMemo(
+    () => ({
+      metadata: playgroundTool?.metadata ?? null,
+      state: isPlaygroundToolPending
+        ? 'pending'
+        : isPlaygroundToolError || !isValidSchema
+          ? 'error'
+          : isPlaygroundToolSuccess
+            ? 'success'
+            : ('idle' as 'idle' | 'pending' | 'success' | 'error'),
+      error: isValidSchema ? null : 'Tool Metadata doesnt follow the schema',
+    }),
+    [
+      playgroundTool?.metadata,
+      isPlaygroundToolPending,
+      isPlaygroundToolSuccess,
+      isPlaygroundToolError,
+      isValidSchema,
+    ],
+  );
+
   const {
     isMetadataGenerationPending,
     isMetadataGenerationSuccess,
@@ -129,20 +154,10 @@ function EditToolPage() {
     metadataGenerationError,
     isMetadataGenerationError,
     forceGenerateMetadata,
-    // setMetadataData,
   } = useToolMetadata({
     chatInboxIdMetadata,
     code: toolCode,
-    initialState: {
-      metadata: playgroundTool?.metadata ?? null,
-      isMetadataGenerationPending: isPlaygroundToolPending,
-      isMetadataGenerationSuccess: isPlaygroundToolSuccess,
-      isMetadataGenerationIdle: false,
-      isMetadataGenerationError: isPlaygroundToolError || !isValidSchema,
-      metadataGenerationError: isValidSchema
-        ? null
-        : 'Tool Metadata doesnt follow the schema',
-    },
+    initialState,
   });
 
   const form = useForm<CreateToolCodeFormSchema>({
@@ -216,13 +231,6 @@ function EditToolPage() {
   }, [form, defaultAgentId]);
 
   useEffect(() => {
-    if (playgroundTool) {
-      setToolCode(playgroundTool.code);
-      setChatInboxId(buildInboxIdFromJobId(playgroundTool.job_id));
-    }
-  }, [playgroundTool]);
-
-  useEffect(() => {
     if (!toolCode || !forceGenerateMetadata.current) return;
     const run = async () => {
       await createToolMetadata(
@@ -250,7 +258,7 @@ function EditToolPage() {
   ]);
 
   const onSubmit = async (data: CreateToolCodeFormSchema) => {
-    if (!auth) return;
+    if (!auth || !chatInboxId) return;
     await createToolCode(
       {
         nodeAddress: auth.node_address,
@@ -258,10 +266,10 @@ function EditToolPage() {
         message: data.message,
         llmProviderId: data.llmProviderId,
         tools: data.tools,
+        jobId: playgroundTool?.job_id,
       },
       {
-        onSuccess: (data) => {
-          setChatInboxId(data.inbox);
+        onSuccess: () => {
           setToolCode('');
           forceGenerateMetadata.current = true;
           baseToolCodeRef.current = '';
@@ -647,7 +655,7 @@ function EditToolPage() {
 
                   <ResizablePanel className="flex flex-col">
                     <div className="flex size-full min-h-[220px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
-                      <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
+                      <div className="text-gray-80 flex h-full flex-col gap-1 py-3 text-xs">
                         <div className="flex items-center justify-between">
                           <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
                             <h2 className="flex font-mono font-semibold text-gray-50">
@@ -682,19 +690,16 @@ function EditToolPage() {
                               Generating...
                             </div>
                           )}
-                          {!isMetadataGenerationPending &&
-                            !isToolCodeGenerationPending &&
+                          {!isToolCodeGenerationPending &&
                             isMetadataGenerationError && (
                               <ToolErrorFallback
                                 error={new Error(metadataGenerationError ?? '')}
                                 resetErrorBoundary={regenerateToolMetadata}
                               />
                             )}
-                          {isMetadataGenerationSuccess &&
-                            !isToolCodeGenerationPending &&
-                            !isMetadataGenerationError &&
-                            isValidSchema && (
-                              <div className="text-gray-80 text-xs">
+                          {isMetadataGenerationSuccess && (
+                            <div className="text-gray-80 text-xs">
+                              {!isMetadataGenerationPending && (
                                 <JsonForm
                                   className="py-4"
                                   formData={formData}
@@ -712,54 +717,55 @@ function EditToolPage() {
                                   }}
                                   validator={validator}
                                 />
-                                <AnimatePresence>
-                                  {(isExecutingCode ||
-                                    isCodeExecutionError ||
-                                    isCodeExecutionSuccess) && (
-                                    <motion.div
-                                      animate={{ opacity: 1, x: 0 }}
-                                      className="flex flex-col border-t border-gray-200 bg-gray-300 py-2 pb-4"
-                                      exit={{ opacity: 0, x: 20 }}
-                                      initial={{ opacity: 0, x: 20 }}
-                                    >
-                                      {isExecutingCode && (
-                                        <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-                                          <Loader2 className="shrink-0 animate-spin" />
-                                          Running Tool...
-                                        </div>
-                                      )}
-                                      {isCodeExecutionError && (
-                                        <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
-                                          <p>
-                                            Tool execution failed. Try
-                                            generating the tool code again.
-                                          </p>
-                                          <pre className="whitespace-break-spaces px-4 text-center">
-                                            {codeExecutionError?.response?.data
-                                              ?.message ??
-                                              codeExecutionError?.message}
-                                          </pre>
-                                        </div>
-                                      )}
-                                      {isCodeExecutionSuccess && toolResult && (
-                                        <div className="py-2">
-                                          <ToolCodeEditor
-                                            language="json"
-                                            readOnly
-                                            style={{ height: '200px' }}
-                                            value={JSON.stringify(
-                                              toolResult,
-                                              null,
-                                              2,
-                                            )}
-                                          />
-                                        </div>
-                                      )}
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
-                              </div>
-                            )}
+                              )}
+                              <AnimatePresence>
+                                {(isExecutingCode ||
+                                  isCodeExecutionError ||
+                                  isCodeExecutionSuccess) && (
+                                  <motion.div
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className="flex flex-col border-t border-gray-200 bg-gray-300 py-2 pb-4"
+                                    exit={{ opacity: 0, x: 20 }}
+                                    initial={{ opacity: 0, x: 20 }}
+                                  >
+                                    {isExecutingCode && (
+                                      <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
+                                        <Loader2 className="shrink-0 animate-spin" />
+                                        Running Tool...
+                                      </div>
+                                    )}
+                                    {isCodeExecutionError && (
+                                      <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
+                                        <p>
+                                          Tool execution failed. Try generating
+                                          the tool code again.
+                                        </p>
+                                        <pre className="whitespace-break-spaces px-4 text-center">
+                                          {codeExecutionError?.response?.data
+                                            ?.message ??
+                                            codeExecutionError?.message}
+                                        </pre>
+                                      </div>
+                                    )}
+                                    {isCodeExecutionSuccess && toolResult && (
+                                      <div className="py-2">
+                                        <ToolCodeEditor
+                                          language="json"
+                                          readOnly
+                                          style={{ height: '200px' }}
+                                          value={JSON.stringify(
+                                            toolResult,
+                                            null,
+                                            2,
+                                          )}
+                                        />
+                                      </div>
+                                    )}
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                          )}
                           {isMetadataGenerationIdle &&
                             !isToolCodeGenerationPending && (
                               <div>

@@ -1,6 +1,5 @@
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
-import { useMemo, useRef, useState } from 'react';
-import { z } from 'zod';
+import { useEffect, useRef, useState } from 'react';
 
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
@@ -14,17 +13,20 @@ export const useToolMetadata = ({
   code?: string;
   initialState?: {
     metadata: ToolMetadata | null;
-    isMetadataGenerationPending?: boolean;
-    isMetadataGenerationSuccess?: boolean;
-    isMetadataGenerationIdle?: boolean;
-    isMetadataGenerationError?: boolean;
-    metadataGenerationError?: string | null;
+    state?: 'idle' | 'pending' | 'success' | 'error';
+    error?: string | null;
   };
 }) => {
   const [metadataData, setMetadataData] = useState<ToolMetadata | null>(
     initialState?.metadata ?? null,
   );
   const auth = useAuth((state) => state.auth);
+  const [error, setError] = useState<string | null>(
+    initialState?.error ?? null,
+  );
+  const [metadataState, setMetadataState] = useState<
+    'idle' | 'pending' | 'success' | 'error'
+  >(initialState?.state ?? 'idle');
 
   const forceGenerateMetadata = useRef(false);
 
@@ -34,83 +36,64 @@ export const useToolMetadata = ({
       forceRefetchInterval: true,
     });
 
-  const {
-    isMetadataGenerationPending,
-    isMetadataGenerationSuccess,
-    isMetadataGenerationIdle,
-    metadataGenerationData,
-    metadataGenerationError,
-    isMetadataGenerationError,
-  } = useMemo(() => {
+  useEffect(() => {
+    setMetadataData(initialState?.metadata ?? null);
+    setError(initialState?.error ?? null);
+    setMetadataState(initialState?.state ?? 'idle');
+  }, [initialState?.error, initialState?.metadata, initialState?.state]);
+
+  useEffect(() => {
     const metadata = metadataChatConversation?.pages?.at(-1)?.at(-1);
 
-    if (initialState && !metadata) {
-      return {
-        isMetadataGenerationPending:
-          initialState.isMetadataGenerationPending ?? false,
-        isMetadataGenerationSuccess:
-          initialState.isMetadataGenerationSuccess ?? false,
-        isMetadataGenerationIdle: initialState.isMetadataGenerationIdle ?? true,
-        metadataGenerationData: metadataData,
-        isMetadataGenerationError:
-          initialState.isMetadataGenerationError ?? false,
-        metadataGenerationError: initialState.metadataGenerationError ?? null,
-      };
+    if (!metadata) {
+      return;
     }
-    const isMetadataGenerationIdle = metadata == null;
-    const isMetadataGenerationPending =
-      metadata?.role === 'assistant' && metadata?.status.type === 'running';
-    const isMetadataGenerationSuccess =
-      metadata?.role === 'assistant' && metadata?.status.type === 'complete';
-    let metadataGenerationData = null;
-    let metadataGenerationError: null | string = null;
-    if (isMetadataGenerationSuccess) {
+
+    if (metadata?.role === 'assistant' && metadata?.status.type === 'running') {
+      setMetadataState('pending');
+      return;
+    }
+
+    if (
+      metadata?.role === 'assistant' &&
+      metadata?.status.type === 'complete'
+    ) {
       const jsonCodeMatch = metadata.content.match(/```json\n([\s\S]*?)\n```/);
       if (jsonCodeMatch) {
         try {
           const parsedJson = JSON.parse(jsonCodeMatch[1].trim());
-          const parsedmetadataGenerationData = ToolMetadataSchema.parse(
+          const parsedMetadata = ToolMetadataSchema.parse(
             parsedJson,
           ) as ToolMetadata;
-          metadataGenerationData = {
-            ...parsedmetadataGenerationData,
+          setMetadataData({
+            ...parsedMetadata,
             author: auth?.shinkai_identity ?? '',
-          };
-          setMetadataData(metadataGenerationData);
+          });
+          setMetadataState('success');
+          setError(null);
         } catch (error) {
-          if (error instanceof Error) {
-            metadataGenerationError = 'Invalid Metadata: ' + error.message;
-          }
-          if (error instanceof z.ZodError) {
-            metadataGenerationError =
-              'Invalid Metadata: ' +
-              error.issues.map((issue) => issue.message).join(', ');
-          }
+          setMetadataState('error');
+          setError(
+            error instanceof Error
+              ? 'Invalid Metadata: ' + error.message
+              : 'Invalid Metadata: Unknown Error',
+          );
         }
       } else {
-        metadataGenerationError = 'No JSON code found';
+        setMetadataState('error');
+        setError('No JSON code found');
       }
+      return;
     }
-
-    return {
-      metadataMessageContent: metadata?.content,
-      isMetadataGenerationPending,
-      isMetadataGenerationSuccess,
-      isMetadataGenerationIdle,
-      metadataGenerationData,
-      isMetadataGenerationError: metadataGenerationError != null,
-      metadataGenerationError,
-    };
-  }, [initialState, metadataChatConversation?.pages]);
+  }, [auth?.shinkai_identity, metadataChatConversation?.pages]);
 
   return {
-    isMetadataGenerationPending,
-    isMetadataGenerationSuccess,
-    isMetadataGenerationIdle,
-    metadataGenerationData,
-    metadataGenerationError,
-    isMetadataGenerationError,
+    isMetadataGenerationIdle: metadataState === 'idle',
+    isMetadataGenerationPending: metadataState === 'pending',
+    isMetadataGenerationSuccess: metadataState === 'success',
+    isMetadataGenerationError: metadataState === 'error',
+    metadataGenerationError: error,
+    metadataGenerationData: metadataData,
     forceGenerateMetadata,
-    setMetadataData,
   };
 };

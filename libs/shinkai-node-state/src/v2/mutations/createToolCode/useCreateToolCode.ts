@@ -21,13 +21,13 @@ export const useCreateToolCode = (options?: Options) => {
     mutationFn: createToolCode,
     ...options,
     onSuccess: (response, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+          { inboxId: response.inbox },
+        ],
+      });
       if (options?.onSuccess) {
-        queryClient.invalidateQueries({
-          queryKey: [
-            FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
-            { inboxId: response.inbox },
-          ],
-        });
         options.onSuccess(response, variables, context);
       }
     },
