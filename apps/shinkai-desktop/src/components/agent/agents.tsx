@@ -188,7 +188,7 @@ const AgentCard = ({
                   name: t('common.edit'),
                   icon: <Edit className="mr-3 h-4 w-4" />,
                   onClick: () => {
-                    navigate(`/edit/${agentId}`);
+                    navigate(`/agents/edit/${agentId}`);
                   },
                 },
                 {

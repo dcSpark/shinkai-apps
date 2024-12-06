@@ -19,7 +19,8 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { AIAgentIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { BotIcon, ChevronDownIcon } from 'lucide-react';
+import { BoltIcon, BotIcon, ChevronDownIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useGetCurrentInbox } from '../../../hooks/use-current-inbox';
@@ -80,14 +81,39 @@ export function AIModelSelector({
               {isAgentsSuccess &&
                 agents.map((agent) => (
                   <DropdownMenuRadioItem
-                    className="flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
+                    className="flex cursor-pointer items-center justify-between gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
                     key={agent.name}
                     value={agent.name}
                   >
-                    <AIAgentIcon className="h-3.5 w-3.5 shrink-0" />
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs">{agent.name}</span>
+                    <div className="inline-flex gap-1.5">
+                      <AIAgentIcon className="h-3.5 w-3.5 shrink-0" />
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xs">{agent.name}</span>
+                      </div>
                     </div>
+                    <Tooltip>
+                      <TooltipTrigger
+                        asChild
+                        className="flex shrink-0 items-center gap-1"
+                      >
+                        <Link
+                          className="text-gray-80 size-3.5 rounded-lg hover:text-white"
+                          to={`/agents/edit/${agent.name}`}
+                        >
+                          <BoltIcon className="size-full" />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent
+                          align="center"
+                          alignOffset={-10}
+                          className="z-[2000000001] max-w-md"
+                          side="top"
+                        >
+                          <p>Configure Agent</p>
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
                   </DropdownMenuRadioItem>
                 ))}
               {isAgentsSuccess && agents.length > 0 && (

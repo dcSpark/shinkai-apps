@@ -270,7 +270,7 @@ const AppRoutes = () => {
           <Route element={<AIsPage />} path="ais" />
           <Route element={<AddAIPage />} path="add-ai" />
           <Route element={<AddAgentPage />} path="add-agent" />
-          <Route element={<EditAgentPage />} path="edit/:agentId" />
+          <Route element={<EditAgentPage />} path="/agents/edit/:agentId" />
         </Route>
         <Route
           element={
