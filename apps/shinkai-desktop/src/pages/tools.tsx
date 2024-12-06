@@ -79,9 +79,9 @@ export const Tools = () => {
             className={cn(
               buttonVariants({
                 variant: 'default',
-                size: 'sm',
+                size: 'auto',
               }),
-              'gap-2 px-3',
+              'h-[30px] gap-2 rounded-lg px-3 text-xs',
             )}
             to="/tools/create"
           >
@@ -326,7 +326,11 @@ function ImportToolModal() {
   return (
     <Dialog onOpenChange={setImportModalOpen} open={isImportModalOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-2 px-3" size="sm" variant="outline">
+        <Button
+          className="h-[30px] gap-2 rounded-lg px-3 text-xs"
+          size="auto"
+          variant="outline"
+        >
           <CloudDownloadIcon className="size-4" />
           Import Tool
         </Button>

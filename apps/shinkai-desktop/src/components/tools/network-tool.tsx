@@ -142,7 +142,7 @@ export default function NetworkTool({
   return (
     <SubpageLayout alignLeft title={formatText(tool.name)}>
       <Button
-        className="absolute right-0 top-9 flex items-center gap-2 bg-gray-500"
+        className="absolute right-0 top-9 flex h-[30px] items-center gap-2 rounded-lg bg-gray-500 text-xs"
         disabled={isExportingTool}
         isLoading={isExportingTool}
         onClick={() => {
