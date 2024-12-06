@@ -24,7 +24,6 @@ import SyntaxHighlighter, {
   PrismAsyncLight,
   PrismLight,
   SyntaxHighlighterProps as SHP,
-  SyntaxHighlighterProps,
 } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import python from 'react-syntax-highlighter/dist/esm/languages/prism/python';
@@ -174,7 +173,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   ),
   p: ({ node, className, ...props }) => (
     <p
-      className={cn('mb-5 mt-5 leading-5 first:mt-0 last:mb-0', className)}
+      className={cn('mb-5 mt-5 text-sm first:mt-0 last:mb-0', className)}
       {...props}
     />
   ),
@@ -419,6 +418,15 @@ export type CodeOverrideProps = ComponentPropsWithoutRef<CodeComponent> & {
       }
     >;
   };
+};
+
+export type SyntaxHighlighterProps = {
+  components: {
+    Pre: PreComponent;
+    Code: CodeComponent;
+  };
+  language: string;
+  code: string;
 };
 
 export type CodeBlockProps = {
