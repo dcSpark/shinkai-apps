@@ -12,6 +12,7 @@ export const sendMessageToJob = async ({
   message,
   parent,
   files,
+  toolKey,
 }: SendMessageToJobInput) => {
   let folderId = '';
   if (files && files.length > 0) {
@@ -24,6 +25,7 @@ export const sendMessageToJob = async ({
       job_id: jobId,
       files_inbox: folderId,
       parent: parent,
+      tool_key: toolKey,
     },
   });
 };

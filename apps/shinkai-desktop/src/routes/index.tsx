@@ -1,4 +1,5 @@
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
+import { TooltipProvider } from '@shinkai_network/shinkai-ui';
 import { listen } from '@tauri-apps/api/event';
 import { debug } from '@tauri-apps/plugin-log';
 import React, { useEffect, useRef } from 'react';
@@ -204,13 +205,15 @@ const AppRoutes = () => {
         <Route
           element={
             <ProtectedRoute>
-              <ChatProvider>
-                <SetJobScopeProvider>
-                  <PromptSelectionProvider>
-                    <ChatLayout />
-                  </PromptSelectionProvider>
-                </SetJobScopeProvider>
-              </ChatProvider>
+              <TooltipProvider delayDuration={0}>
+                <ChatProvider>
+                  <SetJobScopeProvider>
+                    <PromptSelectionProvider>
+                      <ChatLayout />
+                    </PromptSelectionProvider>
+                  </SetJobScopeProvider>
+                </ChatProvider>
+              </TooltipProvider>
             </ProtectedRoute>
           }
           path="inboxes"

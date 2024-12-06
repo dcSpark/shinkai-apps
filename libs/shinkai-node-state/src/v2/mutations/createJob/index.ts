@@ -13,6 +13,7 @@ export const createJob = async ({
   llmProvider,
   sheetId,
   content,
+  toolKey,
   isHidden,
   files,
   selectedVRFiles,
@@ -52,6 +53,7 @@ export const createJob = async ({
       job_id: jobId,
       files_inbox: folderId,
       parent: '',
+      tool_key: toolKey,
     },
   });
 

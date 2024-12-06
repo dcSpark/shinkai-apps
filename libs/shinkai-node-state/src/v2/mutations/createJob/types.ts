@@ -11,6 +11,7 @@ export type CreateJobInput = Token & {
   sheetId?: string;
   content: string;
   isHidden: boolean;
+  toolKey?: string;
   files?: File[];
   selectedVRFiles?: VectorFSItemScopeEntry[];
   selectedVRFolders?: VectorFSFolderScopeEntry[];
