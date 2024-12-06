@@ -520,26 +520,35 @@ function ConversationEmptyFooter() {
                           isSearchToolListSuccess &&
                           searchToolList?.length > 0 &&
                           searchToolList?.map((tool) => (
-                            <motion.button
-                              animate={{ opacity: 1, x: 0 }}
-                              className={cn(
-                                'bg-gray-375 hover:bg-gray-450 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
-                              )}
-                              exit={{ opacity: 0, x: -10 }}
-                              initial={{ opacity: 0, x: -10 }}
-                              key={tool.tool_router_key}
-                              onClick={() => {
-                                chatForm.setValue('tool', {
-                                  key: tool.tool_router_key,
-                                  name: tool.name,
-                                  description: tool.description,
-                                });
-                              }}
-                              type="button"
-                            >
-                              <ToolsIcon className="h-3 w-3" />
-                              {formatText(tool.name)}
-                            </motion.button>
+                            <Tooltip key={tool.tool_router_key}>
+                              <TooltipTrigger asChild>
+                                <motion.button
+                                  animate={{ opacity: 1, x: 0 }}
+                                  className={cn(
+                                    'bg-gray-375 hover:bg-gray-450 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
+                                  )}
+                                  exit={{ opacity: 0, x: -10 }}
+                                  initial={{ opacity: 0, x: -10 }}
+                                  key={tool.tool_router_key}
+                                  onClick={() => {
+                                    chatForm.setValue('tool', {
+                                      key: tool.tool_router_key,
+                                      name: tool.name,
+                                      description: tool.description,
+                                    });
+                                  }}
+                                  type="button"
+                                >
+                                  <ToolsIcon className="h-3 w-3" />
+                                  {formatText(tool.name)}
+                                </motion.button>
+                              </TooltipTrigger>
+                              <TooltipPortal>
+                                <TooltipContent align="start" side="top">
+                                  {tool.description}
+                                </TooltipContent>
+                              </TooltipPortal>
+                            </Tooltip>
                           ))}
                         {!debounceMessage && (
                           <span className="text-xs font-light text-gray-100">
@@ -904,26 +913,35 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                           isSearchToolListSuccess &&
                           searchToolList?.length > 0 &&
                           searchToolList?.map((tool) => (
-                            <motion.button
-                              animate={{ opacity: 1, x: 0 }}
-                              className={cn(
-                                'bg-gray-375 hover:bg-gray-450 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
-                              )}
-                              exit={{ opacity: 0, x: -10 }}
-                              initial={{ opacity: 0, x: -10 }}
-                              key={tool.tool_router_key}
-                              onClick={() => {
-                                chatForm.setValue('tool', {
-                                  key: tool.tool_router_key,
-                                  name: tool.name,
-                                  description: tool.description,
-                                });
-                              }}
-                              type="button"
-                            >
-                              <ToolsIcon className="h-3 w-3" />
-                              {formatText(tool.name)}
-                            </motion.button>
+                            <Tooltip key={tool.tool_router_key}>
+                              <TooltipTrigger asChild>
+                                <motion.button
+                                  animate={{ opacity: 1, x: 0 }}
+                                  className={cn(
+                                    'bg-gray-375 hover:bg-gray-450 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
+                                  )}
+                                  exit={{ opacity: 0, x: -10 }}
+                                  initial={{ opacity: 0, x: -10 }}
+                                  key={tool.tool_router_key}
+                                  onClick={() => {
+                                    chatForm.setValue('tool', {
+                                      key: tool.tool_router_key,
+                                      name: tool.name,
+                                      description: tool.description,
+                                    });
+                                  }}
+                                  type="button"
+                                >
+                                  <ToolsIcon className="h-3 w-3" />
+                                  {formatText(tool.name)}
+                                </motion.button>
+                              </TooltipTrigger>
+                              <TooltipPortal>
+                                <TooltipContent align="start" side="top">
+                                  {tool.description}
+                                </TooltipContent>
+                              </TooltipPortal>
+                            </Tooltip>
                           ))}
                         {!debounceMessage && (
                           <span className="text-xs font-light text-gray-100">
