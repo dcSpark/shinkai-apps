@@ -2,9 +2,17 @@ import { WidgetToolState } from '@shinkai_network/shinkai-message-ts/api/general
 import React, { createContext, useContext, useState } from 'react';
 import { createStore, useStore } from 'zustand';
 
+type FormattedTool = {
+  key: string;
+  name: string;
+  description: string;
+};
+
 type ToolsStore = {
   widget: WidgetToolState | null;
   setWidget: (widget: WidgetToolState | null) => void;
+  selectedTool: FormattedTool | null;
+  setSelectedTool: (selectedTool: FormattedTool | null) => void;
 };
 
 const createToolsStore = () =>
@@ -12,6 +20,9 @@ const createToolsStore = () =>
     // TODO:  external widgets eg: PaymentCard, later we should unify to toolCalls
     widget: null,
     setWidget: (widget) => set({ widget }),
+    // selected tool for chat conversation
+    selectedTool: null,
+    setSelectedTool: (selectedTool) => set({ selectedTool }),
   }));
 
 const ToolsContext = createContext<ReturnType<typeof createToolsStore> | null>(

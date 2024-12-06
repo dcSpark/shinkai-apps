@@ -215,7 +215,14 @@ const AppRoutes = () => {
           }
           path="inboxes"
         >
-          <Route element={<EmptyMessage />} index />
+          <Route
+            element={
+              <ToolsProvider>
+                <EmptyMessage />
+              </ToolsProvider>
+            }
+            index
+          />
           <Route
             element={
               <ToolsProvider>

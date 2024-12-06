@@ -1,38 +1,38 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslation } from '@shinkai_network/shinkai-i18n';
+// import { zodResolver } from '@hookform/resolvers/zod';
+// import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   RustShinkaiTool,
   ShinkaiTool,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import {
-  Button,
-  buttonVariants,
-  Form,
-  FormField,
+  // Button,
+  // buttonVariants,
+  // Form,
+  // FormField,
   Switch,
-  TextField,
+  // TextField,
 } from '@shinkai_network/shinkai-ui';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { useForm } from 'react-hook-form';
-import { Link, useParams } from 'react-router-dom';
+// import { cn } from '@shinkai_network/shinkai-ui/utils';
+// import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
+// import { z } from 'zod';
 import { SubpageLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
 
-const jsToolSchema = z.object({
-  config: z.array(
-    z.object({
-      key_name: z.string(),
-      key_value: z.string().optional(),
-      required: z.boolean(),
-    }),
-  ),
-});
-type JsToolFormSchema = z.infer<typeof jsToolSchema>;
+// const jsToolSchema = z.object({
+//   config: z.array(
+//     z.object({
+//       key_name: z.string(),
+//       key_value: z.string().optional(),
+//       required: z.boolean(),
+//     }),
+//   ),
+// });
+// type JsToolFormSchema = z.infer<typeof jsToolSchema>;
 
 export default function RustTool({
   tool,
@@ -45,8 +45,8 @@ export default function RustTool({
 }) {
   const auth = useAuth((state) => state.auth);
 
-  const { t } = useTranslation();
-  const { mutateAsync: updateTool, isPending } = useUpdateTool({
+  // const { t } = useTranslation();
+  const { mutateAsync: updateTool } = useUpdateTool({
     onSuccess: (_, variables) => {
       if (
         'config' in variables.toolPayload &&
@@ -58,44 +58,44 @@ export default function RustTool({
   });
   const { toolKey } = useParams();
 
-  const form = useForm<JsToolFormSchema>({
-    resolver: zodResolver(jsToolSchema),
-    defaultValues: {
-      // config: tool.config.map((conf) => ({
-      //   key_name: conf.BasicConfig.key_name,
-      //   key_value: conf.BasicConfig.key_value ?? '',
-      //   required: conf.BasicConfig.required,
-      // })),
-    },
-  });
-
-  const onSubmit = async (data: JsToolFormSchema) => {
-    let enabled = isEnabled;
-
-    if (
-      data.config.every(
-        (conf) => !conf.required || (conf.required && conf.key_value !== ''),
-      )
-    ) {
-      enabled = true;
-    }
-
-    await updateTool({
-      toolKey: toolKey ?? '',
-      toolType: 'Rust',
-      toolPayload: {
-        config: data.config.map((conf) => ({
-          BasicConfig: {
-            key_name: conf.key_name,
-            key_value: conf.key_value,
-          },
-        })),
-      } as ShinkaiTool,
-      isToolEnabled: enabled,
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-    });
-  };
+  // const form = useForm<JsToolFormSchema>({
+  //   resolver: zodResolver(jsToolSchema),
+  //   defaultValues: {
+  //     // config: tool.config.map((conf) => ({
+  //     //   key_name: conf.BasicConfig.key_name,
+  //     //   key_value: conf.BasicConfig.key_value ?? '',
+  //     //   required: conf.BasicConfig.required,
+  //     // })),
+  //   },
+  // });
+  //
+  // const onSubmit = async (data: JsToolFormSchema) => {
+  //   let enabled = isEnabled;
+  //
+  //   if (
+  //     data.config.every(
+  //       (conf) => !conf.required || (conf.required && conf.key_value !== ''),
+  //     )
+  //   ) {
+  //     enabled = true;
+  //   }
+  //
+  //   await updateTool({
+  //     toolKey: toolKey ?? '',
+  //     toolType: 'Rust',
+  //     toolPayload: {
+  //       config: data.config.map((conf) => ({
+  //         BasicConfig: {
+  //           key_name: conf.key_name,
+  //           key_value: conf.key_value,
+  //         },
+  //       })),
+  //     } as ShinkaiTool,
+  //     isToolEnabled: enabled,
+  //     nodeAddress: auth?.node_address ?? '',
+  //     token: auth?.api_v2_key ?? '',
+  //   });
+  // };
 
   return (
     <SubpageLayout alignLeft title={formatText(tool.name)}>
