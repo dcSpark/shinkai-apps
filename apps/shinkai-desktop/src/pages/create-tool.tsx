@@ -1124,7 +1124,7 @@ export function ToolSelectionModal({
                                     )
                                   : [...field.value, tool.tool_router_key],
                               );
-                              console.log(tool.config, 'tool.config');
+
                               return;
                             }
                             toast.error('Tool configuration is required', {
