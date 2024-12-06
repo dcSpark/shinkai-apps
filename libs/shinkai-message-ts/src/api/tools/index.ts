@@ -11,6 +11,8 @@ import {
   DeletePromptRequest,
   ExecuteToolCodeRequest,
   ExecuteToolCodeResponse,
+  ExportToolRequest,
+  ExportToolResponse,
   GetAllPromptsResponse,
   GetPlaygroundToolRequest,
   GetPlaygroundToolResponse,
@@ -18,6 +20,8 @@ import {
   GetToolResponse,
   GetToolsResponse,
   GetToolsSearchResponse,
+  ImportToolRequest,
+  ImportToolResponse,
   PayInvoiceRequest,
   SaveToolCodeRequest,
   SaveToolCodeResponse,
@@ -329,4 +333,36 @@ export const updateToolCodeImplementation = async (
     },
   );
   return response.data as UpdateToolCodeImplementationResponse;
+};
+
+export const importTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: ImportToolRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/import_tool'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as ImportToolResponse;
+};
+
+export const exportTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: ExportToolRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/export_tool'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      params: { tool_key_path: payload.toolKey },
+      responseType: 'blob',
+    },
+  );
+  return response.data as ExportToolResponse;
 };
