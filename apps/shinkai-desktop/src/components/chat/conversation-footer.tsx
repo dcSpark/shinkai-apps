@@ -40,7 +40,6 @@ import {
   Tooltip,
   TooltipContent,
   TooltipPortal,
-  TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
@@ -357,35 +356,34 @@ function ConversationEmptyFooter() {
                           }}
                           value={chatForm.watch('agent')}
                         />
-                        <TooltipProvider delayDuration={0}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div
-                                {...getRootFileProps({
-                                  className: cn(
-                                    actionButtonClassnames,
-                                    'relative shrink-0',
-                                  ),
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div
+                              {...getRootFileProps({
+                                className: cn(
+                                  actionButtonClassnames,
+                                  'relative shrink-0',
+                                ),
+                              })}
+                            >
+                              <Paperclip className="h-full w-full" />
+                              <input
+                                {...chatForm.register('files')}
+                                {...getInputFileProps({
+                                  onChange: chatForm.register('files').onChange,
                                 })}
-                              >
-                                <Paperclip className="h-full w-full" />
-                                <input
-                                  {...chatForm.register('files')}
-                                  {...getInputFileProps({
-                                    onChange:
-                                      chatForm.register('files').onChange,
-                                  })}
-                                />
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipPortal>
-                              <TooltipContent align="center" side="top">
-                                {t('common.uploadFile')} <br />
-                                {allowedFileExtensions.join(', ')}
-                              </TooltipContent>
-                            </TooltipPortal>
-                          </Tooltip>
-                        </TooltipProvider>
+                              />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent align="center" side="top">
+                              {t('common.uploadFile')} <br />
+                              {allowedFileExtensions.join(', ')}
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+
                         <PromptSelectionActionBar />
                       </div>
                       {!isAgentInbox && (
@@ -426,32 +424,31 @@ function ConversationEmptyFooter() {
                         <>
                           {selectedTool && (
                             <div className="bg-gray-375 relative max-w-full rounded-lg p-1.5 px-2">
-                              <TooltipProvider delayDuration={0}>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div className="flex items-center gap-2 pr-6">
-                                      <ToolsIcon className="h-3.5 w-3.5" />
-                                      <div className="line-clamp-1 inline-flex items-center gap-2 text-xs text-gray-100">
-                                        <span className="text-white">
-                                          {formatText(selectedTool.name)}{' '}
-                                        </span>
-                                        <InfoCircleIcon className="h-3 w-3 shrink-0" />
-                                      </div>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-2 pr-6">
+                                    <ToolsIcon className="h-3.5 w-3.5" />
+                                    <div className="line-clamp-1 inline-flex items-center gap-2 text-xs text-gray-100">
+                                      <span className="text-white">
+                                        {formatText(selectedTool.name)}{' '}
+                                      </span>
+                                      <InfoCircleIcon className="h-3 w-3 shrink-0" />
                                     </div>
-                                  </TooltipTrigger>
-                                  <TooltipPortal>
-                                    <TooltipContent
-                                      align="start"
-                                      alignOffset={-10}
-                                      className="max-w-[400px]"
-                                      side="top"
-                                      sideOffset={10}
-                                    >
-                                      {selectedTool.description}
-                                    </TooltipContent>
-                                  </TooltipPortal>
-                                </Tooltip>
-                              </TooltipProvider>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipPortal>
+                                  <TooltipContent
+                                    align="start"
+                                    alignOffset={-10}
+                                    className="max-w-[400px]"
+                                    side="top"
+                                    sideOffset={10}
+                                  >
+                                    {selectedTool.description}
+                                  </TooltipContent>
+                                </TooltipPortal>
+                              </Tooltip>
+
                               <button
                                 className="absolute right-2 top-1.5 text-gray-100 hover:text-white"
                                 onClick={() => {
@@ -740,36 +737,35 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                     <div className="flex items-center justify-between gap-4 px-1 pb-2 pt-1">
                       <div className="flex items-center gap-2.5">
                         <AiUpdateSelectionActionBar />
-                        <TooltipProvider delayDuration={0}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div
-                                {...getRootFileProps({
-                                  className: cn(
-                                    actionButtonClassnames,
-                                    'relative shrink-0',
-                                  ),
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div
+                              {...getRootFileProps({
+                                className: cn(
+                                  actionButtonClassnames,
+                                  'relative shrink-0',
+                                ),
+                              })}
+                            >
+                              <Paperclip className="h-full w-full" />
+                              <input
+                                {...chatForm.register('files')}
+                                {...getInputFileProps({
+                                  onChange: chatForm.register('files').onChange,
                                 })}
-                              >
-                                <Paperclip className="h-full w-full" />
-                                <input
-                                  {...chatForm.register('files')}
-                                  {...getInputFileProps({
-                                    onChange:
-                                      chatForm.register('files').onChange,
-                                  })}
-                                />
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipPortal>
-                              <TooltipContent align="center" side="top">
-                                {t('common.uploadFile')}
-                                <br />
-                                {allowedFileExtensions.join(', ')}
-                              </TooltipContent>
-                            </TooltipPortal>
-                          </Tooltip>
-                        </TooltipProvider>
+                              />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent align="center" side="top">
+                              {t('common.uploadFile')}
+                              <br />
+                              {allowedFileExtensions.join(', ')}
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+
                         <PromptSelectionActionBar />
                       </div>
 
@@ -812,32 +808,31 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                         <>
                           {selectedTool && (
                             <div className="bg-gray-375 relative max-w-full rounded-lg p-1.5 px-2">
-                              <TooltipProvider delayDuration={0}>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div className="flex items-center gap-2 pr-6">
-                                      <ToolsIcon className="h-3.5 w-3.5" />
-                                      <div className="line-clamp-1 inline-flex items-center gap-2 text-xs text-gray-100">
-                                        <span className="text-white">
-                                          {formatText(selectedTool.name)}{' '}
-                                        </span>
-                                        <InfoCircleIcon className="h-3 w-3 shrink-0" />
-                                      </div>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-2 pr-6">
+                                    <ToolsIcon className="h-3.5 w-3.5" />
+                                    <div className="line-clamp-1 inline-flex items-center gap-2 text-xs text-gray-100">
+                                      <span className="text-white">
+                                        {formatText(selectedTool.name)}{' '}
+                                      </span>
+                                      <InfoCircleIcon className="h-3 w-3 shrink-0" />
                                     </div>
-                                  </TooltipTrigger>
-                                  <TooltipPortal>
-                                    <TooltipContent
-                                      align="start"
-                                      alignOffset={-10}
-                                      className="max-w-[400px]"
-                                      side="top"
-                                      sideOffset={10}
-                                    >
-                                      {selectedTool.description}
-                                    </TooltipContent>
-                                  </TooltipPortal>
-                                </Tooltip>
-                              </TooltipProvider>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipPortal>
+                                  <TooltipContent
+                                    align="start"
+                                    alignOffset={-10}
+                                    className="max-w-[400px]"
+                                    side="top"
+                                    sideOffset={10}
+                                  >
+                                    {selectedTool.description}
+                                  </TooltipContent>
+                                </TooltipPortal>
+                              </Tooltip>
+
                               <button
                                 className="absolute right-2 top-1.5 text-gray-100 hover:text-white"
                                 onClick={() => {

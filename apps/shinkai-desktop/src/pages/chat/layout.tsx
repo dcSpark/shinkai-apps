@@ -33,7 +33,6 @@ import {
   Tooltip,
   TooltipContent,
   TooltipPortal,
-  TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
@@ -377,50 +376,48 @@ const ChatLayout = () => {
   const showArtifactPanel = selectedArtifact != null;
 
   return (
-    <TooltipProvider delayDuration={0}>
-      <div className={cn('flex h-screen')}>
-        <AnimatePresence initial={false}>
-          {!isChatSidebarCollapsed && (
-            <motion.div
-              animate={{ width: 240, opacity: 1 }}
-              className="flex h-full shrink-0 flex-col overflow-hidden border-r border-gray-300"
-              exit={{ width: 0, opacity: 0 }}
-              initial={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <ChatSidebar />
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel className="flex h-full flex-col">
-            <Outlet />
+    <div className={cn('flex h-screen')}>
+      <AnimatePresence initial={false}>
+        {!isChatSidebarCollapsed && (
+          <motion.div
+            animate={{ width: 240, opacity: 1 }}
+            className="flex h-full shrink-0 flex-col overflow-hidden border-r border-gray-300"
+            exit={{ width: 0, opacity: 0 }}
+            initial={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ChatSidebar />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel className="flex h-full flex-col">
+          <Outlet />
+        </ResizablePanel>
+        {showArtifactPanel && <ResizableHandle className="bg-gray-300" />}
+        {showArtifactPanel && (
+          <ResizablePanel
+            collapsible
+            defaultSize={42}
+            maxSize={70}
+            minSize={40}
+          >
+            <AnimatePresence initial={false} mode="popLayout">
+              {showArtifactPanel && (
+                <motion.div
+                  animate={{ opacity: 1, filter: 'blur(0px)' }}
+                  className="h-full"
+                  initial={{ opacity: 0, filter: 'blur(5px)' }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ArtifactPreview />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </ResizablePanel>
-          {showArtifactPanel && <ResizableHandle className="bg-gray-300" />}
-          {showArtifactPanel && (
-            <ResizablePanel
-              collapsible
-              defaultSize={42}
-              maxSize={70}
-              minSize={40}
-            >
-              <AnimatePresence initial={false} mode="popLayout">
-                {showArtifactPanel && (
-                  <motion.div
-                    animate={{ opacity: 1, filter: 'blur(0px)' }}
-                    className="h-full"
-                    initial={{ opacity: 0, filter: 'blur(5px)' }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ArtifactPreview />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </ResizablePanel>
-          )}
-        </ResizablePanelGroup>
-      </div>
-    </TooltipProvider>
+        )}
+      </ResizablePanelGroup>
+    </div>
   );
 };
 

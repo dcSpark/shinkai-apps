@@ -26,7 +26,6 @@ import {
   Tooltip,
   TooltipContent,
   TooltipPortal,
-  TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
@@ -417,71 +416,66 @@ export const MessageBase = ({
                 >
                   <div className="flex items-center gap-1.5">
                     {message.role === 'user' && !disabledEdit && (
-                      <TooltipProvider delayDuration={0}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              className={cn(
-                                'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
-                              )}
-                              onClick={() => {
-                                setEditing(true);
-                              }}
-                            >
-                              <Edit3 />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipPortal>
-                            <TooltipContent>
-                              <p>{t('common.editMessage')}</p>
-                            </TooltipContent>
-                          </TooltipPortal>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                    {message.role === 'assistant' && !disabledRetry && (
-                      <TooltipProvider delayDuration={0}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              className={cn(
-                                'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
-                              )}
-                              onClick={handleRetryMessage}
-                            >
-                              <RotateCcw />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipPortal>
-                            <TooltipContent>
-                              <p>{t('common.retry')}</p>
-                            </TooltipContent>
-                          </TooltipPortal>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                    <TooltipProvider delayDuration={0}>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div>
-                            <CopyToClipboardIcon
-                              className={cn(
-                                'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
-                              )}
-                              string={extractErrorPropertyOrContent(
-                                message.content,
-                                'error_message',
-                              )}
-                            />
-                          </div>
+                          <button
+                            className={cn(
+                              'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                            )}
+                            onClick={() => {
+                              setEditing(true);
+                            }}
+                          >
+                            <Edit3 />
+                          </button>
                         </TooltipTrigger>
                         <TooltipPortal>
                           <TooltipContent>
-                            <p>{t('common.copy')}</p>
+                            <p>{t('common.editMessage')}</p>
                           </TooltipContent>
                         </TooltipPortal>
                       </Tooltip>
-                    </TooltipProvider>
+                    )}
+                    {message.role === 'assistant' && !disabledRetry && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            className={cn(
+                              'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                            )}
+                            onClick={handleRetryMessage}
+                          >
+                            <RotateCcw />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipPortal>
+                          <TooltipContent>
+                            <p>{t('common.retry')}</p>
+                          </TooltipContent>
+                        </TooltipPortal>
+                      </Tooltip>
+                    )}
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div>
+                          <CopyToClipboardIcon
+                            className={cn(
+                              'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                            )}
+                            string={extractErrorPropertyOrContent(
+                              message.content,
+                              'error_message',
+                            )}
+                          />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent>
+                          <p>{t('common.copy')}</p>
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
                   </div>
                   <div
                     className={cn(

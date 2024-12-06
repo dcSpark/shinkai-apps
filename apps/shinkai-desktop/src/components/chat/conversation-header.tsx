@@ -8,7 +8,6 @@ import {
   Tooltip,
   TooltipContent,
   TooltipPortal,
-  TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { FilesIcon } from '@shinkai_network/shinkai-ui/assets';
@@ -38,36 +37,34 @@ const ConversationHeaderEmpty = () => {
   return (
     <div className="flex h-[58px] items-center justify-between border-b border-gray-400 px-4 py-2">
       <div className="inline-flex items-center gap-2">
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className="text-gray-80 flex items-center gap-2"
-                onClick={() => setChatSidebarCollapsed(!isChatSidebarCollapsed)}
-                size="icon"
-                variant="tertiary"
-              >
-                {isChatSidebarCollapsed ? (
-                  <PanelRightClose className="h-4 w-4" />
-                ) : (
-                  <PanelRightOpen className="h-4 w-4" />
-                )}
-                <span className="sr-only">
-                  {isChatSidebarCollapsed ? 'Open' : 'Close'} Chat Sidebar
-                </span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipPortal>
-              <TooltipContent className="flex flex-col items-center gap-1">
-                <p> Toggle Chat Sidebar</p>
-                <div className="text-gray-80 flex items-center justify-center gap-2 text-center">
-                  <span>⌘</span>
-                  <span>B</span>
-                </div>
-              </TooltipContent>
-            </TooltipPortal>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="text-gray-80 flex items-center gap-2"
+              onClick={() => setChatSidebarCollapsed(!isChatSidebarCollapsed)}
+              size="icon"
+              variant="tertiary"
+            >
+              {isChatSidebarCollapsed ? (
+                <PanelRightClose className="h-4 w-4" />
+              ) : (
+                <PanelRightOpen className="h-4 w-4" />
+              )}
+              <span className="sr-only">
+                {isChatSidebarCollapsed ? 'Open' : 'Close'} Chat Sidebar
+              </span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent className="flex flex-col items-center gap-1">
+              <p> Toggle Chat Sidebar</p>
+              <div className="text-gray-80 flex items-center justify-center gap-2 text-center">
+                <span>⌘</span>
+                <span>B</span>
+              </div>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
 
         <span className="mr-2.5 line-clamp-1 inline text-sm font-medium capitalize text-white">
           New Chat
@@ -193,36 +190,35 @@ const ConversationHeaderWithInboxId = () => {
   return (
     <div className="flex h-[58px] items-center justify-between border-b border-gray-400 px-4 py-2">
       <div className="inline-flex items-center gap-2">
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className="text-gray-80 flex items-center gap-2"
-                onClick={() => setChatSidebarCollapsed(!isChatSidebarCollapsed)}
-                size="icon"
-                variant="tertiary"
-              >
-                {isChatSidebarCollapsed ? (
-                  <PanelRightClose className="h-4 w-4" />
-                ) : (
-                  <PanelRightOpen className="h-4 w-4" />
-                )}
-                <span className="sr-only">
-                  {isChatSidebarCollapsed ? 'Open' : 'Close'} Chat Sidebar
-                </span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipPortal>
-              <TooltipContent className="flex flex-col items-center gap-1">
-                <p> Toggle Chat Sidebar</p>
-                <div className="text-gray-80 flex items-center justify-center gap-2 text-center">
-                  <span>⌘</span>
-                  <span>B</span>
-                </div>
-              </TooltipContent>
-            </TooltipPortal>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="text-gray-80 flex items-center gap-2"
+              onClick={() => setChatSidebarCollapsed(!isChatSidebarCollapsed)}
+              size="icon"
+              variant="tertiary"
+            >
+              {isChatSidebarCollapsed ? (
+                <PanelRightClose className="h-4 w-4" />
+              ) : (
+                <PanelRightOpen className="h-4 w-4" />
+              )}
+              <span className="sr-only">
+                {isChatSidebarCollapsed ? 'Open' : 'Close'} Chat Sidebar
+              </span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent className="flex flex-col items-center gap-1">
+              <p> Toggle Chat Sidebar</p>
+              <div className="text-gray-80 flex items-center justify-center gap-2 text-center">
+                <span>⌘</span>
+                <span>B</span>
+              </div>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+
         <span className="mr-2.5 line-clamp-1 inline text-sm font-medium capitalize text-white">
           {currentInbox?.custom_name || currentInbox?.inbox_id}
         </span>
