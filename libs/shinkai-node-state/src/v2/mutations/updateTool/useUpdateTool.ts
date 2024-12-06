@@ -5,10 +5,11 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { APIError } from '../../types';
 import { updateTool } from './index';
 import { UpdateToolInput, UpdateToolOutput } from './types';
 
-type Options = UseMutationOptions<UpdateToolOutput, Error, UpdateToolInput>;
+type Options = UseMutationOptions<UpdateToolOutput, APIError, UpdateToolInput>;
 
 export const useUpdateTool = (options?: Options) => {
   const queryClient = useQueryClient();

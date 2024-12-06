@@ -1,5 +1,7 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { ShinkaiTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { useImportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/importTool/useImportTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
@@ -7,9 +9,17 @@ import {
   Badge,
   Button,
   buttonVariants,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+  Form,
+  FormField,
   Input,
   ScrollArea,
   Switch,
+  TextField,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -18,9 +28,18 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { BoltIcon, PlusIcon, SearchIcon, XIcon } from 'lucide-react';
+import {
+  BoltIcon,
+  CloudDownloadIcon,
+  PlusIcon,
+  SearchIcon,
+  XIcon,
+} from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 import { useDebounce } from '../hooks/use-debounce';
 import { useAuth } from '../store/auth';
@@ -54,19 +73,22 @@ export const Tools = () => {
     <SimpleLayout
       classname="max-w-3xl"
       headerRightElement={
-        <Link
-          className={cn(
-            buttonVariants({
-              variant: 'default',
-              size: 'sm',
-            }),
-            'gap-2 px-3',
-          )}
-          to="/tools/create"
-        >
-          <PlusIcon className="size-4" />
-          Create Tool
-        </Link>
+        <div className="flex items-center gap-2">
+          <ImportToolModal />
+          <Link
+            className={cn(
+              buttonVariants({
+                variant: 'default',
+                size: 'auto',
+              }),
+              'h-[30px] gap-2 rounded-lg px-3 text-xs',
+            )}
+            to="/tools/create"
+          >
+            <PlusIcon className="size-4" />
+            Create Tool
+          </Link>
+        </div>
       }
       title={t('tools.label')}
     >
@@ -258,3 +280,96 @@ export const Tools = () => {
     </SimpleLayout>
   );
 };
+
+const importToolFormSchema = z.object({
+  url: z.string().url(),
+});
+type ImportToolFormSchema = z.infer<typeof importToolFormSchema>;
+
+function ImportToolModal() {
+  const auth = useAuth((state) => state.auth);
+
+  const navigate = useNavigate();
+  const importToolForm = useForm<ImportToolFormSchema>({
+    resolver: zodResolver(importToolFormSchema),
+  });
+  const [isImportModalOpen, setImportModalOpen] = useState(false);
+
+  const { mutateAsync: importTool, isPending: isPendingImportSheet } =
+    useImportTool({
+      onSuccess: (data) => {
+        setImportModalOpen(false);
+        toast.success('Tool imported successfully', {
+          action: {
+            label: 'View',
+            onClick: () => {
+              navigate(`/tools/${data.tool_key}`);
+            },
+          },
+        });
+      },
+      onError: (error) => {
+        toast.error('Failed to import tool', {
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
+
+  const onSubmit = async (data: ImportToolFormSchema) => {
+    await importTool({
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      url: data.url,
+    });
+  };
+
+  return (
+    <Dialog onOpenChange={setImportModalOpen} open={isImportModalOpen}>
+      <DialogTrigger asChild>
+        <Button
+          className="h-[30px] gap-2 rounded-lg px-3 text-xs"
+          size="auto"
+          variant="outline"
+        >
+          <CloudDownloadIcon className="size-4" />
+          Import Tool
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-[500px]">
+        <DialogTitle className="pb-0">Import Tool</DialogTitle>
+        <Form {...importToolForm}>
+          <form
+            className="mt-2 flex flex-col gap-6"
+            onSubmit={importToolForm.handleSubmit(onSubmit)}
+          >
+            <FormField
+              control={importToolForm.control}
+              name="url"
+              render={({ field }) => (
+                <TextField
+                  autoFocus
+                  field={{
+                    ...field,
+                    placeholder: 'https://example.com/file.zip',
+                  }}
+                  label={'URL'}
+                />
+              )}
+            />
+            <DialogFooter>
+              <Button
+                className="w-full"
+                disabled={isPendingImportSheet}
+                isLoading={isPendingImportSheet}
+                size="auto"
+                type="submit"
+              >
+                Import
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}

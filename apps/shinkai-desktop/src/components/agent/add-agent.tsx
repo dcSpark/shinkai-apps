@@ -346,7 +346,7 @@ function AddAgentPage() {
                                                 tool.tool_router_key,
                                               ],
                                         );
-                                        console.log(tool.config, 'tool.config');
+
                                         return;
                                       }
                                       toast.error(

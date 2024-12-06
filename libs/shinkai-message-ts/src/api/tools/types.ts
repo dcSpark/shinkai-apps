@@ -275,3 +275,20 @@ export type UpdateToolCodeImplementationResponse = {
   message: string;
   status: string;
 };
+
+export type ImportToolRequest = {
+  url: string;
+};
+
+export type ImportToolResponse = {
+  message: string;
+  status: string;
+  tool: GetToolResponse;
+  tool_key: string;
+};
+
+export type ExportToolRequest = {
+  toolKey: string;
+};
+
+export type ExportToolResponse = Blob;

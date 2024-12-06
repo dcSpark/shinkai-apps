@@ -17,7 +17,7 @@ export const SubpageLayout = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className={cn('relative mx-auto max-w-xl py-10', className)}>
+    <div className={cn('relative mx-auto max-w-2xl py-10', className)}>
       <Link
         className={cn('absolute left-4', alignLeft && 'left-0')}
         to={-1 as To}
