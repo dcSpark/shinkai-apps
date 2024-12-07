@@ -11,7 +11,7 @@ import {
   Button,
   CopyToClipboardIcon,
   Input,
-  MarkdownPreview,
+  MarkdownText,
   ScrollArea,
   Textarea,
   Tooltip,
@@ -367,9 +367,9 @@ function PromptPreview({
               setPromptEditContent={setPromptEditContent}
             />
           ) : (
-            <MarkdownPreview
+            <MarkdownText
               className="prose-h1:!text-gray-80 prose-h1:!text-xs !text-gray-80"
-              source={selectedPrompt?.prompt ?? ''}
+              content={selectedPrompt?.prompt ?? ''}
             />
           )}
         </div>
@@ -536,9 +536,9 @@ export const PromptTryOut = ({
               Output
             </p>
             <div className="p-4">
-              <MarkdownPreview
+              <MarkdownText
                 className="prose-h1:!text-gray-80 prose-h1:!text-xs !text-gray-80 !text-xs"
-                source={data?.pages?.at(-1)?.at(-1)?.content ?? ''}
+                content={data?.pages?.at(-1)?.at(-1)?.content ?? ''}
               />
             </div>
           </motion.div>

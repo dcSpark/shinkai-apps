@@ -30,7 +30,7 @@ import { Card, CardContent } from '../card';
 import { CopyToClipboardIcon } from '../copy-to-clipboard-icon';
 import { DotsLoader } from '../dots-loader';
 import { Form, FormField } from '../form';
-import { MarkdownPreview } from '../markdown-preview';
+import { MarkdownText, MarkdownTextPrimitive } from '../markdown-preview';
 import {
   Tooltip,
   TooltipContent,
@@ -343,42 +343,14 @@ const MessageBase = ({
                     </Accordion>
                   )}
                 {message.role === 'assistant' && (
-                  <MarkdownPreview
-                    className={cn(
-                      message.content &&
-                        message.status.type === 'running' &&
-                        'md-running',
-                    )}
-                    components={{
-                      // @ts-expect-error custom element
-                      antartifact: ({
-                        title,
-                        type,
-                        identifier,
-                      }: ArtifactProps) => (
-                        <ArtifactCard
-                          identifier={identifier}
-                          isSelected={artifact?.identifier === messageId}
-                          loading={isThinking}
-                          onArtifactClick={() => {
-                            if (artifact?.identifier === messageId) {
-                              setArtifact?.(null);
-                              return;
-                            }
-                            const selectedArtifact = artifacts?.find(
-                              (art) => art.identifier === messageId,
-                            );
-                            setArtifact?.(selectedArtifact ?? null);
-                          }}
-                          title={title}
-                          type={type}
-                        />
-                      ),
-                    }}
-                    source={extractErrorPropertyOrContent(
+                  <MarkdownText
+                    content={extractErrorPropertyOrContent(
                       message.content,
                       'error_message',
                     )}
+                    isRunning={
+                      !!message.content && message.status.type === 'running'
+                    }
                   />
                 )}
 

@@ -83,6 +83,9 @@
   @apply text-gray-50 ml-1 animate-pulse font-sans text-[10px] content-['\25CF'];
 }
 
+
+
+
 /* react tree view */
 .p-checkbox {
   @apply h-[18px] w-[18px] shrink-0;
