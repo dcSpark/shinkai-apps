@@ -15,57 +15,32 @@ import React, {
   useMemo,
 } from 'react';
 import ReactMarkdown, { type Options } from 'react-markdown';
-import { Components } from 'react-markdown/lib';
-import SyntaxHighlighter, {
-  Light,
-  LightAsync,
-  Prism,
-  PrismAsync,
+import {
   PrismAsyncLight,
-  PrismLight,
   SyntaxHighlighterProps as SHP,
 } from 'react-syntax-highlighter';
-import { dark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import python from 'react-syntax-highlighter/dist/esm/languages/prism/python';
 import tsx from 'react-syntax-highlighter/dist/esm/languages/prism/tsx';
 import { default as github } from 'react-syntax-highlighter/dist/esm/styles/hljs/github';
 import rehypeRaw from 'rehype-raw';
-import rehypeRewrite, { RehypeRewriteOptions } from 'rehype-rewrite';
-import { PluggableList } from 'unified';
+import remarkGfm from 'remark-gfm';
 
 import { cn } from '../utils';
 import { CopyToClipboardIcon } from './copy-to-clipboard-icon';
 
-const rehypePlugins: PluggableList = [
-  rehypeRaw,
-  // rehypeRewrite,
-  // {
-  //   rewrite: (node, _, parent) => {
-  //     if (
-  //       node.type === 'element' &&
-  //       node.tagName === 'a' &&
-  //       parent &&
-  //       parent.type === 'element' &&
-  //       /^h([123456])/.test(parent.tagName)
-  //     ) {
-  //       parent.children = [parent.children[1]];
-  //     }
-  //   },
-  // } as RehypeRewriteOptions,
-];
 type CodeHeaderProps = {
   language: string | undefined;
   code: string;
 };
 export const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
   return (
-    <div className="code-header-root flex items-center justify-between gap-4 rounded-t-lg bg-zinc-800 px-4 py-2 text-sm text-white">
-      <span className="code-header-language text-gray-80 text-sm font-medium lowercase">
+    <div className="code-header-root flex items-center justify-between gap-4 rounded-t-lg bg-zinc-800 px-4 py-1 text-white">
+      <span className="code-header-language text-gray-80 text-xs font-medium lowercase">
         {language}
       </span>
       <CopyToClipboardIcon
         className={cn(
-          'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+          'text-gray-80 h-7 w-7 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
         )}
         string={code}
       />
@@ -110,6 +85,7 @@ export const makePrismAsyncLightSyntaxHighlighter =
 
 export const SyntaxHighlighterBase = makePrismAsyncLightSyntaxHighlighter({
   style: github,
+
   customStyle: {
     margin: 0,
     width: '100%',
@@ -209,21 +185,17 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
     <hr className={cn('my-2.5 border-b', className)} {...props} />
   ),
   table: ({ node, className, ...props }) => (
-    <div className="my-2.5 size-full overflow-x-auto">
-      <table className="w-full" {...props} />
+    <div className="my-3 size-full overflow-x-auto">
+      <table className="w-full border-collapse border-spacing-0" {...props} />
     </div>
-    // <table
-    //   className={cn(
-    //     'my-5 w-full border-separate border-spacing-0 overflow-y-auto',
-    //     className,
-    //   )}
-    //   {...props}
-    // />
+  ),
+  thead: ({ node, className, ...props }) => (
+    <thead className={cn('[&>tr]:border-none', className)} {...props} />
   ),
   th: ({ node, className, ...props }) => (
     <th
       className={cn(
-        'bg-muted px-4 py-2 text-left font-bold first:rounded-tl-lg last:rounded-tr-lg [&[align=center]]:text-center [&[align=right]]:text-right',
+        'bg-[#161b22] px-4 py-2 text-left text-xs font-bold first:rounded-tl-lg last:rounded-tr-lg [&[align=center]]:text-center [&[align=right]]:text-right',
         className,
       )}
       {...props}
@@ -232,7 +204,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   td: ({ node, className, ...props }) => (
     <td
       className={cn(
-        'border-b border-l px-4 py-2 text-left last:border-r [&[align=center]]:text-center [&[align=right]]:text-right',
+        'border-b border-l border-[#30363d] px-4 py-2 text-left last:border-r [&[align=center]]:text-center [&[align=right]]:text-right',
         className,
       )}
       {...props}
@@ -241,7 +213,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   tr: ({ node, className, ...props }) => (
     <tr
       className={cn(
-        'm-0 border-b p-0 first:border-t [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg',
+        'm-0 border-b p-0 first:border-t [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg [&:nth-child(2n)]:bg-[#30363d]',
         className,
       )}
       {...props}
@@ -256,7 +228,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   pre: ({ node, className, ...props }) => (
     <pre
       className={cn(
-        'overflow-x-auto rounded-b-lg bg-black p-4 text-white',
+        'overflow-x-auto rounded-b-lg bg-black !px-4 !py-3 text-white',
         className,
       )}
       {...props}
@@ -278,66 +250,6 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   SyntaxHighlighter: SyntaxHighlighterBase,
 };
 
-export const MarkdownPreview = ({
-  className,
-  source,
-  components,
-}: {
-  className?: string;
-  source?: string;
-  components?: Components;
-}) => {
-  return (
-    <ReactMarkdown
-      className={cn(
-        // 'wmde-markdown-var',
-        // 'max-w-none text-white',
-        // 'prose prose-gray',
-        // 'prose-h1:!text-[1.203125rem] prose-h1:!leading-[1.5] prose-h1:!my-3.5 prose-h1:!font-bold',
-        // 'prose-h2:!text-[1.09375rem] prose-h2:!leading-[1.25] prose-h2:!my-3.5 prose-h2:!font-bold',
-        // 'prose-h3:!text-base prose-h3:!leading-[1.25] prose-h3:!my-3.5 prose-h3:!font-bold',
-        // 'prose-code:text-white prose-blockquote:text-gray-50 prose-blockquote:bg-gray-200 prose-strong:text-white prose-headings:text-white prose-p:whitespace-pre-wrap',
-        // 'prose-code:before:hidden prose-code:after:hidden',
-        // 'prose-h1:!border-b-0 prose-h2:!border-b-0 prose-h3:!border-b-0 prose-h4:!border-b-0 prose-h5:!border-b-0 prose-h6:!border-b-0',
-        // 'prose-hr:!border-b-0 prose-hr:!h-[2px] prose-hr:!bg-gray-50/80',
-        className,
-      )}
-      components={{
-        // a: ({ node, ...props }) => (
-        //   // eslint-disable-next-line jsx-a11y/anchor-has-content
-        //   <a {...props} target="_blank" />
-        // ),
-        // table: ({ node, ...props }) => (
-        //   <div className="mb-2 size-full overflow-x-auto">
-        //     <table className="w-full" {...props} />
-        //   </div>
-        // ),
-        ...defaultComponents,
-      }}
-      rehypePlugins={rehypePlugins}
-      // rehypeRewrite={(node, _, parent) => {
-      //   if (
-      //     'tagName' in node &&
-      //     node.tagName &&
-      //     parent &&
-      //     'tagName' in parent &&
-      //     parent.tagName
-      //   ) {
-      //     if (node.tagName === 'a' && /^h([1-6])/.test(parent.tagName)) {
-      //       // eslint-disable-next-line no-param-reassign
-      //       parent.children = parent.children.slice(1);
-      //     }
-      //   }
-      // }}
-
-      // wrapperElement={{ 'data-color-mode': 'dark' }}
-    >
-      {source}
-    </ReactMarkdown>
-  );
-};
-
-//
 export type PreComponent = NonNullable<
   NonNullable<Options['components']>['pre']
 >;
@@ -400,8 +312,7 @@ export type MarkdownTextPrimitiveProps = Omit<
       }
     >;
   };
-  smooth?: boolean;
-  text: string;
+  content: string;
 };
 
 export type CodeOverrideProps = ComponentPropsWithoutRef<CodeComponent> & {
@@ -544,11 +455,11 @@ export const MarkdownTextPrimitive: ForwardRefExoticComponent<MarkdownTextPrimit
 >(
   (
     {
-      components: userComponents = defaultComponents,
+      components: userComponents,
       className,
       containerProps,
       containerComponent: Container = 'div',
-      text,
+      content,
       ...rest
     },
     forwardedRef,
@@ -587,7 +498,7 @@ export const MarkdownTextPrimitive: ForwardRefExoticComponent<MarkdownTextPrimit
         ref={forwardedRef}
       >
         <ReactMarkdown components={components} {...rest}>
-          {text}
+          {content}
         </ReactMarkdown>
       </Container>
     );
@@ -595,3 +506,32 @@ export const MarkdownTextPrimitive: ForwardRefExoticComponent<MarkdownTextPrimit
 );
 
 MarkdownTextPrimitive.displayName = 'MarkdownTextPrimitive';
+
+export type MakeMarkdownTextProps = MarkdownTextPrimitiveProps & {
+  isRunning?: boolean;
+};
+
+export const MarkdownText = ({
+  className,
+  isRunning,
+  components: userComponents,
+
+  ...rest
+}: MakeMarkdownTextProps) => {
+  const components = {
+    ...defaultComponents,
+    ...Object.fromEntries(
+      Object.entries(userComponents ?? {}).filter(([_, v]) => v !== undefined),
+    ),
+  };
+
+  return (
+    <MarkdownTextPrimitive
+      components={components}
+      rehypePlugins={[rehypeRaw]}
+      remarkPlugins={[remarkGfm]}
+      {...rest}
+      className={cn(isRunning && 'md-running')}
+    />
+  );
+};
