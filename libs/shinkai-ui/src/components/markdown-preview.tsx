@@ -85,7 +85,6 @@ export const makePrismAsyncLightSyntaxHighlighter =
 
 export const SyntaxHighlighterBase = makePrismAsyncLightSyntaxHighlighter({
   style: github,
-
   customStyle: {
     margin: 0,
     width: '100%',
@@ -266,8 +265,6 @@ export const useIsMarkdownCodeBlock = () => {
 export const PreOverride: PreComponent = ({ children, ...rest }) => {
   return <PreContext.Provider value={rest}>{children}</PreContext.Provider>;
 };
-
-// /
 
 export type CodeComponent = NonNullable<
   NonNullable<Options['components']>['code']
@@ -515,7 +512,6 @@ export const MarkdownText = ({
   className,
   isRunning,
   components: userComponents,
-
   ...rest
 }: MakeMarkdownTextProps) => {
   const components = {
@@ -528,10 +524,10 @@ export const MarkdownText = ({
   return (
     <MarkdownTextPrimitive
       components={components}
-      // rehypePlugins={[rehypeRaw]} // enable when needed to render raw html
       remarkPlugins={[remarkGfm]}
       {...rest}
       className={cn(isRunning && 'md-running')}
+      // rehypePlugins={[rehypeRaw]} // enable when needed to render raw html
     />
   );
 };
