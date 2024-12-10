@@ -353,28 +353,22 @@ function EditAgentPage() {
                       </FormItem>
                     )}
                   />
-
-                  {/*<FormField*/}
-                  {/*  control={form.control}*/}
-                  {/*  name="config.stream"*/}
-                  {/*  render={({ field }) => (*/}
-                  {/*    <FormItem className="flex w-full flex-col gap-3">*/}
-                  {/*      <div className="flex gap-3">*/}
-                  {/*        <FormControl>*/}
-                  {/*          <Switch*/}
-                  {/*            checked={field.value}*/}
-                  {/*            onCheckedChange={field.onChange}*/}
-                  {/*          />*/}
-                  {/*        </FormControl>*/}
-                  {/*        <div className="space-y-1 leading-none">*/}
-                  {/*          <FormLabel className="static space-y-1.5 text-sm text-white">*/}
-                  {/*            Enable Stream*/}
-                  {/*          </FormLabel>*/}
-                  {/*        </div>*/}
-                  {/*      </div>*/}
-                  {/*    </FormItem>*/}
-                  {/*  )}*/}
-                  {/*/>*/}
+                  <FormField
+                    control={form.control}
+                    name="config.custom_prompt"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Custom User Prompt</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            className="!min-h-[130px] resize-none text-sm"
+                            spellCheck={false}
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="config.temperature"

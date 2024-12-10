@@ -440,6 +440,22 @@ function AddAgentPage() {
                         </FormItem>
                       )}
                     />
+                  <FormField
+                    control={form.control}
+                    name="config.custom_prompt"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Custom User Prompt</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            className="!min-h-[130px] resize-none text-sm"
+                            spellCheck={false}
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />                    
 
                     <FormField
                       control={form.control}

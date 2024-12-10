@@ -60,7 +60,7 @@ function Agents() {
             <span aria-hidden className="text-5xl">
               🤖
             </span>
-            <p className="text-2xl font-semibold">No available agents</p>
+            <p className="text-2xl font-semibold">No Available Agents</p>
             <p className="text-center text-sm font-medium text-gray-100">
               Create your first Agent to start asking Shinkai AI.
             </p>
