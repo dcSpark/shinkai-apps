@@ -14,6 +14,7 @@ export const checkHealth = async (nodeAddress: string) => {
     urlJoin(nodeAddress, '/v2/health_check'),
     { responseType: 'json' },
   );
+  console.log('checkHealth response', response);
   return response.data as CheckHealthResponse;
 };
 
@@ -58,6 +59,7 @@ export const submitRegistrationNoCode = async (
 ): Promise<SubmitRegistrationNoCodeResponse> => {
   try {
     const healthResponse = await checkHealth(nodeAddress);
+    console.log('submitRegistrationNoCode healthResponse', healthResponse);
     const { status, node_name, is_pristine } = healthResponse;
     if (status !== 'ok') {
       return { status: 'error' };
@@ -65,6 +67,7 @@ export const submitRegistrationNoCode = async (
     if (!is_pristine) {
       return { status: 'non-pristine' };
     }
+    console.log('submitRegistrationNoCode payload', payload);
 
     const messageStr =
       ShinkaiMessageBuilderWrapper.initial_registration_with_no_code_for_device(
@@ -84,6 +87,7 @@ export const submitRegistrationNoCode = async (
       message,
       { responseType: 'json' },
     );
+    console.log('submitRegistrationNoCode response', response);
     const data = response.data.data;
     return { status: 'success', data };
   } catch (error) {
