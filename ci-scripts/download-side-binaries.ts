@@ -105,6 +105,10 @@ const downloadShinkaiNodeBinary = async (arch: Arch, version: string) => {
     arch,
     `./apps/shinkai-desktop/src-tauri/external-binaries/shinkai-node/shinkai-tools-runner-resources/deno`,
   );
+  const shinkaiToolsRunnerUvBinaryPath = asBinaryName(
+    arch,
+    `./apps/shinkai-desktop/src-tauri/external-binaries/shinkai-node/shinkai-tools-runner-resources/uv`,
+  );
   await rename(
     shinkaiNodeBinaryPath,
     asSidecarName(arch, shinkaiNodeBinaryPath),
@@ -113,9 +117,16 @@ const downloadShinkaiNodeBinary = async (arch: Arch, version: string) => {
     shinkaiToolsRunnerDenoBinaryPath,
     asSidecarName(arch, shinkaiToolsRunnerDenoBinaryPath),
   );
+  await rename(
+    shinkaiToolsRunnerUvBinaryPath,
+    asSidecarName(arch, shinkaiToolsRunnerUvBinaryPath),
+  );
 
   await addExecPermissions(asSidecarName(arch, shinkaiNodeBinaryPath));
-  await addExecPermissions(asSidecarName(arch, shinkaiToolsRunnerDenoBinaryPath));
+  await addExecPermissions(
+    asSidecarName(arch, shinkaiToolsRunnerDenoBinaryPath),
+  );
+  await addExecPermissions(asSidecarName(arch, shinkaiToolsRunnerUvBinaryPath));
 };
 
 const downloadOllamaAarch64AppleDarwin = async (version: string) => {
