@@ -238,7 +238,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
     return (
       <code
         className={cn(
-          !isCodeBlock && 'rounded border bg-gray-200 font-semibold',
+          !isCodeBlock && 'rounded border bg-gray-300 font-semibold',
           className,
         )}
         {...props}
