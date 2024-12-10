@@ -22,7 +22,7 @@ import {
 import python from 'react-syntax-highlighter/dist/esm/languages/prism/python';
 import tsx from 'react-syntax-highlighter/dist/esm/languages/prism/tsx';
 import { default as github } from 'react-syntax-highlighter/dist/esm/styles/hljs/github';
-import rehypeRaw from 'rehype-raw';
+// import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 
 import { cn } from '../utils';
@@ -34,7 +34,7 @@ type CodeHeaderProps = {
 };
 export const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
   return (
-    <div className="code-header-root flex items-center justify-between gap-4 rounded-t-lg bg-zinc-800 px-4 py-1 text-white">
+    <div className="code-header-root flex items-center justify-between gap-4 rounded-t-lg border-b border-gray-400 bg-[#0d1117] px-4 py-1 text-white">
       <span className="code-header-language text-gray-80 text-xs font-medium lowercase">
         {language}
       </span>
@@ -156,7 +156,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   a: ({ node, className, ...props }) => (
     <a
       className={cn(
-        'text-primary font-medium underline underline-offset-4',
+        'font-medium text-blue-400 underline underline-offset-4',
         className,
       )}
       target="_blank"
@@ -528,7 +528,7 @@ export const MarkdownText = ({
   return (
     <MarkdownTextPrimitive
       components={components}
-      rehypePlugins={[rehypeRaw]}
+      // rehypePlugins={[rehypeRaw]} // enable when needed to render raw html
       remarkPlugins={[remarkGfm]}
       {...rest}
       className={cn(isRunning && 'md-running')}
