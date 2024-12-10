@@ -13,6 +13,7 @@ use crate::commands::shinkai_node_manager_commands::{
     shinkai_node_set_options, shinkai_node_spawn, show_shinkai_node_manager_window,
 };
 
+use commands::fetch::{http_request_json, http_request_string};
 use commands::spotlight_commands::{hide_spotlight_window_app, show_spotlight_window_app};
 use global_shortcuts::global_shortcut_handler;
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
@@ -88,6 +89,8 @@ fn main() {
             galxe_generate_proof,
             get_request,
             post_request,
+            http_request_json,
+            http_request_string,
             shinkai_node_get_ollama_version,
         ])
         .setup(|app| {
