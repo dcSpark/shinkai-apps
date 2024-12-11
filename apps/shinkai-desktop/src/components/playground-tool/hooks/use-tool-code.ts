@@ -1,5 +1,6 @@
 import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { PrismEditor } from 'prism-react-editor';
 import { useMemo, useRef, useState } from 'react';
 
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
@@ -14,6 +15,7 @@ export const useToolCode = ({
 }) => {
   const [toolCode, setToolCode] = useState<string>('');
   const baseToolCodeRef = useRef<string>('');
+  const codeEditorRef = useRef<PrismEditor | null>(null);
 
   const {
     data,
@@ -133,5 +135,6 @@ export const useToolCode = ({
     isChatConversationSuccess,
     chatConversationData,
     toolHistory,
+    codeEditorRef,
   };
 };

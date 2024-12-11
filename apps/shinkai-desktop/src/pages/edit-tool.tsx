@@ -55,19 +55,19 @@ import { z } from 'zod';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import { LanguageToolSelector } from '../components/playground-tool/components/language-tool-selector';
+import { ToolsSelection } from '../components/playground-tool/components/tools-selection';
 import { ToolErrorFallback } from '../components/playground-tool/error-boundary';
 import { useToolCode } from '../components/playground-tool/hooks/use-tool-code';
 import { useToolMetadata } from '../components/playground-tool/hooks/use-tool-metadata';
 import PlaygroundToolLayout from '../components/playground-tool/layout';
 import { ToolMetadataSchema } from '../components/playground-tool/schemas';
 import ToolCodeEditor from '../components/playground-tool/tool-code-editor';
+import { detectLanguage } from '../components/playground-tool/utils/code';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import {
   CreateToolCodeFormSchema,
   createToolCodeFormSchema,
-  detectLanguage,
-  ToolSelectionModal,
 } from './create-tool';
 
 function EditToolPage() {
@@ -436,7 +436,7 @@ function EditToolPage() {
                               }}
                               value={form.watch('language')}
                             />
-                            <ToolSelectionModal form={form} />
+                            <ToolsSelection form={form} />
                           </div>
                           <ChatInputArea
                             autoFocus
@@ -607,7 +607,7 @@ function EditToolPage() {
                               <div className="flex h-[45px] items-center justify-between rounded-t-lg border-b border-gray-400 bg-[#0d1117] px-3 py-2">
                                 <span className="inline-flex items-center gap-2 pl-3 text-xs font-medium text-gray-50">
                                   {' '}
-                                  TypeScript
+                                  {detectLanguage(toolCode)}{' '}
                                   {isDirty && (
                                     <span className="size-2 shrink-0 rounded-full bg-orange-500" />
                                   )}

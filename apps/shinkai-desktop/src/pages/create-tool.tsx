@@ -18,7 +18,6 @@ import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutat
 import { useRestoreToolConversation } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreToolConversation/useRestoreToolConversation';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
 import { useUpdateToolCodeImplementation } from '@shinkai_network/shinkai-node-state/v2/mutations/updateToolCodeImplementation/useUpdateToolCodeImplementation';
-import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import {
   Badge,
   Button,
@@ -30,13 +29,9 @@ import {
   FormLabel,
   JsonForm,
   MessageList,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-  Switch,
   Tabs,
   TabsContent,
   TabsList,
@@ -44,16 +39,13 @@ import {
   Tooltip,
   TooltipContent,
   TooltipPortal,
-  TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
-import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowUpRight,
-  BoltIcon,
   Loader2,
   LucideArrowLeft,
   Play,
@@ -61,23 +53,22 @@ import {
   Save,
   Undo2Icon,
 } from 'lucide-react';
-import { InfoCircleIcon } from 'primereact/icons/infocircle';
-import { PrismEditor } from 'prism-react-editor';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Link, To, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
-import { actionButtonClassnames } from '../components/chat/conversation-footer';
 import { LanguageToolSelector } from '../components/playground-tool/components/language-tool-selector';
+import { ToolsSelection } from '../components/playground-tool/components/tools-selection';
 import { ToolErrorFallback } from '../components/playground-tool/error-boundary';
 import { useToolCode } from '../components/playground-tool/hooks/use-tool-code';
 import { useToolMetadata } from '../components/playground-tool/hooks/use-tool-metadata';
 import PlaygroundToolLayout from '../components/playground-tool/layout';
 import { ToolMetadataSchema } from '../components/playground-tool/schemas';
 import ToolCodeEditor from '../components/playground-tool/tool-code-editor';
+import { detectLanguage } from '../components/playground-tool/utils/code';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 
@@ -89,41 +80,6 @@ export const createToolCodeFormSchema = z.object({
 });
 
 export type CreateToolCodeFormSchema = z.infer<typeof createToolCodeFormSchema>;
-
-export function extractTypeScriptCode(message: string, language: CodeLanguage) {
-  const tsCodeMatch = message.match(
-    new RegExp(`\`\`\`${language.toLowerCase()}\n([\\s\\S]*?)\n\`\`\``),
-  );
-  return tsCodeMatch ? tsCodeMatch[1].trim() : null;
-}
-
-export function detectLanguage(code: string): string {
-  const pythonPatterns = [
-    /\bdef\b/,
-    /\bclass\b/,
-    /\bimport\b/,
-    /\basync\s+def\b/,
-    /from\s+\w+\s+import\b/,
-    /#.*$/,
-  ];
-
-  const typescriptPatterns = [
-    /\bfunction\b/,
-    /\binterface\b/,
-    /\btype\b\s+\w+\s*=/,
-    /\bexport\s+(default\s+)?/,
-    /\/\/.*$/,
-    /:\s*\w+(\[\])?/,
-  ];
-
-  const isPython = pythonPatterns.some((pattern) => pattern.test(code));
-
-  const isTypeScript = typescriptPatterns.some((pattern) => pattern.test(code));
-
-  if (isPython) return 'Python';
-  if (isTypeScript) return 'TypeScript';
-  return 'Unknown';
-}
 
 function CreateToolPage() {
   const auth = useAuth((state) => state.auth);
@@ -164,6 +120,7 @@ function CreateToolPage() {
     isChatConversationSuccess,
     chatConversationData,
     toolHistory,
+    codeEditorRef,
   } = useToolCode({ chatInboxId, language: form.watch('language') });
 
   const {
@@ -174,10 +131,9 @@ function CreateToolPage() {
     metadataGenerationError,
     isMetadataGenerationError,
     forceGenerateMetadata,
+    metadataEditorRef,
   } = useToolMetadata({ chatInboxIdMetadata, code: toolCode });
 
-  const codeEditorRef = useRef<PrismEditor | null>(null);
-  const metadataEditorRef = useRef<PrismEditor | null>(null);
   const [resetCounter, setResetCounter] = useState(0);
 
   const { mutateAsync: createToolMetadata } = useCreateToolMetadata();
@@ -358,6 +314,91 @@ function CreateToolPage() {
     });
   };
 
+  const restoreCode = async () => {
+    const currentIdx = toolHistory.findIndex(
+      (history) => history.code === toolCode,
+    );
+
+    await restoreToolConversation({
+      token: auth?.api_v2_key ?? '',
+      nodeAddress: auth?.node_address ?? '',
+      jobId: extractJobIdFromInbox(chatInboxId ?? ''),
+      messageId: toolHistory[currentIdx].messageId,
+    });
+  };
+  const goPreviousToolCode = () => {
+    const currentIdx = toolHistory.findIndex(
+      (history) => history.code === toolCode,
+    );
+    const prevTool = toolHistory[currentIdx - 1];
+
+    const messageEl = document.getElementById(prevTool.messageId);
+    baseToolCodeRef.current = prevTool.code;
+    setToolCode(prevTool.code);
+    setResetCounter((prev) => prev + 1);
+    if (messageEl) {
+      // wait til requestAnimationFrame for scrolling
+      setTimeout(() => {
+        messageEl.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }, 100);
+    }
+  };
+
+  const goNextToolCode = () => {
+    const currentIdx = toolHistory.findIndex(
+      (history) => history.code === toolCode,
+    );
+    const nextTool = toolHistory[currentIdx + 1];
+    baseToolCodeRef.current = nextTool.code;
+    setToolCode(nextTool.code);
+    setResetCounter((prev) => prev + 1);
+
+    const messageEl = document.getElementById(nextTool.messageId);
+    if (messageEl) {
+      setTimeout(() => {
+        messageEl.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }, 100);
+    }
+  };
+
+  const handleApplyChangesCodeSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+  ) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const currentEditorValue = data.get('editor');
+    setResetCounter((prev) => prev + 1);
+    setIsDirty(false);
+    baseToolCodeRef.current = currentEditorValue as string;
+    // forceGenerateMetadata.current = true; // do not force it, user can regenerate it in the UI
+
+    await updateToolCodeImplementation({
+      token: auth?.api_v2_key ?? '',
+      nodeAddress: auth?.node_address ?? '',
+      jobId: extractJobIdFromInbox(chatInboxId ?? ''),
+      code: currentEditorValue as string,
+    });
+
+    setTimeout(() => {
+      setToolCode(currentEditorValue as string);
+    }, 0);
+  };
+
+  const resetToolCode = () => {
+    setIsDirty(false);
+    setResetCounter((prev) => prev + 1);
+    forceGenerateMetadata.current = true;
+    setTimeout(() => {
+      setToolCode(baseToolCodeRef.current);
+    }, 0);
+  };
+
   return (
     <PlaygroundToolLayout
       leftElement={
@@ -465,7 +506,7 @@ function CreateToolPage() {
                               }}
                               value={form.watch('language')}
                             />
-                            <ToolSelectionModal form={form} />
+                            <ToolsSelection form={form} />
                           </div>
                           <ChatInputArea
                             autoFocus
@@ -561,20 +602,7 @@ function CreateToolPage() {
                           <TooltipTrigger asChild>
                             <Badge
                               className="bg-gray-350 cursor-pointer border-0 px-2.5 py-2 hover:bg-gray-400"
-                              onClick={async () => {
-                                const currentIdx = toolHistory.findIndex(
-                                  (history) => history.code === toolCode,
-                                );
-
-                                await restoreToolConversation({
-                                  token: auth?.api_v2_key ?? '',
-                                  nodeAddress: auth?.node_address ?? '',
-                                  jobId: extractJobIdFromInbox(
-                                    chatInboxId ?? '',
-                                  ),
-                                  messageId: toolHistory[currentIdx].messageId,
-                                });
-                              }}
+                              onClick={restoreCode}
                               variant="secondary"
                             >
                               {isRestoringToolConversation ? (
@@ -603,28 +631,7 @@ function CreateToolPage() {
                           >
                             <Button
                               className="size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent disabled:text-gray-100"
-                              onClick={async () => {
-                                const currentIdx = toolHistory.findIndex(
-                                  (history) => history.code === toolCode,
-                                );
-                                const prevTool = toolHistory[currentIdx - 1];
-
-                                const messageEl = document.getElementById(
-                                  prevTool.messageId,
-                                );
-                                baseToolCodeRef.current = prevTool.code;
-                                setToolCode(prevTool.code);
-                                setResetCounter((prev) => prev + 1);
-                                if (messageEl) {
-                                  // wait til requestAnimationFrame for scrolling
-                                  setTimeout(() => {
-                                    messageEl.scrollIntoView({
-                                      behavior: 'smooth',
-                                      block: 'start',
-                                    });
-                                  }, 100);
-                                }
-                              }}
+                              onClick={goPreviousToolCode}
                               size="auto"
                               variant="ghost"
                             >
@@ -644,27 +651,7 @@ function CreateToolPage() {
                           >
                             <Button
                               className="size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent disabled:text-gray-100"
-                              onClick={() => {
-                                const currentIdx = toolHistory.findIndex(
-                                  (history) => history.code === toolCode,
-                                );
-                                const nextTool = toolHistory[currentIdx + 1];
-                                baseToolCodeRef.current = nextTool.code;
-                                setToolCode(nextTool.code);
-                                setResetCounter((prev) => prev + 1);
-
-                                const messageEl = document.getElementById(
-                                  nextTool.messageId,
-                                );
-                                if (messageEl) {
-                                  setTimeout(() => {
-                                    messageEl.scrollIntoView({
-                                      behavior: 'smooth',
-                                      block: 'start',
-                                    });
-                                  }, 100);
-                                }
-                              }}
+                              onClick={goNextToolCode}
                               size="auto"
                               variant="ghost"
                             >
@@ -763,29 +750,7 @@ function CreateToolPage() {
                             <form
                               className="flex size-full flex-col"
                               key={resetCounter}
-                              onSubmit={async (e) => {
-                                e.preventDefault();
-                                const data = new FormData(e.currentTarget);
-                                const currentEditorValue = data.get('editor');
-                                setResetCounter((prev) => prev + 1);
-                                setIsDirty(false);
-                                baseToolCodeRef.current =
-                                  currentEditorValue as string;
-                                // forceGenerateMetadata.current = true; // do not force it, user can regenerate it in the UI
-
-                                await updateToolCodeImplementation({
-                                  token: auth?.api_v2_key ?? '',
-                                  nodeAddress: auth?.node_address ?? '',
-                                  jobId: extractJobIdFromInbox(
-                                    chatInboxId ?? '',
-                                  ),
-                                  code: currentEditorValue as string,
-                                });
-
-                                setTimeout(() => {
-                                  setToolCode(currentEditorValue as string);
-                                }, 0);
-                              }}
+                              onSubmit={handleApplyChangesCodeSubmit}
                             >
                               <div className="flex h-[45px] items-center justify-between rounded-t-lg border-b border-gray-400 bg-[#0d1117] px-3 py-2">
                                 <span className="inline-flex items-center gap-2 pl-3 text-xs font-medium text-gray-50">
@@ -806,18 +771,8 @@ function CreateToolPage() {
                                     >
                                       <Button
                                         className="!h-[32px] min-w-[80px] rounded-xl"
-                                        onClick={() => {
-                                          setIsDirty(false);
-                                          setResetCounter((prev) => prev + 1);
-                                          forceGenerateMetadata.current = true;
-                                          setTimeout(() => {
-                                            setToolCode(
-                                              baseToolCodeRef.current,
-                                            );
-                                          }, 0);
-                                        }}
+                                        onClick={resetToolCode}
                                         size="sm"
-                                        type="reset"
                                         variant="outline"
                                       >
                                         Reset
@@ -1059,184 +1014,3 @@ function CreateToolPage() {
 }
 
 export default CreateToolPage;
-
-export function ToolSelectionModal({
-  form,
-}: {
-  form: UseFormReturn<CreateToolCodeFormSchema>;
-}) {
-  const auth = useAuth((state) => state.auth);
-
-  const { data: toolsList } = useGetTools({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
-
-  return (
-    <TooltipProvider delayDuration={0}>
-      <Popover>
-        <PopoverTrigger asChild>
-          <div
-            className={cn(actionButtonClassnames, 'w-[90px]')}
-            role="button"
-            tabIndex={0}
-          >
-            Tools{' '}
-            <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 p-0 text-center text-gray-50">
-              {form.watch('tools').length}
-            </Badge>
-          </div>
-        </PopoverTrigger>
-        <PopoverContent
-          align="start"
-          className="flex w-full max-w-xl flex-col gap-3 bg-gray-300 p-4 pr-1 text-xs"
-        >
-          <div className="flex items-center justify-between pr-3">
-            <p className="font-semibold text-white">Available tools</p>
-            <div className="flex items-center gap-3">
-              <Switch
-                checked={form.watch('tools').length === toolsList?.length}
-                id="all"
-                onCheckedChange={(checked) => {
-                  const isAllConfigFilled = toolsList
-                    ?.map((tool) => tool.config)
-                    .filter((item) => !!item)
-                    .flat()
-                    ?.map((conf) => ({
-                      key_name: conf.BasicConfig.key_name,
-                      key_value: conf.BasicConfig.key_value ?? '',
-                      required: conf.BasicConfig.required,
-                    }))
-                    .every(
-                      (conf) =>
-                        !conf.required ||
-                        (conf.required && conf.key_value !== ''),
-                    );
-                  if (!isAllConfigFilled) {
-                    toast.error('Tool configuration', {
-                      description:
-                        'Please fill in the config required in tool details',
-                    });
-                    return;
-                  }
-
-                  if (checked && toolsList) {
-                    form.setValue(
-                      'tools',
-                      toolsList.map((tool) => tool.tool_router_key),
-                    );
-                  } else {
-                    form.setValue('tools', []);
-                  }
-                }}
-              />
-              <label className="text-xs text-gray-50" htmlFor="all">
-                Enabled All
-              </label>
-            </div>
-          </div>
-
-          <div className="flex max-h-[28vh] flex-col gap-2.5 overflow-auto pr-2">
-            {toolsList?.map((tool) => (
-              <FormField
-                control={form.control}
-                key={tool.tool_router_key}
-                name="tools"
-                render={({ field }) => (
-                  <FormItem className="flex w-full flex-col gap-3">
-                    <FormControl>
-                      <div className="flex w-full items-center gap-3">
-                        <Switch
-                          checked={field.value.includes(tool.tool_router_key)}
-                          id={tool.tool_router_key}
-                          onCheckedChange={() => {
-                            const configs = tool?.config ?? [];
-                            if (
-                              configs
-                                .map((conf) => ({
-                                  key_name: conf.BasicConfig.key_name,
-                                  key_value: conf.BasicConfig.key_value ?? '',
-                                  required: conf.BasicConfig.required,
-                                }))
-                                .every(
-                                  (conf) =>
-                                    !conf.required ||
-                                    (conf.required && conf.key_value !== ''),
-                                )
-                            ) {
-                              field.onChange(
-                                field.value.includes(tool.tool_router_key)
-                                  ? field.value.filter(
-                                      (value) => value !== tool.tool_router_key,
-                                    )
-                                  : [...field.value, tool.tool_router_key],
-                              );
-
-                              return;
-                            }
-                            toast.error('Tool configuration is required', {
-                              description:
-                                'Please fill in the config required in tool details',
-                            });
-                          }}
-                        />
-                        <div className="inline-flex flex-1 items-center gap-2 leading-none">
-                          <label
-                            className="max-w-[40ch] truncate text-xs text-gray-50"
-                            htmlFor={tool.tool_router_key}
-                          >
-                            {formatText(tool.name)}
-                          </label>
-                          <Tooltip>
-                            <TooltipTrigger className="flex shrink-0 items-center gap-1">
-                              <InfoCircleIcon className="h-3 w-3 text-gray-100" />
-                            </TooltipTrigger>
-                            <TooltipPortal>
-                              <TooltipContent
-                                align="center"
-                                alignOffset={-10}
-                                className="max-w-md"
-                                side="top"
-                              >
-                                {tool.description}
-                              </TooltipContent>
-                            </TooltipPortal>
-                          </Tooltip>
-                        </div>
-                        {(tool.config ?? []).length > 0 && (
-                          <Tooltip>
-                            <TooltipTrigger
-                              asChild
-                              className="flex shrink-0 items-center gap-1"
-                            >
-                              <Link
-                                className="text-gray-80 size-3.5 rounded-lg hover:text-white"
-                                to={`/tools/${tool.tool_router_key}`}
-                              >
-                                <BoltIcon className="size-full" />
-                              </Link>
-                            </TooltipTrigger>
-                            <TooltipPortal>
-                              <TooltipContent
-                                align="center"
-                                alignOffset={-10}
-                                className="max-w-md"
-                                side="top"
-                              >
-                                <p>Configure tool</p>
-                              </TooltipContent>
-                            </TooltipPortal>
-                          </Tooltip>
-                        )}
-                      </div>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            ))}
-          </div>
-        </PopoverContent>
-      </Popover>
-    </TooltipProvider>
-  );
-}

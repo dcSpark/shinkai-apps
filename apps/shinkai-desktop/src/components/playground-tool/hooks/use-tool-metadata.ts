@@ -1,4 +1,5 @@
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { PrismEditor } from 'prism-react-editor';
 import { useEffect, useRef, useState } from 'react';
 
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
@@ -17,6 +18,8 @@ export const useToolMetadata = ({
     error?: string | null;
   };
 }) => {
+  const metadataEditorRef = useRef<PrismEditor | null>(null);
+
   const [metadataData, setMetadataData] = useState<ToolMetadata | null>(
     initialState?.metadata ?? null,
   );
@@ -95,5 +98,6 @@ export const useToolMetadata = ({
     metadataGenerationError: error,
     metadataGenerationData: metadataData,
     forceGenerateMetadata,
+    metadataEditorRef,
   };
 };
