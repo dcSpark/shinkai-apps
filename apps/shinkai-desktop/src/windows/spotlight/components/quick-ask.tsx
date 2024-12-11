@@ -14,7 +14,7 @@ import {
   CollapsibleTrigger,
   CopyToClipboardIcon,
   DotsLoader,
-  MarkdownPreview,
+  MarkdownText,
   ScrollArea,
   Separator,
 } from '@shinkai_network/shinkai-ui';
@@ -409,9 +409,9 @@ const QuickAskBodyWithResponseBase = ({
           <ChevronRight className="text-gray-80 h-4 w-4 shrink-0" />
         </CollapsibleTrigger>
         <CollapsibleContent className="max-h-[150px] overflow-y-auto px-5 pb-2 pt-0.5">
-          <MarkdownPreview
+          <MarkdownText
             className="prose-h1:!text-gray-50 prose-h1:!text-sm !text-sm !text-gray-50"
-            source={inputMessage?.content}
+            content={inputMessage?.content ?? ''}
           />
         </CollapsibleContent>
       </Collapsible>
@@ -421,14 +421,11 @@ const QuickAskBodyWithResponseBase = ({
           lastMessage?.content === '' && <DotsLoader className="pl-1 pt-1" />}
 
         {lastMessage?.role === 'assistant' && (
-          <MarkdownPreview
+          <MarkdownText
             className={cn(
               'prose-h1:!text-white prose-h1:!text-sm !text-sm !text-white',
-              lastMessage?.content &&
-                lastMessage?.status.type === 'running' &&
-                'md-running',
             )}
-            source={
+            content={
               lastMessage?.content?.startsWith('{') &&
               lastMessage?.content?.endsWith('}')
                 ? `
@@ -437,6 +434,9 @@ ${lastMessage?.content}
 \`\`\`
 `
                 : lastMessage?.content
+            }
+            isRunning={
+              !!lastMessage?.content && lastMessage?.status.type === 'running'
             }
           />
         )}

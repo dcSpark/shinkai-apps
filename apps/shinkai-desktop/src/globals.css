@@ -25,3 +25,8 @@ html {
 ::-webkit-scrollbar-track {
   @apply bg-gray-400;
 }
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
