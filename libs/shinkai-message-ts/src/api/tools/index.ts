@@ -19,7 +19,6 @@ import {
   GetPlaygroundToolsResponse,
   GetToolResponse,
   GetToolsResponse,
-  GetToolsSearchResponse,
   ImportToolRequest,
   ImportToolResponse,
   PayInvoiceRequest,
@@ -91,7 +90,7 @@ export const searchTools = async (
       responseType: 'json',
     },
   );
-  return response.data as GetToolsSearchResponse;
+  return response.data as GetToolsResponse;
 };
 
 export const updateTool = async (
