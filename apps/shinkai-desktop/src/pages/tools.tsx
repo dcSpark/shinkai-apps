@@ -64,7 +64,7 @@ export const Tools = () => {
         token: auth?.api_v2_key ?? '',
         search: debouncedSearchQuery,
       },
-      { enabled: isSearchQuerySynced },
+      { enabled: isSearchQuerySynced && !!searchQuery },
     );
 
   const { mutateAsync: updateTool } = useUpdateTool();

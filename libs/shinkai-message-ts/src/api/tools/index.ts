@@ -91,9 +91,7 @@ export const searchTools = async (
       responseType: 'json',
     },
   );
-  const data = response.data as GetToolsSearchResponse;
-  const formattedData = data.map(([header]) => header);
-  return formattedData as GetToolsResponse;
+  return response.data as GetToolsSearchResponse;
 };
 
 export const updateTool = async (
