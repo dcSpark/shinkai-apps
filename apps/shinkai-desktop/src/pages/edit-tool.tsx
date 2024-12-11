@@ -4,7 +4,10 @@ import { FormProps } from '@rjsf/core';
 import { RJSFSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import {
+  CodeLanguage,
+  ToolMetadata,
+} from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   buildInboxIdFromJobId,
   extractJobIdFromInbox,
@@ -51,6 +54,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
+import { LanguageToolSelector } from '../components/playground-tool/components/language-tool-selector';
 import { ToolErrorFallback } from '../components/playground-tool/error-boundary';
 import { useToolCode } from '../components/playground-tool/hooks/use-tool-code';
 import { useToolMetadata } from '../components/playground-tool/hooks/use-tool-metadata';
@@ -59,15 +63,12 @@ import { ToolMetadataSchema } from '../components/playground-tool/schemas';
 import ToolCodeEditor from '../components/playground-tool/tool-code-editor';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
-import { ToolSelectionModal } from './create-tool';
-
-export const createToolCodeFormSchema = z.object({
-  message: z.string().min(1),
-  llmProviderId: z.string().min(1),
-  tools: z.array(z.string()),
-});
-
-export type CreateToolCodeFormSchema = z.infer<typeof createToolCodeFormSchema>;
+import {
+  CreateToolCodeFormSchema,
+  createToolCodeFormSchema,
+  detectLanguage,
+  ToolSelectionModal,
+} from './create-tool';
 
 function EditToolPage() {
   const auth = useAuth((state) => state.auth);
@@ -104,6 +105,15 @@ function EditToolPage() {
 
   const [resetCounter, setResetCounter] = useState(0);
 
+  const form = useForm<CreateToolCodeFormSchema>({
+    resolver: zodResolver(createToolCodeFormSchema),
+    defaultValues: {
+      message: '',
+      tools: [],
+      language: detectLanguage(playgroundTool?.code ?? '') as CodeLanguage,
+    },
+  });
+
   const {
     toolCode,
     setToolCode,
@@ -119,7 +129,10 @@ function EditToolPage() {
     isFetchingPreviousPage,
     isChatConversationSuccess,
     chatConversationData,
-  } = useToolCode({ chatInboxId });
+  } = useToolCode({
+    chatInboxId,
+    language: detectLanguage(playgroundTool?.code ?? '') as CodeLanguage,
+  });
 
   const isValidSchema = validator.ajv.validateSchema(
     playgroundTool?.metadata?.parameters ?? {},
@@ -158,14 +171,6 @@ function EditToolPage() {
     chatInboxIdMetadata,
     code: toolCode,
     initialState,
-  });
-
-  const form = useForm<CreateToolCodeFormSchema>({
-    resolver: zodResolver(createToolCodeFormSchema),
-    defaultValues: {
-      message: '',
-      tools: [],
-    },
   });
 
   const { mutateAsync: createToolMetadata } = useCreateToolMetadata();
@@ -267,6 +272,7 @@ function EditToolPage() {
         llmProviderId: data.llmProviderId,
         tools: data.tools,
         jobId: playgroundTool?.job_id,
+        language: data.language,
       },
       {
         onSuccess: () => {
@@ -291,6 +297,7 @@ function EditToolPage() {
       params,
       llmProviderId: form.getValues('llmProviderId'),
       tools: form.getValues('tools'),
+      language: form.getValues('language'),
     });
   };
 
@@ -419,6 +426,15 @@ function EditToolPage() {
                                 form.setValue('llmProviderId', value);
                               }}
                               value={form.watch('llmProviderId')}
+                            />
+                            <LanguageToolSelector
+                              onValueChange={(value) => {
+                                form.setValue(
+                                  'language',
+                                  value as CodeLanguage,
+                                );
+                              }}
+                              value={form.watch('language')}
                             />
                             <ToolSelectionModal form={form} />
                           </div>

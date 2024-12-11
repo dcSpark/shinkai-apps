@@ -97,7 +97,7 @@ export function extractTypeScriptCode(message: string, language: CodeLanguage) {
   return tsCodeMatch ? tsCodeMatch[1].trim() : null;
 }
 
-function detectLanguage(code: string): string {
+export function detectLanguage(code: string): string {
   const pythonPatterns = [
     /\bdef\b/,
     /\bclass\b/,
