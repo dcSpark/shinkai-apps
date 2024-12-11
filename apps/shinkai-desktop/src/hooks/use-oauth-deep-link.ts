@@ -1,0 +1,34 @@
+import { useSetOAuthToken } from '@shinkai_network/shinkai-node-state/v2/mutations/setOAuthToken/index';
+import { emit, listen } from '@tauri-apps/api/event';
+import { useEffect } from 'react';
+
+import { useAuth } from '../store/auth';
+
+export const useOAuthDeepLink = () => {
+  const { mutateAsync: setOAuthToken } = useSetOAuthToken({
+    onSuccess: (data) => {
+      console.log('oauth-success', data);
+      emit('oauth-success', data);
+    },
+  });
+  const auth = useAuth((s) => s.auth);
+
+  useEffect(() => {
+    if (!auth) return;
+    const unlisten = listen('oauth-deep-link', (event) => {
+      console.log('useOAuthDeepLink');
+
+      const payload = event.payload as { state: string; code: string };
+      setOAuthToken({
+        state: payload.state,
+        code: payload.code,
+        nodeAddress: auth.node_address ?? '',
+        token: auth.api_v2_key ?? '',
+      });
+    });
+
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, [setOAuthToken, auth]);
+};

@@ -42,7 +42,7 @@ uuid = "1.10.0"
 
 tauri-plugin-global-shortcut = "2.2"
 tauri-plugin-shell = "2.2"
-tauri-plugin-single-instance = "2.2"
+tauri-plugin-single-instance = { version = "2.2", features = ["deep-link"] }
 tauri-plugin-updater = "2.3"
 tauri-plugin-dialog = "2.2"
 tauri-plugin-fs ="2.2"

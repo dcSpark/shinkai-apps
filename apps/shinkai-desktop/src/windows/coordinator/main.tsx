@@ -2,6 +2,7 @@ import { info } from '@tauri-apps/plugin-log';
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 
+import { useOAuthDeepLink } from '../../hooks/use-oauth-deep-link';
 import {
   useSyncStorageMain,
   useSyncStorageSecondary,
@@ -15,6 +16,8 @@ const App = () => {
   useSyncStorageMain();
   useSyncStorageSecondary();
   useSyncStorageSideEffects();
+  useOAuthDeepLink();
+
   return null;
 };
 
