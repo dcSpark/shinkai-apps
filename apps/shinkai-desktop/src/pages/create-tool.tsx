@@ -4,7 +4,10 @@ import { FormProps } from '@rjsf/core';
 import { RJSFSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import {
+  CodeLanguage,
+  ToolMetadata,
+} from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   buildInboxIdFromJobId,
   extractJobIdFromInbox,
@@ -68,6 +71,7 @@ import { z } from 'zod';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import { actionButtonClassnames } from '../components/chat/conversation-footer';
+import { LanguageToolSelector } from '../components/playground-tool/components/language-tool-selector';
 import { ToolErrorFallback } from '../components/playground-tool/error-boundary';
 import { useToolCode } from '../components/playground-tool/hooks/use-tool-code';
 import { useToolMetadata } from '../components/playground-tool/hooks/use-tool-metadata';
@@ -81,13 +85,44 @@ export const createToolCodeFormSchema = z.object({
   message: z.string().min(1),
   llmProviderId: z.string().min(1),
   tools: z.array(z.string()),
+  language: z.nativeEnum(CodeLanguage),
 });
 
 export type CreateToolCodeFormSchema = z.infer<typeof createToolCodeFormSchema>;
 
-export function extractTypeScriptCode(message: string) {
-  const tsCodeMatch = message.match(/```typescript\n([\s\S]*?)\n```/);
+export function extractTypeScriptCode(message: string, language: CodeLanguage) {
+  const tsCodeMatch = message.match(
+    new RegExp(`\`\`\`${language.toLowerCase()}\n([\\s\\S]*?)\n\`\`\``),
+  );
   return tsCodeMatch ? tsCodeMatch[1].trim() : null;
+}
+
+function detectLanguage(code: string): string {
+  const pythonPatterns = [
+    /\bdef\b/,
+    /\bclass\b/,
+    /\bimport\b/,
+    /\basync\s+def\b/,
+    /from\s+\w+\s+import\b/,
+    /#.*$/,
+  ];
+
+  const typescriptPatterns = [
+    /\bfunction\b/,
+    /\binterface\b/,
+    /\btype\b\s+\w+\s*=/,
+    /\bexport\s+(default\s+)?/,
+    /\/\/.*$/,
+    /:\s*\w+(\[\])?/,
+  ];
+
+  const isPython = pythonPatterns.some((pattern) => pattern.test(code));
+
+  const isTypeScript = typescriptPatterns.some((pattern) => pattern.test(code));
+
+  if (isPython) return 'Python';
+  if (isTypeScript) return 'TypeScript';
+  return 'Unknown';
 }
 
 function CreateToolPage() {
@@ -103,6 +138,15 @@ function CreateToolPage() {
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<
     string | undefined
   >(undefined);
+
+  const form = useForm<CreateToolCodeFormSchema>({
+    resolver: zodResolver(createToolCodeFormSchema),
+    defaultValues: {
+      message: '',
+      tools: [],
+      language: CodeLanguage.Typescript,
+    },
+  });
 
   const {
     toolCode,
@@ -120,7 +164,7 @@ function CreateToolPage() {
     isChatConversationSuccess,
     chatConversationData,
     toolHistory,
-  } = useToolCode({ chatInboxId });
+  } = useToolCode({ chatInboxId, language: form.watch('language') });
 
   const {
     isMetadataGenerationPending,
@@ -135,14 +179,6 @@ function CreateToolPage() {
   const codeEditorRef = useRef<PrismEditor | null>(null);
   const metadataEditorRef = useRef<PrismEditor | null>(null);
   const [resetCounter, setResetCounter] = useState(0);
-
-  const form = useForm<CreateToolCodeFormSchema>({
-    resolver: zodResolver(createToolCodeFormSchema),
-    defaultValues: {
-      message: '',
-      tools: [],
-    },
-  });
 
   const { mutateAsync: createToolMetadata } = useCreateToolMetadata();
   const {
@@ -266,6 +302,7 @@ function CreateToolPage() {
       llmProviderId: data.llmProviderId,
       jobId: chatInboxId ? extractJobIdFromInbox(chatInboxId ?? '') : undefined,
       tools: data.tools,
+      language: data.language,
     });
 
     form.setValue('message', '');
@@ -282,6 +319,7 @@ function CreateToolPage() {
       params,
       llmProviderId: form.getValues('llmProviderId'),
       tools: form.getValues('tools'),
+      language: form.getValues('language'),
     });
   };
 
@@ -417,6 +455,15 @@ function CreateToolPage() {
                                 form.setValue('llmProviderId', value);
                               }}
                               value={form.watch('llmProviderId')}
+                            />
+                            <LanguageToolSelector
+                              onValueChange={(value) => {
+                                form.setValue(
+                                  'language',
+                                  value as CodeLanguage,
+                                );
+                              }}
+                              value={form.watch('language')}
                             />
                             <ToolSelectionModal form={form} />
                           </div>
@@ -743,7 +790,7 @@ function CreateToolPage() {
                               <div className="flex h-[45px] items-center justify-between rounded-t-lg border-b border-gray-400 bg-[#0d1117] px-3 py-2">
                                 <span className="inline-flex items-center gap-2 pl-3 text-xs font-medium text-gray-50">
                                   {' '}
-                                  TypeScript
+                                  {detectLanguage(toolCode)}{' '}
                                   {isDirty && (
                                     <span className="size-2 shrink-0 rounded-full bg-orange-500" />
                                   )}
