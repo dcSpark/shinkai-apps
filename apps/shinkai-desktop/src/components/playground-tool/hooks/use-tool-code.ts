@@ -1,10 +1,17 @@
-import {ChatConversationInfiniteData} from "@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types";
-import {useMemo, useRef, useState} from "react";
+import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { useMemo, useRef, useState } from 'react';
 
-import {useChatConversationWithOptimisticUpdates} from "../../../pages/chat/chat-conversation";
-import {extractTypeScriptCode} from "../../../pages/create-tool";
+import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
+import { extractTypeScriptCode } from '../../../pages/create-tool';
 
-export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
+export const useToolCode = ({
+  chatInboxId,
+  language,
+}: {
+  chatInboxId?: string;
+  language: CodeLanguage;
+}) => {
   const [toolCode, setToolCode] = useState<string>('');
   const baseToolCodeRef = useRef<string>('');
 
@@ -30,8 +37,8 @@ export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
             content:
               message.role === 'user'
                 ? message.content
-                .match(/<input_command>([\s\S]*?)<\/input_command>/)?.[1]
-                ?.trim() ?? ''
+                    .match(/<input_command>([\s\S]*?)<\/input_command>/)?.[1]
+                    ?.trim() ?? ''
                 : message.content,
           };
         });
@@ -52,7 +59,7 @@ export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
         ) {
           return {
             messageId: message.messageId,
-            code: extractTypeScriptCode(message.content) ?? '',
+            code: extractTypeScriptCode(message.content, language) ?? '',
           };
         }
       })
@@ -90,7 +97,8 @@ export const useToolCode = ({ chatInboxId }: { chatInboxId?: string }) => {
       lastMessage.status.type === 'complete'
     ) {
       status = 'success';
-      const generatedCode = extractTypeScriptCode(lastMessage?.content) ?? '';
+      const generatedCode =
+        extractTypeScriptCode(lastMessage?.content, language) ?? '';
       if (generatedCode) {
         baseToolCodeRef.current = generatedCode;
         toolCodeGeneration = generatedCode;
