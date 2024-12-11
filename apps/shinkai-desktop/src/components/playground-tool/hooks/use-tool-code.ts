@@ -3,7 +3,7 @@ import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-stat
 import { useMemo, useRef, useState } from 'react';
 
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
-import { extractTypeScriptCode } from '../../../pages/create-tool';
+import { extractTypeScriptCode } from '../utils/code';
 
 export const useToolCode = ({
   chatInboxId,

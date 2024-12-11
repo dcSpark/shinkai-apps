@@ -30,7 +30,7 @@ import { Card, CardContent } from '../card';
 import { CopyToClipboardIcon } from '../copy-to-clipboard-icon';
 import { DotsLoader } from '../dots-loader';
 import { Form, FormField } from '../form';
-import { MarkdownText, MarkdownTextPrimitive } from '../markdown-preview';
+import { MarkdownText } from '../markdown-preview';
 import {
   Tooltip,
   TooltipContent,
