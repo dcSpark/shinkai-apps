@@ -28,6 +28,7 @@ pub struct ShinkaiNodeOptions {
     pub default_embedding_model: Option<String>,
     pub supported_embedding_models: Option<String>,
     pub shinkai_tools_runner_deno_binary_path: Option<String>,
+    pub shinkai_tools_runner_uv_binary_path: Option<String>,
     pub pdfium_dynamic_lib_path: Option<String>,
 }
 
@@ -195,6 +196,12 @@ impl ShinkaiNodeOptions {
                     .or(base_options.shinkai_tools_runner_deno_binary_path)
                     .unwrap_or_default(),
             ),
+            shinkai_tools_runner_uv_binary_path: Some(
+                options
+                    .shinkai_tools_runner_uv_binary_path
+                    .or(base_options.shinkai_tools_runner_uv_binary_path)
+                    .unwrap_or_default(),
+            ),
             pdfium_dynamic_lib_path: Some(match options.pdfium_dynamic_lib_path {
                 Some(ref path) if !path.is_empty() => path.clone(),
                 _ => base_options.pdfium_dynamic_lib_path.unwrap_or_default(),
@@ -223,6 +230,18 @@ impl Default for ShinkaiNodeOptions {
             .to_string_lossy()
             .to_string();
 
+        let shinkai_tools_runner_uv_binary_path = std::env::current_exe()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .join(if cfg!(target_os = "windows") {
+                "uv.exe"
+            } else {
+                "uv"
+            })
+            .to_string_lossy()
+            .to_string();
+
         ShinkaiNodeOptions {
             node_api_ip: Some("127.0.0.1".to_string()),
             node_api_port: Some("9550".to_string()),
@@ -246,6 +265,7 @@ impl Default for ShinkaiNodeOptions {
             default_embedding_model: Some("snowflake-arctic-embed:xs".to_string()),
             supported_embedding_models: Some("snowflake-arctic-embed:xs".to_string()),
             shinkai_tools_runner_deno_binary_path: Some(shinkai_tools_runner_deno_binary_path),
+            shinkai_tools_runner_uv_binary_path: Some(shinkai_tools_runner_uv_binary_path),
             pdfium_dynamic_lib_path: None,
         }
     }

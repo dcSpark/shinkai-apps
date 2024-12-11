@@ -11,6 +11,7 @@
     "externalBin": [
       "external-binaries/shinkai-node/shinkai-node",
       "external-binaries/shinkai-node/shinkai-tools-runner-resources/deno",
+      "external-binaries/shinkai-node/shinkai-tools-runner-resources/uv",
       "external-binaries/ollama/ollama"
     ],
     "icon": [
