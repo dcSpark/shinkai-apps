@@ -14,6 +14,7 @@ export const executeToolCode = async ({
   llmProviderId,
   tools,
   language,
+  configs,
 }: ExecuteToolCodeInput) => {
   const toolTypeLanguageMap = {
     [CodeLanguage.Python]: DynamicToolType.PythonDynamic,
@@ -26,5 +27,6 @@ export const executeToolCode = async ({
     parameters: params,
     llm_provider: llmProviderId,
     tools,
+    extra_config: configs,
   });
 };

@@ -215,7 +215,7 @@ export type ExecuteToolCodeRequest = {
   tool_type: DynamicToolType;
   parameters: Record<string, any>;
   code: string;
-  extra_config?: string;
+  extra_config?: Record<string, any>;
   llm_provider: string;
   tools: string[];
 };

@@ -7,6 +7,7 @@ import {
 export type ExecuteToolCodeInput = Token & {
   nodeAddress: string;
   params: Record<string, any>;
+  configs?: Record<string, any>;
   code: string;
   llmProviderId: string;
   tools: string[];
