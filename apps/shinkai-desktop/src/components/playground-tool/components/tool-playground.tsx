@@ -228,6 +228,7 @@ function PlaygroundToolEditor({
                 disabledRetryAndEdit={true}
                 fetchPreviousPage={fetchPreviousPage}
                 hasPreviousPage={hasPreviousPage}
+                hidePythonExecution={true}
                 isFetchingPreviousPage={isFetchingPreviousPage}
                 isLoading={isChatConversationLoading}
                 isSuccess={isChatConversationSuccess}
