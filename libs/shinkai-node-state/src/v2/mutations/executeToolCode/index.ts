@@ -24,7 +24,7 @@ export const executeToolCode = async ({
   return await executeToolCodeApi(nodeAddress, token, {
     tool_type: toolTypeLanguageMap[language],
     code,
-    parameters: params,
+    parameters: params ?? {},
     llm_provider: llmProviderId,
     tools,
     extra_config: configs,

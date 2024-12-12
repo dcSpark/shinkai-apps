@@ -1,6 +1,5 @@
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { FormProps } from '@rjsf/core';
-import { RJSFSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
@@ -149,7 +148,7 @@ function PlaygroundToolEditor({
   });
 
   const handleRunCode: FormProps['onSubmit'] = async (data) => {
-    const params = data.formData;
+    const { configs, params } = data.formData;
     const updatedCodeWithoutSave = codeEditorRef.current?.value ?? '';
     await executeToolCodeQuery.mutateAsync({
       code: isDirtyCodeEditor ? updatedCodeWithoutSave : toolCode,
@@ -159,6 +158,7 @@ function PlaygroundToolEditor({
       llmProviderId: form.getValues('llmProviderId'),
       tools: form.getValues('tools'),
       language: form.getValues('language'),
+      configs,
     });
   };
 
@@ -629,11 +629,41 @@ function PlaygroundToolEditor({
                                 noHtml5Validate={true}
                                 onChange={(e) => setFormData(e.formData)}
                                 onSubmit={handleRunCode}
-                                schema={
-                                  metadataGenerationData?.parameters as RJSFSchema
-                                }
+                                schema={{
+                                  type: 'object',
+                                  properties: {
+                                    ...(metadataGenerationData?.configurations
+                                      ?.properties &&
+                                    Object.keys(
+                                      metadataGenerationData.configurations
+                                        .properties,
+                                    ).length > 0
+                                      ? {
+                                          configs:
+                                            metadataGenerationData.configurations,
+                                        }
+                                      : {}),
+                                    ...(metadataGenerationData?.parameters
+                                      ?.properties &&
+                                    Object.keys(
+                                      metadataGenerationData.parameters
+                                        .properties,
+                                    ).length > 0
+                                      ? {
+                                          params:
+                                            metadataGenerationData.parameters,
+                                        }
+                                      : {}),
+                                  },
+                                }}
                                 uiSchema={{
                                   'ui:submitButtonOptions': { norender: true },
+                                  configs: {
+                                    'ui:title': 'Config',
+                                  },
+                                  params: {
+                                    'ui:title': 'Inputs',
+                                  },
                                 }}
                                 validator={validator}
                               />

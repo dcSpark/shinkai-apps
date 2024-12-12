@@ -410,8 +410,6 @@ export const useToolCode = ({
     }, 0);
   };
 
-  console.log({ toolHistory, toolCode });
-
   return {
     chatInboxId,
     toolCode,
