@@ -1,6 +1,7 @@
 import {
   DenoShinkaiTool,
   NetworkShinkaiTool,
+  PythonShinkaiTool,
   RustShinkaiTool,
   ShinkaiTool,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
@@ -13,6 +14,7 @@ import { SubpageLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
 import DenoTool from './deno-tool';
 import NetworkTool from './network-tool';
+import PythonTool from './python-tool';
 import RustTool from './rust-tool';
 
 export function isDenoShinkaiTool(tool: ShinkaiTool): tool is DenoShinkaiTool {
@@ -68,6 +70,16 @@ export default function ToolDetails() {
           (playgroundTool) => playgroundTool.tool_router_key === toolKey,
         )}
         tool={tool as DenoShinkaiTool}
+      />
+    );
+  } else if (isSuccess && toolType === 'Python') {
+    return (
+      <PythonTool
+        isEnabled={isEnabled}
+        isPlaygroundTool={playgroundTools?.some(
+          (playgroundTool) => playgroundTool.tool_router_key === toolKey,
+        )}
+        tool={tool as PythonShinkaiTool}
       />
     );
   } else if (isSuccess && toolType === 'Rust') {
