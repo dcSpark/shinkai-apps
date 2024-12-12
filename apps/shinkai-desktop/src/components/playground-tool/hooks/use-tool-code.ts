@@ -398,7 +398,7 @@ export const useToolCode = ({
 
     setTimeout(() => {
       setToolCode(currentEditorValue as string);
-    }, 0);
+    }, 100);
   };
 
   const resetToolCode = () => {

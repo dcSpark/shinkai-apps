@@ -367,7 +367,7 @@ const MessageBase = ({
                       <DotsLoader />
                     </div>
                   )}
-                {pythonCode && hidePythonExecution && (
+                {pythonCode && !hidePythonExecution && (
                   <PythonCodeRunner code={pythonCode} />
                 )}
                 {message.role === 'user' && !!message.attachments.length && (

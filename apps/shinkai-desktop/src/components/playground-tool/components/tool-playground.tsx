@@ -518,7 +518,7 @@ function PlaygroundToolEditor({
                               key={resetCounter}
                               onSubmit={handleApplyChangesCodeSubmit}
                             >
-                              <div className="flex h-[45px] items-center justify-between rounded-t-lg border-b border-gray-400 bg-[#0d1117] px-3 py-2">
+                              <div className="flex h-[45px] shrink-0 items-center justify-between rounded-t-lg border-b border-gray-400 bg-[#0d1117] px-3 py-2">
                                 <span className="inline-flex items-center gap-2 pl-3 text-xs font-medium text-gray-50">
                                   {' '}
                                   {detectLanguage(toolCode)}{' '}
