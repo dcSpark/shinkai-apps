@@ -217,7 +217,7 @@ function AddAgentPage() {
                             />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="max-h-[40vh]">
                           {llmProviders?.length &&
                             llmProviders.map((llmProvider) => (
                               <SelectItem

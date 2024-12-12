@@ -1,5 +1,8 @@
 import { executeToolCode as executeToolCodeApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
-import { DynamicToolType } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import {
+  CodeLanguage,
+  DynamicToolType,
+} from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
 import { ExecuteToolCodeInput } from './types';
 
@@ -10,12 +13,20 @@ export const executeToolCode = async ({
   params,
   llmProviderId,
   tools,
+  language,
+  configs,
 }: ExecuteToolCodeInput) => {
+  const toolTypeLanguageMap = {
+    [CodeLanguage.Python]: DynamicToolType.PythonDynamic,
+    [CodeLanguage.Typescript]: DynamicToolType.DenoDynamic,
+  };
+
   return await executeToolCodeApi(nodeAddress, token, {
-    tool_type: DynamicToolType.DenoDynamic,
+    tool_type: toolTypeLanguageMap[language],
     code,
-    parameters: params,
+    parameters: params ?? {},
     llm_provider: llmProviderId,
     tools,
+    extra_config: configs,
   });
 };

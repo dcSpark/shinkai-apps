@@ -69,6 +69,7 @@ export const MessageList = ({
   setArtifact,
   artifacts,
   artifact,
+  hidePythonExecution,
 }: {
   noMoreMessageLabel: string;
   isSuccess: boolean;
@@ -91,6 +92,7 @@ export const MessageList = ({
   artifacts?: Artifact[];
   setArtifact?: (artifact: Artifact | null) => void;
   artifact?: Artifact;
+  hidePythonExecution?: boolean;
 }) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const previousChatHeightRef = useRef<number>(0);
@@ -311,6 +313,7 @@ export const MessageList = ({
                                 ? handleFirstMessageRetry
                                 : handleRetryMessage
                             }
+                            hidePythonExecution={hidePythonExecution}
                             key={`${message.messageId}::${messageIndex}`}
                             message={message}
                             messageId={message.messageId}

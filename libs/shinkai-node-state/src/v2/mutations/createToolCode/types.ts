@@ -1,5 +1,8 @@
 import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { CreateToolCodeResponse } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import {
+  CodeLanguage,
+  CreateToolCodeResponse,
+} from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
 export type CreateToolCodeInput = Token & {
   nodeAddress: string;
@@ -7,6 +10,7 @@ export type CreateToolCodeInput = Token & {
   llmProviderId: string;
   jobId?: string;
   tools: string[];
+  language: CodeLanguage;
 };
 
 export type CreateToolCodeOutput = CreateToolCodeResponse;

@@ -47,7 +47,6 @@ import { toast } from 'sonner';
 import Agents from '../components/agent/agents';
 import { useURLQueryParams } from '../hooks/use-url-query-params';
 import { useAuth } from '../store/auth';
-import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { getModelObject } from './add-ai';
 import { SimpleLayout } from './layout/simple-layout';
@@ -60,7 +59,6 @@ const AIsPage = () => {
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
-  const optInExperimental = useSettings((state) => state.optInExperimental);
 
   const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
     (state) => state.isInUse,
@@ -84,11 +82,7 @@ const AIsPage = () => {
       >
         <TabsList
           className={cn(
-            'grid w-full overflow-auto rounded-lg border border-gray-400 bg-transparent p-0.5',
-
-            optInExperimental
-              ? 'max-w-[200px] grid-cols-2'
-              : 'max-w-[100px] grid-cols-1',
+            'grid w-full max-w-[200px] grid-cols-2 overflow-auto rounded-lg border border-gray-400 bg-transparent p-0.5',
           )}
         >
           <TabsTrigger
@@ -97,14 +91,12 @@ const AIsPage = () => {
           >
             AIs
           </TabsTrigger>
-          {optInExperimental && (
-            <TabsTrigger
-              className="flex h-8 items-center gap-1.5 text-xs font-semibold"
-              value="agents"
-            >
-              Agents
-            </TabsTrigger>
-          )}
+          <TabsTrigger
+            className="flex h-8 items-center gap-1.5 text-xs font-semibold"
+            value="agents"
+          >
+            Agents
+          </TabsTrigger>
         </TabsList>
         <TabsContent className="h-full" value="ais">
           <div className="absolute right-3 top-0">
@@ -153,11 +145,9 @@ const AIsPage = () => {
             )}
           </div>
         </TabsContent>
-        {optInExperimental && (
-          <TabsContent className="h-full" value="agents">
-            <Agents />
-          </TabsContent>
-        )}
+        <TabsContent className="h-full" value="agents">
+          <Agents />
+        </TabsContent>
       </Tabs>
     </SimpleLayout>
   );
