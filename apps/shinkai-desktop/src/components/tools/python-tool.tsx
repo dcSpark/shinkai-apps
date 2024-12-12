@@ -173,7 +173,7 @@ export default function PythonTool({
             onCheckedChange={async () => {
               await updateTool({
                 toolKey: toolKey ?? '',
-                toolType: 'Deno',
+                toolType: 'Python',
                 toolPayload: {} as ShinkaiTool,
                 isToolEnabled: !isEnabled,
                 nodeAddress: auth?.node_address ?? '',
