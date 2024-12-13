@@ -1,4 +1,4 @@
-use tauri::{Emitter, EventTarget};
+use tauri::Emitter;
 use tauri_plugin_deep_link::DeepLinkExt;
 
 use crate::windows::{recreate_window, Window};
@@ -30,10 +30,13 @@ pub fn setup_deep_links(app: &tauri::AppHandle) -> tauri::Result<()> {
                         state: url.query().unwrap_or_default().to_string(),
                         code: url.query().unwrap_or_default().to_string(),
                     };
-                    log::debug!("emitting oauth-deep-link event to {}", Window::Coordinator.as_str());
+                    log::debug!(
+                        "emitting oauth-deep-link event to {}",
+                        Window::Coordinator.as_str()
+                    );
                     let _ = recreate_window(app_handle.clone(), Window::Main, true);
                     let _ = app_handle.emit_to(
-                        EventTarget::webview_window(Window::Coordinator.as_str()),
+                        Window::Coordinator.as_str(),
                         "oauth-deep-link",
                         payload,
                     );

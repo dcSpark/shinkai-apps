@@ -14,9 +14,8 @@ export const useOAuthDeepLink = () => {
   const auth = useAuth((s) => s.auth);
 
   useEffect(() => {
-    if (!auth) return;
     const unlisten = listen('oauth-deep-link', (event) => {
-      console.log('useOAuthDeepLink');
+      if (!auth) return;
 
       const payload = event.payload as { state: string; code: string };
       setOAuthToken({
