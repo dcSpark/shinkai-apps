@@ -28,6 +28,7 @@ import {
   CreateAIIcon,
   FilesIcon,
   InboxIcon,
+  ScheduledTasksIcon,
   // MySubscriptionsIcon,
   SheetIcon,
   ShinkaiCombinationMarkIcon,
@@ -360,6 +361,11 @@ export function MainNav() {
       title: 'Shinkai Tools',
       href: '/tools',
       icon: <ToolsIcon className="h-5 w-5" />,
+    },
+    optInExperimental && {
+      title: 'Scheduled Tasks',
+      href: '/tasks',
+      icon: <ScheduledTasksIcon className="h-5 w-5" />,
     },
   ].filter(Boolean) as NavigationLink[];
 

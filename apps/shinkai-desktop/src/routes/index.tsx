@@ -37,6 +37,7 @@ import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
 import { ConnectMethodQrCodePage } from '../pages/connect-method-qr-code';
 import CreateChatPage from '../pages/create-chat';
+import CreateTaskPage from '../pages/create-task';
 import CreateToolPage from '../pages/create-tool';
 import CryptoWalletPage from '../pages/crypto-wallet';
 import EditToolPage from '../pages/edit-tool';
@@ -57,6 +58,7 @@ import SettingsPage from '../pages/settings';
 import SheetDashboard from '../pages/sheet-dashboard';
 import SheetProject from '../pages/sheet-project';
 import ShinkaiPrivatePage from '../pages/shinkai-private';
+import { Tasks } from '../pages/tasks';
 import TermsAndConditionsPage from '../pages/terms-conditions';
 import { Tools } from '../pages/tools';
 import { useAuth } from '../store/auth';
@@ -312,6 +314,19 @@ const AppRoutes = () => {
           <Route element={<Tools />} index />
           <Route element={<ToolDetails />} path={':toolKey'} />
           <Route element={<CreateToolPage />} path={'create'} />
+          <Route element={<EditToolPage />} path={'edit/:toolRouterKey'} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute>
+              <Outlet />
+            </ProtectedRoute>
+          }
+          path={'tasks'}
+        >
+          <Route element={<Tasks />} index />
+          <Route element={<ToolDetails />} path={':toolKey'} />
+          <Route element={<CreateTaskPage />} path={'create'} />
           <Route element={<EditToolPage />} path={'edit/:toolRouterKey'} />
         </Route>
         <Route
