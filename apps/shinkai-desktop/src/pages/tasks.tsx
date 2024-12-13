@@ -1,72 +1,43 @@
-import { zodResolver } from '@hookform/resolvers/zod';
+import { DialogClose } from '@radix-ui/react-dialog';
+import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { ShinkaiTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
-import { useImportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/importTool/useImportTool';
-import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
-import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
-import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
+import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
+import { useGetRecurringTasks } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTasks/useGetRecurringTasks';
 import {
-  Badge,
   Button,
   buttonVariants,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogTitle,
-  DialogTrigger,
-  Form,
-  FormField,
-  Input,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
   Switch,
-  TextField,
-  Tooltip,
-  TooltipContent,
-  TooltipPortal,
-  TooltipProvider,
-  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import {
-  BoltIcon,
-  CloudDownloadIcon,
-  PlusIcon,
-  SearchIcon,
-  XIcon,
-} from 'lucide-react';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Edit, HistoryIcon, PlusIcon, TrashIcon } from 'lucide-react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
-import { useDebounce } from '../hooks/use-debounce';
 import { useAuth } from '../store/auth';
 import { SimpleLayout } from './layout/simple-layout';
 
 export const Tasks = () => {
   const auth = useAuth((state) => state.auth);
-  const { t } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState('');
-  const debouncedSearchQuery = useDebounce(searchQuery, 600);
-  const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
 
-  const { data: toolsList, isPending } = useGetTools({
+  const {
+    data: tasks,
+    isPending,
+    isSuccess,
+  } = useGetRecurringTasks({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
-
-  const { data: searchToolList, isLoading: isSearchToolListPending } =
-    useGetSearchTools(
-      {
-        nodeAddress: auth?.node_address ?? '',
-        token: auth?.api_v2_key ?? '',
-        search: debouncedSearchQuery,
-      },
-      { enabled: isSearchQuerySynced && !!searchQuery },
-    );
-
-  const { mutateAsync: updateTool } = useUpdateTool();
 
   return (
     <SimpleLayout
@@ -91,34 +62,8 @@ export const Tasks = () => {
       }
       title="Scheduled Tasks"
     >
-      <div className="relative mb-4 flex h-10 w-full items-center">
-        <Input
-          className="placeholder-gray-80 !h-full border-none bg-gray-400 py-2 pl-10"
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-          }}
-          placeholder="Search..."
-          spellCheck={false}
-          value={searchQuery}
-        />
-        <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
-        {searchQuery && (
-          <Button
-            className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
-            onClick={() => {
-              setSearchQuery('');
-            }}
-            size="auto"
-            type="button"
-            variant="ghost"
-          >
-            <XIcon />
-            <span className="sr-only">{t('common.clearSearch')}</span>
-          </Button>
-        )}
-      </div>
       <div className="divide-y divide-gray-300">
-        {(isPending || !isSearchQuerySynced || isSearchToolListPending) &&
+        {isPending &&
           Array.from({ length: 8 }).map((_, idx) => (
             <div
               className={cn(
@@ -137,138 +82,25 @@ export const Tasks = () => {
               <span className="h-5 w-[36px] rounded-full bg-gray-300" />
             </div>
           ))}
-        {!searchQuery &&
-          isSearchQuerySynced &&
-          toolsList?.map((tool) => (
-            <div
-              className={cn(
-                'grid grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm bg-gray-500 px-2 py-4 text-left text-sm',
-              )}
-              key={tool.tool_router_key}
-            >
-              <div className="flex flex-col gap-2.5">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium capitalize text-white">
-                    {formatText(tool.name)}{' '}
-                  </span>
-                  {tool.author !== '@@official.shinkai' && (
-                    <Badge className="text-gray-80 bg-gray-200 text-xs font-normal">
-                      {tool.author}
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-gray-80 line-clamp-2 text-xs">
-                  {tool.description}
-                </p>
-              </div>
-              <Link
-                className={cn(
-                  buttonVariants({
-                    variant: 'outline',
-                    size: 'sm',
-                  }),
-                  'min-h-auto h-auto rounded-md py-2',
-                )}
-                to={`/tools/${tool.tool_router_key}`}
-              >
-                <BoltIcon className="mr-1.5 h-4 w-4" />
-                {t('common.configure')}
-              </Link>
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger className="flex items-center gap-1">
-                    <Switch
-                      checked={tool.enabled}
-                      onCheckedChange={async () => {
-                        await updateTool({
-                          toolKey: tool.tool_router_key,
-                          toolType: tool.tool_type,
-                          toolPayload: {} as ShinkaiTool,
-                          isToolEnabled: !tool.enabled,
-                          nodeAddress: auth?.node_address ?? '',
-                          token: auth?.api_v2_key ?? '',
-                        });
-                      }}
-                    />
-                  </TooltipTrigger>
-                  <TooltipPortal>
-                    <TooltipContent align="center" side="top">
-                      {t('common.enabled')}
-                    </TooltipContent>
-                  </TooltipPortal>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+        {isSuccess &&
+          tasks.length > 0 &&
+          tasks?.map((task) => (
+            <TaskCard
+              cronExpression={task.cron}
+              description={task.description}
+              key={task.task_id}
+              name={task.name}
+              prompt={
+                'CreateJobWithConfigAndMessage' in task.action
+                  ? task.action.CreateJobWithConfigAndMessage.message.content
+                  : ''
+              }
+              taskId={task.task_id}
+            />
           ))}
-        {searchQuery &&
-          isSearchQuerySynced &&
-          searchToolList?.map((tool) => (
-            <div
-              className={cn(
-                'grid grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm bg-gray-500 px-2 py-4 text-left text-sm',
-              )}
-              key={tool.tool_router_key}
-            >
-              <div className="flex flex-col gap-2.5">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-white">
-                    {formatText(tool.name)}{' '}
-                  </span>
-                  {tool.author !== '@@official.shinkai' && (
-                    <Badge className="text-gray-80 bg-gray-200 text-xs font-normal">
-                      {tool.author}
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-gray-80 line-clamp-2 text-xs">
-                  {tool.description}
-                </p>
-              </div>
-
-              <Link
-                className={cn(
-                  buttonVariants({
-                    variant: 'outline',
-                    size: 'sm',
-                  }),
-                  'min-h-auto h-auto rounded-md py-2',
-                )}
-                to={`/tools/${tool.tool_router_key}`}
-              >
-                <BoltIcon className="mr-1.5 h-4 w-4" />
-                {t('common.configure')}
-              </Link>
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger className="flex items-center gap-1">
-                    <Switch
-                      checked={tool.enabled}
-                      onCheckedChange={async () => {
-                        await updateTool({
-                          toolKey: tool.tool_router_key,
-                          toolType: tool.tool_type,
-                          toolPayload: {} as ShinkaiTool,
-                          isToolEnabled: !tool.enabled,
-                          nodeAddress: auth?.node_address ?? '',
-                          token: auth?.api_v2_key ?? '',
-                        });
-                      }}
-                    />
-                  </TooltipTrigger>
-                  <TooltipPortal>
-                    <TooltipContent align="center" side="top">
-                      {t('common.enabled')}
-                    </TooltipContent>
-                  </TooltipPortal>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          ))}
-        {searchQuery && isSearchQuerySynced && searchToolList?.length === 0 && (
+        {isSuccess && tasks?.length === 0 && (
           <div className="flex h-20 items-center justify-center">
-            <p className="text-gray-80 text-sm">
-              {t('tools.emptyState.search.text')}
-            </p>
+            <p className="text-gray-80 text-sm">No cron tasks found</p>
           </div>
         )}
       </div>
@@ -276,95 +108,213 @@ export const Tasks = () => {
   );
 };
 
-const importToolFormSchema = z.object({
-  url: z.string().url(),
-});
-type ImportToolFormSchema = z.infer<typeof importToolFormSchema>;
-
-function ImportToolModal() {
-  const auth = useAuth((state) => state.auth);
-
+const TaskCard = ({
+  taskId,
+  name,
+  description,
+  cronExpression,
+  prompt,
+}: {
+  taskId: number;
+  name: string;
+  description?: string;
+  cronExpression: string;
+  prompt: string;
+}) => {
   const navigate = useNavigate();
-  const importToolForm = useForm<ImportToolFormSchema>({
-    resolver: zodResolver(importToolFormSchema),
-  });
-  const [isImportModalOpen, setImportModalOpen] = useState(false);
-
-  const { mutateAsync: importTool, isPending: isPendingImportSheet } =
-    useImportTool({
-      onSuccess: (data) => {
-        setImportModalOpen(false);
-        toast.success('Tool imported successfully', {
-          action: {
-            label: 'View',
-            onClick: () => {
-              navigate(`/tools/${data.tool_key}`);
-            },
-          },
-        });
-      },
-      onError: (error) => {
-        toast.error('Failed to import tool', {
-          description: error.response?.data?.message ?? error.message,
-        });
-      },
-    });
-
-  const onSubmit = async (data: ImportToolFormSchema) => {
-    await importTool({
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      url: data.url,
-    });
-  };
+  const { t } = useTranslation();
+  const [isDeleteTaskDrawerOpen, setIsDeleteTaskDrawerOpen] =
+    React.useState(false);
 
   return (
-    <Dialog onOpenChange={setImportModalOpen} open={isImportModalOpen}>
-      <DialogTrigger asChild>
-        <Button
-          className="h-[30px] gap-2 rounded-lg px-3 text-xs"
-          size="auto"
-          variant="outline"
-        >
-          <CloudDownloadIcon className="size-4" />
-          Import Tool
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-[500px]">
-        <DialogTitle className="pb-0">Import Tool</DialogTitle>
-        <Form {...importToolForm}>
-          <form
-            className="mt-2 flex flex-col gap-6"
-            onSubmit={importToolForm.handleSubmit(onSubmit)}
+    <div
+      className={cn(
+        'grid grid-cols-[1fr_100px_100px_40px] items-start gap-5 rounded-sm bg-gray-500 px-2 py-4 text-left text-sm',
+      )}
+    >
+      <div className="flex flex-col gap-2.5">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium capitalize text-white">
+            {name}
+          </span>
+        </div>
+        <p className="text-gray-80 line-clamp-2 text-xs">
+          {description ?? '-'}
+        </p>
+        <p className="text-gray-80 line-clamp-2 text-xs">
+          <span className="mr-2">Prompt</span>
+          {prompt}
+        </p>
+        <p className="text-gray-80 line-clamp-2 text-xs">
+          <span className="mr-2">Schedule</span>
+          {cronExpression}
+        </p>
+      </div>
+      <div className="flex items-center gap-3 pt-1">
+        <Switch
+        // checked={true}
+        // onCheckedChange={async () => {
+        //   await updateTool({
+        //     toolKey: task.tool_router_key,
+        //     toolType: task.tool_type,
+        //     toolPayload: {} as ShinkaiTool,
+        //     isToolEnabled: !task.enabled,
+        //     nodeAddress: auth?.node_address ?? '',
+        //     token: auth?.api_v2_key ?? '',
+        //   });
+        // }}
+        />
+        <label className="text-xs text-gray-50" htmlFor="all">
+          Active
+        </label>
+      </div>
+      <Link
+        className={cn(
+          buttonVariants({
+            variant: 'outline',
+            size: 'auto',
+          }),
+          'h-[30px] gap-2 rounded-lg px-3 text-xs',
+        )}
+        to="/tasks"
+      >
+        <HistoryIcon className="size-4" />
+        History
+      </Link>
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <div
+            className={cn(
+              buttonVariants({
+                variant: 'outline',
+                size: 'auto',
+              }),
+              'size-[34px] rounded-md border p-1',
+            )}
+            onClick={(event) => {
+              event.stopPropagation();
+            }}
+            role="button"
+            tabIndex={0}
           >
-            <FormField
-              control={importToolForm.control}
-              name="url"
-              render={({ field }) => (
-                <TextField
-                  autoFocus
-                  field={{
-                    ...field,
-                    placeholder: 'https://example.com/file.zip',
-                  }}
-                  label={'URL'}
-                />
+            <span className="sr-only">{t('common.moreOptions')}</span>
+            <DotsVerticalIcon className="text-gray-100" />
+          </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          className="w-[160px] border bg-gray-500 px-2.5 py-2"
+        >
+          {[
+            {
+              name: t('common.edit'),
+              icon: <Edit className="mr-3 h-4 w-4" />,
+              onClick: () => {
+                navigate(`/tasks/edit/${taskId}`);
+              },
+            },
+            {
+              name: t('common.delete'),
+              icon: <TrashIcon className="mr-3 h-4 w-4" />,
+              onClick: () => {
+                // setIsDeleteTaskDrawerOpen(true);
+              },
+            },
+          ].map((option) => (
+            <React.Fragment key={option.name}>
+              {option.name === 'Delete' && (
+                <DropdownMenuSeparator className="bg-gray-300" />
               )}
-            />
-            <DialogFooter>
-              <Button
-                className="w-full"
-                disabled={isPendingImportSheet}
-                isLoading={isPendingImportSheet}
-                size="auto"
-                type="submit"
+              <DropdownMenuItem
+                key={option.name}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  option.onClick();
+                }}
               >
-                Import
+                {option.icon}
+                {option.name}
+              </DropdownMenuItem>
+            </React.Fragment>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <RemoveTaskDrawer
+        onOpenChange={setIsDeleteTaskDrawerOpen}
+        open={isDeleteTaskDrawerOpen}
+        taskId={taskId}
+        taskName={name}
+      />
+    </div>
+  );
+};
+
+const RemoveTaskDrawer = ({
+  open,
+  onOpenChange,
+  taskId,
+  taskName,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  taskId: number;
+  taskName: string;
+}) => {
+  const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
+  const { mutateAsync: removeTask, isPending } = useRemoveRecurringTask({
+    onSuccess: () => {
+      onOpenChange(false);
+      toast.success('Delete task successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed remove task', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
+
+  return (
+    <Dialog onOpenChange={onOpenChange} open={open}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogTitle className="pb-0">
+          Delete Task <span className="font-mono text-base">{taskName}</span> ?
+        </DialogTitle>
+        <DialogDescription>
+          The task will be permanently deleted. This action cannot be undone.
+        </DialogDescription>
+
+        <DialogFooter>
+          <div className="flex gap-2 pt-4">
+            <DialogClose asChild className="flex-1">
+              <Button
+                className="min-w-[100px] flex-1"
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                {t('common.cancel')}
               </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+            </DialogClose>
+            <Button
+              className="min-w-[100px] flex-1"
+              disabled={isPending}
+              isLoading={isPending}
+              onClick={async () => {
+                await removeTask({
+                  nodeAddress: auth?.node_address ?? '',
+                  token: auth?.api_v2_key ?? '',
+                  recurringTaskId: taskId,
+                });
+              }}
+              size="sm"
+              variant="destructive"
+            >
+              {t('common.delete')}
+            </Button>
+          </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
-}
+};

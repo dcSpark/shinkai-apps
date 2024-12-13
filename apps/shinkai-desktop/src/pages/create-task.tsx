@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { useCreateRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/createRecurringTask/useCreateRecurringTask';
 import {
   Button,
   Form,
@@ -17,23 +18,26 @@ import {
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { useAuth } from '../store/auth';
+import { useSettings } from '../store/settings';
 import { SubpageLayout } from './layout/simple-layout';
 
 const createTaskFormSchema = z.object({
   name: z.string(),
+  description: z.string(),
   cronExpression: z.string(),
   jobConfig: z.object({
     custom_system_prompt: z.string().optional(),
-    custom_prompt: z.string().optional(),
-    temperature: z.number().optional(),
+    custom_prompt: z.string(),
+    temperature: z.number(),
     max_tokens: z.number().optional(),
     seed: z.number().optional(),
-    top_k: z.number().optional(),
-    top_p: z.number().optional(),
+    top_k: z.number(),
+    top_p: z.number(),
     stream: z.boolean().optional(),
-    other_model_params: z.unknown().optional(),
     use_tools: z.boolean().optional(),
   }),
   jobMessage: z.object({
@@ -45,12 +49,15 @@ type CreateTaskForm = z.infer<typeof createTaskFormSchema>;
 
 function CreateTaskPage() {
   const { t } = useTranslation();
+  const defaultAgentId = useSettings((state) => state.defaultAgentId);
 
+  const auth = useAuth((state) => state.auth);
   const form = useForm<CreateTaskForm>({
     resolver: zodResolver(createTaskFormSchema),
     defaultValues: {
-      name: '',
-      cronExpression: '',
+      name: 'Hacker News',
+      description: 'Hacker News yada yada',
+      cronExpression: '*/30 * * * *',
       jobConfig: {
         custom_system_prompt: '',
         custom_prompt: '',
@@ -60,17 +67,39 @@ function CreateTaskPage() {
         top_k: 50,
         top_p: 1,
         stream: false,
-        other_model_params: {},
         use_tools: false,
       },
       jobMessage: {
-        content: '',
-        toolKey: '',
+        content: 'Search in duckduckgo about hacker news',
+        toolKey:
+          'local:::shinkai_tool_duckduckgo_search:::shinkai__duckduckgo_search',
       },
     },
   });
 
+  const { mutateAsync: createRecurringTask } = useCreateRecurringTask({
+    onSuccess: () => {
+      toast.success('Task created successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to create task', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
+
   const submit = async (values: CreateTaskForm) => {
+    await createRecurringTask({
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      cronExpression: values.cronExpression,
+      chatConfig: values.jobConfig,
+      message: values.jobMessage.content,
+      toolRouterKey: values.jobMessage.toolKey,
+      llmProvider: defaultAgentId,
+      name: values.name,
+      description: values.description,
+    });
     console.log(values);
   };
   return (
@@ -94,16 +123,24 @@ function CreateTaskPage() {
 
             <FormField
               control={form.control}
+              name="description"
+              render={({ field }) => (
+                <TextField autoFocus field={field} label="Task Description" />
+              )}
+            />
+            <FormField
+              control={form.control}
               name="jobMessage.content"
               render={({ field }) => (
                 <TextField
                   autoFocus
                   field={field}
                   helperMessage="e.g. Give me top hacker news stories "
-                  label="Task Description"
+                  label="Task Prompt"
                 />
               )}
             />
+
             <FormField
               control={form.control}
               name="cronExpression"

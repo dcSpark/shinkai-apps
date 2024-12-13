@@ -9,6 +9,8 @@ import {
   GetRecurringTasksResponse,
   RemoveRecurringTaskRequest,
   RemoveRecurringTaskResponse,
+  SetRecurringTaskRequest,
+  SetRecurringTaskResponse,
 } from './types';
 
 export const createRecurringTask = async (
@@ -55,6 +57,23 @@ export const getRecurringTask = async (
     },
   );
   return response.data as GetRecurringTaskResponse;
+};
+
+export const setRecurringTask = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: SetRecurringTaskRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/update_cron_task'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      params: { cron_task_id: payload.cron_task_id },
+      responseType: 'json',
+    },
+  );
+  return response.data as SetRecurringTaskResponse;
 };
 
 export const removeRecurringTask = async (

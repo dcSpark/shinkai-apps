@@ -4,7 +4,6 @@ import {
   VRFolderScope,
   VRItemScope,
 } from '../jobs/types';
-import { getRecurringTaskLogs } from './index';
 
 export type RecurringTaskAction =
   | {
@@ -32,6 +31,8 @@ export type RecurringTaskAction =
     };
 
 export type CreateRecurringTaskRequest = {
+  name: string;
+  description?: string;
   cron: string;
   action: RecurringTaskAction;
 };
@@ -44,6 +45,8 @@ export type RecurringTask = {
   created_at: string;
   last_modified: string;
   action: RecurringTaskAction;
+  description?: string;
+  name: string;
 };
 
 export type GetRecurringTasksResponse = RecurringTask[];
@@ -52,6 +55,11 @@ export type GetRecurringTaskRequest = {
   cron_task_id: number;
 };
 export type GetRecurringTaskResponse = RecurringTask;
+export type SetRecurringTaskRequest = {
+  cron_task_id: number;
+} & Omit<RecurringTask, 'task_id'>;
+
+export type SetRecurringTaskResponse = RecurringTask;
 export type RemoveRecurringTaskRequest = {
   cron_task_id: number;
 };

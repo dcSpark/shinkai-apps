@@ -131,6 +131,7 @@ export type JobMessage = {
   files_inbox: string;
   parent?: string;
   sheet_job_data?: null;
+  tool_router_key?: string;
   metadata?: {
     tps?: string;
     duration_ms: string;
