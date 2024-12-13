@@ -17,7 +17,6 @@ tauri = { version = "2.0.2", features = [ "macos-private-api", "tray-icon", "ima
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 whisper-rs = "0.8.0"
-cpal = { git = "https://github.com/RustAudio/cpal.git", features = ["asio"] }
 webrtc-vad = "0.2"
 hound = "3.4.0"
 # fix this dependency later on

@@ -23,7 +23,6 @@ use tokio::sync::Mutex;
 use tray::create_tray;
 use windows::{recreate_window, Window};
 
-mod audio;
 mod commands;
 mod galxe;
 mod global_shortcuts;
