@@ -22,9 +22,9 @@ import { UseFormReturn } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { CreateToolCodeFormSchema } from '../../../pages/create-tool';
 import { useAuth } from '../../../store/auth';
 import { actionButtonClassnames } from '../../chat/conversation-footer';
+import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 
 export function ToolsSelection({
   form,
