@@ -90,7 +90,7 @@ function CreateTaskPage() {
   const form = useForm<CreateTaskForm>({
     resolver: zodResolver(createTaskFormSchema),
     defaultValues: {
-      name: 'Hacker News',
+      name: 'Hacker News Task',
       description: 'Hacker News yada yada',
       cronExpression: '* * * * *',
       jobConfig: {
@@ -106,7 +106,7 @@ function CreateTaskPage() {
       },
       llmOrAgentId: defaultAgentId,
       jobMessage: {
-        content: 'Search in duckduckgo about hacker news',
+        content: 'Search in duckduckgo about top hacker news stories',
         toolKey:
           'local:::shinkai_tool_duckduckgo_search:::shinkai__duckduckgo_search',
       },
@@ -234,7 +234,7 @@ function CreateTaskPage() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-[1fr_100px] items-center">
                     <span className="text-gray-80 text-xs">
-                      Select Tool (optional)
+                      Select AI/Agent
                     </span>
                     <AIModelSelector
                       onValueChange={(value) => {
@@ -245,7 +245,7 @@ function CreateTaskPage() {
                   </div>
                   <div className="grid grid-cols-[1fr_250px] items-center">
                     <span className="text-gray-80 text-xs">
-                      Select AI/Agent
+                      Select Tool (optional)
                     </span>
 
                     <DropdownMenu>

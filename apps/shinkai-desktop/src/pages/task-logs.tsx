@@ -100,9 +100,15 @@ export const TaskLogs = () => {
         {isSuccess && logs.length === 0 && (
           <div className="p-10 text-center text-sm">
             <p className="text-white">No runs for this cron task yet</p>
-            <p className="text-gray-80">
+            <p className="text-gray-80 text-xs">
               check the schedule for your cron tasks to see when it runs
             </p>
+          </div>
+        )}
+        {isSuccess && logs.length > 0 && (
+          <div className="p-10 text-center text-sm">
+            <p className="text-white">Logs found</p>
+            <p className="text-gray-80 text-xs">TODO: Display logs</p>
           </div>
         )}
         {/*{isSuccess && (*/}
