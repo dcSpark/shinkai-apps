@@ -5,7 +5,6 @@ import { RemoveRecurringTaskInput } from './types';
 export const removeRecurringTask = async ({
   nodeAddress,
   token,
-
   recurringTaskId,
 }: RemoveRecurringTaskInput) => {
   const response = await removeRecurringTaskApi(nodeAddress, token, {

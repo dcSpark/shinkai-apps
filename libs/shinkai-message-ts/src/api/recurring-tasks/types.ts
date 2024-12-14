@@ -52,20 +52,20 @@ export type RecurringTask = {
 export type GetRecurringTasksResponse = RecurringTask[];
 
 export type GetRecurringTaskRequest = {
-  cron_task_id: number;
+  cron_task_id: string;
 };
 export type GetRecurringTaskResponse = RecurringTask;
 export type SetRecurringTaskRequest = {
-  cron_task_id: number;
+  cron_task_id: string;
 } & Omit<RecurringTask, 'task_id'>;
 
 export type SetRecurringTaskResponse = RecurringTask;
 export type RemoveRecurringTaskRequest = {
-  cron_task_id: number;
+  cron_task_id: string;
 };
 export type RemoveRecurringTaskResponse = {
   status: string;
 };
 export type GetRecurringTaskLogsRequest = {
-  cron_task_id: number;
+  cron_task_id: string;
 };

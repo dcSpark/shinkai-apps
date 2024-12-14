@@ -5,5 +5,5 @@ export type RemoveRecurringTaskOutput = RemoveRecurringTaskResponse;
 
 export type RemoveRecurringTaskInput = Token & {
   nodeAddress: string;
-  recurringTaskId: number;
+  recurringTaskId: string;
 };

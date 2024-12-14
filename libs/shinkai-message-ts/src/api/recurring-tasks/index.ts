@@ -49,7 +49,7 @@ export const getRecurringTask = async (
   payload: GetRecurringTaskRequest,
 ) => {
   const response = await httpClient.get(
-    urlJoin(nodeAddress, '/v2/get_cron_task'),
+    urlJoin(nodeAddress, '/v2/get_specific_cron_task'),
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
       params: { cron_task_id: payload.cron_task_id },

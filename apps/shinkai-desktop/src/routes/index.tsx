@@ -58,6 +58,7 @@ import SettingsPage from '../pages/settings';
 import SheetDashboard from '../pages/sheet-dashboard';
 import SheetProject from '../pages/sheet-project';
 import ShinkaiPrivatePage from '../pages/shinkai-private';
+import { TaskLogs } from '../pages/task-logs';
 import { Tasks } from '../pages/tasks';
 import TermsAndConditionsPage from '../pages/terms-conditions';
 import { Tools } from '../pages/tools';
@@ -325,7 +326,7 @@ const AppRoutes = () => {
           path={'tasks'}
         >
           <Route element={<Tasks />} index />
-          <Route element={<ToolDetails />} path={':toolKey'} />
+          <Route element={<TaskLogs />} path={':taskId'} />
           <Route element={<CreateTaskPage />} path={'create'} />
           <Route element={<EditToolPage />} path={'edit/:toolRouterKey'} />
         </Route>

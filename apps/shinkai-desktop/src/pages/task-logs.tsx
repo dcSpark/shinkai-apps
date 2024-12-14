@@ -2,7 +2,8 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
-import { useGetRecurringTasks } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTasks/useGetRecurringTasks';
+import { useGetRecurringTask } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTask/useGetRecurringTask';
+import { useGetRecurringTaskLogs } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTaskLogs/useGetRecurringTaskLogs';
 import {
   Button,
   buttonVariants,
@@ -16,53 +17,67 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  Switch,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import cronstrue from 'cronstrue';
-import { Edit, PlusIcon, TrashIcon } from 'lucide-react';
+import { Edit, TrashIcon } from 'lucide-react';
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../store/auth';
-import { SimpleLayout } from './layout/simple-layout';
+import { SubpageLayout } from './layout/simple-layout';
 
-export const Tasks = () => {
+export const TaskLogs = () => {
   const auth = useAuth((state) => state.auth);
-
+  const { taskId } = useParams();
   const {
-    data: tasks,
-    isPending,
-    isSuccess,
-  } = useGetRecurringTasks({
+    data: task,
+    isPending: isGetRecurringTaskPending,
+    isSuccess: isGetRecurringTaskSuccess,
+  } = useGetRecurringTask({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
+    recurringTaskId: taskId ?? '',
   });
 
+  const {
+    data: logs,
+    isPending,
+    isSuccess,
+  } = useGetRecurringTaskLogs({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    recurringTaskId: taskId ?? '',
+  });
+
+  console.log(logs, 'logs');
+
   return (
-    <SimpleLayout
-      classname="max-w-4xl"
-      headerRightElement={
-        <div className="flex items-center gap-2">
-          <Link
-            className={cn(
-              buttonVariants({
-                variant: 'default',
-                size: 'auto',
-              }),
-              'h-[30px] gap-2 rounded-lg px-3 text-xs',
-            )}
-            to="/tasks/create"
-          >
-            <PlusIcon className="size-4" />
-            Create New
-          </Link>
+    <SubpageLayout alignLeft className="px-4" title="Cron Logs">
+      {isGetRecurringTaskPending && (
+        <div className="p-4 text-center text-sm">
+          <p className="text-white">Loading cron task details</p>
         </div>
-      }
-      title="Cron Tasks"
-    >
-      <div className="divide-y divide-gray-300 pt-4">
+      )}
+      {isGetRecurringTaskSuccess && (
+        <TaskCard
+          cronExpression={task.cron}
+          description={task.description}
+          key={task.task_id}
+          name={task.name}
+          prompt={
+            'CreateJobWithConfigAndMessage' in task.action
+              ? task.action.CreateJobWithConfigAndMessage.message.content
+              : ''
+          }
+          taskId={task.task_id}
+        />
+      )}
+      <div className="mx-2 mt-6 border-b py-2">
+        <h1 className="text-sm font-bold">Logs</h1>
+      </div>
+      <div className="divide-y divide-gray-300">
         {isPending &&
           Array.from({ length: 8 }).map((_, idx) => (
             <div
@@ -82,29 +97,30 @@ export const Tasks = () => {
               <span className="h-5 w-[36px] rounded-full bg-gray-300" />
             </div>
           ))}
-        {isSuccess &&
-          tasks.length > 0 &&
-          tasks?.map((task) => (
-            <TaskCard
-              cronExpression={task.cron}
-              description={task.description}
-              key={task.task_id}
-              name={task.name}
-              prompt={
-                'CreateJobWithConfigAndMessage' in task.action
-                  ? task.action.CreateJobWithConfigAndMessage.message.content
-                  : ''
-              }
-              taskId={task.task_id}
-            />
-          ))}
-        {isSuccess && tasks?.length === 0 && (
-          <div className="flex h-20 items-center justify-center">
-            <p className="text-gray-80 text-sm">No cron tasks found</p>
+        {isSuccess && logs.length === 0 && (
+          <div className="p-10 text-center text-sm">
+            <p className="text-white">No runs for this cron task yet</p>
+            <p className="text-gray-80">
+              check the schedule for your cron tasks to see when it runs
+            </p>
           </div>
         )}
+        {/*{isSuccess && (*/}
+        {/*  <TaskCard*/}
+        {/*    cronExpression={task.cron}*/}
+        {/*    description={task.description}*/}
+        {/*    key={task.task_id}*/}
+        {/*    name={task.name}*/}
+        {/*    prompt={*/}
+        {/*      'CreateJobWithConfigAndMessage' in task.action*/}
+        {/*        ? task.action.CreateJobWithConfigAndMessage.message.content*/}
+        {/*        : ''*/}
+        {/*    }*/}
+        {/*    taskId={task.task_id}*/}
+        {/*  />*/}
+        {/*)}*/}
       </div>
-    </SimpleLayout>
+    </SubpageLayout>
   );
 };
 
@@ -133,70 +149,36 @@ const TaskCard = ({
   return (
     <div
       className={cn(
-        'grid grid-cols-[1fr_100px_120px_40px] items-start gap-5 rounded-sm bg-gray-500 px-2 py-4 text-left text-sm',
+        'grid grid-cols-[1fr_40px] items-start gap-5 rounded-sm bg-gray-500 px-2 text-left text-sm',
       )}
     >
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium capitalize text-white">
+          <span className="text-base font-medium capitalize text-white">
             {name}
           </span>
         </div>
-        <p className="text-gray-80 line-clamp-2 text-xs">
+        <p className="text-gray-80 line-clamp-2 text-sm">
           {description ?? '-'}
         </p>
-        <p className="line-clamp-2 text-xs text-gray-50">
+        <p className="line-clamp-2 text-sm text-gray-50">
           <span className="text-gray-80 mr-2">Prompt</span>
           {prompt}
         </p>
-        <p className="line-clamp-2 text-xs text-gray-50">
+        <p className="line-clamp-2 text-sm text-gray-50">
           <span className="text-gray-80 mr-2">Schedule</span>
           {readableCron}
         </p>
       </div>
-      <div className="flex items-center gap-3 pt-1">
-        <Switch
-          checked={true}
-          // TODO: need backend changes
-        />
-        <label className="text-xs text-gray-50" htmlFor="all">
-          Active
-        </label>
-      </div>
-      <Link
-        className={cn(
-          buttonVariants({
-            variant: 'outline',
-            size: 'auto',
-          }),
-          'h-[30px] gap-2 rounded-lg px-3 text-xs',
-        )}
-        to={`/tasks/${taskId}`}
-      >
-        <svg
-          className="size-4"
-          fill="none"
-          height="24"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M13 12h8" />
-          <path d="M13 18h8" />
-          <path d="M13 6h8" />
-          <path d="M3 12h1" />
-          <path d="M3 18h1" />
-          <path d="M3 6h1" />
-          <path d="M8 12h1" />
-          <path d="M8 18h1" />
-          <path d="M8 6h1" />
-        </svg>
-        View Logs
-      </Link>
+      {/*<div className="flex items-center gap-3 pt-1">*/}
+      {/*  <Switch*/}
+      {/*    checked={true}*/}
+      {/*    // TODO: need backend changes*/}
+      {/*  />*/}
+      {/*  <label className="text-sm text-gray-50" htmlFor="all">*/}
+      {/*    Active*/}
+      {/*  </label>*/}
+      {/*</div>*/}
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <div
