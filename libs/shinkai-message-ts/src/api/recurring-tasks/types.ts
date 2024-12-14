@@ -37,7 +37,7 @@ export type CreateRecurringTaskRequest = {
   action: RecurringTaskAction;
 };
 
-export type CreateRecurringTaskResponse = {};
+export type CreateRecurringTaskResponse = Record<string, never>;
 
 export type RecurringTask = {
   task_id: number;
