@@ -421,42 +421,13 @@ function ConversationEmptyFooter() {
                           <>
                             {isDragActive && <DropFileActive />}
                             {selectedTool && (
-                              <div className="bg-gray-375 relative max-w-full rounded-lg p-1.5 px-2">
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div className="flex items-center gap-2 pr-6">
-                                      <ToolsIcon className="h-3.5 w-3.5" />
-                                      <div className="line-clamp-1 inline-flex items-center gap-2 text-xs text-gray-100">
-                                        <span className="text-white">
-                                          {formatText(selectedTool.name)}{' '}
-                                        </span>
-                                        <InfoCircleIcon className="h-3 w-3 shrink-0" />
-                                      </div>
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipPortal>
-                                    <TooltipContent
-                                      align="start"
-                                      alignOffset={-10}
-                                      className="max-w-[400px]"
-                                      side="top"
-                                      sideOffset={10}
-                                    >
-                                      {selectedTool.description}
-                                    </TooltipContent>
-                                  </TooltipPortal>
-                                </Tooltip>
-
-                                <button
-                                  className="absolute right-2 top-1.5 text-gray-100 hover:text-white"
-                                  onClick={() => {
-                                    chatForm.setValue('tool', undefined);
-                                  }}
-                                  type="button"
-                                >
-                                  <XIcon className="h-4 w-4" />
-                                </button>
-                              </div>
+                              <SelectedToolChat
+                                description={selectedTool.description}
+                                name={formatText(selectedTool.name)}
+                                remove={() => {
+                                  chatForm.setValue('tool', undefined);
+                                }}
+                              />
                             )}
                             {!isDragActive &&
                               currentFiles &&
@@ -513,7 +484,11 @@ function ConversationEmptyFooter() {
                                   </motion.button>
                                 </TooltipTrigger>
                                 <TooltipPortal>
-                                  <TooltipContent align="start" side="top">
+                                  <TooltipContent
+                                    align="start"
+                                    className="max-w-[500px]"
+                                    side="top"
+                                  >
                                     {tool.description}
                                   </TooltipContent>
                                 </TooltipPortal>
@@ -778,42 +753,13 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                           <>
                             {isDragActive && <DropFileActive />}
                             {selectedTool && (
-                              <div className="bg-gray-375 relative max-w-full rounded-lg p-1.5 px-2">
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div className="flex items-center gap-2 pr-6">
-                                      <ToolsIcon className="h-3.5 w-3.5" />
-                                      <div className="line-clamp-1 inline-flex items-center gap-2 text-xs text-gray-100">
-                                        <span className="text-white">
-                                          {formatText(selectedTool.name)}{' '}
-                                        </span>
-                                        <InfoCircleIcon className="h-3 w-3 shrink-0" />
-                                      </div>
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipPortal>
-                                    <TooltipContent
-                                      align="start"
-                                      alignOffset={-10}
-                                      className="max-w-[400px]"
-                                      side="top"
-                                      sideOffset={10}
-                                    >
-                                      {selectedTool.description}
-                                    </TooltipContent>
-                                  </TooltipPortal>
-                                </Tooltip>
-
-                                <button
-                                  className="absolute right-2 top-1.5 text-gray-100 hover:text-white"
-                                  onClick={() => {
-                                    chatForm.setValue('tool', undefined);
-                                  }}
-                                  type="button"
-                                >
-                                  <XIcon className="h-4 w-4" />
-                                </button>
-                              </div>
+                              <SelectedToolChat
+                                description={selectedTool.description}
+                                name={formatText(selectedTool.name)}
+                                remove={() => {
+                                  chatForm.setValue('tool', undefined);
+                                }}
+                              />
                             )}
                             {!isDragActive &&
                               currentFiles &&
@@ -1013,3 +959,48 @@ const DropFileActive = () => (
     </div>
   </motion.div>
 );
+
+const SelectedToolChat = ({
+  name,
+  description,
+  remove,
+}: {
+  name: string;
+  description: string;
+  remove: () => void;
+}) => {
+  return (
+    <div className="bg-gray-375 relative max-w-full rounded-lg p-1.5 px-2">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="flex items-center gap-2 pr-6">
+            <ToolsIcon className="h-3.5 w-3.5" />
+            <div className="line-clamp-1 inline-flex items-center gap-2 text-xs text-gray-100">
+              <span className="text-white">{name} </span>
+              <InfoCircleIcon className="h-3 w-3 shrink-0" />
+            </div>
+          </div>
+        </TooltipTrigger>
+        <TooltipPortal>
+          <TooltipContent
+            align="start"
+            alignOffset={-10}
+            className="max-w-[400px]"
+            side="top"
+            sideOffset={10}
+          >
+            {description}
+          </TooltipContent>
+        </TooltipPortal>
+      </Tooltip>
+
+      <button
+        className="absolute right-2 top-1.5 text-gray-100 hover:text-white"
+        onClick={remove}
+        type="button"
+      >
+        <XIcon className="h-4 w-4" />
+      </button>
+    </div>
+  );
+};

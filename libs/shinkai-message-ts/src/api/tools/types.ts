@@ -10,6 +10,9 @@ export type ShinkaiToolHeader = {
   tool_router_key: string;
   tool_type: ShinkaiToolType;
   version: string;
+  input_args: {
+    properties: Record<string, { description: string; type: string }>;
+  };
 };
 
 export type ToolConfig = {
