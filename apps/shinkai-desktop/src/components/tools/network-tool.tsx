@@ -28,6 +28,7 @@ import { toast } from 'sonner';
 // import { z } from 'zod';
 import { SubpageLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
+import RemoveToolButton from '../playground-tool/components/remove-tool-button';
 
 // const jsToolSchema = z.object({
 //   config: z.array(
@@ -247,6 +248,9 @@ export default function NetworkTool({
         {/*    Go Playground*/}
         {/*  </Link>*/}
         {/*)}*/}
+        <div className="flex flex-col gap-4 py-4">
+          <RemoveToolButton toolKey={toolKey as string} />
+        </div>
       </div>
     </SubpageLayout>
   );
