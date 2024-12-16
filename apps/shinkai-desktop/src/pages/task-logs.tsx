@@ -53,8 +53,6 @@ export const TaskLogs = () => {
     recurringTaskId: taskId ?? '',
   });
 
-  console.log(logs, 'logs');
-
   return (
     <SubpageLayout alignLeft className="px-4" title="Cron Logs">
       {isGetRecurringTaskPending && (
