@@ -40,6 +40,7 @@ import CreateChatPage from '../pages/create-chat';
 import CreateTaskPage from '../pages/create-task';
 import CreateToolPage from '../pages/create-tool';
 import CryptoWalletPage from '../pages/crypto-wallet';
+import EditTaskPage from '../pages/edit-task';
 import EditToolPage from '../pages/edit-tool';
 import { ExportConnection } from '../pages/export-connection';
 import FreeSubscriptionsPage from '../pages/free-subscription';
@@ -328,7 +329,7 @@ const AppRoutes = () => {
           <Route element={<Tasks />} index />
           <Route element={<TaskLogs />} path={':taskId'} />
           <Route element={<CreateTaskPage />} path={'create'} />
-          <Route element={<EditToolPage />} path={'edit/:toolRouterKey'} />
+          <Route element={<EditTaskPage />} path={'edit/:taskId'} />
         </Route>
         <Route
           element={

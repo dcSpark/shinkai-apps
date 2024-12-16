@@ -37,7 +37,7 @@ export type CreateRecurringTaskRequest = {
   action: RecurringTaskAction;
 };
 
-export type CreateRecurringTaskResponse = Record<string, never>;
+export type CreateRecurringTaskResponse = RecurringTask;
 
 export type RecurringTask = {
   task_id: number;
@@ -57,7 +57,7 @@ export type GetRecurringTaskRequest = {
 export type GetRecurringTaskResponse = RecurringTask;
 export type SetRecurringTaskRequest = {
   cron_task_id: string;
-} & Omit<RecurringTask, 'task_id'>;
+} & Omit<RecurringTask, 'task_id' | 'created_at' | 'last_modified'>;
 
 export type SetRecurringTaskResponse = RecurringTask;
 export type RemoveRecurringTaskRequest = {
