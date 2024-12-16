@@ -640,6 +640,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
         message: data.message,
         parent: '', // Note: we should set the parent if we want to retry or branch out
         files: currentFiles,
+        toolKey: selectedTool?.key,
       });
     } else {
       const sender = `${auth.shinkai_identity}/${auth.profile}/device/${auth.registration_name}`;
