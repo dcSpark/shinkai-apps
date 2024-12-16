@@ -4,6 +4,7 @@ import {
   CreateRecurringTaskRequest,
   CreateRecurringTaskResponse,
   GetRecurringTaskLogsRequest,
+  GetRecurringTaskLogsResponse,
   GetRecurringTaskRequest,
   GetRecurringTaskResponse,
   GetRecurringTasksResponse,
@@ -106,5 +107,5 @@ export const getRecurringTaskLogs = async (
       responseType: 'json',
     },
   );
-  return response.data;
+  return response.data as GetRecurringTaskLogsResponse;
 };

@@ -69,3 +69,9 @@ export type RemoveRecurringTaskResponse = {
 export type GetRecurringTaskLogsRequest = {
   cron_task_id: string;
 };
+export type GetRecurringTaskLogsResponse = {
+  task_id: string;
+  execution_time: string;
+  success: boolean;
+  error_message: string;
+}[];
