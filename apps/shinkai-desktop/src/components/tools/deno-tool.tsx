@@ -5,6 +5,7 @@ import {
   ShinkaiTool,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
+import { useRemoveTool } from '@shinkai_network/shinkai-node-state/v2/mutations/removeTool/useRemoveTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import {
   Button,
@@ -21,7 +22,7 @@ import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import { DownloadIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -49,6 +50,7 @@ export default function DenoTool({
 }) {
   const auth = useAuth((state) => state.auth);
   const { toolKey } = useParams();
+  const navigate = useNavigate();
 
   const { t } = useTranslation();
   const { mutateAsync: updateTool, isPending } = useUpdateTool({
@@ -66,6 +68,18 @@ export default function DenoTool({
       });
     },
   });
+  const { mutateAsync: removeTool, isPending: isRemoveToolPending } =
+    useRemoveTool({
+      onSuccess: () => {
+        toast.success('Tool has been removed successfully');
+        navigate('/tools');
+      },
+      onError: (error) => {
+        toast.error('Failed to remove tool', {
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
 
   const { mutateAsync: exportTool, isPending: isExportingTool } = useExportTool(
     {
@@ -241,8 +255,8 @@ export default function DenoTool({
             </Form>
           </div>
         )}
-        <div className="space-y-4 py-4">
-          {isPlaygroundTool && (
+        {isPlaygroundTool && (
+          <div className="flex flex-col gap-4 py-4">
             <Link
               className={cn(
                 buttonVariants({
@@ -254,8 +268,22 @@ export default function DenoTool({
             >
               Go Playground
             </Link>
-          )}
-        </div>
+            <Button
+              disabled={isRemoveToolPending}
+              isLoading={isRemoveToolPending}
+              onClick={async () => {
+                await removeTool({
+                  toolKey: toolKey ?? '',
+                  nodeAddress: auth?.node_address ?? '',
+                  token: auth?.api_v2_key ?? '',
+                });
+              }}
+              size="sm"
+            >
+              Delete Tool
+            </Button>
+          </div>
+        )}
       </div>
     </SubpageLayout>
   );

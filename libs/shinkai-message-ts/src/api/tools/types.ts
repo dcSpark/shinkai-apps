@@ -293,6 +293,10 @@ export type UpdateToolCodeImplementationResponse = {
   status: string;
 };
 
+export type RemovePlaygroundToolRequest = {
+  tool_key: string;
+};
+
 export type ImportToolRequest = {
   url: string;
 };
