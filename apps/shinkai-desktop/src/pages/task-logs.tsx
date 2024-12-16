@@ -5,6 +5,7 @@ import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/m
 import { useGetRecurringTask } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTask/useGetRecurringTask';
 import { useGetRecurringTaskLogs } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTaskLogs/useGetRecurringTaskLogs';
 import {
+  Badge,
   Button,
   buttonVariants,
   Dialog,
@@ -20,6 +21,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import cronstrue from 'cronstrue';
+import { formatDate } from 'date-fns';
 import { Edit, TrashIcon } from 'lucide-react';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -50,8 +52,6 @@ export const TaskLogs = () => {
     token: auth?.api_v2_key ?? '',
     recurringTaskId: taskId ?? '',
   });
-
-  console.log(logs, 'logs');
 
   return (
     <SubpageLayout alignLeft className="px-4" title="Cron Logs">
@@ -105,26 +105,28 @@ export const TaskLogs = () => {
             </p>
           </div>
         )}
-        {isSuccess && logs.length > 0 && (
-          <div className="p-10 text-center text-sm">
-            <p className="text-white">Logs found</p>
-            <p className="text-gray-80 text-xs">TODO: Display logs</p>
-          </div>
-        )}
-        {/*{isSuccess && (*/}
-        {/*  <TaskCard*/}
-        {/*    cronExpression={task.cron}*/}
-        {/*    description={task.description}*/}
-        {/*    key={task.task_id}*/}
-        {/*    name={task.name}*/}
-        {/*    prompt={*/}
-        {/*      'CreateJobWithConfigAndMessage' in task.action*/}
-        {/*        ? task.action.CreateJobWithConfigAndMessage.message.content*/}
-        {/*        : ''*/}
-        {/*    }*/}
-        {/*    taskId={task.task_id}*/}
-        {/*  />*/}
-        {/*)}*/}
+        {isSuccess &&
+          logs.length > 0 &&
+          logs.map((log) => (
+            <div className="flex items-center gap-10" key={log.execution_time}>
+              <span className="text-gray-80">
+                {formatDate(
+                  new Date(log.execution_time),
+                  'yyyy-MM-dd HH:mm:ss',
+                )}
+              </span>
+              <Badge
+                className={cn(
+                  'text-sm',
+                  log.success
+                    ? 'bg-green-900 text-green-400'
+                    : 'bg-red-900 text-red-400',
+                )}
+              >
+                {log.success ? 'Success' : 'Failed'}
+              </Badge>
+            </div>
+          ))}
       </div>
     </SubpageLayout>
   );
