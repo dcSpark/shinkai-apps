@@ -316,7 +316,9 @@ const MessageBase = ({
                             <AccordionTrigger
                               className={cn(
                                 'min-w-[10rem] py-0 pr-2 no-underline hover:no-underline',
-                                'transition-colors hover:bg-gray-500 [&>svg]:hidden [&[data-state=open]]:bg-gray-500',
+                                'transition-colors hover:bg-gray-500 [&[data-state=open]]:bg-gray-500',
+                                tool.status !== ToolStatusType.Complete &&
+                                  '[&>svg]:hidden',
                               )}
                             >
                               <ToolCard
@@ -326,17 +328,25 @@ const MessageBase = ({
                                 toolRouterKey={tool.toolRouterKey}
                               />
                             </AccordionTrigger>
-                            <AccordionContent className="bg-gray-450 rounded-b-lg px-3 pb-3 pt-2 text-xs">
+                            <AccordionContent className="bg-gray-450 flex flex-col gap-1 rounded-b-lg px-3 pb-3 pt-2 text-xs">
                               {Object.keys(tool.args).length > 0 && (
                                 <span className="font-medium text-white">
                                   {tool.name}(
                                   {Object.keys(tool.args).length > 0 && (
-                                    <span className="text-gray-80 font-medium">
+                                    <span className="text-gray-80 font-mono font-medium">
                                       {JSON.stringify(tool.args)}
                                     </span>
                                   )}
                                   )
                                 </span>
+                              )}
+                              {tool.result && (
+                                <div>
+                                  <span>Response:</span>
+                                  <span className="text-gray-80 break-all font-mono">
+                                    {JSON.stringify(tool.result, null, 2)}
+                                  </span>
+                                </div>
                               )}
                             </AccordionContent>
                           </AccordionItem>
