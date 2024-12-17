@@ -10,6 +10,8 @@ export type SaveToolCodeInput = Token & {
   metadata: Record<string, any>;
   code?: string;
   language: CodeLanguage;
+  xShinkaiAppId: string;
+  xShinkaiToolId: string;
 };
 
 export type SaveToolCodeOutput = SaveToolCodeResponse;

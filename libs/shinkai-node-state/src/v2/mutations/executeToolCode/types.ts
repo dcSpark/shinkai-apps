@@ -12,6 +12,8 @@ export type ExecuteToolCodeInput = Token & {
   llmProviderId: string;
   tools: string[];
   language: CodeLanguage;
+  xShinkaiAppId: string;
+  xShinkaiToolId: string;
 };
 
 export type ExecuteToolCodeOutput = ExecuteToolCodeResponse;

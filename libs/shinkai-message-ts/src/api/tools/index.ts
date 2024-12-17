@@ -239,6 +239,8 @@ export const executeToolCode = async (
   nodeAddress: string,
   bearerToken: string,
   payload: ExecuteToolCodeRequest,
+  xShinkaiAppId: string,
+  xShinkaiToolId: string,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/code_execution'),
@@ -246,9 +248,8 @@ export const executeToolCode = async (
     {
       headers: {
         Authorization: `Bearer ${bearerToken}`,
-        // TODO: remove hardcoded values
-        'x-shinkai-app-id': 'app-test',
-        'x-shinkai-tool-id': 'tool-test',
+        'x-shinkai-app-id': xShinkaiAppId,
+        'x-shinkai-tool-id': xShinkaiToolId,
       },
       responseType: 'json',
     },
@@ -260,12 +261,18 @@ export const saveToolCode = async (
   nodeAddress: string,
   bearerToken: string,
   payload: SaveToolCodeRequest,
+  xShinkaiAppId: string,
+  xShinkaiToolId: string,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/set_playground_tool'),
     payload,
     {
-      headers: { Authorization: `Bearer ${bearerToken}` },
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+        'x-shinkai-app-id': xShinkaiAppId,
+        'x-shinkai-tool-id': xShinkaiToolId,
+      },
       responseType: 'json',
     },
   );

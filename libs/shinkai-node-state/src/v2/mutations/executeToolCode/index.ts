@@ -15,6 +15,8 @@ export const executeToolCode = async ({
   tools,
   language,
   configs,
+  xShinkaiAppId,
+  xShinkaiToolId,
 }: ExecuteToolCodeInput) => {
   const toolTypeLanguageMap = {
     [CodeLanguage.Python]: DynamicToolType.PythonDynamic,
@@ -28,5 +30,8 @@ export const executeToolCode = async ({
     llm_provider: llmProviderId,
     tools,
     extra_config: configs,
-  });
+  }, 
+    xShinkaiAppId,
+    xShinkaiToolId,
+  );
 };
