@@ -86,6 +86,7 @@ const createAssistantMessage = (message: ChatMessage): AssistantMessage => {
       name: tool.name,
       args: tool.arguments,
       status: ToolStatusType.Complete,
+      result: tool?.response ?? '',
     }),
   );
 

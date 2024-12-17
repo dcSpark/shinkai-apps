@@ -141,6 +141,7 @@ export type JobMessage = {
         message: string;
       };
       tool_router_key: string;
+      response?: string;
     }[];
   };
 };
