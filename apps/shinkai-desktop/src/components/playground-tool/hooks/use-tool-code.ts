@@ -176,6 +176,9 @@ export const useToolCode = ({
     'idle' | 'pending' | 'success' | 'error'
   >(initialState?.state ?? 'idle');
 
+  const [xShinkaiAppId] = useState(() => `app-id-${Date.now()}`);
+  const [xShinkaiToolId] = useState(() => `task-id-${Date.now()}`);
+
   useEffect(() => {
     if (initialState?.code) {
       baseToolCodeRef.current = initialState.code;
@@ -321,6 +324,8 @@ export const useToolCode = ({
       token: auth?.api_v2_key ?? '',
       nodeAddress: auth?.node_address ?? '',
       language: currentLanguage,
+      xShinkaiAppId,
+      xShinkaiToolId,
     });
   };
 
@@ -446,5 +451,7 @@ export const useToolCode = ({
     goNextToolCode,
     handleSaveTool,
     resetToolCode,
+    xShinkaiAppId,
+    xShinkaiToolId,
   };
 };

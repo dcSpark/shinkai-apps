@@ -125,6 +125,8 @@ function PlaygroundToolEditor({
     handleSaveTool,
     resetToolCode,
     handleCreateToolCode,
+    xShinkaiAppId,
+    xShinkaiToolId,
   } = useToolCode({
     createToolCodeForm: form,
     initialState: toolCodeInitialValues,
@@ -159,6 +161,8 @@ function PlaygroundToolEditor({
       tools: form.getValues('tools'),
       language: form.getValues('language'),
       configs,
+      xShinkaiAppId,
+      xShinkaiToolId,
     });
   };
 
