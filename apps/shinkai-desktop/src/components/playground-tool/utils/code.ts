@@ -34,3 +34,14 @@ export function detectLanguage(code: string): string {
   if (isTypeScript) return 'TypeScript';
   return 'Unknown';
 }
+
+export function getLanguage(language: string): CodeLanguage {
+  switch (language) {
+    case 'python':
+      return CodeLanguage.Python;
+    case 'typeScript':
+      return CodeLanguage.Typescript;
+    default:
+      return CodeLanguage.Typescript;
+  }
+}
