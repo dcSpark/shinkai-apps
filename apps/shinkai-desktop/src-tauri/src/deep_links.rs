@@ -26,10 +26,18 @@ pub fn setup_deep_links(app: &tauri::AppHandle) -> tauri::Result<()> {
             if let Some(host) = url.host() {
                 if host.to_string() == "oauth" {
                     log::debug!("oauth deep link: {:?}", url);
-                    let payload = OAuthDeepLinkPayload {
-                        state: url.query().unwrap_or_default().to_string(),
-                        code: url.query().unwrap_or_default().to_string(),
-                    };
+                    let query_pairs = url.query_pairs().collect::<Vec<_>>();
+                    let state = query_pairs
+                        .iter()
+                        .find(|(key, _)| key == "state")
+                        .map(|(_, value)| value.to_string())
+                        .unwrap_or_default();
+                    let code = query_pairs
+                        .iter()
+                        .find(|(key, _)| key == "code")
+                        .map(|(_, value)| value.to_string())
+                        .unwrap_or_default();
+                    let payload = OAuthDeepLinkPayload { state, code };
                     log::debug!(
                         "emitting oauth-deep-link event to {}",
                         Window::Coordinator.as_str()
