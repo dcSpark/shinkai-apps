@@ -16,6 +16,7 @@ export type RecurringTaskAction =
       CreateJobWithConfigAndMessage: {
         config: JobConfig;
         message: JobMessage;
+        llm_provider: string;
         job_creation_info: {
           scope: {
             network_folders: [];

@@ -17,6 +17,8 @@ import {
   GetPlaygroundToolRequest,
   GetPlaygroundToolResponse,
   GetPlaygroundToolsResponse,
+  GetShinkaiFileProtocolRequest,
+  GetShinkaiFileProtocolResponse,
   GetToolResponse,
   GetToolsResponse,
   ImportToolRequest,
@@ -386,4 +388,20 @@ export const exportTool = async (
     },
   );
   return response.data as ExportToolResponse;
+};
+
+export const getShinkaiFileProtocol = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetShinkaiFileProtocolRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/resolve_shinkai_file_protocol'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      params: { file: payload.file },
+      responseType: 'blob',
+    },
+  );
+  return response.data as GetShinkaiFileProtocolResponse;
 };

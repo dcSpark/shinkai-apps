@@ -415,6 +415,14 @@ export const useToolCode = ({
     }, 0);
   };
 
+  const { __created_files__: toolResultFiles, ...toolResultWithoutFiles } =
+    (toolResult || {
+      __created_files__: [],
+    }) as {
+      __created_files__: string[];
+      [key: string]: any;
+    };
+
   return {
     chatInboxId,
     toolCode,
@@ -437,7 +445,8 @@ export const useToolCode = ({
     metadataEditorRef,
     createToolCode,
     executeToolCodeQuery,
-    toolResult,
+    toolResult: toolResultWithoutFiles,
+    toolResultFiles: toolResultFiles,
     forceGenerateMetadata,
     isDirtyCodeEditor,
     setIsDirtyCodeEditor,

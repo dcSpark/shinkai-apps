@@ -1,12 +1,11 @@
 import validator from '@rjsf/validator-ajv8';
-import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useGetPlaygroundTool } from '@shinkai_network/shinkai-node-state/v2/queries/getPlaygroundTool/useGetPlaygroundTool';
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 
 import PlaygroundToolEditor from '../components/playground-tool/components/tool-playground';
-import { detectLanguage } from '../components/playground-tool/utils/code';
+import { getLanguage } from '../components/playground-tool/utils/code';
 import { useAuth } from '../store/auth';
 
 function EditToolPage() {
@@ -74,7 +73,7 @@ function EditToolPage() {
   return (
     <PlaygroundToolEditor
       createToolCodeFormInitialValues={{
-        language: detectLanguage(playgroundTool?.code ?? '') as CodeLanguage,
+        language: getLanguage(playgroundTool?.language ?? ''),
       }}
       initialChatInboxId={chatInboxId}
       mode="edit"

@@ -275,6 +275,7 @@ export type PlaygroundTool = {
   job_id: string;
   job_id_history: string[];
   code: string;
+  language: string;
 };
 export type GetPlaygroundToolsResponse = PlaygroundTool[];
 export type GetPlaygroundToolRequest = { tool_key: string };
@@ -316,3 +317,5 @@ export type ExportToolRequest = {
 };
 
 export type ExportToolResponse = Blob;
+export type GetShinkaiFileProtocolRequest = { file: string };
+export type GetShinkaiFileProtocolResponse = Blob;

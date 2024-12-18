@@ -6,6 +6,7 @@ import {
   CodeLanguage,
   ToolMetadata,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { useGetShinkaiFileProtocol } from '@shinkai_network/shinkai-node-state/v2/queries/getShinkaiFileProtocol/useGetShinkaiFileProtocol';
 import {
   Badge,
   Button,
@@ -29,13 +30,21 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
+import {
+  fileIconMap,
+  FileTypeIcon,
+  SendIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { save } from '@tauri-apps/plugin-dialog';
+import * as fs from '@tauri-apps/plugin-fs';
+import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowUpRight,
   Loader2,
   LucideArrowLeft,
+  Paperclip,
   Play,
   Redo2Icon,
   Save,
@@ -43,6 +52,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, To } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import { AIModelSelector } from '../../chat/chat-action-bar/ai-update-selection-action-bar';
@@ -112,6 +122,7 @@ function PlaygroundToolEditor({
     metadataEditorRef,
     executeToolCodeQuery,
     toolResult,
+    toolResultFiles,
     isDirtyCodeEditor,
     setIsDirtyCodeEditor,
     forceGenerateMetadata,
@@ -703,15 +714,33 @@ function PlaygroundToolEditor({
                                     <div ref={toolResultBoxRef}>
                                       {executeToolCodeQuery.isSuccess &&
                                         toolResult && (
-                                          <ToolCodeEditor
-                                            language="json"
-                                            readOnly
-                                            value={JSON.stringify(
-                                              toolResult,
-                                              null,
-                                              2,
+                                          <div className="space-y-3 py-3">
+                                            {toolResultFiles.length > 0 && (
+                                              <div className="inline-flex items-center gap-4">
+                                                <h1>Generated Files</h1>
+                                                <div className="flex flex-wrap gap-2">
+                                                  {toolResultFiles?.map(
+                                                    (file) => (
+                                                      <ToolResultFileCard
+                                                        filePath={file}
+                                                        key={file}
+                                                      />
+                                                    ),
+                                                  )}
+                                                </div>
+                                              </div>
                                             )}
-                                          />
+
+                                            <ToolCodeEditor
+                                              language="json"
+                                              readOnly
+                                              value={JSON.stringify(
+                                                toolResult,
+                                                null,
+                                                2,
+                                              )}
+                                            />
+                                          </div>
                                         )}
                                     </div>
                                   </motion.div>
@@ -813,3 +842,70 @@ function PlaygroundToolEditor({
 }
 
 export default PlaygroundToolEditor;
+
+function ToolResultFileCard({ filePath }: { filePath: string }) {
+  const auth = useAuth((state) => state.auth);
+  const { refetch } = useGetShinkaiFileProtocol(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      file: filePath,
+    },
+    {
+      enabled: false,
+    },
+  );
+
+  const fileNameBase = filePath.split('/')?.at(-1) ?? 'untitled_tool';
+  const fileExtension = fileNameBase.split('.')?.at(-1) ?? '';
+
+  return (
+    <Button
+      className="h-[30px] gap-1.5 rounded-lg text-xs"
+      onClick={async () => {
+        const response = await refetch();
+        const file = new Blob([response.data ?? ''], {
+          type: 'application/octet-stream',
+        });
+
+        const arrayBuffer = await file.arrayBuffer();
+        const content = new Uint8Array(arrayBuffer);
+
+        const savePath = await save({
+          defaultPath: `${fileNameBase}.${fileExtension}`,
+          filters: [
+            {
+              name: 'File',
+              extensions: [fileExtension],
+            },
+          ],
+        });
+
+        if (!savePath) {
+          toast.info('File saving cancelled');
+          return;
+        }
+
+        await fs.writeFile(savePath, content, {
+          baseDir: BaseDirectory.Download,
+        });
+
+        toast.success(`${fileNameBase} downloaded successfully`);
+      }}
+      size="auto"
+      variant="outline"
+    >
+      <div className="flex shrink-0 items-center justify-center">
+        {fileExtension && fileIconMap[fileExtension] ? (
+          <FileTypeIcon
+            className="text-gray-80 h-[18px] w-[18px] shrink-0"
+            type={fileExtension}
+          />
+        ) : (
+          <Paperclip className="text-gray-80 h-3.5 w-3.5 shrink-0" />
+        )}
+      </div>
+      <div className="text-left text-xs">{filePath.split('/')?.at(-1)}</div>
+    </Button>
+  );
+}
