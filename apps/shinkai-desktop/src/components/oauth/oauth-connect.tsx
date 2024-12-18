@@ -27,7 +27,7 @@ const providers: Record<string, ProviderData> = {
 };
 
 export const OAuthConnect = () => {
-  const CLOSE_TIMEOUT = 10000;
+  const CLOSE_TIMEOUT_SECONDS = 10;
   const { oauthModalVisible, url, setOauthModalVisible } = useOAuth();
   const [connectDone, setConnectDone] = React.useState(false);
   const [oauthData, setoauthData] = React.useState<
@@ -45,7 +45,7 @@ export const OAuthConnect = () => {
       setConnectDone(true);
       setTimeout(() => {
         setOauthModalVisible({ visible: false });
-      }, CLOSE_TIMEOUT);
+      }, CLOSE_TIMEOUT_SECONDS * 1000);
     }
   });
 
@@ -67,7 +67,7 @@ export const OAuthConnect = () => {
     }
   }, [url]);
 
-  const [countdown, setCountdown] = React.useState(CLOSE_TIMEOUT);
+  const [countdown, setCountdown] = React.useState(CLOSE_TIMEOUT_SECONDS);
   React.useEffect(() => {
     if (connectDone) {
       const interval = setInterval(() => {
@@ -99,17 +99,19 @@ export const OAuthConnect = () => {
               Sign in with {oauthData?.providerData.name}
             </AlertDialogTitle>
           </div>
-          <AlertDialogDescription className="mt-2 text-gray-600">
+          <AlertDialogDescription className="text-gray-600">
             {connectDone ? (
-              <div className="flex flex-col items-center text-green-600">
-                <CheckCircle className="mr-2 h-5 w-5 animate-bounce" />
-                <span>Connection successful!</span>
-                <span className="mt-2 text-sm text-gray-500">
+              <div className="mt-4 flex flex-col items-start">
+                <div className="flex flex items-center text-green-600">
+                  <CheckCircle className="mr-2 h-5 w-5 animate-bounce" />
+                  <span>Connection successful!</span>
+                </div>
+                <span className="mt-2 text-xs text-gray-500">
                   This window will close automatically in {countdown} seconds...
                 </span>
               </div>
             ) : (
-              <>
+              <div className="mt-4 flex flex-col items-start">
                 <p>Navigate and follow the authentication steps to continue.</p>
                 <a
                   className={cn(
@@ -126,7 +128,7 @@ export const OAuthConnect = () => {
                   <ExternalLink className="mr-1 inline-block h-4 w-4" />
                   Go to {oauthData?.providerData.name}
                 </a>
-              </>
+              </div>
             )}
           </AlertDialogDescription>
         </AlertDialogHeader>
