@@ -156,7 +156,10 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                   .tool_router_key
               : '',
         },
-        llmOrAgentId: defaultAgentId, // TODO: backend doesnt send this atm
+        llmOrAgentId:
+          'CreateJobWithConfigAndMessage' in initialValues.action
+            ? initialValues.action.CreateJobWithConfigAndMessage.llm_provider
+            : defaultAgentId,
       });
     }
   }, [form, initialValues]);
@@ -248,7 +251,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
   return (
     <SubpageLayout
       className="max-w-4xl"
-      title={`${mode === 'create' ? 'Create' : 'Edit'}} Cron Task`}
+      title={`${mode === 'create' ? 'Create' : 'Edit'} Cron Task`}
     >
       <p className="text-gray-80 -mt-8 py-3 pb-6 text-center text-sm">
         Schedule recurring tasks at a specified time
@@ -317,7 +320,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                 </span>
 
                 <div className="space-y-4">
-                  <div className="grid grid-cols-[1fr_100px] items-center">
+                  <div className="grid grid-cols-[1fr_auto] items-center">
                     <span className="text-gray-80 text-xs">AI/Agent</span>
                     <AIModelSelector
                       onValueChange={(value) => {
