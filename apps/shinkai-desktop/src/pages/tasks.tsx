@@ -42,7 +42,6 @@ export const Tasks = () => {
 
   return (
     <SimpleLayout
-      classname="max-w-4xl"
       headerRightElement={
         <div className="flex items-center gap-2">
           <Link

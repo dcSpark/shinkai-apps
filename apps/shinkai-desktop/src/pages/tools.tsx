@@ -70,7 +70,6 @@ export const Tools = () => {
 
   return (
     <SimpleLayout
-      classname="max-w-3xl"
       headerRightElement={
         <div className="flex items-center gap-2">
           <ImportToolModal />

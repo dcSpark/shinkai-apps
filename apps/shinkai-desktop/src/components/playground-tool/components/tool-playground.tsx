@@ -533,8 +533,8 @@ function PlaygroundToolEditor({
                               key={resetCounter}
                               onSubmit={handleApplyChangesCodeSubmit}
                             >
-                              <div className="flex h-[45px] shrink-0 items-center justify-between rounded-t-lg border-b border-gray-400 bg-[#0d1117] px-3 py-2">
-                                <span className="inline-flex items-center gap-2 pl-3 text-xs font-medium text-gray-50">
+                              <div className="flex h-[40px] shrink-0 items-center justify-between rounded-t-lg border-b border-gray-400 bg-[#0d1117] px-3 py-2">
+                                <span className="text-gray-80 inline-flex items-center gap-2 pl-2 text-xs font-medium">
                                   {' '}
                                   {detectLanguage(toolCode)}{' '}
                                   {isDirtyCodeEditor && (
@@ -551,18 +551,18 @@ function PlaygroundToolEditor({
                                       transition={{ duration: 0.2 }}
                                     >
                                       <Button
-                                        className="!h-[32px] min-w-[80px] rounded-xl"
+                                        className="!h-[28px] rounded-lg border-0 bg-transparent"
                                         onClick={resetToolCode}
                                         size="sm"
-                                        variant="outline"
+                                        variant="ghost"
                                       >
                                         Reset
                                       </Button>
                                       <Button
-                                        className="!h-[28px] min-w-[80px] rounded-xl"
+                                        className="!h-[28px] rounded-lg border-0 bg-transparent"
                                         size="sm"
                                         type="submit"
-                                        variant="outline"
+                                        variant="ghost"
                                       >
                                         Apply Changes
                                       </Button>
