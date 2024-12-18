@@ -34,6 +34,7 @@ export const updateRecurringTask = async ({
             network_folders: [],
           },
         },
+        llm_provider: llmProvider,
         message: {
           job_id: jobId,
           content: message,
