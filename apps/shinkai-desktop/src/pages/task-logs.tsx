@@ -31,8 +31,8 @@ import {
   Bot,
   CheckCircle2,
   Clock,
-  Code2,
   Edit,
+  Sparkles,
   TrashIcon,
   XCircle,
 } from 'lucide-react';
@@ -286,7 +286,7 @@ const TaskCard = ({
         <div className="grid gap-6 sm:grid-cols-2">
           <div className="space-y-2">
             <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium">
-              <Code2 className="h-4 w-4" />
+              <Sparkles className="h-4 w-4" />
               Prompt
             </div>
             <div className="rounded-md text-sm">{prompt}</div>
