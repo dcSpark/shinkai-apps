@@ -20,6 +20,7 @@
     "shinkai_node_remove_storage",
     "shinkai_node_set_default_options",
     "shinkai_node_get_ollama_api_url",
-    "shinkai_node_get_default_model"
+    "shinkai_node_get_default_model",
+    "retrieve_logs"
   ]
 }
