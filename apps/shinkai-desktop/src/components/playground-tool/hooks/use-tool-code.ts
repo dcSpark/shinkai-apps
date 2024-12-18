@@ -20,7 +20,7 @@ import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/ch
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import { ToolMetadataSchema } from '../schemas';
-import { extractTypeScriptCode } from '../utils/code';
+import { extractCodeByLanguage, extractCodeLanguage } from '../utils/code';
 
 export const createToolCodeFormSchema = z.object({
   message: z.string().min(1),
@@ -153,13 +153,18 @@ export const useToolCode = ({
     const messageList = conversationData?.pages.flat() ?? [];
     const toolCodesFound = messageList
       .map((message) => {
+        const language = extractCodeLanguage(message.content);
         if (
           message.role === 'assistant' &&
           message.status.type === 'complete'
         ) {
           return {
             messageId: message.messageId,
-            code: extractTypeScriptCode(message.content, currentLanguage) ?? '',
+            code:
+              extractCodeByLanguage(
+                message.content,
+                language ?? currentLanguage,
+              ) ?? '',
           };
         }
       })
@@ -205,8 +210,13 @@ export const useToolCode = ({
       lastMessage?.role === 'assistant' &&
       lastMessage?.status.type === 'complete'
     ) {
+      const language = extractCodeLanguage(lastMessage.content);
+
       const generatedCode =
-        extractTypeScriptCode(lastMessage?.content, currentLanguage) ?? '';
+        extractCodeByLanguage(
+          lastMessage?.content,
+          language ?? currentLanguage,
+        ) ?? '';
       if (generatedCode) {
         baseToolCodeRef.current = generatedCode;
         setToolCode(generatedCode);

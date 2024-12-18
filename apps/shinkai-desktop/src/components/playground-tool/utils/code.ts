@@ -1,6 +1,21 @@
 import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
-export function extractTypeScriptCode(message: string, language: CodeLanguage) {
+export function extractCodeLanguage(input: string): CodeLanguage | null {
+  const match = input.match(/```(\w+)/);
+  if (!match) {
+    return null;
+  }
+  const [_, language] = match;
+  if (language === 'typescript') {
+    return CodeLanguage.Typescript;
+  }
+  if (language === 'python') {
+    return CodeLanguage.Python;
+  }
+  return null;
+}
+
+export function extractCodeByLanguage(message: string, language: CodeLanguage) {
   const tsCodeMatch = message.match(
     new RegExp(`\`\`\`${language.toLowerCase()}\n([\\s\\S]*?)\n\`\`\``),
   );
@@ -8,31 +23,17 @@ export function extractTypeScriptCode(message: string, language: CodeLanguage) {
 }
 
 export function detectLanguage(code: string): string {
-  const pythonPatterns = [
-    /\bdef\b/,
-    /\bclass\b/,
-    /\bimport\b/,
-    /\basync\s+def\b/,
-    /from\s+\w+\s+import\b/,
-    /#.*$/,
-  ];
+  const typeScriptRegex =
+    /(interface\s+\w+\s*{)|(type\s+\w+\s*=)|(function\s+\w+\s*<\w+>)/;
+  const pythonRegex = /^\s*def\s+\w+\s*\(.*\):|^\s*class\s+\w+\s*\(?.*?\)?:/m;
 
-  const typescriptPatterns = [
-    /\bfunction\b/,
-    /\binterface\b/,
-    /\btype\b\s+\w+\s*=/,
-    /\bexport\s+(default\s+)?/,
-    /\/\/.*$/,
-    /:\s*\w+(\[\])?/,
-  ];
-
-  const isPython = pythonPatterns.some((pattern) => pattern.test(code));
-
-  const isTypeScript = typescriptPatterns.some((pattern) => pattern.test(code));
-
-  if (isPython) return 'Python';
-  if (isTypeScript) return 'TypeScript';
-  return 'Unknown';
+  if (typeScriptRegex.test(code)) {
+    return 'TypeScript';
+  } else if (pythonRegex.test(code)) {
+    return 'Python';
+  } else {
+    return 'Unknown';
+  }
 }
 
 export function getLanguage(language: string): CodeLanguage {
