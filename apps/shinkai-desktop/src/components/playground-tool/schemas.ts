@@ -49,6 +49,21 @@ export const ToolMetadataSchema = z.object({
   sqlTables: z.array(z.string()).default([]),
   sqlQueries: z.array(z.string()).default([]),
   tools: z.array(z.string()).default([]),
+  oauth: z.array(
+    z.object({
+      name: z.string().default(''),
+      version: z.string().default('2.0'),
+      authorizationUrl: z.string().default(''),
+      redirectUrl: z.string().default('https://secrets.shinkai.com/redirect'),
+      tokenUrl: z.string().default(''),
+      clientId: z.string().default('YOUR_PROVIDER_CLIENT_ID'),
+      clientSecret: z.string().default('YOUR_PROVIDER_CLIENT_SECRET'),
+      scopes: z.array(z.string()).default([]),
+      grantType: z.string().default('authorization_code'),
+      refreshToken: z.string().default(''),
+      accessToken: z.string().default(''),
+    }),
+  ).default([]),
 });
 
 export type ToolMetadataSchemaType = z.infer<typeof ToolMetadataSchema>;
