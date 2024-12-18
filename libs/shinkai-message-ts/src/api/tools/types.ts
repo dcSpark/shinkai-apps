@@ -319,3 +319,13 @@ export type ExportToolRequest = {
 export type ExportToolResponse = Blob;
 export type GetShinkaiFileProtocolRequest = { file: string };
 export type GetShinkaiFileProtocolResponse = Blob;
+
+export type SetOAuthTokenRequest = {
+  code: string;
+  state: string;
+};
+
+export type SetOAuthTokenResponse = {
+  message: string;
+  status: string;
+};
