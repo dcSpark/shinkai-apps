@@ -27,6 +27,7 @@ import { z } from 'zod';
 
 import { SubpageLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
+import RemoveToolButton from '../playground-tool/components/remove-tool-button';
 const jsToolSchema = z.object({
   config: z.array(
     z.object({
@@ -241,7 +242,7 @@ export default function DenoTool({
             </Form>
           </div>
         )}
-        <div className="space-y-4 py-4">
+        <div className="flex flex-col gap-4 py-4">
           {isPlaygroundTool && (
             <Link
               className={cn(
@@ -255,6 +256,7 @@ export default function DenoTool({
               Go Playground
             </Link>
           )}
+          <RemoveToolButton toolKey={toolKey as string} />
         </div>
       </div>
     </SubpageLayout>

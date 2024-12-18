@@ -1,21 +1,31 @@
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
-import { useEffect, useRef, useState } from 'react';
+import {
+  buildInboxIdFromJobId,
+  extractJobIdFromInbox,
+} from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
+import { useCreateToolMetadata } from '@shinkai_network/shinkai-node-state/v2/mutations/createToolMetadata/useCreateToolMetadata';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
 import { ToolMetadataSchema } from '../schemas';
 
 export const useToolMetadata = ({
-  chatInboxIdMetadata,
+  chatInboxId,
+  forceGenerateMetadata,
   initialState,
+  tools,
+  toolCode,
 }: {
-  chatInboxIdMetadata?: string;
-  code?: string;
+  chatInboxId?: string;
+  toolCode?: string;
   initialState?: {
     metadata: ToolMetadata | null;
     state?: 'idle' | 'pending' | 'success' | 'error';
     error?: string | null;
   };
+  tools: string[];
+  forceGenerateMetadata: React.MutableRefObject<boolean>;
 }) => {
   const [metadataData, setMetadataData] = useState<ToolMetadata | null>(
     initialState?.metadata ?? null,
@@ -28,7 +38,9 @@ export const useToolMetadata = ({
     'idle' | 'pending' | 'success' | 'error'
   >(initialState?.state ?? 'idle');
 
-  const forceGenerateMetadata = useRef(false);
+  const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<
+    string | undefined
+  >(undefined);
 
   const { data: metadataChatConversation } =
     useChatConversationWithOptimisticUpdates({
@@ -36,11 +48,35 @@ export const useToolMetadata = ({
       forceRefetchInterval: true,
     });
 
+  const { mutateAsync: createToolMetadata } = useCreateToolMetadata();
+
   useEffect(() => {
     setMetadataData(initialState?.metadata ?? null);
     setError(initialState?.error ?? null);
     setMetadataState(initialState?.state ?? 'idle');
   }, [initialState?.error, initialState?.metadata, initialState?.state]);
+
+  const regenerateToolMetadata = useCallback(async () => {
+    return await createToolMetadata(
+      {
+        nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
+        jobId: extractJobIdFromInbox(chatInboxId ?? '') ?? '',
+        tools: tools,
+      },
+      {
+        onSuccess: (data) => {
+          setChatInboxIdMetadata(buildInboxIdFromJobId(data.job_id));
+        },
+      },
+    );
+  }, [
+    auth?.api_v2_key,
+    auth?.node_address,
+    chatInboxId,
+    createToolMetadata,
+    tools,
+  ]);
 
   useEffect(() => {
     const metadata = metadataChatConversation?.pages?.at(-1)?.at(-1);
@@ -87,6 +123,35 @@ export const useToolMetadata = ({
     }
   }, [auth?.shinkai_identity, metadataChatConversation?.pages]);
 
+  useEffect(() => {
+    if (!toolCode || !forceGenerateMetadata.current) return;
+    const run = async () => {
+      await createToolMetadata(
+        {
+          nodeAddress: auth?.node_address ?? '',
+          token: auth?.api_v2_key ?? '',
+          jobId: extractJobIdFromInbox(chatInboxId ?? ''),
+          tools: tools,
+        },
+        {
+          onSuccess: (data) => {
+            setChatInboxIdMetadata(buildInboxIdFromJobId(data.job_id));
+            forceGenerateMetadata.current = false;
+          },
+        },
+      );
+    };
+    run();
+  }, [
+    auth?.api_v2_key,
+    auth?.node_address,
+    chatInboxId,
+    toolCode,
+    createToolMetadata,
+    forceGenerateMetadata,
+    tools,
+  ]);
+
   return {
     isMetadataGenerationIdle: metadataState === 'idle',
     isMetadataGenerationPending: metadataState === 'pending',
@@ -94,6 +159,6 @@ export const useToolMetadata = ({
     isMetadataGenerationError: metadataState === 'error',
     metadataGenerationError: error,
     metadataGenerationData: metadataData,
-    forceGenerateMetadata,
+    regenerateToolMetadata,
   };
 };

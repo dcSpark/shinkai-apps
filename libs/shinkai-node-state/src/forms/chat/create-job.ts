@@ -9,6 +9,7 @@ export const createJobFormSchema = z.object({
       key: z.string().min(1),
       name: z.string().min(1),
       description: z.string().min(1),
+      args: z.array(z.string()).optional(),
     })
     .optional(),
 });

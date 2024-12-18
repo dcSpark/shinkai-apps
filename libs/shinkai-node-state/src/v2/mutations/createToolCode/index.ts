@@ -15,6 +15,7 @@ export const createToolCode = async ({
   message,
   jobId,
   tools,
+  language,
 }: CreateToolCodeInput) => {
   let currentJobId = jobId;
   if (!currentJobId) {
@@ -56,6 +57,6 @@ export const createToolCode = async ({
       files_inbox: '',
     },
     tools,
-    language: CodeLanguage.Typescript,
+    language,
   });
 };

@@ -8,7 +8,7 @@ import { Artifact } from '@shinkai_network/shinkai-node-state/v2/queries/getChat
 import { FormattedMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { format } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Code, Edit3, Loader2, RotateCcw, XCircle } from 'lucide-react';
+import { Edit3, Loader2, RotateCcw, XCircle } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import React, { Fragment, memo, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -30,7 +30,7 @@ import { Card, CardContent } from '../card';
 import { CopyToClipboardIcon } from '../copy-to-clipboard-icon';
 import { DotsLoader } from '../dots-loader';
 import { Form, FormField } from '../form';
-import { MarkdownText, MarkdownTextPrimitive } from '../markdown-preview';
+import { MarkdownText } from '../markdown-preview';
 import {
   Tooltip,
   TooltipContent,
@@ -75,6 +75,7 @@ type MessageProps = {
   setArtifactPanel?: (open: boolean) => void;
   artifacts?: Artifact[];
   artifact?: Artifact;
+  hidePythonExecution?: boolean;
 };
 
 const actionBar = {
@@ -162,6 +163,7 @@ const MessageBase = ({
   setArtifact,
   artifacts,
   artifact,
+  hidePythonExecution,
 }: MessageProps) => {
   const { t } = useTranslation();
 
@@ -314,7 +316,9 @@ const MessageBase = ({
                             <AccordionTrigger
                               className={cn(
                                 'min-w-[10rem] py-0 pr-2 no-underline hover:no-underline',
-                                'transition-colors hover:bg-gray-500 [&>svg]:hidden [&[data-state=open]]:bg-gray-500',
+                                'transition-colors hover:bg-gray-500 [&[data-state=open]]:bg-gray-500',
+                                tool.status !== ToolStatusType.Complete &&
+                                  '[&>svg]:hidden',
                               )}
                             >
                               <ToolCard
@@ -324,17 +328,25 @@ const MessageBase = ({
                                 toolRouterKey={tool.toolRouterKey}
                               />
                             </AccordionTrigger>
-                            <AccordionContent className="bg-gray-450 rounded-b-lg px-3 pb-3 pt-2 text-xs">
+                            <AccordionContent className="bg-gray-450 flex flex-col gap-1 rounded-b-lg px-3 pb-3 pt-2 text-xs">
                               {Object.keys(tool.args).length > 0 && (
                                 <span className="font-medium text-white">
                                   {tool.name}(
                                   {Object.keys(tool.args).length > 0 && (
-                                    <span className="text-gray-80 font-medium">
+                                    <span className="text-gray-80 font-mono font-medium">
                                       {JSON.stringify(tool.args)}
                                     </span>
                                   )}
                                   )
                                 </span>
+                              )}
+                              {tool.result && (
+                                <div>
+                                  <span>Response:</span>
+                                  <span className="text-gray-80 break-all font-mono">
+                                    {JSON.stringify(tool.result, null, 2)}
+                                  </span>
+                                </div>
                               )}
                             </AccordionContent>
                           </AccordionItem>
@@ -365,7 +377,9 @@ const MessageBase = ({
                       <DotsLoader />
                     </div>
                   )}
-                {pythonCode && <PythonCodeRunner code={pythonCode} />}
+                {pythonCode && !hidePythonExecution && (
+                  <PythonCodeRunner code={pythonCode} />
+                )}
                 {message.role === 'user' && !!message.attachments.length && (
                   <FileList
                     className="mt-2 min-w-[200px] max-w-[70vw]"

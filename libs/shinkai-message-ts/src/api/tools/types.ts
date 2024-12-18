@@ -10,6 +10,9 @@ export type ShinkaiToolHeader = {
   tool_router_key: string;
   tool_type: ShinkaiToolType;
   version: string;
+  input_args: {
+    properties: Record<string, { description: string; type: string }>;
+  };
 };
 
 export type ToolConfig = {
@@ -51,6 +54,21 @@ export type DenoShinkaiTool = {
   config_set: boolean;
   activated: boolean;
   embedding?: Embedding;
+  result: Record<string, any>;
+};
+export type PythonShinkaiTool = {
+  activated: boolean;
+  author: string;
+  keywords: string[];
+  input_args: ToolArgument[];
+  description: string;
+  config: ToolConfig[];
+  name: string;
+  oauth: string;
+  py_code: string;
+  output_arg: {
+    json: string;
+  };
   result: JSToolResult;
 };
 export type RustShinkaiTool = {
@@ -81,9 +99,10 @@ export type NetworkShinkaiTool = {
   version: string;
 };
 
-export type ShinkaiToolType = 'Deno' | 'Rust' | 'Network';
+export type ShinkaiToolType = 'Deno' | 'Python' | 'Rust' | 'Network';
 export type ShinkaiTool =
   | DenoShinkaiTool
+  | PythonShinkaiTool
   | RustShinkaiTool
   | NetworkShinkaiTool;
 
@@ -199,7 +218,7 @@ export type ExecuteToolCodeRequest = {
   tool_type: DynamicToolType;
   parameters: Record<string, any>;
   code: string;
-  extra_config?: string;
+  extra_config?: Record<string, any>;
   llm_provider: string;
   tools: string[];
 };
@@ -212,6 +231,7 @@ export type SaveToolCodeRequest = {
   job_id: string;
   job_id_history?: string[];
   code: string;
+  language: CodeLanguage;
 };
 
 export type ToolMetadata = {
@@ -255,6 +275,7 @@ export type PlaygroundTool = {
   job_id: string;
   job_id_history: string[];
   code: string;
+  language: string;
 };
 export type GetPlaygroundToolsResponse = PlaygroundTool[];
 export type GetPlaygroundToolRequest = { tool_key: string };
@@ -276,6 +297,10 @@ export type UpdateToolCodeImplementationResponse = {
   status: string;
 };
 
+export type RemovePlaygroundToolRequest = {
+  tool_key: string;
+};
+
 export type ImportToolRequest = {
   url: string;
 };
@@ -292,6 +317,8 @@ export type ExportToolRequest = {
 };
 
 export type ExportToolResponse = Blob;
+export type GetShinkaiFileProtocolRequest = { file: string };
+export type GetShinkaiFileProtocolResponse = Blob;
 
 export type SetOAuthTokenRequest = {
   code: string;

@@ -29,7 +29,7 @@ type ToolCall = {
   toolRouterKey: string;
   name: string;
   args: ToolArgs;
-  result?: unknown;
+  result?: string;
   status?: ToolStatusType; // TODO: remove
   isError?: boolean;
 };

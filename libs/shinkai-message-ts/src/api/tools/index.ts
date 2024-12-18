@@ -17,12 +17,14 @@ import {
   GetPlaygroundToolRequest,
   GetPlaygroundToolResponse,
   GetPlaygroundToolsResponse,
+  GetShinkaiFileProtocolRequest,
+  GetShinkaiFileProtocolResponse,
   GetToolResponse,
   GetToolsResponse,
-  GetToolsSearchResponse,
   ImportToolRequest,
   ImportToolResponse,
   PayInvoiceRequest,
+  RemovePlaygroundToolRequest,
   SaveToolCodeRequest,
   SaveToolCodeResponse,
   SearchPromptsResponse,
@@ -93,9 +95,7 @@ export const searchTools = async (
       responseType: 'json',
     },
   );
-  const data = response.data as GetToolsSearchResponse;
-  const formattedData = data.map(([header]) => header);
-  return formattedData as GetToolsResponse;
+  return response.data as GetToolsResponse;
 };
 
 export const updateTool = async (
@@ -243,6 +243,8 @@ export const executeToolCode = async (
   nodeAddress: string,
   bearerToken: string,
   payload: ExecuteToolCodeRequest,
+  xShinkaiAppId: string,
+  xShinkaiToolId: string,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/code_execution'),
@@ -250,9 +252,8 @@ export const executeToolCode = async (
     {
       headers: {
         Authorization: `Bearer ${bearerToken}`,
-        // TODO: remove hardcoded values
-        'x-shinkai-app-id': 'app-test',
-        'x-shinkai-tool-id': 'tool-test',
+        'x-shinkai-app-id': xShinkaiAppId,
+        'x-shinkai-tool-id': xShinkaiToolId,
       },
       responseType: 'json',
     },
@@ -264,12 +265,18 @@ export const saveToolCode = async (
   nodeAddress: string,
   bearerToken: string,
   payload: SaveToolCodeRequest,
+  xShinkaiAppId: string,
+  xShinkaiToolId: string,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/set_playground_tool'),
     payload,
     {
-      headers: { Authorization: `Bearer ${bearerToken}` },
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+        'x-shinkai-app-id': xShinkaiAppId,
+        'x-shinkai-tool-id': xShinkaiToolId,
+      },
       responseType: 'json',
     },
   );
@@ -322,6 +329,22 @@ export const restoreToolConversation = async (
   return response.data as UndoToolImplementationResponse;
 };
 
+export const removePlaygroundTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: RemovePlaygroundToolRequest,
+) => {
+  const response = await httpClient.delete(
+    urlJoin(nodeAddress, '/v2/remove_playground_tool'),
+    {
+      params: { tool_key: payload.tool_key },
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
+};
+
 export const updateToolCodeImplementation = async (
   nodeAddress: string,
   bearerToken: string,
@@ -369,6 +392,22 @@ export const exportTool = async (
   );
   return response.data as ExportToolResponse;
 };
+
+export const getShinkaiFileProtocol = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetShinkaiFileProtocolRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/resolve_shinkai_file_protocol'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      params: { file: payload.file },
+      responseType: 'blob',
+    },
+  );
+  return response.data as GetShinkaiFileProtocolResponse;
+}
 
 export const setOAuthToken = async (
   nodeAddress: string,

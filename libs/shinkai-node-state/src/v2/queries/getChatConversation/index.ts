@@ -1,3 +1,4 @@
+import { ToolStatusType } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import {
   downloadFileFromInbox,
   getFileNames,
@@ -84,6 +85,8 @@ const createAssistantMessage = (message: ChatMessage): AssistantMessage => {
       toolRouterKey: tool.tool_router_key,
       name: tool.name,
       args: tool.arguments,
+      status: ToolStatusType.Complete,
+      result: tool?.response ?? '',
     }),
   );
 
