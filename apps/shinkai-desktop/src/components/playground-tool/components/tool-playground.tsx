@@ -987,9 +987,6 @@ function ManageToolSourceModal({
       <DialogTrigger asChild>
         <Button
           className="text-gray-80 h-[30px] shrink-0 rounded-md text-xs"
-          // disabled
-          // isLoading={isSavingTool}
-
           size="sm"
           variant="outline"
         >
