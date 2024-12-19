@@ -25,6 +25,7 @@ const providers: Record<string, ProviderData> = {
     image:
       'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png',
   },
+  // Here we can customize more known providers
 };
 
 export const OAuthConnect = () => {
@@ -58,10 +59,14 @@ export const OAuthConnect = () => {
       console.log('Extracted state:', state);
       if (state) {
         console.log('Setting OAuth data with state and code.');
+        const domain = new URL(url).hostname;
         setoauthData({
           domain: new URL(url).hostname,
           state,
-          providerData: providers[new URL(url).hostname],
+          providerData: providers[domain] ?? {
+            image: '',
+            name: domain,
+          },
         });
       } else {
         console.warn('State is missing in the URL parameters.');
@@ -85,20 +90,29 @@ export const OAuthConnect = () => {
     }
   }, [connectDone]);
 
+  React.useEffect(() => {
+    if (!oauthModalVisible) {
+      setConnectDone(false);
+      setOauthModalVisible({ visible: false });
+      setoauthData(undefined);
+      setCountdown(CLOSE_TIMEOUT_SECONDS);
+    }
+  }, [oauthModalVisible, setOauthModalVisible]);
+
   return (
     <AlertDialog open={oauthModalVisible}>
       <AlertDialogContent className="rounded-lg bg-white p-6 shadow-lg">
         <AlertDialogHeader>
           <div className="flex items-center">
-            {oauthData?.providerData.image && (
+            {oauthData?.providerData?.image && (
               <img
-                alt={`${oauthData.providerData.name} logo`}
+                alt={`${oauthData?.providerData?.name} logo`}
                 className="mr-2 h-6 w-6"
                 src={oauthData.providerData.image}
               />
             )}
             <AlertDialogTitle className="text-lg font-semibold text-gray-800">
-              {t('oauth.title', { provider: oauthData?.providerData.name })}
+              {t('oauth.title', { provider: oauthData?.providerData?.name })}
             </AlertDialogTitle>
           </div>
           <AlertDialogDescription className="text-gray-600">
@@ -128,7 +142,7 @@ export const OAuthConnect = () => {
                   target="_blank"
                 >
                   {t('oauth.goToProvider', {
-                    provider: oauthData?.providerData.name,
+                    provider: oauthData?.providerData?.name,
                   })}
                   <ExternalLink className="ml-2 inline-block h-4 w-4" />
                 </a>
