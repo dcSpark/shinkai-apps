@@ -11,5 +11,5 @@ pub fn toggle_spotlight(app: &tauri::AppHandle, _: Shortcut, _: ShortcutEvent) {
             return;
         }
     }
-    recreate_window(app.clone(), Window::Spotlight, true)
+    recreate_window(app.clone(), Window::Spotlight, true);
 }

@@ -277,8 +277,21 @@
       "label": "已收到消息"
     }
   },
+  "oauth": {
+    "close": "关闭",
+    "connectNow": "立即连接",
+    "connectionRequired": "需要连接",
+    "connectionRequiredDescription": "要使用此工具，请连接您的 {{provider}} 账户。",
+    "description": "连接到 {{provider}} 以使用此工具",
+    "goToProvider": "前往 {{provider}}",
+    "navigateToProvider": "请导航并按照认证步骤继续。",
+    "processing": "处理中...",
+    "signIn": "使用 {{provider}} 登录",
+    "success": "连接成功！",
+    "successDescription": "此窗口将在 {{countdown}} 秒后自动关闭...",
+    "title": "连接到 {{provider}}"
+  },
   "ollama": {
-    "version": "Ollama 版本",
     "errors": {
       "failedToFetch": "无法获取本地Ollama模型。请确保Ollama正常运行。"
     },

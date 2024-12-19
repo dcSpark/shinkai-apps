@@ -566,5 +566,19 @@
     "stdout": "Standard Output",
     "output": "Output",
     "executeCode": "Execute Code"
+  },
+  "oauth": {
+    "title": "Connect to {{provider}}",
+    "description": "Connect to {{provider}} to use this tool",
+    "signIn": "Sign in with {{provider}}",
+    "success": "Connection successful!",
+    "successDescription": "This window will close automatically in {{countdown}} seconds...",
+    "navigateToProvider": "Navigate and follow the authentication steps to continue.",
+    "processing": "Processing...",
+    "goToProvider": "Go to {{provider}}",
+    "close": "Close",
+    "connectionRequired": "Connection Required",
+    "connectionRequiredDescription": "To use this tool, please connect your {{provider}} account.",
+    "connectNow": "Connect Now"
   }
 }

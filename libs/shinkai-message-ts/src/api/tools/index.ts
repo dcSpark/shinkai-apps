@@ -32,6 +32,8 @@ import {
   SaveToolCodeRequest,
   SaveToolCodeResponse,
   SearchPromptsResponse,
+  SetOAuthTokenRequest,
+  SetOAuthTokenResponse,
   UndoToolImplementationRequest,
   UndoToolImplementationResponse,
   UpdatePromptRequest,
@@ -284,6 +286,7 @@ export const saveToolCode = async (
   );
   return response.data as SaveToolCodeResponse;
 };
+
 export const getPlaygroundTools = async (
   nodeAddress: string,
   bearerToken: string,
@@ -408,6 +411,22 @@ export const getShinkaiFileProtocol = async (
     },
   );
   return response.data as GetShinkaiFileProtocolResponse;
+}
+
+export const setOAuthToken = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: SetOAuthTokenRequest,
+): Promise<SetOAuthTokenResponse> => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/set_oauth_token'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as SetOAuthTokenResponse;
 };
 
 export const getAllToolAssets = async (

@@ -1,4 +1,4 @@
-use tauri::{AppHandle, Manager, WebviewWindowBuilder};
+use tauri::{AppHandle, Manager, WebviewWindow, WebviewWindowBuilder};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Window {
@@ -19,7 +19,7 @@ impl Window {
     }
 }
 
-pub fn recreate_window(app_handle: AppHandle, window_name: Window, focus: bool) {
+pub fn recreate_window(app_handle: AppHandle, window_name: Window, focus: bool) -> tauri::Result<WebviewWindow> {
     let label = window_name.as_str();
     if let Some(window) = app_handle.get_webview_window(label) {
         log::info!("window {} found, bringing to front", label);
@@ -32,6 +32,7 @@ pub fn recreate_window(app_handle: AppHandle, window_name: Window, focus: bool) 
             // window.center().unwrap();
             let _ = window.set_focus();
         }
+        return Ok(window);
     } else {
         log::info!("window {} not found, recreating...", label);
         let window_config = app_handle
@@ -44,13 +45,18 @@ pub fn recreate_window(app_handle: AppHandle, window_name: Window, focus: bool) 
             .clone();
         match WebviewWindowBuilder::from_config(&app_handle, &window_config) {
             Ok(builder) => match builder.build() {
-                Ok(_) => {
+                Ok(window) => {
                     log::info!("window {} created", label);
+                    return Ok(window)
                 }
-                Err(e) => log::error!("failed to recreate window: {}", e),
+                Err(e) => {
+                    log::error!("failed to recreate window: {}", e);
+                    Err(e)
+                },
             },
             Err(e) => {
                 log::error!("failed to recreate window from config: {}", e);
+                Err(e)
             }
         }
     }

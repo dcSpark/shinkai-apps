@@ -277,6 +277,20 @@
       "label": "Mesaj Alındı"
     }
   },
+  "oauth": {
+    "close": "Kapat",
+    "connectNow": "Şimdi Bağlan",
+    "connectionRequired": "Bağlantı Gerekli",
+    "connectionRequiredDescription": "Bu aracı kullanmak için lütfen {{provider}} hesabınıza bağlanın.",
+    "description": "{{provider}} ile bu aracı kullanmak için bağlanın",
+    "goToProvider": "{{provider}}'ye Git",
+    "navigateToProvider": "Devam etmek için kimlik doğrulama adımlarını izlemek üzere gidin.",
+    "processing": "İşleniyor...",
+    "signIn": "{{provider}} ile Giriş Yap",
+    "success": "Bağlantı başarılı!",
+    "successDescription": "{{countdown}} saniye içinde bu pencere otomatik olarak kapanacaktır...",
+    "title": "{{provider}} ile Bağlan"
+  },
   "ollama": {
     "errors": {
       "failedToFetch": "Yerel Ollama modelleri alınamadı. Lütfen Ollama'nın doğru çalıştığından emin olun."

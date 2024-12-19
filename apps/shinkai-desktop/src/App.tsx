@@ -7,6 +7,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import FullPageErrorFallback from './components/error-boundary';
+import { OAuthConnect } from './components/oauth/oauth-connect';
 import { AnalyticsProvider } from './lib/posthog-provider';
 import AppRoutes from './routes';
 import { useSyncStorageSecondary } from './store/sync-utils';
@@ -21,6 +22,7 @@ function App() {
       <ErrorBoundary FallbackComponent={FullPageErrorFallback}>
         <AnalyticsProvider>
           <QueryProvider>
+            <OAuthConnect />
             <Router>
               <AppRoutes />
             </Router>

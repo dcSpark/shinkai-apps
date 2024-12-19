@@ -37,12 +37,21 @@ import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { format } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Edit3, InfoIcon, Loader2, RotateCcw, XCircle } from 'lucide-react';
+import {
+  Edit3,
+  InfoIcon,
+  Loader2,
+  RotateCcw,
+  Unplug,
+  XCircle,
+} from 'lucide-react';
 import React, { Fragment, memo, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
+import { useOAuth } from '../../../store/oauth';
+import { oauthUrlMatcherFromErrorMessage } from '../../../utils/oauth';
 import { useChatStore } from '../context/chat-context';
 
 export const extractErrorPropertyOrContent = (
@@ -195,6 +204,12 @@ export const MessageBase = ({
     }
     return null;
   }, [message.content]);
+
+  const oauthUrl = useMemo(() => {
+    return oauthUrlMatcherFromErrorMessage(message.content);
+  }, [message.content]);
+
+  const { setOauthModalVisible } = useOAuth();
 
   return (
     <motion.div
@@ -397,6 +412,32 @@ export const MessageBase = ({
                     </div>
                   )}
                 {pythonCode && <PythonCodeRunner code={pythonCode} />}
+
+                {oauthUrl && (
+                  <div className="mt-4 flex flex-col items-start rounded-lg bg-gray-900 p-4 shadow-md">
+                    <p className="mb-2 text-lg font-semibold text-white">
+                      <div className="flex items-center">
+                        <Unplug className="mr-2 h-5 w-5" />
+                        {t('oauth.connectionRequired')}
+                      </div>
+                    </p>
+                    <p className="mb-4 text-sm text-white">
+                      {t('oauth.connectionRequiredDescription', {
+                        provider: new URL(oauthUrl).hostname,
+                      })}
+                    </p>
+                    <Button
+                      className="rounded-lg px-4 py-2 text-white transition duration-300"
+                      onClick={() =>
+                        setOauthModalVisible({ visible: true, url: oauthUrl })
+                      }
+                      variant="outline"
+                    >
+                      {t('oauth.connectNow')}
+                    </Button>
+                  </div>
+                )}
+
                 {message.role === 'user' && !!message.attachments.length && (
                   <FileList
                     className="mt-2 min-w-[200px] max-w-[70vw]"

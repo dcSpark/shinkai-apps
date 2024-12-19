@@ -1,4 +1,6 @@
 {
+  "": {
+  },
   "aiFilesSearch": {
     "description": "Busca para encontrar contenido en todos los archivos de tus archivos AI fácilmente",
     "filesSelected": "Seleccionados {{count}} archivos",
@@ -277,8 +279,21 @@
       "label": "Mensaje Recibido"
     }
   },
+  "oauth": {
+    "close": "Cerrar",
+    "connectNow": "Conectar Ahora",
+    "connectionRequired": "Conexión Requerida",
+    "connectionRequiredDescription": "Para usar esta herramienta, por favor conecta tu cuenta de {{provider}}.",
+    "description": "Conéctate a {{provider}} para usar esta herramienta",
+    "goToProvider": "Ir a {{provider}}",
+    "navigateToProvider": "Navega y sigue los pasos de autenticación para continuar.",
+    "processing": "Procesando...",
+    "signIn": "Iniciar sesión con {{provider}}",
+    "success": "¡Conexión exitosa!",
+    "successDescription": "Esta ventana se cerrará automáticamente en {{countdown}} segundos...",
+    "title": "Conectar a {{provider}}"
+  },
   "ollama": {
-    "version": "Versión de Ollama",
     "errors": {
       "failedToFetch": "Error al obtener modelos locales de Ollama. Por favor, asegúrate de que Ollama esté funcionando correctamente."
     },

@@ -277,8 +277,21 @@
       "label": "Pesan Diterima"
     }
   },
+  "oauth": {
+    "close": "Tutup",
+    "connectNow": "Sambungkan Sekarang",
+    "connectionRequired": "Koneksi Diperlukan",
+    "connectionRequiredDescription": "Untuk menggunakan alat ini, silakan sambungkan akun {{provider}} Anda.",
+    "description": "Sambungkan ke {{provider}} untuk menggunakan alat ini",
+    "goToProvider": "Pergi ke {{provider}}",
+    "navigateToProvider": "Navigasikan dan ikuti langkah-langkah otentikasi untuk melanjutkan.",
+    "processing": "Memproses...",
+    "signIn": "Masuk dengan {{provider}}",
+    "success": "Sambungan berhasil!",
+    "successDescription": "Jendela ini akan ditutup secara otomatis dalam {{countdown}} detik...",
+    "title": "Sambungkan ke {{provider}}"
+  },
   "ollama": {
-    "version": "Versi Ollama",
     "errors": {
       "failedToFetch": "Gagal mengambil model Ollama lokal. Pastikan Ollama berjalan dengan benar."
     },
