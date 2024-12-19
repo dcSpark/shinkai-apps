@@ -127,13 +127,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: (Windows) Install asiosdk
+      - name: (Windows) Install llvm
         if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         shell: PowerShell
         run: |
-          curl https://www.steinberg.net/asiosdk -o asiosdk.zip
-          Expand-Archive .\asiosdk.zip -DestinationPath .\
-          choco install asio4all
           choco install llvm
 
       # This is a workaround for NSIS bundle size limits https://nsis.sourceforge.io/Talk:Special_Builds
@@ -254,7 +251,6 @@ jobs:
           VITE_POSTHOG_API_KEY: ${{ secrets.VITE_POSTHOG_API_KEY }}
           SECRET_DESKTOP_INSTALLATION_PROOF_KEY: ${{secrets.SECRET_DESKTOP_INSTALLATION_PROOF_KEY}}
           # Windows Only
-          CPAL_ASIO_DIR: ${{ github.workspace }}/asiosdk_2.3.3_2019-06-14
           LIBCLANG_PATH: C:\Program Files\LLVM\bin
           NODE_OPTIONS: "--max_old_space_size=8192"
       - name: Prepare binary files
