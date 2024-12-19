@@ -31,12 +31,10 @@ export type RecurringTaskAction =
       };
     };
 
-export type CreateRecurringTaskRequest = {
-  name: string;
-  description?: string;
-  cron: string;
-  action: RecurringTaskAction;
-};
+export type CreateRecurringTaskRequest = Omit<
+  RecurringTask,
+  'created_at' | 'last_modified' | 'paused'
+>;
 
 export type CreateRecurringTaskResponse = RecurringTask;
 
@@ -48,6 +46,7 @@ export type RecurringTask = {
   action: RecurringTaskAction;
   description?: string;
   name: string;
+  paused: boolean;
 };
 
 export type GetRecurringTasksResponse = RecurringTask[];

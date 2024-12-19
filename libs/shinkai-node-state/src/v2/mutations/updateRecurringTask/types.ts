@@ -7,6 +7,7 @@ export type UpdateRecurringTaskOutput = CreateRecurringTaskResponse;
 export type UpdateRecurringTaskInput = Token & {
   nodeAddress: string;
   name: string;
+  active: boolean;
   description?: string;
   taskId: string;
   jobId: string;

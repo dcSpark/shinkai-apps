@@ -1,7 +1,9 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
+import { useUpdateRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/updateRecurringTask/useUpdateRecurringTask';
 import { useGetRecurringTasks } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTasks/useGetRecurringTasks';
 import {
   Button,
@@ -38,6 +40,14 @@ export const Tasks = () => {
   } = useGetRecurringTasks({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
+  });
+
+  const { mutateAsync: updateRecurringTask } = useUpdateRecurringTask({
+    onError: (error) => {
+      toast.error('Failed to updated task', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
   });
 
   return (
@@ -89,6 +99,33 @@ export const Tasks = () => {
               description={task.description}
               key={task.task_id}
               name={task.name}
+              onCheckedChange={async (active) => {
+                if ('CreateJobWithConfigAndMessage' in task.action) {
+                  const config: JobConfig =
+                    task.action.CreateJobWithConfigAndMessage.config;
+                  const message =
+                    task.action.CreateJobWithConfigAndMessage.message.content;
+                  const llmProvider =
+                    task.action.CreateJobWithConfigAndMessage.llm_provider;
+                  const jobId =
+                    task.action.CreateJobWithConfigAndMessage.message.job_id;
+                  await updateRecurringTask({
+                    nodeAddress: auth?.node_address ?? '',
+                    token: auth?.api_v2_key ?? '',
+                    taskId: task.task_id.toString(),
+                    active,
+                    chatConfig: config,
+                    cronExpression: task.cron,
+                    description: task.description,
+                    jobId,
+                    llmProvider,
+                    name: task.name,
+                    message,
+                  });
+                  return;
+                }
+              }}
+              paused={task.paused}
               prompt={
                 'CreateJobWithConfigAndMessage' in task.action
                   ? task.action.CreateJobWithConfigAndMessage.message.content
@@ -113,15 +150,20 @@ const TaskCard = ({
   description,
   cronExpression,
   prompt,
+  paused,
+  onCheckedChange,
 }: {
   taskId: number;
   name: string;
   description?: string;
   cronExpression: string;
   prompt: string;
+  paused: boolean;
+  onCheckedChange: (active: boolean) => void;
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+
   const [isDeleteTaskDrawerOpen, setIsDeleteTaskDrawerOpen] =
     React.useState(false);
 
@@ -154,12 +196,9 @@ const TaskCard = ({
         </p>
       </div>
       <div className="flex items-center gap-3 pt-1">
-        <Switch
-          checked={true}
-          // TODO: need backend changes
-        />
+        <Switch checked={!paused} onCheckedChange={onCheckedChange} />
         <label className="text-xs text-gray-50" htmlFor="all">
-          Active
+          {paused ? 'Inactive' : 'Active'}
         </label>
       </div>
       <Link
