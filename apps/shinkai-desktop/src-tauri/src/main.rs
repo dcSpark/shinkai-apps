@@ -118,7 +118,7 @@ fn main() {
                     // Kill any existing process related to shinkai and/or using shinkai ports
                     let mut shinkai_node_manager_guard =
                         SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
-                    // shinkai_node_manager_guard.kill().await;
+                    shinkai_node_manager_guard.kill().await;
                     drop(shinkai_node_manager_guard);
 
                     let _ = recreate_window(app_handle.clone(), Window::Coordinator, false);
