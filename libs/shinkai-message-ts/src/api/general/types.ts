@@ -9,6 +9,12 @@ export type CheckHealthResponse = {
 };
 
 export type Token = { token: string };
+
+export type CustomToolHeaders = {
+  xShinkaiAppId: string;
+  xShinkaiToolId: string;
+};
+
 export type WalletBalance = {
   amount: string;
   asset: {
