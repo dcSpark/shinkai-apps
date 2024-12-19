@@ -16,6 +16,7 @@ export class NodeManager {
 
   private node: ChildProcess | undefined;
   private nodeExecPath: string;
+  private operationLock: Promise<void> = Promise.resolve();
 
   constructor(nodeExecPath?: string) {
     this.nodeExecPath =
@@ -33,6 +34,17 @@ export class NodeManager {
       path.join(__dirname, '../shinkai-node/.secret'),
       path.join(nodeStoragePath, '.secret'),
     );
+  }
+
+  private async acquireLock(): Promise<() => void> {
+    let release: () => void;
+    const newLock = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const oldLock = this.operationLock;
+    this.operationLock = newLock;
+    await oldLock;
+    return release!;
   }
 
   private async spawnNode(
@@ -53,19 +65,31 @@ export class NodeManager {
         stdio: 'pipe',
         shell: true,
       });
+
+      const cleanup = () => {
+        childProcess.removeAllListeners();
+        childProcess.stdout?.removeAllListeners();
+        childProcess.stderr?.removeAllListeners();
+      };
+
       childProcess.on('close', (err) => {
         logger(`close with code ${String(err)}`);
+        cleanup();
         reject(err);
       });
+
       childProcess.on('error', (err) => {
         logger(`error ${String(err)}`);
       });
+
       childProcess.stderr.on('error', (data) => {
         logger(String(data));
       });
+
       childProcess.stdout.on('error', (data) => {
         logger(String(data));
       });
+
       if (options.pipeLogs) {
         childProcess.stderr.on('data', (data) => {
           logger(data.toString());
@@ -74,17 +98,21 @@ export class NodeManager {
           logger(data.toString());
         });
       }
+
       if (options.readyMatcher) {
         const timeoutRef = setTimeout(() => {
           childProcess.kill();
+          cleanup();
           reject(
             `ready matcher timeout after ${options.readyMatcherTimeoutMs}`,
           );
         }, options.readyMatcherTimeoutMs ?? 15000);
+
         childProcess.stdout?.on('data', (chunk: Buffer) => {
           if (options.readyMatcher?.test(chunk.toString())) {
             logger(`process ready, with readyMatcher:${chunk.toString()}`);
             clearTimeout(timeoutRef);
+            cleanup();
             resolve(childProcess);
           }
         });
@@ -95,45 +123,55 @@ export class NodeManager {
   }
 
   async startNode(pristine: boolean, nodeOptions?: object): Promise<void> {
+    const release = await this.acquireLock();
     console.log('starting node');
-    const mergedOptions = {
-      ...this.defaultNodeOptions,
-      ...(nodeOptions || {}),
-    };
-    if (pristine) {
-      this.resetToPristine(mergedOptions.NODE_STORAGE_PATH);
-    }
-    const nodeEnv = Object.entries(mergedOptions)
-      .map(([key, value]) => {
-        return `${key}="${value}"`;
-      })
-      .join(' ');
+    try {
+      const mergedOptions = {
+        ...this.defaultNodeOptions,
+        ...(nodeOptions || {}),
+      };
+      if (pristine) {
+        this.resetToPristine(mergedOptions.NODE_STORAGE_PATH);
+      }
+      const nodeEnv = Object.entries(mergedOptions)
+        .map(([key, value]) => {
+          return `${key}="${value}"`;
+        })
+        .join(' ');
 
-    this.node = await this.spawnNode(`${nodeEnv} ${this.nodeExecPath}`, {
-      pipeLogs: true,
-      logsId: 'shinkai-node',
-      readyMatcher: /Server::run/,
-    });
-    console.log('node started');
+      this.node = await this.spawnNode(`${nodeEnv} ${this.nodeExecPath}`, {
+        pipeLogs: true,
+        logsId: 'shinkai-node',
+        readyMatcher: /Server::run/,
+      });
+      console.log('node started');
+    } finally {
+      release();
+    }
   }
 
   async stopNode(): Promise<void> {
+    const release = await this.acquireLock();
     console.log('stopping node');
-    if (!this.node) {
-      return Promise.resolve();
-    }
-    this.node.kill();
-    await new Promise<void>((resolve) => {
-      const timeout = setTimeout(() => {
-        console.warn('stopping node timeout');
-        resolve();
-      }, 5000);
-      this.node.once('exit', () => {
-        console.log('stopping node success');
-        clearTimeout(timeout);
-        resolve();
+    try {
+      if (!this.node) {
+        return Promise.resolve();
+      }
+      this.node.kill();
+      await new Promise<void>((resolve) => {
+        const timeout = setTimeout(() => {
+          console.warn('stopping node timeout');
+          resolve();
+        }, 5000);
+        this.node.once('exit', () => {
+          console.log('stopping node success');
+          clearTimeout(timeout);
+          resolve();
+        });
       });
-    });
-    this.node = undefined;
+      this.node = undefined;
+    } finally {
+      release();
+    }
   }
 }
