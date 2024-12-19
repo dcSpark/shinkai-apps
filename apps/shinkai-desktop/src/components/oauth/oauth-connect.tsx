@@ -102,7 +102,7 @@ export const OAuthConnect = () => {
           <AlertDialogDescription className="text-gray-600">
             {connectDone ? (
               <div className="mt-4 flex flex-col items-start">
-                <div className="flex flex items-center text-green-600">
+                <div className="flex items-center text-green-600">
                   <CheckCircle className="mr-2 h-5 w-5 animate-bounce" />
                   <span>Connection successful!</span>
                 </div>
@@ -125,8 +125,8 @@ export const OAuthConnect = () => {
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <ExternalLink className="mr-1 inline-block h-4 w-4" />
                   Go to {oauthData?.providerData.name}
+                  <ExternalLink className="ml-2 inline-block h-4 w-4" />
                 </a>
               </div>
             )}
