@@ -189,7 +189,7 @@ export default function RustTool({
         {/*    Go Playground*/}
         {/*  </Link>*/}
         {/*)}*/}
-        <div className="flex flex-col gap-4 py-4">
+        <div className="flex flex-col gap-4 py-6">
           <RemoveToolButton toolKey={toolKey as string} />
         </div>
       </div>

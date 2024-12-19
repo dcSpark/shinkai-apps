@@ -14,7 +14,10 @@ import {
   Switch,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { formatText } from '@shinkai_network/shinkai-ui/helpers';
+import {
+  formatCamelCaseText,
+  formatText,
+} from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
@@ -194,7 +197,7 @@ export default function DenoTool({
           },
           tool.keywords.length > 0 && {
             label: 'Keyword',
-            value: tool.keywords,
+            value: tool.keywords.join(', '),
           },
         ]
           .filter((item) => !!item)
@@ -223,7 +226,7 @@ export default function DenoTool({
                       render={({ field }) => (
                         <TextField
                           field={field}
-                          label={formatText(conf.BasicConfig.key_name)}
+                          label={formatCamelCaseText(conf.BasicConfig.key_name)}
                           type="password"
                         />
                       )}
@@ -242,7 +245,7 @@ export default function DenoTool({
             </Form>
           </div>
         )}
-        <div className="flex flex-col gap-4 py-4">
+        <div className="flex flex-col gap-4 py-6">
           {isPlaygroundTool && (
             <Link
               className={cn(
