@@ -85,15 +85,28 @@ impl ShinkaiNodeManager {
     }
 
     pub async fn spawn(&mut self) -> Result<(), String> {
+        // Add cleanup in case of previous failed state
+        self.kill().await;
+
+        // Start Ollama with timeout
         self.emit_event(ShinkaiNodeManagerEvent::StartingOllama);
-        match self.ollama_process.spawn(None).await {
-            Ok(_) => {
+        match tokio::time::timeout(
+            Duration::from_secs(30),
+            self.ollama_process.spawn(None)
+        ).await {
+            Ok(Ok(_)) => {
                 self.emit_event(ShinkaiNodeManagerEvent::OllamaStarted);
-            }
-            Err(e) => {
+            },
+            Ok(Err(e)) => {
                 self.kill().await;
                 self.emit_event(ShinkaiNodeManagerEvent::OllamaStartError { error: e.clone() });
                 return Err(e);
+            },
+            Err(_) => {
+                self.kill().await;
+                let error = "Ollama start timeout".to_string();
+                self.emit_event(ShinkaiNodeManagerEvent::OllamaStartError { error: error.clone() });
+                return Err(error);
             }
         }
 
@@ -223,19 +236,26 @@ impl ShinkaiNodeManager {
         }
 
         self.emit_event(ShinkaiNodeManagerEvent::StartingShinkaiNode);
-        match self.shinkai_node_process.spawn().await {
-            Ok(_) => {
+        match tokio::time::timeout(
+            Duration::from_secs(30),
+            self.shinkai_node_process.spawn()
+        ).await {
+            Ok(Ok(_)) => {
                 self.emit_event(ShinkaiNodeManagerEvent::ShinkaiNodeStarted);
-            }
-            Err(e) => {
+                Ok(())
+            },
+            Ok(Err(e)) => {
                 self.kill().await;
-                self.emit_event(ShinkaiNodeManagerEvent::ShinkaiNodeStartError {
-                    error: e.clone(),
-                });
-                return Err(e);
+                self.emit_event(ShinkaiNodeManagerEvent::ShinkaiNodeStartError { error: e.clone() });
+                Err(e)
+            },
+            Err(_) => {
+                self.kill().await;
+                let error = "Shinkai node start timeout".to_string();
+                self.emit_event(ShinkaiNodeManagerEvent::ShinkaiNodeStartError { error: error.clone() });
+                Err(error)
             }
         }
-        Ok(())
     }
 
     pub async fn kill(&mut self) {
