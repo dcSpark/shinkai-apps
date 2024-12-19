@@ -320,6 +320,20 @@ export type ExportToolResponse = Blob;
 export type GetShinkaiFileProtocolRequest = { file: string };
 export type GetShinkaiFileProtocolResponse = Blob;
 
+export type GetAllToolAssetsResponse = string[];
+export type AddToolRequestRequest = {
+  filename: string;
+  file: File;
+};
+export type AddToolRequestResponse = {
+  file: number;
+  file_name: string;
+  message: string;
+  status: string;
+};
+export type RemoveToolRequestRequest = {
+  filename: string;
+};
 export type SetOAuthTokenRequest = {
   code: string;
   state: string;
