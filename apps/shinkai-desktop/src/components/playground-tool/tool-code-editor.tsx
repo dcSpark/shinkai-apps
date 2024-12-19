@@ -116,7 +116,7 @@ const ToolCodeEditor = forwardRef<
   }
 >(({ value, onUpdate, language, name, readOnly, style }, ref) => (
   <Editor
-    insertSpaces={false}
+    insertSpaces={true}
     language={language}
     onUpdate={onUpdate}
     readOnly={readOnly}

@@ -2,6 +2,8 @@ import { httpClient } from '../../http-client';
 import { urlJoin } from '../../utils/url-join';
 import {
   AddToolRequest,
+  AddToolRequestRequest,
+  AddToolRequestResponse,
   CreatePromptRequest,
   CreatePromptResponse,
   CreateToolCodeRequest,
@@ -14,6 +16,7 @@ import {
   ExportToolRequest,
   ExportToolResponse,
   GetAllPromptsResponse,
+  GetAllToolAssetsResponse,
   GetPlaygroundToolRequest,
   GetPlaygroundToolResponse,
   GetPlaygroundToolsResponse,
@@ -25,6 +28,7 @@ import {
   ImportToolResponse,
   PayInvoiceRequest,
   RemovePlaygroundToolRequest,
+  RemoveToolRequestRequest,
   SaveToolCodeRequest,
   SaveToolCodeResponse,
   SearchPromptsResponse,
@@ -404,4 +408,96 @@ export const getShinkaiFileProtocol = async (
     },
   );
   return response.data as GetShinkaiFileProtocolResponse;
+};
+
+export const getAllToolAssets = async (
+  nodeAddress: string,
+  bearerToken: string,
+  xShinkaiAppId: string,
+  xShinkaiToolId: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/list_tool_asset'),
+    {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+        'x-shinkai-app-id': xShinkaiAppId,
+        'x-shinkai-tool-id': xShinkaiToolId,
+      },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetAllToolAssetsResponse;
+};
+
+export const uploadAssetTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: AddToolRequestRequest,
+  xShinkaiAppId: string,
+  xShinkaiToolId: string,
+) => {
+  const fileData = await payload.file.arrayBuffer();
+
+  const formData = new FormData();
+  formData.append('file_name', payload.filename);
+  formData.append('file', new Blob([fileData]));
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/tool_asset'),
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+        'x-shinkai-app-id': xShinkaiAppId,
+        'x-shinkai-tool-id': xShinkaiToolId,
+      },
+      responseType: 'json',
+    },
+  );
+  return response.data as AddToolRequestResponse;
+};
+
+export const uploadAssetsToTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  xShinkaiAppId: string,
+  xShinkaiToolId: string,
+  files: File[],
+) => {
+  for (const file of files) {
+    await uploadAssetTool(
+      nodeAddress,
+      bearerToken,
+      {
+        filename: encodeURIComponent(file.name),
+        file,
+      },
+      xShinkaiAppId,
+      xShinkaiToolId,
+    );
+  }
+  return { success: true };
+};
+
+export const removeToolAsset = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: RemoveToolRequestRequest,
+  xShinkaiAppId: string,
+  xShinkaiToolId: string,
+) => {
+  const response = await httpClient.delete(
+    urlJoin(nodeAddress, '/v2/tool_asset'),
+    {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+        'x-shinkai-app-id': xShinkaiAppId,
+        'x-shinkai-tool-id': xShinkaiToolId,
+      },
+      params: { file_name: payload.filename },
+      responseType: 'json',
+    },
+  );
+  return response.data;
 };

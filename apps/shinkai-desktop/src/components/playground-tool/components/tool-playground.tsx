@@ -1,16 +1,26 @@
+import { DialogClose } from '@radix-ui/react-dialog';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { FormProps } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { CustomToolHeaders } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import {
   CodeLanguage,
   ToolMetadata,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { useRemoveAssetTool } from '@shinkai_network/shinkai-node-state/v2/mutations/removeAssetTool/useRemoveAssetTool';
+import { useUploadAssetsTool } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadAssetsTool/useUploadAssetsTool';
+import { useGetAllToolAssets } from '@shinkai_network/shinkai-node-state/v2/queries/getAllToolAssets/useGetAllToolAssets';
 import { useGetShinkaiFileProtocol } from '@shinkai_network/shinkai-node-state/v2/queries/getShinkaiFileProtocol/useGetShinkaiFileProtocol';
 import {
   Badge,
   Button,
   ChatInputArea,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
   Form,
   FormControl,
   FormField,
@@ -21,6 +31,7 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
+  Separator,
   Tabs,
   TabsContent,
   TabsList,
@@ -34,7 +45,9 @@ import {
   fileIconMap,
   FileTypeIcon,
   SendIcon,
+  ToolAssetsIcon,
 } from '@shinkai_network/shinkai-ui/assets';
+import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
@@ -49,11 +62,15 @@ import {
   Redo2Icon,
   Save,
   Undo2Icon,
+  Upload,
+  XIcon,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { Link, To } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { allowedFileExtensions } from '../../../lib/constants';
 import { useAuth } from '../../../store/auth';
 import { AIModelSelector } from '../../chat/chat-action-bar/ai-update-selection-action-bar';
 import { ToolErrorFallback } from '../error-boundary';
@@ -359,7 +376,7 @@ function PlaygroundToolEditor({
                     Metadata
                   </TabsTrigger>
                 </TabsList>
-                <div className="flex items-center gap-6">
+                <div className="flex items-stretch gap-6">
                   {toolHistory.length > 1 && (
                     <div className="flex items-center gap-4">
                       {toolCode === toolHistory?.at(-1)?.code ? (
@@ -446,24 +463,33 @@ function PlaygroundToolEditor({
                           </TooltipPortal>
                         </Tooltip>
                       </div>
+                      <Separator
+                        className="my-1 bg-gray-300"
+                        orientation="vertical"
+                      />
                     </div>
                   )}
-                  <Button
-                    className="text-gray-80 h-[30px] shrink-0 rounded-md text-xs"
-                    disabled={
-                      !toolCode ||
-                      !metadataGenerationData ||
-                      !chatInboxId ||
-                      isSavingTool
-                    }
-                    isLoading={isSavingTool}
-                    onClick={handleSaveTool}
-                    size="sm"
-                    variant="outline"
-                  >
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Tool
-                  </Button>
+                  <div className="flex items-center gap-2.5">
+                    <ManageToolSourceModal
+                      xShinkaiAppId={xShinkaiAppId}
+                      xShinkaiToolId={xShinkaiToolId}
+                    />
+                    <Button
+                      className="h-[30px] shrink-0 rounded-md text-xs"
+                      disabled={
+                        !toolCode ||
+                        !metadataGenerationData ||
+                        !chatInboxId ||
+                        isSavingTool
+                      }
+                      isLoading={isSavingTool}
+                      onClick={handleSaveTool}
+                      size="sm"
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      Save Tool
+                    </Button>
+                  </div>
                 </div>
               </div>
               <TabsContent
@@ -907,5 +933,149 @@ function ToolResultFileCard({ filePath }: { filePath: string }) {
       </div>
       <div className="text-left text-xs">{filePath.split('/')?.at(-1)}</div>
     </Button>
+  );
+}
+
+function ManageToolSourceModal({
+  xShinkaiAppId,
+  xShinkaiToolId,
+}: CustomToolHeaders) {
+  const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
+
+  const { data: assets, isSuccess: isGetAllToolAssetsSuccess } =
+    useGetAllToolAssets({
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      xShinkaiAppId,
+      xShinkaiToolId,
+    });
+
+  const { mutateAsync: uploadAssets } = useUploadAssetsTool({
+    onError: (error) => {
+      toast.error('Failed uploading source:', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
+
+  const { mutateAsync: removeAsset } = useRemoveAssetTool({
+    onError: (error) => {
+      toast.error('Failed removing source:', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
+
+  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
+    useDropzone({
+      multiple: true,
+      maxFiles: 5,
+      onDrop: async (acceptedFiles) => {
+        await uploadAssets({
+          nodeAddress: auth?.node_address ?? '',
+          token: auth?.api_v2_key ?? '',
+          files: acceptedFiles,
+          xShinkaiAppId,
+          xShinkaiToolId,
+        });
+      },
+    });
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          className="text-gray-80 h-[30px] shrink-0 rounded-md text-xs"
+          size="sm"
+          variant="outline"
+        >
+          <ToolAssetsIcon className="text-gray-80 mr-2 h-4 w-4" />
+          Manage Sources ({isGetAllToolAssetsSuccess ? assets.length : '-'})
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="flex h-[50vh] max-w-[500px] flex-col gap-4">
+        <DialogClose className="absolute right-4 top-4">
+          <XIcon className="text-gray-80 h-5 w-5" />
+        </DialogClose>
+        <div className="space-y-2">
+          <DialogTitle className="pb-0">Manage Sources</DialogTitle>
+          <DialogDescription className="text-xs">
+            Add knowledge directly to your tool. It is used to provide context
+            to the large language model.
+          </DialogDescription>
+        </div>
+
+        <div
+          {...getRootFileProps({
+            className:
+              'dropzone py-4 bg-gray-400 group relative  flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed border-gray-200 transition-colors hover:border-gray-100',
+          })}
+        >
+          <div className="flex flex-col items-center justify-center space-y-1 px-2">
+            <div className="bg-gray-350 rounded-full p-2 shadow-sm">
+              <Upload className="h-4 w-4" />
+            </div>
+            <p className="text-sm text-white">{t('common.clickToUpload')}</p>
+
+            <p className="text-gray-80 line-clamp-1 text-xs">
+              Supports {allowedFileExtensions.join(', ')}
+            </p>
+          </div>
+
+          <input {...getInputFileProps({})} />
+        </div>
+        <Separator className="my-1 bg-gray-200" orientation="horizontal" />
+        <div
+          className={cn(
+            'flex flex-1 flex-col gap-2 overflow-y-auto pr-2',
+            (assets ?? []).length > 5,
+          )}
+        >
+          {isGetAllToolAssetsSuccess && assets.length === 0 && (
+            <span className="text-gray-80 text-center text-xs">
+              No source files uploaded yet.
+            </span>
+          )}
+          {isGetAllToolAssetsSuccess &&
+            assets.map((asset) => (
+              <div
+                className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 px-1.5 py-1.5 py-2"
+                key={asset}
+              >
+                <div className="flex items-center gap-2 text-gray-50">
+                  <div className="w-4.5 flex aspect-square shrink-0 items-center justify-center">
+                    {getFileExt(asset) && fileIconMap[getFileExt(asset)] ? (
+                      <FileTypeIcon
+                        className="text-gray-80 h-[18px] w-[18px] shrink-0"
+                        type={getFileExt(asset)}
+                      />
+                    ) : (
+                      <Paperclip className="text-gray-80 h-3.5 w-3.5 shrink-0" />
+                    )}
+                  </div>
+                  <span className="text-sm">{decodeURIComponent(asset)}</span>
+                </div>
+                <Button
+                  className="text-gray-80 !size-5 border-0 p-0.5 hover:text-white"
+                  onClick={async () => {
+                    await removeAsset({
+                      nodeAddress: auth?.node_address ?? '',
+                      token: auth?.api_v2_key ?? '',
+                      xShinkaiAppId,
+                      xShinkaiToolId,
+                      filename: asset,
+                    });
+                  }}
+                  size="auto"
+                  variant="outline"
+                >
+                  <XIcon className="size-full" />
+                </Button>
+              </div>
+            ))}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

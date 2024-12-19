@@ -24,7 +24,6 @@ export default function RemoveToolButton({ toolKey }: { toolKey: string }) {
 
   return (
     <Button
-      className="border-red-800 bg-red-700/50 text-red-50 hover:bg-red-900"
       disabled={isRemoveToolPending}
       isLoading={isRemoveToolPending}
       onClick={async () => {
