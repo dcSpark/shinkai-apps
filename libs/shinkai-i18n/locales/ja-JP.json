@@ -277,8 +277,21 @@
       "label": "メッセージを受信しました"
     }
   },
+  "oauth": {
+    "close": "閉じる",
+    "connectNow": "今すぐ接続",
+    "connectionRequired": "接続が必要です",
+    "connectionRequiredDescription": "このツールを使用するには、{{provider}}アカウントに接続してください。",
+    "description": "このツールを使用するために{{provider}}に接続します",
+    "goToProvider": "{{provider}}に移動",
+    "navigateToProvider": "認証手順に従って進んでください。",
+    "processing": "処理中...",
+    "signIn": "{{provider}}でサインイン",
+    "success": "接続に成功しました！",
+    "successDescription": "{{countdown}}秒後にこのウィンドウは自動的に閉じます...",
+    "title": "{{provider}}に接続"
+  },
   "ollama": {
-    "version": "Ollamaバージョン",
     "errors": {
       "failedToFetch": "ローカルのOllamaモデルの取得に失敗しました。Ollamaが正常に動作していることを確認してください。"
     },

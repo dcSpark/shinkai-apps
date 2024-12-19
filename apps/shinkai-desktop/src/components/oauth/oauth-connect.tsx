@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -28,6 +29,7 @@ const providers: Record<string, ProviderData> = {
 
 export const OAuthConnect = () => {
   const CLOSE_TIMEOUT_SECONDS = 10;
+  const { t } = useTranslation();
   const { oauthModalVisible, url, setOauthModalVisible } = useOAuth();
   const [connectDone, setConnectDone] = React.useState(false);
   const [oauthData, setoauthData] = React.useState<
@@ -96,7 +98,7 @@ export const OAuthConnect = () => {
               />
             )}
             <AlertDialogTitle className="text-lg font-semibold text-gray-800">
-              Sign in with {oauthData?.providerData.name}
+              {t('oauth.title', { provider: oauthData?.providerData.name })}
             </AlertDialogTitle>
           </div>
           <AlertDialogDescription className="text-gray-600">
@@ -104,15 +106,15 @@ export const OAuthConnect = () => {
               <div className="mt-4 flex flex-col items-start">
                 <div className="flex items-center text-green-600">
                   <CheckCircle className="mr-2 h-5 w-5 animate-bounce" />
-                  <span>Connection successful!</span>
+                  <span>{t('oauth.success')}</span>
                 </div>
                 <span className="mt-2 text-xs text-gray-500">
-                  This window will close automatically in {countdown} seconds...
+                  {t('oauth.successDescription', { countdown })}
                 </span>
               </div>
             ) : (
               <div className="mt-4 flex flex-col items-start">
-                <p>Navigate and follow the authentication steps to continue.</p>
+                <p>{t('oauth.navigateToProvider')}</p>
                 <a
                   className={cn(
                     buttonVariants({
@@ -125,7 +127,9 @@ export const OAuthConnect = () => {
                   rel="noreferrer"
                   target="_blank"
                 >
-                  Go to {oauthData?.providerData.name}
+                  {t('oauth.goToProvider', {
+                    provider: oauthData?.providerData.name,
+                  })}
                   <ExternalLink className="ml-2 inline-block h-4 w-4" />
                 </a>
               </div>
@@ -138,7 +142,9 @@ export const OAuthConnect = () => {
               <div className="flex flex-row items-center space-x-1">
                 <Loader2 className="h-5 w-5 shrink-0 animate-spin text-gray-500" />
               </div>{' '}
-              <span className="ml-2 text-gray-500">Processing...</span>
+              <span className="ml-2 text-gray-500">
+                {t('oauth.processing')}
+              </span>
             </div>
           )}
         </div>

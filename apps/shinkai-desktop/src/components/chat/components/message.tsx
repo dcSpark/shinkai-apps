@@ -418,12 +418,13 @@ export const MessageBase = ({
                     <p className="mb-2 text-lg font-semibold text-white">
                       <div className="flex items-center">
                         <Unplug className="mr-2 h-5 w-5" />
-                        Connection Required
+                        {t('oauth.connectionRequired')}
                       </div>
                     </p>
                     <p className="mb-4 text-sm text-white">
-                      To use this tool, please connect your{' '}
-                      <strong>{new URL(oauthUrl).hostname}</strong> account.
+                      {t('oauth.connectionRequiredDescription', {
+                        provider: new URL(oauthUrl).hostname,
+                      })}
                     </p>
                     <Button
                       className="rounded-lg px-4 py-2 text-white transition duration-300"
@@ -432,7 +433,7 @@ export const MessageBase = ({
                       }
                       variant="outline"
                     >
-                      Connect Now
+                      {t('oauth.connectNow')}
                     </Button>
                   </div>
                 )}
