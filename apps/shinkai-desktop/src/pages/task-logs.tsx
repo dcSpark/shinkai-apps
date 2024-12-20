@@ -32,6 +32,7 @@ import {
   CheckCircle2,
   Clock,
   Edit,
+  RefreshCwIcon,
   Sparkles,
   TrashIcon,
   XCircle,
@@ -59,7 +60,9 @@ export const TaskLogs = () => {
   const {
     data: logs,
     isPending,
+    isRefetching,
     isSuccess,
+    refetch,
   } = useGetRecurringTaskLogs({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
@@ -77,6 +80,7 @@ export const TaskLogs = () => {
         <TaskCard
           cronExpression={task.cron}
           description={task.description}
+          isRunning={!task.paused}
           key={task.task_id}
           llmProvider={
             'CreateJobWithConfigAndMessage' in task.action
@@ -114,19 +118,19 @@ export const TaskLogs = () => {
             </div>
           ))}
 
-        <div className="flex items-center justify-between p-2">
+        <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Logs</h2>
-          {/*<Button*/}
-          {/*  size="sm"*/}
-          {/*  variant="outline"*/}
-          {/*>*/}
-          {/*  {isRunning ? (*/}
-          {/*    <Pause className="mr-2 h-4 w-4" />*/}
-          {/*  ) : (*/}
-          {/*    <Play className="mr-2 h-4 w-4" />*/}
-          {/*  )}*/}
-          {/*  {isRunning ? 'Pause Task' : 'Resume Task'}*/}
-          {/*</Button>*/}
+          <Button
+            className="h-8 w-auto gap-2 rounded-lg p-1 px-2 text-xs"
+            disabled={isRefetching}
+            isLoading={isRefetching}
+            onClick={() => refetch()}
+            size="auto"
+            variant="outline"
+          >
+            <RefreshCwIcon className="h-4 w-4" />
+            Refresh logs
+          </Button>
         </div>
 
         <Card className="border-0 p-0">
@@ -139,15 +143,15 @@ export const TaskLogs = () => {
             </div>
           )}
           {isSuccess && logs.length > 0 && (
-            <div className="divide-y divide-gray-300 p-2">
-              <div className="grid grid-cols-[360px_100px_1fr] items-center gap-6 py-1.5 text-xs text-gray-50">
+            <div className="divide-gray-375 divide-y py-2">
+              <div className="grid grid-cols-[360px_100px_1fr] items-center gap-6 py-1.5 font-mono text-xs text-gray-50">
                 <span>Execution Time</span>
                 <span>Status</span>
                 <span>Message</span>
               </div>
               {logs.map((log) => (
                 <div
-                  className="grid grid-cols-[360px_100px_1fr] items-center gap-6 py-1.5 text-sm"
+                  className="grid grid-cols-[360px_100px_1fr] items-center gap-6 py-3 text-xs"
                   key={log.execution_time}
                 >
                   <div className="text-muted-foreground shrink-0 font-mono">
@@ -163,6 +167,9 @@ export const TaskLogs = () => {
                     <div className="font-mono">
                       {log.success ? 'Success' : 'Failed'}
                     </div>
+                  </div>
+                  <div className="text-gray-80 font-mono">
+                    {log.error_message || '-'}
                   </div>
                 </div>
               ))}
@@ -181,7 +188,7 @@ const TaskCard = ({
   cronExpression,
   prompt,
   llmProvider,
-  isRunning = true,
+  isRunning,
 }: {
   taskId: number;
   name: string;
@@ -189,7 +196,7 @@ const TaskCard = ({
   cronExpression: string;
   prompt: string;
   llmProvider: string;
-  isRunning?: boolean;
+  isRunning: boolean;
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -201,17 +208,21 @@ const TaskCard = ({
   });
 
   return (
-    <Card className="mb-8 border">
-      <CardHeader>
+    <Card className="mb-4 border-none p-0 py-2 shadow-none">
+      <CardHeader className="px-0 py-0">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <CardTitle className="flex items-center gap-2 capitalize">
               {name}
               <Badge
-                className="rounded-md border border-gray-300"
+                className={cn(
+                  'rounded-md border border-gray-300',
+                  isRunning &&
+                    'border-cyan-600 bg-cyan-900/20 font-normal text-cyan-400',
+                )}
                 variant={isRunning ? 'default' : 'secondary'}
               >
-                {isRunning ? 'Active' : 'Paused'}
+                {isRunning ? 'Active' : 'Inactive'}
               </Badge>
             </CardTitle>
             <CardDescription>{description}</CardDescription>
@@ -282,34 +293,32 @@ const TaskCard = ({
           />
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="grid gap-6 sm:grid-cols-2">
-          <div className="space-y-2">
-            <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium">
-              <Sparkles className="h-4 w-4" />
-              Prompt
-            </div>
-            <div className="rounded-md text-sm">{prompt}</div>
+      <CardContent className="flex flex-col gap-4 px-0 py-6">
+        <div className="flex items-center gap-4">
+          <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium">
+            <Sparkles className="h-4 w-4" />
+            Prompt:
           </div>
-          <div className="grid gap-4">
-            <div className="space-y-2">
-              <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium">
-                <Clock className="h-4 w-4" />
-                Schedule
-              </div>
-              <div className="text-sm">
-                {readableCron}
-                <span className="text-gray-80 ml-2">({cronExpression})</span>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium">
-                <Bot className="h-4 w-4" />
-                Agent/AI Model
-              </div>
-              <div className="text-sm">{llmProvider}</div>
-            </div>
+          <div className="rounded-md text-sm">{prompt}</div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium">
+            <Clock className="h-4 w-4" />
+            Schedule:
           </div>
+          <div className="text-sm">
+            {readableCron}
+            <span className="text-gray-80 ml-2 rounded-lg bg-gray-300 px-2 py-1 font-mono">
+              {cronExpression}
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium">
+            <Bot className="h-4 w-4" />
+            Agent/AI Model:
+          </div>
+          <div className="text-sm">{llmProvider}</div>
         </div>
       </CardContent>
     </Card>

@@ -55,6 +55,10 @@ export type GetRecurringTaskRequest = {
   cron_task_id: string;
 };
 export type GetRecurringTaskResponse = RecurringTask;
+export type GetRecurringTasksNextExecutionTimeResponse = [
+  RecurringTask,
+  string,
+][];
 export type SetRecurringTaskRequest = {
   cron_task_id: string;
 } & Omit<RecurringTask, 'task_id' | 'created_at' | 'last_modified'>;
