@@ -466,22 +466,24 @@ const AddAIPage = () => {
                 isLoading={isPending}
                 size="sm"
                 type="submit"
-                variant="outline"
+                variant={currentModel === Models.Ollama ? 'default' : 'outline'}
               >
                 {t('llmProviders.add')}
               </Button>
-              <Button
-                className="w-full"
-                disabled={isPending}
-                isLoading={isPending}
-                onClick={() => {
-                  addAgentForm.handleSubmit(handleTestAndSave)();
-                }}
-                size="sm"
-                type="button"
-              >
-                Test & Add AI
-              </Button>
+              {currentModel !== Models.Ollama && (
+                <Button
+                  className="w-full"
+                  disabled={isPending}
+                  isLoading={isPending}
+                  onClick={() => {
+                    addAgentForm.handleSubmit(handleTestAndSave)();
+                  }}
+                  size="sm"
+                  type="button"
+                >
+                  Test & Add AI
+                </Button>
+              )}
             </div>
           )}
         </form>
