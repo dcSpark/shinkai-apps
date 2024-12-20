@@ -68,10 +68,10 @@ const AIsPage = () => {
 
   const onAddAgentClick = () => {
     if (isLocalShinkaiNodeIsUse) {
-      navigate('/local-ais');
       return;
     }
-    navigate('/add-ai');
+    navigate('/local-ais');
+    // navigate('/add-ai');
   };
 
   return (

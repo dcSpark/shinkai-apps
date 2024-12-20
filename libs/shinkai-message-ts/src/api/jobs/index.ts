@@ -241,6 +241,21 @@ export const addLLMProvider = async (
   );
   return response.data as AddLLMProviderResponse;
 };
+export const testLLMProvider = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: AddLLMProviderRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/test_llm_provider'),
+    { ...payload, model: getModelString(payload.model) },
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as AddLLMProviderResponse;
+};
 
 export const updateLLMProvider = async (
   nodeAddress: string,

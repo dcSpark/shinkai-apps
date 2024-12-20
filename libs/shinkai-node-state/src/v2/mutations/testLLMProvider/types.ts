@@ -7,6 +7,5 @@ import {
 export type AddLLMProviderInput = Token & {
   nodeAddress: string;
   agent: SerializedLLMProvider;
-  enableTest?: boolean;
 };
 export type AddLLMProviderOutput = AddLLMProviderResponse;

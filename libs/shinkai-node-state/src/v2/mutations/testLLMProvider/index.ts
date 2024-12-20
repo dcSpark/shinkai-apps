@@ -9,11 +9,11 @@ export const addLLMProvider = async ({
   nodeAddress,
   token,
   agent,
-  enableTest,
 }: AddLLMProviderInput) => {
-  if (!agent.model.Ollama && enableTest) {
+  if (!agent.model.Ollama) {
     await testLLMProvider(nodeAddress, token, agent);
   }
+
   const data = await addLLMProviderAPI(nodeAddress, token, agent);
   return data;
 };
