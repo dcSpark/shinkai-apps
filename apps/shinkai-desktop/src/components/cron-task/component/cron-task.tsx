@@ -6,6 +6,7 @@ import { useCreateRecurringTask } from '@shinkai_network/shinkai-node-state/v2/m
 import { useUpdateRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/updateRecurringTask/useUpdateRecurringTask';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import {
+  Badge,
   Button,
   DropdownMenu,
   DropdownMenuContent,
@@ -270,7 +271,6 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                 <TextField autoFocus field={field} label="Task Name" />
               )}
             />
-
             <FormField
               control={form.control}
               name="description"
@@ -289,7 +289,6 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                 />
               )}
             />
-
             <FormField
               control={form.control}
               name="cronExpression"
@@ -312,6 +311,41 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                 </span>
               </div>
             )}
+            <div className="flex flex-wrap gap-2">
+              {[
+                {
+                  label: 'every 5 min',
+                  cron: '*/5 * * * *',
+                },
+                {
+                  label: 'every 5 hours',
+                  cron: '0 */5 * * *',
+                },
+                {
+                  label: 'every monday at 8am',
+                  cron: '0 8 * * 1',
+                },
+                {
+                  label: 'every january 1st at 12am',
+                  cron: '0 0 1 1 *',
+                },
+                {
+                  label: 'every 1st of the month at 12pm',
+                  cron: '0 12 1 * *',
+                },
+              ].map((item) => (
+                <Badge
+                  className="cursor-pointer hover:bg-gray-400"
+                  key={item.cron}
+                  onClick={() => {
+                    form.setValue('cronExpression', item.cron);
+                  }}
+                  variant="outline"
+                >
+                  <span className="text-xs">{item.label}</span>
+                </Badge>
+              ))}
+            </div>
           </div>
           <div className="space-y-4">
             <div className="space-y-4">
