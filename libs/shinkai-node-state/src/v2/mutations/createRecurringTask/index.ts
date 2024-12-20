@@ -56,7 +56,7 @@ export const createRecurringTask = async ({
           files_inbox: '',
         },
       },
-      // we are repeting jobID here
+
       // SendMessageToJob: {
       //   job_id: jobId,
       //   message: {

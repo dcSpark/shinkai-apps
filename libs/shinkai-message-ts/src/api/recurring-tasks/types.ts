@@ -33,7 +33,7 @@ export type RecurringTaskAction =
 
 export type CreateRecurringTaskRequest = Omit<
   RecurringTask,
-  'created_at' | 'last_modified' | 'paused'
+  'created_at' | 'last_modified' | 'paused' | 'task_id'
 >;
 
 export type CreateRecurringTaskResponse = RecurringTask;
