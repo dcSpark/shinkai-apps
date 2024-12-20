@@ -50,7 +50,6 @@ import GetStartedPage from '../pages/get-started';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
-import LocalAisPage from '../pages/local-ais';
 import { PromptLibrary } from '../pages/prompt-library';
 import { PublicKeys } from '../pages/public-keys';
 import QuickConnectionPage from '../pages/quick-connection';
@@ -203,7 +202,7 @@ const AppRoutes = () => {
           path={'/free-subscriptions'}
         />
         <Route
-          element={<AIModelInstallation />}
+          element={<AIModelInstallation isOnboardingStep={true} />}
           path={'/ai-model-installation'}
         />
         <Route
@@ -273,7 +272,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         >
-          <Route element={<LocalAisPage />} path="local-ais" />
+          <Route element={<AIModelInstallation />} path="local-ais" />
           <Route element={<AIsPage />} path="ais" />
           <Route element={<AddAIPage />} path="add-ai" />
           <Route element={<AddAgentPage />} path="add-agent" />

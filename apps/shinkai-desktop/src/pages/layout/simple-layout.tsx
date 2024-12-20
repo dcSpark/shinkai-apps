@@ -41,24 +41,28 @@ export const FixedHeaderLayout = ({
   title,
   children,
   className,
+  rightElement,
 }: {
   title: React.ReactNode;
   children: React.ReactNode;
+  rightElement?: React.ReactNode;
   className?: string;
 }) => {
   const { t } = useTranslation();
 
   return (
     <div className={cn('mx-auto h-screen max-w-lg py-10 pb-4', className)}>
-      <div className="mx-2 flex justify-between">
-        <Link className="" to={-1 as To}>
-          <LucideArrowLeft />
-          <span className="sr-only">{t('common.back')}</span>
-        </Link>
-        <h1 className="mb-8 text-center text-2xl font-semibold tracking-tight">
-          {title}
-        </h1>
-        <div />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Link className="" to={-1 as To}>
+            <LucideArrowLeft />
+            <span className="sr-only">{t('common.back')}</span>
+          </Link>
+          <h1 className="font-clash text-center text-2xl font-semibold tracking-tight">
+            {title}
+          </h1>
+        </div>
+        {rightElement}
       </div>
       {children}
     </div>
