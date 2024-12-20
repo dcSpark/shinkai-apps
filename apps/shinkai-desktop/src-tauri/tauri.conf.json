@@ -38,6 +38,11 @@
       "windows": {
         "installMode": "basicUi"
       }
+    },
+    "deep-link": {
+      "desktop": {
+        "schemes": ["shinkai"]
+      }
     }
   },
   "app": {

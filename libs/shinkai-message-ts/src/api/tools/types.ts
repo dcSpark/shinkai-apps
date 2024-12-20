@@ -334,3 +334,12 @@ export type AddToolRequestResponse = {
 export type RemoveToolRequestRequest = {
   filename: string;
 };
+export type SetOAuthTokenRequest = {
+  code: string;
+  state: string;
+};
+
+export type SetOAuthTokenResponse = {
+  message: string;
+  status: string;
+};

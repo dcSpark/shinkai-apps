@@ -23,7 +23,7 @@ use tauri::{Manager, RunEvent};
 use tokio::sync::Mutex;
 use tray::create_tray;
 use windows::{recreate_window, Window};
-
+use deep_links::setup_deep_links;
 mod audio;
 mod commands;
 mod galxe;
@@ -33,6 +33,7 @@ mod hardware;
 mod local_shinkai_node;
 mod tray;
 mod windows;
+mod deep_links;
 
 #[derive(Clone, serde::Serialize)]
 struct Payload {
@@ -42,16 +43,16 @@ struct Payload {
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
+            app.emit("single-instance", Payload { args: argv, cwd })
+                .unwrap();
+        }))
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_process::init())
-        .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
-            app.emit("single-instance", Payload { args: argv, cwd })
-                .unwrap();
-        }))
         .plugin(tauri_plugin_dialog::init())
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
@@ -71,6 +72,7 @@ fn main() {
                 )
                 .build(),
         )
+        .plugin(tauri_plugin_deep_link::init())
         .invoke_handler(tauri::generate_handler![
             hide_spotlight_window_app,
             show_spotlight_window_app,
@@ -104,6 +106,7 @@ fn main() {
             }
 
             create_tray(app.handle())?;
+            setup_deep_links(app.handle())?;
 
             /*
                 This is the initialization pipeline
@@ -118,9 +121,9 @@ fn main() {
                     shinkai_node_manager_guard.kill().await;
                     drop(shinkai_node_manager_guard);
 
-                    recreate_window(app_handle.clone(), Window::Coordinator, false);
-                    recreate_window(app_handle.clone(), Window::Spotlight, false);
-                    recreate_window(app_handle.clone(), Window::Main, true);
+                    let _ = recreate_window(app_handle.clone(), Window::Coordinator, false);
+                    let _ = recreate_window(app_handle.clone(), Window::Spotlight, false);
+                    let _ = recreate_window(app_handle.clone(), Window::Main, true);
                 }
             });
 
@@ -140,6 +143,8 @@ fn main() {
                     }
                 }
             });
+
+
 
             Ok(())
         })
