@@ -79,6 +79,7 @@ export const Tasks = () => {
                 <PopoverTrigger asChild>
                   <Button
                     className="h-[30px] gap-2 rounded-lg px-3 text-xs"
+                    onClick={() => refetch()}
                     size="auto"
                     type="button"
                     variant="outline"
