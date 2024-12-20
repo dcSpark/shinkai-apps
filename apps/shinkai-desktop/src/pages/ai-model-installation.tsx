@@ -1,4 +1,5 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import {
   Button,
   buttonVariants,
@@ -15,7 +16,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ArrowRight, Plus, Sparkles } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { ResourcesBanner } from '../components/hardware-capabilities/resources-banner';
 import { OllamaModels } from '../components/shinkai-node-manager/ollama-models';
@@ -24,6 +25,7 @@ import { FixedHeaderLayout } from './layout/simple-layout';
 
 const cloudProviders = [
   {
+    id: Models.OpenAI,
     name: 'OpenAI',
     icon: (
       <svg
@@ -41,6 +43,7 @@ const cloudProviders = [
       'OpenAI is an AI research lab that aims to ensure that artificial general intelligence benefits all of humanity.',
   },
   {
+    id: Models.TogetherComputer,
     name: 'Together AI',
     icon: (
       <svg
@@ -68,10 +71,12 @@ const cloudProviders = [
     ],
   },
   {
+    id: Models.Gemini,
     name: 'Gemini',
     description:
       ' A state-of-the-art large language model offering advanced reasoning, multimodal capabilities, and extended context handling.',
     hasInstructions: true,
+    docUrl: 'https://ai.google.dev/api',
     icon: (
       <svg height="1em" viewBox="0 0 24 24" width="1em">
         <defs>
@@ -96,10 +101,12 @@ const cloudProviders = [
     ),
   },
   {
+    id: Models.Groq,
     name: 'Groq',
     description:
       'A hardware-accelerated inference solution optimized for low-latency and high-throughput deployments.',
     hasInstructions: true,
+    docUrl: 'https://console.groq.com/docs/overview',
     icon: (
       <svg
         fill="currentColor"
@@ -114,9 +121,11 @@ const cloudProviders = [
     ),
   },
   {
+    id: Models.OpenRouter,
     name: 'OpenRouter',
     description:
       'A scalable orchestration layer that intelligently routes queries across multiple AI models, optimizing performance and cost.',
+    docUrl: 'https://openrouter.ai/docs/quick-start',
     icon: (
       <svg
         fill="currentColor"
@@ -131,6 +140,7 @@ const cloudProviders = [
     ),
   },
   {
+    id: Models.Exo,
     name: 'Exo',
     description:
       'A specialized model platform focused on precise information extraction, efficient summarization, and reliable knowledge retrieval.',
@@ -316,6 +326,7 @@ const cloudProviders = [
     ),
   },
   {
+    id: Models.Claude,
     name: 'Claude',
     models: [
       'Claude 3.5 Sonnet',
@@ -323,6 +334,7 @@ const cloudProviders = [
       'Claude 3 Sonnet',
       'Claude 3 Haiku',
     ],
+    docUrl: 'https://docs.anthropic.com/en/docs/intro-to-claude',
     icon: (
       <svg height="1em" viewBox="0 0 24 24" width="1em">
         <title>Claude</title>
@@ -335,14 +347,19 @@ const cloudProviders = [
     ),
   },
 ];
-const AIModelInstallation = () => {
+const AIModelInstallation = ({
+  isOnboardingStep,
+}: {
+  isOnboardingStep?: boolean;
+}) => {
   const { t } = useTranslation();
   const [showAllOllamaModels, setShowAllOllamaModels] = useState(false);
 
+  const navigate = useNavigate();
   return (
     <Tabs
       className="flex h-screen w-full flex-col overflow-hidden"
-      defaultValue="local"
+      defaultValue={'local'}
     >
       <QueryClientProvider client={shinkaiNodeQueryClient}>
         <FixedHeaderLayout
@@ -417,20 +434,22 @@ const AIModelInstallation = () => {
               parentSetShowAllOllamaModels={setShowAllOllamaModels}
               parentShowAllOllamaModels={showAllOllamaModels}
             />
-            <div className="flex w-full justify-center">
-              <Link
-                className={cn(
-                  buttonVariants({
-                    size: 'sm',
-                  }),
-                  'gap-2 rounded-lg px-6',
-                )}
-                to={{ pathname: '/' }}
-              >
-                {t('common.continue')}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
+            {isOnboardingStep && (
+              <div className="flex w-full justify-center">
+                <Link
+                  className={cn(
+                    buttonVariants({
+                      size: 'sm',
+                    }),
+                    'gap-2 rounded-lg px-6',
+                  )}
+                  to={{ pathname: '/' }}
+                >
+                  {t('common.continue')}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            )}
           </TabsContent>
           <TabsContent className="h-full" value="cloud">
             <div className="flex items-center justify-between gap-10 space-y-2 pb-4">
@@ -445,18 +464,18 @@ const AIModelInstallation = () => {
               </div>
               <Button
                 className={cn('shrink-0 gap-2')}
-                onClick={() => setShowAllOllamaModels(!showAllOllamaModels)}
+                onClick={() => navigate('/add-ai')}
                 size="sm"
                 variant="outline"
               >
                 <Sparkles className="h-4 w-4" />
-                <span className="capitalize">Add Manual AI Provider</span>
+                <span className="capitalize">Add Custom AI Model </span>
               </Button>
             </div>
             <div className="grid grid-cols-4 gap-4">
               {cloudProviders.map((model) => (
                 <Card
-                  className="flex flex-col justify-between"
+                  className="flex h-[260px] flex-col justify-between"
                   key={model.name}
                 >
                   <div className="space-y-3">
@@ -472,16 +491,16 @@ const AIModelInstallation = () => {
                         </h3>
                       </div>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-4 px-4">
                       {model.models ? (
                         <div>
-                          <p className="text-gray-80 mb-2 text-xs">
-                            MODELS INSTALLED
+                          <p className="text-gray-80 mb-2 text-xs uppercase">
+                            Available Models
                           </p>
                           <ul className="space-y-1">
                             {model.models.map((item) => (
                               <li
-                                className="text-gray-80 flex items-center gap-2 text-xs"
+                                className="text-gray-80 flex items-center gap-2 truncate text-xs"
                                 key={item}
                               >
                                 <span>✓</span>
@@ -497,36 +516,54 @@ const AIModelInstallation = () => {
                       )}
 
                       {model.hasInstructions && (
-                        <a className="w-full text-xs underline" href="">
+                        <a
+                          className="w-full text-xs underline"
+                          href={model.docUrl}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
                           Instructions
                         </a>
                       )}
                     </CardContent>
                   </div>
 
-                  <CardFooter>
-                    <Button size="sm" variant="outline">
+                  <CardFooter className="px-4 pb-4">
+                    <Link
+                      className={cn(
+                        buttonVariants({
+                          size: 'sm',
+                          variant: 'outline',
+                        }),
+                      )}
+                      state={{
+                        type: 'cloud',
+                      }}
+                      to={`/add-ai?aiProvider=${model.id}`}
+                    >
                       <Plus className="mr-2 h-4 w-4" />
-                      {model.hasInstructions ? 'Add More' : 'Add AI'}
-                    </Button>
+                      Add AI
+                    </Link>
                   </CardFooter>
                 </Card>
               ))}
             </div>
-            <div className="flex w-full justify-center pt-6">
-              <Link
-                className={cn(
-                  buttonVariants({
-                    size: 'sm',
-                  }),
-                  'gap-2 rounded-lg px-6',
-                )}
-                to={{ pathname: '/' }}
-              >
-                {t('common.continue')}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
+            {isOnboardingStep && (
+              <div className="flex w-full justify-center pt-6">
+                <Link
+                  className={cn(
+                    buttonVariants({
+                      size: 'sm',
+                    }),
+                    'gap-2 rounded-lg px-6',
+                  )}
+                  to={{ pathname: '/' }}
+                >
+                  {t('common.continue')}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            )}
           </TabsContent>
         </FixedHeaderLayout>
       </QueryClientProvider>

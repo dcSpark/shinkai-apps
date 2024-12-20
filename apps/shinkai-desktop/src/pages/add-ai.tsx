@@ -35,6 +35,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { useURLQueryParams } from '../hooks/use-url-query-params';
 import { useAuth } from '../store/auth';
 import { SubpageLayout } from './layout/simple-layout';
 
@@ -99,10 +100,20 @@ const AddAIPage = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
+  const query = useURLQueryParams();
+
   const addAgentForm = useForm<AddAgentFormSchema>({
     resolver: zodResolver(addAgentSchema),
     defaultValues: addAgentFormDefault,
   });
+
+  const preSelectedAiProvider = query.get('aiProvider') as Models;
+  useEffect(() => {
+    if (preSelectedAiProvider) {
+      addAgentForm.setValue('model', preSelectedAiProvider);
+    }
+  }, [addAgentForm, preSelectedAiProvider]);
+
   const {
     mutateAsync: addLLMProvider,
     isPending,
@@ -122,7 +133,6 @@ const AddAIPage = () => {
       });
     },
   });
-
   const {
     model: currentModel,
     isCustomModel: isCustomModelMode,
@@ -282,10 +292,7 @@ const AddAIPage = () => {
                     <FormLabel>
                       {t('llmProviders.form.modelProvider')}
                     </FormLabel>
-                    <Select
-                      defaultValue={field.value}
-                      onValueChange={field.onChange}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder={' '} />
