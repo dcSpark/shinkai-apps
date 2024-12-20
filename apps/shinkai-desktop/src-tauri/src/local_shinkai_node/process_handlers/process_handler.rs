@@ -35,7 +35,6 @@ impl ProcessHandler {
     const MAX_LOGS_LENGTH: usize = 500;
     const MIN_MS_ALIVE: u64 = 5000;
 
-    /// Initializes a new ShinkaiNodeManager with default or provided options
     pub(crate) fn new(
         app: AppHandle,
         process_name: String,
@@ -93,52 +92,13 @@ impl ProcessHandler {
         process.is_some()
     }
 
-    pub async fn spawn(
-        &self,
-        env: HashMap<String, String>,
-        args: Vec<&str>,
-        current_dir: Option<PathBuf>,
-    ) -> Result<(), String> {
-        {
-            let process = self.process.lock().await;
-            if process.is_some() {
-                log::warn!("process {} is already running", self.process_name);
-                return Ok(());
-            }
-        }
-
-        let mut logger = self.logger.write().await;
-        let shell = self.app.shell();
-        let (mut rx, child) = shell
-            .sidecar(self.process_name.clone())
-            .map_err(|error| {
-                let message = format!("failed to spawn, error: {}", error);
-                logger.add_log(message.clone());
-                message
-            })?
-            .envs(env.clone())
-            .current_dir(current_dir.unwrap_or_else(|| std::path::PathBuf::from("./")))
-            .args(args)
-            .spawn()
-            .map_err(|error| {
-                let message = format!("failed to spawn error: {}", error);
-                logger.add_log(message.clone());
-                message
-            })?;
-        drop(logger);
-
-        {
-            let mut process = self.process.lock().await;
-            *process = Some(child);
-        }
-
+    async fn handle_process_events(&self, mut rx: tokio::sync::mpsc::Receiver<CommandEvent>) {
         let process_mutex = Arc::clone(&self.process);
         let logger_mutex = Arc::clone(&self.logger);
         let event_sender_mutex = Arc::clone(&self.event_sender);
         let is_ready_mutex = Arc::new(Mutex::new(false));
-        let is_ready_mutex_clone = is_ready_mutex.clone();
-
         let ready_matcher = self.ready_matcher.clone();
+
         tauri::async_runtime::spawn(async move {
             while let Some(event) = rx.recv().await {
                 let message = Self::command_event_to_message(event.clone());
@@ -157,37 +117,52 @@ impl ProcessHandler {
                 }
             }
         });
+    }
 
-        let start_time = std::time::Instant::now();
-        let logger_mutex = self.logger.clone();
-        let process_mutex = self.process.clone();
-        let event_sender_mutex = Arc::clone(&self.event_sender);
-        tauri::async_runtime::spawn(async move {
-            while std::time::Instant::now().duration_since(start_time)
-                < std::time::Duration::from_millis(Self::MIN_MS_ALIVE)
-            {
-                let process = process_mutex.lock().await;
-                let is_ready = is_ready_mutex_clone.lock().await;
-                if process.is_none() {
-                    let event_sender = event_sender_mutex.lock().await;
-                    let mut logger = logger_mutex.write().await;
-                    let message = "failed to spawn shinkai-node, it crashed before min time alive"
-                        .to_string();
-                    let log_entry = logger.add_log(message.clone());
-                    let _ = event_sender.send(ProcessHandlerEvent::Log(log_entry)).await;
-                    return Err(message.to_string());
-                } else if *is_ready {
-                    break;
-                }
-                std::thread::sleep(std::time::Duration::from_millis(500));
+    pub async fn spawn(
+        &self,
+        env: HashMap<String, String>,
+        args: Vec<&str>,
+        current_dir: Option<PathBuf>,
+    ) -> Result<(), String> {
+        {
+            let process = self.process.lock().await;
+            if process.is_some() {
+                log::warn!("process {} is already running", self.process_name);
+                return Ok(());
             }
-            Ok(())
-        })
-        .await
-        .unwrap()?;
+        }
+
+        let child = {
+            let mut logger = self.logger.write().await;
+            let shell = self.app.shell();
+            let (rx, child) = shell
+                .sidecar(self.process_name.clone())
+                .map_err(|error| {
+                    let message = format!("failed to spawn, error: {}", error);
+                    logger.add_log(message.clone());
+                    message
+                })?
+                .envs(env.clone())
+                .current_dir(current_dir.unwrap_or_else(|| std::path::PathBuf::from("./")))
+                .args(args)
+                .spawn()
+                .map_err(|error| {
+                    let message = format!("failed to spawn error: {}", error);
+                    logger.add_log(message.clone());
+                    message
+                })?;
+
+            self.handle_process_events(rx);
+            child
+        };
+
+        {
+            let mut process = self.process.lock().await;
+            *process = Some(child);
+        }
 
         self.emit_event(ProcessHandlerEvent::Started).await;
-
         Ok(())
     }
 
