@@ -31,12 +31,10 @@ export type RecurringTaskAction =
       };
     };
 
-export type CreateRecurringTaskRequest = {
-  name: string;
-  description?: string;
-  cron: string;
-  action: RecurringTaskAction;
-};
+export type CreateRecurringTaskRequest = Omit<
+  RecurringTask,
+  'created_at' | 'last_modified' | 'paused' | 'task_id'
+>;
 
 export type CreateRecurringTaskResponse = RecurringTask;
 
@@ -48,6 +46,7 @@ export type RecurringTask = {
   action: RecurringTaskAction;
   description?: string;
   name: string;
+  paused: boolean;
 };
 
 export type GetRecurringTasksResponse = RecurringTask[];
@@ -56,6 +55,10 @@ export type GetRecurringTaskRequest = {
   cron_task_id: string;
 };
 export type GetRecurringTaskResponse = RecurringTask;
+export type GetRecurringTasksNextExecutionTimeResponse = [
+  RecurringTask,
+  string,
+][];
 export type SetRecurringTaskRequest = {
   cron_task_id: string;
 } & Omit<RecurringTask, 'task_id' | 'created_at' | 'last_modified'>;

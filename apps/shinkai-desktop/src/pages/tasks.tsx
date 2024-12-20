@@ -1,7 +1,10 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
+import { useUpdateRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/updateRecurringTask/useUpdateRecurringTask';
+import { useGetRecurringTaskNextExecutionTime } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTaskNextExecutionTime/useGetRecurringTaskNextExecutionTime';
 import { useGetRecurringTasks } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTasks/useGetRecurringTasks';
 import {
   Button,
@@ -16,11 +19,19 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Switch,
 } from '@shinkai_network/shinkai-ui';
+import {
+  ScheduledTasksComingSoonIcon,
+  ScheduledTasksIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import cronstrue from 'cronstrue';
-import { Edit, PlusIcon, TrashIcon } from 'lucide-react';
+import { formatDistance } from 'date-fns';
+import { Edit, PlusIcon, RefreshCwIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -40,10 +51,95 @@ export const Tasks = () => {
     token: auth?.api_v2_key ?? '',
   });
 
+  const {
+    data: cronTasksNextExecutionTime,
+    isSuccess: isCronTasksNextExecutionTimeSuccess,
+    refetch,
+    isRefetching,
+  } = useGetRecurringTaskNextExecutionTime({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const { mutateAsync: updateRecurringTask } = useUpdateRecurringTask({
+    onError: (error) => {
+      toast.error('Failed to updated task', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
+
   return (
     <SimpleLayout
       headerRightElement={
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {isCronTasksNextExecutionTimeSuccess &&
+            cronTasksNextExecutionTime.length > 0 && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    className="h-[30px] gap-2 rounded-lg px-3 text-xs"
+                    onClick={() => refetch()}
+                    size="auto"
+                    type="button"
+                    variant="outline"
+                  >
+                    <ScheduledTasksComingSoonIcon className="size-3.5" />
+                    <span className="text-xs">Activity</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="end"
+                  alignOffset={-4}
+                  className="flex w-[400px] flex-col gap-2 bg-gray-300 px-3.5 py-4 text-xs"
+                  onOpenAutoFocus={(e) => e.preventDefault()}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <h1 className="text-sm">Scheduled Cron Tasks </h1>
+                    <Button
+                      className="h-8 w-auto gap-2 rounded-lg p-1 px-2 text-xs"
+                      disabled={isRefetching}
+                      isLoading={isRefetching}
+                      onClick={() => refetch()}
+                      size="auto"
+                      variant="outline"
+                    >
+                      {!isRefetching && (
+                        <RefreshCwIcon className="h-3.5 w-3.5" />
+                      )}
+                    </Button>
+                  </div>
+                  {cronTasksNextExecutionTime?.map(([task, date]) => (
+                    <div
+                      className="flex items-start gap-2 py-1"
+                      key={task.task_id}
+                    >
+                      <ScheduledTasksIcon className="text-gray-80 mt-1 size-4" />
+                      <div className="flex flex-col gap-1 text-left">
+                        <span className="text-sm text-gray-50">
+                          {task.name}
+                          <span className="text-gray-80 mx-1 rounded-lg border border-gray-200 px-1.5 py-1 text-xs">
+                            {cronstrue.toString(task.cron, {
+                              throwExceptionOnParseError: false,
+                            })}
+                          </span>
+                        </span>
+                        <span className="text-gray-80">
+                          {' '}
+                          Next execution in{' '}
+                          <span className="text-gray-80 font-semibold">
+                            {formatDistance(new Date(date), new Date(), {
+                              addSuffix: true,
+                            })}
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </PopoverContent>
+              </Popover>
+            )}
+
           <Link
             className={cn(
               buttonVariants({
@@ -89,6 +185,33 @@ export const Tasks = () => {
               description={task.description}
               key={task.task_id}
               name={task.name}
+              onCheckedChange={async (active) => {
+                if ('CreateJobWithConfigAndMessage' in task.action) {
+                  const config: JobConfig =
+                    task.action.CreateJobWithConfigAndMessage.config;
+                  const message =
+                    task.action.CreateJobWithConfigAndMessage.message.content;
+                  const llmProvider =
+                    task.action.CreateJobWithConfigAndMessage.llm_provider;
+                  const jobId =
+                    task.action.CreateJobWithConfigAndMessage.message.job_id;
+                  await updateRecurringTask({
+                    nodeAddress: auth?.node_address ?? '',
+                    token: auth?.api_v2_key ?? '',
+                    taskId: task.task_id.toString(),
+                    active,
+                    chatConfig: config,
+                    cronExpression: task.cron,
+                    description: task.description,
+                    jobId,
+                    llmProvider,
+                    name: task.name,
+                    message,
+                  });
+                  return;
+                }
+              }}
+              paused={task.paused}
               prompt={
                 'CreateJobWithConfigAndMessage' in task.action
                   ? task.action.CreateJobWithConfigAndMessage.message.content
@@ -113,15 +236,20 @@ const TaskCard = ({
   description,
   cronExpression,
   prompt,
+  paused,
+  onCheckedChange,
 }: {
   taskId: number;
   name: string;
   description?: string;
   cronExpression: string;
   prompt: string;
+  paused: boolean;
+  onCheckedChange: (active: boolean) => void;
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+
   const [isDeleteTaskDrawerOpen, setIsDeleteTaskDrawerOpen] =
     React.useState(false);
 
@@ -154,12 +282,9 @@ const TaskCard = ({
         </p>
       </div>
       <div className="flex items-center gap-3 pt-1">
-        <Switch
-          checked={true}
-          // TODO: need backend changes
-        />
+        <Switch checked={!paused} onCheckedChange={onCheckedChange} />
         <label className="text-xs text-gray-50" htmlFor="all">
-          Active
+          {paused ? 'Inactive' : 'Active'}
         </label>
       </div>
       <Link

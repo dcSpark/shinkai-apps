@@ -7,6 +7,7 @@ import {
   GetRecurringTaskLogsResponse,
   GetRecurringTaskRequest,
   GetRecurringTaskResponse,
+  GetRecurringTasksNextExecutionTimeResponse,
   GetRecurringTasksResponse,
   RemoveRecurringTaskRequest,
   RemoveRecurringTaskResponse,
@@ -58,6 +59,20 @@ export const getRecurringTask = async (
     },
   );
   return response.data as GetRecurringTaskResponse;
+};
+
+export const getRecurringTasksExecutionTime = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/get_cron_schedule'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetRecurringTasksNextExecutionTimeResponse;
 };
 
 export const setRecurringTask = async (

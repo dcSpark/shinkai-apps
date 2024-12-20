@@ -25,6 +25,7 @@ export default function EditTaskPage() {
               created_at: task.created_at,
               last_modified: task.last_modified,
               description: task.description,
+              paused: task.paused,
               name: task.name,
             }
           : undefined

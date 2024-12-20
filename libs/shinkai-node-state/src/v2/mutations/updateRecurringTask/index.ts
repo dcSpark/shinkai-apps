@@ -14,12 +14,14 @@ export const updateRecurringTask = async ({
   toolRouterKey,
   taskId,
   jobId,
+  active,
 }: UpdateRecurringTaskInput) => {
   const response = await setRecurringTaskApi(nodeAddress, token, {
     cron_task_id: taskId,
     name: name,
     description: description,
     cron: cronExpression,
+    paused: !active,
     action: {
       CreateJobWithConfigAndMessage: {
         config: chatConfig,
