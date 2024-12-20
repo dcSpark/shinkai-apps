@@ -85,7 +85,7 @@ export const Tasks = () => {
                     variant="outline"
                   >
                     <ScheduledTasksComingSoonIcon className="size-3.5" />
-                    <span className="text-xs">Activity</span>
+                    <span className="text-xs">Upcoming</span>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -95,7 +95,7 @@ export const Tasks = () => {
                   onOpenAutoFocus={(e) => e.preventDefault()}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <h1 className="text-sm">Scheduled Cron Tasks </h1>
+                    <h1 className="text-sm">Upcoming Tasks </h1>
                     <Button
                       className="h-8 w-auto gap-2 rounded-lg p-1 px-2 text-xs"
                       disabled={isRefetching}
@@ -129,7 +129,7 @@ export const Tasks = () => {
                           Next execution in{' '}
                           <span className="text-gray-80 font-semibold">
                             {formatDistance(new Date(date), new Date(), {
-                              addSuffix: true,
+                              addSuffix: false,
                             })}
                           </span>
                         </span>
@@ -155,7 +155,7 @@ export const Tasks = () => {
           </Link>
         </div>
       }
-      title="Cron Tasks"
+      title="Scheduled Tasks"
     >
       <div className="divide-y divide-gray-300 pt-4">
         {isPending &&
@@ -222,7 +222,7 @@ export const Tasks = () => {
           ))}
         {isSuccess && tasks?.length === 0 && (
           <div className="flex h-20 items-center justify-center">
-            <p className="text-gray-80 text-sm">No cron tasks found</p>
+            <p className="text-gray-80 text-sm">No scheduled tasks found</p>
           </div>
         )}
       </div>

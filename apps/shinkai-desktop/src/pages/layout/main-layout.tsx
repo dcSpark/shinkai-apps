@@ -363,7 +363,7 @@ export function MainNav() {
       icon: <ToolsIcon className="h-5 w-5" />,
     },
     optInExperimental && {
-      title: 'Cron Tasks',
+      title: 'Scheduled Tasks',
       href: '/tasks',
       icon: <ScheduledTasksIcon className="h-5 w-5" />,
     },
