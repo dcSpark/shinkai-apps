@@ -28,7 +28,7 @@ export const createRecurringTask = async ({
         network_folders: [],
       },
       associated_ui: null,
-      is_hidden: false,
+      is_hidden: true,
     },
   });
 
@@ -39,7 +39,7 @@ export const createRecurringTask = async ({
         config: chatConfig,
         job_creation_info: {
           associated_ui: null,
-          is_hidden: false,
+          is_hidden: true,
           scope: {
             vector_fs_folders: [],
             vector_fs_items: [],
