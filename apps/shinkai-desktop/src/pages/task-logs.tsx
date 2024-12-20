@@ -70,7 +70,7 @@ export const TaskLogs = () => {
   });
 
   return (
-    <SubpageLayout alignLeft className="max-w-4xl px-4" title="Cron Logs">
+    <SubpageLayout alignLeft className="max-w-4xl px-4" title="Scheduled Task Logs">
       {isGetRecurringTaskPending && (
         <div className="p-4 text-center text-sm">
           <p className="text-white">...</p>
@@ -136,9 +136,9 @@ export const TaskLogs = () => {
         <Card className="border-0 p-0">
           {isSuccess && logs.length === 0 && (
             <div className="p-10 text-center text-sm">
-              <p className="text-white">No runs for this cron task yet</p>
+              <p className="text-white">No runs for this task yet</p>
               <p className="text-gray-80 text-xs">
-                check the schedule for your cron tasks to see when it runs
+                check the schedule for your tasks to see when it runs
               </p>
             </div>
           )}
