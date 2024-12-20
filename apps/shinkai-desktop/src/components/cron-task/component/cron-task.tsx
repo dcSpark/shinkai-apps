@@ -227,6 +227,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
           'CreateJobWithConfigAndMessage' in initialValues.action
             ? initialValues?.action.CreateJobWithConfigAndMessage.message.job_id
             : '',
+        active: !initialValues.paused,
       });
     }
   };
