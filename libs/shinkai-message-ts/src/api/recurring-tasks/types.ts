@@ -78,4 +78,5 @@ export type GetRecurringTaskLogsResponse = {
   execution_time: string;
   success: boolean;
   error_message: string;
+  job_id: string;
 }[];
