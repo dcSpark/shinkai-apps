@@ -1,6 +1,7 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
 import { useGetRecurringTask } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTask/useGetRecurringTask';
 import { useGetRecurringTaskLogs } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTaskLogs/useGetRecurringTaskLogs';
@@ -38,7 +39,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import React from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../store/auth';
@@ -70,7 +71,11 @@ export const TaskLogs = () => {
   });
 
   return (
-    <SubpageLayout alignLeft className="max-w-4xl px-4" title="Scheduled Task Logs">
+    <SubpageLayout
+      alignLeft
+      className="max-w-4xl px-4"
+      title="Scheduled Task Logs"
+    >
       {isGetRecurringTaskPending && (
         <div className="p-4 text-center text-sm">
           <p className="text-white">...</p>
@@ -144,14 +149,15 @@ export const TaskLogs = () => {
           )}
           {isSuccess && logs.length > 0 && (
             <div className="divide-gray-375 divide-y py-2">
-              <div className="grid grid-cols-[360px_100px_1fr] items-center gap-6 py-1.5 font-mono text-xs text-gray-50">
+              <div className="grid grid-cols-[360px_100px_100px_1fr] items-center gap-6 py-1.5 font-mono text-xs text-gray-50">
                 <span>Execution Time</span>
                 <span>Status</span>
+                <span>Chat</span>
                 <span>Message</span>
               </div>
               {logs.map((log) => (
                 <div
-                  className="grid grid-cols-[360px_100px_1fr] items-center gap-6 py-3 text-xs"
+                  className="grid grid-cols-[360px_100px_100px_1fr] items-center gap-6 py-3 text-xs"
                   key={log.execution_time}
                 >
                   <div className="text-muted-foreground shrink-0 font-mono">
@@ -168,6 +174,13 @@ export const TaskLogs = () => {
                       {log.success ? 'Success' : 'Failed'}
                     </div>
                   </div>
+
+                  <Link
+                    className="text-gray-80 font-mono underline"
+                    to={`/inboxes/${encodeURIComponent(buildInboxIdFromJobId(log.job_id))}`}
+                  >
+                    Go to chat
+                  </Link>
                   <div className="text-gray-80 font-mono">
                     {log.error_message || '-'}
                   </div>
