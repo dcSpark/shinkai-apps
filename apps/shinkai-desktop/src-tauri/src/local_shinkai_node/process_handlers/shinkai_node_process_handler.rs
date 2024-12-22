@@ -141,12 +141,33 @@ impl ShinkaiNodeProcessHandler {
         let _ = self.kill().await;
 
         let env = options_to_env(&self.options.clone());
-        self.process_handler.spawn(env, [].to_vec(), None).await?;
-        if let Err(e) = self.wait_shinkai_node_server().await {
-            self.process_handler.kill().await;
-            return Err(e);
+
+        // Add timeout for spawn operation
+        let spawn_result = tokio::time::timeout(
+            Duration::from_secs(30),
+            self.process_handler.spawn(env, [].to_vec(), None)
+        ).await;
+
+        match spawn_result {
+            Ok(Ok(_)) => {
+                match tokio::time::timeout(
+                    Duration::from_millis(Self::HEALTH_TIMEOUT_MS),
+                    self.wait_shinkai_node_server()
+                ).await {
+                    Ok(Ok(_)) => Ok(()),
+                    Ok(Err(e)) => {
+                        self.process_handler.kill().await;
+                        Err(e)
+                    },
+                    Err(_) => {
+                        self.process_handler.kill().await;
+                        Err("Health check timeout".to_string())
+                    }
+                }
+            },
+            Ok(Err(e)) => Err(e),
+            Err(_) => Err("Spawn timeout".to_string())
         }
-        Ok(())
     }
 
     pub async fn get_last_n_logs(&self, n: usize) -> Vec<LogEntry> {
