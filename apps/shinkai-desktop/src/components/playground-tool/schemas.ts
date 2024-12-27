@@ -13,6 +13,8 @@ export const ToolMetadataSchema = z.object({
 
   author: z.string(),
 
+  version: z.string().default('1.0.0'),
+
   keywords: z.array(z.string()).default([]),
 
   configurations: z

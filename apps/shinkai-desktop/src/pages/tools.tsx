@@ -25,7 +25,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { formatText } from '@shinkai_network/shinkai-ui/helpers';
+import { formatText, getVersionFromTool } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   BoltIcon,
@@ -150,6 +150,9 @@ export const Tools = () => {
                   <span className="text-sm font-medium capitalize text-white">
                     {formatText(tool.name)}{' '}
                   </span>
+                  <Badge className="text-gray-80 bg-gray-200 text-xs font-normal">
+                    {getVersionFromTool(tool)}
+                  </Badge>
                   {tool.author !== '@@official.shinkai' && (
                     <Badge className="text-gray-80 bg-gray-200 text-xs font-normal">
                       {tool.author}
@@ -213,6 +216,9 @@ export const Tools = () => {
                   <span className="text-sm font-medium text-white">
                     {formatText(tool.name)}{' '}
                   </span>
+                  <Badge className="text-gray-80 bg-gray-200 text-xs font-normal">
+                    {getVersionFromTool(tool)}
+                  </Badge>
                   {tool.author !== '@@official.shinkai' && (
                     <Badge className="text-gray-80 bg-gray-200 text-xs font-normal">
                       {tool.author}
