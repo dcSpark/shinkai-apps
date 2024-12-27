@@ -9,6 +9,12 @@ pub struct OAuthDeepLinkPayload {
     pub code: String,
 }
 
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct StoreDeepLinkPayload {
+    pub tool_type: String,
+    pub tool_url: String,
+}
+
 pub fn setup_deep_links(app: &tauri::AppHandle) -> tauri::Result<()> {
     #[cfg(any(windows, target_os = "linux"))]
     {
@@ -24,7 +30,36 @@ pub fn setup_deep_links(app: &tauri::AppHandle) -> tauri::Result<()> {
         for url in urls {
             log::debug!("handling deep link: {:?}", url);
             if let Some(host) = url.host() {
+                if host.to_string() == "store" {
+                    // shinkai://store?type=tool&url=https://download.shinkai.app/tool/email-fetcher.zip
+                    let query_pairs = url.query_pairs().collect::<Vec<_>>();
+                    let tool_type = query_pairs
+                        .iter()
+                        .find(|(key, _)| key == "type")
+                        .map(|(_, value)| value.to_string())
+                        .unwrap_or_default();
+                    let tool_url = query_pairs
+                        .iter()
+                        .find(|(key, _)| key == "url")
+                        .map(|(_, value)| value.to_string())
+                        .unwrap_or_default();
+                    
+                    let payload = StoreDeepLinkPayload { tool_type, tool_url };
+
+                    log::debug!(
+                        "emitting store-deep-link event to {}",
+                        Window::Coordinator.as_str()
+                    );
+                    let _ = recreate_window(app_handle.clone(), Window::Main, true);
+                    let _ = app_handle.emit_to(
+                        Window::Coordinator.as_str(),
+                        "store-deep-link",
+                        payload,
+                    );
+                }
+
                 if host.to_string() == "oauth" {
+                    // shinkai://oauth?code=11&state=22
                     log::debug!("oauth deep link: {:?}", url);
                     let query_pairs = url.query_pairs().collect::<Vec<_>>();
                     let state = query_pairs
