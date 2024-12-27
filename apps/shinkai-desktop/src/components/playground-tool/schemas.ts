@@ -46,14 +46,10 @@ export const ToolMetadataSchema = z.object({
     )
     .passthrough(),
 
-  sqlTables: z
-    .array(
-      z.object({
-        name: z.string(),
-        definition: z.string(),
-      }),
-    )
-    .default([]),
+  sqlTables: z.array(z.object({
+    name: z.string(),
+    definition: z.string(),
+  })).default([]),
   sqlQueries: z.array(z.object({
     name: z.string(),
     query: z.string(),
