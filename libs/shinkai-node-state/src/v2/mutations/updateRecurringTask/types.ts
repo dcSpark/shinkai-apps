@@ -13,7 +13,7 @@ export type UpdateRecurringTaskInput = Token & {
   jobId: string;
   cronExpression: string;
   message: string;
-  toolRouterKey?: string;
+  toolKey?: string;
   llmProvider: string;
   chatConfig: JobConfig;
 };

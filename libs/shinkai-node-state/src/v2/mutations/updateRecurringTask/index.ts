@@ -11,7 +11,7 @@ export const updateRecurringTask = async ({
   cronExpression,
   chatConfig,
   message,
-  toolRouterKey,
+  toolKey,
   taskId,
   jobId,
   active,
@@ -40,7 +40,7 @@ export const updateRecurringTask = async ({
         message: {
           job_id: jobId,
           content: message,
-          tool_router_key: toolRouterKey,
+          tool_key: toolKey,
 
           files_inbox: '',
         },
