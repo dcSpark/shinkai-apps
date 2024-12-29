@@ -3,6 +3,7 @@ import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
+import { useRunTaskNow } from '@shinkai_network/shinkai-node-state/v2/mutations/runTaskNow/useRunTaskNow';
 import { useUpdateRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/updateRecurringTask/useUpdateRecurringTask';
 import { useGetRecurringTaskNextExecutionTime } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTaskNextExecutionTime/useGetRecurringTaskNextExecutionTime';
 import { useGetRecurringTasks } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTasks/useGetRecurringTasks';
@@ -31,7 +32,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import cronstrue from 'cronstrue';
 import { formatDistance } from 'date-fns';
-import { Edit, PlusIcon, RefreshCwIcon, TrashIcon } from 'lucide-react';
+import { Edit, PlayIcon, PlusIcon, RefreshCwIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -249,12 +250,24 @@ const TaskCard = ({
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
 
   const [isDeleteTaskDrawerOpen, setIsDeleteTaskDrawerOpen] =
     React.useState(false);
 
   const readableCron = cronstrue.toString(cronExpression, {
     throwExceptionOnParseError: false,
+  });
+
+  const { mutateAsync: runTaskNow, isPending: isRunTaskPending } = useRunTaskNow({
+    onSuccess: () => {
+      toast.success('Task run successfully');
+    },
+    onError: (error: any) => {
+      toast.error('Failed to run task', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
   });
 
   return (
@@ -354,12 +367,24 @@ const TaskCard = ({
               },
             },
             {
+              name: t('tasks.runNow'),
+              icon: <PlayIcon className="mr-3 h-4 w-4" />,
+              onClick: async () => {
+                await runTaskNow({
+                  nodeAddress: auth?.node_address ?? '',
+                  token: auth?.api_v2_key ?? '',
+                  taskId: taskId.toString(),
+                });
+              },
+            },
+            {
               name: t('common.delete'),
               icon: <TrashIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
                 setIsDeleteTaskDrawerOpen(true);
               },
             },
+           
           ].map((option) => (
             <React.Fragment key={option.name}>
               {option.name === 'Delete' && (
