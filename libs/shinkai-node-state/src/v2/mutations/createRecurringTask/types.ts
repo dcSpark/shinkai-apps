@@ -1,8 +1,7 @@
 import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import {
-  CreateRecurringTaskResponse,
-  RecurringTaskAction,
+  CreateRecurringTaskResponse
 } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/types';
 
 export type CreateRecurringTaskOutput = CreateRecurringTaskResponse;
@@ -13,7 +12,7 @@ export type CreateRecurringTaskInput = Token & {
   description?: string;
   cronExpression: string;
   message: string;
-  toolRouterKey?: string;
+  toolKey?: string;
   llmProvider: string;
   // recurringTaskAction: RecurringTaskAction;
   chatConfig: JobConfig;
