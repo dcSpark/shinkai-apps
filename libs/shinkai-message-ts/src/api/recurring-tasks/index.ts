@@ -124,3 +124,20 @@ export const getRecurringTaskLogs = async (
   );
   return response.data as GetRecurringTaskLogsResponse;
 };
+
+export const runTaskNowApi = async (nodeAddress: string, token: string, taskId: string) => {
+  const response = await httpClient.post(
+    `${nodeAddress}/v2/force_execute_cron_task`,
+    null, // No body needed for this request
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        cron_task_id: taskId,
+      },
+    }
+  );
+
+  return response.data;
+};
