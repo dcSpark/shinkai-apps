@@ -86,7 +86,7 @@ const AllFiles = () => {
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const {
     isPending: isVRFilesPending,
-    data: VRFiles,
+    data: fileInfoArray,
     isSuccess: isVRFilesSuccess,
   } = useGetVRPathSimplified(
     {
@@ -102,15 +102,9 @@ const AllFiles = () => {
     },
     {
       select: (data) => {
-        return {
-          ...data,
-          child_folders: data?.child_folders?.sort((a, b) =>
-            a.name.localeCompare(b.name),
-          ),
-          child_items: data?.child_items?.sort((a, b) =>
-            a.name.localeCompare(b.name),
-          ),
-        };
+        return data?.sort((a, b) =>
+          a.path.split('/').pop().localeCompare(b.path.split('/').pop())
+        );
       },
       refetchInterval: 6000,
     },

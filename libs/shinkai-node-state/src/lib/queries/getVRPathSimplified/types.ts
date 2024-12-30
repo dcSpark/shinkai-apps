@@ -27,10 +27,13 @@ export type FileInfo = {
   is_directory: boolean;
   modified_time: string;
   path: string;
+  name: string;
+  extension: string | null;
+  file_size: string | null;
 };
 
 export type VRItem = FileInfo;
-export type VRFolder = FileInfo;
+export type VRFolder = FileInfo[];
 
 export type GetVRPathSimplifiedInput = JobCredentialsPayload & {
   nodeAddress: string;
@@ -43,7 +46,7 @@ export type UseGetMySharedFolders = [
   GetVRPathSimplifiedInput,
 ];
 
-export type GetVRPathSimplifiedOutput = VRFolder;
+export type GetVRPathSimplifiedOutput = FileInfo[];
 
 export type Options = QueryObserverOptions<
   GetVRPathSimplifiedOutput,

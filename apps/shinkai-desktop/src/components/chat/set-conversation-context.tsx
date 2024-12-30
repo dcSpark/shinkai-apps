@@ -60,7 +60,7 @@ export const SetJobScopeDrawer = () => {
   const auth = useAuth((state) => state.auth);
   const [nodes, setNodes] = useState<TreeNode[]>([]);
 
-  const { data: VRFiles, isSuccess: isVRFilesSuccess } = useGetVRPathSimplified(
+  const { data: fileInfoArray, isSuccess: isVRFilesSuccess } = useGetVRPathSimplified(
     {
       nodeAddress: auth?.node_address ?? '',
       profile: auth?.profile ?? '',
@@ -88,9 +88,9 @@ export const SetJobScopeDrawer = () => {
 
   useEffect(() => {
     if (isVRFilesSuccess) {
-      setNodes(transformDataToTreeNodes(VRFiles));
+      setNodes(transformDataToTreeNodes(fileInfoArray));
     }
-  }, [VRFiles, isVRFilesSuccess]);
+  }, [fileInfoArray, isVRFilesSuccess]);
 
   useEffect(() => {
     if (!isSetJobScopeOpen) {

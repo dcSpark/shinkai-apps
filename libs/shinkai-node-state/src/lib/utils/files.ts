@@ -7,7 +7,6 @@ export function transformDataToTreeNodes(
   parentPath = '/',
 ): TreeNode[] {
   const result: TreeNode[] = [];
-  console.log('data: ', data);
 
   // Directly iterate over data assuming it's an array
   data.forEach((fileInfo) => {

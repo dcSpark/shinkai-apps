@@ -386,7 +386,7 @@ export const VectorFsScopeDrawer = ({
   const [nodes, setNodes] = useState<TreeNode[]>([]);
   const auth = useAuth((state) => state.auth);
 
-  const { data: VRFiles, isSuccess: isVRFilesSuccess } = useGetVRPathSimplified(
+  const { data: fileInfoArray, isSuccess: isVRFilesSuccess } = useGetVRPathSimplified(
     {
       nodeAddress: auth?.node_address ?? '',
       profile: auth?.profile ?? '',
@@ -402,9 +402,9 @@ export const VectorFsScopeDrawer = ({
 
   useEffect(() => {
     if (isVRFilesSuccess) {
-      setNodes(transformDataToTreeNodes(VRFiles));
+      setNodes(transformDataToTreeNodes(fileInfoArray));
     }
-  }, [VRFiles, isVRFilesSuccess]);
+  }, [fileInfoArray, isVRFilesSuccess]);
 
   const { t } = useTranslation();
 

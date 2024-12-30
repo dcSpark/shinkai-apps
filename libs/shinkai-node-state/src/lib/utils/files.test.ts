@@ -8,7 +8,10 @@ describe('transformDataToTreeNodes', () => {
       has_embeddings: false,
       is_directory: true,
       modified_time: "2024-12-30T05:27:59.764041184+00:00",
-      path: "nico"
+      path: "nico",
+      name: "nico",
+      extension: null,
+      file_size: null
     }];
 
     const result = transformDataToTreeNodes(data);
@@ -29,7 +32,10 @@ describe('transformDataToTreeNodes', () => {
       has_embeddings: false,
       is_directory: true,
       modified_time: "2024-12-30T05:27:59.764041184+00:00",
-      path: "/nico"
+      path: "/nico",
+      name: "nico",
+      extension: null,
+      file_size: null
     }];
 
     const result = transformDataToTreeNodes(data);
@@ -51,14 +57,20 @@ describe('transformDataToTreeNodes', () => {
         has_embeddings: false,
         is_directory: true,
         modified_time: "2024-12-30T05:27:59.764041184+00:00",
-        path: "nico"
+        path: "nico",
+        name: "nico",
+        extension: null,
+        file_size: null
       },
       {
         created_time: "2024-12-30T05:27:59.764041184+00:00",
         has_embeddings: false,
         is_directory: false,
         modified_time: "2024-12-30T05:27:59.764041184+00:00",
-        path: "nico/file.txt"
+        path: "nico/file.txt",
+        name: "file.txt",
+        extension: "txt",
+        file_size: "0"
       }
     ];
 
@@ -79,4 +91,4 @@ describe('transformDataToTreeNodes', () => {
       }
     ]);
   });
-}); 
+});

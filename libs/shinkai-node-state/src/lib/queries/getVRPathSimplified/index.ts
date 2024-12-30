@@ -1,6 +1,7 @@
 import { retrieveVRPathSimplified as retrieveVRPathSimplifiedApi } from '@shinkai_network/shinkai-message-ts/api';
 
-import { GetVRPathSimplifiedInput, VRFolder } from './types';
+import { transformFileInfo } from './transformations';
+import { FileInfo, GetVRPathSimplifiedInput } from './types';
 
 export const getVRPathSimplified = async ({
   nodeAddress,
@@ -12,7 +13,7 @@ export const getVRPathSimplified = async ({
   node_encryption_pk,
   profile_encryption_sk,
   profile_identity_sk,
-}: GetVRPathSimplifiedInput): Promise<VRFolder> => {
+}: GetVRPathSimplifiedInput): Promise<FileInfo[]> => {
   const response = await retrieveVRPathSimplifiedApi(
     nodeAddress,
     shinkaiIdentity,
@@ -29,5 +30,7 @@ export const getVRPathSimplified = async ({
     },
   );
 
-  return response.data;
+  const transformedData = transformFileInfo(response.data);
+
+  return transformedData;
 };
