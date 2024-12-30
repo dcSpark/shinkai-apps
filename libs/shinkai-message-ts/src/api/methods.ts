@@ -914,6 +914,8 @@ export const getAvailableSharedFolders = async (
   const data = response.data;
   return data;
 };
+
+// TODO: remove this
 export const getMySharedFolders = async (
   nodeAddress: string,
   sender: string,
@@ -992,6 +994,8 @@ export const createShareableFolder = async (
   const data = response.data;
   return data;
 };
+
+// TODO: remove this
 export const unshareFolder = async (
   nodeAddress: string,
   sender: string,

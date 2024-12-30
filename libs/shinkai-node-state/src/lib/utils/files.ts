@@ -1,47 +1,54 @@
 import { TreeNode } from 'primereact/treenode';
 
-import { VRFolder, VRItem } from '../queries/getVRPathSimplified/types';
+import { FileInfo } from '../queries/getVRPathSimplified/types';
 
 export function transformDataToTreeNodes(
-  data: VRFolder,
+  data: FileInfo[],
   parentPath = '/',
 ): TreeNode[] {
   const result: TreeNode[] = [];
+  console.log('data: ', data);
 
-  for (const folder of data?.child_folders ?? []) {
-    const folderNode: TreeNode = {
-      key: folder.path,
-      label: folder.name,
-      data: folder,
-      icon: 'icon-folder',
-      children: transformDataToTreeNodes(folder, folder.path),
-    };
-    result.push(folderNode);
-  }
+  // Directly iterate over data assuming it's an array
+  data.forEach((fileInfo) => {
+    const pathWithSlash = fileInfo.path.startsWith('/') ? fileInfo.path : `/${fileInfo.path}`;
+    const label = pathWithSlash.split('/').pop() || '';
 
-  for (const item of data.child_items ?? []) {
-    const itemNode: TreeNode = {
-      key: item.path,
-      label: item.name,
-      data: item,
-      icon: 'icon-file',
-    };
-    result.push(itemNode);
-  }
+    if (fileInfo.is_directory) {
+      const folderNode: TreeNode = {
+        key: fileInfo.path,
+        label: label,
+        data: fileInfo,
+        icon: 'icon-folder',
+        children: [], // Assuming you will populate this with child nodes
+      };
+      result.push(folderNode);
+    } else {
+      const itemNode: TreeNode = {
+        key: fileInfo.path,
+        label: label,
+        data: fileInfo,
+        icon: 'icon-file',
+      };
+      result.push(itemNode);
+    }
+  });
 
   return result;
 }
 
-export function getFlatChildItems(data: VRFolder): VRItem[] {
-  let result: VRItem[] = [];
+export function getFlatChildItems(data: FileInfo[]): FileInfo[] {
+  const result: FileInfo[] = [];
 
-  for (const folder of data?.child_folders ?? []) {
-    result = result.concat(getFlatChildItems(folder));
-  }
-
-  for (const item of data.child_items ?? []) {
-    result.push(item);
-  }
+  // for (const item of data) {
+  //   if (item.is_directory) {
+  //     // Assuming you have a way to retrieve child items for a directory
+  //     const childItems = getChildItemsForDirectory(item.path);
+  //     result = result.concat(getFlatChildItems(childItems));
+  //   } else {
+  //     result.push(item);
+  //   }
+  // }
 
   return result;
 }

@@ -29,20 +29,20 @@ import { VectorFsItemAction } from './vector-fs-drawer';
 export const VectorFsItemInfo = ({
   file,
   createdDatetime,
-  fileSize,
+  // fileSize,
 }: {
   file: VRItem;
   createdDatetime: string;
-  fileSize: string;
+  // fileSize: string;
 }) => {
   const layout = useVectorFsStore((state) => state.layout);
 
   return (
     <div className="flex-1 truncate text-left">
-      <div className="text-sm font-medium">{file.name}</div>
+      <div className="text-sm font-medium">{file.path}</div>
       {layout === VectorFSLayout.List && (
         <p className="text-xs font-medium text-gray-100">
-          <span>{createdDatetime}</span> - <span>{fileSize}</span>
+          <span>{createdDatetime}</span> - <span>0</span>
         </p>
       )}
     </div>
@@ -77,33 +77,33 @@ const VectorFsItem = ({
     layout === VectorFSLayout.Grid && 'bg-gray-400/30 p-2',
   );
 
-  const createdDatetime = formatDateToUSLocaleString(file.created_datetime);
-  const fileSize = size(file.vr_size);
+  const createdDatetime = formatDateToUSLocaleString(new Date(file.created_time));
+  // const fileSize = size(file.size);
 
   if (isVRSelectionActive) {
     return (
       <div className={wrapperClassname}>
         <Checkbox
           checked={isSelectedFile}
-          id={`item-${file.name}`}
+          id={`item-${file.path}`}
           onCheckedChange={() => {
             handleSelectFiles(file);
           }}
         />
         <label
           className="flex flex-1 items-center gap-3"
-          htmlFor={`item-${file.name}`}
+          htmlFor={`item-${file.path}`}
         >
-          <FileTypeIcon
+          {/* <FileTypeIcon
             type={
               file?.vr_header?.resource_source?.Standard?.FileRef?.file_type
                 ?.Document
             }
-          />
+          /> */}
           <VectorFsItemInfo
             createdDatetime={createdDatetime}
             file={file}
-            fileSize={fileSize}
+            // fileSize={fileSize}
           />
         </label>
       </div>
@@ -112,16 +112,16 @@ const VectorFsItem = ({
 
   return (
     <button className={wrapperClassname} onClick={onClick}>
-      <FileTypeIcon
+      {/* <FileTypeIcon
         type={
           file?.vr_header?.resource_source?.Standard?.FileRef?.file_type
             ?.Document
         }
-      />
+      /> */}
       <VectorFsItemInfo
         createdDatetime={createdDatetime}
         file={file}
-        fileSize={fileSize}
+        // fileSize={fileSize}
       />
 
       <TooltipProvider delayDuration={0}>
