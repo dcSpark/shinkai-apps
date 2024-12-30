@@ -177,16 +177,9 @@ export const UploadVRFilesAction = () => {
     closeDrawerMenu();
     await uploadVRFiles({
       nodeAddress: auth?.node_address ?? '',
-      sender: auth?.shinkai_identity ?? '',
-      senderSubidentity: auth?.profile ?? '',
-      receiver: auth?.shinkai_identity ?? '',
       destinationPath: currentGlobalPath,
       files: values.files,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
+      token: auth?.api_v2_key ?? '',
     });
   };
 
@@ -298,16 +291,9 @@ export const SaveWebpageToVectorFsAction = () => {
     closeDrawerMenu();
     await uploadVRFiles({
       nodeAddress: auth?.node_address ?? '',
-      sender: auth?.shinkai_identity ?? '',
-      senderSubidentity: auth?.profile ?? '',
-      receiver: auth?.shinkai_identity ?? '',
       destinationPath: values.destinationFolderPath,
       files: values.files,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
+      token: auth?.api_v2_key ?? '',
     });
   };
 

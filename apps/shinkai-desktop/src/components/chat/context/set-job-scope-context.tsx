@@ -1,7 +1,4 @@
-import {
-  VectorFSFolderScopeEntry,
-  VectorFSItemScopeEntry,
-} from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import { ShinkaiPath } from '@shinkai_network/shinkai-message-ts/models';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import React, { createContext, useContext, useState } from 'react';
 import { createStore, useStore } from 'zustand';
@@ -16,8 +13,8 @@ type SetJobScopeStore = {
   setSetJobScopeOpen: (isSetJobScopeOpen: boolean) => void;
   selectedKeys: TreeCheckboxSelectionKeys | null;
   onSelectedKeysChange: (value: TreeCheckboxSelectionKeys | null) => void;
-  selectedFileKeysRef: Map<string, VectorFSItemScopeEntry>;
-  selectedFolderKeysRef: Map<string, VectorFSFolderScopeEntry>;
+  selectedFileKeysRef: Map<string, ShinkaiPath>;
+  selectedFolderKeysRef: Map<string, ShinkaiPath>;
 
   isKnowledgeSearchOpen: boolean;
   setKnowledgeSearchOpen: (isKnowledgeSearchOpen: boolean) => void;
@@ -35,8 +32,8 @@ const createVectorFsStore = () =>
     onSelectedKeysChange: (selectedKeys) => {
       set({ selectedKeys });
     },
-    selectedFileKeysRef: new Map(),
-    selectedFolderKeysRef: new Map(),
+    selectedFileKeysRef: new Map<string, ShinkaiPath>(),
+    selectedFolderKeysRef: new Map<string, ShinkaiPath>(),
 
     isKnowledgeSearchOpen: false,
     setKnowledgeSearchOpen: (isKnowledgeSearchOpen) => {
@@ -46,8 +43,8 @@ const createVectorFsStore = () =>
       set({
         isSetJobScopeOpen: false,
         selectedKeys: null,
-        selectedFileKeysRef: new Map(),
-        selectedFolderKeysRef: new Map(),
+        selectedFileKeysRef: new Map<string, ShinkaiPath>(),
+        selectedFolderKeysRef: new Map<string, ShinkaiPath>(),
         isKnowledgeSearchOpen: false,
       });
     },

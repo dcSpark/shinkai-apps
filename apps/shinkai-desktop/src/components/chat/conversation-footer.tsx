@@ -16,10 +16,6 @@ import {
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
-import {
-  VRFolder,
-  VRItem,
-} from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
@@ -86,8 +82,8 @@ export const actionButtonClassnames =
 export type ChatConversationLocationState = {
   files: File[];
   agentName: string;
-  selectedVRFiles: VRItem[];
-  selectedVRFolders: VRFolder[];
+  selectedVRFiles: string[];
+  selectedVRFolders: string[];
   llmProviderId: string;
 };
 
@@ -180,13 +176,9 @@ function ConversationEmptyFooter() {
         locationState?.selectedVRFolders?.length > 0)
     ) {
       const selectedVRFilesPathMap = locationState?.selectedVRFiles?.reduce(
-        (acc, file) => {
-          selectedFileKeysRef.set(file.path, {
-            name: file.name,
-            path: file.path,
-            source: file.vr_header.resource_source,
-          });
-          acc[file.path] = {
+        (acc, path) => {
+          selectedFileKeysRef.set(path, path);
+          acc[path] = {
             checked: true,
           };
           return acc;
@@ -195,9 +187,9 @@ function ConversationEmptyFooter() {
       );
 
       const selectedVRFoldersPathMap = locationState?.selectedVRFolders?.reduce(
-        (acc, folder) => {
-          selectedFolderKeysRef.set(folder.path, folder);
-          acc[folder.path] = {
+        (acc, path) => {
+          selectedFolderKeysRef.set(path, path);
+          acc[path] = {
             checked: true,
           };
           return acc;
@@ -216,6 +208,7 @@ function ConversationEmptyFooter() {
     locationState?.selectedVRFolders,
     selectedFileKeysRef,
     selectedFolderKeysRef,
+    onSelectedKeysChange,
   ]);
 
   const currentMessage = useWatch({

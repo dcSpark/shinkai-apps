@@ -1,8 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  VectorFSFolderScopeEntry,
-  VectorFSItemScopeEntry,
+  ShinkaiPath,
 } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import {
@@ -71,12 +70,8 @@ export const CreateJob = () => {
   const query = useQuery();
   const auth = useAuth((state) => state.auth);
 
-  const selectedFileKeysRef = useRef<Map<string, VectorFSItemScopeEntry>>(
-    new Map(),
-  );
-  const selectedFolderKeysRef = useRef<Map<string, VectorFSFolderScopeEntry>>(
-    new Map(),
-  );
+  const selectedFileKeysRef = useRef<Map<string, ShinkaiPath>>(new Map());
+  const selectedFolderKeysRef = useRef<Map<string, ShinkaiPath>>(new Map());
   // const settings = useSettings((state) => state.settings);
   const currentDefaultAgentId = useSettings((state) => state.defaultAgentId);
   const {
@@ -199,11 +194,7 @@ export const CreateJob = () => {
     ) {
       const selectedVRFilesPathMap = location?.state?.selectedVRFiles?.reduce(
         (acc, file) => {
-          selectedFileKeysRef.current.set(file.path, {
-            path: file.path,
-            name: file.name,
-            source: file.vr_header.resource_source,
-          });
+          selectedFileKeysRef.current.set(file.path, file.path);
           acc[file.path] = {
             checked: true,
           };
@@ -215,7 +206,7 @@ export const CreateJob = () => {
       const selectedVRFoldersPathMap =
         location?.state?.selectedVRFolders?.reduce(
           (acc, folder) => {
-            selectedFolderKeysRef.current.set(folder.path, folder);
+            selectedFolderKeysRef.current.set(folder.path, folder.path);
             acc[folder.path] = {
               checked: true,
             };

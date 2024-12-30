@@ -121,14 +121,10 @@ export const SetJobScopeDrawer = () => {
           <Tree
             onSelect={(e) => {
               if (e.node.icon === 'icon-folder') {
-                selectedFolderKeysRef.set(String(e.node.key), e.node.data);
+                selectedFolderKeysRef.set(String(e.node.key), e.node.data.path);
                 return;
               }
-              selectedFileKeysRef.set(String(e.node.key), {
-                path: e.node.data.path,
-                name: e.node.data.name,
-                source: e.node.data.vr_header.resource_source,
-              });
+              selectedFileKeysRef.set(String(e.node.key), e.node.data.path);
             }}
             onSelectionChange={(e) => {
               onSelectedKeysChange(e.value as TreeCheckboxSelectionKeys);
@@ -173,22 +169,9 @@ export const SetJobScopeDrawer = () => {
                   nodeAddress: auth?.node_address ?? '',
                   token: auth?.api_v2_key ?? '',
                   jobScope: {
-                    vector_fs_items: Array.from(
-                      selectedFileKeysRef.values(),
-                    )?.map((vfFile) => ({
-                      path: vfFile.path,
-                      name: vfFile.name,
-                      source: vfFile.source,
-                    })),
-                    vector_fs_folders: Array.from(
-                      selectedFolderKeysRef.values(),
-                    )?.map((vfFolder) => ({
-                      path: vfFolder.path,
-                      name: vfFolder.name,
-                    })),
-                    local_vrpack: [],
-                    local_vrkai: [],
-                    network_folders: [],
+                    vector_fs_items: Array.from(selectedFileKeysRef.values()),
+                    vector_fs_folders: Array.from(selectedFolderKeysRef.values()),
+                    vector_search_mode: [],
                   },
                 });
               }

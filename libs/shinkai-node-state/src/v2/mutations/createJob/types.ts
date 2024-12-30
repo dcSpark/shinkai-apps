@@ -1,9 +1,6 @@
 import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
-import {
-  VectorFSFolderScopeEntry,
-  VectorFSItemScopeEntry,
-} from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import { ShinkaiPath } from '@shinkai_network/shinkai-message-ts/models';
 
 export type CreateJobInput = Token & {
   nodeAddress: string;
@@ -13,8 +10,8 @@ export type CreateJobInput = Token & {
   isHidden: boolean;
   toolKey?: string;
   files?: File[];
-  selectedVRFiles?: VectorFSItemScopeEntry[];
-  selectedVRFolders?: VectorFSFolderScopeEntry[];
+  selectedVRFiles?: ShinkaiPath[];
+  selectedVRFolders?: ShinkaiPath[];
   chatConfig?: JobConfig;
 };
 
