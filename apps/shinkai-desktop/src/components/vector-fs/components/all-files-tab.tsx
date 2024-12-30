@@ -2,6 +2,7 @@ import { HomeIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useGetSearchVRItems } from '@shinkai_network/shinkai-node-state/lib/queries/getSearchVRItems/useGetSearchVRItems';
 import {
+  FileInfo,
   VRFolder,
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
@@ -101,10 +102,8 @@ const AllFiles = () => {
       profile_identity_sk: auth?.profile_identity_sk ?? '',
     },
     {
-      select: (data) => {
-        return data?.sort((a, b) =>
-          a.path.split('/').pop().localeCompare(b.path.split('/').pop())
-        );
+      select: (data: FileInfo[]) => {
+        return data?.sort((a, b) => a.name.localeCompare(b.name));
       },
       refetchInterval: 6000,
     },
@@ -202,19 +201,17 @@ const AllFiles = () => {
     },
   ];
 
-  const splitCurrentPath = VRFiles?.path?.split('/').filter(Boolean) ?? [];
+  const splitCurrentPath = currentGlobalPath.split('/').filter(Boolean);
 
   const folderList = React.useMemo(() => {
-    return !isSortByName
-      ? [...(VRFiles?.child_folders ?? [])].reverse()
-      : VRFiles?.child_folders;
-  }, [VRFiles?.child_folders, isSortByName]);
+    const folders = fileInfoArray?.filter((file) => file.is_directory) ?? [];
+    return isSortByName ? folders : [...folders].reverse();
+  }, [fileInfoArray, isSortByName]);
 
   const itemList = React.useMemo(() => {
-    return !isSortByName
-      ? [...(VRFiles?.child_items ?? [])].reverse()
-      : VRFiles?.child_items;
-  }, [VRFiles?.child_items, isSortByName]);
+    const items = fileInfoArray?.filter((file) => !file.is_directory) ?? [];
+    return isSortByName ? items : [...items].reverse();
+  }, [fileInfoArray, isSortByName]);
 
   return (
     <div className="flex h-full flex-col">
@@ -396,7 +393,7 @@ const AllFiles = () => {
             })}
           {!searchQuery &&
             isVRFilesSuccess &&
-            VRFiles?.child_folders?.length === 0 &&
+            folderList.length === 0 &&
             currentGlobalPath === '/' && (
               <div className="text-gray-80 mt-4 flex flex-col items-center justify-center gap-4 text-center text-base">
                 <FileEmptyStateIcon className="h-20 w-20" />
@@ -412,8 +409,8 @@ const AllFiles = () => {
             )}
           {!searchQuery &&
             isVRFilesSuccess &&
-            VRFiles?.child_items?.length === 0 &&
-            VRFiles.child_folders?.length === 0 && (
+            itemList.length === 0 &&
+            folderList.length === 0 && (
               <div className="flex h-20 items-center justify-center text-gray-100">
                 {t('vectorFs.emptyState.noFiles')}
               </div>

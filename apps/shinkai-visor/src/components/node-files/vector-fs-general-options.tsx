@@ -9,7 +9,7 @@ import {
   uploadVRFilesFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/vector-fs/folder';
 import { useCreateVRFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createVRFolder/useCreateVRFolder';
-import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/lib/mutations/uploadVRFiles/useUploadVRFiles';
+import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadVRFiles/useUploadVRFiles';
 import {
   Button,
   DrawerDescription,

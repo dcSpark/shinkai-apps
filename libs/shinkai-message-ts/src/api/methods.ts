@@ -569,33 +569,34 @@ export const retrieveVectorSearchSimplified = async (
 
 export const uploadFilesToVR = async (
   nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
+  bearerToken: string,
   destinationPath: string,
   files: File[],
-  setupDetailsState: CredentialsPayload,
 ): Promise<{ status: string }> => {
   try {
-    const fileUploader = new FileUploader(
-      nodeAddress,
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      '',
-      sender,
-      sender_subidentity,
-      receiver,
-    );
-
-    await fileUploader.createFolder();
     for (const fileToUpload of files) {
-      await fileUploader.uploadEncryptedFile(fileToUpload);
-    }
-    const response =
-      await fileUploader.finalizeAndAddItemsToDb(destinationPath);
+      const formData = new FormData();
+      formData.append('file_data', fileToUpload);
+      formData.append('filename', fileToUpload.name);
+      formData.append('path', destinationPath);
 
-    return response;
+      const response = await httpClient.post(
+        urlJoin(nodeAddress, '/v2/upload_file_to_folder'),
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${bearerToken}`,
+          },
+        }
+      );
+
+      if (response.status !== 200) {
+        throw new Error(`Failed to upload file: ${fileToUpload.name}`);
+      }
+    }
+
+    return { status: 'success' };
   } catch (error) {
     console.error('Error uploadFilesToVR:', error);
     throw error;

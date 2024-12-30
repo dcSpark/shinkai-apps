@@ -4,7 +4,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
+import { FunctionKey } from '../../../lib/constants';
 import { uploadVRFiles } from '.';
 import { UploadVRFilesInput, UploadVRFilesOutput } from './types';
 

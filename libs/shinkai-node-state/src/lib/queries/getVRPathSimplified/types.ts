@@ -33,7 +33,7 @@ export type FileInfo = {
 };
 
 export type VRItem = FileInfo;
-export type VRFolder = FileInfo[];
+export type VRFolder = FileInfo;
 
 export type GetVRPathSimplifiedInput = JobCredentialsPayload & {
   nodeAddress: string;
