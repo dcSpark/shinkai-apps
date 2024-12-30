@@ -4,8 +4,8 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
-import { sendMessageWithFilesToInbox } from '.';
+import { FunctionKey } from '../../../lib/constants';
+import { sendMessageWithFilesToJob } from '.';
 import {
   SendMessageWithFilesToInboxInput,
   SendMessageWithFilesToInboxOutput,
@@ -20,7 +20,7 @@ type Options = UseMutationOptions<
 export const useSendMessageWithFilesToInbox = (options?: Options) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: sendMessageWithFilesToInbox,
+    mutationFn: sendMessageWithFilesToJob,
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({

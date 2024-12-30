@@ -136,41 +136,50 @@ export const sendTextMessageWithInbox = async (
   }
 };
 
-export const sendTextMessageWithFilesForInbox = async (
+export const sendTextMessageWithFilesToJob = async (
   nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
   text_message: string,
-  job_inbox: string,
+  job_id: string,
   files: File[],
-  setupDetailsState: CredentialsPayload,
+  bearerToken: string,
 ): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
-  const fileUploader = new FileUploader(
+  // Upload files using the uploadFilesToVR function
+  const uploadResponse = await uploadFilesToJob(
     nodeAddress,
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    job_inbox,
-    sender,
-    sender_subidentity,
-    receiver,
+    bearerToken,
+    job_id,
+    files
   );
 
-  await fileUploader.createFolder();
-  for (const fileToUpload of files) {
-    await fileUploader.uploadEncryptedFile(fileToUpload);
+  if (uploadResponse.status !== 'success') {
+    throw new Error('Failed to upload files');
   }
-  const message = await fileUploader.finalizeAndSend(text_message, null);
 
-  if (message.body && 'unencrypted' in message.body) {
-    const inboxId = message.body.unencrypted.internal_metadata.inbox;
-    return { inboxId, message };
-  } else {
-    console.warn('message body is null or encrypted');
-    // TODO: workaround to skip error reading encrypted message
-    return { inboxId: job_inbox, message };
-  }
+  // Prepare the message payload
+  const messagePayload = {
+    job_message: {
+      job_id,
+      content: text_message,
+      files: [], // update with an array of string with the file paths
+    },
+  };
+
+  // Send the message to the job
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/job_message'),
+    messagePayload,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${bearerToken}`,
+      },
+    }
+  );
+
+  const data = response.data;
+
+  // Assuming the response contains the message and inboxId
+  return { inbox_id: job_id, message: data };
 };
 
 export const updateInboxName = async (
@@ -1658,4 +1667,40 @@ export const removeRowsSheet = async (
 
   const data = response.data;
   return data;
+};
+
+export const uploadFilesToJob = async (
+  nodeAddress: string,
+  bearerToken: string,
+  jobId: string,
+  files: File[],
+): Promise<{ status: string }> => {
+  try {
+    for (const fileToUpload of files) {
+      const formData = new FormData();
+      formData.append('file_data', fileToUpload);
+      formData.append('filename', fileToUpload.name);
+      formData.append('job_id', jobId);
+
+      const response = await httpClient.post(
+        urlJoin(nodeAddress, '/v2/upload_file_to_job'),
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${bearerToken}`,
+          },
+        }
+      );
+
+      if (response.status !== 200) {
+        throw new Error(`Failed to upload file: ${fileToUpload.name}`);
+      }
+    }
+
+    return { status: 'success' };
+  } catch (error) {
+    console.error('Error uploadFilesToJob:', error);
+    throw error;
+  }
 };

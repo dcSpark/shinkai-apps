@@ -1,18 +1,16 @@
 import type {
-  CredentialsPayload,
   ShinkaiMessage,
 } from '@shinkai_network/shinkai-message-ts/models';
 
-export type SendMessageWithFilesToInboxInput = CredentialsPayload & {
+export type SendMessageWithFilesToInboxInput = {
   nodeAddress: string;
-  sender: string;
-  receiver: string;
-  senderSubidentity: string;
+  token: string;
   message: string;
-  inboxId: string;
+  jobId: string;
   files: File[];
 };
+
 export type SendMessageWithFilesToInboxOutput = {
-  inboxId: string;
+  jobId: string;
   message: ShinkaiMessage;
 };
