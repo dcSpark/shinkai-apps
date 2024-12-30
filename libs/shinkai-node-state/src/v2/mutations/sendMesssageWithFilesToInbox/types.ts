@@ -11,6 +11,5 @@ export type SendMessageWithFilesToInboxInput = {
 };
 
 export type SendMessageWithFilesToInboxOutput = {
-  jobId: string;
   message: ShinkaiMessage;
 };

@@ -4,6 +4,7 @@ import { SendMessageWithFilesToInboxInput } from './types';
 
 export const sendMessageWithFilesToJob = async ({
   nodeAddress,
+  token,
   message,
   jobId,
   files,
@@ -13,5 +14,6 @@ export const sendMessageWithFilesToJob = async ({
     message,
     jobId,
     files,
+    token,
   );
 };

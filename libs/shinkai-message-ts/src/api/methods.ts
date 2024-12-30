@@ -142,7 +142,7 @@ export const sendTextMessageWithFilesToJob = async (
   job_id: string,
   files: File[],
   bearerToken: string,
-): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
+): Promise<{ message: ShinkaiMessage }> => {
   // Upload files using the uploadFilesToVR function
   const uploadResponse = await uploadFilesToJob(
     nodeAddress,
@@ -179,7 +179,7 @@ export const sendTextMessageWithFilesToJob = async (
   const data = response.data;
 
   // Assuming the response contains the message and inboxId
-  return { inbox_id: job_id, message: data };
+  return { message: data };
 };
 
 export const updateInboxName = async (
