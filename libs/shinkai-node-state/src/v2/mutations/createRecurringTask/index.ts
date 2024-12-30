@@ -15,7 +15,7 @@ export const createRecurringTask = async ({
   cronExpression,
   chatConfig,
   message,
-  toolRouterKey,
+  toolKey,
 }: CreateRecurringTaskInput) => {
   const { job_id: jobId } = await createJobApi(nodeAddress, token, {
     llm_provider: llmProvider,
@@ -52,7 +52,7 @@ export const createRecurringTask = async ({
         message: {
           job_id: jobId,
           content: message,
-          tool_router_key: toolRouterKey,
+          tool_key: toolKey,
           files_inbox: '',
         },
       },

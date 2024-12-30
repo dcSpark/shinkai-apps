@@ -542,6 +542,9 @@ export default {
       deleteAgent: 'Error deleting AI',
     },
   },
+  tasks: {
+    runNow: 'Run Now',
+  },
   ollama: {
     version: 'Ollama Version',
     errors: {

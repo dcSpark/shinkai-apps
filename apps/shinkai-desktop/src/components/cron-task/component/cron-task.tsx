@@ -80,7 +80,7 @@ const createTaskFormSchema = z.object({
   }),
   jobMessage: z.object({
     content: z.string(),
-    toolKey: z.string().optional(),
+    tool_key: z.string().optional(),
   }),
 });
 type CreateTaskForm = z.infer<typeof createTaskFormSchema>;
@@ -112,7 +112,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
       llmOrAgentId: defaultAgentId,
       jobMessage: {
         content: '',
-        toolKey: '',
+        tool_key: '',
       },
     },
   });
@@ -151,10 +151,10 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
               ? initialValues.action.CreateJobWithConfigAndMessage.message
                   .content
               : '',
-          toolKey:
+          tool_key:
             'CreateJobWithConfigAndMessage' in initialValues.action
               ? initialValues.action.CreateJobWithConfigAndMessage.message
-                  .tool_router_key
+                  .tool_key
               : '',
         },
         llmOrAgentId:
@@ -205,7 +205,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
         cronExpression: values.cronExpression,
         chatConfig: values.jobConfig,
         message: values.jobMessage.content,
-        toolRouterKey: values.jobMessage.toolKey,
+        toolKey: values.jobMessage.tool_key,
         llmProvider: values.llmOrAgentId,
         name: values.name,
         description: values.description,
@@ -219,7 +219,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
         cronExpression: values.cronExpression,
         chatConfig: values.jobConfig,
         message: values.jobMessage.content,
-        toolRouterKey: values.jobMessage.toolKey,
+        toolKey: values.jobMessage.tool_key,
         llmProvider: values.llmOrAgentId,
         name: values.name,
         description: values.description,
@@ -379,10 +379,10 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                         <div className="flex items-center gap-1 truncate">
                           <ToolsIcon className="mr-1 h-4 w-4" />
                           <span>
-                            {form.watch('jobMessage.toolKey')
+                            {form.watch('jobMessage.tool_key')
                               ? formatText(
                                   form
-                                    .watch('jobMessage.toolKey')
+                                    .watch('jobMessage.tool_key')
                                     ?.split(':::')?.[2] ?? '',
                                 )
                               : 'None'}
@@ -397,9 +397,9 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                       >
                         <DropdownMenuRadioGroup
                           onValueChange={(value) => {
-                            form.setValue('jobMessage.toolKey', value);
+                            form.setValue('jobMessage.tool_key', value);
                           }}
-                          value={form.watch('jobMessage.toolKey')}
+                          value={form.watch('jobMessage.tool_key')}
                         >
                           <DropdownMenuRadioItem
                             className="flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"

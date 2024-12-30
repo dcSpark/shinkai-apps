@@ -13,6 +13,8 @@ export const ToolMetadataSchema = z.object({
 
   author: z.string(),
 
+  version: z.string().default('1.0.0'),
+
   keywords: z.array(z.string()).default([]),
 
   configurations: z
@@ -46,8 +48,14 @@ export const ToolMetadataSchema = z.object({
     )
     .passthrough(),
 
-  sqlTables: z.array(z.string()).default([]),
-  sqlQueries: z.array(z.string()).default([]),
+  sqlTables: z.array(z.object({
+    name: z.string(),
+    definition: z.string(),
+  })).default([]),
+  sqlQueries: z.array(z.object({
+    name: z.string(),
+    query: z.string(),
+  })).default([]),
   tools: z.array(z.string()).default([]),
   oauth: z.array(
     z.object({
