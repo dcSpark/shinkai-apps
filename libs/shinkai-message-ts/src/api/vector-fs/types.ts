@@ -16,6 +16,12 @@ export type MoveFsItemRequest = {
 };
 export type MoveFsItemResponse = string;
 
+export type CreateFolderRequest = {
+  path: string;
+  folder_name: string;
+};
+export type CreateFolderResponse = string;
+
 export type CopyFolderRequest = {
   origin_path: string;
   destination_path: string;

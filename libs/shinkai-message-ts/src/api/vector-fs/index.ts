@@ -5,6 +5,8 @@ import {
   CopyFolderResponse,
   CopyFsItemRequest,
   CopyFsItemResponse,
+  CreateFolderRequest,
+  CreateFolderResponse,
   MoveFolderRequest,
   MoveFolderResponse,
   MoveFsItemRequest,
@@ -31,6 +33,22 @@ export const retrieveSourceFile = async (
     },
   );
   return response.data as RetrieveSourceFileResponse;
+};
+
+export const createFolder = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: CreateFolderRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/create_folder'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as CreateFolderResponse;
 };
 export const copyFolder = async (
   nodeAddress: string,

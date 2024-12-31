@@ -1,24 +1,20 @@
 import { UseMutationOptions, useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
-import { createVRFolder } from '.';
-import { CreateVRFolderInput, CreateVRFolderOutput } from './types';
+import { FunctionKeyV2 } from '../../constants';
+import { createFolder } from '.';
+import { CreateFolderInput, CreateFolderOutput } from './types';
 
-type Options = UseMutationOptions<
-  CreateVRFolderOutput,
-  Error,
-  CreateVRFolderInput
->;
+type Options = UseMutationOptions<CreateFolderOutput, Error, CreateFolderInput>;
 
-export const useCreateVRFolder = (options?: Options) => {
+export const useCreateFolder = (options?: Options) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: createVRFolder,
+    mutationFn: createFolder,
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [FunctionKey.GET_VR_FILES],
+        queryKey: [FunctionKeyV2.GET_VR_FILES],
       });
 
       if (options?.onSuccess) {
