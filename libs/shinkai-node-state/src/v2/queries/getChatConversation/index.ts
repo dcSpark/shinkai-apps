@@ -1,10 +1,11 @@
 import { ToolStatusType } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import {
-  downloadFileFromInbox,
-  getFileNames,
+  downloadFileFromJob,
+  getJobFolderName,
   getLastMessagesWithBranches,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 import { ChatMessage } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 
 import {
   Artifact,
@@ -21,17 +22,15 @@ const createUserMessage = async (
   message: ChatMessage,
   nodeAddress: string,
   token: string,
+  folderName: string,
 ): Promise<UserMessage> => {
   const text = message.job_message.content;
 
-  const inbox = message.job_message?.files_inbox;
+  const hasFiles = message.job_message?.job_filenames?.length > 0;
   const attachments: UserMessage['attachments'] = [];
 
-  if (inbox) {
-    // TODO: list files from jobId, inboxes no longer exist
-    const fileNames = await getFileNames(nodeAddress, token, {
-      inboxName: inbox,
-    });
+  if (hasFiles) {
+    const fileNames = message.job_message.job_filenames;
 
     await Promise.all(
       fileNames?.map(async (name) => {
@@ -43,15 +42,22 @@ const createUserMessage = async (
 
         if (name.match(/\.(jpg|jpeg|png|gif)$/i)) {
           try {
-            // TODO: download file from jobId, inboxes no longer exist
-            const response = await downloadFileFromInbox(
+            const fileNameBase = name.split('/')?.at(-1) ?? 'untitled_tool';
+            const fileExtension = fileNameBase.split('.')?.at(-1) ?? '';
+            const base64String = await downloadFileFromJob(
               nodeAddress,
               token,
-              inbox,
-              name,
+              `${folderName}/${name}`,
             );
-            if (response) {
-              const blob = new Blob([response]);
+            if (base64String) {
+              const byteCharacters = atob(base64String);
+              const byteNumbers = new Array(byteCharacters.length)
+                .fill(0)
+                .map((_, i) => byteCharacters.charCodeAt(i));
+              const byteArray = new Uint8Array(byteNumbers);
+              const blob = new Blob([byteArray], {
+                type: `image/${fileExtension}`,
+              });
               file.type = 'image';
               file.preview = URL.createObjectURL(blob);
             }
@@ -152,6 +158,14 @@ export const getChatConversation = async ({
     offset_key: lastKey,
   });
 
+  const { folder_name: folderName } = await getJobFolderName(
+    nodeAddress,
+    token,
+    {
+      job_id: extractJobIdFromInbox(inboxId),
+    },
+  );
+
   const flattenMessages = data.flat(1);
 
   const uniqueParentHashes = new Set<string>();
@@ -173,7 +187,12 @@ export const getChatConversation = async ({
         : 'assistant';
 
     if (role === 'user') {
-      const userMessage = await createUserMessage(message, nodeAddress, token);
+      const userMessage = await createUserMessage(
+        message,
+        nodeAddress,
+        token,
+        folderName,
+      );
       messagesV2.push(userMessage);
     } else {
       const assistantMessage = createAssistantMessage(message);

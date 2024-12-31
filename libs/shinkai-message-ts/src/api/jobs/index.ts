@@ -14,6 +14,8 @@ import {
   GetChatConfigResponse,
   GetFileNamesRequest,
   GetFileNamesResponse,
+  GetJobFolderNameRequest,
+  GetJobFolderNameResponse,
   GetJobScopeRequest,
   GetJobScopeResponse,
   GetLastMessagesRequest,
@@ -196,23 +198,35 @@ export const uploadFilesToJob = async (
   return responses;
 };
 
-export const downloadFileFromInbox = async (
+export const getJobFolderName = async (
   nodeAddress: string,
   bearerToken: string,
-  inboxName: string,
-  filename: string,
+  payload: GetJobFolderNameRequest,
 ) => {
   const response = await httpClient.get(
-    urlJoin(
-      nodeAddress,
-      `/v2/download_file_from_inbox/${inboxName}/${decodeURIComponent(filename)}`,
-    ),
+    urlJoin(nodeAddress, '/v2/get_folder_name_for_job'),
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
-      responseType: 'blob',
+      responseType: 'json',
+      params: { job_id: payload.job_id },
     },
   );
-  return response.data as Blob;
+  return response.data as GetJobFolderNameResponse;
+};
+
+export const downloadFileFromJob = async (
+  nodeAddress: string,
+  bearerToken: string,
+  filePath: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, `/v2/download_file`),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      params: { path: filePath },
+    },
+  );
+  return response.data as string;
 };
 
 export const getLLMProviders = async (

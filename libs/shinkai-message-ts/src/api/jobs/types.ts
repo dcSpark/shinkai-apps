@@ -135,7 +135,6 @@ export type JobMessage = {
   job_id: string;
   callback?: null;
   content: string;
-  files_inbox: string;
   parent?: string;
   sheet_job_data?: null;
   tool_key?: string;
@@ -151,6 +150,8 @@ export type JobMessage = {
       response?: string;
     }[];
   };
+  fs_files_paths: ShinkaiPath[];
+  job_filenames: string[];
 };
 export type ChatMessage = {
   job_message: JobMessage;
@@ -324,3 +325,9 @@ export type AddFileToJobRequest = {
   file: File;
 };
 export type AddFileToJobResponse = string;
+export type GetJobFolderNameRequest = {
+  job_id: string;
+};
+export type GetJobFolderNameResponse = {
+  folder_name: string;
+};
