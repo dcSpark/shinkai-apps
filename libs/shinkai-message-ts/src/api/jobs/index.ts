@@ -3,6 +3,7 @@ import { urlJoin } from '../../utils/url-join';
 import {
   AddFileToInboxRequest,
   AddFileToInboxResponse,
+  AddFileToJobRequest,
   AddLLMProviderRequest,
   AddLLMProviderResponse,
   CreateFilesInboxResponse,
@@ -152,20 +153,44 @@ export const addFileToInbox = async (
   return response.data as AddFileToInboxResponse;
 };
 
-export const uploadFilesToInbox = async (
+export const addFileToJob = async (
   nodeAddress: string,
   bearerToken: string,
+
+  payload: AddFileToJobRequest,
+) => {
+  const fileData = await payload.file.arrayBuffer();
+
+  const formData = new FormData();
+  formData.append('job_id', payload.job_id);
+  formData.append('filename', payload.filename);
+  formData.append('file_data', new Blob([fileData]));
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/upload_file_to_job'),
+    formData,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+
+  return response.data as AddFileToInboxResponse;
+};
+
+export const uploadFilesToJob = async (
+  nodeAddress: string,
+  bearerToken: string,
+  jobId: string,
   files: File[],
 ) => {
-  const folderId = await createFilesInbox(nodeAddress, bearerToken);
   for (const file of files) {
-    await addFileToInbox(nodeAddress, bearerToken, {
+    await addFileToJob(nodeAddress, bearerToken, {
       filename: encodeURIComponent(file.name),
-      file_inbox_name: folderId,
+      job_id: jobId,
       file,
     });
   }
-  return folderId;
 };
 
 export const downloadFileFromInbox = async (

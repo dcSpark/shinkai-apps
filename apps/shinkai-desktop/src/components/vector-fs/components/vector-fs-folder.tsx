@@ -92,7 +92,8 @@ const VectorFsFolder = ({
     layout === VectorFSLayout.Grid && 'bg-gray-400/30 p-2',
   );
   const totalItem =
-    (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
+    // (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
+    0;
 
   const FolderIcon = isSharedFolder ? SharedFolderIcon : DirectoryTypeIcon;
 
@@ -144,7 +145,7 @@ const VectorFsFolder = ({
                 event.stopPropagation();
                 navigate('/inboxes', {
                   state: {
-                    selectedVRFolders: [folder],
+                    selectedVRFolders: [folder.path],
                   },
                 });
               }}

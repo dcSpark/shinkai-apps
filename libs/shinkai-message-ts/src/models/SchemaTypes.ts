@@ -67,28 +67,6 @@ export enum MessageSchemaType {
   SearchShinkaiTool = 'SearchShinkaiTool',
 }
 
-export enum VectorSearchMode {
-  FillUpTo25k = 'FillUpTo25k',
-  MergeSiblings = 'MergeSiblings'
-}
-
-export type ShinkaiPath = string;
-
-export interface JobScope {
-  vector_fs_items: ShinkaiPath[];
-  vector_fs_folders: ShinkaiPath[];
-  vector_search_mode: VectorSearchMode[];
-}
-
-export interface JobCreation {
-  scope: JobScope;
-}
-
-export interface JobMessage {
-  job_id: string;
-  content: string;
-}
-
 export interface JobToolCall {
   tool_id: string;
   inputs: Record<string, string>;

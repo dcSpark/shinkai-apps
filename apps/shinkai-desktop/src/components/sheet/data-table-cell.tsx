@@ -386,8 +386,8 @@ export const VectorFsScopeDrawer = ({
   const [nodes, setNodes] = useState<TreeNode[]>([]);
   const auth = useAuth((state) => state.auth);
 
-  const { data: fileInfoArray, isSuccess: isVRFilesSuccess } = useGetVRPathSimplified(
-    {
+  const { data: fileInfoArray, isSuccess: isVRFilesSuccess } =
+    useGetVRPathSimplified({
       nodeAddress: auth?.node_address ?? '',
       profile: auth?.profile ?? '',
       shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -397,8 +397,7 @@ export const VectorFsScopeDrawer = ({
       node_encryption_pk: auth?.node_encryption_pk ?? '',
       profile_encryption_sk: auth?.profile_encryption_sk ?? '',
       profile_identity_sk: auth?.profile_identity_sk ?? '',
-    },
-  );
+    });
 
   useEffect(() => {
     if (isVRFilesSuccess) {
@@ -482,6 +481,7 @@ const FileUploadButton = ({
       onDrop: async (acceptedFiles) => {
         if (!auth || !fileInboxId) return;
         try {
+          // TODO: we need a jobId to upload files in shinkai sheet
           await addFileToInbox(auth.node_address, auth.api_v2_key, {
             file: acceptedFiles[0],
             filename: encodeURIComponent(acceptedFiles[0].name),

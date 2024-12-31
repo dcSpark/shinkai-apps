@@ -1,6 +1,6 @@
 import {
   sendMessageToJob as sendMessageToJobApi,
-  uploadFilesToInbox,
+  uploadFilesToJob,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
 import { SendMessageToJobInput } from './types';
@@ -14,18 +14,17 @@ export const sendMessageToJob = async ({
   files,
   toolKey,
 }: SendMessageToJobInput) => {
-  let folderId = '';
   if (files && files.length > 0) {
-    folderId = await uploadFilesToInbox(nodeAddress, token, files);
+    await uploadFilesToJob(nodeAddress, token, jobId, files);
   }
 
   return await sendMessageToJobApi(nodeAddress, token, {
     job_message: {
       content: message,
       job_id: jobId,
-      files_inbox: folderId,
       parent: parent,
       tool_key: toolKey,
+      files: [],
     },
   });
 };

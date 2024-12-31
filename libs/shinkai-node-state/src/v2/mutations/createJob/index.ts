@@ -2,7 +2,7 @@ import {
   createJob as createJobApi,
   sendMessageToJob,
   updateChatConfig,
-  uploadFilesToInbox,
+  uploadFilesToJob,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
 import { CreateJobInput } from './types';
@@ -26,9 +26,6 @@ export const createJob = async ({
       scope: {
         vector_fs_items: selectedVRFiles ?? [],
         vector_fs_folders: selectedVRFolders ?? [],
-        local_vrpack: [],
-        local_vrkai: [],
-        network_folders: [],
       },
       associated_ui: sheetId ? { Sheet: sheetId } : null,
       is_hidden: isHidden,
@@ -42,16 +39,14 @@ export const createJob = async ({
     });
   }
 
-  let folderId = '';
   if (files && files.length > 0) {
-    folderId = await uploadFilesToInbox(nodeAddress, token, files);
+    await uploadFilesToJob(nodeAddress, token, jobId, files);
   }
 
   await sendMessageToJob(nodeAddress, token, {
     job_message: {
       content,
       job_id: jobId,
-      files_inbox: folderId,
       parent: '',
       tool_key: toolKey,
     },

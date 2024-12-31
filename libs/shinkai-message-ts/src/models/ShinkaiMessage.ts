@@ -1,4 +1,4 @@
-import { JobScope, MessageSchemaType, TSEncryptionMethod } from './SchemaTypes';
+import { MessageSchemaType, TSEncryptionMethod } from './SchemaTypes';
 
 export interface InternalMetadata {
   sender_subidentity: string;
@@ -67,16 +67,6 @@ export type AgentInbox = {
   id: string;
   model: string;
   type: 'Agent' | 'LLMProvider';
-};
-
-export type SmartInbox = {
-  custom_name: string;
-  inbox_id: string;
-  last_message?: ShinkaiMessage;
-  is_finished: boolean;
-  job_scope?: JobScope;
-  agent?: AgentInbox;
-  datetime_created: string;
 };
 
 export type CreateChatInboxResponse = {

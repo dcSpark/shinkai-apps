@@ -1,8 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import {
-  ShinkaiPath,
-} from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import { ShinkaiPath } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import {
   CreateJobFormSchema,

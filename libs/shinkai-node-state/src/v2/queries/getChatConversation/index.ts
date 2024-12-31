@@ -28,6 +28,7 @@ const createUserMessage = async (
   const attachments: UserMessage['attachments'] = [];
 
   if (inbox) {
+    // TODO: list files from jobId, inboxes no longer exist
     const fileNames = await getFileNames(nodeAddress, token, {
       inboxName: inbox,
     });
@@ -42,6 +43,7 @@ const createUserMessage = async (
 
         if (name.match(/\.(jpg|jpeg|png|gif)$/i)) {
           try {
+            // TODO: download file from jobId, inboxes no longer exist
             const response = await downloadFileFromInbox(
               nodeAddress,
               token,

@@ -77,7 +77,9 @@ const VectorFsItem = ({
     layout === VectorFSLayout.Grid && 'bg-gray-400/30 p-2',
   );
 
-  const createdDatetime = formatDateToUSLocaleString(new Date(file.created_time));
+  const createdDatetime = formatDateToUSLocaleString(
+    new Date(file.created_time),
+  );
   // const fileSize = size(file.size);
 
   if (isVRSelectionActive) {
@@ -94,12 +96,7 @@ const VectorFsItem = ({
           className="flex flex-1 items-center gap-3"
           htmlFor={`item-${file.path}`}
         >
-          {/* <FileTypeIcon
-            type={
-              file?.vr_header?.resource_source?.Standard?.FileRef?.file_type
-                ?.Document
-            }
-          /> */}
+          <FileTypeIcon type={file?.extension ?? ''} />
           <VectorFsItemInfo
             createdDatetime={createdDatetime}
             file={file}
@@ -112,12 +109,7 @@ const VectorFsItem = ({
 
   return (
     <button className={wrapperClassname} onClick={onClick}>
-      {/* <FileTypeIcon
-        type={
-          file?.vr_header?.resource_source?.Standard?.FileRef?.file_type
-            ?.Document
-        }
-      /> */}
+      <FileTypeIcon type={file?.extension ?? ''} />
       <VectorFsItemInfo
         createdDatetime={createdDatetime}
         file={file}
@@ -139,7 +131,7 @@ const VectorFsItem = ({
                 event.stopPropagation();
                 navigate('/inboxes', {
                   state: {
-                    selectedVRFiles: [file],
+                    selectedVRFiles: [file.path],
                   },
                 });
               }}

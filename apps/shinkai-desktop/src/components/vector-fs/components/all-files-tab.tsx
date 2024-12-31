@@ -492,8 +492,10 @@ const AllFiles = () => {
                 } else {
                   navigate('/inboxes', {
                     state: {
-                      selectedVRFiles: selectedFiles,
-                      selectedVRFolders: selectedFolders,
+                      selectedVRFiles: selectedFiles.map((file) => file.path),
+                      selectedVRFolders: selectedFolders.map(
+                        (folder) => folder.path,
+                      ),
                     },
                   });
                 }

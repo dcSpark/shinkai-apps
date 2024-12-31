@@ -148,7 +148,7 @@ export const sendTextMessageWithFilesToJob = async (
     nodeAddress,
     bearerToken,
     job_id,
-    files
+    files,
   );
 
   if (uploadResponse.status !== 'success') {
@@ -171,9 +171,9 @@ export const sendTextMessageWithFilesToJob = async (
     {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${bearerToken}`,
+        Authorization: `Bearer ${bearerToken}`,
       },
-    }
+    },
   );
 
   const data = response.data;
@@ -505,7 +505,16 @@ export const retrieveVRPathSimplified = async (
   receiver_subidentity: string,
   path = '/',
   setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
+): Promise<{
+  data: {
+    created_time: string;
+    has_embeddings: boolean;
+    is_directory: boolean;
+    modified_time: string;
+    path: string;
+  }[];
+  status: string;
+}> => {
   const messageStr = ShinkaiMessageBuilderWrapper.retrievePathSimplified(
     setupDetailsState.profile_encryption_sk,
     setupDetailsState.profile_identity_sk,
@@ -595,9 +604,9 @@ export const uploadFilesToVR = async (
         {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${bearerToken}`,
+            Authorization: `Bearer ${bearerToken}`,
           },
-        }
+        },
       );
 
       if (response.status !== 200) {
@@ -1688,9 +1697,9 @@ export const uploadFilesToJob = async (
         {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${bearerToken}`,
+            Authorization: `Bearer ${bearerToken}`,
           },
-        }
+        },
       );
 
       if (response.status !== 200) {

@@ -1,6 +1,8 @@
 import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
-import { ShinkaiPath } from '@shinkai_network/shinkai-message-ts/models';
+import {
+  JobConfig,
+  ShinkaiPath,
+} from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 
 export type CreateJobInput = Token & {
   nodeAddress: string;

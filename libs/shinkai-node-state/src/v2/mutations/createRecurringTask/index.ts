@@ -23,9 +23,6 @@ export const createRecurringTask = async ({
       scope: {
         vector_fs_items: [],
         vector_fs_folders: [],
-        local_vrpack: [],
-        local_vrkai: [],
-        network_folders: [],
       },
       associated_ui: null,
       is_hidden: true,
@@ -43,9 +40,6 @@ export const createRecurringTask = async ({
           scope: {
             vector_fs_folders: [],
             vector_fs_items: [],
-            local_vrpack: [],
-            local_vrkai: [],
-            network_folders: [],
           },
         },
         llm_provider: llmProvider,

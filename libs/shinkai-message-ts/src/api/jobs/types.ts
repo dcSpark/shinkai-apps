@@ -1,4 +1,3 @@
-import { JobScope } from '../../models/SchemaTypes';
 import { AgentInbox } from '../../models/ShinkaiMessage';
 
 type ResourceSource = {
@@ -69,16 +68,23 @@ export type VRItemScope = Pick<VRItem, 'name' | 'path'> & {
   source: ResourceSource;
 };
 
+export enum VectorSearchMode {
+  FillUpTo25k = 'FillUpTo25k',
+  MergeSiblings = 'MergeSiblings',
+}
+
+export type ShinkaiPath = string;
+
+export type JobScope = {
+  vector_fs_items: ShinkaiPath[];
+  vector_fs_folders: ShinkaiPath[];
+  vector_search_mode?: VectorSearchMode[];
+};
+
 export type CreateJobRequest = {
   llm_provider: string;
   job_creation_info: {
-    scope: {
-      network_folders: [];
-      vector_fs_folders: VRFolderScope[];
-      vector_fs_items: VRItemScope[];
-      local_vrpack: [];
-      local_vrkai: [];
-    };
+    scope: JobScope;
     associated_ui:
       | 'Playground'
       | {
@@ -96,9 +102,9 @@ export type JobMessageRequest = {
   job_message: {
     job_id: string;
     content: string;
-    files_inbox: string;
     parent: string | null;
     tool_key?: string;
+    files?: string[];
   };
 };
 export type JobMessageResponse = {
@@ -308,3 +314,9 @@ export type RetryMessageRequest = {
 export type RemoveJobRequest = {
   job_id: string;
 };
+export type AddFileToJobRequest = {
+  job_id: string;
+  filename: string;
+  file: File;
+};
+export type AddFileToJobResponse = string;
