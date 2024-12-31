@@ -39,8 +39,10 @@ export const createJob = async ({
     });
   }
 
+  let filePaths: string[] = [];
   if (files && files.length > 0) {
-    await uploadFilesToJob(nodeAddress, token, jobId, files);
+    const uploadResponses = await uploadFilesToJob(nodeAddress, token, jobId, files);
+    filePaths = uploadResponses.map(response => response.path);
   }
 
   await sendMessageToJob(nodeAddress, token, {
@@ -49,6 +51,7 @@ export const createJob = async ({
       job_id: jobId,
       parent: '',
       tool_key: toolKey,
+      files: filePaths,
     },
   });
 

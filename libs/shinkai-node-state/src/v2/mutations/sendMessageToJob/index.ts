@@ -14,8 +14,10 @@ export const sendMessageToJob = async ({
   files,
   toolKey,
 }: SendMessageToJobInput) => {
+  let filePaths: string[] = [];
   if (files && files.length > 0) {
-    await uploadFilesToJob(nodeAddress, token, jobId, files);
+    const uploadResponses = await uploadFilesToJob(nodeAddress, token, jobId, files);
+    filePaths = uploadResponses.map(response => response.path);
   }
 
   return await sendMessageToJobApi(nodeAddress, token, {
@@ -24,7 +26,7 @@ export const sendMessageToJob = async ({
       job_id: jobId,
       parent: parent,
       tool_key: toolKey,
-      files: [],
+      files: filePaths,
     },
   });
 };

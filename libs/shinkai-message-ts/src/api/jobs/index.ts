@@ -129,6 +129,7 @@ export const createFilesInbox = async (
   return response.data as CreateFilesInboxResponse;
 };
 
+// TODO: remove this
 export const addFileToInbox = async (
   nodeAddress: string,
   bearerToken: string,
@@ -156,9 +157,8 @@ export const addFileToInbox = async (
 export const addFileToJob = async (
   nodeAddress: string,
   bearerToken: string,
-
   payload: AddFileToJobRequest,
-) => {
+): Promise<AddFileToInboxResponse> => {
   const fileData = await payload.file.arrayBuffer();
 
   const formData = new FormData();
@@ -183,14 +183,17 @@ export const uploadFilesToJob = async (
   bearerToken: string,
   jobId: string,
   files: File[],
-) => {
+): Promise<AddFileToInboxResponse[]> => {
+  const responses: AddFileToInboxResponse[] = [];
   for (const file of files) {
-    await addFileToJob(nodeAddress, bearerToken, {
+    const response = await addFileToJob(nodeAddress, bearerToken, {
       filename: encodeURIComponent(file.name),
       job_id: jobId,
       file,
     });
+    responses.push(response);
   }
+  return responses;
 };
 
 export const downloadFileFromInbox = async (

@@ -168,7 +168,10 @@ export type AddFileToInboxRequest = {
   filename: string;
   file: File;
 };
-export type AddFileToInboxResponse = string;
+export type AddFileToInboxResponse = {
+  message: string;
+  path: string;
+};
 
 export type LLMProvider = {
   id: string;

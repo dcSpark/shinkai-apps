@@ -5,8 +5,6 @@ import {
   CreateChatInboxResponse,
   CredentialsPayload,
   JobCredentialsPayload,
-  LastMessagesFromInboxCredentialsPayload,
-  LLMProvider,
   SetupPayload,
   ShinkaiMessage,
 } from '../models';
@@ -14,12 +12,11 @@ import {
   APIUseRegistrationCodeSuccessResponse,
   SubmitInitialRegistrationNoCodePayload,
 } from '../models/Payloads';
-import { SerializedLLMProvider } from '../models/SchemaTypes';
 import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
 import { urlJoin } from '../utils/url-join';
-import { FileUploader } from '../wasm/FileUploaderUsingSymmetricKeyManager';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
 import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
+import { uploadFilesToJob } from './jobs';
 
 export const fetchPublicKey =
   (nodeAddress: string) => async (): Promise<any> => {
@@ -143,24 +140,25 @@ export const sendTextMessageWithFilesToJob = async (
   files: File[],
   bearerToken: string,
 ): Promise<{ message: ShinkaiMessage }> => {
-  // Upload files using the uploadFilesToVR function
-  const uploadResponse = await uploadFilesToJob(
+  // Upload files using the uploadFilesToJob function
+  const uploadResponses = await uploadFilesToJob(
     nodeAddress,
     bearerToken,
     job_id,
     files,
   );
 
-  if (uploadResponse.status !== 'success') {
-    throw new Error('Failed to upload files');
-  }
+  // Extract file paths from the upload responses
+  const filePaths = uploadResponses.map(response => response.path);
+
+  console.log('filePaths: ', filePaths);
 
   // Prepare the message payload
   const messagePayload = {
     job_message: {
       job_id,
       content: text_message,
-      files: [], // update with an array of string with the file paths
+      files: filePaths,
     },
   };
 
@@ -1676,40 +1674,4 @@ export const removeRowsSheet = async (
 
   const data = response.data;
   return data;
-};
-
-export const uploadFilesToJob = async (
-  nodeAddress: string,
-  bearerToken: string,
-  jobId: string,
-  files: File[],
-): Promise<{ status: string }> => {
-  try {
-    for (const fileToUpload of files) {
-      const formData = new FormData();
-      formData.append('file_data', fileToUpload);
-      formData.append('filename', fileToUpload.name);
-      formData.append('job_id', jobId);
-
-      const response = await httpClient.post(
-        urlJoin(nodeAddress, '/v2/upload_file_to_job'),
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${bearerToken}`,
-          },
-        },
-      );
-
-      if (response.status !== 200) {
-        throw new Error(`Failed to upload file: ${fileToUpload.name}`);
-      }
-    }
-
-    return { status: 'success' };
-  } catch (error) {
-    console.error('Error uploadFilesToJob:', error);
-    throw error;
-  }
 };
