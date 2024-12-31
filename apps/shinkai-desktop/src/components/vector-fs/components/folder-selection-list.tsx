@@ -167,7 +167,7 @@ export const FolderSelectionList = () => {
                 key={idx}
               />
             ))}
-          {VRFiles?.child_folders.map((folder) => {
+          {VRFiles?.map((folder) => {
             return (
               <button
                 className={cn(
