@@ -149,16 +149,15 @@ export const sendTextMessageWithFilesToJob = async (
   );
 
   // Extract file paths from the upload responses
-  const filePaths = uploadResponses.map(response => response.path);
-
-  console.log('filePaths: ', filePaths);
+  const filenames = uploadResponses.map(response => response.filename);
 
   // Prepare the message payload
   const messagePayload = {
     job_message: {
       job_id,
       content: text_message,
-      files: filePaths,
+      fs_files_paths: [],
+      job_filenames: filenames,
     },
   };
 

@@ -104,7 +104,8 @@ export type JobMessageRequest = {
     content: string;
     parent: string | null;
     tool_key?: string;
-    files?: string[];
+    fs_files_paths?: string[];
+    job_filenames?: string[];
   };
 };
 export type JobMessageResponse = {
@@ -170,7 +171,7 @@ export type AddFileToInboxRequest = {
 };
 export type AddFileToInboxResponse = {
   message: string;
-  path: string;
+  filename: string;
 };
 
 export type LLMProvider = {
