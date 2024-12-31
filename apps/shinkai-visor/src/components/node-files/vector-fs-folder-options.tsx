@@ -5,11 +5,11 @@ import {
   ShareFolderFormSchema,
   shareFolderFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/vector-fs/folder';
-import { useCopyVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/copyVRFolder/useCopyVrFolder';
 import { useCreateShareableFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createShareableFolder/useCreateShareableFolder';
-import { useDeleteVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteVRFolder/useDeleteVRFolder';
-import { useMoveVrFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/moveVRFolder/useMoveVRFolder';
 import { useUnshareFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/unshareFolder/useUnshareFolder';
+import { useCopyFolder } from '@shinkai_network/shinkai-node-state/v2/mutations/copyFolder/useCopyFolder';
+import { useMoveFolder } from '@shinkai_network/shinkai-node-state/v2/mutations/moveFolder/useMoveFolder';
+import { useRemoveFolder } from '@shinkai_network/shinkai-node-state/v2/mutations/removeFolder/useRemoveFolder';
 import {
   Alert,
   AlertDescription,
@@ -48,7 +48,7 @@ export const VectorFsFolderMoveAction = () => {
   );
 
   const { mutateAsync: moveVrFolder, isPending: isMovingVrFolder } =
-    useMoveVrFolder({
+    useMoveFolder({
       onSuccess: () => {
         setCurrentGlobalPath(destinationFolderPath ?? '/');
         closeDrawerMenu();
@@ -80,15 +80,9 @@ export const VectorFsFolderMoveAction = () => {
           onClick={async () => {
             await moveVrFolder({
               nodeAddress: auth?.node_address ?? '',
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              profile: auth?.profile ?? '',
+              token: auth?.api_v2_key ?? '',
               originPath: selectedFolder?.path ?? '',
               destinationPath: destinationFolderPath ?? '/',
-              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-              my_device_identity_sk: auth?.profile_identity_sk ?? '',
-              node_encryption_pk: auth?.node_encryption_pk ?? '',
-              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-              profile_identity_sk: auth?.profile_identity_sk ?? '',
             });
           }}
         >
@@ -104,7 +98,7 @@ export const VectorFsFolderDeleteAction = () => {
   const auth = useAuth((state) => state.auth);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
 
-  const { mutateAsync: deleteVrFolder, isPending } = useDeleteVrFolder({
+  const { mutateAsync: deleteVrFolder, isPending } = useRemoveFolder({
     onSuccess: () => {
       closeDrawerMenu();
       toast.success(t('vectorFs.success.folderDeleted'));
@@ -135,14 +129,8 @@ export const VectorFsFolderDeleteAction = () => {
           onClick={async () => {
             await deleteVrFolder({
               nodeAddress: auth?.node_address ?? '',
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              profile: auth?.profile ?? '',
+              token: auth?.api_v2_key ?? '',
               folderPath: selectedFolder?.path ?? '',
-              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-              my_device_identity_sk: auth?.profile_identity_sk ?? '',
-              node_encryption_pk: auth?.node_encryption_pk ?? '',
-              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-              profile_identity_sk: auth?.profile_identity_sk ?? '',
             });
           }}
           variant="destructive"
@@ -166,7 +154,7 @@ export const VectorFsFolderCopyAction = () => {
     (state) => state.destinationFolderPath,
   );
 
-  const { mutateAsync: copyVrFolder, isPending } = useCopyVrFolder({
+  const { mutateAsync: copyVrFolder, isPending } = useCopyFolder({
     onSuccess: () => {
       setCurrentGlobalPath(destinationFolderPath ?? '/');
       closeDrawerMenu();
@@ -198,15 +186,9 @@ export const VectorFsFolderCopyAction = () => {
           onClick={async () => {
             await copyVrFolder({
               nodeAddress: auth?.node_address ?? '',
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              profile: auth?.profile ?? '',
+              token: auth?.api_v2_key ?? '',
               originPath: selectedFolder?.path ?? '',
               destinationPath: destinationFolderPath ?? '/',
-              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-              my_device_identity_sk: auth?.profile_identity_sk ?? '',
-              node_encryption_pk: auth?.node_encryption_pk ?? '',
-              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-              profile_identity_sk: auth?.profile_identity_sk ?? '',
             });
           }}
         >

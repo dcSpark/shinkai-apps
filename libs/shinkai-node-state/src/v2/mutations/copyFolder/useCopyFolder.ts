@@ -4,20 +4,20 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
-import { moveVRFolder } from './index';
-import { MoveVRFolderInput, MoveVRFolderOutput } from './types';
+import { FunctionKeyV2 } from '../../constants';
+import { copyFolder } from './index';
+import { CopyFolderInput, CopyFolderOutput } from './types';
 
-type Options = UseMutationOptions<MoveVRFolderOutput, Error, MoveVRFolderInput>;
+type Options = UseMutationOptions<CopyFolderOutput, Error, CopyFolderInput>;
 
-export const useMoveVrFolder = (options?: Options) => {
+export const useCopyFolder = (options?: Options) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: moveVRFolder,
+    mutationFn: copyFolder,
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [FunctionKey.GET_VR_FILES],
+        queryKey: [FunctionKeyV2.GET_VR_FILES],
       });
 
       if (options?.onSuccess) {

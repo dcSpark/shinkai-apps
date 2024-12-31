@@ -4,20 +4,20 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
-import { copyVRItem } from './index';
+import { FunctionKeyV2 } from '../../constants';
+import { copyFsItem } from './index';
 import { CopyVRItemInput, CopyVRItemOutput } from './types';
 
 type Options = UseMutationOptions<CopyVRItemOutput, Error, CopyVRItemInput>;
 
-export const useCopyVrItem = (options?: Options) => {
+export const useCopyFsItem = (options?: Options) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: copyVRItem,
+    mutationFn: copyFsItem,
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [FunctionKey.GET_VR_FILES],
+        queryKey: [FunctionKeyV2.GET_VR_FILES],
       });
 
       if (options?.onSuccess) {
