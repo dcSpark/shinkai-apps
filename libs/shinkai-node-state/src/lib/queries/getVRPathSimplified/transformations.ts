@@ -10,6 +10,7 @@ export function transformFileInfo(data: any[]): FileInfo[] {
 
     return {
       ...fileInfo,
+      path: pathWithSlash,
       name,
       extension,
       file_size,

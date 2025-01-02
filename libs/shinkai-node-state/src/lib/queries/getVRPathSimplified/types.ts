@@ -22,12 +22,14 @@ type ResourceKeywords = {
 };
 
 export type FileInfo = {
+  children: null | FileInfo[];
   created_time: string;
   has_embeddings: boolean;
   is_directory: boolean;
   modified_time: string;
   path: string;
   name: string;
+  size: number;
   extension: string | null;
   file_size: string | null;
 };
