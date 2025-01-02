@@ -22,7 +22,7 @@ import {
 } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
-import { CopyIcon, FileInputIcon, TrashIcon } from 'lucide-react';
+import { BadgeCheck, CopyIcon, FileInputIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -42,7 +42,21 @@ export const VectorFsItemInfo = ({
 
   return (
     <div className="flex-1 truncate text-left">
-      <div className="text-sm font-medium">{file.name}</div>
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-medium">{file.name}</span>
+        {!!file.has_embeddings && (
+          <Tooltip>
+            <TooltipTrigger>
+              <BadgeCheck className="size-4 text-cyan-500" />{' '}
+            </TooltipTrigger>
+            <TooltipPortal>
+              <TooltipContent side="top">
+                <p>Embeddings Generated</p>
+              </TooltipContent>
+            </TooltipPortal>
+          </Tooltip>
+        )}
+      </div>
       {layout === VectorFSLayout.List && (
         <p className="text-xs font-medium text-gray-100">
           <span>{createdDatetime}</span> - <span>{fileSize}</span>
