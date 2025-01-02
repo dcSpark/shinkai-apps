@@ -120,7 +120,7 @@ export const moveFsItem = async (
   payload: MoveFsItemRequest,
 ) => {
   const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v2/move_folder'),
+    urlJoin(nodeAddress, '/v2/move_item'),
     payload,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
