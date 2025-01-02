@@ -99,14 +99,7 @@ export type CreateJobResponse = {
 };
 
 export type JobMessageRequest = {
-  job_message: {
-    job_id: string;
-    content: string;
-    parent: string | null;
-    tool_key?: string;
-    fs_files_paths?: string[];
-    job_filenames?: string[];
-  };
+  job_message: JobMessage;
 };
 export type JobMessageResponse = {
   inbox: string;
@@ -150,8 +143,8 @@ export type JobMessage = {
       response?: string;
     }[];
   };
-  fs_files_paths: ShinkaiPath[];
-  job_filenames: string[];
+  fs_files_paths?: ShinkaiPath[];
+  job_filenames?: string[];
 };
 export type ChatMessage = {
   job_message: JobMessage;
