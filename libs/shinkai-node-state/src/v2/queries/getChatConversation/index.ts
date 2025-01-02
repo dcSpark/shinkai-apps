@@ -1,6 +1,6 @@
 import { ToolStatusType } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import {
-  downloadFileFromJob,
+  downloadFile,
   getJobFolderName,
   getLastMessagesWithBranches,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
@@ -26,11 +26,11 @@ const createUserMessage = async (
 ): Promise<UserMessage> => {
   const text = message.job_message.content;
 
-  const hasFiles = message.job_message?.job_filenames?.length > 0;
+  const hasFiles = (message.job_message?.job_filenames ?? [])?.length > 0;
   const attachments: UserMessage['attachments'] = [];
 
   if (hasFiles) {
-    const fileNames = message.job_message.job_filenames;
+    const fileNames = message.job_message.job_filenames ?? [];
 
     await Promise.all(
       fileNames?.map(async (name) => {
@@ -44,11 +44,9 @@ const createUserMessage = async (
           try {
             const fileNameBase = name.split('/')?.at(-1) ?? 'untitled_tool';
             const fileExtension = fileNameBase.split('.')?.at(-1) ?? '';
-            const base64String = await downloadFileFromJob(
-              nodeAddress,
-              token,
-              `${folderName}/${name}`,
-            );
+            const base64String = await downloadFile(nodeAddress, token, {
+              path: `${folderName}/${name}`,
+            });
             if (base64String) {
               const byteCharacters = atob(base64String);
               const byteNumbers = new Array(byteCharacters.length)

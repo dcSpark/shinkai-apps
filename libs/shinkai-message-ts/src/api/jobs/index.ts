@@ -12,6 +12,8 @@ import {
   GetAllInboxesResponse,
   GetChatConfigRequest,
   GetChatConfigResponse,
+  GetDownloadFileRequest,
+  GetDownloadFileResponse,
   GetFileNamesRequest,
   GetFileNamesResponse,
   GetJobFolderNameRequest,
@@ -214,19 +216,19 @@ export const getJobFolderName = async (
   return response.data as GetJobFolderNameResponse;
 };
 
-export const downloadFileFromJob = async (
+export const downloadFile = async (
   nodeAddress: string,
   bearerToken: string,
-  filePath: string,
+  payload: GetDownloadFileRequest,
 ) => {
   const response = await httpClient.get(
     urlJoin(nodeAddress, `/v2/download_file`),
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
-      params: { path: filePath },
+      params: payload,
     },
   );
-  return response.data as string;
+  return response.data as GetDownloadFileResponse;
 };
 
 export const getLLMProviders = async (

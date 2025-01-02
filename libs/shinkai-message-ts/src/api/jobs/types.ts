@@ -113,6 +113,11 @@ export type LLMProvider = {
   allowed_message_senders: string[];
 };
 
+export type GetDownloadFileRequest = {
+  path: string;
+};
+export type GetDownloadFileResponse = string;
+
 export type GetLLMProvidersResponse = LLMProvider[];
 
 export type LLMProviderInterface = {

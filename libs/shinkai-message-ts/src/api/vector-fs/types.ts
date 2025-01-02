@@ -1,9 +1,3 @@
-export type RetrieveSourceFileRequest = {
-  path: string;
-};
-
-export type RetrieveSourceFileResponse = string;
-
 export type GetListDirectoryContentsRequest = {
   path: string;
 };

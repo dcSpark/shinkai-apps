@@ -1,5 +1,4 @@
-import { useDownloadVRFile } from '@shinkai_network/shinkai-node-state/lib/mutations/downloadVRFile/useDownloadVRFile';
-import { useRetrieveSourceFile } from '@shinkai_network/shinkai-node-state/v2/mutations/retrieveSourceFile/useRetrieveSourceFile';
+import { useGetDownloadFile } from '@shinkai_network/shinkai-node-state/v2/queries/getDownloadFile/useGetDownloadFile';
 import {
   Badge,
   Button,
@@ -31,7 +30,7 @@ export const VectorFileDetails = () => {
 
   const fileExtension = getFileExt(selectedFile?.name ?? '');
 
-  const { mutateAsync: retreiveSourceFile } = useRetrieveSourceFile({
+  const { mutateAsync: downloadFile } = useGetDownloadFile({
     onSuccess: async (response, variables) => {
       if (!fileExtension) {
         toast.error('File extension not found');
@@ -43,7 +42,7 @@ export const VectorFileDetails = () => {
         );
 
         const savePath = await save({
-          defaultPath: `${variables.filePath.split('/').pop()}.${fileExtension.toLowerCase()}`,
+          defaultPath: `${variables.path.split('/').pop()}.${fileExtension.toLowerCase()}`,
           filters: [
             { name: fileExtension, extensions: [fileExtension.toLowerCase()] },
           ],
@@ -66,29 +65,29 @@ export const VectorFileDetails = () => {
     },
   });
 
-  const { mutateAsync: downloadVRFile } = useDownloadVRFile({
-    onSuccess: async (response, variables) => {
-      const file = new Blob([response.data], {
-        type: 'application/octet-stream',
-      });
-      const dataUrl = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.readAsDataURL(file);
-      });
-
-      const path = await save({
-        defaultPath: variables.path.split('/').at(-1) + '.vrkai',
-      });
-      if (!path) return;
-      const fileContent = await fetch(dataUrl).then((response) =>
-        response.arrayBuffer(),
-      );
-      await fs.writeFile(path, new Uint8Array(fileContent), {
-        baseDir: BaseDirectory.Download,
-      });
-    },
-  });
+  // const { mutateAsync: downloadVRFile } = useDownloadVRFile({
+  //   onSuccess: async (response, variables) => {
+  //     const file = new Blob([response.data], {
+  //       type: 'application/octet-stream',
+  //     });
+  //     const dataUrl = await new Promise<string>((resolve) => {
+  //       const reader = new FileReader();
+  //       reader.onload = () => resolve(reader.result as string);
+  //       reader.readAsDataURL(file);
+  //     });
+  //
+  //     const path = await save({
+  //       defaultPath: variables.path.split('/').at(-1) + '.vrkai',
+  //     });
+  //     if (!path) return;
+  //     const fileContent = await fetch(dataUrl).then((response) =>
+  //       response.arrayBuffer(),
+  //     );
+  //     await fs.writeFile(path, new Uint8Array(fileContent), {
+  //       baseDir: BaseDirectory.Download,
+  //     });
+  //   },
+  // });
 
   return (
     <React.Fragment>
@@ -155,32 +154,33 @@ export const VectorFileDetails = () => {
         </div>
       </div>
       <SheetFooter className="flex flex-row gap-3 [&>*]:flex-1">
+        {/* Hide it til we support it in the node */}
+        {/*<Button*/}
+        {/*  onClick={async () => {*/}
+        {/*    if (!selectedFile || !auth) return;*/}
+        {/*    await downloadVRFile({*/}
+        {/*      nodeAddress: auth.node_address,*/}
+        {/*      shinkaiIdentity: auth?.shinkai_identity,*/}
+        {/*      profile: auth.profile,*/}
+        {/*      path: selectedFile.path,*/}
+        {/*      my_device_encryption_sk: auth.profile_encryption_sk,*/}
+        {/*      my_device_identity_sk: auth.profile_identity_sk,*/}
+        {/*      node_encryption_pk: auth.node_encryption_pk,*/}
+        {/*      profile_encryption_sk: auth.profile_encryption_sk,*/}
+        {/*      profile_identity_sk: auth.profile_identity_sk,*/}
+        {/*    });*/}
+        {/*  }}*/}
+        {/*  size="sm"*/}
+        {/*  variant="outline"*/}
+        {/*>*/}
+        {/*  Download Vector Resource*/}
+        {/*</Button>*/}
         <Button
           onClick={async () => {
             if (!selectedFile || !auth) return;
-            await downloadVRFile({
+            await downloadFile({
               nodeAddress: auth.node_address,
-              shinkaiIdentity: auth?.shinkai_identity,
-              profile: auth.profile,
               path: selectedFile.path,
-              my_device_encryption_sk: auth.profile_encryption_sk,
-              my_device_identity_sk: auth.profile_identity_sk,
-              node_encryption_pk: auth.node_encryption_pk,
-              profile_encryption_sk: auth.profile_encryption_sk,
-              profile_identity_sk: auth.profile_identity_sk,
-            });
-          }}
-          size="sm"
-          variant="outline"
-        >
-          Download Vector Resource
-        </Button>
-        <Button
-          onClick={async () => {
-            if (!selectedFile || !auth) return;
-            await retreiveSourceFile({
-              nodeAddress: auth.node_address,
-              filePath: selectedFile.path,
               token: auth.api_v2_key,
             });
           }}
