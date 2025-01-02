@@ -42,7 +42,7 @@ export const VectorFsItemInfo = ({
 
   return (
     <div className="flex-1 truncate text-left">
-      <div className="text-sm font-medium">{file.path}</div>
+      <div className="text-sm font-medium">{file.name}</div>
       {layout === VectorFSLayout.List && (
         <p className="text-xs font-medium text-gray-100">
           <span>{createdDatetime}</span> - <span>{fileSize}</span>

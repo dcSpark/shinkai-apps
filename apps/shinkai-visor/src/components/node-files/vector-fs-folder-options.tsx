@@ -1,31 +1,14 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils';
-import {
-  ShareFolderFormSchema,
-  shareFolderFormSchema,
-} from '@shinkai_network/shinkai-node-state/forms/vector-fs/folder';
-import { useCreateShareableFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createShareableFolder/useCreateShareableFolder';
-import { useUnshareFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/unshareFolder/useUnshareFolder';
 import { useCopyFolder } from '@shinkai_network/shinkai-node-state/v2/mutations/copyFolder/useCopyFolder';
 import { useMoveFolder } from '@shinkai_network/shinkai-node-state/v2/mutations/moveFolder/useMoveFolder';
 import { useRemoveFolder } from '@shinkai_network/shinkai-node-state/v2/mutations/removeFolder/useRemoveFolder';
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
   Button,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  Form,
-  FormField,
-  TextField,
 } from '@shinkai_network/shinkai-ui';
-import { AlertCircle } from 'lucide-react';
 import React from 'react';
-import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth/auth';
@@ -193,183 +176,6 @@ export const VectorFsFolderCopyAction = () => {
           }}
         >
           {t('vectorFs.actions.copy')}
-        </Button>
-      </DrawerFooter>
-    </React.Fragment>
-  );
-};
-
-export const VectorFsFolderCreateShareableAction = () => {
-  const { t } = useTranslation();
-  const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
-  const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
-  const auth = useAuth((state) => state.auth);
-  const shareFolderForm = useForm<ShareFolderFormSchema>({
-    resolver: zodResolver(shareFolderFormSchema),
-  });
-  const destinationFolderPath = useVectorFolderSelectionStore(
-    (state) => state.destinationFolderPath,
-  );
-  const setSelectedVectorFsTab = useVectorFsStore(
-    (state) => state.setSelectedVectorFsTab,
-  );
-
-  const { mutateAsync: createShareableFolder, isPending } =
-    useCreateShareableFolder({
-      onSuccess: () => {
-        closeDrawerMenu();
-        toast.success(t('vectorFs.success.folderShared'));
-        setSelectedVectorFsTab('shared-folders');
-      },
-      onError: () => {
-        toast.error(t('vectorFs.errors.folderShared'));
-      },
-    });
-
-  const onSubmit = async (data: ShareFolderFormSchema) => {
-    await createShareableFolder({
-      nodeAddress: auth?.node_address ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      profile: auth?.profile ?? '',
-      folderPath: selectedFolder?.path ?? '',
-      folderDescription: data.folderDescription ?? '',
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    });
-  };
-  const isIdentityLocalhost = isShinkaiIdentityLocalhost(
-    auth?.shinkai_identity ?? '',
-  );
-
-  return (
-    <React.Fragment>
-      <DrawerHeader>
-        <DrawerTitle className="line-clamp-1 font-normal">
-          {t('vectorFs.actions.share')}
-          <span className="font-medium">
-            {' '}
-            &quot;{selectedFolder?.name}&quot;
-          </span>{' '}
-        </DrawerTitle>
-        <DrawerDescription>
-          {t('vectorFs.actions.shareFolderText')}
-        </DrawerDescription>
-      </DrawerHeader>
-      <Form {...shareFolderForm}>
-        <form
-          className="mt-5 flex flex-col gap-3"
-          onSubmit={shareFolderForm.handleSubmit(onSubmit)}
-        >
-          <FormField
-            control={shareFolderForm.control}
-            name="folderDescription"
-            render={({ field }) => (
-              <TextField
-                autoFocus
-                field={field}
-                label={t('vectorFs.forms.folderDescription')}
-              />
-            )}
-          />
-          <Button
-            className="mt-4"
-            disabled={
-              destinationFolderPath === selectedFolder?.path ||
-              isIdentityLocalhost
-            }
-            isLoading={isPending}
-            type="submit"
-          >
-            {t('vectorFs.actions.share')}
-          </Button>
-
-          {isIdentityLocalhost && (
-            <Alert className="mx-auto w-[98%] shadow-lg" variant="warning">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle className="text-sm">
-                {t('vectorFs.shareFolderWarning.title')}
-              </AlertTitle>
-              <AlertDescription className="text-xs">
-                <div className="">
-                  {t('vectorFs.shareFolderWarning.text')}
-                  <a
-                    className="underline"
-                    href="https://docs.shinkai.com/for-end-users/register-identity-onchain/"
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    {t('vectorFs.shareFolderWarning.action')}{' '}
-                  </a>
-                </div>
-              </AlertDescription>
-            </Alert>
-          )}
-        </form>
-      </Form>
-    </React.Fragment>
-  );
-};
-export const VectorFsFolderUnshareAction = () => {
-  const { t, Trans } = useTranslation();
-  const selectedFolder = useVectorFsStore((state) => state.selectedFolder);
-  const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
-  const auth = useAuth((state) => state.auth);
-  const destinationFolderPath = useVectorFolderSelectionStore(
-    (state) => state.destinationFolderPath,
-  );
-
-  const { mutateAsync: unshareFolder, isPending } = useUnshareFolder({
-    onSuccess: () => {
-      closeDrawerMenu();
-      toast.success(t('vectorFs.success.folderUnshared'));
-    },
-    onError: () => {
-      toast.error(t('vectorFs.errors.folderUnshared'));
-    },
-  });
-
-  return (
-    <React.Fragment>
-      <DrawerHeader>
-        <DrawerTitle className="line-clamp-1 font-normal">
-          {t('vectorFs.actions.unshare')}
-          <span className="font-medium">
-            {' '}
-            &quot;{selectedFolder?.name}&quot;
-          </span>{' '}
-          ?
-        </DrawerTitle>
-        <DrawerDescription className="py-3">
-          <Trans
-            components={{ br: <br /> }}
-            i18nKey="vectorFs.actions.unshareFolderText"
-          />
-        </DrawerDescription>
-      </DrawerHeader>
-
-      <DrawerFooter>
-        <Button
-          className="mt-4"
-          disabled={destinationFolderPath === selectedFolder?.path}
-          isLoading={isPending}
-          onClick={async () => {
-            await unshareFolder({
-              nodeAddress: auth?.node_address ?? '',
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              profile: auth?.profile ?? '',
-              folderPath: selectedFolder?.path ?? '',
-              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-              my_device_identity_sk: auth?.profile_identity_sk ?? '',
-              node_encryption_pk: auth?.node_encryption_pk ?? '',
-              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-              profile_identity_sk: auth?.profile_identity_sk ?? '',
-            });
-          }}
-        >
-          {t('vectorFs.actions.unshare')}
         </Button>
       </DrawerFooter>
     </React.Fragment>

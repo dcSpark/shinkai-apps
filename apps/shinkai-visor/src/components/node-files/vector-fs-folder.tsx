@@ -1,6 +1,6 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { VRFolder } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import {
   buttonVariants,
   Checkbox,
@@ -17,17 +17,10 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { formatDateToUSLocaleString } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import {
-  CopyIcon,
-  FolderInputIcon,
-  Link2Off,
-  Share2,
-  TrashIcon,
-} from 'lucide-react';
+import { CopyIcon, FolderInputIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import config from '../../config';
 import { useVectorFsStore, VectorFSLayout } from './node-file-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
 
@@ -37,7 +30,7 @@ export const VectorFsFolderInfo = ({
   allowFolderNameOnly,
   layout,
 }: {
-  folder: VRFolder;
+  folder: DirectoryContent;
   totalItem?: number;
   allowFolderNameOnly?: boolean;
   layout?: VectorFSLayout;
@@ -47,8 +40,10 @@ export const VectorFsFolderInfo = ({
       <div className="truncate text-sm font-medium">{folder.name}</div>
       {layout === VectorFSLayout.List && !allowFolderNameOnly && (
         <p className="text-xs font-medium text-gray-100">
-          <span>{formatDateToUSLocaleString(folder.created_datetime)}</span> -{' '}
-          <span>{totalItem} items</span>
+          <span>
+            {formatDateToUSLocaleString(new Date(folder.created_time ?? ''))}
+          </span>{' '}
+          - <span>{totalItem} items</span>
         </p>
       )}
     </div>
@@ -63,8 +58,8 @@ const VectorFsFolder = ({
   isSharedFolder,
 }: {
   onClick: () => void;
-  folder: VRFolder;
-  handleSelectFolders: (folder: VRFolder) => void;
+  folder: DirectoryContent;
+  handleSelectFolders: (folder: DirectoryContent) => void;
   isSelectedFolder: boolean;
   isSharedFolder?: boolean;
 }) => {
@@ -85,8 +80,7 @@ const VectorFsFolder = ({
     'flex items-center justify-between gap-2 truncate rounded-lg py-3.5 pr-2 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400',
     layout === VectorFSLayout.Grid && 'bg-gray-400/30 p-2',
   );
-  const totalItem =
-    (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
+  const totalItem = (folder.children ?? [])?.length ?? 0;
 
   const FolderIcon = isSharedFolder ? SharedFolderIcon : DirectoryTypeIcon;
 
@@ -173,24 +167,6 @@ const VectorFsFolder = ({
                 });
               },
             },
-            config.isDev &&
-              (isSharedFolder
-                ? {
-                    name: t('vectorFs.actions.unshare'),
-                    icon: <Link2Off className="mr-3 h-4 w-4" />,
-                    onClick: () => {
-                      setActiveDrawerMenuOption(VectorFsFolderAction.Unshare);
-                    },
-                  }
-                : {
-                    name: t('vectorFs.actions.share'),
-                    icon: <Share2 className="mr-3 h-4 w-4" />,
-                    onClick: () => {
-                      setActiveDrawerMenuOption(
-                        VectorFsFolderAction.CreateShareable,
-                      );
-                    },
-                  }),
             {
               name: t('vectorFs.actions.delete'),
               icon: <TrashIcon className="mr-3 h-4 w-4" />,

@@ -11,6 +11,7 @@ import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import {
   formatDateToLocaleStringWithTime,
   formatDateToUSLocaleString,
+  getFileExt,
 } from '@shinkai_network/shinkai-ui/helpers';
 import { save } from '@tauri-apps/plugin-dialog';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
@@ -28,9 +29,8 @@ export const VectorFileDetails = () => {
   const size = partial({ standard: 'jedec' });
   const auth = useAuth((state) => state.auth);
 
-  const fileExtension =
-    selectedFile?.vr_header?.resource_source?.Standard?.FileRef?.file_type
-      ?.Document;
+  const fileExtension = getFileExt(selectedFile?.name ?? '');
+
   const { mutateAsync: retreiveSourceFile } = useRetrieveSourceFile({
     onSuccess: async (response, variables) => {
       if (!fileExtension) {
@@ -100,25 +100,22 @@ export const VectorFileDetails = () => {
           <div>
             <FileTypeIcon
               className="h-10 w-10"
-              type={
-                selectedFile?.vr_header?.resource_source?.Standard?.FileRef
-                  ?.file_type?.Document
-              }
+              type={getFileExt(selectedFile?.name ?? '')}
             />
           </div>
           <p className="break-words text-lg font-medium text-white">
             {selectedFile?.name}
             <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-              {selectedFile?.vr_header?.resource_source?.Standard?.FileRef
-                ?.file_type?.Document ?? '-'}
+              {getFileExt(selectedFile?.name ?? '') ?? '-'}
             </Badge>
           </p>
           <p className="text-gray-100">
             <span className="text-sm">
-              {formatDateToUSLocaleString(selectedFile?.created_datetime)}
+              {formatDateToUSLocaleString(
+                new Date(selectedFile?.created_time ?? ''),
+              )}
             </span>{' '}
-            -{' '}
-            <span className="text-sm">{size(selectedFile?.vr_size ?? 0)}</span>
+            - <span className="text-sm">{size(selectedFile?.size ?? 0)}</span>
           </p>
         </div>
         <div className="py-6">
@@ -127,14 +124,14 @@ export const VectorFileDetails = () => {
           </h2>
           <div className="divide-y divide-gray-300">
             {[
-              { label: 'Created', value: selectedFile?.created_datetime },
+              { label: 'Created', value: selectedFile?.created_time },
               {
                 label: 'Modified',
-                value: selectedFile?.last_written_datetime,
+                value: selectedFile?.modified_time,
               },
               {
                 label: 'Last Opened',
-                value: selectedFile?.last_read_datetime,
+                value: selectedFile?.modified_time,
               },
             ].map((item) => (
               <div
@@ -143,7 +140,7 @@ export const VectorFileDetails = () => {
               >
                 <span className="text-sm text-gray-100">{item.label}</span>
                 <span className="text-sm text-white">
-                  {formatDateToLocaleStringWithTime(item.value)}
+                  {formatDateToLocaleStringWithTime(new Date(item.value ?? ''))}
                 </span>
               </div>
             ))}

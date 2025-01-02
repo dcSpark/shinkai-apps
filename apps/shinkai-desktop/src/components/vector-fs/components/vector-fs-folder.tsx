@@ -23,17 +23,10 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { formatDateToUSLocaleString } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import {
-  CopyIcon,
-  FolderInputIcon,
-  Link2Off,
-  Share2,
-  TrashIcon,
-} from 'lucide-react';
+import { CopyIcon, FolderInputIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import config from '../../../config';
 import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
 
@@ -212,24 +205,6 @@ const VectorFsFolder = ({
                 });
               },
             },
-            config.isDev &&
-              (isSharedFolder
-                ? {
-                    name: t('vectorFs.actions.unshare'),
-                    icon: <Link2Off className="mr-3 h-4 w-4" />,
-                    onClick: () => {
-                      setActiveDrawerMenuOption(VectorFsFolderAction.Unshare);
-                    },
-                  }
-                : {
-                    name: t('vectorFs.actions.share'),
-                    icon: <Share2 className="mr-3 h-4 w-4" />,
-                    onClick: () => {
-                      setActiveDrawerMenuOption(
-                        VectorFsFolderAction.CreateShareable,
-                      );
-                    },
-                  }),
             {
               name: t('vectorFs.actions.delete'),
               icon: <TrashIcon className="mr-3 h-4 w-4" />,

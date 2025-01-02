@@ -3,7 +3,6 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import { useGetSearchVRItems } from '@shinkai_network/shinkai-node-state/lib/queries/getSearchVRItems/useGetSearchVRItems';
 import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
-import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/v2/queries/getMySharedFolders/useGetMySharedFolders';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -121,13 +120,6 @@ const AllFiles = () => {
     },
   );
 
-  const { data: sharedFolders } = useGetMySharedFolders({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    profile: auth?.profile ?? '',
-  });
-
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
   const [selectedFiles, setSelectedFiles] = React.useState<DirectoryContent[]>(
     [],
@@ -208,7 +200,7 @@ const AllFiles = () => {
   }, [fileInfoArray, isSortByName]);
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="relative flex h-full flex-col">
       <DropdownMenu
         modal={false}
         onOpenChange={(value) => setMenuOpened(value)}
@@ -216,7 +208,7 @@ const AllFiles = () => {
       >
         <DropdownMenuTrigger asChild>
           <Button
-            className="absolute left-auto right-0 top-0 flex gap-2 self-end px-6"
+            className="absolute -top-12 right-0 flex gap-2 self-end px-6"
             size="sm"
           >
             <PlusIcon className="h-4 w-4" /> {t('vectorFs.actions.addNew')}
@@ -331,7 +323,7 @@ const AllFiles = () => {
           className={cn(
             'grid flex-1',
             layout === VectorFSLayout.Grid &&
-              'grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5',
+              'grid-cols-2 gap-3 md:grid-cols-3',
             layout === VectorFSLayout.List &&
               'grid-cols-1 divide-y divide-gray-400',
             searchQuery && 'pt-4',
@@ -354,9 +346,6 @@ const AllFiles = () => {
                   handleSelectFolders={handleSelectFolders}
                   isSelectedFolder={selectedFolders.some(
                     (selectedFolder) => selectedFolder.path === folder.path,
-                  )}
-                  isSharedFolder={sharedFolders?.some(
-                    (sharedFolder) => sharedFolder.path === folder.path,
                   )}
                   key={index}
                   onClick={() => {

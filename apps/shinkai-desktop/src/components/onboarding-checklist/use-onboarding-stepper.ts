@@ -1,5 +1,3 @@
-// import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
-
 import { getFlatChildItems } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
@@ -46,17 +44,6 @@ export const useOnboardingSteps = () => {
     path: '/My Subscriptions',
   });
 
-  // const { data: mySharedFolders } = useGetMySharedFolders({
-  //   nodeAddress: auth?.node_address ?? '',
-  //   shinkaiIdentity: auth?.shinkai_identity ?? '',
-  //   profile: auth?.profile ?? '',
-  //   my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-  //   my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-  //   node_encryption_pk: auth?.node_encryption_pk ?? '',
-  //   profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-  //   profile_identity_sk: auth?.profile_identity_sk ?? '',
-  // });
-
   useEffect(() => {
     if (isSuccess && nodeInfo?.status === 'ok') {
       currentStepsMap.set(
@@ -102,19 +89,13 @@ export const useOnboardingSteps = () => {
   }, [inboxes]);
 
   useEffect(() => {
-    if ((subscriptionFolder?.child_folders ?? [])?.length > 0) {
+    if ((subscriptionFolder ?? [])?.length > 0) {
       currentStepsMap.set(
         GetStartedSteps.SubscribeToKnowledge,
         GetStartedStatus.Done,
       );
     }
-  }, [subscriptionFolder?.child_folders]);
-  //
-  // useEffect(() => {
-  //   if ((mySharedFolders ?? [])?.length > 0) {
-  //     currentStepsMap.set(GetStartedSteps.ShareFolder, GetStartedStatus.Done);
-  //   }
-  // }, [mySharedFolders]);
+  }, [subscriptionFolder]);
 
   return currentStepsMap;
 };

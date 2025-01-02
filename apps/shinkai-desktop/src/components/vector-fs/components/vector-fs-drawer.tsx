@@ -4,10 +4,8 @@ import { useVectorFsStore } from '../context/vector-fs-context';
 import { VectorFolderSelectionProvider } from './folder-selection-list';
 import {
   VectorFsFolderCopyAction,
-  VectorFsFolderCreateShareableAction,
   VectorFsFolderDeleteAction,
   VectorFsFolderMoveAction,
-  VectorFsFolderUnshareAction,
 } from './vector-fs-folder-options';
 import {
   AddNewFolderAction,
@@ -65,8 +63,6 @@ export enum VectorFsFolderAction {
   Move = 'move-folder',
   Copy = 'copy-folder',
   Delete = 'delete-folder',
-  CreateShareable = 'create-shareable-folder',
-  Unshare = 'unshare-folder',
 }
 
 export enum VectorFsItemAction {
@@ -103,10 +99,6 @@ const VectorFSDrawerContent = ({
       return <VectorFsFolderCopyAction />;
     case VectorFsFolderAction.Delete:
       return <VectorFsFolderDeleteAction />;
-    case VectorFsFolderAction.CreateShareable:
-      return <VectorFsFolderCreateShareableAction />;
-    case VectorFsFolderAction.Unshare:
-      return <VectorFsFolderUnshareAction />;
 
     // item actions
     case VectorFsItemAction.Move:
