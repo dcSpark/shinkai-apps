@@ -1,15 +1,16 @@
+import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import { TreeNode } from 'primereact/treenode';
 
-import { FileInfo } from '../queries/getVRPathSimplified/types';
-
 export function transformDataToTreeNodes(
-  data: FileInfo[],
+  data: DirectoryContent[],
   parentPath = '/',
 ): TreeNode[] {
   const result: TreeNode[] = [];
 
   data.forEach((fileInfo) => {
-    const pathWithSlash = fileInfo.path.startsWith('/') ? fileInfo.path : `/${fileInfo.path}`;
+    const pathWithSlash = fileInfo.path.startsWith('/')
+      ? fileInfo.path
+      : `/${fileInfo.path}`;
 
     if (fileInfo.is_directory) {
       const folderNode: TreeNode = {
@@ -34,7 +35,9 @@ export function transformDataToTreeNodes(
   return result;
 }
 
-export function getFlatChildItems(data: FileInfo[]): FileInfo[] {
-  const result: FileInfo[] = [];
+export function getFlatChildItems(
+  data: DirectoryContent[],
+): DirectoryContent[] {
+  const result: DirectoryContent[] = [];
   return result;
 }

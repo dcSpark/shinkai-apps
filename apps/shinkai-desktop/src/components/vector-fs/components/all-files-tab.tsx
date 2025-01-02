@@ -1,12 +1,8 @@
 import { HomeIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import { useGetSearchVRItems } from '@shinkai_network/shinkai-node-state/lib/queries/getSearchVRItems/useGetSearchVRItems';
-import {
-  FileInfo,
-  VRFolder,
-  VRItem,
-} from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
-import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
 import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/v2/queries/getMySharedFolders/useGetMySharedFolders';
 import {
   Breadcrumb,
@@ -89,22 +85,16 @@ const AllFiles = () => {
     isPending: isVRFilesPending,
     data: fileInfoArray,
     isSuccess: isVRFilesSuccess,
-  } = useGetVRPathSimplified(
+  } = useGetListDirectoryContents(
     {
       nodeAddress: auth?.node_address ?? '',
-      profile: auth?.profile ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      token: auth?.api_v2_key ?? '',
       path: currentGlobalPath,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
     },
     {
-      select: (data: FileInfo[]) => {
-        return data?.sort((a, b) => a.name.localeCompare(b.name));
-      },
+      // select: (data: FileInfo[]) => {
+      //   return data?.sort((a, b) => a.name.localeCompare(b.name));
+      // },
       refetchInterval: 6000,
     },
   );
@@ -139,8 +129,12 @@ const AllFiles = () => {
   });
 
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
-  const [selectedFiles, setSelectedFiles] = React.useState<VRItem[]>([]);
-  const [selectedFolders, setSelectedFolders] = React.useState<VRFolder[]>([]);
+  const [selectedFiles, setSelectedFiles] = React.useState<DirectoryContent[]>(
+    [],
+  );
+  const [selectedFolders, setSelectedFolders] = React.useState<
+    DirectoryContent[]
+  >([]);
   const [isMenuOpened, setMenuOpened] = React.useState(false);
 
   useEffect(() => {
@@ -155,7 +149,7 @@ const AllFiles = () => {
       );
     }
   }, [query]);
-  const handleSelectFiles = (file: VRItem) => {
+  const handleSelectFiles = (file: DirectoryContent) => {
     if (selectedFiles.some((selectedFile) => selectedFile.path === file.path)) {
       setSelectedFiles(selectedFiles.filter((item) => item !== file));
     } else {
@@ -163,7 +157,7 @@ const AllFiles = () => {
     }
   };
 
-  const handleSelectFolders = (folder: VRFolder) => {
+  const handleSelectFolders = (folder: DirectoryContent) => {
     if (
       selectedFolders.some(
         (selectedFolder) => selectedFolder.path === folder.path,

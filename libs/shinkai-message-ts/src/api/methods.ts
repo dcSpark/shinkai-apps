@@ -458,54 +458,6 @@ export const archiveJob = async (
   const data = response.data;
   return data;
 };
-export const retrieveVRPathSimplified = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  path = '/',
-  setupDetailsState: CredentialsPayload,
-): Promise<{
-  data: {
-    created_time: string;
-    has_embeddings: boolean;
-    is_directory: boolean;
-    modified_time: string;
-    path: string;
-  }[];
-  status: string;
-}> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.retrievePathSimplified(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    path,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/vec_fs/retrieve_path_simplified_json'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return typeof data?.data === 'string'
-    ? {
-        data: JSON.parse(data.data),
-        status: data.status,
-      }
-    : data;
-};
 
 export const retrieveVectorSearchSimplified = async (
   nodeAddress: string,

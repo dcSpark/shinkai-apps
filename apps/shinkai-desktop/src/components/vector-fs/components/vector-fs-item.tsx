@@ -1,6 +1,6 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { VRItem } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import {
   buttonVariants,
   Checkbox,
@@ -16,7 +16,10 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { CreateAIIcon, FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
-import { formatDateToUSLocaleString } from '@shinkai_network/shinkai-ui/helpers';
+import {
+  formatDateToUSLocaleString,
+  getFileExt,
+} from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { CopyIcon, FileInputIcon, TrashIcon } from 'lucide-react';
@@ -29,11 +32,11 @@ import { VectorFsItemAction } from './vector-fs-drawer';
 export const VectorFsItemInfo = ({
   file,
   createdDatetime,
-  // fileSize,
+  fileSize,
 }: {
-  file: VRItem;
+  file: DirectoryContent;
   createdDatetime: string;
-  // fileSize: string;
+  fileSize: string;
 }) => {
   const layout = useVectorFsStore((state) => state.layout);
 
@@ -42,7 +45,7 @@ export const VectorFsItemInfo = ({
       <div className="text-sm font-medium">{file.path}</div>
       {layout === VectorFSLayout.List && (
         <p className="text-xs font-medium text-gray-100">
-          <span>{createdDatetime}</span> - <span>0</span>
+          <span>{createdDatetime}</span> - <span>{fileSize}</span>
         </p>
       )}
     </div>
@@ -56,8 +59,8 @@ const VectorFsItem = ({
   isSelectedFile,
 }: {
   onClick: () => void;
-  file: VRItem;
-  handleSelectFiles: (file: VRItem) => void;
+  file: DirectoryContent;
+  handleSelectFiles: (file: DirectoryContent) => void;
   isSelectedFile: boolean;
 }) => {
   const { t } = useTranslation();
@@ -80,7 +83,7 @@ const VectorFsItem = ({
   const createdDatetime = formatDateToUSLocaleString(
     new Date(file.created_time),
   );
-  // const fileSize = size(file.size);
+  const fileSize = size(file.size);
 
   if (isVRSelectionActive) {
     return (
@@ -96,11 +99,11 @@ const VectorFsItem = ({
           className="flex flex-1 items-center gap-3"
           htmlFor={`item-${file.path}`}
         >
-          <FileTypeIcon type={file?.extension ?? ''} />
+          <FileTypeIcon type={getFileExt(file.name)} />
           <VectorFsItemInfo
             createdDatetime={createdDatetime}
             file={file}
-            // fileSize={fileSize}
+            fileSize={fileSize}
           />
         </label>
       </div>
@@ -109,11 +112,11 @@ const VectorFsItem = ({
 
   return (
     <button className={wrapperClassname} onClick={onClick}>
-      <FileTypeIcon type={file?.extension ?? ''} />
+      <FileTypeIcon type={getFileExt(file.name)} />
       <VectorFsItemInfo
         createdDatetime={createdDatetime}
         file={file}
-        // fileSize={fileSize}
+        fileSize={fileSize}
       />
 
       <TooltipProvider delayDuration={0}>

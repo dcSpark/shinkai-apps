@@ -4,6 +4,23 @@ export type RetrieveSourceFileRequest = {
 
 export type RetrieveSourceFileResponse = string;
 
+export type GetListDirectoryContentsRequest = {
+  path: string;
+};
+
+export type DirectoryContent = {
+  children: null | DirectoryContent[];
+  created_time: string;
+  has_embeddings: boolean;
+  is_directory: boolean;
+  modified_time: string;
+  name: string;
+  path: string;
+  size: number;
+};
+
+export type GetListDirectoryContentsResponse = DirectoryContent[];
+
 export type MoveFolderRequest = {
   origin_path: string;
   destination_path: string;

@@ -1,6 +1,6 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { VRFolder } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import {
   buttonVariants,
   Checkbox,
@@ -21,7 +21,7 @@ import {
   DirectoryTypeIcon,
   SharedFolderIcon,
 } from '@shinkai_network/shinkai-ui/assets';
-// import { formatDateToUSLocaleString } from '@shinkai_network/shinkai-ui/helpers';
+import { formatDateToUSLocaleString } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   CopyIcon,
@@ -43,7 +43,7 @@ export const VectorFsFolderInfo = ({
   allowFolderNameOnly,
   layout,
 }: {
-  folder: VRFolder;
+  folder: DirectoryContent;
   totalItem?: number;
   allowFolderNameOnly?: boolean;
   layout?: VectorFSLayout;
@@ -53,8 +53,10 @@ export const VectorFsFolderInfo = ({
       <div className="truncate text-sm font-medium">{folder.name}</div>
       {layout === VectorFSLayout.List && !allowFolderNameOnly && (
         <p className="text-xs font-medium text-gray-100">
-          {/*<span>{formatDateToUSLocaleString(folder.created_datetime)}</span> -{' '}*/}
-          <span>{totalItem} items</span>
+          <span>
+            {formatDateToUSLocaleString(new Date(folder.created_time ?? ''))}
+          </span>{' '}
+          - <span>{totalItem} items</span>
         </p>
       )}
     </div>
@@ -69,8 +71,8 @@ const VectorFsFolder = ({
   isSharedFolder,
 }: {
   onClick: () => void;
-  folder: VRFolder;
-  handleSelectFolders: (folder: VRFolder) => void;
+  folder: DirectoryContent;
+  handleSelectFolders: (folder: DirectoryContent) => void;
   isSelectedFolder: boolean;
   isSharedFolder?: boolean;
 }) => {
@@ -91,9 +93,7 @@ const VectorFsFolder = ({
     'flex items-center justify-between gap-2 truncate rounded-lg py-3.5 pr-2 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400',
     layout === VectorFSLayout.Grid && 'bg-gray-400/30 p-2',
   );
-  const totalItem =
-    // (folder.child_folders?.length ?? 0) + (folder.child_items?.length ?? 0);
-    0;
+  const totalItem = (folder.children ?? []).length;
 
   const FolderIcon = isSharedFolder ? SharedFolderIcon : DirectoryTypeIcon;
 

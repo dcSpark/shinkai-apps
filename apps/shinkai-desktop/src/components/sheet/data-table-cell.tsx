@@ -7,8 +7,8 @@ import {
   ColumnType,
 } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
 import { useSetCellSheet } from '@shinkai_network/shinkai-node-state/lib/mutations/setCellSheet/useSetCellSheet';
-import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
+import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
 import {
   Badge,
   Button,
@@ -387,16 +387,10 @@ export const VectorFsScopeDrawer = ({
   const auth = useAuth((state) => state.auth);
 
   const { data: fileInfoArray, isSuccess: isVRFilesSuccess } =
-    useGetVRPathSimplified({
+    useGetListDirectoryContents({
       nodeAddress: auth?.node_address ?? '',
-      profile: auth?.profile ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      token: auth?.api_v2_key ?? '',
       path: '/',
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
     });
 
   useEffect(() => {
