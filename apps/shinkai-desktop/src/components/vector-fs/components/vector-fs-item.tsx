@@ -46,7 +46,7 @@ export const VectorFsItemInfo = ({
         <span className="text-sm font-medium">{file.name}</span>
         {!!file.has_embeddings && (
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger className="rounded-lg border-cyan-600 bg-cyan-900/20 p-1">
               <svg
                 className="size-4 text-cyan-400"
                 fill={'none'}
