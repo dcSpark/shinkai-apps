@@ -139,6 +139,7 @@
     "unselectAll": "取消全选",
     "update": "更新",
     "upload": "上传",
+    "uploadAFileDescription": "支持图像、PDF、CSV、TXT、XLSX等多种格式",
     "uploadFile": "上传文件"
   },
   "desktop": {
@@ -506,6 +507,9 @@
   "subscriptions": {
     "browse": "浏览公共订阅",
     "label": "我的订阅"
+  },
+  "tasks": {
+    "runNow": "立即运行"
   },
   "tools": {
     "emptyState": {

@@ -141,6 +141,7 @@
     "unselectAll": "Deseleccionar todo",
     "update": "Actualizar",
     "upload": "Subir",
+    "uploadAFileDescription": "Admite imágenes, PDF, CSV, TXT, XLSX y más formatos",
     "uploadFile": "Subir un Archivo"
   },
   "desktop": {
@@ -508,6 +509,9 @@
   "subscriptions": {
     "browse": "Explorar Suscripciones Públicas",
     "label": "Mis Suscripciones"
+  },
+  "tasks": {
+    "runNow": "Ejecutar ahora"
   },
   "tools": {
     "emptyState": {

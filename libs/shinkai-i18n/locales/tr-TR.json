@@ -139,6 +139,7 @@
     "unselectAll": "Hepsini Seçme",
     "update": "Güncelle",
     "upload": "Yükle",
+    "uploadAFileDescription": "Görüntüler, PDF, CSV, TXT, XLSX ve daha fazla formatı destekler",
     "uploadFile": "Bir Dosya Yükle"
   },
   "desktop": {
@@ -506,6 +507,9 @@
   "subscriptions": {
     "browse": "Halka Açık Abonelikleri Gözat",
     "label": "Aboneliklerim"
+  },
+  "tasks": {
+    "runNow": "Şimdi Çalıştır"
   },
   "tools": {
     "emptyState": {

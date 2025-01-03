@@ -20,7 +20,6 @@ export const useGetJobScope = (
 ) => {
   const response = useQuery({
     queryKey: [FunctionKeyV2.GET_JOB_SCOPE, input],
-
     queryFn: () => getJobScope(input),
   });
   return response;

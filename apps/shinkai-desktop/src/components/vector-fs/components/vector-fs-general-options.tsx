@@ -34,7 +34,6 @@ import { useForm } from 'react-hook-form';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { allowedFileExtensions } from '../../../lib/constants';
 import { useAnalytics } from '../../../lib/posthog-provider';
 import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
@@ -209,9 +208,8 @@ export const UploadVRFilesAction = () => {
                   <div className="flex flex-col space-y-1">
                     <div className="flex items-center justify-center">
                       <FileUploader
-                        accept={allowedFileExtensions.join(',')}
                         allowMultiple
-                        descriptionText={`Supports ${allowedFileExtensions.join(', ')} `}
+                        descriptionText={t('common.uploadAFileDescription')}
                         onChange={(acceptedFiles) => {
                           field.onChange(acceptedFiles);
                         }}

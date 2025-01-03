@@ -430,6 +430,8 @@ export default {
     clearSearch: 'Clear Search',
     searchPlaceholder: 'Search...',
     uploadFile: 'Upload a File',
+    uploadAFileDescription:
+      'Supports Images, PDF, CSV, TXT, XLSX and more formats',
     folders: 'Folders',
     folderWithCount_one: '{{count}} Folder',
     folderWithCount_other: '{{count}} Folders',
@@ -627,13 +629,16 @@ export default {
     description: 'Connect to {{provider}} to use this tool',
     signIn: 'Sign in with {{provider}}',
     success: 'Connection successful!',
-    successDescription: 'This window will close automatically in {{countdown}} seconds...',
-    navigateToProvider: 'Navigate and follow the authentication steps to continue.',
+    successDescription:
+      'This window will close automatically in {{countdown}} seconds...',
+    navigateToProvider:
+      'Navigate and follow the authentication steps to continue.',
     processing: 'Processing...',
     goToProvider: 'Go to {{provider}}',
     close: 'Close',
     connectionRequired: 'Connection Required',
-    connectionRequiredDescription: 'To use this tool, please connect your {{provider}} account.',
+    connectionRequiredDescription:
+      'To use this tool, please connect your {{provider}} account.',
     connectNow: 'Connect Now',
   },
 };

@@ -392,6 +392,7 @@
     "clearSearch": "Clear Search",
     "searchPlaceholder": "Search...",
     "uploadFile": "Upload a File",
+    "uploadAFileDescription": "Supports Images, PDF, CSV, TXT, XLSX and more formats",
     "folders": "Folders",
     "folderWithCount_one": "{{count}} Folder",
     "folderWithCount_other": "{{count}} Folders",
@@ -497,6 +498,9 @@
       "updateAgent": "Error updating AI",
       "deleteAgent": "Error deleting AI"
     }
+  },
+  "tasks": {
+    "runNow": "Run Now"
   },
   "ollama": {
     "version": "Ollama Version",

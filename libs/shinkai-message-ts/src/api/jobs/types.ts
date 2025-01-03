@@ -188,6 +188,7 @@ export type UpdateLLMProviderResponse = string;
 export type RemoveLLMProviderRequest = {
   llm_provider_id: string;
 };
+
 export type Inbox = {
   inbox_id: string;
   custom_name: string;

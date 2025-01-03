@@ -139,6 +139,7 @@
     "unselectAll": "すべて選択解除",
     "update": "更新",
     "upload": "アップロード",
+    "uploadAFileDescription": "画像、PDF、CSV、TXT、XLSXなどの形式をサポートしています",
     "uploadFile": "ファイルをアップロード"
   },
   "desktop": {
@@ -506,6 +507,9 @@
   "subscriptions": {
     "browse": "パブリックサブスクリプションを閲覧",
     "label": "マイサブスクリプション"
+  },
+  "tasks": {
+    "runNow": "今すぐ実行"
   },
   "tools": {
     "emptyState": {

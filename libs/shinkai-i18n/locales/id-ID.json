@@ -139,6 +139,7 @@
     "unselectAll": "Batalkan Pilihan Semua",
     "update": "Perbarui",
     "upload": "Unggah",
+    "uploadAFileDescription": "Mendukung gambar, PDF, CSV, TXT, XLSX, dan format lainnya",
     "uploadFile": "Unggah Berkas"
   },
   "desktop": {
@@ -506,6 +507,9 @@
   "subscriptions": {
     "browse": "Telusuri Langganan Publik",
     "label": "Langganan Saya"
+  },
+  "tasks": {
+    "runNow": "Jalankan Sekarang"
   },
   "tools": {
     "emptyState": {
