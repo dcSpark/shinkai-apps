@@ -64,7 +64,8 @@ export const VectorFsItemMoveAction = () => {
               nodeAddress: auth?.node_address ?? '',
               token: auth?.api_v2_key ?? '',
               originPath: selectedFile?.path ?? '',
-              destinationPath: destinationFolderPath ?? '/',
+              destinationPath:
+                `${destinationFolderPath}/${selectedFile?.name}` ?? '/',
             });
           }}
         >
@@ -171,7 +172,8 @@ export const VectorFsItemCopyAction = () => {
               nodeAddress: auth?.node_address ?? '',
               token: auth?.api_v2_key ?? '',
               originPath: selectedFile?.path ?? '',
-              destinationPath: destinationFolderPath ?? '/',
+              destinationPath:
+                `${destinationFolderPath}/${selectedFile?.name}` ?? '/',
             });
           }}
         >

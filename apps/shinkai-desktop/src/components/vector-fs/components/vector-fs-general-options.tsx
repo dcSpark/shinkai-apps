@@ -59,7 +59,6 @@ export const AddNewFolderAction = () => {
     isSuccess,
   } = useCreateFolder({
     onSuccess: () => {
-      toast.success(t('vectorFs.success.folderCreated'));
       createFolderForm.reset();
       closeDrawerMenu();
     },

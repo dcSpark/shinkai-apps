@@ -134,6 +134,7 @@ export const FolderSelectionList = () => {
                       const buildPath = splitCurrentPath
                         .slice(0, idx + 1)
                         .join('/');
+
                       setCurrentSelectedFolderPath('/' + buildPath);
                       setDestinationFolderPath(buildPath);
                     }}
