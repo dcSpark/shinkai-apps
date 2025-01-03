@@ -7,30 +7,18 @@ export function transformDataToTreeNodes(
 ): TreeNode[] {
   const result: TreeNode[] = [];
 
-  data.forEach((fileInfo) => {
-    const pathWithSlash = fileInfo.path.startsWith('/')
-      ? fileInfo.path
-      : `/${fileInfo.path}`;
-
-    if (fileInfo.is_directory) {
-      const folderNode: TreeNode = {
-        key: pathWithSlash,
-        label: fileInfo.name,
-        data: fileInfo,
-        icon: 'icon-folder',
-        children: [], // Assuming you will populate this with child nodes
-      };
-      result.push(folderNode);
-    } else {
-      const itemNode: TreeNode = {
-        key: pathWithSlash,
-        label: fileInfo.name,
-        data: fileInfo,
-        icon: 'icon-file',
-      };
-      result.push(itemNode);
-    }
-  });
+  for (const item of data ?? []) {
+    const itemNode: TreeNode = {
+      key: item.path,
+      label: item.name,
+      data: item,
+      icon: item.is_directory ? 'icon-folder' : 'icon-file',
+      children: item.is_directory
+        ? transformDataToTreeNodes(item.children ?? [], item.path)
+        : undefined,
+    };
+    result.push(itemNode);
+  }
 
   return result;
 }
