@@ -47,7 +47,9 @@ export const VectorFsItemInfo = ({
   return (
     <div className="flex-1 truncate text-left">
       <div className="flex items-center gap-2">
-        <span className="text-sm font-medium">{file.name}</span>
+        <span className="max-w-sm truncate text-sm font-medium">
+          {file.name}
+        </span>
         {!!file.has_embeddings && (
           <Tooltip>
             <TooltipTrigger className="rounded-lg border-cyan-600 bg-cyan-900/20 p-1">
