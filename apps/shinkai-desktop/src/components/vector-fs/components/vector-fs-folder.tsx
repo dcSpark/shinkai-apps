@@ -27,6 +27,7 @@ import { CopyIcon, FolderInputIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import config from '../../../config';
 import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
 import { VectorFsFolderAction } from './vector-fs-drawer';
 
@@ -194,7 +195,7 @@ const VectorFsFolder = ({
                 setActiveDrawerMenuOption(VectorFsFolderAction.Copy);
               },
             },
-            {
+            config.isDev && {
               name: t('vectorFs.actions.searchWithinFolder'),
               icon: <AISearchContentIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
