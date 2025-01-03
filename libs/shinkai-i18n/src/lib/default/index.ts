@@ -141,6 +141,7 @@ export default {
       addNew: 'Add New',
       createFolder: 'Add New Folder',
       uploadFile: 'File Upload',
+      createTextFile: 'Create Text File',
       share: 'Share',
       unshare: 'Unshare',
       move: 'Move',
@@ -157,6 +158,7 @@ export default {
     forms: {
       folderName: 'Folder Name',
       folderDescription: 'Folder Description',
+      textFileName: 'Title',
     },
     pending: {
       filesUploading: 'Uploading files',

@@ -3,6 +3,8 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   CreateFolderFormSchema,
   createFolderFormSchema,
+  CreateTextFileFormSchema,
+  createTextFileFormSchema,
   SaveWebpageToVectorFsFormSchema,
   saveWebpageToVectorFsFormSchema,
   UploadVRFilesFormSchema,
@@ -29,13 +31,16 @@ import {
   DirectoryTypeIcon,
   FileTypeIcon,
 } from '@shinkai_network/shinkai-ui/assets';
-import { useEffect } from 'react';
+import { FileType2Icon } from 'lucide-react';
+import { PrismEditor } from 'prism-react-editor';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAnalytics } from '../../../lib/posthog-provider';
 import { useAuth } from '../../../store/auth';
+import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import { useVectorFsStore } from '../context/vector-fs-context';
 import {
   FolderSelectionList,
@@ -345,6 +350,112 @@ export const SaveWebpageToVectorFsAction = () => {
             type="submit"
           >
             Save
+          </Button>
+        </form>
+      </Form>
+    </>
+  );
+};
+
+// create a new text file
+export const CreateTextFileAction = () => {
+  const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
+  const currentGlobalPath = useVectorFsStore(
+    (state) => state.currentGlobalPath,
+  );
+
+  const textFileContentRef = useRef<PrismEditor | null>(null);
+
+  const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
+  const createTextFileForm = useForm<CreateTextFileFormSchema>({
+    resolver: zodResolver(createTextFileFormSchema),
+  });
+
+  const { isPending, mutateAsync: uploadVRFiles } = useUploadVRFiles({
+    onSuccess: (_) => {
+      createTextFileForm.reset();
+    },
+    onError: (error) => {
+      toast.error(t('vectorFs.errors.filesUploaded'), {
+        id: 'uploading-VR-files',
+        description: error.message,
+      });
+    },
+  });
+
+  const onSubmit = async (values: CreateTextFileFormSchema) => {
+    if (!auth) return;
+    closeDrawerMenu();
+    const textFileContent = textFileContentRef.current?.value;
+    if (!textFileContent) {
+      toast.error('Please enter file content');
+      return;
+    }
+
+    const textFile = new File([textFileContent], `${values.name}.txt`, {
+      type: 'text/plain',
+    });
+
+    await uploadVRFiles({
+      nodeAddress: auth?.node_address ?? '',
+      destinationPath: currentGlobalPath,
+      files: [textFile],
+      token: auth?.api_v2_key ?? '',
+    });
+  };
+
+  return (
+    <>
+      <SheetHeader>
+        <SheetTitle className="flex flex-col items-start gap-1">
+          <FileType2Icon className="h-8 w-8" />
+          {t('vectorFs.actions.createTextFile')}
+        </SheetTitle>
+      </SheetHeader>
+      <Form {...createTextFileForm}>
+        <form
+          className="flex h-[calc(100vh-100px)] flex-col gap-8 pt-4"
+          onSubmit={createTextFileForm.handleSubmit(onSubmit)}
+        >
+          <FormField
+            control={createTextFileForm.control}
+            name="name"
+            render={({ field }) => (
+              <TextField
+                autoFocus
+                field={{
+                  ...field,
+                  onKeyDown: (event) => {
+                    if (
+                      event.key === 'Enter' &&
+                      (event.metaKey || event.ctrlKey)
+                    ) {
+                      createTextFileForm.handleSubmit(onSubmit)();
+                    }
+                  },
+                }}
+                label={t('vectorFs.forms.textFileName')}
+              />
+            )}
+          />
+          <div className="flex flex-1 flex-col space-y-2">
+            <p className="text-gray-80 text-xs font-medium">Content</p>
+            <ToolCodeEditor
+              language="txt"
+              name={'text-file-content'}
+              ref={textFileContentRef}
+              style={{ height: '100%' }}
+              value={''}
+            />
+          </div>
+          <Button
+            className="w-full"
+            disabled={isPending}
+            isLoading={isPending}
+            type="submit"
+          >
+            {t('vectorFs.actions.createTextFile')}
           </Button>
         </form>
       </Form>

@@ -37,7 +37,13 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { ChevronRight, PlusIcon, SearchIcon, XIcon } from 'lucide-react';
+import {
+  ChevronRight,
+  FileType2Icon,
+  PlusIcon,
+  SearchIcon,
+  XIcon,
+} from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -183,6 +189,15 @@ const AllFiles = () => {
       disabled: currentGlobalPath === '/',
       onClick: () => {
         setActiveDrawerMenuOption(VectorFsGlobalAction.GenerateFromDocument);
+      },
+    },
+
+    {
+      name: t('vectorFs.actions.createTextFile'),
+      icon: <FileType2Icon className="mr-2 h-3.5 w-3.5" />,
+      disabled: currentGlobalPath === '/',
+      onClick: () => {
+        setActiveDrawerMenuOption(VectorFsGlobalAction.CreateTextFile);
       },
     },
   ];
