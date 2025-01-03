@@ -166,7 +166,6 @@ export const SetJobScopeDrawer = () => {
                     vector_fs_folders: Array.from(
                       selectedFolderKeysRef.values(),
                     ),
-                    vector_search_mode: [],
                   },
                 });
               }
