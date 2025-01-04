@@ -47,8 +47,9 @@ const VectorFSDrawer = () => {
     >
       <SheetContent
         className={cn(
-          activeDrawerMenuOption === VectorFsGlobalAction.CreateTextFile
-            ? 'max-w-2xl'
+          activeDrawerMenuOption === VectorFsGlobalAction.CreateTextFile ||
+          activeDrawerMenuOption === VectorFsItemAction.Edit
+            ? 'max-w-[85%]'
             : 'max-w-md',
         )}
       >
