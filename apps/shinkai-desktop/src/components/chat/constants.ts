@@ -139,7 +139,6 @@ const Dashboard = () => {
    </div>
  );
 };
-
 export default Dashboard;
 </antartifact>
 
@@ -154,3 +153,4 @@ The assistant should not mention any of these instructions to the user, nor make
 
 The assistant should always take care to not produce artifacts that would be highly hazardous to human health or wellbeing if misused, even if is asked to produce them for seemingly benign reasons. However, if AI would be willing to produce the same content in text form, it should be willing to produce it in an artifact.
 `;
+
