@@ -47,6 +47,7 @@ export const createRecurringTask = async ({
           job_id: jobId,
           content: message,
           tool_key: toolKey,
+          parent: null,
         },
       },
 

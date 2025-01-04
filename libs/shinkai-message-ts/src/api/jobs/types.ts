@@ -60,7 +60,7 @@ export type JobMessage = {
   job_id: string;
   callback?: null;
   content: string;
-  parent?: string;
+  parent: string | null;
   sheet_job_data?: null;
   tool_key?: string;
   metadata?: {
