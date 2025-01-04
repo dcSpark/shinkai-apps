@@ -17,6 +17,7 @@ import { VectorFileDetails } from './vector-fs-item-detail';
 import {
   VectorFsItemCopyAction,
   VectorFsItemDeleteAction,
+  VectorFsItemEditTextFileAction,
   VectorFsItemMoveAction,
 } from './vector-fs-item-options';
 
@@ -70,6 +71,7 @@ export enum VectorFsFolderAction {
 export enum VectorFsItemAction {
   Move = 'move-item',
   Copy = 'copy-item',
+  Edit = 'edit-item', // txt files
   Delete = 'delete-item',
 }
 
@@ -109,6 +111,8 @@ const VectorFSDrawerContent = ({
       return <VectorFsItemMoveAction />;
     case VectorFsItemAction.Copy:
       return <VectorFsItemCopyAction />;
+    case VectorFsItemAction.Edit:
+      return <VectorFsItemEditTextFileAction />;
     case VectorFsItemAction.Delete:
       return <VectorFsItemDeleteAction />;
 

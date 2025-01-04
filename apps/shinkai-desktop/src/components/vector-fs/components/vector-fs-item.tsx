@@ -26,7 +26,7 @@ import {
 } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
-import { CopyIcon, FileInputIcon, TrashIcon } from 'lucide-react';
+import { CopyIcon, Edit2Icon, FileInputIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -196,6 +196,13 @@ const VectorFsItem = ({
           className="w-[160px] border bg-gray-500 px-2.5 py-2"
         >
           {[
+            {
+              name: t('vectorFs.actions.edit'),
+              icon: <Edit2Icon className="mr-3 h-4 w-4" />,
+              onClick: () => {
+                setActiveDrawerMenuOption(VectorFsItemAction.Edit);
+              },
+            },
             {
               name: t('vectorFs.actions.move'),
               icon: <FileInputIcon className="mr-3 h-4 w-4" />,

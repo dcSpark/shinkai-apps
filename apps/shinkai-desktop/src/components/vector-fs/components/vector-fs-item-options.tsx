@@ -2,13 +2,14 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useCopyFsItem } from '@shinkai_network/shinkai-node-state/v2/mutations/copyFsItem/useCopyFsItem';
 import { useMoveFsItem } from '@shinkai_network/shinkai-node-state/v2/mutations/moveFsItem/useMoveFsItem';
 import { useRemoveFsItem } from '@shinkai_network/shinkai-node-state/v2/mutations/removeFsItem/useRemoveFsItem';
+import { useGetDownloadFile } from '@shinkai_network/shinkai-node-state/v2/queries/getDownloadFile/useGetDownloadFile';
 import {
   Button,
   DrawerFooter,
   SheetHeader,
   SheetTitle,
 } from '@shinkai_network/shinkai-ui';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
@@ -17,6 +18,7 @@ import {
   FolderSelectionList,
   useVectorFolderSelectionStore,
 } from './folder-selection-list';
+import { CreateTextFileAction } from './vector-fs-general-options';
 
 export const VectorFsItemMoveAction = () => {
   const { t } = useTranslation();
@@ -182,4 +184,45 @@ export const VectorFsItemCopyAction = () => {
       </DrawerFooter>
     </React.Fragment>
   );
+};
+
+export const VectorFsItemEditTextFileAction = () => {
+  const auth = useAuth((state) => state.auth);
+  const selectedFile = useVectorFsStore((state) => state.selectedFile);
+
+  const fileNameWithoutExtension = selectedFile?.name?.split('.')?.[0] ?? '';
+
+  const [initialValues, setInitialValues] = React.useState({
+    name: fileNameWithoutExtension,
+    path: selectedFile?.path ?? '',
+    content: '',
+  });
+
+  const { mutateAsync: downloadFile } = useGetDownloadFile({});
+
+  useEffect(() => {
+    const fetchFileContent = async () => {
+      if (selectedFile && auth) {
+        try {
+          const fileContentBase64 = await downloadFile({
+            nodeAddress: auth.node_address,
+            token: auth.api_v2_key,
+            path: selectedFile.path,
+          });
+          const fileContent = atob(fileContentBase64);
+          setInitialValues({
+            name: fileNameWithoutExtension,
+            path: selectedFile.path,
+            content: fileContent,
+          });
+        } catch (error) {
+          console.error('Error downloading file content:', error);
+        }
+      }
+    };
+
+    fetchFileContent();
+  }, [selectedFile, auth, downloadFile]);
+
+  return <CreateTextFileAction initialValues={initialValues} mode="edit" />;
 };

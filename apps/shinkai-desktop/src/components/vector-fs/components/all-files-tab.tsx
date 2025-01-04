@@ -97,9 +97,9 @@ const AllFiles = () => {
       path: currentGlobalPath,
     },
     {
-      // select: (data: FileInfo[]) => {
-      //   return data?.sort((a, b) => a.name.localeCompare(b.name));
-      // },
+      select: (data) => {
+        return data?.sort((a, b) => a.name.localeCompare(b.name));
+      },
       refetchInterval: 6000,
     },
   );

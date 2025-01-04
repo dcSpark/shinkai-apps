@@ -524,7 +524,10 @@
       "addNew": "添加新文件",
       "copy": "复制",
       "createFolder": "添加新文件夹",
+      "createTextFile": "创建文本文件",
       "delete": "删除",
+      "edit": "编辑",
+      "editTextFile": "编辑文本文件",
       "move": "移动",
       "searchWithinFolder": "文件夹内搜索",
       "share": "分享",
@@ -558,7 +561,8 @@
     "filesSelected": "{{count}} 已选择",
     "forms": {
       "folderDescription": "文件夹描述",
-      "folderName": "文件夹名称"
+      "folderName": "文件夹名称",
+      "textFileName": "标题"
     },
     "home": "主页",
     "label": "我的AI文件资源管理器",

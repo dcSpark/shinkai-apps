@@ -11,6 +11,7 @@ import {
   uploadVRFilesFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/vector-fs/folder';
 import { useCreateFolder } from '@shinkai_network/shinkai-node-state/v2/mutations/createFolder/useCreateFolder';
+import { useRemoveFsItem } from '@shinkai_network/shinkai-node-state/v2/mutations/removeFsItem/useRemoveFsItem';
 import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadVRFiles/useUploadVRFiles';
 import {
   Button,
@@ -357,8 +358,13 @@ export const SaveWebpageToVectorFsAction = () => {
   );
 };
 
-// create a new text file
-export const CreateTextFileAction = () => {
+export const CreateTextFileAction = ({
+  initialValues,
+  mode = 'create',
+}: {
+  initialValues?: { name: string; content: string; path: string };
+  mode?: 'create' | 'edit';
+}) => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const currentGlobalPath = useVectorFsStore(
@@ -370,7 +376,14 @@ export const CreateTextFileAction = () => {
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
   const createTextFileForm = useForm<CreateTextFileFormSchema>({
     resolver: zodResolver(createTextFileFormSchema),
+    defaultValues: initialValues,
   });
+
+  useEffect(() => {
+    if (initialValues) {
+      createTextFileForm.setValue('name', initialValues.name);
+    }
+  }, [initialValues, createTextFileForm]);
 
   const { isPending, mutateAsync: uploadVRFiles } = useUploadVRFiles({
     onSuccess: (_) => {
@@ -384,25 +397,48 @@ export const CreateTextFileAction = () => {
     },
   });
 
+  const { mutateAsync: deleteVrItem, isPending: isRemovingItem } =
+    useRemoveFsItem({
+      onError: () => {
+        toast.error(t('vectorFs.errors.fileDeleted'));
+      },
+    });
+
   const onSubmit = async (values: CreateTextFileFormSchema) => {
     if (!auth) return;
-    closeDrawerMenu();
     const textFileContent = textFileContentRef.current?.value;
     if (!textFileContent) {
       toast.error('Please enter file content');
       return;
     }
-
     const textFile = new File([textFileContent], `${values.name}.txt`, {
       type: 'text/plain',
     });
 
-    await uploadVRFiles({
-      nodeAddress: auth?.node_address ?? '',
-      destinationPath: currentGlobalPath,
-      files: [textFile],
-      token: auth?.api_v2_key ?? '',
-    });
+    if (mode === 'create') {
+      await uploadVRFiles({
+        nodeAddress: auth?.node_address ?? '',
+        destinationPath: currentGlobalPath,
+        files: [textFile],
+        token: auth?.api_v2_key ?? '',
+      });
+    }
+
+    if (mode === 'edit') {
+      await deleteVrItem({
+        nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
+        itemPath: initialValues?.path ?? '',
+      });
+      await uploadVRFiles({
+        nodeAddress: auth?.node_address ?? '',
+        destinationPath: currentGlobalPath,
+        files: [textFile],
+        token: auth?.api_v2_key ?? '',
+      });
+    }
+
+    closeDrawerMenu();
   };
 
   return (
@@ -410,12 +446,13 @@ export const CreateTextFileAction = () => {
       <SheetHeader>
         <SheetTitle className="flex flex-col items-start gap-1">
           <FileType2Icon className="h-8 w-8" />
-          {t('vectorFs.actions.createTextFile')}
+          {mode === 'create' && t('vectorFs.actions.createTextFile')}
+          {mode === 'edit' && t('vectorFs.actions.editTextFile')}
         </SheetTitle>
       </SheetHeader>
       <Form {...createTextFileForm}>
         <form
-          className="flex h-[calc(100vh-100px)] flex-col gap-8 pt-4"
+          className="flex h-[calc(100vh-110px)] flex-col gap-8 pt-4"
           onSubmit={createTextFileForm.handleSubmit(onSubmit)}
         >
           <FormField
@@ -439,23 +476,22 @@ export const CreateTextFileAction = () => {
               />
             )}
           />
-          <div className="flex flex-1 flex-col space-y-2">
-            <p className="text-gray-80 text-xs font-medium">Content</p>
+          <div className="flex flex-1 flex-col space-y-2 overflow-hidden">
+            <p className="text-gray-80 text-xs font-semibold">Content</p>
             <ToolCodeEditor
               language="txt"
-              name={'text-file-content'}
               ref={textFileContentRef}
-              style={{ height: '100%' }}
-              value={''}
+              value={initialValues?.content ?? ''}
             />
           </div>
           <Button
             className="w-full"
-            disabled={isPending}
-            isLoading={isPending}
+            disabled={isPending || isRemovingItem}
+            isLoading={isPending || isRemovingItem}
             type="submit"
           >
-            {t('vectorFs.actions.createTextFile')}
+            {mode === 'create' && t('vectorFs.actions.createTextFile')}
+            {mode === 'edit' && t('vectorFs.actions.editTextFile')}
           </Button>
         </form>
       </Form>
