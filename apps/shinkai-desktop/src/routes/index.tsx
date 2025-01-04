@@ -1,7 +1,3 @@
-import { PlusIcon } from '@radix-ui/react-icons';
-import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
-import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { TooltipProvider } from '@shinkai_network/shinkai-ui';
 import { listen } from '@tauri-apps/api/event';

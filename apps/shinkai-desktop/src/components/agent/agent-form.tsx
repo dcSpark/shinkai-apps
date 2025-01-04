@@ -105,8 +105,6 @@ function AgentForm({ mode }: AgentFormProps) {
   const selectedFileKeysRef = useSetJobScope((state) => state.selectedFileKeysRef);
   const selectedFolderKeysRef = useSetJobScope((state) => state.selectedFolderKeysRef);
   const onSelectedKeysChange = useSetJobScope((state) => state.onSelectedKeysChange);
-  const setFileKey = useSetJobScope((state) => state.setFileKey);
-  const setFolderKey = useSetJobScope((state) => state.setFolderKey);
 
   const { data: agent } = useGetAgent({
     agentId: agentId ?? '',
@@ -194,7 +192,6 @@ function AgentForm({ mode }: AgentFormProps) {
       if (agent.scope?.vector_fs_items?.length || agent.scope?.vector_fs_folders?.length) {
         const selectedVRFilesPathMap = agent.scope.vector_fs_items.reduce<Record<string, { checked: boolean }>>(
           (acc: Record<string, { checked: boolean }>, filePath: string) => {
-            setFileKey(filePath, filePath);
             acc[filePath] = {
               checked: true,
             };
@@ -205,7 +202,6 @@ function AgentForm({ mode }: AgentFormProps) {
 
         const selectedVRFoldersPathMap = agent.scope.vector_fs_folders.reduce<Record<string, { checked: boolean }>>(
           (acc: Record<string, { checked: boolean }>, folderPath: string) => {
-            setFolderKey(folderPath, folderPath);
             acc[folderPath] = {
               checked: true,
             };
@@ -226,7 +222,7 @@ function AgentForm({ mode }: AgentFormProps) {
         });
       }
     }
-  }, [agent, form, mode, onSelectedKeysChange, setFileKey, setFolderKey]);
+  }, [agent, form, mode, onSelectedKeysChange]);
 
   // Effect to handle drawer open/close
   useEffect(() => {
