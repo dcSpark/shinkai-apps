@@ -1,7 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { Agent } from '@shinkai_network/shinkai-message-ts/api/agents/types';
 import { JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { ShinkaiPath } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/createAgent/useCreateAgent';
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
@@ -77,6 +79,13 @@ const agentFormSchema = z.object({
       other_model_params: z.record(z.string()),
     })
     .nullable(),
+  scope: z
+    .object({
+      vector_fs_items: z.array(z.string()),
+      vector_fs_folders: z.array(z.string()),
+      vector_search_mode: z.string(),
+    })
+    .optional(),
 });
 
 type AgentFormValues = z.infer<typeof agentFormSchema>;
@@ -93,6 +102,11 @@ function AgentForm({ mode }: AgentFormProps) {
   const { t } = useTranslation();
   const setSetJobScopeOpen = useSetJobScope((state) => state.setSetJobScopeOpen);
   const selectedKeys = useSetJobScope((state) => state.selectedKeys);
+  const selectedFileKeysRef = useSetJobScope((state) => state.selectedFileKeysRef);
+  const selectedFolderKeysRef = useSetJobScope((state) => state.selectedFolderKeysRef);
+  const onSelectedKeysChange = useSetJobScope((state) => state.onSelectedKeysChange);
+  const setFileKey = useSetJobScope((state) => state.setFileKey);
+  const setFolderKey = useSetJobScope((state) => state.setFolderKey);
 
   const { data: agent } = useGetAgent({
     agentId: agentId ?? '',
@@ -120,9 +134,42 @@ function AgentForm({ mode }: AgentFormProps) {
         use_tools: true,
       },
       llmProviderId: defaultAgentId,
+      scope: {
+        vector_fs_items: [],
+        vector_fs_folders: [],
+        vector_search_mode: "FillUpTo25k"
+      }
     },
   });
 
+  // Effect to update form when selected items change
+  useEffect(() => {
+    if (selectedKeys || selectedFileKeysRef.size > 0 || selectedFolderKeysRef.size > 0) {
+      const agentData = {
+        ...form.getValues(),
+        scope: {
+          vector_fs_items: Array.from(selectedFileKeysRef.values()),
+          vector_fs_folders: Array.from(selectedFolderKeysRef.values()),
+          vector_search_mode: "FillUpTo25k"
+        }
+      };
+      form.setValue('scope', agentData.scope);
+    }
+  }, [selectedKeys, selectedFileKeysRef, selectedFolderKeysRef, form]);
+
+  // Effect to handle drawer close
+  useEffect(() => {
+    if (!setSetJobScopeOpen) {
+      const scope = {
+        vector_fs_items: Array.from(selectedFileKeysRef.values()),
+        vector_fs_folders: Array.from(selectedFolderKeysRef.values()),
+        vector_search_mode: "FillUpTo25k"
+      };
+      form.setValue('scope', scope);
+    }
+  }, [setSetJobScopeOpen, selectedFileKeysRef, selectedFolderKeysRef, form]);
+
+  // Effect to handle initial agent data
   useEffect(() => {
     if (mode === 'edit' && agent) {
       form.setValue('name', agent.name);
@@ -142,8 +189,56 @@ function AgentForm({ mode }: AgentFormProps) {
         other_model_params: agent.config?.other_model_params ?? {},
       });
       form.setValue('llmProviderId', agent.llm_provider_id);
+
+      // Set selected files and folders
+      if (agent.scope?.vector_fs_items?.length || agent.scope?.vector_fs_folders?.length) {
+        const selectedVRFilesPathMap = agent.scope.vector_fs_items.reduce<Record<string, { checked: boolean }>>(
+          (acc: Record<string, { checked: boolean }>, filePath: string) => {
+            setFileKey(filePath, filePath);
+            acc[filePath] = {
+              checked: true,
+            };
+            return acc;
+          },
+          {},
+        );
+
+        const selectedVRFoldersPathMap = agent.scope.vector_fs_folders.reduce<Record<string, { checked: boolean }>>(
+          (acc: Record<string, { checked: boolean }>, folderPath: string) => {
+            setFolderKey(folderPath, folderPath);
+            acc[folderPath] = {
+              checked: true,
+            };
+            return acc;
+          },
+          {},
+        );
+
+        onSelectedKeysChange({
+          ...selectedVRFilesPathMap,
+          ...selectedVRFoldersPathMap,
+        });
+
+        form.setValue('scope', {
+          vector_fs_items: agent.scope.vector_fs_items,
+          vector_fs_folders: agent.scope.vector_fs_folders,
+          vector_search_mode: agent.scope.vector_search_mode || "FillUpTo25k"
+        });
+      }
     }
-  }, [agent, form, mode]);
+  }, [agent, form, mode, onSelectedKeysChange, setFileKey, setFolderKey]);
+
+  // Effect to handle drawer open/close
+  useEffect(() => {
+    const scope = form.getValues('scope');
+    if (scope) {
+      form.setValue('scope', {
+        ...scope,
+        vector_fs_items: Array.from(selectedFileKeysRef.values()),
+        vector_fs_folders: Array.from(selectedFolderKeysRef.values()),
+      });
+    }
+  }, [form, selectedFileKeysRef, selectedFolderKeysRef]);
 
   const { data: toolsList } = useGetTools({
     nodeAddress: auth?.node_address ?? '',
@@ -189,6 +284,11 @@ function AgentForm({ mode }: AgentFormProps) {
       debug_mode: values.debugMode,
       config: values.config,
       name: values.name,
+      scope: {
+        vector_fs_items: Array.from(selectedFileKeysRef.values()),
+        vector_fs_folders: Array.from(selectedFolderKeysRef.values()),
+        vector_search_mode: "FillUpTo25k"
+      }
     };
 
     if (mode === 'edit') {
