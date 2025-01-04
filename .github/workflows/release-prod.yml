@@ -31,49 +31,49 @@ jobs:
           script: |
             core.setFailed('Version mismatch')
 
-  release-shinkai-visor:
-    needs: prebuild
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  # release-shinkai-visor:
+  #   needs: prebuild
+  #   runs-on: ubuntu-latest
+  #   environment: production
+  #   steps:
+  #     - name: Check out repository
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
 
-      - name: Setup Node version
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          check-latest: false
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+  #     - name: Setup Node version
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version-file: '.nvmrc'
+  #         check-latest: false
+  #         cache: "npm"
+  #         cache-dependency-path: package-lock.json
 
-      - name: Install dependencies
-        run: |
-          npm cache verify
-          npm ci --no-audit --prefer-offline
+  #     - name: Install dependencies
+  #       run: |
+  #         npm cache verify
+  #         npm ci --no-audit --prefer-offline
 
-      - name: Run NX build on shinkai-visor
-        run: npx nx build shinkai-visor --skip-nx-cache
-        env:
-          VERSION: ${{ needs.prebuild.outputs.version }}.${{github.run_number}}
-          NAME_PREFIX: ''
-          DESCRIPTION_PREFIX: ''
-          PUBLIC_KEY: ${{ secrets.CHROME_EXTENSION_PUBLIC_KEY }}
+  #     - name: Run NX build on shinkai-visor
+  #       run: npx nx build shinkai-visor --skip-nx-cache
+  #       env:
+  #         VERSION: ${{ needs.prebuild.outputs.version }}.${{github.run_number}}
+  #         NAME_PREFIX: ''
+  #         DESCRIPTION_PREFIX: ''
+  #         PUBLIC_KEY: ${{ secrets.CHROME_EXTENSION_PUBLIC_KEY }}
 
-      - name: Zip extension
-        run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
+  #     - name: Zip extension
+  #       run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
 
-      - name: Upload & Release
-        uses: mnao305/chrome-extension-upload@v4.0.1
-        with:
-          file-path: dist/apps/shinkai-visor.zip
-          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
-          client-id: ${{ secrets.CHROME_CLIENT_ID }}
-          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
-          publish: false
+  #     - name: Upload & Release
+  #       uses: mnao305/chrome-extension-upload@v4.0.1
+  #       with:
+  #         file-path: dist/apps/shinkai-visor.zip
+  #         extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+  #         client-id: ${{ secrets.CHROME_CLIENT_ID }}
+  #         client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+  #         refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+  #         publish: false
 
   release-shinkai-desktop:
     needs: prebuild
@@ -380,45 +380,45 @@ jobs:
                 }
               ]
             }
-      - name: Post Shinkai Visor to a Slack channel
-        uses: slackapi/slack-github-action@v1.26.0
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        with:
-          channel-id: 'C072VJ6E7GC'
-          payload: |
-            {
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "📦 New build: Shinkai Visor v${{ needs.prebuild.outputs.version }}.${{ github.run_number }}",
-                    "emoji": true
-                  }
-                },
-                {
-                  "type": "divider"
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Found it at <https://chromewebstore.google.com/detail/shinkai-visor-supercharge/${{ secrets.CHROME_EXTENSION_ID }}|Chrome Web Store>"
-                  }
-                },
-                {
-                  "type": "divider"
-                },
-                {
-                  "type": "context",
-                  "elements": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "_💡 Send it for review and publish on <https://chrome.google.com/u/4/webstore/devconsole/f35b7411-6fce-4a2b-8865-c310ce95c89f/${{ secrets.CHROME_EXTENSION_ID }}/edit|Chrome Web Store Developer> to start the rollout_"
-                    }
-                  ]
-                }
+      # - name: Post Shinkai Visor to a Slack channel
+      #   uses: slackapi/slack-github-action@v1.26.0
+      #   env:
+      #     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      #   with:
+      #     channel-id: 'C072VJ6E7GC'
+      #     payload: |
+      #       {
+      #         "blocks": [
+      #           {
+      #             "type": "header",
+      #             "text": {
+      #               "type": "plain_text",
+      #               "text": "📦 New build: Shinkai Visor v${{ needs.prebuild.outputs.version }}.${{ github.run_number }}",
+      #               "emoji": true
+      #             }
+      #           },
+      #           {
+      #             "type": "divider"
+      #           },
+      #           {
+      #             "type": "section",
+      #             "text": {
+      #               "type": "mrkdwn",
+      #               "text": "Found it at <https://chromewebstore.google.com/detail/shinkai-visor-supercharge/${{ secrets.CHROME_EXTENSION_ID }}|Chrome Web Store>"
+      #             }
+      #           },
+      #           {
+      #             "type": "divider"
+      #           },
+      #           {
+      #             "type": "context",
+      #             "elements": [
+      #               {
+      #                 "type": "mrkdwn",
+      #                 "text": "_💡 Send it for review and publish on <https://chrome.google.com/u/4/webstore/devconsole/f35b7411-6fce-4a2b-8865-c310ce95c89f/${{ secrets.CHROME_EXTENSION_ID }}/edit|Chrome Web Store Developer> to start the rollout_"
+      #               }
+      #             ]
+      #           }
 
-              ]
-            }
+      #         ]
+      #       }
