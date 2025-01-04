@@ -9,7 +9,6 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Paperclip } from 'lucide-react';
 import * as React from 'react';
 
-import { allowedFileExtensions } from '../../../lib/constants';
 import { actionButtonClassnames } from '../conversation-footer';
 
 type FileUploadInputProps = {
@@ -38,7 +37,7 @@ export function FileSelectionActionBar({
         <TooltipPortal>
           <TooltipContent align="center" side="top">
             {t('common.uploadFile')} <br />
-            {allowedFileExtensions.join(', ')}
+            {t('common.uploadAFileDescription')}
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>

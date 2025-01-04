@@ -139,6 +139,7 @@
     "unselectAll": "Batalkan Pilihan Semua",
     "update": "Perbarui",
     "upload": "Unggah",
+    "uploadAFileDescription": "Mendukung gambar, PDF, CSV, TXT, XLSX, dan format lainnya",
     "uploadFile": "Unggah Berkas"
   },
   "desktop": {
@@ -507,6 +508,9 @@
     "browse": "Telusuri Langganan Publik",
     "label": "Langganan Saya"
   },
+  "tasks": {
+    "runNow": "Jalankan Sekarang"
+  },
   "tools": {
     "emptyState": {
       "search": {
@@ -520,7 +524,10 @@
       "addNew": "Tambah Baru",
       "copy": "Salin",
       "createFolder": "Tambah Folder Baru",
+      "createTextFile": "Buat Berkas Teks",
       "delete": "Hapus",
+      "edit": "Edit",
+      "editTextFile": "Edit Berkas Teks",
       "move": "Pindah",
       "searchWithinFolder": "Cari dalam folder",
       "share": "Bagikan",
@@ -554,7 +561,8 @@
     "filesSelected": "{{count}} dipilih",
     "forms": {
       "folderDescription": "Deskripsi Folder",
-      "folderName": "Nama Folder"
+      "folderName": "Nama Folder",
+      "textFileName": "Judul"
     },
     "home": "Beranda",
     "label": "Penjelajah File AI Saya",

@@ -6,10 +6,10 @@ import {
   SearchVectorFormSchema,
   searchVectorFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/vector-fs/vector-search';
-import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
 import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import { useUpdateJobScope } from '@shinkai_network/shinkai-node-state/v2/mutations/updateJobScope/useUpdateJobScope';
+import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
 import {
   Badge,
   Button,
@@ -60,19 +60,12 @@ export const SetJobScopeDrawer = () => {
   const auth = useAuth((state) => state.auth);
   const [nodes, setNodes] = useState<TreeNode[]>([]);
 
-  const { data: VRFiles, isSuccess: isVRFilesSuccess } = useGetVRPathSimplified(
-    {
+  const { data: fileInfoArray, isSuccess: isVRFilesSuccess } =
+    useGetListDirectoryContents({
       nodeAddress: auth?.node_address ?? '',
-      profile: auth?.profile ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      token: auth?.api_v2_key ?? '',
       path: '/',
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    },
-  );
+    });
 
   const { mutateAsync: updateJobScope, isPending: isUpdatingJobScope } =
     useUpdateJobScope({
@@ -88,9 +81,9 @@ export const SetJobScopeDrawer = () => {
 
   useEffect(() => {
     if (isVRFilesSuccess) {
-      setNodes(transformDataToTreeNodes(VRFiles));
+      setNodes(transformDataToTreeNodes(fileInfoArray));
     }
-  }, [VRFiles, isVRFilesSuccess]);
+  }, [fileInfoArray, isVRFilesSuccess]);
 
   useEffect(() => {
     if (!isSetJobScopeOpen) {
@@ -121,14 +114,10 @@ export const SetJobScopeDrawer = () => {
           <Tree
             onSelect={(e) => {
               if (e.node.icon === 'icon-folder') {
-                selectedFolderKeysRef.set(String(e.node.key), e.node.data);
+                selectedFolderKeysRef.set(String(e.node.key), e.node.data.path);
                 return;
               }
-              selectedFileKeysRef.set(String(e.node.key), {
-                path: e.node.data.path,
-                name: e.node.data.name,
-                source: e.node.data.vr_header.resource_source,
-              });
+              selectedFileKeysRef.set(String(e.node.key), e.node.data.path);
             }}
             onSelectionChange={(e) => {
               onSelectedKeysChange(e.value as TreeCheckboxSelectionKeys);
@@ -173,22 +162,10 @@ export const SetJobScopeDrawer = () => {
                   nodeAddress: auth?.node_address ?? '',
                   token: auth?.api_v2_key ?? '',
                   jobScope: {
-                    vector_fs_items: Array.from(
-                      selectedFileKeysRef.values(),
-                    )?.map((vfFile) => ({
-                      path: vfFile.path,
-                      name: vfFile.name,
-                      source: vfFile.source,
-                    })),
+                    vector_fs_items: Array.from(selectedFileKeysRef.values()),
                     vector_fs_folders: Array.from(
                       selectedFolderKeysRef.values(),
-                    )?.map((vfFolder) => ({
-                      path: vfFolder.path,
-                      name: vfFolder.name,
-                    })),
-                    local_vrpack: [],
-                    local_vrkai: [],
-                    network_folders: [],
+                    ),
                   },
                 });
               }

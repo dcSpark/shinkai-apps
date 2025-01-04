@@ -139,6 +139,7 @@
     "unselectAll": "すべて選択解除",
     "update": "更新",
     "upload": "アップロード",
+    "uploadAFileDescription": "画像、PDF、CSV、TXT、XLSXなどの形式をサポートしています",
     "uploadFile": "ファイルをアップロード"
   },
   "desktop": {
@@ -507,6 +508,9 @@
     "browse": "パブリックサブスクリプションを閲覧",
     "label": "マイサブスクリプション"
   },
+  "tasks": {
+    "runNow": "今すぐ実行"
+  },
   "tools": {
     "emptyState": {
       "search": {
@@ -520,7 +524,10 @@
       "addNew": "新規追加",
       "copy": "コピー",
       "createFolder": "新しいフォルダを作成",
+      "createTextFile": "テキストファイルを作成",
       "delete": "削除",
+      "edit": "編集",
+      "editTextFile": "テキストファイルを編集",
       "move": "移動",
       "searchWithinFolder": "フォルダ内を検索",
       "share": "共有",
@@ -554,7 +561,8 @@
     "filesSelected": "{{count}} 個選択されました",
     "forms": {
       "folderDescription": "フォルダの説明",
-      "folderName": "フォルダ名"
+      "folderName": "フォルダ名",
+      "textFileName": "タイトル"
     },
     "home": "ホーム",
     "label": "私のAIファイルエクスプローラー",

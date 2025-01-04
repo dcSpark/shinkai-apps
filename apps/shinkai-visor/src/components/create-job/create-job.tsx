@@ -1,9 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import {
-  VectorFSFolderScopeEntry,
-  VectorFSItemScopeEntry,
-} from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import { ShinkaiPath } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import {
   CreateJobFormSchema,
@@ -13,9 +10,9 @@ import {
   VRFolder,
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
-import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
+import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
   Badge,
@@ -71,28 +68,18 @@ export const CreateJob = () => {
   const query = useQuery();
   const auth = useAuth((state) => state.auth);
 
-  const selectedFileKeysRef = useRef<Map<string, VectorFSItemScopeEntry>>(
-    new Map(),
-  );
-  const selectedFolderKeysRef = useRef<Map<string, VectorFSFolderScopeEntry>>(
-    new Map(),
-  );
+  const selectedFileKeysRef = useRef<Map<string, ShinkaiPath>>(new Map());
+  const selectedFolderKeysRef = useRef<Map<string, ShinkaiPath>>(new Map());
   // const settings = useSettings((state) => state.settings);
   const currentDefaultAgentId = useSettings((state) => state.defaultAgentId);
   const {
     // isPending: isVRFilesPending,
     data: VRFiles,
     isSuccess: isVRFilesSuccess,
-  } = useGetVRPathSimplified({
+  } = useGetListDirectoryContents({
     nodeAddress: auth?.node_address ?? '',
-    profile: auth?.profile ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    token: auth?.api_v2_key ?? '',
     path: '/',
-    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-    my_device_identity_sk: auth?.profile_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
   const form = useForm<CreateJobFormSchema>({
@@ -199,11 +186,7 @@ export const CreateJob = () => {
     ) {
       const selectedVRFilesPathMap = location?.state?.selectedVRFiles?.reduce(
         (acc, file) => {
-          selectedFileKeysRef.current.set(file.path, {
-            path: file.path,
-            name: file.name,
-            source: file.vr_header.resource_source,
-          });
+          selectedFileKeysRef.current.set(file.path, file.path);
           acc[file.path] = {
             checked: true,
           };
@@ -215,7 +198,7 @@ export const CreateJob = () => {
       const selectedVRFoldersPathMap =
         location?.state?.selectedVRFolders?.reduce(
           (acc, folder) => {
-            selectedFolderKeysRef.current.set(folder.path, folder);
+            selectedFolderKeysRef.current.set(folder.path, folder.path);
             acc[folder.path] = {
               checked: true,
             };

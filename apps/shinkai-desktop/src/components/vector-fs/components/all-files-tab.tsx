@@ -1,12 +1,8 @@
 import { HomeIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import { useGetSearchVRItems } from '@shinkai_network/shinkai-node-state/lib/queries/getSearchVRItems/useGetSearchVRItems';
-import {
-  VRFolder,
-  VRItem,
-} from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
-import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
-import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/v2/queries/getMySharedFolders/useGetMySharedFolders';
+import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -41,7 +37,13 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { ChevronRight, PlusIcon, SearchIcon, XIcon } from 'lucide-react';
+import {
+  ChevronRight,
+  FileType2Icon,
+  PlusIcon,
+  SearchIcon,
+  XIcon,
+} from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -86,31 +88,17 @@ const AllFiles = () => {
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const {
     isPending: isVRFilesPending,
-    data: VRFiles,
+    data: fileInfoArray,
     isSuccess: isVRFilesSuccess,
-  } = useGetVRPathSimplified(
+  } = useGetListDirectoryContents(
     {
       nodeAddress: auth?.node_address ?? '',
-      profile: auth?.profile ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      token: auth?.api_v2_key ?? '',
       path: currentGlobalPath,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
     },
     {
       select: (data) => {
-        return {
-          ...data,
-          child_folders: data?.child_folders?.sort((a, b) =>
-            a.name.localeCompare(b.name),
-          ),
-          child_items: data?.child_items?.sort((a, b) =>
-            a.name.localeCompare(b.name),
-          ),
-        };
+        return data?.sort((a, b) => a.name.localeCompare(b.name));
       },
       refetchInterval: 6000,
     },
@@ -138,16 +126,13 @@ const AllFiles = () => {
     },
   );
 
-  const { data: sharedFolders } = useGetMySharedFolders({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    profile: auth?.profile ?? '',
-  });
-
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
-  const [selectedFiles, setSelectedFiles] = React.useState<VRItem[]>([]);
-  const [selectedFolders, setSelectedFolders] = React.useState<VRFolder[]>([]);
+  const [selectedFiles, setSelectedFiles] = React.useState<DirectoryContent[]>(
+    [],
+  );
+  const [selectedFolders, setSelectedFolders] = React.useState<
+    DirectoryContent[]
+  >([]);
   const [isMenuOpened, setMenuOpened] = React.useState(false);
 
   useEffect(() => {
@@ -162,7 +147,7 @@ const AllFiles = () => {
       );
     }
   }, [query]);
-  const handleSelectFiles = (file: VRItem) => {
+  const handleSelectFiles = (file: DirectoryContent) => {
     if (selectedFiles.some((selectedFile) => selectedFile.path === file.path)) {
       setSelectedFiles(selectedFiles.filter((item) => item !== file));
     } else {
@@ -170,7 +155,7 @@ const AllFiles = () => {
     }
   };
 
-  const handleSelectFolders = (folder: VRFolder) => {
+  const handleSelectFolders = (folder: DirectoryContent) => {
     if (
       selectedFolders.some(
         (selectedFolder) => selectedFolder.path === folder.path,
@@ -206,24 +191,31 @@ const AllFiles = () => {
         setActiveDrawerMenuOption(VectorFsGlobalAction.GenerateFromDocument);
       },
     },
+
+    {
+      name: t('vectorFs.actions.createTextFile'),
+      icon: <FileType2Icon className="mr-2 h-3.5 w-3.5" />,
+      disabled: currentGlobalPath === '/',
+      onClick: () => {
+        setActiveDrawerMenuOption(VectorFsGlobalAction.CreateTextFile);
+      },
+    },
   ];
 
-  const splitCurrentPath = VRFiles?.path?.split('/').filter(Boolean) ?? [];
+  const splitCurrentPath = currentGlobalPath.split('/').filter(Boolean);
 
   const folderList = React.useMemo(() => {
-    return !isSortByName
-      ? [...(VRFiles?.child_folders ?? [])].reverse()
-      : VRFiles?.child_folders;
-  }, [VRFiles?.child_folders, isSortByName]);
+    const folders = fileInfoArray?.filter((file) => file.is_directory) ?? [];
+    return isSortByName ? folders : [...folders].reverse();
+  }, [fileInfoArray, isSortByName]);
 
   const itemList = React.useMemo(() => {
-    return !isSortByName
-      ? [...(VRFiles?.child_items ?? [])].reverse()
-      : VRFiles?.child_items;
-  }, [VRFiles?.child_items, isSortByName]);
+    const items = fileInfoArray?.filter((file) => !file.is_directory) ?? [];
+    return isSortByName ? items : [...items].reverse();
+  }, [fileInfoArray, isSortByName]);
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="relative flex h-full flex-col">
       <DropdownMenu
         modal={false}
         onOpenChange={(value) => setMenuOpened(value)}
@@ -231,7 +223,7 @@ const AllFiles = () => {
       >
         <DropdownMenuTrigger asChild>
           <Button
-            className="absolute left-auto right-0 top-0 flex gap-2 self-end px-6"
+            className="absolute -top-12 right-0 flex gap-2 self-end px-6"
             size="sm"
           >
             <PlusIcon className="h-4 w-4" /> {t('vectorFs.actions.addNew')}
@@ -346,7 +338,7 @@ const AllFiles = () => {
           className={cn(
             'grid flex-1',
             layout === VectorFSLayout.Grid &&
-              'grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5',
+              'grid-cols-2 gap-3 md:grid-cols-3',
             layout === VectorFSLayout.List &&
               'grid-cols-1 divide-y divide-gray-400',
             searchQuery && 'pt-4',
@@ -369,9 +361,6 @@ const AllFiles = () => {
                   handleSelectFolders={handleSelectFolders}
                   isSelectedFolder={selectedFolders.some(
                     (selectedFolder) => selectedFolder.path === folder.path,
-                  )}
-                  isSharedFolder={sharedFolders?.some(
-                    (sharedFolder) => sharedFolder.path === folder.path,
                   )}
                   key={index}
                   onClick={() => {
@@ -402,7 +391,7 @@ const AllFiles = () => {
             })}
           {!searchQuery &&
             isVRFilesSuccess &&
-            VRFiles?.child_folders?.length === 0 &&
+            folderList.length === 0 &&
             currentGlobalPath === '/' && (
               <div className="text-gray-80 mt-4 flex flex-col items-center justify-center gap-4 text-center text-base">
                 <FileEmptyStateIcon className="h-20 w-20" />
@@ -418,8 +407,8 @@ const AllFiles = () => {
             )}
           {!searchQuery &&
             isVRFilesSuccess &&
-            VRFiles?.child_items?.length === 0 &&
-            VRFiles.child_folders?.length === 0 && (
+            itemList.length === 0 &&
+            folderList.length === 0 && (
               <div className="flex h-20 items-center justify-center text-gray-100">
                 {t('vectorFs.emptyState.noFiles')}
               </div>
@@ -501,8 +490,10 @@ const AllFiles = () => {
                 } else {
                   navigate('/inboxes', {
                     state: {
-                      selectedVRFiles: selectedFiles,
-                      selectedVRFolders: selectedFolders,
+                      selectedVRFiles: selectedFiles.map((file) => file.path),
+                      selectedVRFolders: selectedFolders.map(
+                        (folder) => folder.path,
+                      ),
                     },
                   });
                 }

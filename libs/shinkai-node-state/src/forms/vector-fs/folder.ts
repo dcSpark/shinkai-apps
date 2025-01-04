@@ -26,3 +26,9 @@ export const saveWebpageToVectorFsFormSchema = z.object({
 export type SaveWebpageToVectorFsFormSchema = z.infer<
   typeof saveWebpageToVectorFsFormSchema
 >;
+
+export const createTextFileFormSchema = z.object({
+  name: z.string().min(1, 'File name is required'),
+});
+
+export type CreateTextFileFormSchema = z.infer<typeof createTextFileFormSchema>;

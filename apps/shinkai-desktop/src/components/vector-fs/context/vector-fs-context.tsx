@@ -1,7 +1,4 @@
-import {
-  VRFolder,
-  VRItem,
-} from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import React, { createContext, useContext, useState } from 'react';
 import { createStore, useStore } from 'zustand';
 
@@ -24,10 +21,10 @@ type VectorFsStore = {
   setSortByName: (sortByName: boolean) => void;
   isVRSelectionActive: boolean;
   setVRSelectionActive: (isVRSelectionActive: boolean) => void;
-  selectedFile: VRItem | null;
-  setSelectedFile: (selectedFile: VRItem | null) => void;
-  selectedFolder: VRFolder | null;
-  setSelectedFolder: (selectedFolder: VRFolder | null) => void;
+  selectedFile: DirectoryContent | null;
+  setSelectedFile: (selectedFile: DirectoryContent | null) => void;
+  selectedFolder: DirectoryContent | null;
+  setSelectedFolder: (selectedFolder: DirectoryContent | null) => void;
   selectedVectorFsTab: 'all' | 'shared-folders';
   setSelectedVectorFsTab: (
     selectedVectorFsTab: 'all' | 'shared-folders',

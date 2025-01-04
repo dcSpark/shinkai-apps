@@ -1,6 +1,4 @@
 {
-  "": {
-  },
   "aiFilesSearch": {
     "description": "Busca para encontrar contenido en todos los archivos de tus archivos AI fácilmente",
     "filesSelected": "Seleccionados {{count}} archivos",
@@ -141,6 +139,7 @@
     "unselectAll": "Deseleccionar todo",
     "update": "Actualizar",
     "upload": "Subir",
+    "uploadAFileDescription": "Admite imágenes, PDF, CSV, TXT, XLSX y más formatos",
     "uploadFile": "Subir un Archivo"
   },
   "desktop": {
@@ -509,6 +508,9 @@
     "browse": "Explorar Suscripciones Públicas",
     "label": "Mis Suscripciones"
   },
+  "tasks": {
+    "runNow": "Ejecutar ahora"
+  },
   "tools": {
     "emptyState": {
       "search": {
@@ -522,7 +524,10 @@
       "addNew": "Añadir nuevo",
       "copy": "Copiar",
       "createFolder": "Añadir nueva carpeta",
+      "createTextFile": "Crear archivo de texto",
       "delete": "Eliminar",
+      "edit": "Editar",
+      "editTextFile": "Editar archivo de texto",
       "move": "Mover",
       "searchWithinFolder": "Buscar dentro de la carpeta",
       "share": "Compartir",
@@ -556,7 +561,8 @@
     "filesSelected": "{{count}} seleccionados",
     "forms": {
       "folderDescription": "Descripción de la carpeta",
-      "folderName": "Nombre de la carpeta"
+      "folderName": "Nombre de la carpeta",
+      "textFileName": "Título"
     },
     "home": "Inicio",
     "label": "Mi Explorador de Archivos de IA",

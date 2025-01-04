@@ -1,6 +1,5 @@
-// import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/lib/queries/getMySharedFolders/useGetMySharedFolders';
-import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
 import { getFlatChildItems } from '@shinkai_network/shinkai-node-state/lib/utils/files';
+import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxes';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
@@ -33,40 +32,17 @@ export const useOnboardingSteps = () => {
     token: auth?.api_v2_key ?? '',
   });
 
-  const { data: VRFiles } = useGetVRPathSimplified({
+  const { data: VRFiles } = useGetListDirectoryContents({
     nodeAddress: auth?.node_address ?? '',
-    profile: auth?.profile ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    token: auth?.api_v2_key ?? '',
     path: '/',
-    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-    my_device_identity_sk: auth?.profile_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
-  const { data: subscriptionFolder } = useGetVRPathSimplified({
+  const { data: subscriptionFolder } = useGetListDirectoryContents({
     nodeAddress: auth?.node_address ?? '',
-    profile: auth?.profile ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    token: auth?.api_v2_key ?? '',
     path: '/My Subscriptions',
-    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-    my_device_identity_sk: auth?.profile_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
-
-  // const { data: mySharedFolders } = useGetMySharedFolders({
-  //   nodeAddress: auth?.node_address ?? '',
-  //   shinkaiIdentity: auth?.shinkai_identity ?? '',
-  //   profile: auth?.profile ?? '',
-  //   my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-  //   my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-  //   node_encryption_pk: auth?.node_encryption_pk ?? '',
-  //   profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-  //   profile_identity_sk: auth?.profile_identity_sk ?? '',
-  // });
 
   useEffect(() => {
     if (isSuccess && nodeInfo?.status === 'ok') {
@@ -113,19 +89,13 @@ export const useOnboardingSteps = () => {
   }, [inboxes]);
 
   useEffect(() => {
-    if ((subscriptionFolder?.child_folders ?? [])?.length > 0) {
+    if ((subscriptionFolder ?? [])?.length > 0) {
       currentStepsMap.set(
         GetStartedSteps.SubscribeToKnowledge,
         GetStartedStatus.Done,
       );
     }
-  }, [subscriptionFolder?.child_folders]);
-  //
-  // useEffect(() => {
-  //   if ((mySharedFolders ?? [])?.length > 0) {
-  //     currentStepsMap.set(GetStartedSteps.ShareFolder, GetStartedStatus.Done);
-  //   }
-  // }, [mySharedFolders]);
+  }, [subscriptionFolder]);
 
   return currentStepsMap;
 };

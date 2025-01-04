@@ -139,6 +139,7 @@
     "unselectAll": "Hepsini Seçme",
     "update": "Güncelle",
     "upload": "Yükle",
+    "uploadAFileDescription": "Görüntüler, PDF, CSV, TXT, XLSX ve daha fazla formatı destekler",
     "uploadFile": "Bir Dosya Yükle"
   },
   "desktop": {
@@ -507,6 +508,9 @@
     "browse": "Halka Açık Abonelikleri Gözat",
     "label": "Aboneliklerim"
   },
+  "tasks": {
+    "runNow": "Şimdi Çalıştır"
+  },
   "tools": {
     "emptyState": {
       "search": {
@@ -520,7 +524,10 @@
       "addNew": "Yeni Ekle",
       "copy": "Kopyala",
       "createFolder": "Yeni Klasör Oluştur",
+      "createTextFile": "Metin Dosyası Oluştur",
       "delete": "Sil",
+      "edit": "Düzenle",
+      "editTextFile": "Metin Dosyasını Düzenle",
       "move": "Taşı",
       "searchWithinFolder": "Klasör içinde ara",
       "share": "Paylaş",
@@ -554,7 +561,8 @@
     "filesSelected": "{{count}} seçildi",
     "forms": {
       "folderDescription": "Klasör Açıklaması",
-      "folderName": "Klasör Adı"
+      "folderName": "Klasör Adı",
+      "textFileName": "Başlık"
     },
     "home": "Ana Sayfa",
     "label": "AI Dosya Gezgini",

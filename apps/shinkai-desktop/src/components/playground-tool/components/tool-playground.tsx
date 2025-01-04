@@ -70,7 +70,6 @@ import { useDropzone } from 'react-dropzone';
 import { Link, To } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { allowedFileExtensions } from '../../../lib/constants';
 import { useAuth } from '../../../store/auth';
 import { AIModelSelector } from '../../chat/chat-action-bar/ai-update-selection-action-bar';
 import { ToolErrorFallback } from '../error-boundary';
@@ -1019,7 +1018,7 @@ function ManageToolSourceModal({
             <p className="text-sm text-white">{t('common.clickToUpload')}</p>
 
             <p className="text-gray-80 line-clamp-1 text-xs">
-              Supports {allowedFileExtensions.join(', ')}
+              {t('common.uploadAFileDescription')}
             </p>
           </div>
 

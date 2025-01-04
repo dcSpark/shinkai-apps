@@ -25,56 +25,56 @@ jobs:
         id: package-version
         uses: Saionaro/extract-package-version@v1.2.1
 
-  release-shinkai-visor:
-    needs: prebuild
-    runs-on: ubuntu-latest
-    environment: development
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  # release-shinkai-visor:
+  #   needs: prebuild
+  #   runs-on: ubuntu-latest
+  #   environment: development
+  #   steps:
+  #     - name: Check out repository
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
 
-      - name: Setup Node version
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          check-latest: false
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+  #     - name: Setup Node version
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version-file: '.nvmrc'
+  #         check-latest: false
+  #         cache: "npm"
+  #         cache-dependency-path: package-lock.json
 
-      - name: Install dependencies
-        run: |
-          npm cache verify
-          npm ci --no-audit --prefer-offline
+  #     - name: Install dependencies
+  #       run: |
+  #         npm cache verify
+  #         npm ci --no-audit --prefer-offline
 
-      - name: Run NX build on shinkai-visor
-        run: npx nx build shinkai-visor --skip-nx-cache
-        env:
-          VERSION: ${{ needs.prebuild.outputs.version }}.${{github.run_number}}
-          NAME_PREFIX: '[Dev]'
-          DESCRIPTION_PREFIX: '[Dev]'
+  #     - name: Run NX build on shinkai-visor
+  #       run: npx nx build shinkai-visor --skip-nx-cache
+  #       env:
+  #         VERSION: ${{ needs.prebuild.outputs.version }}.${{github.run_number}}
+  #         NAME_PREFIX: '[Dev]'
+  #         DESCRIPTION_PREFIX: '[Dev]'
 
-      - name: Zip extension
-        run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
+  #     - name: Zip extension
+  #       run: cd ./dist/apps && zip -r shinkai-visor.zip shinkai-visor
 
-      - name: Upload & Release
-        uses: mnao305/chrome-extension-upload@v4.0.1
-        continue-on-error: true
-        with:
-          file-path: dist/apps/shinkai-visor.zip
-          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
-          client-id: ${{ secrets.CHROME_CLIENT_ID }}
-          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
-          publish: false
+  #     - name: Upload & Release
+  #       uses: mnao305/chrome-extension-upload@v4.0.1
+  #       continue-on-error: true
+  #       with:
+  #         file-path: dist/apps/shinkai-visor.zip
+  #         extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+  #         client-id: ${{ secrets.CHROME_CLIENT_ID }}
+  #         client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+  #         refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+  #         publish: false
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: shinkai-visor
-          path: dist/apps/shinkai-visor
-          if-no-files-found: error
-          retention-days: 5
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: shinkai-visor
+  #         path: dist/apps/shinkai-visor
+  #         if-no-files-found: error
+  #         retention-days: 5
 
   release-shinkai-desktop:
     needs: prebuild

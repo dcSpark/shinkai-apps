@@ -439,15 +439,22 @@ const ChatSidebar = () => {
     {
       refetchIntervalInBackground: true,
       refetchInterval: (query) => {
-        const allInboxesAreCompleted = query.state.data?.every((inbox) => {
+        const queryState = query?.state?.data?.filter(
+          (item) => !!item.last_message,
+        );
+        if (!queryState || !auth) return 0;
+
+        const allInboxesAreCompleted = queryState.every((inbox) => {
           return (
             inbox.last_message &&
+            inbox.last_message.sender &&
             !(
               inbox.last_message.sender === auth?.shinkai_identity &&
-              inbox.last_message.sender_subidentity === auth.profile
+              inbox.last_message.sender_subidentity === auth?.profile
             )
           );
         });
+
         return allInboxesAreCompleted ? 0 : 5000;
       },
     },
