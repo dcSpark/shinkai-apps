@@ -196,7 +196,7 @@ const VectorFsItem = ({
           className="w-[160px] border bg-gray-500 px-2.5 py-2"
         >
           {[
-            {
+            file.path.includes('.txt') && {
               name: t('vectorFs.actions.edit'),
               icon: <Edit2Icon className="mr-3 h-4 w-4" />,
               onClick: () => {
@@ -224,22 +224,24 @@ const VectorFsItem = ({
                 setActiveDrawerMenuOption(VectorFsItemAction.Delete);
               },
             },
-          ].map((option, idx) => (
-            <React.Fragment key={option.name}>
-              {idx === 2 && <DropdownMenuSeparator className="bg-gray-300" />}
-              <DropdownMenuItem
-                key={option.name}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  option.onClick();
-                  setSelectedFile(file);
-                }}
-              >
-                {option.icon}
-                {option.name}
-              </DropdownMenuItem>
-            </React.Fragment>
-          ))}
+          ]
+            .filter((item) => !!item)
+            .map((option, idx) => (
+              <React.Fragment key={option.name}>
+                {idx === 2 && <DropdownMenuSeparator className="bg-gray-300" />}
+                <DropdownMenuItem
+                  key={option.name}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    option.onClick();
+                    setSelectedFile(file);
+                  }}
+                >
+                  {option.icon}
+                  {option.name}
+                </DropdownMenuItem>
+              </React.Fragment>
+            ))}
         </DropdownMenuContent>
       </DropdownMenu>
     </button>
