@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { PlusIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
@@ -8,6 +9,7 @@ import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getA
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import {
+  Badge,
   Button,
   Form,
   FormControl,
@@ -34,8 +36,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { FilesIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
-import { BoltIcon, PlusIcon } from 'lucide-react';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { BoltIcon } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -43,6 +47,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
 import { SubpageLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -86,6 +91,8 @@ function AgentForm({ mode }: AgentFormProps) {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const setSetJobScopeOpen = useSetJobScope((state) => state.setSetJobScopeOpen);
+  const selectedKeys = useSetJobScope((state) => state.selectedKeys);
 
   const { data: agent } = useGetAgent({
     agentId: agentId ?? '',
@@ -677,6 +684,40 @@ function AgentForm({ mode }: AgentFormProps) {
                         </FormItem>
                       )}
                     />
+                  </div>
+                </div>
+
+                <div className="space-y-6 rounded-lg bg-gray-400 px-4 py-4 pb-7">
+                  <span className="flex-1 items-center gap-1 truncate py-2 text-left text-xs font-semibold text-gray-50">
+                    Agent Context
+                  </span>
+
+                  <div className="space-y-4">
+                    <Button
+                      className={cn(
+                        'flex h-auto w-auto items-center gap-2 rounded-lg bg-gray-500 px-2.5 py-1.5',
+                      )}
+                      onClick={() => {
+                        setSetJobScopeOpen(true);
+                      }}
+                      size="auto"
+                      type="button"
+                      variant="ghost"
+                    >
+                      <div className="flex items-center gap-2">
+                        <FilesIcon className="h-4 w-4" />
+                        <p className="text-xs text-white">{t('vectorFs.localFiles')}</p>
+                      </div>
+                      {Object.keys(selectedKeys || {}).length > 0 ? (
+                        <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 p-0 text-center text-gray-50">
+                          {Object.keys(selectedKeys || {}).length}
+                        </Badge>
+                      ) : (
+                        <Badge className="inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 bg-gray-200 p-0 text-center text-gray-50">
+                          <PlusIcon className="h-3.5 w-3.5" />
+                        </Badge>
+                      )}
+                    </Button>
                   </div>
                 </div>
               </div>
