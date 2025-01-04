@@ -11,6 +11,11 @@ export type Agent = {
   tools: string[];
   debug_mode: boolean;
   config?: JobConfig | null;
+  scope?: {
+    vector_fs_items: string[];
+    vector_fs_folders: string[];
+    vector_search_mode: string;
+  };
 };
 
 export type CreateAgentRequest = Agent;

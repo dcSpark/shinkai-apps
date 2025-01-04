@@ -247,3 +247,18 @@ export type Columns = {
     name: string;
   };
 };
+
+export interface VectorFSItemScopeEntry {
+  name: string;
+  source: string;
+  path: string;
+  vr_header: {
+    resource_name: string;
+    resource_source: string;
+  };
+}
+
+export interface VectorFSFolderScopeEntry {
+  name: string;
+  path: string;
+}

@@ -209,7 +209,12 @@ export const VectorFsItemEditTextFileAction = () => {
             token: auth.api_v2_key,
             path: selectedFile.path,
           });
-          const fileContent = atob(fileContentBase64);
+          const binaryString = atob(fileContentBase64);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          const fileContent = new TextDecoder('utf-8').decode(bytes);
           setInitialValues({
             name: fileNameWithoutExtension,
             path: selectedFile.path,
