@@ -1,4 +1,5 @@
 import { Sheet, SheetContent } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 
 import { useVectorFsStore } from '../context/vector-fs-context';
 import { VectorFolderSelectionProvider } from './folder-selection-list';
@@ -32,6 +33,7 @@ const VectorFSDrawer = () => {
     (state) => state.setSelectedFolder,
   );
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
+  console.log('activeDrawerMenuOption', activeDrawerMenuOption);
   return (
     <Sheet
       onOpenChange={(open) => {
@@ -43,7 +45,13 @@ const VectorFSDrawer = () => {
       }}
       open={!!activeDrawerMenuOption}
     >
-      <SheetContent className="max-w-md">
+      <SheetContent
+        className={cn(
+          activeDrawerMenuOption === VectorFsGlobalAction.CreateTextFile
+            ? 'max-w-2xl'
+            : 'max-w-md',
+        )}
+      >
         <VectorFolderSelectionProvider>
           <VectorFSDrawerContent selectedOption={activeDrawerMenuOption} />
         </VectorFolderSelectionProvider>
