@@ -121,8 +121,11 @@
       "addNew": "Add New",
       "createFolder": "Add New Folder",
       "uploadFile": "File Upload",
+      "createTextFile": "Create Text File",
+      "editTextFile": "Edit Text File",
       "share": "Share",
       "unshare": "Unshare",
+      "edit": "Edit",
       "move": "Move",
       "copy": "Copy",
       "delete": "Delete",
@@ -133,7 +136,8 @@
     },
     "forms": {
       "folderName": "Folder Name",
-      "folderDescription": "Folder Description"
+      "folderDescription": "Folder Description",
+      "textFileName": "Title"
     },
     "pending": {
       "filesUploading": "Uploading files"
@@ -392,6 +396,7 @@
     "clearSearch": "Clear Search",
     "searchPlaceholder": "Search...",
     "uploadFile": "Upload a File",
+    "uploadAFileDescription": "Supports Images, PDF, CSV, TXT, XLSX and more formats",
     "folders": "Folders",
     "folderWithCount_one": "{{count}} Folder",
     "folderWithCount_other": "{{count}} Folders",
@@ -497,6 +502,9 @@
       "updateAgent": "Error updating AI",
       "deleteAgent": "Error deleting AI"
     }
+  },
+  "tasks": {
+    "runNow": "Run Now"
   },
   "ollama": {
     "version": "Ollama Version",

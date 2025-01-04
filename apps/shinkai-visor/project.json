@@ -21,7 +21,8 @@
         },
         "production": {
           "mode": "production",
-          "force": true
+          "force": true,
+          "buildable": false
         }
       }
     },

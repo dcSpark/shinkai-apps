@@ -1,84 +1,22 @@
-import { JobScope } from '../../models/SchemaTypes';
 import { AgentInbox } from '../../models/ShinkaiMessage';
 
-type ResourceSource = {
-  Standard: {
-    FileRef: {
-      file_name: string;
-      file_type: {
-        Document: string;
-      };
-      original_creation_datetime: null;
-      text_chunking_strategy: string;
-    };
-  };
-};
+export enum VectorSearchMode {
+  FillUpTo25k = 'FillUpTo25k',
+  MergeSiblings = 'MergeSiblings',
+}
 
-type ResourceKeywords = {
-  keyword_list: string[];
-  keywords_embedding: null;
-};
+export type ShinkaiPath = string;
 
-type VRHeader = {
-  resource_name: string;
-  resource_id: string;
-  resource_base_type: 'Document';
-  resource_source: ResourceSource;
-  resource_embedding: null;
-  resource_created_datetime: Date;
-  resource_last_written_datetime: Date;
-  resource_embedding_model_used: {
-    TextEmbeddingsInference: string;
-  };
-  resource_merkle_root: string;
-  resource_keywords: ResourceKeywords;
-  data_tag_names: string[];
-  metadata_index_keys: string[];
-};
-
-export type VRItem = {
-  name: string;
-  path: string;
-  vr_header: VRHeader;
-  created_datetime: Date;
-  last_written_datetime: Date;
-  last_read_datetime: Date;
-  vr_last_saved_datetime: Date;
-  source_file_map_last_saved_datetime: Date;
-  distribution_origin: null;
-  vr_size: number;
-  source_file_map_size: number;
-  merkle_hash: string;
-};
-
-export type VRFolder = {
-  path: string;
-  child_folders: VRFolder[];
-  child_items: Array<VRItem>;
-  created_datetime: Date;
-  last_written_datetime: Date;
-  merkle_root: string;
-  last_modified_datetime: Date;
-  last_read_datetime: Date;
-  merkle_hash: string;
-  name: string;
-};
-
-export type VRFolderScope = Pick<VRFolder, 'name' | 'path'>;
-export type VRItemScope = Pick<VRItem, 'name' | 'path'> & {
-  source: ResourceSource;
+export type JobScope = {
+  vector_fs_items: ShinkaiPath[];
+  vector_fs_folders: ShinkaiPath[];
+  vector_search_mode?: VectorSearchMode[];
 };
 
 export type CreateJobRequest = {
   llm_provider: string;
   job_creation_info: {
-    scope: {
-      network_folders: [];
-      vector_fs_folders: VRFolderScope[];
-      vector_fs_items: VRItemScope[];
-      local_vrpack: [];
-      local_vrkai: [];
-    };
+    scope: JobScope;
     associated_ui:
       | 'Playground'
       | {
@@ -93,13 +31,7 @@ export type CreateJobResponse = {
 };
 
 export type JobMessageRequest = {
-  job_message: {
-    job_id: string;
-    content: string;
-    files_inbox: string;
-    parent: string | null;
-    tool_key?: string;
-  };
+  job_message: JobMessage;
 };
 export type JobMessageResponse = {
   inbox: string;
@@ -128,8 +60,7 @@ export type JobMessage = {
   job_id: string;
   callback?: null;
   content: string;
-  files_inbox: string;
-  parent?: string;
+  parent: string | null;
   sheet_job_data?: null;
   tool_key?: string;
   metadata?: {
@@ -144,6 +75,8 @@ export type JobMessage = {
       response?: string;
     }[];
   };
+  fs_files_paths?: ShinkaiPath[];
+  job_filenames?: string[];
 };
 export type ChatMessage = {
   job_message: JobMessage;
@@ -157,12 +90,16 @@ export type ChatMessage = {
 export type GetLastMessagesResponse = ChatMessage[];
 export type GetLastMessagesWithBranchesResponse = ChatMessage[][];
 export type CreateFilesInboxResponse = string;
+
 export type AddFileToInboxRequest = {
   file_inbox_name: string;
   filename: string;
   file: File;
 };
-export type AddFileToInboxResponse = string;
+export type AddFileToInboxResponse = {
+  message: string;
+  filename: string;
+};
 
 export type LLMProvider = {
   id: string;
@@ -175,6 +112,11 @@ export type LLMProvider = {
   storage_bucket_permissions: string[];
   allowed_message_senders: string[];
 };
+
+export type GetDownloadFileRequest = {
+  path: string;
+};
+export type GetDownloadFileResponse = string;
 
 export type GetLLMProvidersResponse = LLMProvider[];
 
@@ -246,6 +188,7 @@ export type UpdateLLMProviderResponse = string;
 export type RemoveLLMProviderRequest = {
   llm_provider_id: string;
 };
+
 export type Inbox = {
   inbox_id: string;
   custom_name: string;
@@ -307,4 +250,16 @@ export type RetryMessageRequest = {
 
 export type RemoveJobRequest = {
   job_id: string;
+};
+export type AddFileToJobRequest = {
+  job_id: string;
+  filename: string;
+  file: File;
+};
+export type AddFileToJobResponse = string;
+export type GetJobFolderNameRequest = {
+  job_id: string;
+};
+export type GetJobFolderNameResponse = {
+  folder_name: string;
 };

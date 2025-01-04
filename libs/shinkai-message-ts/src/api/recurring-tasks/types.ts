@@ -1,9 +1,4 @@
-import {
-  JobConfig,
-  JobMessage,
-  VRFolderScope,
-  VRItemScope,
-} from '../jobs/types';
+import { JobConfig, JobMessage } from '../jobs/types';
 
 export type RecurringTaskAction =
   | {
@@ -19,11 +14,8 @@ export type RecurringTaskAction =
         llm_provider: string;
         job_creation_info: {
           scope: {
-            network_folders: [];
-            vector_fs_folders: VRFolderScope[];
-            vector_fs_items: VRItemScope[];
-            local_vrpack: [];
-            local_vrkai: [];
+            vector_fs_folders: string[];
+            vector_fs_items: string[];
           };
           is_hidden?: boolean;
           associated_ui?: null;

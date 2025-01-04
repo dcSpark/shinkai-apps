@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircledIcon, CircleIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { Inbox } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
-import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxes';
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/v2/queries/getMySubscriptions/useGetMySubscriptions';
 import {
@@ -50,16 +50,10 @@ export const GalxeSusbcriptions = () => {
     token: auth?.api_v2_key ?? '',
   });
 
-  const { data: subscriptionFolder } = useGetVRPathSimplified({
+  const { data: subscriptionFolder } = useGetListDirectoryContents({
     nodeAddress: auth?.node_address ?? '',
-    profile: auth?.profile ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
+    token: auth?.api_v2_key ?? '',
     path: SUBSCRIPTION_PATH,
-    my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-    my_device_identity_sk: auth?.profile_identity_sk ?? '',
-    node_encryption_pk: auth?.node_encryption_pk ?? '',
-    profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-    profile_identity_sk: auth?.profile_identity_sk ?? '',
   });
 
   const { data: subscriptions } = useGetMySubscriptions({

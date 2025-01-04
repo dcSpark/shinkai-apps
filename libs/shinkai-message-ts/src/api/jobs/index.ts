@@ -3,6 +3,7 @@ import { urlJoin } from '../../utils/url-join';
 import {
   AddFileToInboxRequest,
   AddFileToInboxResponse,
+  AddFileToJobRequest,
   AddLLMProviderRequest,
   AddLLMProviderResponse,
   CreateFilesInboxResponse,
@@ -11,8 +12,12 @@ import {
   GetAllInboxesResponse,
   GetChatConfigRequest,
   GetChatConfigResponse,
+  GetDownloadFileRequest,
+  GetDownloadFileResponse,
   GetFileNamesRequest,
   GetFileNamesResponse,
+  GetJobFolderNameRequest,
+  GetJobFolderNameResponse,
   GetJobScopeRequest,
   GetJobScopeResponse,
   GetLastMessagesRequest,
@@ -128,6 +133,7 @@ export const createFilesInbox = async (
   return response.data as CreateFilesInboxResponse;
 };
 
+// TODO: remove this
 export const addFileToInbox = async (
   nodeAddress: string,
   bearerToken: string,
@@ -152,39 +158,77 @@ export const addFileToInbox = async (
   return response.data as AddFileToInboxResponse;
 };
 
-export const uploadFilesToInbox = async (
+export const addFileToJob = async (
   nodeAddress: string,
   bearerToken: string,
-  files: File[],
-) => {
-  const folderId = await createFilesInbox(nodeAddress, bearerToken);
-  for (const file of files) {
-    await addFileToInbox(nodeAddress, bearerToken, {
-      filename: encodeURIComponent(file.name),
-      file_inbox_name: folderId,
-      file,
-    });
-  }
-  return folderId;
-};
+  payload: AddFileToJobRequest,
+): Promise<AddFileToInboxResponse> => {
+  const fileData = await payload.file.arrayBuffer();
 
-export const downloadFileFromInbox = async (
-  nodeAddress: string,
-  bearerToken: string,
-  inboxName: string,
-  filename: string,
-) => {
-  const response = await httpClient.get(
-    urlJoin(
-      nodeAddress,
-      `/v2/download_file_from_inbox/${inboxName}/${decodeURIComponent(filename)}`,
-    ),
+  const formData = new FormData();
+  formData.append('job_id', payload.job_id);
+  formData.append('filename', payload.filename);
+  formData.append('file_data', new Blob([fileData]));
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/upload_file_to_job'),
+    formData,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
-      responseType: 'blob',
+      responseType: 'json',
     },
   );
-  return response.data as Blob;
+
+  return response.data as AddFileToInboxResponse;
+};
+
+export const uploadFilesToJob = async (
+  nodeAddress: string,
+  bearerToken: string,
+  jobId: string,
+  files: File[],
+): Promise<AddFileToInboxResponse[]> => {
+  const responses: AddFileToInboxResponse[] = [];
+  for (const file of files) {
+    const response = await addFileToJob(nodeAddress, bearerToken, {
+      filename: encodeURIComponent(file.name),
+      job_id: jobId,
+      file,
+    });
+    responses.push(response);
+  }
+  return responses;
+};
+
+export const getJobFolderName = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetJobFolderNameRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/get_folder_name_for_job'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+      params: { job_id: payload.job_id },
+    },
+  );
+  return response.data as GetJobFolderNameResponse;
+};
+
+export const downloadFile = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetDownloadFileRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, `/v2/download_file`),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      params: payload,
+    },
+  );
+  return response.data as GetDownloadFileResponse;
 };
 
 export const getLLMProviders = async (

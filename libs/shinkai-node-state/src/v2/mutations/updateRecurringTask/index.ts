@@ -31,9 +31,6 @@ export const updateRecurringTask = async ({
           scope: {
             vector_fs_folders: [],
             vector_fs_items: [],
-            local_vrpack: [],
-            local_vrkai: [],
-            network_folders: [],
           },
         },
         llm_provider: llmProvider,
@@ -41,8 +38,7 @@ export const updateRecurringTask = async ({
           job_id: jobId,
           content: message,
           tool_key: toolKey,
-
-          files_inbox: '',
+          parent: null,
         },
       },
     },

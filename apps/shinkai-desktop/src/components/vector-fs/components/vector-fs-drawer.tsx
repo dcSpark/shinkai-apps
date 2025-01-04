@@ -1,16 +1,16 @@
 import { Sheet, SheetContent } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 
 import { useVectorFsStore } from '../context/vector-fs-context';
 import { VectorFolderSelectionProvider } from './folder-selection-list';
 import {
   VectorFsFolderCopyAction,
-  VectorFsFolderCreateShareableAction,
   VectorFsFolderDeleteAction,
   VectorFsFolderMoveAction,
-  VectorFsFolderUnshareAction,
 } from './vector-fs-folder-options';
 import {
   AddNewFolderAction,
+  CreateTextFileAction,
   SaveWebpageToVectorFsAction,
   UploadVRFilesAction,
 } from './vector-fs-general-options';
@@ -18,6 +18,7 @@ import { VectorFileDetails } from './vector-fs-item-detail';
 import {
   VectorFsItemCopyAction,
   VectorFsItemDeleteAction,
+  VectorFsItemEditTextFileAction,
   VectorFsItemMoveAction,
 } from './vector-fs-item-options';
 
@@ -32,6 +33,7 @@ const VectorFSDrawer = () => {
     (state) => state.setSelectedFolder,
   );
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
+  console.log('activeDrawerMenuOption', activeDrawerMenuOption);
   return (
     <Sheet
       onOpenChange={(open) => {
@@ -43,7 +45,13 @@ const VectorFSDrawer = () => {
       }}
       open={!!activeDrawerMenuOption}
     >
-      <SheetContent className="max-w-md">
+      <SheetContent
+        className={cn(
+          activeDrawerMenuOption === VectorFsGlobalAction.CreateTextFile
+            ? 'max-w-2xl'
+            : 'max-w-md',
+        )}
+      >
         <VectorFolderSelectionProvider>
           <VectorFSDrawerContent selectedOption={activeDrawerMenuOption} />
         </VectorFolderSelectionProvider>
@@ -58,6 +66,7 @@ export enum VectorFsGlobalAction {
   // GenerateFromWeb = 'generate-from-web',
   VectorFileDetails = 'vector-file-details',
   GenerateFromDocumentIncludeFolder = 'generate-from-document-include-folder',
+  CreateTextFile = 'create-text-file',
 }
 
 export enum VectorFsFolderAction {
@@ -65,13 +74,12 @@ export enum VectorFsFolderAction {
   Move = 'move-folder',
   Copy = 'copy-folder',
   Delete = 'delete-folder',
-  CreateShareable = 'create-shareable-folder',
-  Unshare = 'unshare-folder',
 }
 
 export enum VectorFsItemAction {
   Move = 'move-item',
   Copy = 'copy-item',
+  Edit = 'edit-item', // txt files
   Delete = 'delete-item',
 }
 
@@ -91,6 +99,8 @@ const VectorFSDrawerContent = ({
       return <VectorFileDetails />;
     case VectorFsGlobalAction.NewFolder:
       return <AddNewFolderAction />;
+    case VectorFsGlobalAction.CreateTextFile:
+      return <CreateTextFileAction />;
     case VectorFsGlobalAction.GenerateFromDocument:
       return <UploadVRFilesAction />;
     case VectorFsGlobalAction.GenerateFromDocumentIncludeFolder:
@@ -103,16 +113,14 @@ const VectorFSDrawerContent = ({
       return <VectorFsFolderCopyAction />;
     case VectorFsFolderAction.Delete:
       return <VectorFsFolderDeleteAction />;
-    case VectorFsFolderAction.CreateShareable:
-      return <VectorFsFolderCreateShareableAction />;
-    case VectorFsFolderAction.Unshare:
-      return <VectorFsFolderUnshareAction />;
 
     // item actions
     case VectorFsItemAction.Move:
       return <VectorFsItemMoveAction />;
     case VectorFsItemAction.Copy:
       return <VectorFsItemCopyAction />;
+    case VectorFsItemAction.Edit:
+      return <VectorFsItemEditTextFileAction />;
     case VectorFsItemAction.Delete:
       return <VectorFsItemDeleteAction />;
 

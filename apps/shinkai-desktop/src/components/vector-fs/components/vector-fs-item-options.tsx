@@ -1,14 +1,15 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { useCopyVrItem } from '@shinkai_network/shinkai-node-state/lib/mutations/copyVRItem/useCopyVrItem';
-import { useDeleteVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteVRItem/useDeleteVRItem';
-import { useMoveVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/moveVRItem/useMoveVRItem';
+import { useCopyFsItem } from '@shinkai_network/shinkai-node-state/v2/mutations/copyFsItem/useCopyFsItem';
+import { useMoveFsItem } from '@shinkai_network/shinkai-node-state/v2/mutations/moveFsItem/useMoveFsItem';
+import { useRemoveFsItem } from '@shinkai_network/shinkai-node-state/v2/mutations/removeFsItem/useRemoveFsItem';
+import { useGetDownloadFile } from '@shinkai_network/shinkai-node-state/v2/queries/getDownloadFile/useGetDownloadFile';
 import {
   Button,
   DrawerFooter,
   SheetHeader,
   SheetTitle,
 } from '@shinkai_network/shinkai-ui';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
@@ -17,6 +18,7 @@ import {
   FolderSelectionList,
   useVectorFolderSelectionStore,
 } from './folder-selection-list';
+import { CreateTextFileAction } from './vector-fs-general-options';
 
 export const VectorFsItemMoveAction = () => {
   const { t } = useTranslation();
@@ -30,17 +32,16 @@ export const VectorFsItemMoveAction = () => {
     (state) => state.destinationFolderPath,
   );
 
-  const { mutateAsync: moveVrFolder, isPending: isMovingVrFolder } =
-    useMoveVRItem({
-      onSuccess: () => {
-        setCurrentGlobalPath(destinationFolderPath ?? '/');
-        closeDrawerMenu();
-        toast.success(t('vectorFs.success.fileMoved'));
-      },
-      onError: () => {
-        toast.error(t('vectorFs.errors.fileMoved'));
-      },
-    });
+  const { mutateAsync: moveFsItem, isPending: isMovingFsItem } = useMoveFsItem({
+    onSuccess: () => {
+      setCurrentGlobalPath(destinationFolderPath ?? '/');
+      closeDrawerMenu();
+      toast.success(t('vectorFs.success.fileMoved'));
+    },
+    onError: () => {
+      toast.error(t('vectorFs.errors.fileMoved'));
+    },
+  });
 
   return (
     <React.Fragment>
@@ -59,19 +60,14 @@ export const VectorFsItemMoveAction = () => {
         <Button
           className="mt-4"
           disabled={destinationFolderPath === selectedFile?.path}
-          isLoading={isMovingVrFolder}
+          isLoading={isMovingFsItem}
           onClick={async () => {
-            await moveVrFolder({
+            await moveFsItem({
               nodeAddress: auth?.node_address ?? '',
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              profile: auth?.profile ?? '',
+              token: auth?.api_v2_key ?? '',
               originPath: selectedFile?.path ?? '',
-              destinationPath: destinationFolderPath ?? '/',
-              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-              my_device_identity_sk: auth?.profile_identity_sk ?? '',
-              node_encryption_pk: auth?.node_encryption_pk ?? '',
-              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-              profile_identity_sk: auth?.profile_identity_sk ?? '',
+              destinationPath:
+                `${destinationFolderPath}/${selectedFile?.name}` ?? '/',
             });
           }}
         >
@@ -87,7 +83,7 @@ export const VectorFsItemDeleteAction = () => {
   const auth = useAuth((state) => state.auth);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
 
-  const { mutateAsync: deleteVrItem, isPending } = useDeleteVRItem({
+  const { mutateAsync: deleteVrItem, isPending } = useRemoveFsItem({
     onSuccess: () => {
       closeDrawerMenu();
       toast.success(t('vectorFs.success.fileDeleted'));
@@ -119,14 +115,8 @@ export const VectorFsItemDeleteAction = () => {
           onClick={async () => {
             await deleteVrItem({
               nodeAddress: auth?.node_address ?? '',
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              profile: auth?.profile ?? '',
+              token: auth?.api_v2_key ?? '',
               itemPath: selectedFile?.path ?? '',
-              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-              my_device_identity_sk: auth?.profile_identity_sk ?? '',
-              node_encryption_pk: auth?.node_encryption_pk ?? '',
-              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-              profile_identity_sk: auth?.profile_identity_sk ?? '',
             });
           }}
           variant="destructive"
@@ -150,7 +140,7 @@ export const VectorFsItemCopyAction = () => {
     (state) => state.destinationFolderPath,
   );
 
-  const { mutateAsync: copyVrFolder, isPending } = useCopyVrItem({
+  const { mutateAsync: copyFsItem, isPending } = useCopyFsItem({
     onSuccess: () => {
       setCurrentGlobalPath(destinationFolderPath ?? '/');
       closeDrawerMenu();
@@ -180,17 +170,12 @@ export const VectorFsItemCopyAction = () => {
           disabled={destinationFolderPath === selectedFile?.path}
           isLoading={isPending}
           onClick={async () => {
-            await copyVrFolder({
+            await copyFsItem({
               nodeAddress: auth?.node_address ?? '',
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              profile: auth?.profile ?? '',
+              token: auth?.api_v2_key ?? '',
               originPath: selectedFile?.path ?? '',
-              destinationPath: destinationFolderPath ?? '/',
-              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-              my_device_identity_sk: auth?.profile_identity_sk ?? '',
-              node_encryption_pk: auth?.node_encryption_pk ?? '',
-              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-              profile_identity_sk: auth?.profile_identity_sk ?? '',
+              destinationPath:
+                `${destinationFolderPath}/${selectedFile?.name}` ?? '/',
             });
           }}
         >
@@ -199,4 +184,45 @@ export const VectorFsItemCopyAction = () => {
       </DrawerFooter>
     </React.Fragment>
   );
+};
+
+export const VectorFsItemEditTextFileAction = () => {
+  const auth = useAuth((state) => state.auth);
+  const selectedFile = useVectorFsStore((state) => state.selectedFile);
+
+  const fileNameWithoutExtension = selectedFile?.name?.split('.')?.[0] ?? '';
+
+  const [initialValues, setInitialValues] = React.useState({
+    name: fileNameWithoutExtension,
+    path: selectedFile?.path ?? '',
+    content: '',
+  });
+
+  const { mutateAsync: downloadFile } = useGetDownloadFile({});
+
+  useEffect(() => {
+    const fetchFileContent = async () => {
+      if (selectedFile && auth) {
+        try {
+          const fileContentBase64 = await downloadFile({
+            nodeAddress: auth.node_address,
+            token: auth.api_v2_key,
+            path: selectedFile.path,
+          });
+          const fileContent = atob(fileContentBase64);
+          setInitialValues({
+            name: fileNameWithoutExtension,
+            path: selectedFile.path,
+            content: fileContent,
+          });
+        } catch (error) {
+          console.error('Error downloading file content:', error);
+        }
+      }
+    };
+
+    fetchFileContent();
+  }, [selectedFile, auth, downloadFile]);
+
+  return <CreateTextFileAction initialValues={initialValues} mode="edit" />;
 };

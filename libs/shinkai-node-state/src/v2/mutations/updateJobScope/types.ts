@@ -1,6 +1,8 @@
 import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { UpdateChatConfigResponse } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
-import { JobScope } from '@shinkai_network/shinkai-message-ts/models/SchemaTypes';
+import {
+  JobScope,
+  UpdateChatConfigResponse,
+} from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 
 export type UpdateChatConfigOutput = UpdateChatConfigResponse;
 

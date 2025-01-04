@@ -1,7 +1,7 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { useCopyVrItem } from '@shinkai_network/shinkai-node-state/lib/mutations/copyVRItem/useCopyVrItem';
-import { useDeleteVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/deleteVRItem/useDeleteVRItem';
-import { useMoveVRItem } from '@shinkai_network/shinkai-node-state/lib/mutations/moveVRItem/useMoveVRItem';
+import { useCopyFsItem } from '@shinkai_network/shinkai-node-state/v2/mutations/copyFsItem/useCopyFsItem';
+import { useMoveFsItem } from '@shinkai_network/shinkai-node-state/v2/mutations/moveFsItem/useMoveFsItem';
+import { useRemoveFsItem } from '@shinkai_network/shinkai-node-state/v2/mutations/removeFsItem/useRemoveFsItem';
 import {
   Button,
   DrawerFooter,
@@ -30,8 +30,8 @@ export const VectorFsItemMoveAction = () => {
     (state) => state.destinationFolderPath,
   );
 
-  const { mutateAsync: moveVrFolder, isPending: isMovingVrFolder } =
-    useMoveVRItem({
+  const { mutateAsync: moveFsItem, isPending: isMovingVrFolder } =
+    useMoveFsItem({
       onSuccess: () => {
         setCurrentGlobalPath(destinationFolderPath ?? '/');
         closeDrawerMenu();
@@ -61,17 +61,11 @@ export const VectorFsItemMoveAction = () => {
           disabled={destinationFolderPath === selectedFile?.path}
           isLoading={isMovingVrFolder}
           onClick={async () => {
-            await moveVrFolder({
+            await moveFsItem({
               nodeAddress: auth?.node_address ?? '',
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              profile: auth?.profile ?? '',
+              token: auth?.api_v2_key ?? '',
               originPath: selectedFile?.path ?? '',
               destinationPath: destinationFolderPath ?? '/',
-              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-              my_device_identity_sk: auth?.profile_identity_sk ?? '',
-              node_encryption_pk: auth?.node_encryption_pk ?? '',
-              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-              profile_identity_sk: auth?.profile_identity_sk ?? '',
             });
           }}
         >
@@ -87,7 +81,7 @@ export const VectorFsItemDeleteAction = () => {
   const auth = useAuth((state) => state.auth);
   const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
 
-  const { mutateAsync: deleteVrItem, isPending } = useDeleteVRItem({
+  const { mutateAsync: deleteVrItem, isPending } = useRemoveFsItem({
     onSuccess: () => {
       closeDrawerMenu();
       toast.success(t('vectorFs.success.fileDeleted'));
@@ -119,14 +113,8 @@ export const VectorFsItemDeleteAction = () => {
           onClick={async () => {
             await deleteVrItem({
               nodeAddress: auth?.node_address ?? '',
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              profile: auth?.profile ?? '',
+              token: auth?.api_v2_key ?? '',
               itemPath: selectedFile?.path ?? '',
-              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-              my_device_identity_sk: auth?.profile_identity_sk ?? '',
-              node_encryption_pk: auth?.node_encryption_pk ?? '',
-              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-              profile_identity_sk: auth?.profile_identity_sk ?? '',
             });
           }}
           variant="destructive"
@@ -150,7 +138,7 @@ export const VectorFsItemCopyAction = () => {
     (state) => state.destinationFolderPath,
   );
 
-  const { mutateAsync: copyVrFolder, isPending } = useCopyVrItem({
+  const { mutateAsync: copyVrFolder, isPending } = useCopyFsItem({
     onSuccess: () => {
       setCurrentGlobalPath(destinationFolderPath ?? '/');
       closeDrawerMenu();
@@ -182,15 +170,9 @@ export const VectorFsItemCopyAction = () => {
           onClick={async () => {
             await copyVrFolder({
               nodeAddress: auth?.node_address ?? '',
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              profile: auth?.profile ?? '',
+              token: auth?.api_v2_key ?? '',
               originPath: selectedFile?.path ?? '',
               destinationPath: destinationFolderPath ?? '/',
-              my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-              my_device_identity_sk: auth?.profile_identity_sk ?? '',
-              node_encryption_pk: auth?.node_encryption_pk ?? '',
-              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-              profile_identity_sk: auth?.profile_identity_sk ?? '',
             });
           }}
         >

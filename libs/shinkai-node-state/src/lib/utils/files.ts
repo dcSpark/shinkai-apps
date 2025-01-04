@@ -1,30 +1,21 @@
+import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import { TreeNode } from 'primereact/treenode';
 
-import { VRFolder, VRItem } from '../queries/getVRPathSimplified/types';
-
 export function transformDataToTreeNodes(
-  data: VRFolder,
+  data: DirectoryContent[],
   parentPath = '/',
 ): TreeNode[] {
   const result: TreeNode[] = [];
 
-  for (const folder of data?.child_folders ?? []) {
-    const folderNode: TreeNode = {
-      key: folder.path,
-      label: folder.name,
-      data: folder,
-      icon: 'icon-folder',
-      children: transformDataToTreeNodes(folder, folder.path),
-    };
-    result.push(folderNode);
-  }
-
-  for (const item of data.child_items ?? []) {
+  for (const item of data ?? []) {
     const itemNode: TreeNode = {
       key: item.path,
       label: item.name,
       data: item,
-      icon: 'icon-file',
+      icon: item.is_directory ? 'icon-folder' : 'icon-file',
+      children: item.is_directory
+        ? transformDataToTreeNodes(item.children ?? [], item.path)
+        : undefined,
     };
     result.push(itemNode);
   }
@@ -32,16 +23,9 @@ export function transformDataToTreeNodes(
   return result;
 }
 
-export function getFlatChildItems(data: VRFolder): VRItem[] {
-  let result: VRItem[] = [];
-
-  for (const folder of data?.child_folders ?? []) {
-    result = result.concat(getFlatChildItems(folder));
-  }
-
-  for (const item of data.child_items ?? []) {
-    result.push(item);
-  }
-
+export function getFlatChildItems(
+  data: DirectoryContent[],
+): DirectoryContent[] {
+  const result: DirectoryContent[] = [];
   return result;
 }
