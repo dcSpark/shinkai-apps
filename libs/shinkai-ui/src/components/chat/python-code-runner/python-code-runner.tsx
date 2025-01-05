@@ -2,6 +2,8 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import { AnimatePresence, motion } from 'framer-motion';
+import { loadPyodide, PyodideInterface } from 'pyodide';
+import React, { useCallback,useEffect } from 'react';
 
 import { Button } from '../../button';
 import { OutputRender } from './output-render';
@@ -10,6 +12,108 @@ import PythonRunnerWorker from './python-code-runner-web-worker?worker';
 
 // Utility function to create a delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Pyodide instance in the main thread
+let pyodideMain: PyodideInterface | null = null;
+
+// Function to initialize Pyodide in the main thread
+async function initPyodideInMainThread() {
+  if (pyodideMain) {
+    console.log('Pyodide is already initialized in main thread.');
+    return;
+  }
+
+  console.time('initialize main thread pyodide');
+  pyodideMain = await loadPyodide({
+    indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/',
+    stdout: console.log,
+    stderr: console.error,
+  });
+  console.log('Pyodide initialized in main thread');
+
+  // Mount IDBFS to the same path as the worker
+  try {
+    if (!pyodideMain) return;
+    
+    pyodideMain.FS.mount(
+      pyodideMain.FS.filesystems.IDBFS,
+      {},
+      '/home/pyodide'
+    );
+
+    // Sync FROM IDB (true) to pull anything stored by the worker
+    await new Promise<void>((resolve, reject) => {
+      if (!pyodideMain) {
+        reject(new Error('Pyodide not initialized'));
+        return;
+      }
+      
+      pyodideMain.FS.syncfs(true, (err: Error | null) => {
+        if (err) {
+          console.error('Failed to sync from IndexedDB:', err);
+          reject(err);
+        } else {
+          console.log('Successfully synced from IndexedDB');
+          resolve();
+        }
+      });
+    });
+
+    // List the directory contents
+    const contents = pyodideMain.FS.readdir('/home/pyodide');
+    console.log('Main thread sees /home/pyodide contents:', contents);
+  } catch (error) {
+    console.error('Failed to set up IDBFS in main thread:', error);
+  }
+
+  console.timeEnd('initialize main thread pyodide');
+}
+
+type FileSystemEntry = {
+  name: string;
+  type: 'directory' | 'file';
+  content?: string;
+  contents?: FileSystemEntry[];
+};
+
+// Function to read IDBFS contents
+function readIDBFSContents(path: string): FileSystemEntry[] | null {
+  if (!pyodideMain) {
+    console.error('Pyodide not initialized in main thread');
+    return null;
+  }
+
+  try {
+    const entries = pyodideMain.FS.readdir(path);
+    const contents = entries.filter((entry: string) => entry !== '.' && entry !== '..');
+    
+    const result = contents.map((entry: string) => {
+      const fullPath = `${path}/${entry}`;
+      const stat = pyodideMain?.FS.stat(fullPath);
+      const isDirectory = stat && pyodideMain?.FS.isDir(stat.mode);
+      
+      if (isDirectory) {
+        return { 
+          name: entry, 
+          type: 'directory' as const, 
+          contents: readIDBFSContents(fullPath) 
+        };
+      } else {
+        const content = pyodideMain?.FS.readFile(fullPath, { encoding: 'utf8' });
+        return { 
+          name: entry, 
+          type: 'file' as const, 
+          content: content as string 
+        };
+      }
+    });
+
+    return result;
+  } catch (error) {
+    console.error(`Error reading ${path}:`, error);
+    return null;
+  }
+}
 
 type PythonCodeRunnerProps = {
   code: string;
@@ -172,40 +276,90 @@ export const PythonCodeRunner = ({ code }: PythonCodeRunnerProps) => {
     data: runResult,
     isPending,
   } = usePythonRunnerRunMutation();
+
+  // Initialize Pyodide in main thread when component mounts
+  useEffect(() => {
+    initPyodideInMainThread().catch(console.error);
+  }, []);
+
+  // Function to read and log IDBFS contents
+  const handleReadIDBFS = useCallback(() => {
+    if (!pyodideMain) {
+      console.error('Pyodide not initialized in main thread');
+      return;
+    }
+
+    const contents = readIDBFSContents('/home/pyodide');
+    console.log('IDBFS contents:', contents);
+
+    // Check if injected.txt exists
+    const hasInjectedFile = contents?.some(entry => entry.name === 'injected.txt');
+    
+    if (!hasInjectedFile) {
+      try {
+        // Create and write to injected.txt
+        pyodideMain.FS.writeFile('/home/pyodide/injected.txt', 'hello hello', { encoding: 'utf8' });
+        
+        // Sync TO IDB (false) to persist the new file
+        pyodideMain.FS.syncfs(false, (err: Error | null) => {
+          if (err) {
+            console.error('Failed to sync to IndexedDB:', err);
+          } else {
+            console.log('Successfully created and synced injected.txt');
+          }
+        });
+      } catch (error) {
+        console.error('Failed to create injected.txt:', error);
+      }
+    }
+  }, []);
+
   return (
     <div className="mt-4">
-      <Button
-        className="h-8 min-w-[160px] cursor-pointer justify-start rounded-md border border-[#63676c] px-4 text-gray-50 hover:border-white hover:bg-transparent"
-        disabled={isPending}
-        isLoading={isPending}
-        onClick={() => {
-          run({ code });
-        }}
-        size={'sm'}
-        variant="outline"
-      >
-        {isPending ? null : (
-          <svg
-            className="mr-2 h-4 w-4"
-            fill="currentColor"
-            height="1em"
-            stroke="currentColor"
-            strokeWidth="0"
-            viewBox="0 0 512 512"
-            width="1em"
-          >
-            <path
-              d="M112 111v290c0 17.44 17 28.52 31 20.16l247.9-148.37c12.12-7.25 12.12-26.33 0-33.58L143 90.84c-14-8.36-31 2.72-31 20.16z"
-              fill="none"
-              strokeMiterlimit="10"
-              strokeWidth="32"
-            />
-          </svg>
-        )}
-        <span className="text-xs font-semibold text-gray-50">
-          {i18n.t('codeRunner.executeCode')}
-        </span>
-      </Button>
+      <div className="flex gap-2">
+        <Button
+          className="h-8 min-w-[160px] cursor-pointer justify-start rounded-md border border-[#63676c] px-4 text-gray-50 hover:border-white hover:bg-transparent"
+          disabled={isPending}
+          isLoading={isPending}
+          onClick={() => {
+            run({ code });
+          }}
+          size={'sm'}
+          variant="outline"
+        >
+          {isPending ? null : (
+            <svg
+              className="mr-2 h-4 w-4"
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              strokeWidth="0"
+              viewBox="0 0 512 512"
+              width="1em"
+            >
+              <path
+                d="M112 111v290c0 17.44 17 28.52 31 20.16l247.9-148.37c12.12-7.25 12.12-26.33 0-33.58L143 90.84c-14-8.36-31 2.72-31 20.16z"
+                fill="none"
+                strokeMiterlimit="10"
+                strokeWidth="32"
+              />
+            </svg>
+          )}
+          <span className="text-xs font-semibold text-gray-50">
+            {i18n.t('codeRunner.executeCode')}
+          </span>
+        </Button>
+        <Button
+          className="h-8 cursor-pointer justify-start rounded-md border border-[#63676c] px-4 text-gray-50 hover:border-white hover:bg-transparent"
+          onClick={handleReadIDBFS}
+          size={'sm'}
+          variant="outline"
+        >
+          <span className="text-xs font-semibold text-gray-50">
+            Read IDBFS
+          </span>
+        </Button>
+      </div>
       <AnimatePresence>
         {!isPending && runResult && (
           <motion.div
