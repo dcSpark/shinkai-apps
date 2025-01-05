@@ -60,6 +60,7 @@ import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import { ARTIFACTS_SYSTEM_PROMPT } from '../constants';
 import { usePromptSelectionStore } from '../prompt/context/prompt-selection-context';
 import {
   AIModelSelector,
@@ -252,12 +253,12 @@ function ConversationEmptyFooter() {
     name: 'files',
   });
   const { mutateAsync: createJob, isPending } = useCreateJob({
-    onError: (error) => {
+    onError: (error: Error) => {
       toast.error('Failed to send message', {
         description: error.response?.data?.message ?? error.message,
       });
     },
-    onSuccess: async (data, variables) => {
+    onSuccess: async (data: { jobId: string }, variables: CreateJobFormSchema) => {
       navigate(
         `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
       );
@@ -373,7 +374,7 @@ function ConversationEmptyFooter() {
                             {...chatForm.register('files')}
                           />
                           <PromptSelectionActionBar />
-                          <ToolsSwitchActionBar />
+                          <ToolsSwitchActionBar form={chatConfigForm} />
                         </div>
                         {!isAgentInbox && (
                           <CreateChatConfigActionBar form={chatConfigForm} />
@@ -525,15 +526,6 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     },
   });
 
-  const selectedTool = chatForm.watch('tool');
-
-  const promptSelected = usePromptSelectionStore(
-    (state) => state.promptSelected,
-  );
-
-  const currentInbox = useGetCurrentInbox();
-  const isAgentInbox = currentInbox?.agent?.type === 'Agent';
-
   const { data: chatConfig } = useGetChatConfig(
     {
       nodeAddress: auth?.node_address ?? '',
@@ -542,6 +534,40 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     },
     { enabled: !!inboxId },
   );
+
+  const chatConfigForm = useForm<ChatConfigFormSchemaType>({
+    resolver: zodResolver(chatConfigFormSchema),
+    defaultValues: {
+      stream: chatConfig?.stream ?? DEFAULT_CHAT_CONFIG.stream,
+      customPrompt: chatConfig?.custom_prompt ?? '',
+      temperature: chatConfig?.temperature ?? DEFAULT_CHAT_CONFIG.temperature,
+      topP: chatConfig?.top_p ?? DEFAULT_CHAT_CONFIG.top_p,
+      topK: chatConfig?.top_k ?? DEFAULT_CHAT_CONFIG.top_k,
+      useTools: chatConfig?.use_tools ?? DEFAULT_CHAT_CONFIG.use_tools,
+    },
+  });
+
+  useEffect(() => {
+    if (chatConfig) {
+      chatConfigForm.reset({
+        stream: chatConfig.stream,
+        customPrompt: chatConfig.custom_prompt ?? '',
+        temperature: chatConfig.temperature,
+        topP: chatConfig.top_p,
+        topK: chatConfig.top_k,
+        useTools: chatConfig.use_tools,
+      });
+    }
+  }, [chatConfig, chatConfigForm]);
+
+  const selectedTool = chatForm.watch('tool');
+
+  const promptSelected = usePromptSelectionStore(
+    (state) => state.promptSelected,
+  );
+
+  const currentInbox = useGetCurrentInbox();
+  const isAgentInbox = currentInbox?.agent?.type === 'Agent';
 
   const hasProviderEnableStreaming = streamingSupportedModels.includes(
     currentInbox?.agent?.model.split(':')?.[0] as Models,
@@ -714,7 +740,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                             {...chatForm.register('files')}
                           />
                           <PromptSelectionActionBar />
-                          <ToolsSwitchActionBar />
+                          <ToolsSwitchActionBar form={chatConfigForm} />
                         </div>
 
                         {!isAgentInbox && <UpdateChatConfigActionBar />}
