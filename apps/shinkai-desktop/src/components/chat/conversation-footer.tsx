@@ -61,7 +61,6 @@ import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
-import { ARTIFACTS_SYSTEM_PROMPT } from '../constants';
 import { usePromptSelectionStore } from '../prompt/context/prompt-selection-context';
 import {
   AIModelSelector,
