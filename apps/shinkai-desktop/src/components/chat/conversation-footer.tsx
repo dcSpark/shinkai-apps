@@ -18,6 +18,7 @@ import {
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
+import type { CreateJobInput, CreateJobOutput } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/types';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mutations/stopGeneratingLLM/useStopGeneratingLLM';
@@ -253,12 +254,12 @@ function ConversationEmptyFooter() {
     name: 'files',
   });
   const { mutateAsync: createJob, isPending } = useCreateJob({
-    onError: (error: Error) => {
+    onError: (error: { response?: { data?: { message?: string } }; message: string }) => {
       toast.error('Failed to send message', {
         description: error.response?.data?.message ?? error.message,
       });
     },
-    onSuccess: async (data: { jobId: string }, variables: CreateJobFormSchema) => {
+    onSuccess: async (data: CreateJobOutput, variables: CreateJobInput) => {
       navigate(
         `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
       );
