@@ -73,6 +73,10 @@ import {
 } from './chat-action-bar/chat-config-action-bar';
 import { FileSelectionActionBar } from './chat-action-bar/file-selection-action-bar';
 import PromptSelectionActionBar from './chat-action-bar/prompt-selection-action-bar';
+import {
+  ToolsSwitchActionBar,
+  UpdateToolsSwitchActionBar,
+} from './chat-action-bar/tools-switch-action-bar';
 import { streamingSupportedModels } from './constants';
 import { useSetJobScope } from './context/set-job-scope-context';
 
@@ -365,14 +369,13 @@ function ConversationEmptyFooter() {
                             }}
                             onClick={openFilePicker}
                           />
-                          <input
-                            {...getInputFileProps({
-                              onChange: chatForm.register('files').onChange,
-                            })}
-                            {...chatForm.register('files')}
-                          />
-
                           <PromptSelectionActionBar />
+                          <ToolsSwitchActionBar
+                            checked={chatConfigForm.watch('useTools')}
+                            onCheckedChange={(checked) => {
+                              chatConfigForm.setValue('useTools', checked);
+                            }}
+                          />
                         </div>
                         {!isAgentInbox && (
                           <CreateChatConfigActionBar form={chatConfigForm} />
@@ -524,15 +527,6 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     },
   });
 
-  const selectedTool = chatForm.watch('tool');
-
-  const promptSelected = usePromptSelectionStore(
-    (state) => state.promptSelected,
-  );
-
-  const currentInbox = useGetCurrentInbox();
-  const isAgentInbox = currentInbox?.agent?.type === 'Agent';
-
   const { data: chatConfig } = useGetChatConfig(
     {
       nodeAddress: auth?.node_address ?? '',
@@ -541,6 +535,40 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     },
     { enabled: !!inboxId },
   );
+
+  const chatConfigForm = useForm<ChatConfigFormSchemaType>({
+    resolver: zodResolver(chatConfigFormSchema),
+    defaultValues: {
+      stream: chatConfig?.stream ?? DEFAULT_CHAT_CONFIG.stream,
+      customPrompt: chatConfig?.custom_prompt ?? '',
+      temperature: chatConfig?.temperature ?? DEFAULT_CHAT_CONFIG.temperature,
+      topP: chatConfig?.top_p ?? DEFAULT_CHAT_CONFIG.top_p,
+      topK: chatConfig?.top_k ?? DEFAULT_CHAT_CONFIG.top_k,
+      useTools: chatConfig?.use_tools ?? DEFAULT_CHAT_CONFIG.use_tools,
+    },
+  });
+
+  useEffect(() => {
+    if (chatConfig) {
+      chatConfigForm.reset({
+        stream: chatConfig.stream,
+        customPrompt: chatConfig.custom_prompt ?? '',
+        temperature: chatConfig.temperature,
+        topP: chatConfig.top_p,
+        topK: chatConfig.top_k,
+        useTools: chatConfig.use_tools,
+      });
+    }
+  }, [chatConfig, chatConfigForm]);
+
+  const selectedTool = chatForm.watch('tool');
+
+  const promptSelected = usePromptSelectionStore(
+    (state) => state.promptSelected,
+  );
+
+  const currentInbox = useGetCurrentInbox();
+  const isAgentInbox = currentInbox?.agent?.type === 'Agent';
 
   const hasProviderEnableStreaming = streamingSupportedModels.includes(
     currentInbox?.agent?.model.split(':')?.[0] as Models,
@@ -707,6 +735,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                             onClick={openFilePicker}
                           />
                           <PromptSelectionActionBar />
+                          <UpdateToolsSwitchActionBar />
                         </div>
 
                         {!isAgentInbox && <UpdateChatConfigActionBar />}
