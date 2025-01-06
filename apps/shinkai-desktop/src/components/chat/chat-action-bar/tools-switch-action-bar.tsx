@@ -103,8 +103,6 @@ export function UpdateToolsSwitchActionBar() {
     },
   });
 
-  console.log(chatConfigForm.getValues());
-
   const handleUpdateTool = async (useTools: boolean) => {
     await updateChatConfig({
       nodeAddress: auth?.node_address ?? '',
