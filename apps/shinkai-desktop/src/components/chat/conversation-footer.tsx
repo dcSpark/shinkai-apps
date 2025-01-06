@@ -370,12 +370,14 @@ function ConversationEmptyFooter() {
                             onClick={openFilePicker}
                           />
                           <PromptSelectionActionBar />
-                          <ToolsSwitchActionBar
-                            checked={chatConfigForm.watch('useTools')}
-                            onCheckedChange={(checked) => {
-                              chatConfigForm.setValue('useTools', checked);
-                            }}
-                          />
+                          {!isAgentInbox && (
+                            <ToolsSwitchActionBar
+                              checked={chatConfigForm.watch('useTools')}
+                              onCheckedChange={(checked) => {
+                                chatConfigForm.setValue('useTools', checked);
+                              }}
+                            />
+                          )}
                         </div>
                         {!isAgentInbox && (
                           <CreateChatConfigActionBar form={chatConfigForm} />
