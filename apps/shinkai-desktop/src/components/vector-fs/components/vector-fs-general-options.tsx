@@ -3,13 +3,16 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   CreateFolderFormSchema,
   createFolderFormSchema,
+  CreateTextFileFormSchema,
+  createTextFileFormSchema,
   SaveWebpageToVectorFsFormSchema,
   saveWebpageToVectorFsFormSchema,
   UploadVRFilesFormSchema,
   uploadVRFilesFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/vector-fs/folder';
-import { useCreateVRFolder } from '@shinkai_network/shinkai-node-state/lib/mutations/createVRFolder/useCreateVRFolder';
-import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/lib/mutations/uploadVRFiles/useUploadVRFiles';
+import { useCreateFolder } from '@shinkai_network/shinkai-node-state/v2/mutations/createFolder/useCreateFolder';
+import { useRemoveFsItem } from '@shinkai_network/shinkai-node-state/v2/mutations/removeFsItem/useRemoveFsItem';
+import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadVRFiles/useUploadVRFiles';
 import {
   Button,
   FileItem,
@@ -29,14 +32,16 @@ import {
   DirectoryTypeIcon,
   FileTypeIcon,
 } from '@shinkai_network/shinkai-ui/assets';
-import { useEffect } from 'react';
+import { FileType2Icon } from 'lucide-react';
+import { PrismEditor } from 'prism-react-editor';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { allowedFileExtensions } from '../../../lib/constants';
 import { useAnalytics } from '../../../lib/posthog-provider';
 import { useAuth } from '../../../store/auth';
+import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import { useVectorFsStore } from '../context/vector-fs-context';
 import {
   FolderSelectionList,
@@ -58,9 +63,8 @@ export const AddNewFolderAction = () => {
     isPending,
     mutateAsync: createVRFolder,
     isSuccess,
-  } = useCreateVRFolder({
+  } = useCreateFolder({
     onSuccess: () => {
-      toast.success(t('vectorFs.success.folderCreated'));
       createFolderForm.reset();
       closeDrawerMenu();
     },
@@ -74,15 +78,9 @@ export const AddNewFolderAction = () => {
 
     await createVRFolder({
       nodeAddress: auth?.node_address ?? '',
-      profile: auth?.profile ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      token: auth?.api_v2_key ?? '',
       folderName: values.name,
       path: currentGlobalPath,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
     });
   };
 
@@ -183,16 +181,9 @@ export const UploadVRFilesAction = () => {
     closeDrawerMenu();
     await uploadVRFiles({
       nodeAddress: auth?.node_address ?? '',
-      sender: auth?.shinkai_identity ?? '',
-      senderSubidentity: auth?.profile ?? '',
-      receiver: auth?.shinkai_identity ?? '',
       destinationPath: currentGlobalPath,
       files: values.files,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
+      token: auth?.api_v2_key ?? '',
     });
   };
 
@@ -222,9 +213,8 @@ export const UploadVRFilesAction = () => {
                   <div className="flex flex-col space-y-1">
                     <div className="flex items-center justify-center">
                       <FileUploader
-                        accept={allowedFileExtensions.join(',')}
                         allowMultiple
-                        descriptionText={`Supports ${allowedFileExtensions.join(', ')} `}
+                        descriptionText={t('common.uploadAFileDescription')}
                         onChange={(acceptedFiles) => {
                           field.onChange(acceptedFiles);
                         }}
@@ -302,16 +292,9 @@ export const SaveWebpageToVectorFsAction = () => {
     closeDrawerMenu();
     await uploadVRFiles({
       nodeAddress: auth?.node_address ?? '',
-      sender: auth?.shinkai_identity ?? '',
-      senderSubidentity: auth?.profile ?? '',
-      receiver: auth?.shinkai_identity ?? '',
       destinationPath: values.destinationFolderPath,
       files: values.files,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
+      token: auth?.api_v2_key ?? '',
     });
   };
 
@@ -368,6 +351,147 @@ export const SaveWebpageToVectorFsAction = () => {
             type="submit"
           >
             Save
+          </Button>
+        </form>
+      </Form>
+    </>
+  );
+};
+
+export const CreateTextFileAction = ({
+  initialValues,
+  mode = 'create',
+}: {
+  initialValues?: { name: string; content: string; path: string };
+  mode?: 'create' | 'edit';
+}) => {
+  const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
+  const currentGlobalPath = useVectorFsStore(
+    (state) => state.currentGlobalPath,
+  );
+
+  const textFileContentRef = useRef<PrismEditor | null>(null);
+
+  const closeDrawerMenu = useVectorFsStore((state) => state.closeDrawerMenu);
+  const createTextFileForm = useForm<CreateTextFileFormSchema>({
+    resolver: zodResolver(createTextFileFormSchema),
+    defaultValues: initialValues,
+  });
+
+  useEffect(() => {
+    if (initialValues) {
+      createTextFileForm.setValue('name', initialValues.name);
+    }
+  }, [initialValues, createTextFileForm]);
+
+  const { isPending, mutateAsync: uploadVRFiles } = useUploadVRFiles({
+    onSuccess: (_) => {
+      createTextFileForm.reset();
+    },
+    onError: (error) => {
+      toast.error(t('vectorFs.errors.filesUploaded'), {
+        id: 'uploading-VR-files',
+        description: error.message,
+      });
+    },
+  });
+
+  const { mutateAsync: deleteVrItem, isPending: isRemovingItem } =
+    useRemoveFsItem({
+      onError: () => {
+        toast.error(t('vectorFs.errors.fileDeleted'));
+      },
+    });
+
+  const onSubmit = async (values: CreateTextFileFormSchema) => {
+    if (!auth) return;
+    const textFileContent = textFileContentRef.current?.value;
+    if (!textFileContent) {
+      toast.error('Please enter file content');
+      return;
+    }
+    const textFile = new File([textFileContent], `${values.name}.txt`, {
+      type: 'text/plain',
+    });
+
+    if (mode === 'create') {
+      await uploadVRFiles({
+        nodeAddress: auth?.node_address ?? '',
+        destinationPath: currentGlobalPath,
+        files: [textFile],
+        token: auth?.api_v2_key ?? '',
+      });
+    }
+
+    if (mode === 'edit') {
+      await deleteVrItem({
+        nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
+        itemPath: initialValues?.path ?? '',
+      });
+      await uploadVRFiles({
+        nodeAddress: auth?.node_address ?? '',
+        destinationPath: currentGlobalPath,
+        files: [textFile],
+        token: auth?.api_v2_key ?? '',
+      });
+    }
+
+    closeDrawerMenu();
+  };
+
+  return (
+    <>
+      <SheetHeader>
+        <SheetTitle className="flex flex-col items-start gap-1">
+          <FileType2Icon className="h-8 w-8" />
+          {mode === 'create' && t('vectorFs.actions.createTextFile')}
+          {mode === 'edit' && t('vectorFs.actions.editTextFile')}
+        </SheetTitle>
+      </SheetHeader>
+      <Form {...createTextFileForm}>
+        <form
+          className="flex h-[calc(100vh-110px)] flex-col gap-8 pt-4"
+          onSubmit={createTextFileForm.handleSubmit(onSubmit)}
+        >
+          <FormField
+            control={createTextFileForm.control}
+            name="name"
+            render={({ field }) => (
+              <TextField
+                autoFocus
+                field={{
+                  ...field,
+                  onKeyDown: (event) => {
+                    if (
+                      event.key === 'Enter' &&
+                      (event.metaKey || event.ctrlKey)
+                    ) {
+                      createTextFileForm.handleSubmit(onSubmit)();
+                    }
+                  },
+                }}
+                label={t('vectorFs.forms.textFileName')}
+              />
+            )}
+          />
+          <div className="flex flex-1 flex-col space-y-2 overflow-hidden">
+            <p className="text-gray-80 text-xs font-semibold">Content</p>
+            <ToolCodeEditor
+              language="txt"
+              ref={textFileContentRef}
+              value={initialValues?.content ?? ''}
+            />
+          </div>
+          <Button
+            className="w-full"
+            disabled={isPending || isRemovingItem}
+            isLoading={isPending || isRemovingItem}
+            type="submit"
+          >
+            {mode === 'create' && t('vectorFs.actions.createTextFile')}
+            {mode === 'edit' && t('vectorFs.actions.editTextFile')}
           </Button>
         </form>
       </Form>

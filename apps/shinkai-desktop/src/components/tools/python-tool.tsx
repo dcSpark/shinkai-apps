@@ -135,7 +135,7 @@ export default function PythonTool({
 
     await updateTool({
       toolKey: toolKey ?? '',
-      toolType: 'Deno',
+      toolType: 'Python',
       toolPayload: {
         config: data.config.map((conf) => ({
           BasicConfig: {

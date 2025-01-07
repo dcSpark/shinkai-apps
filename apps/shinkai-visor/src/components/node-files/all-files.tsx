@@ -5,7 +5,7 @@ import {
   VRFolder,
   VRItem,
 } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
-import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
 import { useGetMySharedFolders } from '@shinkai_network/shinkai-node-state/v2/queries/getMySharedFolders/useGetMySharedFolders';
 import {
   Breadcrumb,
@@ -88,17 +88,11 @@ const AllFiles = () => {
     isPending: isVRFilesPending,
     data: VRFiles,
     isSuccess: isVRFilesSuccess,
-  } = useGetVRPathSimplified(
+  } = useGetListDirectoryContents(
     {
       nodeAddress: auth?.node_address ?? '',
-      profile: auth?.profile ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
       path: currentGlobalPath,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
+      token: auth?.api_v2_key ?? '',
     },
     {
       refetchInterval: 6000,

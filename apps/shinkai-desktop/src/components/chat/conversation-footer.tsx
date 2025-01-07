@@ -16,10 +16,6 @@ import {
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
-import {
-  VRFolder,
-  VRItem,
-} from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
@@ -77,6 +73,10 @@ import {
 } from './chat-action-bar/chat-config-action-bar';
 import { FileSelectionActionBar } from './chat-action-bar/file-selection-action-bar';
 import PromptSelectionActionBar from './chat-action-bar/prompt-selection-action-bar';
+import {
+  ToolsSwitchActionBar,
+  UpdateToolsSwitchActionBar,
+} from './chat-action-bar/tools-switch-action-bar';
 import { streamingSupportedModels } from './constants';
 import { useSetJobScope } from './context/set-job-scope-context';
 
@@ -86,8 +86,8 @@ export const actionButtonClassnames =
 export type ChatConversationLocationState = {
   files: File[];
   agentName: string;
-  selectedVRFiles: VRItem[];
-  selectedVRFolders: VRFolder[];
+  selectedVRFiles: string[];
+  selectedVRFolders: string[];
   llmProviderId: string;
 };
 
@@ -180,13 +180,9 @@ function ConversationEmptyFooter() {
         locationState?.selectedVRFolders?.length > 0)
     ) {
       const selectedVRFilesPathMap = locationState?.selectedVRFiles?.reduce(
-        (acc, file) => {
-          selectedFileKeysRef.set(file.path, {
-            name: file.name,
-            path: file.path,
-            source: file.vr_header.resource_source,
-          });
-          acc[file.path] = {
+        (acc, path) => {
+          selectedFileKeysRef.set(path, path);
+          acc[path] = {
             checked: true,
           };
           return acc;
@@ -195,9 +191,9 @@ function ConversationEmptyFooter() {
       );
 
       const selectedVRFoldersPathMap = locationState?.selectedVRFolders?.reduce(
-        (acc, folder) => {
-          selectedFolderKeysRef.set(folder.path, folder);
-          acc[folder.path] = {
+        (acc, path) => {
+          selectedFolderKeysRef.set(path, path);
+          acc[path] = {
             checked: true,
           };
           return acc;
@@ -216,6 +212,7 @@ function ConversationEmptyFooter() {
     locationState?.selectedVRFolders,
     selectedFileKeysRef,
     selectedFolderKeysRef,
+    onSelectedKeysChange,
   ]);
 
   const currentMessage = useWatch({
@@ -372,14 +369,15 @@ function ConversationEmptyFooter() {
                             }}
                             onClick={openFilePicker}
                           />
-                          <input
-                            {...getInputFileProps({
-                              onChange: chatForm.register('files').onChange,
-                            })}
-                            {...chatForm.register('files')}
-                          />
-
                           <PromptSelectionActionBar />
+                          {!isAgentInbox && (
+                            <ToolsSwitchActionBar
+                              checked={chatConfigForm.watch('useTools')}
+                              onCheckedChange={(checked) => {
+                                chatConfigForm.setValue('useTools', checked);
+                              }}
+                            />
+                          )}
                         </div>
                         {!isAgentInbox && (
                           <CreateChatConfigActionBar form={chatConfigForm} />
@@ -531,15 +529,6 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     },
   });
 
-  const selectedTool = chatForm.watch('tool');
-
-  const promptSelected = usePromptSelectionStore(
-    (state) => state.promptSelected,
-  );
-
-  const currentInbox = useGetCurrentInbox();
-  const isAgentInbox = currentInbox?.agent?.type === 'Agent';
-
   const { data: chatConfig } = useGetChatConfig(
     {
       nodeAddress: auth?.node_address ?? '',
@@ -548,6 +537,40 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     },
     { enabled: !!inboxId },
   );
+
+  const chatConfigForm = useForm<ChatConfigFormSchemaType>({
+    resolver: zodResolver(chatConfigFormSchema),
+    defaultValues: {
+      stream: chatConfig?.stream ?? DEFAULT_CHAT_CONFIG.stream,
+      customPrompt: chatConfig?.custom_prompt ?? '',
+      temperature: chatConfig?.temperature ?? DEFAULT_CHAT_CONFIG.temperature,
+      topP: chatConfig?.top_p ?? DEFAULT_CHAT_CONFIG.top_p,
+      topK: chatConfig?.top_k ?? DEFAULT_CHAT_CONFIG.top_k,
+      useTools: chatConfig?.use_tools ?? DEFAULT_CHAT_CONFIG.use_tools,
+    },
+  });
+
+  useEffect(() => {
+    if (chatConfig) {
+      chatConfigForm.reset({
+        stream: chatConfig.stream,
+        customPrompt: chatConfig.custom_prompt ?? '',
+        temperature: chatConfig.temperature,
+        topP: chatConfig.top_p,
+        topK: chatConfig.top_k,
+        useTools: chatConfig.use_tools,
+      });
+    }
+  }, [chatConfig, chatConfigForm]);
+
+  const selectedTool = chatForm.watch('tool');
+
+  const promptSelected = usePromptSelectionStore(
+    (state) => state.promptSelected,
+  );
+
+  const currentInbox = useGetCurrentInbox();
+  const isAgentInbox = currentInbox?.agent?.type === 'Agent';
 
   const hasProviderEnableStreaming = streamingSupportedModels.includes(
     currentInbox?.agent?.model.split(':')?.[0] as Models,
@@ -714,6 +737,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                             onClick={openFilePicker}
                           />
                           <PromptSelectionActionBar />
+                          <UpdateToolsSwitchActionBar />
                         </div>
 
                         {!isAgentInbox && <UpdateChatConfigActionBar />}

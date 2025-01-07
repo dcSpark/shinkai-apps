@@ -1,6 +1,6 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { VRItem } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
+import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import {
   buttonVariants,
   Checkbox,
@@ -15,11 +15,18 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { CreateAIIcon, FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
-import { formatDateToUSLocaleString } from '@shinkai_network/shinkai-ui/helpers';
+import {
+  CreateAIIcon,
+  EmbeddingsGeneratedIcon,
+  FileTypeIcon,
+} from '@shinkai_network/shinkai-ui/assets';
+import {
+  formatDateToUSLocaleString,
+  getFileExt,
+} from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
-import { CopyIcon, FileInputIcon, TrashIcon } from 'lucide-react';
+import { CopyIcon, Edit2Icon, FileInputIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -31,7 +38,7 @@ export const VectorFsItemInfo = ({
   createdDatetime,
   fileSize,
 }: {
-  file: VRItem;
+  file: DirectoryContent;
   createdDatetime: string;
   fileSize: string;
 }) => {
@@ -39,7 +46,23 @@ export const VectorFsItemInfo = ({
 
   return (
     <div className="flex-1 truncate text-left">
-      <div className="text-sm font-medium">{file.name}</div>
+      <div className="flex items-center gap-2">
+        <span className="max-w-sm truncate text-sm font-medium">
+          {file.name}
+        </span>
+        {!!file.has_embeddings && (
+          <Tooltip>
+            <TooltipTrigger className="rounded-lg border-cyan-600 bg-cyan-900/20 p-1">
+              <EmbeddingsGeneratedIcon className="size-4 text-cyan-400" />
+            </TooltipTrigger>
+            <TooltipPortal>
+              <TooltipContent side="top">
+                <p>Embeddings Generated</p>
+              </TooltipContent>
+            </TooltipPortal>
+          </Tooltip>
+        )}
+      </div>
       {layout === VectorFSLayout.List && (
         <p className="text-xs font-medium text-gray-100">
           <span>{createdDatetime}</span> - <span>{fileSize}</span>
@@ -56,8 +79,8 @@ const VectorFsItem = ({
   isSelectedFile,
 }: {
   onClick: () => void;
-  file: VRItem;
-  handleSelectFiles: (file: VRItem) => void;
+  file: DirectoryContent;
+  handleSelectFiles: (file: DirectoryContent) => void;
   isSelectedFile: boolean;
 }) => {
   const { t } = useTranslation();
@@ -77,29 +100,26 @@ const VectorFsItem = ({
     layout === VectorFSLayout.Grid && 'bg-gray-400/30 p-2',
   );
 
-  const createdDatetime = formatDateToUSLocaleString(file.created_datetime);
-  const fileSize = size(file.vr_size);
+  const createdDatetime = formatDateToUSLocaleString(
+    new Date(file.created_time),
+  );
+  const fileSize = size(file.size);
 
   if (isVRSelectionActive) {
     return (
       <div className={wrapperClassname}>
         <Checkbox
           checked={isSelectedFile}
-          id={`item-${file.name}`}
+          id={`item-${file.path}`}
           onCheckedChange={() => {
             handleSelectFiles(file);
           }}
         />
         <label
           className="flex flex-1 items-center gap-3"
-          htmlFor={`item-${file.name}`}
+          htmlFor={`item-${file.path}`}
         >
-          <FileTypeIcon
-            type={
-              file?.vr_header?.resource_source?.Standard?.FileRef?.file_type
-                ?.Document
-            }
-          />
+          <FileTypeIcon type={getFileExt(file.name)} />
           <VectorFsItemInfo
             createdDatetime={createdDatetime}
             file={file}
@@ -112,12 +132,7 @@ const VectorFsItem = ({
 
   return (
     <button className={wrapperClassname} onClick={onClick}>
-      <FileTypeIcon
-        type={
-          file?.vr_header?.resource_source?.Standard?.FileRef?.file_type
-            ?.Document
-        }
-      />
+      <FileTypeIcon type={getFileExt(file.name)} />
       <VectorFsItemInfo
         createdDatetime={createdDatetime}
         file={file}
@@ -139,7 +154,7 @@ const VectorFsItem = ({
                 event.stopPropagation();
                 navigate('/inboxes', {
                   state: {
-                    selectedVRFiles: [file],
+                    selectedVRFiles: [file.path],
                   },
                 });
               }}
@@ -181,6 +196,13 @@ const VectorFsItem = ({
           className="w-[160px] border bg-gray-500 px-2.5 py-2"
         >
           {[
+            file.path.includes('.txt') && {
+              name: t('vectorFs.actions.edit'),
+              icon: <Edit2Icon className="mr-3 h-4 w-4" />,
+              onClick: () => {
+                setActiveDrawerMenuOption(VectorFsItemAction.Edit);
+              },
+            },
             {
               name: t('vectorFs.actions.move'),
               icon: <FileInputIcon className="mr-3 h-4 w-4" />,
@@ -202,22 +224,24 @@ const VectorFsItem = ({
                 setActiveDrawerMenuOption(VectorFsItemAction.Delete);
               },
             },
-          ].map((option, idx) => (
-            <React.Fragment key={option.name}>
-              {idx === 2 && <DropdownMenuSeparator className="bg-gray-300" />}
-              <DropdownMenuItem
-                key={option.name}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  option.onClick();
-                  setSelectedFile(file);
-                }}
-              >
-                {option.icon}
-                {option.name}
-              </DropdownMenuItem>
-            </React.Fragment>
-          ))}
+          ]
+            .filter((item) => !!item)
+            .map((option, idx) => (
+              <React.Fragment key={option.name}>
+                {idx === 2 && <DropdownMenuSeparator className="bg-gray-300" />}
+                <DropdownMenuItem
+                  key={option.name}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    option.onClick();
+                    setSelectedFile(file);
+                  }}
+                >
+                  {option.icon}
+                  {option.name}
+                </DropdownMenuItem>
+              </React.Fragment>
+            ))}
         </DropdownMenuContent>
       </DropdownMenu>
     </button>

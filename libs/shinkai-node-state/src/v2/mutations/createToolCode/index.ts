@@ -25,9 +25,6 @@ export const createToolCode = async ({
         scope: {
           vector_fs_items: [],
           vector_fs_folders: [],
-          local_vrpack: [],
-          local_vrkai: [],
-          network_folders: [],
         },
         associated_ui: 'Playground',
         is_hidden: true,
@@ -54,7 +51,7 @@ export const createToolCode = async ({
     message: {
       job_id: currentJobId,
       content: message,
-      files_inbox: '',
+      parent: null,
     },
     tools,
     language,

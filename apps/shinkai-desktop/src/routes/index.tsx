@@ -275,8 +275,26 @@ const AppRoutes = () => {
           <Route element={<AIModelInstallation />} path="local-ais" />
           <Route element={<AIsPage />} path="ais" />
           <Route element={<AddAIPage />} path="add-ai" />
-          <Route element={<AddAgentPage />} path="add-agent" />
-          <Route element={<EditAgentPage />} path="/agents/edit/:agentId" />
+          <Route
+            element={
+              <VectorFsProvider>
+                <SetJobScopeProvider>
+                  <AddAgentPage />
+                </SetJobScopeProvider>
+              </VectorFsProvider>
+            }
+            path="add-agent"
+          />
+          <Route
+            element={
+              <VectorFsProvider>
+                <SetJobScopeProvider>
+                  <EditAgentPage />
+                </SetJobScopeProvider>
+              </VectorFsProvider>
+            }
+            path="/agents/edit/:agentId"
+          />
         </Route>
         <Route
           element={

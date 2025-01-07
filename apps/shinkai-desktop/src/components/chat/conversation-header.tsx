@@ -155,8 +155,8 @@ const ConversationHeaderWithInboxId = () => {
     ) {
       const selectedVRFilesPathMap = jobScope.vector_fs_items.reduce(
         (acc, file) => {
-          selectedFileKeysRef.set(file.path, file);
-          acc[file.path] = {
+          selectedFileKeysRef.set(file, file);
+          acc[file] = {
             checked: true,
           };
           return acc;
@@ -166,8 +166,8 @@ const ConversationHeaderWithInboxId = () => {
 
       const selectedVRFoldersPathMap = jobScope.vector_fs_folders.reduce(
         (acc, folder) => {
-          selectedFolderKeysRef.set(folder.path, folder);
-          acc[folder.path] = {
+          selectedFolderKeysRef.set(folder, folder);
+          acc[folder] = {
             checked: true,
           };
           return acc;

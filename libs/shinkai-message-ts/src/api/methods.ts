@@ -5,8 +5,6 @@ import {
   CreateChatInboxResponse,
   CredentialsPayload,
   JobCredentialsPayload,
-  LastMessagesFromInboxCredentialsPayload,
-  LLMProvider,
   SetupPayload,
   ShinkaiMessage,
 } from '../models';
@@ -14,12 +12,11 @@ import {
   APIUseRegistrationCodeSuccessResponse,
   SubmitInitialRegistrationNoCodePayload,
 } from '../models/Payloads';
-import { SerializedLLMProvider } from '../models/SchemaTypes';
 import { InboxNameWrapper } from '../pkg/shinkai_message_wasm';
 import { urlJoin } from '../utils/url-join';
-import { FileUploader } from '../wasm/FileUploaderUsingSymmetricKeyManager';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
 import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
+import { uploadFilesToJob } from './jobs';
 
 export const fetchPublicKey =
   (nodeAddress: string) => async (): Promise<any> => {
@@ -136,41 +133,50 @@ export const sendTextMessageWithInbox = async (
   }
 };
 
-export const sendTextMessageWithFilesForInbox = async (
+export const sendTextMessageWithFilesToJob = async (
   nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
   text_message: string,
-  job_inbox: string,
+  job_id: string,
   files: File[],
-  setupDetailsState: CredentialsPayload,
-): Promise<{ inboxId: string; message: ShinkaiMessage }> => {
-  const fileUploader = new FileUploader(
+  bearerToken: string,
+): Promise<{ message: ShinkaiMessage }> => {
+  // Upload files using the uploadFilesToJob function
+  const uploadResponses = await uploadFilesToJob(
     nodeAddress,
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    job_inbox,
-    sender,
-    sender_subidentity,
-    receiver,
+    bearerToken,
+    job_id,
+    files,
   );
 
-  await fileUploader.createFolder();
-  for (const fileToUpload of files) {
-    await fileUploader.uploadEncryptedFile(fileToUpload);
-  }
-  const message = await fileUploader.finalizeAndSend(text_message, null);
+  // Extract file paths from the upload responses
+  const filenames = uploadResponses.map((response) => response.filename);
 
-  if (message.body && 'unencrypted' in message.body) {
-    const inboxId = message.body.unencrypted.internal_metadata.inbox;
-    return { inboxId, message };
-  } else {
-    console.warn('message body is null or encrypted');
-    // TODO: workaround to skip error reading encrypted message
-    return { inboxId: job_inbox, message };
-  }
+  // Prepare the message payload
+  const messagePayload = {
+    job_message: {
+      job_id,
+      content: text_message,
+      fs_files_paths: [],
+      job_filenames: filenames,
+    },
+  };
+
+  // Send the message to the job
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/job_message'),
+    messagePayload,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${bearerToken}`,
+      },
+    },
+  );
+
+  const data = response.data;
+
+  // Assuming the response contains the message and inboxId
+  return { message: data };
 };
 
 export const updateInboxName = async (
@@ -452,81 +458,6 @@ export const archiveJob = async (
   const data = response.data;
   return data;
 };
-export const createVRFolder = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  folderName: string,
-  path = '/',
-  setupDetailsState: CredentialsPayload,
-): Promise<{ status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.createFolder(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    folderName,
-    path,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/vec_fs/create_folder'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
-export const retrieveVRPathSimplified = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  path = '/',
-  setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.retrievePathSimplified(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    path,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/vec_fs/retrieve_path_simplified_json'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return typeof data?.data === 'string'
-    ? {
-        data: JSON.parse(data.data),
-        status: data.status,
-      }
-    : data;
-};
 
 export const retrieveVectorSearchSimplified = async (
   nodeAddress: string,
@@ -569,33 +500,34 @@ export const retrieveVectorSearchSimplified = async (
 
 export const uploadFilesToVR = async (
   nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
+  bearerToken: string,
   destinationPath: string,
   files: File[],
-  setupDetailsState: CredentialsPayload,
 ): Promise<{ status: string }> => {
   try {
-    const fileUploader = new FileUploader(
-      nodeAddress,
-      setupDetailsState.profile_encryption_sk,
-      setupDetailsState.profile_identity_sk,
-      setupDetailsState.node_encryption_pk,
-      '',
-      sender,
-      sender_subidentity,
-      receiver,
-    );
-
-    await fileUploader.createFolder();
     for (const fileToUpload of files) {
-      await fileUploader.uploadEncryptedFile(fileToUpload);
-    }
-    const response =
-      await fileUploader.finalizeAndAddItemsToDb(destinationPath);
+      const formData = new FormData();
+      formData.append('file_data', fileToUpload);
+      formData.append('filename', fileToUpload.name);
+      formData.append('path', destinationPath);
 
-    return response;
+      const response = await httpClient.post(
+        urlJoin(nodeAddress, '/v2/upload_file_to_folder'),
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${bearerToken}`,
+          },
+        },
+      );
+
+      if (response.status !== 200) {
+        throw new Error(`Failed to upload file: ${fileToUpload.name}`);
+      }
+    }
+
+    return { status: 'success' };
   } catch (error) {
     console.error('Error uploadFilesToVR:', error);
     throw error;
@@ -677,182 +609,6 @@ export const moveFolderVR = async (
   const data = response.data;
   return data;
 };
-export const copyFolderVR = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  originPath: string,
-  destionationPath: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.copyFolder(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    originPath,
-    destionationPath,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/vec_fs/copy_folder'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
-export const deleteFolderVR = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  folderPath: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.deleteFolder(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    folderPath,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/vec_fs/remove_folder'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
-export const moveItemVR = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  originPath: string,
-  destionationPath: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.moveItem(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    originPath,
-    destionationPath,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/vec_fs/move_item'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
-export const copyItemVR = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  originPath: string,
-  destionationPath: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.copyItem(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    originPath,
-    destionationPath,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/vec_fs/copy_item'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
-export const deleteItemVR = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  itemPath: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.deleteItem(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    itemPath,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/vec_fs/remove_item'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
 export const searchItemsVR = async (
   nodeAddress: string,
   sender: string,
@@ -914,118 +670,7 @@ export const getAvailableSharedFolders = async (
   const data = response.data;
   return data;
 };
-export const getMySharedFolders = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  streamer_node_name: string,
-  streamer_profile_name: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.getMySharedFolders(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-    streamer_node_name,
-    streamer_profile_name,
-  );
 
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/available_shared_items'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return typeof data?.data === 'string'
-    ? {
-        data: JSON.parse(data.data),
-        status: data.status,
-      }
-    : data;
-};
-
-export const createShareableFolder = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  folderPath: string,
-  folderDescription: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.createShareableFolder(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    folderPath,
-    folderDescription,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/create_shareable_folder'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
-export const unshareFolder = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  folderPath: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.unshareFolder(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    folderPath,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/unshare_folder'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
 export const subscribeToSharedFolder = async (
   nodeAddress: string,
   sender: string,

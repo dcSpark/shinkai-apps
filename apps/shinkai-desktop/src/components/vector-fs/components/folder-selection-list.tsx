@@ -1,6 +1,6 @@
 import { HomeIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { useGetVRPathSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/useGetVRPathSimplified';
+import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -85,19 +85,12 @@ export const FolderSelectionList = () => {
     (state) => state.setCurrentSelectedFolderPath,
   );
 
-  const { isPending: isVRFilesPending, data: VRFiles } = useGetVRPathSimplified(
-    {
+  const { isPending: isVRFilesPending, data: VRFiles } =
+    useGetListDirectoryContents({
       nodeAddress: auth?.node_address ?? '',
-      profile: auth?.profile ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
+      token: auth?.api_v2_key ?? '',
       path: currentSelectedFolderPath,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    },
-  );
+    });
 
   const splitCurrentPath =
     destinationFolderPath?.split('/').filter(Boolean) ?? [];
@@ -141,6 +134,7 @@ export const FolderSelectionList = () => {
                       const buildPath = splitCurrentPath
                         .slice(0, idx + 1)
                         .join('/');
+
                       setCurrentSelectedFolderPath('/' + buildPath);
                       setDestinationFolderPath(buildPath);
                     }}
@@ -167,7 +161,7 @@ export const FolderSelectionList = () => {
                 key={idx}
               />
             ))}
-          {VRFiles?.child_folders.map((folder) => {
+          {VRFiles?.map((folder) => {
             return (
               <button
                 className={cn(
@@ -177,7 +171,7 @@ export const FolderSelectionList = () => {
                 )}
                 key={folder.path}
                 onClick={() => {
-                  if (folder.child_folders?.length > 0) {
+                  if ((folder.children ?? []).length > 0) {
                     setCurrentSelectedFolderPath(folder.path);
                     setDestinationFolderPath(folder.path);
                   } else {
@@ -188,7 +182,7 @@ export const FolderSelectionList = () => {
               >
                 <DirectoryTypeIcon />
                 <VectorFsFolderInfo allowFolderNameOnly folder={folder} />
-                {!!folder.child_folders?.length && (
+                {!!(folder?.children ?? []).length && (
                   <ChevronRight className="text-gray-80 h-5 w-5" />
                 )}
               </button>
