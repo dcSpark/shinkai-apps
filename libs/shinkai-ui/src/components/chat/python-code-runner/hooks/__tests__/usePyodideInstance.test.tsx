@@ -39,7 +39,7 @@ describe('usePyodideInstance', () => {
   });
 
   it('should initialize Pyodide and file system service', async () => {
-    mockPyodide.FS.syncfs.mockImplementation((populate, callback) => callback(null));
+    mockPyodide.FS.syncfs.mockImplementation((populate: boolean, callback: (err: Error | null) => void) => callback(null));
 
     const { result } = renderHook(() => usePyodideInstance());
 
@@ -67,7 +67,7 @@ describe('usePyodideInstance', () => {
   });
 
   it('should reuse existing Pyodide instance', async () => {
-    mockPyodide.FS.syncfs.mockImplementation((populate, callback) => callback(null));
+    mockPyodide.FS.syncfs.mockImplementation((populate: boolean, callback: (err: Error | null) => void) => callback(null));
 
     const { result } = renderHook(() => usePyodideInstance());
 
@@ -91,7 +91,7 @@ describe('usePyodideInstance', () => {
   });
 
   it('should handle file system initialization errors', async () => {
-    mockPyodide.FS.syncfs.mockImplementation((populate, callback) => callback(new Error('Sync failed')));
+    mockPyodide.FS.syncfs.mockImplementation((populate: boolean, callback: (err: Error | null) => void) => callback(new Error('Sync failed')));
 
     const { result } = renderHook(() => usePyodideInstance());
 
