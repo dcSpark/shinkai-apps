@@ -25,13 +25,18 @@ import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
+import { VectorFsItemAction } from './vector-fs-drawer';
 
 export const VectorFileDetails = () => {
   const selectedFile = useVectorFsStore((state) => state.selectedFile);
+  const setActiveDrawerMenuOption = useVectorFsStore(
+    (state) => state.setActiveDrawerMenuOption,
+  );
   const size = partial({ standard: 'jedec' });
   const auth = useAuth((state) => state.auth);
 
   const fileExtension = getFileExt(selectedFile?.name ?? '');
+  const isTextFile = fileExtension?.toLowerCase() === 'txt';
 
   const { mutateAsync: downloadFile } = useGetDownloadFile({
     onSuccess: async (response, variables) => {
@@ -164,28 +169,18 @@ export const VectorFileDetails = () => {
           </span>
         </div>
       </div>
-      <SheetFooter className="flex flex-row gap-3 [&>*]:flex-1">
-        {/* Hide it til we support it in the node */}
-        {/*<Button*/}
-        {/*  onClick={async () => {*/}
-        {/*    if (!selectedFile || !auth) return;*/}
-        {/*    await downloadVRFile({*/}
-        {/*      nodeAddress: auth.node_address,*/}
-        {/*      shinkaiIdentity: auth?.shinkai_identity,*/}
-        {/*      profile: auth.profile,*/}
-        {/*      path: selectedFile.path,*/}
-        {/*      my_device_encryption_sk: auth.profile_encryption_sk,*/}
-        {/*      my_device_identity_sk: auth.profile_identity_sk,*/}
-        {/*      node_encryption_pk: auth.node_encryption_pk,*/}
-        {/*      profile_encryption_sk: auth.profile_encryption_sk,*/}
-        {/*      profile_identity_sk: auth.profile_identity_sk,*/}
-        {/*    });*/}
-        {/*  }}*/}
-        {/*  size="sm"*/}
-        {/*  variant="outline"*/}
-        {/*>*/}
-        {/*  Download Vector Resource*/}
-        {/*</Button>*/}
+      <SheetFooter className="flex flex-col gap-3">
+        {isTextFile && (
+          <Button
+            onClick={() => {
+              setActiveDrawerMenuOption(VectorFsItemAction.Edit);
+            }}
+            size="sm"
+            variant="outline"
+          >
+            Edit File
+          </Button>
+        )}
         <Button
           onClick={async () => {
             if (!selectedFile || !auth) return;
