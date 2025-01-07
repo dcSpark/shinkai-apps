@@ -39,7 +39,11 @@ describe('usePyodideInstance', () => {
   });
 
   it('should initialize Pyodide and file system service', async () => {
-    mockPyodide.FS.syncfs.mockImplementation((populate: boolean, callback: (err: Error | null) => void) => callback(null));
+    mockPyodide.FS.syncfs.mockImplementation(
+      // @ts-expect-error populate
+      (populate: boolean, callback: (err: Error | null) => void) =>
+        callback(null),
+    );
 
     const { result } = renderHook(() => usePyodideInstance());
 
@@ -48,7 +52,8 @@ describe('usePyodideInstance', () => {
     expect(result.current.fileSystemService).toBeNull();
 
     // Initialize
-    const { pyodide, fileSystemService } = await result.current.initializePyodide();
+    const { pyodide, fileSystemService } =
+      await result.current.initializePyodide();
 
     // After initialization
     expect(pyodide).toBe(mockPyodide);
@@ -61,13 +66,20 @@ describe('usePyodideInstance', () => {
     expect(mockPyodide.FS.mount).toHaveBeenCalledWith(
       'IDBFS',
       {},
-      '/home/pyodide'
+      '/home/pyodide',
     );
-    expect(mockPyodide.FS.syncfs).toHaveBeenCalledWith(true, expect.any(Function));
+    expect(mockPyodide.FS.syncfs).toHaveBeenCalledWith(
+      true,
+      expect.any(Function),
+    );
   });
 
   it('should reuse existing Pyodide instance', async () => {
-    mockPyodide.FS.syncfs.mockImplementation((populate: boolean, callback: (err: Error | null) => void) => callback(null));
+    mockPyodide.FS.syncfs.mockImplementation(
+      // @ts-expect-error populate
+      (populate: boolean, callback: (err: Error | null) => void) =>
+        callback(null),
+    );
 
     const { result } = renderHook(() => usePyodideInstance());
 
@@ -83,18 +95,28 @@ describe('usePyodideInstance', () => {
   });
 
   it('should handle initialization errors', async () => {
-    (loadPyodide as jest.Mock).mockRejectedValue(new Error('Failed to load Pyodide'));
+    (loadPyodide as jest.Mock).mockRejectedValue(
+      new Error('Failed to load Pyodide'),
+    );
 
     const { result } = renderHook(() => usePyodideInstance());
 
-    await expect(result.current.initializePyodide()).rejects.toThrow('Failed to load Pyodide');
+    await expect(result.current.initializePyodide()).rejects.toThrow(
+      'Failed to load Pyodide',
+    );
   });
 
   it('should handle file system initialization errors', async () => {
-    mockPyodide.FS.syncfs.mockImplementation((populate: boolean, callback: (err: Error | null) => void) => callback(new Error('Sync failed')));
+    mockPyodide.FS.syncfs.mockImplementation(
+      // @ts-expect-error populate
+      (populate: boolean, callback: (err: Error | null) => void) =>
+        callback(new Error('Sync failed')),
+    );
 
     const { result } = renderHook(() => usePyodideInstance());
 
-    await expect(result.current.initializePyodide()).rejects.toThrow('Sync failed');
+    await expect(result.current.initializePyodide()).rejects.toThrow(
+      'Sync failed',
+    );
   });
-}); 
+});

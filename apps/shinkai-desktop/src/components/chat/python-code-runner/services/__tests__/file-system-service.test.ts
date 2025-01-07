@@ -1,6 +1,6 @@
 import { PyodideInterface } from 'pyodide';
 
-import { FileSystemEntry, PyodideFileSystemService } from '../file-system-service';
+import { PyodideFileSystemService } from '../file-system-service';
 
 type FSCallback = (error: Error | null) => void;
 type MockStats = { [key: string]: { mode: number } };
@@ -34,16 +34,22 @@ describe('PyodideFileSystemService', () => {
 
   describe('initialize', () => {
     it('should mount IDBFS and sync from IndexedDB', async () => {
-      mockPyodide.FS.syncfs.mockImplementation((populate: boolean, callback: FSCallback) => callback(null));
+      mockPyodide.FS.syncfs.mockImplementation(
+        // @ts-expect-error unused-vars
+        (populate: boolean, callback: FSCallback) => callback(null),
+      );
 
       await service.initialize();
 
       expect(mockPyodide.FS.mount).toHaveBeenCalledWith(
         'IDBFS',
         {},
-        '/home/pyodide'
+        '/home/pyodide',
       );
-      expect(mockPyodide.FS.syncfs).toHaveBeenCalledWith(true, expect.any(Function));
+      expect(mockPyodide.FS.syncfs).toHaveBeenCalledWith(
+        true,
+        expect.any(Function),
+      );
     });
 
     it('should throw error if mounting fails', async () => {
@@ -55,8 +61,10 @@ describe('PyodideFileSystemService', () => {
     });
 
     it('should throw error if sync fails', async () => {
-      mockPyodide.FS.syncfs.mockImplementation((populate: boolean, callback: FSCallback) => 
-        callback(new Error('Sync failed'))
+      mockPyodide.FS.syncfs.mockImplementation(
+        // @ts-expect-error unused-vars
+        (populate: boolean, callback: FSCallback) =>
+          callback(new Error('Sync failed')),
       );
 
       await expect(service.initialize()).rejects.toThrow('Sync failed');
@@ -68,7 +76,7 @@ describe('PyodideFileSystemService', () => {
       const mockEntries = ['file1.txt', 'dir1', '.', '..', '.matplotlib'];
       const mockStats: MockStats = {
         'file1.txt': { mode: 0o100644 }, // regular file
-        'dir1': { mode: 0o040000 }, // directory
+        dir1: { mode: 0o040000 }, // directory
       };
 
       // Mock first readdir call for root directory
@@ -88,7 +96,9 @@ describe('PyodideFileSystemService', () => {
         }
         return stat;
       });
-      mockPyodide.FS.isDir.mockImplementation((mode: number) => (mode === 0o040000));
+      mockPyodide.FS.isDir.mockImplementation(
+        (mode: number) => mode === 0o040000,
+      );
       mockPyodide.FS.readFile.mockReturnValue('file content');
 
       const result = service.readContents('/test');
@@ -125,7 +135,7 @@ describe('PyodideFileSystemService', () => {
       expect(mockPyodide.FS.writeFile).toHaveBeenCalledWith(
         '/test/file.txt',
         'content',
-        { encoding: 'utf8' }
+        { encoding: 'utf8' },
       );
     });
 
@@ -134,7 +144,9 @@ describe('PyodideFileSystemService', () => {
         throw new Error('Write failed');
       });
 
-      expect(() => service.writeFile('/test/file.txt', 'content')).toThrow('Write failed');
+      expect(() => service.writeFile('/test/file.txt', 'content')).toThrow(
+        'Write failed',
+      );
     });
   });
 
@@ -174,7 +186,7 @@ describe('PyodideFileSystemService', () => {
   describe('removeStaleItems', () => {
     it('should remove files and directories not in validPaths', () => {
       const validPaths = new Set(['/home/pyodide/keep.txt']);
-      
+
       // Mock readdir to return different results for different paths
       mockPyodide.FS.readdir.mockImplementation((path: string) => {
         if (path === '/home/pyodide') {
@@ -183,13 +195,13 @@ describe('PyodideFileSystemService', () => {
         // Return empty directory for recursive calls
         return ['.', '..'];
       });
-      
+
       const mockStats: MockStats = {
         'keep.txt': { mode: 0o100644 },
         'remove.txt': { mode: 0o100644 },
-        'dir1': { mode: 0o040000 },
+        dir1: { mode: 0o040000 },
       };
-      
+
       mockPyodide.FS.stat.mockImplementation((path: string) => {
         const name = path.split('/').pop() || '';
         const stat = mockStats[name];
@@ -199,28 +211,42 @@ describe('PyodideFileSystemService', () => {
         }
         return stat;
       });
-      mockPyodide.FS.isDir.mockImplementation((mode: number) => mode === 0o040000);
+      mockPyodide.FS.isDir.mockImplementation(
+        (mode: number) => mode === 0o040000,
+      );
 
       service.removeStaleItems('/home/pyodide', validPaths);
 
-      expect(mockPyodide.FS.unlink).toHaveBeenCalledWith('/home/pyodide/remove.txt');
+      expect(mockPyodide.FS.unlink).toHaveBeenCalledWith(
+        '/home/pyodide/remove.txt',
+      );
       expect(mockPyodide.FS.rmdir).toHaveBeenCalledWith('/home/pyodide/dir1');
-      expect(mockPyodide.FS.unlink).not.toHaveBeenCalledWith('/home/pyodide/keep.txt');
+      expect(mockPyodide.FS.unlink).not.toHaveBeenCalledWith(
+        '/home/pyodide/keep.txt',
+      );
     });
   });
 
   describe('syncToIndexedDB', () => {
     it('should sync to IndexedDB successfully', async () => {
-      mockPyodide.FS.syncfs.mockImplementation((populate: boolean, callback: FSCallback) => callback(null));
+      mockPyodide.FS.syncfs.mockImplementation(
+        // @ts-expect-error unused-vars
+        (populate: boolean, callback: FSCallback) => callback(null),
+      );
 
       await service.syncToIndexedDB();
 
-      expect(mockPyodide.FS.syncfs).toHaveBeenCalledWith(false, expect.any(Function));
+      expect(mockPyodide.FS.syncfs).toHaveBeenCalledWith(
+        false,
+        expect.any(Function),
+      );
     });
 
     it('should handle sync errors', async () => {
-      mockPyodide.FS.syncfs.mockImplementation((populate: boolean, callback: FSCallback) => 
-        callback(new Error('Sync failed'))
+      mockPyodide.FS.syncfs.mockImplementation(
+        // @ts-expect-error unused-vars
+        (populate: boolean, callback: FSCallback) =>
+          callback(new Error('Sync failed')),
       );
 
       await expect(service.syncToIndexedDB()).rejects.toThrow('Sync failed');
@@ -229,19 +255,27 @@ describe('PyodideFileSystemService', () => {
 
   describe('syncFromIndexedDB', () => {
     it('should sync from IndexedDB successfully', async () => {
-      mockPyodide.FS.syncfs.mockImplementation((populate: boolean, callback: FSCallback) => callback(null));
+      mockPyodide.FS.syncfs.mockImplementation(
+        // @ts-expect-error unused-vars
+        (populate: boolean, callback: FSCallback) => callback(null),
+      );
 
       await service.syncFromIndexedDB();
 
-      expect(mockPyodide.FS.syncfs).toHaveBeenCalledWith(true, expect.any(Function));
+      expect(mockPyodide.FS.syncfs).toHaveBeenCalledWith(
+        true,
+        expect.any(Function),
+      );
     });
 
     it('should handle sync errors', async () => {
-      mockPyodide.FS.syncfs.mockImplementation((populate: boolean, callback: FSCallback) => 
-        callback(new Error('Sync failed'))
+      mockPyodide.FS.syncfs.mockImplementation(
+        // @ts-expect-error unused-vars
+        (populate: boolean, callback: FSCallback) =>
+          callback(new Error('Sync failed')),
       );
 
       await expect(service.syncFromIndexedDB()).rejects.toThrow('Sync failed');
     });
   });
-}); 
+});

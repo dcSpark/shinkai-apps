@@ -40,7 +40,7 @@ import {
 } from '../tooltip';
 import { ChatInputArea } from './chat-input-area';
 import { FileList } from './files-preview';
-import { PythonCodeRunner } from './python-code-runner/python-code-runner';
+// import { PythonCodeRunner } from './python-code-runner/python-code-runner';
 
 export const extractErrorPropertyOrContent = (
   content: string,
@@ -71,8 +71,7 @@ type MessageProps = {
   disabledEdit?: boolean;
   handleEditMessage?: (message: string) => void;
   messageExtra?: React.ReactNode;
-  setArtifact?: (artifact: Artifact | null) => void;
-  setArtifactPanel?: (open: boolean) => void;
+
   artifacts?: Artifact[];
   artifact?: Artifact;
   hidePythonExecution?: boolean;
@@ -160,9 +159,6 @@ const MessageBase = ({
   disabledRetry,
   disabledEdit,
   handleEditMessage,
-  setArtifact,
-  artifacts,
-  artifact,
   hidePythonExecution,
 }: MessageProps) => {
   const { t } = useTranslation();
@@ -377,9 +373,9 @@ const MessageBase = ({
                       <DotsLoader />
                     </div>
                   )}
-                {pythonCode && !hidePythonExecution && (
-                  <PythonCodeRunner code={pythonCode} />
-                )}
+                {/*{pythonCode && !hidePythonExecution && (*/}
+                {/*  <PythonCodeRunner code={pythonCode} />*/}
+                {/*)}*/}
                 {message.role === 'user' && !!message.attachments.length && (
                   <FileList
                     className="mt-2 min-w-[200px] max-w-[70vw]"

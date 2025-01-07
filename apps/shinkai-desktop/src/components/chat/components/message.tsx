@@ -23,7 +23,6 @@ import {
   Form,
   FormField,
   MarkdownText,
-  PythonCodeRunner,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -55,6 +54,7 @@ import { useAuth } from '../../../store/auth';
 import { useOAuth } from '../../../store/oauth';
 import { oauthUrlMatcherFromErrorMessage } from '../../../utils/oauth';
 import { useChatStore } from '../context/chat-context';
+import { PythonCodeRunner } from '../python-code-runner/python-code-runner';
 
 export const extractErrorPropertyOrContent = (
   content: string,
@@ -85,6 +85,7 @@ type MessageProps = {
   disabledEdit?: boolean;
   handleEditMessage?: (message: string) => void;
   messageExtra?: React.ReactNode;
+  hidePythonExecution?: boolean;
 };
 
 const actionBar = {
@@ -164,6 +165,7 @@ type EditMessageFormSchema = z.infer<typeof editMessageFormSchema>;
 export const MessageBase = ({
   message,
   // messageId,
+  hidePythonExecution,
   isPending,
   handleRetryMessage,
   disabledRetry,
@@ -415,10 +417,12 @@ export const MessageBase = ({
                       <DotsLoader />
                     </div>
                   )}
-                {pythonCode && (
-                  <PythonCodeRunner 
-                    code={pythonCode} 
-                    jobId={extractJobIdFromInbox(message.metadata.inboxId ?? '')} 
+                {pythonCode && !hidePythonExecution && (
+                  <PythonCodeRunner
+                    code={pythonCode}
+                    jobId={extractJobIdFromInbox(
+                      message.metadata.inboxId ?? '',
+                    )}
                     nodeAddress={auth?.node_address ?? ''}
                     token={auth?.api_v2_key ?? ''}
                   />
