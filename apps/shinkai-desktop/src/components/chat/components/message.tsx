@@ -4,6 +4,7 @@ import {
   ToolArgs,
   ToolStatusType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { FormattedMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import {
   Accordion,
@@ -50,6 +51,7 @@ import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
+import { useAuth } from '../../../store/auth';
 import { useOAuth } from '../../../store/oauth';
 import { oauthUrlMatcherFromErrorMessage } from '../../../utils/oauth';
 import { useChatStore } from '../context/chat-context';
@@ -210,6 +212,8 @@ export const MessageBase = ({
   }, [message.content]);
 
   const { setOauthModalVisible } = useOAuth();
+
+  const auth = useAuth((state) => state.auth);
 
   return (
     <motion.div
@@ -411,7 +415,14 @@ export const MessageBase = ({
                       <DotsLoader />
                     </div>
                   )}
-                {pythonCode && <PythonCodeRunner code={pythonCode} />}
+                {pythonCode && (
+                  <PythonCodeRunner 
+                    code={pythonCode} 
+                    jobId={extractJobIdFromInbox(message.metadata.inboxId ?? '')} 
+                    nodeAddress={auth?.node_address ?? ''}
+                    token={auth?.api_v2_key ?? ''}
+                  />
+                )}
 
                 {oauthUrl && (
                   <div className="mt-4 flex flex-col items-start rounded-lg bg-gray-900 p-4 shadow-md">

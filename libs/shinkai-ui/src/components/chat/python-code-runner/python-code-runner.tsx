@@ -1,9 +1,12 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { addFileToJob } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
+import { useGetDownloadFile } from '@shinkai_network/shinkai-node-state/v2/queries/getDownloadFile/useGetDownloadFile';
+import { useGetJobContents } from '@shinkai_network/shinkai-node-state/v2/queries/getJobContents/useGetJobContents';
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import { AnimatePresence, motion } from 'framer-motion';
 import { loadPyodide, PyodideInterface } from 'pyodide';
-import React, { useCallback,useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Button } from '../../button';
 import { OutputRender } from './output-render';
@@ -74,6 +77,7 @@ type FileSystemEntry = {
   type: 'directory' | 'file';
   content?: string;
   contents?: FileSystemEntry[];
+  mtimeMs?: number;
 };
 
 // Function to read IDBFS contents
@@ -85,7 +89,9 @@ function readIDBFSContents(path: string): FileSystemEntry[] | null {
 
   try {
     const entries = pyodideMain.FS.readdir(path);
-    const contents = entries.filter((entry: string) => entry !== '.' && entry !== '..');
+    const contents = entries.filter((entry: string) => 
+      entry !== '.' && entry !== '..' && entry !== '.matplotlib' // Ignore these entries
+    );
     
     const result = contents.map((entry: string) => {
       const fullPath = `${path}/${entry}`;
@@ -115,8 +121,54 @@ function readIDBFSContents(path: string): FileSystemEntry[] | null {
   }
 }
 
+// Function to read IDBFS contents with mtime
+function readIDBFSContentsWithMtime(path: string): FileSystemEntry[] | null {
+  if (!pyodideMain) {
+    console.error('Pyodide not initialized in main thread');
+    return null;
+  }
+
+  try {
+    const entries = pyodideMain.FS.readdir(path);
+    const contents = entries.filter((entry: string) => 
+      entry !== '.' && entry !== '..' && entry !== '.matplotlib'
+    );
+
+    const result = contents.map((entry: string) => {
+      const fullPath = `${path}/${entry}`;
+      const stat = pyodideMain?.FS.stat(fullPath);
+      const isDirectory = stat && pyodideMain?.FS.isDir(stat.mode);
+      const mtimeMs = stat ? stat.mtime * 1000 : 0; // Convert mtime to milliseconds
+
+      if (isDirectory) {
+        return { 
+          name: entry, 
+          type: 'directory' as const, 
+          contents: readIDBFSContentsWithMtime(fullPath) 
+        };
+      } else {
+        const content = pyodideMain?.FS.readFile(fullPath, { encoding: 'utf8' });
+        return { 
+          name: entry, 
+          type: 'file' as const, 
+          content: content as string,
+          mtimeMs
+        };
+      }
+    });
+
+    return result;
+  } catch (error) {
+    console.error(`Error reading ${path}:`, error);
+    return null;
+  }
+}
+
 type PythonCodeRunnerProps = {
   code: string;
+  jobId: string;
+  nodeAddress: string;
+  token: string;
 };
 
 // Define more specific message types
@@ -150,6 +202,11 @@ export const usePythonRunnerRunMutation = (
 ) => {
   const response = useMutation({
     mutationFn: async (params: { code: string }): Promise<RunResult> => {
+      // Initialize Pyodide *only* if it's not already up
+      if (!pyodideMain) {
+        await initPyodideInMainThread();
+      }
+
       const worker = new PythonRunnerWorker();
 
       return new Promise<RunResult>((resolve, reject) => {
@@ -269,18 +326,189 @@ export const usePythonRunnerRunMutation = (
   return { ...response };
 };
 
-export const PythonCodeRunner = ({ code }: PythonCodeRunnerProps) => {
+export const PythonCodeRunner = ({ code, jobId, nodeAddress, token }: PythonCodeRunnerProps) => {
   const i18n = useTranslation();
+  const [isSyncing, setIsSyncing] = useState(false);
+  
   const {
     mutateAsync: run,
     data: runResult,
     isPending,
   } = usePythonRunnerRunMutation();
 
-  // Initialize Pyodide in main thread when component mounts
+  const { mutateAsync: downloadFile } = useGetDownloadFile();
+
+  const { data: jobContents, isLoading: isLoadingJobContents } = useGetJobContents(
+    {
+      nodeAddress,
+      token,
+      jobId,
+    },
+    {
+      enabled: !!nodeAddress && !!token && !!jobId,
+    }
+  );
+
+  // Just log contents if needed, but don't auto-init Pyodide
   useEffect(() => {
-    initPyodideInMainThread().catch(console.error);
-  }, []);
+    if (jobContents) {
+      console.log('Job contents:', jobContents);
+    }
+  }, [jobContents]);
+
+  // Function to read file content from IDBFS
+  const readFileFromIDBFS = (filePath: string): string | undefined => {
+    if (!pyodideMain) return undefined;
+    try {
+      return pyodideMain.FS.readFile(filePath, { encoding: 'utf8' });
+    } catch (error) {
+      console.error(`Failed to read file ${filePath}:`, error);
+      return undefined;
+    }
+  };
+
+  // Utility that checks if file contents differ by comparing byte length.
+  function isFileChangedLocally(
+    localContent: string | undefined,
+    remoteFile: { size: number } | undefined
+  ) {
+    if (!localContent || !remoteFile) return true; 
+    return localContent.length !== remoteFile.size;
+  }
+
+  // Recursively mirror job files into /home/pyodide
+  async function syncJobFilesToIDBFS() {
+    if (!pyodideMain || !jobContents) return;
+
+    console.time('Sync Job Files to IDBFS');
+    setIsSyncing(true);
+    try {
+      const idbfsContents = readIDBFSContents('/home/pyodide') ?? [];
+      const idbfsNames = new Set(idbfsContents.map(e => e.name));
+      const jobFileNames = new Set(jobContents.map(item => item.name));
+
+      // Remove anything from IDBFS that’s no longer in the job
+      for (const entry of idbfsContents) {
+        if (!jobFileNames.has(entry.name)) {
+          try {
+            if (entry.type === 'directory') {
+              pyodideMain.FS.rmdir(`/home/pyodide/${entry.name}`);
+            } else {
+              pyodideMain.FS.unlink(`/home/pyodide/${entry.name}`);
+            }
+            console.log(`Removed ${entry.name} from IDBFS`);
+          } catch (err) {
+            console.error(`Failed removing ${entry.name}:`, err);
+          }
+        }
+      }
+
+      // Add or update anything that’s missing in IDBFS
+      for (const remoteFile of jobContents) {
+        if (!remoteFile.is_directory) {
+          if (!idbfsNames.has(remoteFile.name)) {
+            await syncFileToIDBFS(remoteFile);
+          }
+        } else {
+          try {
+            const stat = pyodideMain.FS.stat(`/home/pyodide/${remoteFile.name}`);
+            if (!pyodideMain.FS.isDir(stat.mode)) {
+              throw new Error(`${remoteFile.name} is not a directory`);
+            }
+          } catch {
+            pyodideMain.FS.mkdir(`/home/pyodide/${remoteFile.name}`);
+          }
+        }
+      }
+
+      await new Promise<void>((resolve, reject) => {
+        pyodideMain?.FS.syncfs(false, (err: Error | null) => {
+          if (err) {
+            console.error('Failed to sync to IndexedDB:', err);
+            reject(err);
+          } else {
+            console.log('Successfully synced all files to IndexedDB');
+            resolve();
+          }
+        });
+      });
+    } catch (error) {
+      console.error('Failed to sync job files:', error);
+    } finally {
+      setIsSyncing(false);
+      console.timeEnd('Sync Job Files to IDBFS');
+    }
+  }
+
+  // Function to compare and upload files based on mtime
+  async function compareAndUploadFiles(timeBefore: number | null) {
+    console.log('compareAndUploadFiles', timeBefore);
+    if (!pyodideMain || !jobId || !nodeAddress || !token || !jobContents || !timeBefore) {
+      console.warn('Missing required parameters for file comparison and upload.');
+      return;
+    }
+
+    console.time('Compare and Upload Files');
+    console.log('Starting file comparison and upload process.');
+    try {
+      const idbfsContents = readIDBFSContentsWithMtime('/home/pyodide');
+      if (!idbfsContents) {
+        console.warn('No contents found in /home/pyodide.');
+        return;
+      }
+
+      for (const entry of idbfsContents) {
+        if (entry.type === 'file' && entry.mtimeMs !== undefined) {
+          const mtimeInMs = entry.mtimeMs / 1000; // Convert mtime to milliseconds
+          const mtimeISO = new Date(mtimeInMs).toISOString();
+          const timeBeforeISO = new Date(timeBefore).toISOString();
+          console.log(`Checking file: ${entry.name}, Modified Time: ${mtimeISO}, Time Before: ${timeBeforeISO}`);
+          if (mtimeInMs > timeBefore) {
+            console.log(`Uploading changed file: ${entry.name}`);
+            try {
+              const blob = new Blob([entry.content ?? ''], { type: 'text/plain' });
+              const file = new File([blob], entry.name, { type: 'text/plain' });
+              await addFileToJob(nodeAddress, token, {
+                filename: entry.name,
+                job_id: jobId,
+                file,
+              });
+              console.log(`Successfully uploaded file: ${entry.name}`);
+            } catch (error) {
+              console.error(`Failed to upload file ${entry.name}:`, error);
+            }
+          } else {
+            console.log(`No changes detected for file: ${entry.name}`);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Failed to compare/upload files:', error);
+    } finally {
+      console.timeEnd('Compare and Upload Files');
+      console.log('File comparison and upload process completed.');
+    }
+  }
+
+  // Function to sync a single file from job to IDBFS
+  const syncFileToIDBFS = async (item: { path: string; name: string }) => {
+    if (!pyodideMain) return;
+
+    try {
+      // Download the file content
+      const content = await downloadFile({
+        nodeAddress,
+        token,
+        path: item.path,
+      });
+
+      // Write to IDBFS
+      pyodideMain.FS.writeFile(`/home/pyodide/${item.name}`, content, { encoding: 'utf8' });
+      console.log(`Synced file ${item.name} to IDBFS`);
+    } catch (error) {
+      console.error(`Failed to sync file ${item.name}:`, error);
+    }
+  };
 
   // Function to read and log IDBFS contents
   const handleReadIDBFS = useCallback(() => {
@@ -291,27 +519,6 @@ export const PythonCodeRunner = ({ code }: PythonCodeRunnerProps) => {
 
     const contents = readIDBFSContents('/home/pyodide');
     console.log('IDBFS contents:', contents);
-
-    // Check if injected.txt exists
-    const hasInjectedFile = contents?.some(entry => entry.name === 'injected.txt');
-    
-    if (!hasInjectedFile) {
-      try {
-        // Create and write to injected.txt
-        pyodideMain.FS.writeFile('/home/pyodide/injected.txt', 'hello hello', { encoding: 'utf8' });
-        
-        // Sync TO IDB (false) to persist the new file
-        pyodideMain.FS.syncfs(false, (err: Error | null) => {
-          if (err) {
-            console.error('Failed to sync to IndexedDB:', err);
-          } else {
-            console.log('Successfully created and synced injected.txt');
-          }
-        });
-      } catch (error) {
-        console.error('Failed to create injected.txt:', error);
-      }
-    }
   }, []);
 
   return (
@@ -321,8 +528,41 @@ export const PythonCodeRunner = ({ code }: PythonCodeRunnerProps) => {
           className="h-8 min-w-[160px] cursor-pointer justify-start rounded-md border border-[#63676c] px-4 text-gray-50 hover:border-white hover:bg-transparent"
           disabled={isPending}
           isLoading={isPending}
-          onClick={() => {
-            run({ code });
+          onClick={async () => {
+            const timeBefore = Date.now(); // Use a regular variable to store the timestamp
+            console.log('Executing Python code.');
+            
+            // 1) Run the Python code in the worker
+            await run({ code });
+            console.log('Python code execution completed.');
+
+            // 2) Pull the latest FS changes from the worker into main thread
+            if (pyodideMain) {
+              console.log('Now syncing from IndexedDB (pulling changes from worker).');
+              await new Promise<void>((resolve, reject) => {
+                if (pyodideMain) {
+                  pyodideMain.FS.syncfs(true, (err: Error | null) => {
+                    if (err) {
+                      console.error('Failed to sync from IndexedDB after Python code run:', err);
+                      reject(err);
+                    } else {
+                      console.log('Successfully synced from IndexedDB after Python code run.');
+                      resolve();
+                    }
+                  });
+                } else {
+                  console.warn('pyodideMain became null, skipping sync operation.');
+                  reject(new Error('pyodideMain is null'));
+                }
+              });
+            } else {
+              console.warn('pyodideMain is null, skipping sync operation.');
+            }
+
+            // 3) Now check for changed files in IDBFS and upload them
+            console.log('Starting file comparison and upload.');
+            await compareAndUploadFiles(timeBefore);
+            console.log('File sync completed.');
           }}
           size={'sm'}
           variant="outline"
@@ -359,7 +599,53 @@ export const PythonCodeRunner = ({ code }: PythonCodeRunnerProps) => {
             Read IDBFS
           </span>
         </Button>
+        <Button
+          className="h-8 cursor-pointer justify-start rounded-md border border-[#63676c] px-4 text-gray-50 hover:border-white hover:bg-transparent"
+          disabled={isSyncing || !jobContents?.length}
+          isLoading={isSyncing}
+          onClick={syncJobFilesToIDBFS}
+          size={'sm'}
+          variant="outline"
+        >
+          <span className="text-xs font-semibold text-gray-50">
+            {isSyncing ? 'Syncing...' : 'Sync Job Files'}
+          </span>
+        </Button>
       </div>
+      
+      {/* Display job contents */}
+      {isLoadingJobContents ? (
+        <div className="mt-2 text-sm text-gray-400">Loading job contents...</div>
+      ) : jobContents && jobContents.length > 0 ? (
+        <div className="mt-2">
+          <div className="text-sm font-medium text-gray-200 mb-2">Job Files:</div>
+          <ul className="mt-1 space-y-2">
+            {jobContents.map((item, index) => (
+              <li className="text-sm text-gray-400 bg-gray-800/30 p-2 rounded-md" key={index}>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <span className="font-medium">{item.name}</span>
+                    <span className="ml-2 text-gray-500">({item.is_directory ? 'Directory' : 'File'})</span>
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {!item.is_directory && (
+                      <span>{(item.size / 1024).toFixed(1)} KB</span>
+                    )}
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500 mt-1 flex gap-3">
+                  <span>Created: {new Date(item.created_time).toLocaleString()}</span>
+                  <span>Modified: {new Date(item.modified_time).toLocaleString()}</span>
+                  {item.has_embeddings && (
+                    <span className="text-emerald-500/70">Has Embeddings</span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      
       <AnimatePresence>
         {!isPending && runResult && (
           <motion.div
