@@ -27,7 +27,6 @@ import {
   FormItem,
   FormLabel,
   JsonForm,
-  MessageList,
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
@@ -72,6 +71,7 @@ import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import { AIModelSelector } from '../../chat/chat-action-bar/ai-update-selection-action-bar';
+import { MessageList } from '../../chat/components/message-list';
 import { ToolErrorFallback } from '../error-boundary';
 import {
   CreateToolCodeFormSchema,

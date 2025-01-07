@@ -14,13 +14,7 @@ import {
 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
-import {
-  Button,
-  Form,
-  FormField,
-  Input,
-  MessageList,
-} from '@shinkai_network/shinkai-ui';
+import { Button, Form, FormField, Input } from '@shinkai_network/shinkai-ui';
 import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
@@ -36,6 +30,7 @@ import {
   AIModelSelector,
   AiUpdateSelectionActionBar,
 } from '../chat/chat-action-bar/ai-update-selection-action-bar';
+import { MessageList } from '../chat/components/message-list';
 import { useWebSocketMessage } from '../chat/websocket-message';
 import { useSheetProjectStore } from './context/table-context';
 

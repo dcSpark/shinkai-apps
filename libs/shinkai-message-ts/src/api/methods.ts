@@ -17,6 +17,7 @@ import { urlJoin } from '../utils/url-join';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
 import { ShinkaiNameWrapper } from '../wasm/ShinkaiNameWrapper';
 import { uploadFilesToJob } from './jobs';
+import { DirectoryContent } from './vector-fs/types';
 
 export const fetchPublicKey =
   (nodeAddress: string) => async (): Promise<any> => {
@@ -1298,4 +1299,20 @@ export const removeRowsSheet = async (
 
   const data = response.data;
   return data;
+};
+
+export const retrieveFilesForJob = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: { job_id: string },
+): Promise<DirectoryContent[]> => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/retrieve_files_for_job'),
+    {
+      params: payload,
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
 };

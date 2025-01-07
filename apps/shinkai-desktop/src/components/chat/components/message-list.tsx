@@ -66,6 +66,7 @@ export const MessageList = ({
   regenerateFirstMessage,
   disabledRetryAndEdit,
   messageExtra,
+  hidePythonExecution,
 }: {
   noMoreMessageLabel: string;
   isSuccess: boolean;
@@ -85,6 +86,7 @@ export const MessageList = ({
   lastMessageContent?: React.ReactNode;
   disabledRetryAndEdit?: boolean;
   messageExtra?: React.ReactNode;
+  hidePythonExecution?: boolean;
 }) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const previousChatHeightRef = useRef<number>(0);
@@ -302,6 +304,7 @@ export const MessageList = ({
                                 ? handleFirstMessageRetry
                                 : handleRetryMessage
                             }
+                            hidePythonExecution={hidePythonExecution}
                             key={`${message.messageId}::${messageIndex}`}
                             message={message}
                             messageId={message.messageId}

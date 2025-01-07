@@ -53,3 +53,9 @@ export type RemoveFsItemRequest = {
   path: string;
 };
 export type RemoveFsItemResponse = string;
+
+export interface RetrieveFilesForJobRequest {
+  job_id: string;
+}
+
+export type RetrieveFilesForJobResponse = DirectoryContent[];
