@@ -51,6 +51,7 @@ import { toast } from 'sonner';
 import ArtifactPreview from '../../components/chat/artifact-preview';
 import { useChatStore } from '../../components/chat/context/chat-context';
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
+import FileExplorer from '../../components/chat/file-explorer';
 import { usePromptSelectionStore } from '../../components/prompt/context/prompt-selection-context';
 import { handleSendNotification } from '../../lib/notifications';
 import { useAuth } from '../../store/auth';
@@ -373,6 +374,7 @@ const ChatLayout = () => {
   );
 
   const selectedArtifact = useChatStore((state) => state.selectedArtifact);
+  const fileExplorerOpen = useChatStore((state) => state.fileExplorerOpen);
   const showArtifactPanel = selectedArtifact != null;
 
   return (
@@ -411,6 +413,28 @@ const ChatLayout = () => {
                   transition={{ duration: 0.2 }}
                 >
                   <ArtifactPreview />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </ResizablePanel>
+        )}
+        {fileExplorerOpen && <ResizableHandle className="bg-gray-300" />}
+        {fileExplorerOpen && (
+          <ResizablePanel
+            collapsible
+            defaultSize={42}
+            maxSize={70}
+            minSize={40}
+          >
+            <AnimatePresence initial={false} mode="popLayout">
+              {fileExplorerOpen && (
+                <motion.div
+                  animate={{ opacity: 1, filter: 'blur(0px)' }}
+                  className="h-full"
+                  initial={{ opacity: 0, filter: 'blur(5px)' }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <FileExplorer />
                 </motion.div>
               )}
             </AnimatePresence>
