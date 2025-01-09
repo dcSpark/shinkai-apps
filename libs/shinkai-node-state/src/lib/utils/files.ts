@@ -13,7 +13,6 @@ export function transformDataToTreeNodes(
       key: item.path,
       label: item.name,
       data: item,
-
       icon: item.is_directory ? 'icon-folder' : 'icon-file',
       children: item.is_directory
         ? transformDataToTreeNodes(
@@ -23,7 +22,7 @@ export function transformDataToTreeNodes(
           )
         : undefined,
       expanded: true,
-      selectable: selectedPaths?.includes(item.path) ? false : true,
+      className: selectedPaths?.includes(item.path) ? 'p-node-disabled' : '',
     };
     result.push(itemNode);
   }
