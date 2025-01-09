@@ -164,7 +164,9 @@ const ConversationHeaderWithInboxId = () => {
   const hasFiles = isSuccess && jobScope.vector_fs_items.length > 0;
 
   const filesAndFoldersCount = isSuccess
-    ? jobScope.vector_fs_folders.length + jobScope.vector_fs_items.length
+    ? jobScope.vector_fs_folders.length +
+      jobScope.vector_fs_items.length +
+      (hasFilesJobFolder ? 1 : 0)
     : 0;
   const hasConversationContext = hasFolders || hasFiles;
 

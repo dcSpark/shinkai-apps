@@ -106,6 +106,7 @@ export const SetJobScopeDrawer = () => {
     }
   }, [isSetJobScopeOpen]);
 
+  console.log(selectedKeys, 'selectedKeys');
   return (
     <Sheet onOpenChange={setSetJobScopeOpen} open={isSetJobScopeOpen}>
       <SheetContent>
@@ -186,7 +187,7 @@ export const SetJobScopeDrawer = () => {
             size="sm"
             type="button"
           >
-            {t('common.done')}
+            {inboxId ? t('common.saveChanges') : t('common.done')}
           </Button>
         </SheetFooter>
       </SheetContent>
