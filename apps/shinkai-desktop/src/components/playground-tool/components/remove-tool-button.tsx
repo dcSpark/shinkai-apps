@@ -24,6 +24,7 @@ export default function RemoveToolButton({ toolKey }: { toolKey: string }) {
 
   return (
     <Button
+      className="rounded-md"
       disabled={isRemoveToolPending}
       isLoading={isRemoveToolPending}
       onClick={async () => {

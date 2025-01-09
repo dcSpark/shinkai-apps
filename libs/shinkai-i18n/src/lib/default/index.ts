@@ -444,6 +444,7 @@ export default {
     fileWithCount_one: '{{count}} File',
     fileWithCount_other: '{{count}} Files',
     save: 'Save',
+    saveChanges: 'Save Changes',
     cancel: 'Cancel',
     continue: 'Continue',
     connect: 'Connect',

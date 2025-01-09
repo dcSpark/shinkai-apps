@@ -7,32 +7,42 @@ import { Link, To } from 'react-router-dom';
 export const SubpageLayout = ({
   title,
   children,
+  rightElement,
   className,
   alignLeft,
 }: {
   title: React.ReactNode;
   children: React.ReactNode;
+  rightElement?: React.ReactNode;
   className?: string;
   alignLeft?: boolean;
 }) => {
   const { t } = useTranslation();
   return (
     <div className={cn('relative mx-auto max-w-2xl py-10', className)}>
-      <Link
-        className={cn('absolute left-4', alignLeft && 'left-0')}
-        to={-1 as To}
-      >
-        <LucideArrowLeft />
-        <span className="sr-only">{t('common.back')}</span>
-      </Link>
-      <h1
-        className={cn(
-          'mb-8 text-center text-2xl font-semibold tracking-tight',
-          alignLeft && 'pl-[40px] pt-0 text-left text-xl',
-        )}
-      >
-        {title}
-      </h1>
+      <div className="mb-8 flex items-center gap-2">
+        <div
+          className={cn(
+            'flex w-full items-center gap-3',
+            alignLeft ? 'justify-start' : 'justify-between',
+          )}
+        >
+          <Link to={-1 as To}>
+            <LucideArrowLeft />
+            <span className="sr-only">{t('common.back')}</span>
+          </Link>
+          <h1
+            className={cn(
+              'text-center text-xl font-semibold tracking-tight',
+              alignLeft && 'text-left',
+            )}
+          >
+            {title}
+          </h1>
+          {alignLeft ? null : <div className="min-w-[40px]" />}
+        </div>
+        {rightElement}
+      </div>
       <div className="flex-1">{children}</div>
     </div>
   );

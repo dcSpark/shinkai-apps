@@ -1,52 +1,26 @@
-// import { zodResolver } from '@hookform/resolvers/zod';
-// import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   RustShinkaiTool,
   ShinkaiTool,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
-import {
-  // Button,
-  // buttonVariants,
-  // Form,
-  // FormField,
-  Switch,
-  // TextField,
-} from '@shinkai_network/shinkai-ui';
+import { Switch } from '@shinkai_network/shinkai-ui';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
-// import { cn } from '@shinkai_network/shinkai-ui/utils';
-// import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-// import { z } from 'zod';
 import { SubpageLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
 import RemoveToolButton from '../playground-tool/components/remove-tool-button';
 
-// const jsToolSchema = z.object({
-//   config: z.array(
-//     z.object({
-//       key_name: z.string(),
-//       key_value: z.string().optional(),
-//       required: z.boolean(),
-//     }),
-//   ),
-// });
-// type JsToolFormSchema = z.infer<typeof jsToolSchema>;
-
 export default function RustTool({
   tool,
   isEnabled,
-  // isPlaygroundTool,
 }: {
   tool: RustShinkaiTool;
   isEnabled: boolean;
-  // isPlaygroundTool?: boolean;
 }) {
   const auth = useAuth((state) => state.auth);
 
-  // const { t } = useTranslation();
   const { mutateAsync: updateTool } = useUpdateTool({
     onSuccess: (_, variables) => {
       if (
@@ -58,45 +32,6 @@ export default function RustTool({
     },
   });
   const { toolKey } = useParams();
-
-  // const form = useForm<JsToolFormSchema>({
-  //   resolver: zodResolver(jsToolSchema),
-  //   defaultValues: {
-  //     // config: tool.config.map((conf) => ({
-  //     //   key_name: conf.BasicConfig.key_name,
-  //     //   key_value: conf.BasicConfig.key_value ?? '',
-  //     //   required: conf.BasicConfig.required,
-  //     // })),
-  //   },
-  // });
-  //
-  // const onSubmit = async (data: JsToolFormSchema) => {
-  //   let enabled = isEnabled;
-  //
-  //   if (
-  //     data.config.every(
-  //       (conf) => !conf.required || (conf.required && conf.key_value !== ''),
-  //     )
-  //   ) {
-  //     enabled = true;
-  //   }
-  //
-  //   await updateTool({
-  //     toolKey: toolKey ?? '',
-  //     toolType: 'Rust',
-  //     toolPayload: {
-  //       config: data.config.map((conf) => ({
-  //         BasicConfig: {
-  //           key_name: conf.key_name,
-  //           key_value: conf.key_value,
-  //         },
-  //       })),
-  //     } as ShinkaiTool,
-  //     isToolEnabled: enabled,
-  //     nodeAddress: auth?.node_address ?? '',
-  //     token: auth?.api_v2_key ?? '',
-  //   });
-  // };
 
   return (
     <SubpageLayout alignLeft title={formatText(tool.name)}>
@@ -122,14 +57,6 @@ export default function RustTool({
             label: 'Description',
             value: tool.description,
           },
-          // tool.author && {
-          //   label: 'Author',
-          //   value: tool.author,
-          // },
-          // tool.keywords.length > 0 && {
-          //   label: 'Keyword',
-          //   value: tool.keywords,
-          // },
         ]
           .filter((item) => !!item)
           .map(({ label, value }) => (
@@ -139,56 +66,6 @@ export default function RustTool({
             </div>
           ))}
 
-        {/*{tool.config.length > 0 && (*/}
-        {/*  <div className="mx-auto mt-6 w-full space-y-6 rounded-md border p-8">*/}
-        {/*    <div className="text-lg font-medium">Tool Configuration</div>*/}
-
-        {/*    <Form {...form}>*/}
-        {/*      <form*/}
-        {/*        className="flex flex-col justify-between space-y-8"*/}
-        {/*        onSubmit={form.handleSubmit(onSubmit)}*/}
-        {/*      >*/}
-        {/*        <div className="flex grow flex-col space-y-5">*/}
-        {/*          {tool.config.map((conf, index) => (*/}
-        {/*            <FormField*/}
-        {/*              control={form.control}*/}
-        {/*              key={conf.BasicConfig.key_name}*/}
-        {/*              name={`config.${index}.key_value`}*/}
-        {/*              render={({ field }) => (*/}
-        {/*                <TextField*/}
-        {/*                  field={field}*/}
-        {/*                  label={formatText(conf.BasicConfig.key_name)}*/}
-        {/*                  type="password"*/}
-        {/*                />*/}
-        {/*              )}*/}
-        {/*            />*/}
-        {/*          ))}*/}
-        {/*        </div>*/}
-        {/*        <Button*/}
-        {/*          className="w-full rounded-lg text-sm"*/}
-        {/*          disabled={isPending}*/}
-        {/*          isLoading={isPending}*/}
-        {/*          type="submit"*/}
-        {/*        >*/}
-        {/*          {t('common.save')}*/}
-        {/*        </Button>*/}
-        {/*      </form>*/}
-        {/*    </Form>*/}
-        {/*  </div>*/}
-        {/*)}*/}
-        {/*{isPlaygroundTool && (*/}
-        {/*  <Link*/}
-        {/*    className={cn(*/}
-        {/*      buttonVariants({*/}
-        {/*        size: 'sm',*/}
-        {/*        variant: 'outline',*/}
-        {/*      }),*/}
-        {/*    )}*/}
-        {/*    to={`/tools/edit/${toolKey}`}*/}
-        {/*  >*/}
-        {/*    Go Playground*/}
-        {/*  </Link>*/}
-        {/*)}*/}
         <div className="flex flex-col gap-4 py-6">
           <RemoveToolButton toolKey={toolKey as string} />
         </div>

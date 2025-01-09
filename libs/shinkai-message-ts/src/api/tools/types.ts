@@ -21,6 +21,7 @@ export type ToolConfig = {
     key_name: string;
     key_value: string | null;
     required: boolean;
+    type: string | null;
   };
 };
 

@@ -1,4 +1,5 @@
-import { zodResolver } from '@hookform/resolvers/zod';
+import { FormProps } from '@rjsf/core';
+import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   DenoShinkaiTool,
@@ -9,38 +10,23 @@ import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/
 import {
   Button,
   buttonVariants,
-  Form,
-  FormField,
+  JsonForm,
   Switch,
-  TextField,
 } from '@shinkai_network/shinkai-ui';
-import {
-  formatCamelCaseText,
-  formatText,
-} from '@shinkai_network/shinkai-ui/helpers';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import { DownloadIcon } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { SubpageLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
 import RemoveToolButton from '../playground-tool/components/remove-tool-button';
-const jsToolSchema = z.object({
-  config: z.array(
-    z.object({
-      key_name: z.string(),
-      key_value: z.string().optional(),
-      required: z.boolean(),
-    }),
-  ),
-});
-type JsToolFormSchema = z.infer<typeof jsToolSchema>;
+import { parseConfigToJsonSchema } from './utils/tool-config';
 
 export default function DenoTool({
   tool,
@@ -53,6 +39,7 @@ export default function DenoTool({
 }) {
   const auth = useAuth((state) => state.auth);
   const { toolKey } = useParams();
+  const [formData, setFormData] = useState<Record<string, any> | null>(null);
 
   const { t } = useTranslation();
   const { mutateAsync: updateTool, isPending } = useUpdateTool({
@@ -111,44 +98,26 @@ export default function DenoTool({
     },
   );
 
-  const form = useForm<JsToolFormSchema>({
-    resolver: zodResolver(jsToolSchema),
-    defaultValues: {
-      config: tool.config.map((conf) => ({
-        key_name: conf.BasicConfig.key_name,
-        key_value: conf.BasicConfig.key_value ?? '',
-        required: conf.BasicConfig.required,
-      })),
-    },
-  });
-
-  const onSubmit = async (data: JsToolFormSchema) => {
-    let enabled = isEnabled;
-
-    if (
-      data.config.every(
-        (conf) => !conf.required || (conf.required && conf.key_value !== ''),
-      )
-    ) {
-      enabled = true;
-    }
-
+  const handleSaveToolConfig: FormProps['onSubmit'] = async (data) => {
+    const formData = data.formData;
     await updateTool({
       toolKey: toolKey ?? '',
       toolType: 'Deno',
       toolPayload: {
-        config: data.config.map((conf) => ({
+        config: Object.entries(formData).map(([key_name, key_value]) => ({
           BasicConfig: {
-            key_name: conf.key_name,
-            key_value: conf.key_value,
+            key_name,
+            key_value,
           },
         })),
       } as ShinkaiTool,
-      isToolEnabled: enabled,
+      isToolEnabled: true,
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
     });
   };
+
+  const toolConfigSchema = parseConfigToJsonSchema(tool?.config ?? []);
 
   return (
     <SubpageLayout alignLeft title={formatText(tool.name)}>
@@ -209,40 +178,37 @@ export default function DenoTool({
           ))}
 
         {tool.config.length > 0 && (
-          <div className="mx-auto mt-6 w-full space-y-6 rounded-md border p-8">
-            <div className="text-lg font-medium">Tool Configuration</div>
+          <div className="mx-auto mt-6 w-full border-b border-t border-gray-300 py-6">
+            <div className="mb-4">
+              <h2 className="text-lg font-medium text-white">Configuration</h2>
+              <p className="text-gray-80 text-xs">
+                Configure the settings for this tool
+              </p>
+            </div>
 
-            <Form {...form}>
-              <form
-                className="flex flex-col justify-between space-y-8"
-                onSubmit={form.handleSubmit(onSubmit)}
+            <JsonForm
+              className="py-4"
+              formData={formData}
+              id="parameters-form"
+              noHtml5Validate={true}
+              onChange={(e) => setFormData(e.formData)}
+              onSubmit={handleSaveToolConfig}
+              schema={toolConfigSchema}
+              uiSchema={{ 'ui:submitButtonOptions': { norender: true } }}
+              validator={validator}
+            />
+            <div className="flex w-full justify-end">
+              <Button
+                className="h-[36px] w-full min-w-[100px] rounded-lg border-gray-200 text-white"
+                disabled={isPending}
+                form="parameters-form"
+                isLoading={isPending}
+                size="sm"
+                variant="default"
               >
-                <div className="flex grow flex-col space-y-5">
-                  {tool.config.map((conf, index) => (
-                    <FormField
-                      control={form.control}
-                      key={conf.BasicConfig.key_name}
-                      name={`config.${index}.key_value`}
-                      render={({ field }) => (
-                        <TextField
-                          field={field}
-                          label={formatCamelCaseText(conf.BasicConfig.key_name)}
-                          type="password"
-                        />
-                      )}
-                    />
-                  ))}
-                </div>
-                <Button
-                  className="w-full rounded-lg text-sm"
-                  disabled={isPending}
-                  isLoading={isPending}
-                  type="submit"
-                >
-                  {t('common.save')}
-                </Button>
-              </form>
-            </Form>
+                {t('common.saveChanges')}
+              </Button>
+            </div>
           </div>
         )}
         <div className="flex flex-col gap-4 py-6">
