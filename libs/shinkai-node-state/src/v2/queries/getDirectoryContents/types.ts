@@ -7,6 +7,7 @@ import { FunctionKeyV2 } from '../../constants';
 export type GetVRPathSimplifiedInput = Token & {
   nodeAddress: string;
   path: string;
+  depth?: number;
 };
 
 export type UseGetDirectoryContents = [

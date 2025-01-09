@@ -21,7 +21,6 @@ export function transformDataToTreeNodes(
             selectedPaths,
           )
         : undefined,
-      expanded: true,
       className: selectedPaths?.includes(item.path) ? 'p-node-disabled' : '',
     };
     result.push(itemNode);
