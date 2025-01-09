@@ -352,7 +352,7 @@ export function MainNav() {
     //   href: '/my-subscriptions',
     //   icon: <MySubscriptionsIcon className="h-5 w-5" />,
     // },
-    {
+    optInExperimental && {
       title: 'Shinkai Sheet',
       href: '/sheets',
       icon: <SheetIcon className="h-5 w-5" />,
