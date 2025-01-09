@@ -1,5 +1,6 @@
 export type GetListDirectoryContentsRequest = {
   path: string;
+  depth?: number;
 };
 
 export type DirectoryContent = {

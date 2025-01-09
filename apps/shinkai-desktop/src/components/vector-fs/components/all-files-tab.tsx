@@ -19,7 +19,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Input,
+  // Input,
   ScrollArea,
   Separator,
   Tooltip,
@@ -41,12 +41,13 @@ import {
   ChevronRight,
   FileType2Icon,
   PlusIcon,
-  SearchIcon,
+  // SearchIcon,
   XIcon,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import config from '../../../config';
 import { useDebounce } from '../../../hooks/use-debounce';
 import { useURLQueryParams } from '../../../hooks/use-url-query-params';
 import { useAuth } from '../../../store/auth';
@@ -122,7 +123,7 @@ const AllFiles = () => {
       profile_identity_sk: auth?.profile_identity_sk ?? '',
     },
     {
-      enabled: !!debouncedSearchQuery,
+      enabled: !!debouncedSearchQuery && config.isDev,
     },
   );
 
@@ -249,29 +250,29 @@ const AllFiles = () => {
       </DropdownMenu>
       <div className="mt-2 flex justify-between gap-3">
         <div className="relative flex h-10 w-full max-w-[500px] items-center">
-          <Input
-            className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-            }}
-            placeholder={t('common.searchPlaceholder')}
-            value={searchQuery}
-          />
-          <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
-          {searchQuery && (
-            <Button
-              className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
-              onClick={() => {
-                setSearchQuery('');
-              }}
-              size="auto"
-              type="button"
-              variant="ghost"
-            >
-              <XIcon />
-              <span className="sr-only">{t('common.clearSearch')}</span>
-            </Button>
-          )}
+          {/*<Input*/}
+          {/*  className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"*/}
+          {/*  onChange={(e) => {*/}
+          {/*    setSearchQuery(e.target.value);*/}
+          {/*  }}*/}
+          {/*  placeholder={t('common.searchPlaceholder')}*/}
+          {/*  value={searchQuery}*/}
+          {/*/>*/}
+          {/*<SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />*/}
+          {/*{searchQuery && (*/}
+          {/*  <Button*/}
+          {/*    className="absolute right-1 h-8 w-8 bg-gray-200 p-2"*/}
+          {/*    onClick={() => {*/}
+          {/*      setSearchQuery('');*/}
+          {/*    }}*/}
+          {/*    size="auto"*/}
+          {/*    type="button"*/}
+          {/*    variant="ghost"*/}
+          {/*  >*/}
+          {/*    <XIcon />*/}
+          {/*    <span className="sr-only">{t('common.clearSearch')}</span>*/}
+          {/*  </Button>*/}
+          {/*)}*/}
         </div>
         <div className="flex gap-3">
           <VectorFsToggleSortName />
@@ -413,14 +414,16 @@ const AllFiles = () => {
                 {t('vectorFs.emptyState.noFiles')}
               </div>
             )}
-          {searchQuery &&
+          {config.isDev &&
+            searchQuery &&
             isSearchVRItemsSuccess &&
             searchVRItems?.length === 0 && (
               <div className="flex h-20 items-center justify-center text-gray-100">
                 {t('vectorFs.emptyState.noFiles')}
               </div>
             )}
-          {searchQuery &&
+          {config.isDev &&
+            searchQuery &&
             isSearchVRItemsSuccess &&
             searchQuery === debouncedSearchQuery &&
             searchVRItems?.map((item) => {

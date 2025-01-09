@@ -22,10 +22,12 @@ import {
   Tooltip,
   TooltipContent,
   TooltipPortal,
-  TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { formatText, getVersionFromTool } from '@shinkai_network/shinkai-ui/helpers';
+import {
+  formatText,
+  getVersionFromTool,
+} from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   BoltIcon,
@@ -176,30 +178,28 @@ export const Tools = () => {
                 <BoltIcon className="mr-1.5 h-4 w-4" />
                 {t('common.configure')}
               </Link>
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger className="flex items-center gap-1">
-                    <Switch
-                      checked={tool.enabled}
-                      onCheckedChange={async () => {
-                        await updateTool({
-                          toolKey: tool.tool_router_key,
-                          toolType: tool.tool_type,
-                          toolPayload: {} as ShinkaiTool,
-                          isToolEnabled: !tool.enabled,
-                          nodeAddress: auth?.node_address ?? '',
-                          token: auth?.api_v2_key ?? '',
-                        });
-                      }}
-                    />
-                  </TooltipTrigger>
-                  <TooltipPortal>
-                    <TooltipContent align="center" side="top">
-                      {t('common.enabled')}
-                    </TooltipContent>
-                  </TooltipPortal>
-                </Tooltip>
-              </TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger className="flex items-center gap-1">
+                  <Switch
+                    checked={tool.enabled}
+                    onCheckedChange={async () => {
+                      await updateTool({
+                        toolKey: tool.tool_router_key,
+                        toolType: tool.tool_type,
+                        toolPayload: {} as ShinkaiTool,
+                        isToolEnabled: !tool.enabled,
+                        nodeAddress: auth?.node_address ?? '',
+                        token: auth?.api_v2_key ?? '',
+                      });
+                    }}
+                  />
+                </TooltipTrigger>
+                <TooltipPortal>
+                  <TooltipContent align="center" side="top">
+                    {t('common.enabled')}
+                  </TooltipContent>
+                </TooltipPortal>
+              </Tooltip>
             </div>
           ))}
         {searchQuery &&
@@ -243,30 +243,29 @@ export const Tools = () => {
                 <BoltIcon className="mr-1.5 h-4 w-4" />
                 {t('common.configure')}
               </Link>
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger className="flex items-center gap-1">
-                    <Switch
-                      checked={tool.enabled}
-                      onCheckedChange={async () => {
-                        await updateTool({
-                          toolKey: tool.tool_router_key,
-                          toolType: tool.tool_type,
-                          toolPayload: {} as ShinkaiTool,
-                          isToolEnabled: !tool.enabled,
-                          nodeAddress: auth?.node_address ?? '',
-                          token: auth?.api_v2_key ?? '',
-                        });
-                      }}
-                    />
-                  </TooltipTrigger>
-                  <TooltipPortal>
-                    <TooltipContent align="center" side="top">
-                      {t('common.enabled')}
-                    </TooltipContent>
-                  </TooltipPortal>
-                </Tooltip>
-              </TooltipProvider>
+
+              <Tooltip>
+                <TooltipTrigger className="flex items-center gap-1">
+                  <Switch
+                    checked={tool.enabled}
+                    onCheckedChange={async () => {
+                      await updateTool({
+                        toolKey: tool.tool_router_key,
+                        toolType: tool.tool_type,
+                        toolPayload: {} as ShinkaiTool,
+                        isToolEnabled: !tool.enabled,
+                        nodeAddress: auth?.node_address ?? '',
+                        token: auth?.api_v2_key ?? '',
+                      });
+                    }}
+                  />
+                </TooltipTrigger>
+                <TooltipPortal>
+                  <TooltipContent align="center" side="top">
+                    {t('common.enabled')}
+                  </TooltipContent>
+                </TooltipPortal>
+              </Tooltip>
             </div>
           ))}
         {searchQuery && isSearchQuerySynced && searchToolList?.length === 0 && (

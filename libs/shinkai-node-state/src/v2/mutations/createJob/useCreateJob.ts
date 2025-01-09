@@ -18,6 +18,13 @@ export const useCreateJob = (options?: Options) => {
         queryKey: [FunctionKeyV2.GET_INBOXES],
       });
 
+      queryClient.invalidateQueries({
+        queryKey: [FunctionKeyV2.GET_JOB_SCOPE],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [FunctionKeyV2.GET_VR_FILES],
+      });
+
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);
       }

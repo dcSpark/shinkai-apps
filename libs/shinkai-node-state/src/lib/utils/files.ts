@@ -4,6 +4,7 @@ import { TreeNode } from 'primereact/treenode';
 export function transformDataToTreeNodes(
   data: DirectoryContent[],
   parentPath = '/',
+  selectedPaths?: string[],
 ): TreeNode[] {
   const result: TreeNode[] = [];
 
@@ -14,15 +15,19 @@ export function transformDataToTreeNodes(
       data: item,
       icon: item.is_directory ? 'icon-folder' : 'icon-file',
       children: item.is_directory
-        ? transformDataToTreeNodes(item.children ?? [], item.path)
+        ? transformDataToTreeNodes(
+            item.children ?? [],
+            item.path,
+            selectedPaths,
+          )
         : undefined,
+      className: selectedPaths?.includes(item.path) ? 'p-node-disabled' : '',
     };
     result.push(itemNode);
   }
 
   return result;
 }
-
 export function getFlatChildItems(
   data: DirectoryContent[],
 ): DirectoryContent[] {

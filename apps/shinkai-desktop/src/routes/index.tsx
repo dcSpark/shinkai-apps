@@ -325,7 +325,11 @@ const AppRoutes = () => {
         <Route
           element={
             <ProtectedRoute>
-              <Outlet />
+              <TooltipProvider delayDuration={0}>
+                <ChatProvider>
+                  <Outlet />
+                </ChatProvider>
+              </TooltipProvider>
             </ProtectedRoute>
           }
           path={'tools'}
