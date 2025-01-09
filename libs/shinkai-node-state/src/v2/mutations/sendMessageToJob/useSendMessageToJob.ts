@@ -70,6 +70,12 @@ export const useSendMessageToJob = (options?: Options) => {
       };
     },
     onSuccess: (response, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: [FunctionKeyV2.GET_JOB_SCOPE],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [FunctionKeyV2.GET_VR_FILES],
+      });
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);
       }

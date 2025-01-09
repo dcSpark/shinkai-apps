@@ -1,6 +1,8 @@
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
+import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
+import { useGetJobFolderName } from '@shinkai_network/shinkai-node-state/v2/queries/getJobFolderName/useGetJobFolderName';
 import { useGetJobScope } from '@shinkai_network/shinkai-node-state/v2/queries/getJobScope/useGetJobScope';
 import {
   Badge,
@@ -138,6 +140,26 @@ const ConversationHeaderWithInboxId = () => {
     { enabled: !!inboxId },
   );
 
+  const { data: jobFolderData } = useGetJobFolderName({
+    jobId: extractJobIdFromInbox(inboxId),
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const { data: fileInfoArray, isSuccess: isVRFilesSuccess } =
+    useGetListDirectoryContents(
+      {
+        nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
+        path: decodeURIComponent(jobFolderData?.folder_name ?? '') ?? '',
+      },
+      {
+        enabled: !!jobFolderData?.folder_name,
+      },
+    );
+
+  const hasFilesJobFolder = isVRFilesSuccess && fileInfoArray.length > 0;
+
   const hasFolders = isSuccess && jobScope.vector_fs_folders.length > 0;
   const hasFiles = isSuccess && jobScope.vector_fs_items.length > 0;
 
@@ -150,7 +172,8 @@ const ConversationHeaderWithInboxId = () => {
     if (
       isSuccess &&
       inboxId &&
-      (jobScope.vector_fs_folders?.length > 0 ||
+      (hasFilesJobFolder ||
+        jobScope.vector_fs_folders?.length > 0 ||
         jobScope.vector_fs_items?.length > 0)
     ) {
       const selectedVRFilesPathMap = jobScope.vector_fs_items.reduce(
@@ -177,10 +200,17 @@ const ConversationHeaderWithInboxId = () => {
 
       onSelectedKeysChange({
         ...selectedVRFilesPathMap,
+        ...(jobFolderData?.folder_name && {
+          [jobFolderData.folder_name]: {
+            checked: true,
+          },
+        }),
         ...selectedVRFoldersPathMap,
       });
     }
   }, [
+    hasFilesJobFolder,
+    jobFolderData?.folder_name,
     jobScope?.vector_fs_folders,
     jobScope?.vector_fs_items,
     isSuccess,

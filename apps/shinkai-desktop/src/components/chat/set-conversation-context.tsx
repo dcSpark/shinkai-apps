@@ -10,6 +10,7 @@ import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib
 import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import { useUpdateJobScope } from '@shinkai_network/shinkai-node-state/v2/mutations/updateJobScope/useUpdateJobScope';
 import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
+import { useGetJobFolderName } from '@shinkai_network/shinkai-node-state/v2/queries/getJobFolderName/useGetJobFolderName';
 import {
   Badge,
   Button,
@@ -79,11 +80,21 @@ export const SetJobScopeDrawer = () => {
       },
     });
 
+  const { data: jobFolderData } = useGetJobFolderName({
+    jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const selectedPaths = jobFolderData ? [jobFolderData.folder_name] : [];
+
   useEffect(() => {
     if (isVRFilesSuccess) {
-      setNodes(transformDataToTreeNodes(fileInfoArray));
+      setNodes(
+        transformDataToTreeNodes(fileInfoArray, undefined, selectedPaths),
+      );
     }
-  }, [fileInfoArray, isVRFilesSuccess]);
+  }, [fileInfoArray, isVRFilesSuccess, jobFolderData]);
 
   useEffect(() => {
     if (!isSetJobScopeOpen) {
