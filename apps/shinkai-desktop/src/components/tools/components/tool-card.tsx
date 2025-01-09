@@ -26,7 +26,6 @@ import { toast } from 'sonner';
 import { SubpageLayout } from '../../../pages/layout/simple-layout';
 import { useAuth } from '../../../store/auth';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
-import { isDenoShinkaiTool, isPythonShinkaiTool } from '../tool-details';
 import { parseConfigToJsonSchema } from '../utils/tool-config';
 
 interface ToolDetailsProps {
@@ -196,43 +195,40 @@ export default function ToolCard({
             </div>
           ))}
 
-        {(isPythonShinkaiTool(tool) || isDenoShinkaiTool(tool)) &&
-          tool.config.length > 0 && (
-            <div className="mx-auto mt-6 w-full border-b border-t border-gray-300 py-6">
-              <div className="mb-4">
-                <h2 className="text-lg font-medium text-white">
-                  Configuration
-                </h2>
-                <p className="text-gray-80 text-xs">
-                  Configure the settings for this tool
-                </p>
-              </div>
-
-              <JsonForm
-                className="py-4"
-                formData={formData}
-                id="parameters-form"
-                noHtml5Validate={true}
-                onChange={(e) => setFormData(e.formData)}
-                onSubmit={handleSaveToolConfig}
-                schema={toolConfigSchema}
-                uiSchema={{ 'ui:submitButtonOptions': { norender: true } }}
-                validator={validator}
-              />
-              <div className="flex w-full justify-end">
-                <Button
-                  className="w-full min-w-[100px] rounded-lg border-gray-200 text-white"
-                  disabled={isPending}
-                  form="parameters-form"
-                  isLoading={isPending}
-                  size="sm"
-                  variant="default"
-                >
-                  {t('common.saveChanges')}
-                </Button>
-              </div>
+        {'config' in tool && tool.config.length > 0 && (
+          <div className="mx-auto mt-6 w-full border-b border-t border-gray-300 py-6">
+            <div className="mb-4">
+              <h2 className="text-lg font-medium text-white">Configuration</h2>
+              <p className="text-gray-80 text-xs">
+                Configure the settings for this tool
+              </p>
             </div>
-          )}
+
+            <JsonForm
+              className="py-1"
+              formData={formData}
+              id="parameters-form"
+              noHtml5Validate={true}
+              onChange={(e) => setFormData(e.formData)}
+              onSubmit={handleSaveToolConfig}
+              schema={toolConfigSchema}
+              uiSchema={{ 'ui:submitButtonOptions': { norender: true } }}
+              validator={validator}
+            />
+            <div className="flex w-full justify-end">
+              <Button
+                className="w-full min-w-[100px] rounded-lg border-gray-200 text-white"
+                disabled={isPending}
+                form="parameters-form"
+                isLoading={isPending}
+                size="sm"
+                variant="default"
+              >
+                {t('common.saveChanges')}
+              </Button>
+            </div>
+          </div>
+        )}
 
         <div className="flex flex-col gap-4 py-6">
           {isPlaygroundTool && (
