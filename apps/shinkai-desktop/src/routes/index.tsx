@@ -330,10 +330,20 @@ const AppRoutes = () => {
           }
           path={'tools'}
         >
-          <Route element={<Tools />} index />
-          <Route element={<ToolDetails />} path={':toolKey'} />
-          <Route element={<CreateToolPage />} path={'create'} />
-          <Route element={<EditToolPage />} path={'edit/:toolRouterKey'} />
+          <Route element={
+            <TooltipProvider delayDuration={0}>
+              <ChatProvider>
+                <SetJobScopeProvider>
+                  <Outlet />
+                </SetJobScopeProvider>
+              </ChatProvider>
+            </TooltipProvider>
+          }>
+            <Route element={<Tools />} index />
+            <Route element={<ToolDetails />} path={':toolKey'} />
+            <Route element={<CreateToolPage />} path={'create'} />
+            <Route element={<EditToolPage />} path={'edit/:toolRouterKey'} />
+          </Route>
         </Route>
         <Route
           element={
