@@ -475,7 +475,7 @@ const AIModelInstallation = ({
             <div className="grid grid-cols-4 gap-4">
               {cloudProviders.map((model) => (
                 <Card
-                  className="flex h-[260px] flex-col justify-between"
+                  className="flex h-[235px] flex-col justify-between"
                   key={model.name}
                 >
                   <div className="space-y-3">

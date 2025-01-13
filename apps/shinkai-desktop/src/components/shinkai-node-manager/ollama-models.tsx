@@ -101,7 +101,7 @@ export const OllamaModels = ({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center gap-2 py-2',
+        'flex flex-col items-center justify-center gap-1.5 pb-2',
         showAllOllamaModels && 'h-full',
       )}
     >
@@ -200,7 +200,7 @@ export const OllamaModels = ({
           </AutoSizer>
         </div>
       )}
-      <span className="text-gray-80 w-full text-right text-xs">
+      <span className="w-full text-right text-xs text-gray-100">
         {t('shinkaiNode.models.poweredByOllama')}
       </span>
       {parentShowAllOllamaModels == null && (
