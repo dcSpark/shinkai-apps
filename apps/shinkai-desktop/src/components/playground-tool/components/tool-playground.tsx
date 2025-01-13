@@ -990,7 +990,7 @@ function ManageToolSourceModal({
           variant="outline"
         >
           <ToolAssetsIcon className="text-gray-80 mr-2 h-4 w-4" />
-          Manage Sources ({isGetAllToolAssetsSuccess ? assets.length : '-'})
+          Manage Knowledge ({isGetAllToolAssetsSuccess ? assets.length : '-'})
         </Button>
       </DialogTrigger>
       <DialogContent className="flex h-[50vh] max-w-[500px] flex-col gap-4">
@@ -998,7 +998,7 @@ function ManageToolSourceModal({
           <XIcon className="text-gray-80 h-5 w-5" />
         </DialogClose>
         <div className="space-y-2">
-          <DialogTitle className="pb-0">Manage Sources</DialogTitle>
+          <DialogTitle className="pb-0">Manage Knowledge</DialogTitle>
           <DialogDescription className="text-xs">
             Add knowledge directly to your tool. It is used to provide context
             to the large language model.
