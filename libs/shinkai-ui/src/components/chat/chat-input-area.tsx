@@ -6,6 +6,7 @@ import { ChatInput } from './chat-input';
 
 type ChatInputAreaProps = {
   value: string;
+  onPaste?: (e: React.ClipboardEvent<HTMLTextAreaElement>) => void;
   onChange: (value: string) => void;
   onSubmit: () => void;
   disabled?: boolean;
@@ -24,6 +25,7 @@ export const ChatInputArea = React.forwardRef<
     {
       value,
       onChange,
+      onPaste,
       autoFocus,
       onSubmit,
       disabled,
@@ -53,6 +55,7 @@ export const ChatInputArea = React.forwardRef<
             autoFocus={autoFocus}
             disabled={disabled || isLoading}
             onChange={(e) => onChange(e.target.value)}
+            onPaste={onPaste}
             onSend={onSubmit}
             placeholder={placeholder ?? 'Send a message'}
             ref={textareaRef}

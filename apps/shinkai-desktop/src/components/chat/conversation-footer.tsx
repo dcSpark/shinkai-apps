@@ -50,7 +50,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Paperclip, X, XIcon } from 'lucide-react';
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm, useWatch } from 'react-hook-form';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -235,6 +235,15 @@ function ConversationEmptyFooter() {
       },
     );
 
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const previousFiles = chatForm.getValues('files') ?? [];
+      const newFiles = [...previousFiles, ...acceptedFiles];
+      chatForm.setValue('files', newFiles, { shouldValidate: true });
+    },
+    [chatForm],
+  );
+
   const {
     getRootProps: getRootFileProps,
     getInputProps: getInputFileProps,
@@ -244,11 +253,7 @@ function ConversationEmptyFooter() {
     noClick: true,
     noKeyboard: true,
     multiple: true,
-    onDrop: (acceptedFiles) => {
-      const previousFiles = chatForm.getValues('files') ?? [];
-      const newFiles = [...previousFiles, ...acceptedFiles];
-      chatForm.setValue('files', newFiles, { shouldValidate: true });
-    },
+    onDrop,
   });
 
   const currentFiles = useWatch({
@@ -420,6 +425,19 @@ function ConversationEmptyFooter() {
                         }
                         disabled={isPending}
                         onChange={field.onChange}
+                        onPaste={(event) => {
+                          const items = event.clipboardData?.items;
+                          if (items) {
+                            for (let i = 0; i < items.length; i++) {
+                              if (items[i].type.indexOf('image') !== -1) {
+                                const file = items[i].getAsFile();
+                                if (file) {
+                                  onDrop([file]);
+                                }
+                              }
+                            }
+                          }
+                        }}
                         onSubmit={chatForm.handleSubmit(onSubmit)}
                         ref={textareaRef}
                         topAddons={
@@ -613,6 +631,15 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
       },
     );
 
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const previousFiles = chatForm.getValues('files') ?? [];
+      const newFiles = [...previousFiles, ...acceptedFiles];
+      chatForm.setValue('files', newFiles, { shouldValidate: true });
+    },
+    [chatForm],
+  );
+
   const {
     getRootProps: getRootFileProps,
     getInputProps: getInputFileProps,
@@ -622,11 +649,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     noClick: true,
     noKeyboard: true,
     multiple: true,
-    onDrop: (acceptedFiles) => {
-      const previousFiles = chatForm.getValues('files') ?? [];
-      const newFiles = [...previousFiles, ...acceptedFiles];
-      chatForm.setValue('files', newFiles, { shouldValidate: true });
-    },
+    onDrop,
   });
 
   const currentFiles = useWatch({
@@ -783,6 +806,19 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                         }
                         disabled={isLoadingMessage}
                         onChange={field.onChange}
+                        onPaste={(event) => {
+                          const items = event.clipboardData?.items;
+                          if (items) {
+                            for (let i = 0; i < items.length; i++) {
+                              if (items[i].type.indexOf('image') !== -1) {
+                                const file = items[i].getAsFile();
+                                if (file) {
+                                  onDrop([file]);
+                                }
+                              }
+                            }
+                          }
+                        }}
                         onSubmit={chatForm.handleSubmit(onSubmit)}
                         ref={textareaRef}
                         topAddons={
