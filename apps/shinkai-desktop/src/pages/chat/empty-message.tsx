@@ -81,7 +81,10 @@ const EmptyMessage = () => {
   return (
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <ConversationHeader />
-      <div className="flex w-full flex-1 items-center justify-center p-6">
+      <div
+        className="flex size-full items-center justify-center p-6"
+        style={{ contain: 'strict' }}
+      >
         <motion.div
           animate={{ opacity: 1 }}
           className="flex flex-col items-center gap-6 pt-10 text-center"
