@@ -403,14 +403,26 @@ export function CreatePromptDrawer({
                     </FormItem>
                   )}
                 />
-                <Button
-                  className="mt-4"
-                  disabled={isPending}
-                  isLoading={isPending}
-                  type="submit"
-                >
-                  Create Prompt
-                </Button>
+                <div className="flex justify-end gap-3">
+                  <Button
+                    className="mt-4 h-[30px]"
+                    onClick={() => setIsPromptDrawerOpen(false)}
+                    size="sm"
+                    type="button"
+                    variant="outline"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="mt-4 h-[30px]"
+                    disabled={isPending}
+                    isLoading={isPending}
+                    size="sm"
+                    type="submit"
+                  >
+                    Create Prompt
+                  </Button>
+                </div>
               </form>
             </Form>
           </div>
