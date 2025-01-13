@@ -96,6 +96,7 @@ function ConversationEmptyFooter() {
   const navigate = useNavigate();
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const onSelectedKeysChange = useSetJobScope(
     (state) => state.onSelectedKeysChange,
@@ -290,6 +291,12 @@ function ConversationEmptyFooter() {
   }, [chatForm, promptSelected]);
 
   useEffect(() => {
+    if (!textareaRef.current) return;
+    textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
+    textareaRef.current.focus();
+  }, [chatForm.watch('message')]);
+
+  useEffect(() => {
     chatConfigForm.setValue(
       'useTools',
       promptSelected?.useTools ? true : DEFAULT_CHAT_CONFIG.use_tools,
@@ -348,7 +355,7 @@ function ConversationEmptyFooter() {
               control={chatForm.control}
               name="message"
               render={({ field }) => (
-                <FormItem className="w-full space-y-0">
+                <FormItem className="w-full">
                   <FormLabel className="sr-only">
                     {t('chat.enterMessage')}
                   </FormLabel>
@@ -414,6 +421,7 @@ function ConversationEmptyFooter() {
                         disabled={isPending}
                         onChange={field.onChange}
                         onSubmit={chatForm.handleSubmit(onSubmit)}
+                        ref={textareaRef}
                         topAddons={
                           <>
                             {isDragActive && <DropFileActive />}
@@ -690,13 +698,14 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
   useEffect(() => {
     if (promptSelected) {
       chatForm.setValue('message', promptSelected.prompt);
-      setTimeout(() => {
-        if (!textareaRef.current) return;
-        textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
-        textareaRef.current.focus();
-      }, 10);
     }
   }, [chatForm, promptSelected]);
+
+  useEffect(() => {
+    if (!textareaRef.current) return;
+    textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
+    textareaRef.current.focus();
+  }, [chatForm.watch('message')]);
 
   useEffect(() => {
     chatForm.reset();
@@ -720,7 +729,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
               control={chatForm.control}
               name="message"
               render={({ field }) => (
-                <FormItem className="w-full space-y-0 overflow-hidden">
+                <FormItem className="w-full">
                   <FormLabel className="sr-only">
                     {t('chat.enterMessage')}
                   </FormLabel>

@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { useCombinedRefs } from '../../hooks/use-combined-refs';
+import { cn } from '../../utils';
 import { ChatInput } from './chat-input';
 
 type ChatInputAreaProps = {
@@ -36,7 +37,12 @@ export const ChatInputArea = React.forwardRef<
     const textareaRef = useCombinedRefs<HTMLTextAreaElement>(ref);
 
     return (
-      <div className="flex w-full max-w-full flex-col rounded-lg border border-gray-300 bg-gray-400 px-1 py-1 text-sm shadow-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50">
+      <div
+        className={cn(
+          'flex w-full max-w-full flex-col rounded-lg bg-gray-400 px-1 py-1 text-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
+          'shadow-[0_0_0_1px_currentColor] shadow-gray-300 transition-shadow focus-within:shadow-gray-200',
+        )}
+      >
         {topAddons}
         <div
           aria-disabled={disabled}
