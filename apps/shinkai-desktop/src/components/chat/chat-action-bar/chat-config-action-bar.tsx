@@ -475,7 +475,7 @@ const ToolsDisabledAlert = ({
         </TooltipTrigger>
         <TooltipPortal>
           <TooltipContent>
-            <p>Turn on Enable Tools in chat config to allow tool usage.</p>
+            <p>Turn on Enable Tools in chat settings to allow tool usage.</p>
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>
