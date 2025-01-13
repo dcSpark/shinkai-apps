@@ -500,6 +500,7 @@ function ConversationEmptyFooter() {
                                       tool.input_args.properties ?? {},
                                     ),
                                   });
+                                  chatConfigForm.setValue('useTools', true);
                                 }}
                                 type="button"
                               >
@@ -882,7 +883,11 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                               </motion.button>
                             </TooltipTrigger>
                             <TooltipPortal>
-                              <TooltipContent align="start" side="top">
+                              <TooltipContent
+                                align="start"
+                                className="max-w-[500px]"
+                                side="top"
+                              >
                                 {tool.description}
                               </TooltipContent>
                             </TooltipPortal>
