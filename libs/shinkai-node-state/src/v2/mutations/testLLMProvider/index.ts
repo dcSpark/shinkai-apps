@@ -1,19 +1,15 @@
 import {
   addLLMProvider as addLLMProviderAPI,
-  testLLMProvider,
+  testLLMProvider as testLLMProviderApi,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import { AddLLMProviderInput } from './types';
+import { TestLLMProviderInput } from './types';
 
-export const addLLMProvider = async ({
+export const testLLMProvider = async ({
   nodeAddress,
   token,
   agent,
-}: AddLLMProviderInput) => {
-  if (!agent.model.Ollama) {
-    await testLLMProvider(nodeAddress, token, agent);
-  }
-
-  const data = await addLLMProviderAPI(nodeAddress, token, agent);
-  return data;
+}: TestLLMProviderInput) => {
+  const response = await testLLMProviderApi(nodeAddress, token, agent);
+  return response;
 };

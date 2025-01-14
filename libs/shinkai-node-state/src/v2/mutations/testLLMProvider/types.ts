@@ -4,8 +4,8 @@ import {
   SerializedLLMProvider,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 
-export type AddLLMProviderInput = Token & {
+export type TestLLMProviderInput = Token & {
   nodeAddress: string;
   agent: SerializedLLMProvider;
 };
-export type AddLLMProviderOutput = AddLLMProviderResponse;
+export type TestLLMProviderOutput = AddLLMProviderResponse;

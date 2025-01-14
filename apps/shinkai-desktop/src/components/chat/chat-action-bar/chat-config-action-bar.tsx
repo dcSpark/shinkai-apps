@@ -400,6 +400,8 @@ export function CreateChatConfigActionBar({
 }: {
   form: UseFormReturn<ChatConfigFormSchemaType>;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center gap-2">
       <ToolsDisabledAlert isToolsDisabled={!form.watch('useTools')} />
@@ -428,6 +430,28 @@ export function CreateChatConfigActionBar({
                   // onSubmit={form.handleSubmit(onSubmit)}
                 >
                   <ChatConfigForm form={form} />
+                  <div className="flex items-center justify-end gap-2">
+                    <PopoverClose asChild>
+                      <Button
+                        className="h-9 min-w-[100px] gap-2 rounded-xl"
+                        onClick={() => {
+                          form.reset();
+                        }}
+                        size="sm"
+                        variant="outline"
+                      >
+                        <span>Reset to defaults</span>
+                      </Button>
+                    </PopoverClose>
+                    <PopoverClose asChild>
+                      <Button
+                        className="h-9 min-w-[100px] gap-2 rounded-xl"
+                        size="sm"
+                      >
+                        <span>{t('common.save')}</span>
+                      </Button>
+                    </PopoverClose>
+                  </div>
                 </form>
               </Form>
             </PopoverContent>
@@ -475,7 +499,7 @@ const ToolsDisabledAlert = ({
         </TooltipTrigger>
         <TooltipPortal>
           <TooltipContent>
-            <p>Turn on Enable Tools in chat config to allow tool usage.</p>
+            <p>Turn on Enable Tools in chat settings to allow tool usage.</p>
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>

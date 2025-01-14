@@ -174,11 +174,12 @@ export const MessageList = ({
   return (
     <div
       className={cn(
-        'scroll flex-1 overflow-y-auto overscroll-none will-change-scroll',
+        'scroll size-full overflow-y-auto overscroll-none will-change-scroll',
         'flex-1 overflow-y-auto',
         containerClassName,
       )}
       ref={chatContainerRef}
+      style={{ contain: 'strict' }}
     >
       {isSuccess &&
         !isFetchingPreviousPage &&

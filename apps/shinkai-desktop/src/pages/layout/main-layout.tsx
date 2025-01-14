@@ -352,15 +352,15 @@ export function MainNav() {
     //   href: '/my-subscriptions',
     //   icon: <MySubscriptionsIcon className="h-5 w-5" />,
     // },
+    {
+      title: 'Shinkai Tools',
+      href: '/tools',
+      icon: <ToolsIcon className="h-5 w-5" />,
+    },
     optInExperimental && {
       title: 'Shinkai Sheet',
       href: '/sheets',
       icon: <SheetIcon className="h-5 w-5" />,
-    },
-    optInExperimental && {
-      title: 'Shinkai Tools',
-      href: '/tools',
-      icon: <ToolsIcon className="h-5 w-5" />,
     },
     optInExperimental && {
       title: 'Scheduled Tasks',
@@ -483,7 +483,7 @@ export function MainNav() {
           {navigationLinks.map((item) => {
             return (
               <Fragment key={item.title}>
-                {optInExperimental && item.href === '/tools' && (
+                {optInExperimental && item.href === '/sheets' && (
                   <Separator className="my-0.5 w-full bg-gray-200" />
                 )}
                 <TooltipProvider
@@ -603,16 +603,19 @@ export function MainNav() {
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-4 flex gap-2">
+          <AlertDialogFooter className="mt-4 flex justify-end gap-2">
             <AlertDialogCancel
-              className="mt-0 flex-1"
+              className="mt-0 min-w-[120px]"
               onClick={() => {
                 setIsConfirmLogoutDialogOpened(false);
               }}
             >
               {t('common.cancel')}
             </AlertDialogCancel>
-            <AlertDialogAction className="flex-1" onClick={handleDisconnect}>
+            <AlertDialogAction
+              className="min-w-[120px]"
+              onClick={handleDisconnect}
+            >
               {t('common.disconnect')}
             </AlertDialogAction>
           </AlertDialogFooter>

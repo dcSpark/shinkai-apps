@@ -1,4 +1,4 @@
-import { getFlatChildItems } from '@shinkai_network/shinkai-node-state/lib/utils/files';
+import { flattenDirectoryContents } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxes';
@@ -36,13 +36,14 @@ export const useOnboardingSteps = () => {
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
     path: '/',
+    depth: 3,
   });
 
-  const { data: subscriptionFolder } = useGetListDirectoryContents({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    path: '/My Subscriptions',
-  });
+  // const { data: subscriptionFolder } = useGetListDirectoryContents({
+  //   nodeAddress: auth?.node_address ?? '',
+  //   token: auth?.api_v2_key ?? '',
+  //   path: '/My Subscriptions',
+  // });
 
   useEffect(() => {
     if (isSuccess && nodeInfo?.status === 'ok') {
@@ -61,7 +62,7 @@ export const useOnboardingSteps = () => {
   }, [llmProviders, isLocalShinkaiNodeInUse]);
 
   useEffect(() => {
-    const currentFiles = VRFiles ? getFlatChildItems(VRFiles) : [];
+    const currentFiles = VRFiles ? flattenDirectoryContents(VRFiles) : [];
     if (currentFiles.length > 2) {
       currentStepsMap.set(GetStartedSteps.UploadAFile, GetStartedStatus.Done);
     }
@@ -88,14 +89,14 @@ export const useOnboardingSteps = () => {
     }
   }, [inboxes]);
 
-  useEffect(() => {
-    if ((subscriptionFolder ?? [])?.length > 0) {
-      currentStepsMap.set(
-        GetStartedSteps.SubscribeToKnowledge,
-        GetStartedStatus.Done,
-      );
-    }
-  }, [subscriptionFolder]);
+  // useEffect(() => {
+  //   if ((subscriptionFolder ?? [])?.length > 0) {
+  //     currentStepsMap.set(
+  //       GetStartedSteps.SubscribeToKnowledge,
+  //       GetStartedStatus.Done,
+  //     );
+  //   }
+  // }, [subscriptionFolder]);
 
   return currentStepsMap;
 };

@@ -106,7 +106,6 @@ export const SetJobScopeDrawer = () => {
     }
   }, [isSetJobScopeOpen]);
 
-  console.log(selectedKeys, 'selectedKeys');
   return (
     <Sheet onOpenChange={setSetJobScopeOpen} open={isSetJobScopeOpen}>
       <SheetContent>

@@ -155,6 +155,7 @@ const ConversationHeaderWithInboxId = () => {
       },
       {
         enabled: !!jobFolderData?.folder_name,
+        retry: 1,
       },
     );
 
@@ -168,6 +169,7 @@ const ConversationHeaderWithInboxId = () => {
       jobScope.vector_fs_items.length +
       (hasFilesJobFolder ? 1 : 0)
     : 0;
+
   const hasConversationContext = hasFolders || hasFiles;
 
   useEffect(() => {
@@ -202,12 +204,10 @@ const ConversationHeaderWithInboxId = () => {
 
       onSelectedKeysChange({
         ...selectedVRFilesPathMap,
-        ...(jobFolderData?.folder_name && {
-          [jobFolderData.folder_name]: {
-            checked: true,
-          },
-        }),
         ...selectedVRFoldersPathMap,
+        ...(hasFilesJobFolder && jobFolderData
+          ? { [jobFolderData?.folder_name]: { checked: true } }
+          : {}),
       });
     }
   }, [

@@ -116,7 +116,7 @@ const AddAIPage = () => {
 
   const { mutateAsync: addLLMProvider, isPending } = useAddLLMProvider({
     onSuccess: (_, variables) => {
-      navigate('/inboxes', {
+      navigate('/ais', {
         state: {
           agentName: variables.agent.id,
         },
@@ -447,8 +447,12 @@ const AddAIPage = () => {
               name="apikey"
               render={({ field }) => (
                 <TextField
+                  classes={{
+                    formItem: 'flex-1',
+                  }}
                   field={field}
                   label={t('llmProviders.form.apiKey')}
+                  type="password"
                 />
               )}
             />

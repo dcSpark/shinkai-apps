@@ -28,9 +28,17 @@ export function transformDataToTreeNodes(
 
   return result;
 }
-export function getFlatChildItems(
+export function flattenDirectoryContents(
   data: DirectoryContent[],
 ): DirectoryContent[] {
   const result: DirectoryContent[] = [];
+
+  for (const item of data ?? []) {
+    result.push(item);
+    if (item.is_directory) {
+      result.push(...flattenDirectoryContents(item.children ?? []));
+    }
+  }
+
   return result;
 }
