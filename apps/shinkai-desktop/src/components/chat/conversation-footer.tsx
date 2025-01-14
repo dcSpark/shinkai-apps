@@ -424,7 +424,7 @@ function ConversationEmptyFooter() {
                     onChange={field.onChange}
                     onKeyDown={(e) => {
                       if (
-                        e.ctrlKey &&
+                        (e.ctrlKey || e.metaKey) &&
                         e.key === 'z' &&
                         promptSelected?.prompt === chatForm.watch('message')
                       ) {
@@ -808,7 +808,7 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                     onChange={field.onChange}
                     onKeyDown={(e) => {
                       if (
-                        e.ctrlKey &&
+                        (e.ctrlKey || e.metaKey) &&
                         e.key === 'z' &&
                         promptSelected?.prompt === chatForm.watch('message')
                       ) {
