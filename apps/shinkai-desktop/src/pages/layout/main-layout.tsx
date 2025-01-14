@@ -603,16 +603,19 @@ export function MainNav() {
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-4 flex gap-2">
+          <AlertDialogFooter className="mt-4 flex justify-end gap-2">
             <AlertDialogCancel
-              className="mt-0 flex-1"
+              className="mt-0 min-w-[120px]"
               onClick={() => {
                 setIsConfirmLogoutDialogOpened(false);
               }}
             >
               {t('common.cancel')}
             </AlertDialogCancel>
-            <AlertDialogAction className="flex-1" onClick={handleDisconnect}>
+            <AlertDialogAction
+              className="min-w-[120px]"
+              onClick={handleDisconnect}
+            >
               {t('common.disconnect')}
             </AlertDialogAction>
           </AlertDialogFooter>

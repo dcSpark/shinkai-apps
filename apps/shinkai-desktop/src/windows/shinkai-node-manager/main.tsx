@@ -432,16 +432,19 @@ const App = () => {
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-4 flex gap-1">
+          <AlertDialogFooter className="mt-4 flex justify-end gap-1">
             <AlertDialogCancel
-              className="mt-0 flex-1"
+              className="mt-0 min-w-[120px]"
               onClick={() => {
                 setIsConfirmResetDialogOpened(false);
               }}
             >
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction className="flex-1" onClick={() => handleReset()}>
+            <AlertDialogAction
+              className="min-w-[120px]"
+              onClick={() => handleReset()}
+            >
               Reset
             </AlertDialogAction>
           </AlertDialogFooter>
