@@ -352,15 +352,15 @@ export function MainNav() {
     //   href: '/my-subscriptions',
     //   icon: <MySubscriptionsIcon className="h-5 w-5" />,
     // },
+    {
+      title: 'Shinkai Tools',
+      href: '/tools',
+      icon: <ToolsIcon className="h-5 w-5" />,
+    },
     optInExperimental && {
       title: 'Shinkai Sheet',
       href: '/sheets',
       icon: <SheetIcon className="h-5 w-5" />,
-    },
-    optInExperimental && {
-      title: 'Shinkai Tools',
-      href: '/tools',
-      icon: <ToolsIcon className="h-5 w-5" />,
     },
     optInExperimental && {
       title: 'Scheduled Tasks',
@@ -483,7 +483,7 @@ export function MainNav() {
           {navigationLinks.map((item) => {
             return (
               <Fragment key={item.title}>
-                {optInExperimental && item.href === '/tools' && (
+                {optInExperimental && item.href === '/sheets' && (
                   <Separator className="my-0.5 w-full bg-gray-200" />
                 )}
                 <TooltipProvider

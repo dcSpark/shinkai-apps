@@ -38,7 +38,7 @@ export const useAutoResizeTextarea = (
 };
 
 const ChatInputBase = React.forwardRef<HTMLTextAreaElement, ChatInputProps>(
-  ({ className, onSend, ...props }, ref) => {
+  ({ className, onSend, onKeyDown, ...props }, ref) => {
     const { textAreaRef } = useAutoResizeTextarea(ref, props.value);
 
     return (
@@ -49,6 +49,7 @@ const ChatInputBase = React.forwardRef<HTMLTextAreaElement, ChatInputProps>(
         )}
         id="chat-input"
         onKeyDown={(event) => {
+          onKeyDown?.(event);
           if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
             onSend?.();
