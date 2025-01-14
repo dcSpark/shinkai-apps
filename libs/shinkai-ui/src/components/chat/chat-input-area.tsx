@@ -6,8 +6,9 @@ import { ChatInput } from './chat-input';
 
 type ChatInputAreaProps = {
   value: string;
-  onPaste?: (e: React.ClipboardEvent<HTMLTextAreaElement>) => void;
   onChange: (value: string) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  onPaste?: (e: React.ClipboardEvent<HTMLTextAreaElement>) => void;
   onSubmit: () => void;
   disabled?: boolean;
   autoFocus?: boolean;
@@ -26,6 +27,7 @@ export const ChatInputArea = React.forwardRef<
       value,
       onChange,
       onPaste,
+      onKeyDown,
       autoFocus,
       onSubmit,
       disabled,
@@ -55,6 +57,7 @@ export const ChatInputArea = React.forwardRef<
             autoFocus={autoFocus}
             disabled={disabled || isLoading}
             onChange={(e) => onChange(e.target.value)}
+            onKeyDown={onKeyDown}
             onPaste={onPaste}
             onSend={onSubmit}
             placeholder={placeholder ?? 'Send a message'}

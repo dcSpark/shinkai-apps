@@ -422,6 +422,15 @@ function ConversationEmptyFooter() {
                     }
                     disabled={isPending}
                     onChange={field.onChange}
+                    onKeyDown={(e) => {
+                      if (
+                        e.ctrlKey &&
+                        e.key === 'z' &&
+                        promptSelected?.prompt === chatForm.watch('message')
+                      ) {
+                        chatForm.setValue('message', '');
+                      }
+                    }}
                     onPaste={(event) => {
                       const items = event.clipboardData?.items;
                       if (items) {
@@ -797,6 +806,15 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
                     }
                     disabled={isLoadingMessage}
                     onChange={field.onChange}
+                    onKeyDown={(e) => {
+                      if (
+                        e.ctrlKey &&
+                        e.key === 'z' &&
+                        promptSelected?.prompt === chatForm.watch('message')
+                      ) {
+                        chatForm.setValue('message', '');
+                      }
+                    }}
                     onPaste={(event) => {
                       const items = event.clipboardData?.items;
                       if (items) {
