@@ -2,18 +2,18 @@ import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
 import { APIError } from '../../types';
-import { addLLMProvider } from '.';
-import { AddLLMProviderInput, AddLLMProviderOutput } from './types';
+import { testLLMProvider } from '.';
+import { TestLLMProviderInput, TestLLMProviderOutput } from './types';
 
 type Options = UseMutationOptions<
-  AddLLMProviderOutput,
+  TestLLMProviderOutput,
   APIError,
-  AddLLMProviderInput
+  TestLLMProviderInput
 >;
 
-export const useAddLLMProvider = (options?: Options) => {
+export const useTestLLMProvider = (options?: Options) => {
   return useMutation({
-    mutationFn: addLLMProvider,
+    mutationFn: testLLMProvider,
     ...options,
   });
 };
