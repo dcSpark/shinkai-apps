@@ -39,11 +39,11 @@ export const useOnboardingSteps = () => {
     depth: 3,
   });
 
-  const { data: subscriptionFolder } = useGetListDirectoryContents({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    path: '/My Subscriptions',
-  });
+  // const { data: subscriptionFolder } = useGetListDirectoryContents({
+  //   nodeAddress: auth?.node_address ?? '',
+  //   token: auth?.api_v2_key ?? '',
+  //   path: '/My Subscriptions',
+  // });
 
   useEffect(() => {
     if (isSuccess && nodeInfo?.status === 'ok') {
@@ -89,14 +89,14 @@ export const useOnboardingSteps = () => {
     }
   }, [inboxes]);
 
-  useEffect(() => {
-    if ((subscriptionFolder ?? [])?.length > 0) {
-      currentStepsMap.set(
-        GetStartedSteps.SubscribeToKnowledge,
-        GetStartedStatus.Done,
-      );
-    }
-  }, [subscriptionFolder]);
+  // useEffect(() => {
+  //   if ((subscriptionFolder ?? [])?.length > 0) {
+  //     currentStepsMap.set(
+  //       GetStartedSteps.SubscribeToKnowledge,
+  //       GetStartedStatus.Done,
+  //     );
+  //   }
+  // }, [subscriptionFolder]);
 
   return currentStepsMap;
 };
