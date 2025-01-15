@@ -357,15 +357,15 @@ export function MainNav() {
       href: '/tools',
       icon: <ToolsIcon className="h-5 w-5" />,
     },
+    {
+      title: 'Scheduled Tasks',
+      href: '/tasks',
+      icon: <ScheduledTasksIcon className="h-5 w-5" />,
+    },
     optInExperimental && {
       title: 'Shinkai Sheet',
       href: '/sheets',
       icon: <SheetIcon className="h-5 w-5" />,
-    },
-    optInExperimental && {
-      title: 'Scheduled Tasks',
-      href: '/tasks',
-      icon: <ScheduledTasksIcon className="h-5 w-5" />,
     },
   ].filter(Boolean) as NavigationLink[];
 
