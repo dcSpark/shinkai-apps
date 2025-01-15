@@ -6,14 +6,14 @@ import * as React from 'react';
 import { cn } from '../utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-gray-50',
+  'inline-flex items-center justify-center gap-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-gray-50',
   {
     variants: {
       variant: {
         default:
           'bg-brand hover:bg-brand-500 text-white disabled:bg-gray-200 disabled:text-gray-100',
         destructive:
-          'bg-red-500 text-gray-50 shadow-sm hover:bg-red-500/90 dark:bg-red-900 dark:text-gray-50 dark:hover:bg-red-900/90 disabled:bg-gray-200 disabled:text-gray-100',
+          'bg-red-500 text-gray-50 shadow-sm hover:bg-red-500/90 disabled:bg-gray-200 disabled:text-gray-100 dark:bg-red-900 dark:text-gray-50 dark:hover:bg-red-900/90',
         outline:
           'hover:bg-gray-350 border border-gray-200 bg-transparent shadow-sm hover:text-gray-50',
         secondary:
@@ -26,15 +26,21 @@ const buttonVariants = cva(
       },
       size: {
         default: 'h-[54px] px-8 py-4 text-base',
+        xs: 'h-[34px] px-3 py-1 text-xs',
         sm: 'h-[40px] px-3 py-3 text-xs',
         lg: 'h-[54px] px-2 py-4 text-base',
         icon: 'h-9 w-9',
         auto: 'h-auto p-4',
       },
+      rounded: {
+        full: 'rounded-full',
+        lg: 'rounded-lg',
+      },
     },
     defaultVariants: {
       variant: 'default',
       size: 'default',
+      rounded: 'full',
     },
   },
 );
@@ -48,13 +54,21 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { className, variant, size, asChild = false, isLoading = false, ...props },
+    {
+      className,
+      variant,
+      size,
+      rounded,
+      asChild = false,
+      isLoading = false,
+      ...props
+    },
     ref,
   ) => {
     const Comp = asChild ? Slot : 'button';
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(buttonVariants({ variant, size, rounded, className }))}
         ref={ref}
         {...props}
       >

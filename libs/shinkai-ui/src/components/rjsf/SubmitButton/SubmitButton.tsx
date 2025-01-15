@@ -29,10 +29,11 @@ export default function SubmitButton<
       <Button
         {...submitButtonProps}
         className={cn(
-          'h-[30px] rounded-lg border-gray-200 text-white',
+          'border-gray-200 text-white',
           submitButtonProps?.className,
         )}
-        size="sm"
+        rounded="lg"
+        size="xs"
         type="submit"
         variant="ghost"
       >

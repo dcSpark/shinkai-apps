@@ -1,9 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { Agent } from '@shinkai_network/shinkai-message-ts/api/agents/types';
-import { JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
-import { ShinkaiPath } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/createAgent/useCreateAgent';
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
@@ -100,11 +97,19 @@ function AgentForm({ mode }: AgentFormProps) {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const setSetJobScopeOpen = useSetJobScope((state) => state.setSetJobScopeOpen);
+  const setSetJobScopeOpen = useSetJobScope(
+    (state) => state.setSetJobScopeOpen,
+  );
   const selectedKeys = useSetJobScope((state) => state.selectedKeys);
-  const selectedFileKeysRef = useSetJobScope((state) => state.selectedFileKeysRef);
-  const selectedFolderKeysRef = useSetJobScope((state) => state.selectedFolderKeysRef);
-  const onSelectedKeysChange = useSetJobScope((state) => state.onSelectedKeysChange);
+  const selectedFileKeysRef = useSetJobScope(
+    (state) => state.selectedFileKeysRef,
+  );
+  const selectedFolderKeysRef = useSetJobScope(
+    (state) => state.selectedFolderKeysRef,
+  );
+  const onSelectedKeysChange = useSetJobScope(
+    (state) => state.onSelectedKeysChange,
+  );
 
   const { data: agent } = useGetAgent({
     agentId: agentId ?? '',
@@ -135,21 +140,25 @@ function AgentForm({ mode }: AgentFormProps) {
       scope: {
         vector_fs_items: [],
         vector_fs_folders: [],
-        vector_search_mode: "FillUpTo25k"
-      }
+        vector_search_mode: 'FillUpTo25k',
+      },
     },
   });
 
   // Effect to update form when selected items change
   useEffect(() => {
-    if (selectedKeys || selectedFileKeysRef.size > 0 || selectedFolderKeysRef.size > 0) {
+    if (
+      selectedKeys ||
+      selectedFileKeysRef.size > 0 ||
+      selectedFolderKeysRef.size > 0
+    ) {
       const agentData = {
         ...form.getValues(),
         scope: {
           vector_fs_items: Array.from(selectedFileKeysRef.values()),
           vector_fs_folders: Array.from(selectedFolderKeysRef.values()),
-          vector_search_mode: "FillUpTo25k"
-        }
+          vector_search_mode: 'FillUpTo25k',
+        },
       };
       form.setValue('scope', agentData.scope);
     }
@@ -161,7 +170,7 @@ function AgentForm({ mode }: AgentFormProps) {
       const scope = {
         vector_fs_items: Array.from(selectedFileKeysRef.values()),
         vector_fs_folders: Array.from(selectedFolderKeysRef.values()),
-        vector_search_mode: "FillUpTo25k"
+        vector_search_mode: 'FillUpTo25k',
       };
       form.setValue('scope', scope);
     }
@@ -179,7 +188,8 @@ function AgentForm({ mode }: AgentFormProps) {
       form.setValue('config', {
         custom_prompt: agent.config?.custom_prompt ?? '',
         custom_system_prompt: agent.config?.custom_system_prompt ?? '',
-        temperature: agent.config?.temperature ?? DEFAULT_CHAT_CONFIG.temperature,
+        temperature:
+          agent.config?.temperature ?? DEFAULT_CHAT_CONFIG.temperature,
         top_k: agent.config?.top_k ?? DEFAULT_CHAT_CONFIG.top_k,
         top_p: agent.config?.top_p ?? DEFAULT_CHAT_CONFIG.top_p,
         use_tools: agent.config?.use_tools ?? true,
@@ -189,26 +199,27 @@ function AgentForm({ mode }: AgentFormProps) {
       form.setValue('llmProviderId', agent.llm_provider_id);
 
       // Set selected files and folders
-      if (agent.scope?.vector_fs_items?.length || agent.scope?.vector_fs_folders?.length) {
-        const selectedVRFilesPathMap = agent.scope.vector_fs_items.reduce<Record<string, { checked: boolean }>>(
-          (acc: Record<string, { checked: boolean }>, filePath: string) => {
-            acc[filePath] = {
-              checked: true,
-            };
-            return acc;
-          },
-          {},
-        );
+      if (
+        agent.scope?.vector_fs_items?.length ||
+        agent.scope?.vector_fs_folders?.length
+      ) {
+        const selectedVRFilesPathMap = agent.scope.vector_fs_items.reduce<
+          Record<string, { checked: boolean }>
+        >((acc: Record<string, { checked: boolean }>, filePath: string) => {
+          acc[filePath] = {
+            checked: true,
+          };
+          return acc;
+        }, {});
 
-        const selectedVRFoldersPathMap = agent.scope.vector_fs_folders.reduce<Record<string, { checked: boolean }>>(
-          (acc: Record<string, { checked: boolean }>, folderPath: string) => {
-            acc[folderPath] = {
-              checked: true,
-            };
-            return acc;
-          },
-          {},
-        );
+        const selectedVRFoldersPathMap = agent.scope.vector_fs_folders.reduce<
+          Record<string, { checked: boolean }>
+        >((acc: Record<string, { checked: boolean }>, folderPath: string) => {
+          acc[folderPath] = {
+            checked: true,
+          };
+          return acc;
+        }, {});
 
         onSelectedKeysChange({
           ...selectedVRFilesPathMap,
@@ -218,7 +229,7 @@ function AgentForm({ mode }: AgentFormProps) {
         form.setValue('scope', {
           vector_fs_items: agent.scope.vector_fs_items,
           vector_fs_folders: agent.scope.vector_fs_folders,
-          vector_search_mode: agent.scope.vector_search_mode || "FillUpTo25k"
+          vector_search_mode: agent.scope.vector_search_mode || 'FillUpTo25k',
         });
       }
     }
@@ -283,8 +294,8 @@ function AgentForm({ mode }: AgentFormProps) {
       scope: {
         vector_fs_items: Array.from(selectedFileKeysRef.values()),
         vector_fs_folders: Array.from(selectedFolderKeysRef.values()),
-        vector_search_mode: "FillUpTo25k"
-      }
+        vector_search_mode: 'FillUpTo25k',
+      },
     };
 
     if (mode === 'edit') {
@@ -306,7 +317,10 @@ function AgentForm({ mode }: AgentFormProps) {
 
   return (
     <TooltipProvider>
-      <SubpageLayout className="max-w-4xl" title={mode === 'edit' ? 'Edit Agent' : 'Create new Agent'}>
+      <SubpageLayout
+        className="max-w-4xl"
+        title={mode === 'edit' ? 'Edit Agent' : 'Create new Agent'}
+      >
         <p className="text-gray-80 -mt-8 py-3 pb-6 text-center text-sm">
           Create and explore custom AI agents with tailored instructions and
           diverse skills.
@@ -406,11 +420,10 @@ function AgentForm({ mode }: AgentFormProps) {
                     </span>
                     <div className="flex items-center gap-1">
                       <Button
-                        className="h-[30px] text-xs"
                         onClick={() => {
                           navigate('/tools/create');
                         }}
-                        size="auto"
+                        size="xs"
                         variant="outline"
                       >
                         <PlusIcon className="mr-1 size-3.5" />
@@ -802,7 +815,9 @@ function AgentForm({ mode }: AgentFormProps) {
                     >
                       <div className="flex items-center gap-2">
                         <FilesIcon className="h-4 w-4" />
-                        <p className="text-xs text-white">{t('vectorFs.localFiles')}</p>
+                        <p className="text-xs text-white">
+                          {t('vectorFs.localFiles')}
+                        </p>
                       </div>
                       {Object.keys(selectedKeys || {}).length > 0 ? (
                         <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 p-0 text-center text-gray-50">
@@ -846,4 +861,4 @@ function AgentForm({ mode }: AgentFormProps) {
   );
 }
 
-export default AgentForm; 
+export default AgentForm;

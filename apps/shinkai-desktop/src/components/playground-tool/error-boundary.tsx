@@ -18,9 +18,9 @@ export function ToolErrorFallback({
         <pre className="whitespace-break-spaces px-4">{error.message}</pre>
       </div>
       <Button
-        className="h-[30px] gap-2 bg-gray-400 text-white"
+        className="bg-gray-400 text-white"
         onClick={() => resetErrorBoundary()}
-        size="sm"
+        size="xs"
         type="button"
         variant="outline"
       >

@@ -32,7 +32,13 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import cronstrue from 'cronstrue';
 import { formatDistance } from 'date-fns';
-import { Edit, PlayIcon, PlusIcon, RefreshCwIcon, TrashIcon } from 'lucide-react';
+import {
+  Edit,
+  PlayIcon,
+  PlusIcon,
+  RefreshCwIcon,
+  TrashIcon,
+} from 'lucide-react';
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -77,17 +83,18 @@ export const Tasks = () => {
           {isCronTasksNextExecutionTimeSuccess &&
             cronTasksNextExecutionTime.length > 0 && (
               <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    className="h-[30px] gap-2 rounded-lg px-3 text-xs"
-                    onClick={() => refetch()}
-                    size="auto"
-                    type="button"
-                    variant="outline"
-                  >
-                    <ScheduledTasksComingSoonIcon className="size-3.5" />
-                    <span className="text-xs">Upcoming</span>
-                  </Button>
+                <PopoverTrigger
+                  className={cn(
+                    buttonVariants({
+                      variant: 'outline',
+                      size: 'xs',
+                      rounded: 'lg',
+                    }),
+                  )}
+                  onClick={() => refetch()}
+                >
+                  <ScheduledTasksComingSoonIcon className="size-3.5" />
+                  <span className="text-xs">Upcoming</span>
                 </PopoverTrigger>
                 <PopoverContent
                   align="end"
@@ -145,9 +152,9 @@ export const Tasks = () => {
             className={cn(
               buttonVariants({
                 variant: 'default',
-                size: 'auto',
+                size: 'xs',
+                rounded: 'lg',
               }),
-              'h-[30px] gap-2 rounded-lg px-3 text-xs',
             )}
             to="/tasks/create"
           >
@@ -259,7 +266,7 @@ const TaskCard = ({
     throwExceptionOnParseError: false,
   });
 
-  const { mutateAsync: runTaskNow, isPending: isRunTaskPending } = useRunTaskNow({
+  const { mutateAsync: runTaskNow } = useRunTaskNow({
     onSuccess: () => {
       toast.success('Task run successfully');
     },
@@ -304,9 +311,9 @@ const TaskCard = ({
         className={cn(
           buttonVariants({
             variant: 'outline',
-            size: 'auto',
+            size: 'xs',
+            rounded: 'lg',
           }),
-          'h-[30px] gap-2 rounded-lg px-3 text-xs',
         )}
         to={`/tasks/${taskId}`}
       >
@@ -384,7 +391,6 @@ const TaskCard = ({
                 setIsDeleteTaskDrawerOpen(true);
               },
             },
-           
           ].map((option) => (
             <React.Fragment key={option.name}>
               {option.name === 'Delete' && (

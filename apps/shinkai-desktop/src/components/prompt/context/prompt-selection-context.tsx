@@ -403,21 +403,21 @@ export function CreatePromptDrawer({
                     </FormItem>
                   )}
                 />
-                <div className="flex justify-end gap-3">
+                <div className="mt-4 flex justify-end gap-3">
                   <Button
-                    className="mt-4 h-[30px]"
                     onClick={() => setIsPromptDrawerOpen(false)}
-                    size="sm"
+                    rounded="lg"
+                    size="xs"
                     type="button"
                     variant="outline"
                   >
                     Cancel
                   </Button>
                   <Button
-                    className="mt-4 h-[30px]"
                     disabled={isPending}
                     isLoading={isPending}
-                    size="sm"
+                    rounded="lg"
+                    size="xs"
                     type="submit"
                   >
                     Create Prompt
@@ -534,21 +534,21 @@ function UpdateWorkflowDrawer({
                     </FormItem>
                   )}
                 />
-                <div className="flex justify-end gap-3">
+                <div className="mt-4 flex justify-end gap-3">
                   <Button
-                    className="mt-4 h-[30px]"
                     onClick={() => setOpen(false)}
-                    size="sm"
+                    rounded="lg"
+                    size="xs"
                     type="button"
                     variant="outline"
                   >
                     Cancel
                   </Button>
                   <Button
-                    className="mt-4 h-[30px]"
                     disabled={isPending}
                     isLoading={isPending}
-                    size="sm"
+                    rounded="lg"
+                    size="xs"
                     type="submit"
                   >
                     Update Prompt
