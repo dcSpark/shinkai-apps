@@ -45,7 +45,6 @@ import EditToolPage from '../pages/edit-tool';
 import { ExportConnection } from '../pages/export-connection';
 import FreeSubscriptionsPage from '../pages/free-subscription';
 import { GalxeValidation } from '../pages/galxe-validation';
-import GenerateCodePage from '../pages/generate-code';
 import GetStartedPage from '../pages/get-started';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
@@ -361,7 +360,6 @@ const AppRoutes = () => {
           path={'settings'}
         >
           <Route element={<SettingsPage />} index />
-          <Route element={<GenerateCodePage />} path={'generate-code'} />
           <Route element={<ExportConnection />} path={'export-connection'} />
           <Route element={<PublicKeys />} path={'public-keys'} />
           <Route
