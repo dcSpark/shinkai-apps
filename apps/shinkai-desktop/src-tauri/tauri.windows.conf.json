@@ -8,9 +8,9 @@
         "template": "./dummy.wxs"
       }
     },
-    "resources": [
-      "external-binaries/shinkai-node/pdfium.dll",
-      "external-binaries/ollama/lib"
-    ]
+    "resources": {
+      "external-binaries/shinkai-node/pdfium.dll": "external-binaries/shinkai-node/pdfium.dll",
+      "external-binaries/ollama/lib/": "lib/"
+    }
   }
 }
