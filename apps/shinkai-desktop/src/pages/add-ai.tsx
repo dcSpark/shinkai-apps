@@ -29,7 +29,6 @@ import {
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -242,32 +241,6 @@ const AddAIPage = () => {
         toolkit_permissions: [],
         model,
       },
-      enableTest: false,
-    });
-  };
-  const handleTestAndSave = async (data: AddAgentFormSchema) => {
-    if (!auth) return;
-    let model = getModelObject(data.model, data.modelType);
-    if (isCustomModelMode && data.modelCustom && data.modelTypeCustom) {
-      model = getModelObject(data.modelCustom, data.modelTypeCustom);
-    } else if (isCustomModelType && data.modelTypeCustom) {
-      model = getModelObject(data.model, data.modelTypeCustom);
-    }
-    await addLLMProvider({
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      agent: {
-        allowed_message_senders: [],
-        api_key: data.apikey,
-        external_url: data.externalUrl,
-        full_identity_name: `${auth.shinkai_identity}/${auth.profile}/agent/${data.agentName}`,
-        id: data.agentName,
-        perform_locally: false,
-        storage_bucket_permissions: [],
-        toolkit_permissions: [],
-        model,
-      },
-      enableTest: true,
     });
   };
 
@@ -458,38 +431,17 @@ const AddAIPage = () => {
             />
           </div>
 
-          {isPending ? (
-            <div className="flex flex-row items-center justify-center space-x-1">
-              <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
-            </div>
-          ) : (
-            <div className="flex flex-col items-center gap-4">
-              <Button
-                className="w-full"
-                disabled={isPending}
-                isLoading={isPending}
-                size="sm"
-                type="submit"
-                variant={currentModel === Models.Ollama ? 'default' : 'outline'}
-              >
-                {t('llmProviders.add')}
-              </Button>
-              {currentModel !== Models.Ollama && (
-                <Button
-                  className="w-full"
-                  disabled={isPending}
-                  isLoading={isPending}
-                  onClick={() => {
-                    addAgentForm.handleSubmit(handleTestAndSave)();
-                  }}
-                  size="sm"
-                  type="button"
-                >
-                  Test & Add AI
-                </Button>
-              )}
-            </div>
-          )}
+          <div className="flex flex-col items-center gap-4">
+            <Button
+              className="w-full"
+              disabled={isPending}
+              isLoading={isPending}
+              size="sm"
+              type="submit"
+            >
+              Test & Add AI
+            </Button>
+          </div>
         </form>
       </Form>
     </SubpageLayout>
