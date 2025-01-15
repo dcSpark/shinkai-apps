@@ -61,6 +61,7 @@ pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
                     if shinkai_node_manager_guard.is_running().await {
                         shinkai_node_manager_guard.kill().await;
                     }
+                    drop(shinkai_node_manager_guard);
                     std::process::exit(0);
                 });
             }

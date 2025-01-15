@@ -190,8 +190,8 @@ impl OllamaProcessHandler {
 
     pub async fn kill(&self) {
         kill_process_by_name(self.app.clone(), "ollama_llama_server").await;
-        let _ = self.kill_existing_processes_using_ports().await;
         self.process_handler.kill().await;
+        let _ = self.kill_existing_processes_using_ports().await;
     }
 
     pub async fn version(app: AppHandle) -> Result<String> {
