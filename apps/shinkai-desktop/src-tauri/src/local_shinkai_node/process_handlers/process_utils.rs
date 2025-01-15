@@ -29,7 +29,7 @@ pub async fn kill_process_by_name(app: AppHandle, process_name: &str) {
         // Windows: Use taskkill command
         app.shell()
             .command("taskkill")
-            .args(["/F", "/IM", &adapted_process_name])
+            .args(["/F", "/T", "/IM", &adapted_process_name])
             .output()
     } else {
         // Unix-like systems: Use pkill command
@@ -86,7 +86,7 @@ pub async fn kill_process_by_pid(app: AppHandle, process_id: &str) {
         // windows: use taskkill command
         app.shell()
             .command("taskkill")
-            .args(["/F", "/PID", process_id])
+            .args(["/F", "/T", "/PID", process_id])
             .output()
     } else {
         app.shell()

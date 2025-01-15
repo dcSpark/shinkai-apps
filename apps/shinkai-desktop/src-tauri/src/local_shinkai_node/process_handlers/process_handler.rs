@@ -142,14 +142,24 @@ impl ProcessHandler {
         tauri::async_runtime::spawn(async move {
             while let Some(event) = rx.recv().await {
                 let message = Self::command_event_to_message(event.clone());
-                let mut logger = logger_mutex.write().await;
-                let log_entry = logger.add_log(message.clone());
-                let event_sender = event_sender_mutex.lock().await;
-                let _ = event_sender.send(ProcessHandlerEvent::Log(log_entry)).await;
+                let log_entry;
+                {
+                    let mut logger = logger_mutex.write().await;
+                    log_entry = logger.add_log(message.clone());
+                }
+                {
+                    let event_sender = event_sender_mutex.lock().await;
+                    let _ = event_sender.send(ProcessHandlerEvent::Log(log_entry)).await;
+                }
                 if matches!(event, CommandEvent::Terminated { .. }) {
-                    let mut process = process_mutex.lock().await;
-                    *process = None;
-                    let _ = event_sender.send(ProcessHandlerEvent::Stopped).await;
+                    {
+                        let mut process = process_mutex.lock().await;
+                        *process = None;
+                    }
+                    {
+                        let event_sender = event_sender_mutex.lock().await;
+                        let _ = event_sender.send(ProcessHandlerEvent::Stopped).await;
+                    }
                 }
                 if ready_matcher.is_match(&message) {
                     let mut is_ready = is_ready_mutex.lock().await;
@@ -169,16 +179,23 @@ impl ProcessHandler {
                 let process = process_mutex.lock().await;
                 let is_ready = is_ready_mutex_clone.lock().await;
                 if process.is_none() {
-                    let event_sender = event_sender_mutex.lock().await;
-                    let mut logger = logger_mutex.write().await;
                     let message = "failed to spawn shinkai-node, it crashed before min time alive"
                         .to_string();
-                    let log_entry = logger.add_log(message.clone());
-                    let _ = event_sender.send(ProcessHandlerEvent::Log(log_entry)).await;
+                    let log_entry: LogEntry;
+                    {
+                        let mut logger = logger_mutex.write().await;
+                        log_entry = logger.add_log(message.clone());
+                    }
+                    {
+                        let event_sender = event_sender_mutex.lock().await;
+                        let _ = event_sender.send(ProcessHandlerEvent::Log(log_entry)).await;
+                    }
                     return Err(message.to_string());
                 } else if *is_ready {
                     break;
                 }
+                drop(process);
+                drop(is_ready);
                 std::thread::sleep(std::time::Duration::from_millis(500));
             }
             Ok(())
@@ -194,11 +211,13 @@ impl ProcessHandler {
     pub async fn kill(&self) {
         let mut process = self.process.lock().await;
         if let Some(child) = process.take() {
-            match child.kill() {
+            let kill_result = kill_tree::tokio::kill_tree(child.pid()).await;
+            match kill_result {
                 Ok(_) => log::info!("{}: process killed", self.process_name),
                 Err(e) => log::warn!("{}: failed to kill {}", self.process_name, e),
             }
             *process = None;
+            drop(process);
             let event_sender = self.event_sender.lock().await;
             let _ = event_sender.send(ProcessHandlerEvent::Stopped).await;
         } else {

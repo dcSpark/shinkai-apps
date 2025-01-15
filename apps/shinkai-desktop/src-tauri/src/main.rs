@@ -162,7 +162,7 @@ fn main() {
                     let mut shinkai_node_manager_guard =
                         SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
                     shinkai_node_manager_guard.kill().await;
-
+                    drop(shinkai_node_manager_guard);
                     // Force exit the application
                     std::process::exit(0);
                 });
