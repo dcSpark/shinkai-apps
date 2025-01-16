@@ -163,14 +163,13 @@ export type PayInvoiceRequest = {
 export type PayInvoiceResponse = any;
 
 export type Prompt = {
+  rowid: number;
   name: string;
   prompt: string;
   is_system: boolean;
   is_enabled: boolean;
   version: string;
   is_favorite: boolean;
-  embedding?: string;
-  useTools?: boolean;
 };
 export type GetAllPromptsResponse = Prompt[];
 export type SearchPromptsResponse = Prompt[];

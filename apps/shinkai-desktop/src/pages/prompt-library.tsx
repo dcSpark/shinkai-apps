@@ -348,6 +348,7 @@ function PromptPreview({
               onCancel={() => setEditing(false)}
               onSave={async () =>
                 await updatePrompt({
+                  id: selectedPrompt.rowid,
                   nodeAddress: auth?.node_address ?? '',
                   token: auth?.api_v2_key ?? '',
                   promptName: selectedPrompt.name,
