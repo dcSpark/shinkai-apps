@@ -22,7 +22,6 @@ pub struct OllamaOptions {
     pub ollama_max_loaded_models: String,
     pub ollama_origins: String,
     pub ollama_debug: String,
-    pub ollama_runners_dir: Option<String>,
 }
 
 impl Default for OllamaOptions {
@@ -33,26 +32,6 @@ impl Default for OllamaOptions {
             ollama_max_loaded_models: "2".to_string(),
             ollama_origins: "*".to_string(),
             ollama_debug: "true".to_string(),
-            ollama_runners_dir: None,
-        }
-    }
-}
-
-impl OllamaOptions {
-    pub fn with_app_options(app_resource_dir: PathBuf) -> Self {
-        let ollama_runners_dir = if cfg!(target_os = "windows") {
-            Some(
-                app_resource_dir
-                    .join("external-binaries/ollama/lib/ollama/runners")
-                    .to_string_lossy()
-                    .to_string(),
-            )
-        } else {
-            None
-        };
-        Self {
-            ollama_runners_dir,
-            ..Default::default()
         }
     }
 }
@@ -81,7 +60,7 @@ impl OllamaProcessHandler {
             event_sender,
             ready_matcher,
         );
-        let options = OllamaOptions::with_app_options(app_resource_dir.clone());
+        let options = OllamaOptions::default();
         OllamaProcessHandler {
             app,
             process_handler,
@@ -124,20 +103,9 @@ impl OllamaProcessHandler {
     pub async fn spawn(&self, ensure_model: Option<&str>) -> Result<(), String> {
         let _ = self.kill().await;
 
-        let ollama_process_cwd = if cfg!(target_os = "windows") {
-            Some(PathBuf::from(
-                self.app_resource_dir
-                    .clone()
-                    .join("external-binaries/ollama")
-                    .to_string_lossy()
-                    .to_string(),
-            ))
-        } else {
-            None
-        };
         let env = options_to_env(&self.options);
         self.process_handler
-            .spawn(env, ["serve"].to_vec(), ollama_process_cwd)
+            .spawn(env, ["serve"].to_vec(), None)
             .await?;
         if let Err(e) = self.wait_ollama_server().await {
             self.process_handler.kill().await;
