@@ -157,7 +157,7 @@ export const Tools = () => {
       }
       title={t('tools.label')}
     >
-      <div className="flex h-full flex-1 flex-col overflow-y-auto">
+      <div className="flex h-full flex-1 flex-col">
         <div className="relative mb-4 flex h-10 w-full items-center">
           <Input
             className="placeholder-gray-80 !h-full border-none bg-gray-400 py-2 pl-10"
@@ -214,7 +214,7 @@ export const Tools = () => {
             toolsList?.map((tool) => (
               <div
                 className={cn(
-                  'grid grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm bg-gray-500 px-2 py-4 text-left text-sm',
+                  'grid grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm bg-gray-500 px-2 py-4 pr-4 text-left text-sm',
                 )}
                 key={tool.tool_router_key}
               >
@@ -278,7 +278,7 @@ export const Tools = () => {
             searchToolList?.map((tool) => (
               <div
                 className={cn(
-                  'grid grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm bg-gray-500 px-2 py-4 text-left text-sm',
+                  'grid grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm bg-gray-500 px-2 py-4 pr-4 text-left text-sm',
                 )}
                 key={tool.tool_router_key}
               >
