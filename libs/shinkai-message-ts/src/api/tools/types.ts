@@ -346,3 +346,13 @@ export type SetOAuthTokenResponse = {
   message: string;
   status: string;
 };
+export type EnableAllToolsResponse = {
+  [toolKey: string]: {
+    activated: boolean;
+  };
+};
+export type DisableAllToolsResponse = {
+  [toolKey: string]: {
+    activated: boolean;
+  };
+};

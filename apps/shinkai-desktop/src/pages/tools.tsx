@@ -1,6 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { ShinkaiTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { useDisableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/disableAllTools/useDisableAllTools';
+import { useEnableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/enableAllTools/useEnableAllTools';
 import { useImportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/importTool/useImportTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
@@ -70,10 +72,49 @@ export const Tools = () => {
 
   const { mutateAsync: updateTool } = useUpdateTool();
 
+  const { mutateAsync: enableAllTools } = useEnableAllTools({
+    onSuccess: () => {
+      toast.success('All tools enabled');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message ?? error.message);
+    },
+  });
+  const { mutateAsync: disableAllTools } = useDisableAllTools({
+    onSuccess: () => {
+      toast.success('All tools disabled');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message ?? error.message);
+    },
+  });
+
   return (
     <SimpleLayout
       headerRightElement={
         <div className="flex items-center gap-2">
+          <Button
+            onClick={() => {
+              enableAllTools({
+                nodeAddress: auth?.node_address ?? '',
+                token: auth?.api_v2_key ?? '',
+              });
+            }}
+            size="xs"
+          >
+            Enable All Tools
+          </Button>
+          <Button
+            onClick={() => {
+              disableAllTools({
+                nodeAddress: auth?.node_address ?? '',
+                token: auth?.api_v2_key ?? '',
+              });
+            }}
+            size="xs"
+          >
+            Disable All Tools
+          </Button>
           <ImportToolModal />
           <Link
             className={cn(

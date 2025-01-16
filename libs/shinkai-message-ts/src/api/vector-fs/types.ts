@@ -15,7 +15,10 @@ export type DirectoryContent = {
 };
 
 export type GetListDirectoryContentsResponse = DirectoryContent[];
-
+export type GetSearchDirectoryContentsRequest = {
+  name: string;
+};
+export type GetSearchDirectoryContentsResponse = DirectoryContent[];
 export type MoveFolderRequest = {
   origin_path: string;
   destination_path: string;
