@@ -368,8 +368,9 @@ export function UpdateChatConfigActionBar() {
                   <div className="flex items-center justify-end gap-2">
                     <PopoverClose asChild>
                       <Button
-                        className="h-9 min-w-[100px] gap-2 rounded-xl"
-                        size="sm"
+                        className="min-w-[100px]"
+                        rounded="lg"
+                        size="xs"
                         variant="outline"
                       >
                         <span>{t('common.cancel')}</span>
@@ -377,8 +378,9 @@ export function UpdateChatConfigActionBar() {
                     </PopoverClose>
                     <PopoverClose asChild>
                       <Button
-                        className="h-9 min-w-[100px] gap-2 rounded-xl"
-                        size="sm"
+                        className="min-w-[100px]"
+                        rounded="lg"
+                        size="xs"
                         type={'submit'}
                       >
                         <span>{t('common.save')}</span>
@@ -444,10 +446,7 @@ export function CreateChatConfigActionBar({
                       </Button>
                     </PopoverClose>
                     <PopoverClose asChild>
-                      <Button
-                        className="h-9 min-w-[100px] gap-2 rounded-xl"
-                        size="sm"
-                      >
+                      <Button className="min-w-[100px]" rounded="lg" size="xs">
                         <span>{t('common.save')}</span>
                       </Button>
                     </PopoverClose>

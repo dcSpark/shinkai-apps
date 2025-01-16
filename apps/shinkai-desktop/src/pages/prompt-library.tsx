@@ -93,7 +93,7 @@ export const PromptLibrary = () => {
             );
           }}
         >
-          <Button className="h-9 min-w-[100px] gap-2 rounded-xl" size="auto">
+          <Button rounded="lg" size="xs">
             <PlusIcon className="h-5 w-5" />
             New Prompt
           </Button>
@@ -409,19 +409,21 @@ export const PromptEditor = ({
     />
     <div className="flex items-center justify-end gap-4 pt-3">
       <Button
-        className="h-9 min-w-[100px] rounded-md"
+        className="min-w-[100px]"
         isLoading={isPending}
         onClick={onCancel}
-        size="auto"
+        rounded="lg"
+        size="xs"
         type="button"
         variant="outline"
       >
         Cancel
       </Button>
       <Button
-        className="h-9 min-w-[100px] rounded-md"
+        className="min-w-[100px]"
         onClick={onSave}
-        size="auto"
+        rounded="lg"
+        size="xs"
         type="button"
       >
         Save
