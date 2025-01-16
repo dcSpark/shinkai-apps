@@ -33,7 +33,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Settings2 } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { UseFormReturn } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
@@ -257,7 +257,7 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
   );
 }
 
-export function UpdateChatConfigActionBar() {
+export function UpdateChatConfigActionBarBase() {
   const auth = useAuth((state) => state.auth);
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
@@ -397,7 +397,10 @@ export function UpdateChatConfigActionBar() {
     </div>
   );
 }
-export function CreateChatConfigActionBar({
+
+export const UpdateChatConfigActionBar = memo(UpdateChatConfigActionBarBase);
+
+function CreateChatConfigActionBarBase({
   form,
 }: {
   form: UseFormReturn<ChatConfigFormSchemaType>;
@@ -461,6 +464,8 @@ export function CreateChatConfigActionBar({
     </div>
   );
 }
+
+export const CreateChatConfigActionBar = memo(CreateChatConfigActionBarBase);
 
 // const useSelectedAIModel = () => {
 //   const defaultAgentId = useSettings((state) => state.defaultAgentId);

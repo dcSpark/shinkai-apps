@@ -170,6 +170,7 @@ export type Prompt = {
   is_enabled: boolean;
   version: string;
   is_favorite: boolean;
+  useTools?: boolean; // flag for prompt templates
 };
 export type CreatePrompt = Omit<Prompt, 'rowid'>;
 

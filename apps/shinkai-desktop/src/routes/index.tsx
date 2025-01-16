@@ -33,7 +33,6 @@ import AIsPage from '../pages/ais';
 import AnalyticsPage from '../pages/analytics';
 import AnalyticsSettingsPage from '../pages/analytics-settings';
 import ChatConversation from '../pages/chat/chat-conversation';
-import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
 import { ConnectMethodQrCodePage } from '../pages/connect-method-qr-code';
 import CreateChatPage from '../pages/create-chat';
@@ -211,7 +210,9 @@ const AppRoutes = () => {
                 <ChatProvider>
                   <SetJobScopeProvider>
                     <PromptSelectionProvider>
-                      <ChatLayout />
+                      <ToolsProvider>
+                        <ChatLayout />
+                      </ToolsProvider>
                     </PromptSelectionProvider>
                   </SetJobScopeProvider>
                 </ChatProvider>
@@ -220,15 +221,8 @@ const AppRoutes = () => {
           }
           path="inboxes"
         >
-          <Route element={<EmptyMessage />} index />
-          <Route
-            element={
-              <ToolsProvider>
-                <ChatConversation />
-              </ToolsProvider>
-            }
-            path=":inboxId"
-          />
+          <Route element={<ChatConversation />} index />
+          <Route element={<ChatConversation />} path=":inboxId" />
         </Route>
         <Route
           element={

@@ -45,7 +45,7 @@ export default function ChatTable() {
 
   useWebSocketMessage({
     inboxId: chatInboxId ?? '',
-    enabled: true,
+    enabled: !!chatInboxId,
   });
 
   const { sheetId } = useParams();

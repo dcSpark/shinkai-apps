@@ -5,6 +5,7 @@ import {
 } from '@tanstack/react-query';
 import React, {
   Fragment,
+  memo,
   RefObject,
   useCallback,
   useEffect,
