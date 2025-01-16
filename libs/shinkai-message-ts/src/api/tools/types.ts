@@ -171,9 +171,11 @@ export type Prompt = {
   version: string;
   is_favorite: boolean;
 };
+export type CreatePrompt = Omit<Prompt, 'rowid'>;
+
 export type GetAllPromptsResponse = Prompt[];
 export type SearchPromptsResponse = Prompt[];
-export type CreatePromptRequest = Prompt;
+export type CreatePromptRequest = CreatePrompt;
 export type CreatePromptResponse = Prompt;
 export type UpdatePromptRequest = Prompt;
 export type DeletePromptRequest = {
