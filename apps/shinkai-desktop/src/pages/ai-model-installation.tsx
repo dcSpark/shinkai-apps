@@ -417,7 +417,7 @@ const AIModelInstallation = ({
                 </p>
               </div>
               <Button
-                className={cn('shrink-0 gap-2')}
+                className={cn('shrink-0')}
                 onClick={() => setShowAllOllamaModels(!showAllOllamaModels)}
                 size="sm"
                 variant="outline"
@@ -463,7 +463,7 @@ const AIModelInstallation = ({
                 </p>
               </div>
               <Button
-                className={cn('shrink-0 gap-2')}
+                className={cn('shrink-0')}
                 onClick={() => navigate('/add-ai')}
                 size="sm"
                 variant="outline"

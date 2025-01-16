@@ -889,7 +889,6 @@ function ToolResultFileCard({ filePath }: { filePath: string }) {
 
   return (
     <Button
-      className="h-[30px] gap-1.5 rounded-lg text-xs"
       onClick={async () => {
         const response = await refetch();
         const file = new Blob([response.data ?? ''], {
@@ -920,7 +919,8 @@ function ToolResultFileCard({ filePath }: { filePath: string }) {
 
         toast.success(`${fileNameBase} downloaded successfully`);
       }}
-      size="auto"
+      rounded="lg"
+      size="xs"
       variant="outline"
     >
       <div className="flex shrink-0 items-center justify-center">

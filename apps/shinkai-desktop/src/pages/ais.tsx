@@ -106,9 +106,9 @@ const AIsPage = () => {
         <TabsContent className="h-full" value="ais">
           <div className="absolute right-3 top-0">
             <Button
-              className="h-[40px] gap-2"
+              className="min-w-[100px]"
               onClick={onAddAgentClick}
-              size="auto"
+              size="sm"
             >
               <Plus className="h-4 w-4" />
               <span>{t('llmProviders.add')}</span>

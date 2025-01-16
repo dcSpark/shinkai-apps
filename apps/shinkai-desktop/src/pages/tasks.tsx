@@ -105,11 +105,12 @@ export const Tasks = () => {
                   <div className="flex items-center justify-between gap-2">
                     <h1 className="text-sm">Upcoming Tasks </h1>
                     <Button
-                      className="h-8 w-auto gap-2 rounded-lg p-1 px-2 text-xs"
+                      className="w-auto"
                       disabled={isRefetching}
                       isLoading={isRefetching}
                       onClick={() => refetch()}
-                      size="auto"
+                      rounded="lg"
+                      size="xs"
                       variant="outline"
                     >
                       {!isRefetching && (

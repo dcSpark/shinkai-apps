@@ -271,18 +271,20 @@ export const MessageBase = ({
                             </div>
                             <div className="flex items-center gap-2">
                               <Button
-                                className="min-w-[90px] rounded-lg"
+                                className="min-w-[90px]"
                                 onClick={() => setEditing(false)}
-                                size="sm"
+                                rounded="lg"
+                                size="xs"
                                 variant="outline"
                               >
                                 {t('common.cancel')}
                               </Button>
                               <Button
-                                className="min-w-[90px] rounded-lg"
+                                className="min-w-[90px]"
                                 disabled={!currentMessage}
                                 onClick={editMessageForm.handleSubmit(onSubmit)}
-                                size="sm"
+                                rounded="lg"
+                                size="xs"
                               >
                                 {t('common.send')}
                               </Button>

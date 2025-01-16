@@ -410,7 +410,6 @@ export const PromptEditor = ({
     <div className="flex items-center justify-end gap-4 pt-3">
       <Button
         className="min-w-[100px]"
-        isLoading={isPending}
         onClick={onCancel}
         rounded="lg"
         size="xs"
@@ -421,6 +420,7 @@ export const PromptEditor = ({
       </Button>
       <Button
         className="min-w-[100px]"
+        isLoading={isPending}
         onClick={onSave}
         rounded="lg"
         size="xs"
