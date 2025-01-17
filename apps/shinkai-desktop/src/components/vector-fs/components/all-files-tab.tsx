@@ -49,7 +49,6 @@ import {
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import config from '../../../config';
 import { useDebounce } from '../../../hooks/use-debounce';
 import { useURLQueryParams } from '../../../hooks/use-url-query-params';
 import { useAuth } from '../../../store/auth';
@@ -72,6 +71,7 @@ const AllFiles = () => {
   const currentGlobalPath = useVectorFsStore(
     (state) => state.currentGlobalPath,
   );
+
   const setCurrentGlobalPath = useVectorFsStore(
     (state) => state.setCurrentGlobalPath,
   );
@@ -410,16 +410,14 @@ const AllFiles = () => {
                 {t('vectorFs.emptyState.noFiles')}
               </div>
             )}
-          {config.isDev &&
-            searchQuery &&
+          {searchQuery &&
             isSearchVRItemsSuccess &&
             searchVRItems?.length === 0 && (
               <div className="flex h-20 items-center justify-center text-gray-100">
                 {t('vectorFs.emptyState.noFiles')}
               </div>
             )}
-          {config.isDev &&
-            searchQuery &&
+          {searchQuery &&
             isSearchVRItemsSuccess &&
             searchQuery === debouncedSearchQuery &&
             searchVRItems?.map((item) => {
@@ -429,18 +427,12 @@ const AllFiles = () => {
                   key={item.path}
                   onClick={() => {
                     const directoryMainPath = item.path.split('/').slice(0, -1);
-                    setCurrentGlobalPath(
-                      directoryMainPath.length > 1
-                        ? '/' + directoryMainPath.join('/')
-                        : '/' + directoryMainPath,
-                    );
+                    setCurrentGlobalPath(directoryMainPath.join('/'));
                     setSearchQuery('');
                   }}
                 >
                   <FileTypeIcon />
-                  <span className="text-gray-80 text-sm">
-                    {item?.relative_path} // TODO fix
-                  </span>
+                  <span className="text-gray-80 text-sm">{item?.name}</span>
                 </button>
               );
             })}

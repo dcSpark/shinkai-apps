@@ -64,7 +64,10 @@ function ToolsSwitchActionBarBase({
   );
 }
 
-export const ToolsSwitchActionBar = memo(ToolsSwitchActionBarBase);
+export const ToolsSwitchActionBar = memo(
+  ToolsSwitchActionBarBase,
+  (prevProps, nextProps) => prevProps.checked === nextProps.checked,
+);
 
 export function UpdateToolsSwitchActionBarBase() {
   const auth = useAuth((state) => state.auth);

@@ -400,7 +400,7 @@ export function UpdateChatConfigActionBarBase() {
 
 export const UpdateChatConfigActionBar = memo(UpdateChatConfigActionBarBase);
 
-function CreateChatConfigActionBarBase({
+export function CreateChatConfigActionBar({
   form,
 }: {
   form: UseFormReturn<ChatConfigFormSchemaType>;
@@ -464,8 +464,6 @@ function CreateChatConfigActionBarBase({
     </div>
   );
 }
-
-export const CreateChatConfigActionBar = memo(CreateChatConfigActionBarBase);
 
 // const useSelectedAIModel = () => {
 //   const defaultAgentId = useSettings((state) => state.defaultAgentId);
