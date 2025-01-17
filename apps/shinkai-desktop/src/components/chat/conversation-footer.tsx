@@ -561,7 +561,6 @@ function ConversationChatFooter({
                             }}
                           />
                         )}
-                        {console.log('form', chatForm.formState.errors)}
                         {!isDragActive &&
                           currentFiles &&
                           currentFiles.length > 0 && (
