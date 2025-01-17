@@ -20,6 +20,7 @@ import {
 import { AIAgentIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BoltIcon, BotIcon, ChevronDownIcon } from 'lucide-react';
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -27,7 +28,7 @@ import { useGetCurrentInbox } from '../../../hooks/use-current-inbox';
 import { useAuth } from '../../../store/auth';
 import { actionButtonClassnames } from '../conversation-footer';
 
-export function AIModelSelector({
+export function AIModelSelectorBase({
   value,
   onValueChange,
 }: {
@@ -143,7 +144,13 @@ export function AIModelSelector({
     </DropdownMenu>
   );
 }
-export function AiUpdateSelectionActionBar({ inboxId }: { inboxId?: string }) {
+export const AIModelSelector = memo(AIModelSelectorBase);
+
+export function AiUpdateSelectionActionBarBase({
+  inboxId,
+}: {
+  inboxId?: string;
+}) {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const currentInbox = useGetCurrentInbox(inboxId);
@@ -179,3 +186,7 @@ export function AiUpdateSelectionActionBar({ inboxId }: { inboxId?: string }) {
     />
   );
 }
+export const AiUpdateSelectionActionBar = memo(
+  AiUpdateSelectionActionBarBase,
+  (prevProps, nextProps) => prevProps.inboxId === nextProps.inboxId,
+);

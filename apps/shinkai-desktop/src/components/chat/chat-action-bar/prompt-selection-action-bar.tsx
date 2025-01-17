@@ -7,11 +7,12 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { PromptLibraryIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { memo } from 'react';
 
 import { usePromptSelectionStore } from '../../prompt/context/prompt-selection-context';
 import { actionButtonClassnames } from '../conversation-footer';
 
-export default function PromptSelectionActionBar() {
+function PromptSelectionActionBarBase() {
   const setPromptSelectionDrawerOpen = usePromptSelectionStore(
     (state) => state.setPromptSelectionDrawerOpen,
   );
@@ -38,3 +39,6 @@ export default function PromptSelectionActionBar() {
     </TooltipProvider>
   );
 }
+
+const PromptSelectionActionBar = memo(PromptSelectionActionBarBase);
+export default PromptSelectionActionBar;

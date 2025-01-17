@@ -10,7 +10,6 @@ import {
 import {
   ExportIcon,
   PromptLibraryIcon,
-  QrIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
@@ -126,11 +125,6 @@ export function MainNav() {
       title: t('settings.layout.exportConnection'),
       href: '/settings/export-connection',
       icon: <ExportIcon className="text-gray-80 h-4 w-4" />,
-    },
-    {
-      title: t('settings.layout.createRegistrationCode'),
-      href: '/settings/generate-code',
-      icon: <QrIcon className="text-gray-80 h-4 w-4" />,
     },
     {
       title: t('settings.layout.publicKeys'),

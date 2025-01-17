@@ -411,7 +411,7 @@ export const getShinkaiFileProtocol = async (
     },
   );
   return response.data as GetShinkaiFileProtocolResponse;
-}
+};
 
 export const setOAuthToken = async (
   nodeAddress: string,
@@ -517,6 +517,33 @@ export const removeToolAsset = async (
       params: { file_name: payload.filename },
       responseType: 'json',
     },
+  );
+  return response.data;
+};
+
+export const enableAllTools = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/enable_all_tools'),
+    {},
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
+};
+
+export const disableAllTools = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/disable_all_tools'),
+    {},
+    { headers: { Authorization: `Bearer ${bearerToken}` } },
   );
   return response.data;
 };

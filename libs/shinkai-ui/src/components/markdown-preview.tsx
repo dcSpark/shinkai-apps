@@ -9,6 +9,7 @@ import React, {
   FC,
   forwardRef,
   ForwardRefExoticComponent,
+  memo,
   ReactNode,
   RefAttributes,
   useContext,
@@ -508,7 +509,7 @@ export type MakeMarkdownTextProps = MarkdownTextPrimitiveProps & {
   isRunning?: boolean;
 };
 
-export const MarkdownText = ({
+export const MarkdownTextBase = ({
   className,
   isRunning,
   components: userComponents,
@@ -531,3 +532,8 @@ export const MarkdownText = ({
     />
   );
 };
+export const MarkdownText = memo(
+  MarkdownTextBase,
+  (prev, next) =>
+    prev.content === next.content && prev.isRunning === next.isRunning,
+);

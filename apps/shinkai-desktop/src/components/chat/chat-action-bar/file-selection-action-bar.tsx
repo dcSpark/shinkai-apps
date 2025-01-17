@@ -16,7 +16,7 @@ type FileUploadInputProps = {
   onClick: () => void;
 };
 
-export function FileSelectionActionBar({
+function FileSelectionActionBarBase({
   onClick,
   inputProps,
 }: FileUploadInputProps) {
@@ -45,3 +45,7 @@ export function FileSelectionActionBar({
     </>
   );
 }
+export const FileSelectionActionBar = React.memo(
+  FileSelectionActionBarBase,
+  () => true,
+);

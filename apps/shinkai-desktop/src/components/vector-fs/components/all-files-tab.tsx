@@ -1,8 +1,8 @@
 import { HomeIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
-import { useGetSearchVRItems } from '@shinkai_network/shinkai-node-state/lib/queries/getSearchVRItems/useGetSearchVRItems';
 import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
+import { useGetSearchDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getSearchDirectoryContents/useGetSearchDirectoryContents';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -19,6 +19,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  Input,
   // Input,
   ScrollArea,
   Separator,
@@ -41,13 +42,13 @@ import {
   ChevronRight,
   FileType2Icon,
   PlusIcon,
+  SearchIcon,
   // SearchIcon,
   XIcon,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import config from '../../../config';
 import { useDebounce } from '../../../hooks/use-debounce';
 import { useURLQueryParams } from '../../../hooks/use-url-query-params';
 import { useAuth } from '../../../store/auth';
@@ -70,6 +71,7 @@ const AllFiles = () => {
   const currentGlobalPath = useVectorFsStore(
     (state) => state.currentGlobalPath,
   );
+
   const setCurrentGlobalPath = useVectorFsStore(
     (state) => state.setCurrentGlobalPath,
   );
@@ -109,21 +111,15 @@ const AllFiles = () => {
     data: searchVRItems,
     isSuccess: isSearchVRItemsSuccess,
     isLoading: isSearchVRItemsLoading,
-  } = useGetSearchVRItems(
+  } = useGetSearchDirectoryContents(
     {
       nodeAddress: auth?.node_address ?? '',
-      profile: auth?.profile ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      path: currentGlobalPath,
-      search: debouncedSearchQuery,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
+      token: auth?.api_v2_key ?? '',
+      // path: currentGlobalPath,
+      name: debouncedSearchQuery,
     },
     {
-      enabled: !!debouncedSearchQuery && config.isDev,
+      enabled: !!debouncedSearchQuery,
     },
   );
 
@@ -250,29 +246,29 @@ const AllFiles = () => {
       </DropdownMenu>
       <div className="mt-2 flex justify-between gap-3">
         <div className="relative flex h-10 w-full max-w-[500px] items-center">
-          {/*<Input*/}
-          {/*  className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"*/}
-          {/*  onChange={(e) => {*/}
-          {/*    setSearchQuery(e.target.value);*/}
-          {/*  }}*/}
-          {/*  placeholder={t('common.searchPlaceholder')}*/}
-          {/*  value={searchQuery}*/}
-          {/*/>*/}
-          {/*<SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />*/}
-          {/*{searchQuery && (*/}
-          {/*  <Button*/}
-          {/*    className="absolute right-1 h-8 w-8 bg-gray-200 p-2"*/}
-          {/*    onClick={() => {*/}
-          {/*      setSearchQuery('');*/}
-          {/*    }}*/}
-          {/*    size="auto"*/}
-          {/*    type="button"*/}
-          {/*    variant="ghost"*/}
-          {/*  >*/}
-          {/*    <XIcon />*/}
-          {/*    <span className="sr-only">{t('common.clearSearch')}</span>*/}
-          {/*  </Button>*/}
-          {/*)}*/}
+          <Input
+            className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
+            placeholder={t('common.searchPlaceholder')}
+            value={searchQuery}
+          />
+          <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
+          {searchQuery && (
+            <Button
+              className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
+              onClick={() => {
+                setSearchQuery('');
+              }}
+              size="auto"
+              type="button"
+              variant="ghost"
+            >
+              <XIcon />
+              <span className="sr-only">{t('common.clearSearch')}</span>
+            </Button>
+          )}
         </div>
         <div className="flex gap-3">
           <VectorFsToggleSortName />
@@ -414,37 +410,29 @@ const AllFiles = () => {
                 {t('vectorFs.emptyState.noFiles')}
               </div>
             )}
-          {config.isDev &&
-            searchQuery &&
+          {searchQuery &&
             isSearchVRItemsSuccess &&
             searchVRItems?.length === 0 && (
               <div className="flex h-20 items-center justify-center text-gray-100">
                 {t('vectorFs.emptyState.noFiles')}
               </div>
             )}
-          {config.isDev &&
-            searchQuery &&
+          {searchQuery &&
             isSearchVRItemsSuccess &&
             searchQuery === debouncedSearchQuery &&
             searchVRItems?.map((item) => {
               return (
                 <button
                   className="relative flex items-center gap-2 text-ellipsis px-3 py-1.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
-                  key={item}
+                  key={item.path}
                   onClick={() => {
-                    const directoryMainPath = item.split('/').slice(0, -1);
-                    setCurrentGlobalPath(
-                      directoryMainPath.length > 1
-                        ? '/' + directoryMainPath.join('/')
-                        : '/' + directoryMainPath,
-                    );
+                    const directoryMainPath = item.path.split('/').slice(0, -1);
+                    setCurrentGlobalPath(directoryMainPath.join('/'));
                     setSearchQuery('');
                   }}
                 >
                   <FileTypeIcon />
-                  <span className="text-gray-80 text-sm">
-                    {item?.split('/').at(-1)?.replace(/_/g, ' ')}
-                  </span>
+                  <span className="text-gray-80 text-sm">{item?.name}</span>
                 </button>
               );
             })}

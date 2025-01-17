@@ -33,7 +33,6 @@ import AIsPage from '../pages/ais';
 import AnalyticsPage from '../pages/analytics';
 import AnalyticsSettingsPage from '../pages/analytics-settings';
 import ChatConversation from '../pages/chat/chat-conversation';
-import EmptyMessage from '../pages/chat/empty-message';
 import ChatLayout from '../pages/chat/layout';
 import { ConnectMethodQrCodePage } from '../pages/connect-method-qr-code';
 import CreateChatPage from '../pages/create-chat';
@@ -45,7 +44,6 @@ import EditToolPage from '../pages/edit-tool';
 import { ExportConnection } from '../pages/export-connection';
 import FreeSubscriptionsPage from '../pages/free-subscription';
 import { GalxeValidation } from '../pages/galxe-validation';
-import GenerateCodePage from '../pages/generate-code';
 import GetStartedPage from '../pages/get-started';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
@@ -212,7 +210,9 @@ const AppRoutes = () => {
                 <ChatProvider>
                   <SetJobScopeProvider>
                     <PromptSelectionProvider>
-                      <ChatLayout />
+                      <ToolsProvider>
+                        <ChatLayout />
+                      </ToolsProvider>
                     </PromptSelectionProvider>
                   </SetJobScopeProvider>
                 </ChatProvider>
@@ -221,15 +221,8 @@ const AppRoutes = () => {
           }
           path="inboxes"
         >
-          <Route element={<EmptyMessage />} index />
-          <Route
-            element={
-              <ToolsProvider>
-                <ChatConversation />
-              </ToolsProvider>
-            }
-            path=":inboxId"
-          />
+          <Route element={<ChatConversation />} index />
+          <Route element={<ChatConversation />} path=":inboxId" />
         </Route>
         <Route
           element={
@@ -361,7 +354,6 @@ const AppRoutes = () => {
           path={'settings'}
         >
           <Route element={<SettingsPage />} index />
-          <Route element={<GenerateCodePage />} path={'generate-code'} />
           <Route element={<ExportConnection />} path={'export-connection'} />
           <Route element={<PublicKeys />} path={'public-keys'} />
           <Route

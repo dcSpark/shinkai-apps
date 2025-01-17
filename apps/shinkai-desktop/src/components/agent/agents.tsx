@@ -44,13 +44,13 @@ function Agents() {
     <div className="flex h-full flex-col space-y-3">
       <div className="absolute right-3 top-0">
         <Button
-          className="px-4"
+          className="min-w-[100px]"
           onClick={() => {
             navigate('/add-agent');
           }}
           size="sm"
         >
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="h-4 w-4" />
           <span>Add Agent</span>
         </Button>
       </div>
@@ -67,7 +67,7 @@ function Agents() {
           </div>
 
           <Button
-            className="px-4"
+            className="min-w-[100px]"
             onClick={() => {
               navigate('/add-agent');
             }}

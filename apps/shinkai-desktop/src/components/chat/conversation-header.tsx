@@ -15,7 +15,7 @@ import {
 import { FilesIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { PanelRightClose, PanelRightOpen } from 'lucide-react';
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
@@ -319,4 +319,4 @@ const ConversationHeader = () => {
   return <ConversationHeaderEmpty />;
 };
 
-export default ConversationHeader;
+export default memo(ConversationHeader, () => true);

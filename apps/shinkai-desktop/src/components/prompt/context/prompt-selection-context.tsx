@@ -277,12 +277,13 @@ const PromptSearchDrawer = () => {
           </div>
         </ScrollArea>
         {selectedPromptEdit && (
-          <UpdateWorkflowDrawer
+          <UpdatePromptDrawer
             isPromptEnabled={selectedPromptEdit.is_enabled}
             isPromptFavorite={selectedPromptEdit.is_favorite}
             isPromptSystem={selectedPromptEdit.is_system}
             open={!!selectedPromptEdit}
             promptContent={selectedPromptEdit.prompt}
+            promptId={selectedPromptEdit.rowid}
             promptName={selectedPromptEdit.name}
             promptVersion={selectedPromptEdit.version}
             setOpen={(open) => {
@@ -403,21 +404,21 @@ export function CreatePromptDrawer({
                     </FormItem>
                   )}
                 />
-                <div className="flex justify-end gap-3">
+                <div className="mt-4 flex justify-end gap-3">
                   <Button
-                    className="mt-4 h-[30px]"
                     onClick={() => setIsPromptDrawerOpen(false)}
-                    size="sm"
+                    rounded="lg"
+                    size="xs"
                     type="button"
                     variant="outline"
                   >
                     Cancel
                   </Button>
                   <Button
-                    className="mt-4 h-[30px]"
                     disabled={isPending}
                     isLoading={isPending}
-                    size="sm"
+                    rounded="lg"
+                    size="xs"
                     type="submit"
                   >
                     Create Prompt
@@ -432,7 +433,8 @@ export function CreatePromptDrawer({
   );
 }
 
-function UpdateWorkflowDrawer({
+function UpdatePromptDrawer({
+  promptId,
   promptName,
   promptContent,
   isPromptFavorite,
@@ -442,6 +444,7 @@ function UpdateWorkflowDrawer({
   open,
   setOpen,
 }: {
+  promptId: number;
   promptName: string;
   promptContent: string;
   isPromptFavorite: boolean;
@@ -478,14 +481,15 @@ function UpdateWorkflowDrawer({
 
   const onSubmit = async (data: CreatePromptFormSchema) => {
     await updatePrompt({
+      id: promptId,
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       promptName: data.promptName,
       promptContent: data.promptContent,
-      isPromptFavorite: false,
-      isPromptEnabled: false,
-      isPromptSystem: false,
-      promptVersion: '1',
+      isPromptFavorite: data.isPromptFavorite ?? false,
+      isPromptEnabled: data.isPromptEnabled ?? false,
+      isPromptSystem: data.isPromptSystem ?? false,
+      promptVersion: data.promptVersion ?? '1',
     });
   };
   return (
@@ -534,21 +538,21 @@ function UpdateWorkflowDrawer({
                     </FormItem>
                   )}
                 />
-                <div className="flex justify-end gap-3">
+                <div className="mt-4 flex justify-end gap-3">
                   <Button
-                    className="mt-4 h-[30px]"
                     onClick={() => setOpen(false)}
-                    size="sm"
+                    rounded="lg"
+                    size="xs"
                     type="button"
                     variant="outline"
                   >
                     Cancel
                   </Button>
                   <Button
-                    className="mt-4 h-[30px]"
                     disabled={isPending}
                     isLoading={isPending}
-                    size="sm"
+                    rounded="lg"
+                    size="xs"
                     type="submit"
                   >
                     Update Prompt

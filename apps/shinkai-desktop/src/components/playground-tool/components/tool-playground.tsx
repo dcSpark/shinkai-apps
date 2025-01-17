@@ -474,7 +474,7 @@ function PlaygroundToolEditor({
                       xShinkaiToolId={xShinkaiToolId}
                     />
                     <Button
-                      className="h-[30px] shrink-0 rounded-md text-xs"
+                      className="shrink-0"
                       disabled={
                         !toolCode ||
                         !metadataGenerationData ||
@@ -483,9 +483,10 @@ function PlaygroundToolEditor({
                       }
                       isLoading={isSavingTool}
                       onClick={handleSaveTool}
-                      size="sm"
+                      rounded="lg"
+                      size="xs"
                     >
-                      <Save className="mr-2 h-4 w-4" />
+                      <Save className="h-4 w-4" />
                       Save Tool
                     </Button>
                   </div>
@@ -578,14 +579,14 @@ function PlaygroundToolEditor({
                                       <Button
                                         className="!h-[28px] rounded-lg border-0 bg-transparent"
                                         onClick={resetToolCode}
-                                        size="sm"
+                                        size="xs"
                                         variant="ghost"
                                       >
                                         Reset
                                       </Button>
                                       <Button
                                         className="!h-[28px] rounded-lg border-0 bg-transparent"
-                                        size="sm"
+                                        size="xs"
                                         type="submit"
                                         variant="ghost"
                                       >
@@ -629,14 +630,15 @@ function PlaygroundToolEditor({
                           !isToolCodeGenerationPending &&
                           !isMetadataGenerationError && (
                             <Button
-                              className="h-[30px] rounded-lg border-gray-200 text-white"
+                              className="border-gray-200 text-white"
                               form="parameters-form"
                               isLoading={executeToolCodeQuery.isPending}
-                              size="sm"
+                              rounded="lg"
+                              size="xs"
                               variant="ghost"
                             >
                               {!executeToolCodeQuery.isPending && (
-                                <Play className="mr-2 h-4 w-4" />
+                                <Play className="h-4 w-4" />
                               )}
                               Run
                             </Button>
@@ -803,9 +805,10 @@ function PlaygroundToolEditor({
                     </div>
                     {isMetadataGenerationSuccess && (
                       <Button
-                        className="text-gray-80 h-[30px] gap-2 rounded-md text-xs"
+                        className="text-gray-80"
                         onClick={regenerateToolMetadata}
-                        size="sm"
+                        rounded="lg"
+                        size="xs"
                         variant="outline"
                       >
                         <ReloadIcon className="size-3.5" />
@@ -886,7 +889,6 @@ function ToolResultFileCard({ filePath }: { filePath: string }) {
 
   return (
     <Button
-      className="h-[30px] gap-1.5 rounded-lg text-xs"
       onClick={async () => {
         const response = await refetch();
         const file = new Blob([response.data ?? ''], {
@@ -917,7 +919,8 @@ function ToolResultFileCard({ filePath }: { filePath: string }) {
 
         toast.success(`${fileNameBase} downloaded successfully`);
       }}
-      size="auto"
+      rounded="lg"
+      size="xs"
       variant="outline"
     >
       <div className="flex shrink-0 items-center justify-center">
@@ -985,8 +988,9 @@ function ManageToolSourceModal({
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          className="text-gray-80 h-[30px] shrink-0 rounded-md text-xs"
-          size="sm"
+          className="text-gray-80 shrink-0"
+          rounded="lg"
+          size="xs"
           variant="outline"
         >
           <ToolAssetsIcon className="text-gray-80 mr-2 h-4 w-4" />
