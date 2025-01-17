@@ -972,7 +972,6 @@ function ManageToolSourceModal({
   const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
     useDropzone({
       multiple: true,
-      maxFiles: 5,
       onDrop: async (acceptedFiles) => {
         await uploadAssets({
           nodeAddress: auth?.node_address ?? '',

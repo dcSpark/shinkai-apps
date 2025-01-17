@@ -9,6 +9,7 @@ export type SaveToolCodeInput = Token & {
   jobId: string;
   metadata: Record<string, any>;
   code?: string;
+  assets: string[];
   language: CodeLanguage;
   xShinkaiAppId: string;
   xShinkaiToolId: string;
