@@ -172,8 +172,9 @@ const ChatConversation = () => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
     return (
       !!inboxId &&
-      lastMessage?.role === 'assistant' &&
-      lastMessage?.status.type === 'running'
+      lastMessage &&
+      lastMessage.role === 'assistant' &&
+      lastMessage.status.type === 'running'
     );
   }, [data?.pages, inboxId]);
 
@@ -280,7 +281,7 @@ const ChatConversation = () => {
       )}
       <ConversationChatFooter
         inboxId={inboxId}
-        isLoadingMessage={isLoadingMessage}
+        isLoadingMessage={!!isLoadingMessage}
       />
     </div>
   );
