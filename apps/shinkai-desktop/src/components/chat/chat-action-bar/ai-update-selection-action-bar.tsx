@@ -4,6 +4,7 @@ import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mut
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
+  CommandShortcut,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
@@ -64,8 +65,23 @@ export function AIModelSelectorBase({
             </DropdownMenuTrigger>
           </TooltipTrigger>
           <TooltipPortal>
-            <TooltipContent align="center" side="top">
-              {t('llmProviders.switch')}
+            <TooltipContent
+              align="center"
+              className="flex flex-col gap-1"
+              side="top"
+            >
+              <span className="text-center text-xs text-white">
+                {t('llmProviders.switch')}
+              </span>
+              <div className="flex items-center gap-4 text-left">
+                <div className="flex items-center justify-center gap-2 text-xs text-gray-100">
+                  <CommandShortcut>⌘ [</CommandShortcut> or
+                  <CommandShortcut>⌘ ]</CommandShortcut>
+                </div>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-xs text-gray-100">Prev / Next AI</span>
+                </div>
+              </div>
             </TooltipContent>
           </TooltipPortal>
           <DropdownMenuContent
