@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const chatMessageFormSchema = z.object({
   agent: z.string().optional(),
   message: z.string().min(1),
-  files: z.array(z.any()).max(3).optional(),
+  files: z.array(z.any()).optional(),
   tool: z
     .object({
       key: z.string().min(1),

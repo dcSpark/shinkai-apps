@@ -44,7 +44,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import equal from 'fast-deep-equal';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Paperclip, X, XIcon } from 'lucide-react';
+import { Loader2, Paperclip, X, XIcon } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
@@ -561,11 +561,13 @@ function ConversationChatFooter({
                             }}
                           />
                         )}
+                        {console.log('form', chatForm.formState.errors)}
                         {!isDragActive &&
                           currentFiles &&
                           currentFiles.length > 0 && (
                             <FileList
                               currentFiles={currentFiles}
+                              isPending={isPending}
                               onRemoveFile={(index) => {
                                 const newFiles = [...currentFiles];
                                 newFiles.splice(index, 1);
@@ -699,9 +701,14 @@ const StopGeneratingButton = memo(StopGeneratingButtonBase);
 type FileListProps = {
   currentFiles: File[];
   onRemoveFile: (index: number) => void;
+  isPending?: boolean;
 };
 
-const FileListBase = ({ currentFiles, onRemoveFile }: FileListProps) => {
+const FileListBase = ({
+  currentFiles,
+  onRemoveFile,
+  isPending,
+}: FileListProps) => {
   const size = partial({ standard: 'jedec' });
 
   return (
@@ -713,7 +720,10 @@ const FileListBase = ({ currentFiles, onRemoveFile }: FileListProps) => {
             key={index}
           >
             <div className="flex w-6 shrink-0 items-center justify-center">
-              {getFileExt(file.name) && fileIconMap[getFileExt(file.name)] ? (
+              {isPending ? (
+                <Loader2 className="h-5 w-5 animate-spin text-gray-100" />
+              ) : getFileExt(file.name) &&
+                fileIconMap[getFileExt(file.name)] ? (
                 <FileTypeIcon
                   className="text-gray-80 h-[18px] w-[18px] shrink-0"
                   type={getFileExt(file.name)}
@@ -748,6 +758,7 @@ const FileListBase = ({ currentFiles, onRemoveFile }: FileListProps) => {
 };
 const FileList = memo(FileListBase, (prevProps, nextProps) => {
   if (!equal(prevProps.currentFiles, nextProps.currentFiles)) return false;
+  if (prevProps.isPending !== nextProps.isPending) return false;
   return true;
 });
 
