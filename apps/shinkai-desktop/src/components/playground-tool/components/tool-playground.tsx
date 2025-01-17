@@ -953,13 +953,14 @@ function ManageToolSourceModal({
       xShinkaiToolId,
     });
 
-  const { mutateAsync: uploadAssets } = useUploadAssetsTool({
-    onError: (error) => {
-      toast.error('Failed uploading source:', {
-        description: error.response?.data?.message ?? error.message,
-      });
-    },
-  });
+  const { mutateAsync: uploadAssets, isPending: isUploadingAssets } =
+    useUploadAssetsTool({
+      onError: (error) => {
+        toast.error('Failed uploading source:', {
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
 
   const { mutateAsync: removeAsset } = useRemoveAssetTool({
     onError: (error) => {
@@ -972,7 +973,6 @@ function ManageToolSourceModal({
   const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
     useDropzone({
       multiple: true,
-      maxFiles: 5,
       onDrop: async (acceptedFiles) => {
         await uploadAssets({
           nodeAddress: auth?.node_address ?? '',
@@ -997,7 +997,7 @@ function ManageToolSourceModal({
           Manage Knowledge ({isGetAllToolAssetsSuccess ? assets.length : '-'})
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex h-[50vh] max-w-[500px] flex-col gap-4">
+      <DialogContent className="flex h-[60vh] max-w-[500px] flex-col gap-4">
         <DialogClose className="absolute right-4 top-4">
           <XIcon className="text-gray-80 h-5 w-5" />
         </DialogClose>
@@ -1039,6 +1039,14 @@ function ManageToolSourceModal({
             <span className="text-gray-80 text-center text-xs">
               No source files uploaded yet.
             </span>
+          )}
+          {isUploadingAssets && (
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 className="text-gray-80 shrink-0 animate-spin" />
+              <span className="text-gray-80 text-center text-xs">
+                Uploading files...
+              </span>
+            </div>
           )}
           {isGetAllToolAssetsSuccess &&
             assets.map((asset) => (

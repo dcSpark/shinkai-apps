@@ -9,6 +9,7 @@ import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutat
 import { useRestoreToolConversation } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreToolConversation/useRestoreToolConversation';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
 import { useUpdateToolCodeImplementation } from '@shinkai_network/shinkai-node-state/v2/mutations/updateToolCodeImplementation/useUpdateToolCodeImplementation';
+import { useGetAllToolAssets } from '@shinkai_network/shinkai-node-state/v2/queries/getAllToolAssets/useGetAllToolAssets';
 import { PrismEditor } from 'prism-react-editor';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, UseFormReturn } from 'react-hook-form';
@@ -184,6 +185,13 @@ export const useToolCode = ({
   const [xShinkaiAppId] = useState(() => `app-id-${Date.now()}`);
   const [xShinkaiToolId] = useState(() => `task-id-${Date.now()}`);
 
+  const { data: assets } = useGetAllToolAssets({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    xShinkaiAppId,
+    xShinkaiToolId,
+  });
+
   useEffect(() => {
     if (initialState?.code) {
       baseToolCodeRef.current = initialState.code;
@@ -334,6 +342,7 @@ export const useToolCode = ({
       token: auth?.api_v2_key ?? '',
       nodeAddress: auth?.node_address ?? '',
       language: currentLanguage,
+      assets: assets ?? [],
       xShinkaiAppId,
       xShinkaiToolId,
     });

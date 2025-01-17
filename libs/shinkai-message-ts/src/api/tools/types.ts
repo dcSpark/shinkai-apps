@@ -235,6 +235,7 @@ export type SaveToolCodeRequest = {
   job_id_history?: string[];
   code: string;
   language: CodeLanguage;
+  assets: string[];
 };
 
 export type ToolMetadata = {
