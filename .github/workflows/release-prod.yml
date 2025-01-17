@@ -76,6 +76,9 @@ jobs:
   #         publish: false
 
   release-shinkai-desktop:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     needs: prebuild
     name: Release Shinkai Desktop
     environment: production
