@@ -17,11 +17,14 @@ import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/cons
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mutations/stopGeneratingLLM/useStopGeneratingLLM';
+import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
 import {
   Button,
   ChatInputArea,
+  CommandShortcut,
   Form,
   FormControl,
   FormField,
@@ -48,6 +51,7 @@ import { Loader2, Paperclip, X, XIcon } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -152,6 +156,8 @@ const useSelectedFilesChat = ({ inboxId }: { inboxId?: string }) => {
   };
 };
 
+const SUGGESTED_TOOLS_COUNT = 3;
+
 function ConversationChatFooter({
   inboxId,
   isLoadingMessage,
@@ -202,6 +208,7 @@ function ConversationChatFooter({
   const selectedTool = chatForm.watch('tool');
   const currentMessage = chatForm.watch('message');
   const currentFiles = chatForm.watch('files');
+  const currentAI = chatForm.watch('agent');
 
   const { data: chatConfig } = useGetChatConfig(
     {
@@ -271,9 +278,69 @@ function ConversationChatFooter({
       },
       {
         enabled: !!debounceMessage && !!currentMessage && !selectedTool,
-        select: (data) => data.slice(0, 3),
+        select: (data) => data.slice(0, SUGGESTED_TOOLS_COUNT),
       },
     );
+
+  // for suggested tools
+  useHotkeys(
+    ['mod+1', 'ctrl+1', 'mod+2', 'ctrl+2', 'mod+3', 'ctrl+3'],
+    (event) => {
+      if (!searchToolList?.length) return;
+
+      const toolNumber = parseInt(event.key);
+      if (toolNumber < 1 || toolNumber > SUGGESTED_TOOLS_COUNT) return;
+      const selectedTool = searchToolList[toolNumber - 1];
+      chatForm.setValue('tool', {
+        key: selectedTool.tool_router_key,
+        name: selectedTool.name,
+        description: selectedTool.description,
+        args: Object.keys(selectedTool.input_args.properties ?? {}),
+      });
+    },
+    {
+      enabled: !!searchToolList?.length && !!currentMessage && !selectedTool,
+      enableOnFormTags: true,
+    },
+  );
+
+  const { data: llmProviders } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+  const { data: agents } = useGetAgents({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  // For switching AIs
+  useHotkeys(
+    ['mod+[', 'mod+]', 'ctrl+[', 'ctrl+]'],
+    (event) => {
+      if (inboxId) return; // switch for only empty chat for now
+      if (!llmProviders || !agents) return;
+      const allAIs = [
+        ...(agents ?? []).map((a) => a.name),
+        ...(llmProviders ?? []).map((l) => l.id),
+      ];
+
+      const currentIndex = allAIs.indexOf(currentAI ?? '');
+      if (currentIndex === -1) return;
+
+      let newIndex;
+      if (event.key === '[') {
+        newIndex = currentIndex === 0 ? allAIs.length - 1 : currentIndex - 1;
+      } else {
+        newIndex = currentIndex === allAIs.length - 1 ? 0 : currentIndex + 1;
+      }
+
+      chatForm.setValue('agent', allAIs[newIndex]);
+    },
+    {
+      enableOnFormTags: true,
+      enabled: !!llmProviders?.length && !!agents?.length && !!currentAI,
+    },
+  );
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -466,7 +533,7 @@ function ConversationChatFooter({
                           onValueChange={(value) => {
                             chatForm.setValue('agent', value);
                           }}
-                          value={chatForm.watch('agent') ?? ''}
+                          value={currentAI ?? ''}
                         />
                       )}
                       <FileSelectionActionBar
@@ -592,7 +659,7 @@ function ConversationChatFooter({
                         !selectedTool &&
                         isSearchToolListSuccess &&
                         searchToolList?.length > 0 &&
-                        searchToolList?.map((tool) => (
+                        searchToolList?.map((tool, idx) => (
                           <Tooltip key={tool.tool_router_key}>
                             <TooltipTrigger asChild>
                               <motion.button
@@ -627,6 +694,13 @@ function ConversationChatFooter({
                                 side="top"
                               >
                                 {tool.description}
+
+                                <br />
+                                <div className="flex items-center justify-end gap-2 text-xs text-gray-100">
+                                  <CommandShortcut>
+                                    ⌘ + {idx + 1}
+                                  </CommandShortcut>
+                                </div>
                               </TooltipContent>
                             </TooltipPortal>
                           </Tooltip>

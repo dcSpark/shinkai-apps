@@ -2,9 +2,10 @@ import { useGetDownloadFile } from '@shinkai_network/shinkai-node-state/v2/queri
 import {
   Badge,
   Button,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  MarkdownText,
 } from '@shinkai_network/shinkai-ui';
 import {
   EmbeddingsGeneratedIcon,
@@ -20,7 +21,7 @@ import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import * as fs from '@tauri-apps/plugin-fs';
 import { partial } from 'filesize';
 import { LockIcon } from 'lucide-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
@@ -30,177 +31,229 @@ export const VectorFileDetails = () => {
   const selectedFile = useVectorFsStore((state) => state.selectedFile);
   const size = partial({ standard: 'jedec' });
   const auth = useAuth((state) => state.auth);
-
+  const [fileContent, setFileContent] = React.useState<string | null>(null);
   const fileExtension = getFileExt(selectedFile?.name ?? '');
 
-  const { mutateAsync: downloadFile } = useGetDownloadFile({
-    onSuccess: async (response, variables) => {
-      if (!fileExtension) {
-        toast.error('File extension not found');
-        return;
-      }
-      try {
-        const binaryData = Uint8Array.from(atob(response), (c) =>
-          c.charCodeAt(0),
-        );
+  const { mutateAsync: downloadFile } = useGetDownloadFile({});
 
-        const savePath = await save({
-          defaultPath: `${variables.path.split('/').pop()}.${fileExtension.toLowerCase()}`,
-          filters: [
-            { name: fileExtension, extensions: [fileExtension.toLowerCase()] },
-          ],
-        });
-
-        if (!savePath) {
-          toast.info('File save cancelled');
-          return;
+  useEffect(() => {
+    const fetchFileContent = async () => {
+      if (selectedFile && auth) {
+        try {
+          const fileContentBase64 = await downloadFile({
+            nodeAddress: auth.node_address,
+            token: auth.api_v2_key,
+            path: selectedFile.path,
+          });
+          setFileContent(fileContentBase64);
+        } catch (error) {
+          console.error('Error downloading file content:', error);
+          toast.error('Failed to load file preview');
         }
-
-        await fs.writeFile(savePath, binaryData, {
-          baseDir: BaseDirectory.Download,
-        });
-
-        toast.success('File saved successfully');
-      } catch (error) {
-        console.error('Error saving file:', error);
-        toast.error('Failed to save file');
       }
-    },
-  });
+    };
 
-  // const { mutateAsync: downloadVRFile } = useDownloadVRFile({
-  //   onSuccess: async (response, variables) => {
-  //     const file = new Blob([response.data], {
-  //       type: 'application/octet-stream',
-  //     });
-  //     const dataUrl = await new Promise<string>((resolve) => {
-  //       const reader = new FileReader();
-  //       reader.onload = () => resolve(reader.result as string);
-  //       reader.readAsDataURL(file);
-  //     });
-  //
-  //     const path = await save({
-  //       defaultPath: variables.path.split('/').at(-1) + '.vrkai',
-  //     });
-  //     if (!path) return;
-  //     const fileContent = await fetch(dataUrl).then((response) =>
-  //       response.arrayBuffer(),
-  //     );
-  //     await fs.writeFile(path, new Uint8Array(fileContent), {
-  //       baseDir: BaseDirectory.Download,
-  //     });
-  //   },
-  // });
+    fetchFileContent();
+  }, [selectedFile, auth, downloadFile]);
+
+  const renderFilePreview = () => {
+    if (!fileContent) return <div>Loading preview...</div>;
+
+    switch (fileExtension?.toLowerCase()) {
+      case 'txt':
+      case 'json':
+      case 'js':
+      case 'ts':
+      case 'tsx':
+      case 'jsx': {
+        const binaryString = atob(fileContent);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const textContent = new TextDecoder('utf-8').decode(bytes);
+        return (
+          <pre className="h-full overflow-auto whitespace-pre-wrap break-words bg-gray-600 p-4 font-mono text-sm">
+            {textContent}
+          </pre>
+        );
+      }
+      case 'md': {
+        const binaryString = atob(fileContent);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const textContent = new TextDecoder('utf-8').decode(bytes);
+        return (
+          <div className="h-full overflow-auto p-4">
+            <MarkdownText content={textContent} />
+          </div>
+        );
+      }
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+      case 'gif':
+        return (
+          <div className="flex aspect-square h-full items-center justify-center">
+            <img
+              alt={selectedFile?.name}
+              className="max-h-full max-w-full object-contain"
+              src={`data:image/${fileExtension};base64,${fileContent}`}
+            />
+          </div>
+        );
+      default:
+        return (
+          <div className="flex h-full flex-col items-center justify-center gap-6 text-gray-50">
+            <span>Preview not available for this file type</span>
+            <Button onClick={handleDownloadFile} size="xs" variant="outline">
+              Download File
+            </Button>
+          </div>
+        );
+    }
+  };
+
+  const handleDownloadFile = async () => {
+    if (!selectedFile || !auth) return;
+    await downloadFile(
+      {
+        nodeAddress: auth.node_address,
+        path: selectedFile.path,
+        token: auth.api_v2_key,
+      },
+      {
+        onSuccess: async (response, variables) => {
+          if (!fileExtension) {
+            toast.error('File extension not found');
+            return;
+          }
+          try {
+            const binaryData = Uint8Array.from(atob(response), (c) =>
+              c.charCodeAt(0),
+            );
+
+            const savePath = await save({
+              defaultPath: `${variables.path.split('/').pop()}.${fileExtension.toLowerCase()}`,
+              filters: [
+                {
+                  name: fileExtension,
+                  extensions: [fileExtension.toLowerCase()],
+                },
+              ],
+            });
+
+            if (!savePath) {
+              toast.info('File save cancelled');
+              return;
+            }
+
+            await fs.writeFile(savePath, binaryData, {
+              baseDir: BaseDirectory.Download,
+            });
+
+            toast.success('File saved successfully');
+          } catch (error) {
+            console.error('Error saving file:', error);
+            toast.error('Failed to save file');
+          }
+        },
+      },
+    );
+  };
 
   return (
     <React.Fragment>
-      <SheetHeader>
-        <SheetTitle className={'sr-only'}>Information</SheetTitle>
-      </SheetHeader>
-      <div>
-        <div className="space-y-2 text-left">
-          <div>
-            <FileTypeIcon
-              className="h-10 w-10"
-              type={getFileExt(selectedFile?.name ?? '')}
-            />
-          </div>
-          <p className="break-words text-lg font-medium text-white">
-            {selectedFile?.name}
-            <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
-              {getFileExt(selectedFile?.name ?? '') ?? '-'}
-            </Badge>
-          </p>
-          <p className="text-gray-100">
-            <span className="text-sm">
-              {formatDateToUSLocaleString(
-                new Date(selectedFile?.created_time ?? ''),
-              )}
-            </span>{' '}
-            - <span className="text-sm">{size(selectedFile?.size ?? 0)}</span>
-          </p>
-          {!!selectedFile?.has_embeddings && (
-            <div className="inline-flex items-center gap-1 rounded-lg border-cyan-600 bg-cyan-900/20 px-2 py-1">
-              <EmbeddingsGeneratedIcon className="size-4 text-cyan-400" />
-              <span className="text-xs font-medium text-cyan-400">
-                Embeddings Generated
-              </span>
-            </div>
-          )}
+      <div className="flex size-full">
+        <div className="flex max-w-[80%] flex-1 basis-[80%] flex-col overflow-hidden rounded-l-xl bg-gray-600 p-10 text-white">
+          {renderFilePreview()}
         </div>
-        <div className="py-6">
-          <h2 className="mb-3 text-left text-lg font-medium text-white">
-            Information
-          </h2>
-          <div className="divide-y divide-gray-300">
-            {[
-              { label: 'Created', value: selectedFile?.created_time },
-              {
-                label: 'Modified',
-                value: selectedFile?.modified_time,
-              },
-              {
-                label: 'Last Opened',
-                value: selectedFile?.modified_time,
-              },
-            ].map((item) => (
-              <div
-                className="flex items-center justify-between py-2 font-medium"
-                key={item.label}
-              >
-                <span className="text-sm text-gray-100">{item.label}</span>
-                <span className="text-sm text-white">
-                  {formatDateToLocaleStringWithTime(new Date(item.value ?? ''))}
+        {/* add a preview of the file on the right side of this screen,  */}
+        <div className="flex min-w-[350px] flex-1 shrink-0 flex-col rounded-r-xl border-l border-gray-200 bg-gray-300 p-5 pl-4">
+          <DialogHeader>
+            <DialogTitle className={'sr-only'}>File Information</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 text-left">
+            <div>
+              <FileTypeIcon
+                className="h-10 w-10"
+                type={getFileExt(selectedFile?.name ?? '')}
+              />
+            </div>
+            <p className="break-words text-lg font-medium text-white">
+              {selectedFile?.name}
+              <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
+                {getFileExt(selectedFile?.name ?? '') ?? '-'}
+              </Badge>
+            </p>
+            <p className="text-gray-100">
+              <span className="text-sm">
+                {formatDateToUSLocaleString(
+                  new Date(selectedFile?.created_time ?? ''),
+                )}
+              </span>{' '}
+              - <span className="text-sm">{size(selectedFile?.size ?? 0)}</span>
+            </p>
+            {!!selectedFile?.has_embeddings && (
+              <div className="inline-flex items-center gap-1 rounded-lg border-cyan-600 bg-cyan-900/20 px-2 py-1">
+                <EmbeddingsGeneratedIcon className="size-4 text-cyan-400" />
+                <span className="text-xs font-medium text-cyan-400">
+                  Embeddings Generated
                 </span>
               </div>
-            ))}
+            )}
           </div>
-        </div>
-        <div className="py-6 text-left">
-          <h2 className="mb-3 text-lg font-medium text-white">Permissions</h2>
-          <span className="text-sm">
-            <LockIcon className="mr-2 inline-block h-4 w-4" />
-            You can read and write
-          </span>
+          <div className="py-6">
+            <h2 className="mb-3 text-left text-base font-medium text-white">
+              Information
+            </h2>
+            <div className="divide-y divide-gray-300">
+              {[
+                { label: 'Created', value: selectedFile?.created_time },
+                {
+                  label: 'Modified',
+                  value: selectedFile?.modified_time,
+                },
+                {
+                  label: 'Last Opened',
+                  value: selectedFile?.modified_time,
+                },
+              ].map((item) => (
+                <div
+                  className="flex items-center justify-between py-2 text-xs font-medium"
+                  key={item.label}
+                >
+                  <span className="text-sm text-gray-100">{item.label}</span>
+                  <span className="text-sm text-white">
+                    {formatDateToLocaleStringWithTime(
+                      new Date(item.value ?? ''),
+                    )}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="py-6 text-left">
+            <h2 className="mb-3 text-base font-medium text-white">
+              Permissions
+            </h2>
+            <span className="text-sm">
+              <LockIcon className="mr-2 inline-block h-4 w-4" />
+              You can read and write
+            </span>
+          </div>
+          <Button
+            onClick={handleDownloadFile}
+            size="xs"
+            type="button"
+            variant="outline"
+          >
+            Download File
+          </Button>
         </div>
       </div>
-      <SheetFooter className="flex flex-row gap-3 [&>*]:flex-1">
-        {/* Hide it til we support it in the node */}
-        {/*<Button*/}
-        {/*  onClick={async () => {*/}
-        {/*    if (!selectedFile || !auth) return;*/}
-        {/*    await downloadVRFile({*/}
-        {/*      nodeAddress: auth.node_address,*/}
-        {/*      shinkaiIdentity: auth?.shinkai_identity,*/}
-        {/*      profile: auth.profile,*/}
-        {/*      path: selectedFile.path,*/}
-        {/*      my_device_encryption_sk: auth.profile_encryption_sk,*/}
-        {/*      my_device_identity_sk: auth.profile_identity_sk,*/}
-        {/*      node_encryption_pk: auth.node_encryption_pk,*/}
-        {/*      profile_encryption_sk: auth.profile_encryption_sk,*/}
-        {/*      profile_identity_sk: auth.profile_identity_sk,*/}
-        {/*    });*/}
-        {/*  }}*/}
-        {/*  size="sm"*/}
-        {/*  variant="outline"*/}
-        {/*>*/}
-        {/*  Download Vector Resource*/}
-        {/*</Button>*/}
-        <Button
-          onClick={async () => {
-            if (!selectedFile || !auth) return;
-            await downloadFile({
-              nodeAddress: auth.node_address,
-              path: selectedFile.path,
-              token: auth.api_v2_key,
-            });
-          }}
-          size="sm"
-          variant="default"
-        >
-          Download Source File
-        </Button>
-      </SheetFooter>
     </React.Fragment>
   );
 };

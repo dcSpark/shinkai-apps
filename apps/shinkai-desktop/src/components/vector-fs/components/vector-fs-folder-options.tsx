@@ -4,9 +4,9 @@ import { useMoveFolder } from '@shinkai_network/shinkai-node-state/v2/mutations/
 import { useRemoveFolder } from '@shinkai_network/shinkai-node-state/v2/mutations/removeFolder/useRemoveFolder';
 import {
   Button,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '@shinkai_network/shinkai-ui';
 import React from 'react';
 import { toast } from 'sonner';
@@ -44,20 +44,20 @@ export const VectorFsFolderMoveAction = () => {
 
   return (
     <React.Fragment>
-      <SheetHeader>
-        <SheetTitle className="font-normal">
+      <DialogHeader>
+        <DialogTitle className="font-normal">
           {t('vectorFs.actions.move')}
           <span className="font-medium">
             {' '}
             &quot;{selectedFolder?.name}&quot;
           </span>{' '}
           to ...
-        </SheetTitle>
-      </SheetHeader>
+        </DialogTitle>
+      </DialogHeader>
       <FolderSelectionList />
-      <SheetFooter>
+      <DialogFooter className="mt-4">
         <Button
-          className="mt-4"
+          className="min-w-[100px]"
           disabled={destinationFolderPath === selectedFolder?.path}
           isLoading={isMovingVrFolder}
           onClick={async () => {
@@ -69,10 +69,11 @@ export const VectorFsFolderMoveAction = () => {
                 `${destinationFolderPath}/${selectedFolder?.path}` ?? '/',
             });
           }}
+          size="sm"
         >
           {t('vectorFs.actions.move')}
         </Button>
-      </SheetFooter>
+      </DialogFooter>
     </React.Fragment>
   );
 };
@@ -94,21 +95,21 @@ export const VectorFsFolderDeleteAction = () => {
 
   return (
     <React.Fragment>
-      <SheetHeader>
-        <SheetTitle className="font-normal">
+      <DialogHeader>
+        <DialogTitle className="font-normal">
           {t('vectorFs.actions.delete')}
           <span className="font-medium">
             {' '}
             &quot;{selectedFolder?.name}&quot;
           </span>{' '}
-        </SheetTitle>
-      </SheetHeader>
+        </DialogTitle>
+      </DialogHeader>
       <p className="text-gray-80 my-3 text-base">
         {t('vectorFs.deleteFolderConfirmation')}
       </p>
-      <SheetFooter>
+      <DialogFooter className="mt-4">
         <Button
-          className="mt-4"
+          className="min-w-[100px]"
           isLoading={isPending}
           onClick={async () => {
             await deleteVrFolder({
@@ -117,11 +118,12 @@ export const VectorFsFolderDeleteAction = () => {
               folderPath: selectedFolder?.path ?? '',
             });
           }}
+          size="sm"
           variant="destructive"
         >
           {t('vectorFs.actions.delete')}
         </Button>
-      </SheetFooter>
+      </DialogFooter>
     </React.Fragment>
   );
 };
@@ -152,20 +154,21 @@ export const VectorFsFolderCopyAction = () => {
 
   return (
     <React.Fragment>
-      <SheetHeader>
-        <SheetTitle className="font-normal">
+      <DialogHeader>
+        <DialogTitle className="font-normal">
           {t('vectorFs.actions.copy')}
           <span className="font-medium">
             {' '}
             &quot;{selectedFolder?.name}&quot;
           </span>{' '}
           to ...
-        </SheetTitle>
-      </SheetHeader>
+        </DialogTitle>
+      </DialogHeader>
       <FolderSelectionList />
-      <SheetFooter>
+
+      <DialogFooter className="mt-4">
         <Button
-          className="mt-4"
+          className="min-w-[100px]"
           disabled={destinationFolderPath === selectedFolder?.path}
           isLoading={isPending}
           onClick={async () => {
@@ -177,10 +180,11 @@ export const VectorFsFolderCopyAction = () => {
                 `${destinationFolderPath}/${selectedFolder?.path}` ?? '/',
             });
           }}
+          size="sm"
         >
           {t('vectorFs.actions.copy')}
         </Button>
-      </SheetFooter>
+      </DialogFooter>
     </React.Fragment>
   );
 };

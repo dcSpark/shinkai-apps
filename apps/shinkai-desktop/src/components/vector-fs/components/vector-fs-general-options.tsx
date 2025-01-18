@@ -15,6 +15,8 @@ import { useRemoveFsItem } from '@shinkai_network/shinkai-node-state/v2/mutation
 import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadVRFiles/useUploadVRFiles';
 import {
   Button,
+  DialogHeader,
+  DialogTitle,
   FileItem,
   FileUploader,
   Form,
@@ -23,9 +25,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import {
@@ -93,12 +92,12 @@ export const AddNewFolderAction = () => {
 
   return (
     <>
-      <SheetHeader>
-        <SheetTitle className="flex flex-col items-start gap-1">
-          <DirectoryTypeIcon className="h-10 w-10" />
+      <DialogHeader>
+        <DialogTitle className="flex items-center gap-2">
+          <DirectoryTypeIcon className="h-6 w-6" />
           {t('vectorFs.actions.createFolder')}
-        </SheetTitle>
-      </SheetHeader>
+        </DialogTitle>
+      </DialogHeader>
       <Form {...createFolderForm}>
         <form
           className="space-y-8 pt-4"
@@ -129,6 +128,7 @@ export const AddNewFolderAction = () => {
             className="w-full"
             disabled={isPending}
             isLoading={isPending}
+            size="sm"
             type="submit"
           >
             {t('vectorFs.actions.createFolder')}
@@ -189,15 +189,12 @@ export const UploadVRFilesAction = () => {
 
   return (
     <>
-      <SheetHeader>
-        <SheetTitle className="flex flex-col items-start gap-1">
-          <FileTypeIcon className="h-10 w-10" />
+      <DialogHeader>
+        <DialogTitle className="flex items-center gap-2">
+          <FileTypeIcon className="h-6 w-6" />
           {t('vectorFs.actions.uploadFile')}
-        </SheetTitle>
-        <SheetDescription>
-          {t('vectorFs.actions.uploadFileText')}
-        </SheetDescription>
-      </SheetHeader>
+        </DialogTitle>
+      </DialogHeader>
       <Form {...createFolderForm}>
         <form
           className="space-y-8"
@@ -231,6 +228,7 @@ export const UploadVRFilesAction = () => {
             className="w-full"
             disabled={isPending}
             isLoading={isPending}
+            size="sm"
             type="submit"
           >
             {t('common.upload')}
@@ -307,11 +305,11 @@ export const SaveWebpageToVectorFsAction = () => {
 
   return (
     <>
-      <SheetHeader>
-        <SheetTitle className="flex flex-col items-start gap-1">
+      <DialogHeader>
+        <DialogTitle className="flex items-center gap-2">
           Save Webpage to AI Files
-        </SheetTitle>
-      </SheetHeader>
+        </DialogTitle>
+      </DialogHeader>
       <Form {...saveWebpageToVectorFsForm}>
         <form
           className="mt-6 space-y-8"
@@ -348,6 +346,7 @@ export const SaveWebpageToVectorFsAction = () => {
             className="w-full"
             disabled={isPending}
             isLoading={isPending}
+            size="sm"
             type="submit"
           >
             Save
@@ -443,16 +442,16 @@ export const CreateTextFileAction = ({
 
   return (
     <>
-      <SheetHeader>
-        <SheetTitle className="flex flex-col items-start gap-1">
-          <FileType2Icon className="h-8 w-8" />
+      <DialogHeader>
+        <DialogTitle className="flex shrink-0 items-center gap-2">
+          <FileType2Icon className="h-5 w-5" />
           {mode === 'create' && t('vectorFs.actions.createTextFile')}
           {mode === 'edit' && t('vectorFs.actions.editTextFile')}
-        </SheetTitle>
-      </SheetHeader>
+        </DialogTitle>
+      </DialogHeader>
       <Form {...createTextFileForm}>
         <form
-          className="flex h-[calc(100vh-110px)] flex-col gap-8 pt-4"
+          className="flex flex-1 flex-col gap-8 pt-4"
           onSubmit={createTextFileForm.handleSubmit(onSubmit)}
         >
           <FormField
@@ -476,7 +475,10 @@ export const CreateTextFileAction = ({
               />
             )}
           />
-          <div className="flex flex-1 flex-col space-y-2 overflow-hidden">
+          <div
+            className="flex size-full flex-col space-y-2"
+            style={{ contain: 'strict' }}
+          >
             <p className="text-gray-80 text-xs font-semibold">Content</p>
             <ToolCodeEditor
               language="txt"
@@ -488,6 +490,7 @@ export const CreateTextFileAction = ({
             className="w-full"
             disabled={isPending || isRemovingItem}
             isLoading={isPending || isRemovingItem}
+            size="sm"
             type="submit"
           >
             {mode === 'create' && t('vectorFs.actions.createTextFile')}
