@@ -208,6 +208,7 @@ function ConversationChatFooter({
   const selectedTool = chatForm.watch('tool');
   const currentMessage = chatForm.watch('message');
   const currentFiles = chatForm.watch('files');
+  const currentAI = chatForm.watch('agent');
 
   const { data: chatConfig } = useGetChatConfig(
     {
@@ -316,14 +317,13 @@ function ConversationChatFooter({
   useHotkeys(
     ['mod+[', 'mod+]', 'ctrl+[', 'ctrl+]'],
     (event) => {
+      if (inboxId) return; // switch for only empty chat for now
       if (!llmProviders || !agents) return;
-
       const allAIs = [
         ...(agents ?? []).map((a) => a.name),
         ...(llmProviders ?? []).map((l) => l.id),
       ];
 
-      const currentAI = chatForm.getValues('agent');
       const currentIndex = allAIs.indexOf(currentAI ?? '');
       if (currentIndex === -1) return;
 
@@ -338,10 +338,7 @@ function ConversationChatFooter({
     },
     {
       enableOnFormTags: true,
-      enabled:
-        !!llmProviders?.length &&
-        !!agents?.length &&
-        !!chatForm.getValues('agent'),
+      enabled: !!llmProviders?.length && !!agents?.length && !!currentAI,
     },
   );
 
@@ -536,7 +533,7 @@ function ConversationChatFooter({
                           onValueChange={(value) => {
                             chatForm.setValue('agent', value);
                           }}
-                          value={chatForm.watch('agent') ?? ''}
+                          value={currentAI ?? ''}
                         />
                       )}
                       <FileSelectionActionBar
