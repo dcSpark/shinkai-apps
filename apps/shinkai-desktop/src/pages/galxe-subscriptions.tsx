@@ -63,7 +63,7 @@ export const GalxeSusbcriptions = () => {
 
   const filteredSubscriptions = subscriptions
     ?.map((subscription) => {
-      const matchingFolder = subscriptionFolder?.child_folders?.find(
+      const matchingFolder = subscriptionFolder?.find(
         (folder) =>
           folder.path.split('/')?.[2] ===
           subscription.shared_folder.replace(/^\/+/, ''),
@@ -78,8 +78,7 @@ export const GalxeSusbcriptions = () => {
     })
     .filter((item) => !!item);
 
-  const isUserSubscribedToKnowledge =
-    (subscriptionFolder?.child_folders ?? [])?.length > 0;
+  const isUserSubscribedToKnowledge = (subscriptionFolder ?? [])?.length > 0;
 
   const inboxesWithSubscriptions: Inbox[] = inboxes.filter(
     (inbox) =>

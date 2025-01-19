@@ -7,6 +7,7 @@ import {
   StrictRJSFSchema,
 } from '@rjsf/utils';
 
+import { formatText } from '../../../helpers/format-text';
 import { cn } from '../../../utils';
 
 export default function FieldTemplate<
@@ -69,7 +70,7 @@ export default function FieldTemplate<
             )}
             htmlFor={id}
           >
-            {label}
+            {formatText(label)}
             <span className="ml-1">{required ? '*' : null}</span>
           </label>
         )}

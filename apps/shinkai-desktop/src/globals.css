@@ -30,3 +30,13 @@ html {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
+.p-node-disabled {
+  pointer-events: none;
+  & .p-checkbox-box {
+    @apply !bg-gray-100;
+  }
+  & .p-icon.p-checkbox-icon {
+    @apply !pointer-events-none ;
+  }
+}

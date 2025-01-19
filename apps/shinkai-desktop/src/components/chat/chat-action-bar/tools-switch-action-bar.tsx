@@ -12,7 +12,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -30,7 +30,7 @@ interface ToolsSwitchActionBarProps {
   onCheckedChange: (checked: boolean) => void;
 }
 
-export function ToolsSwitchActionBar({
+function ToolsSwitchActionBarBase({
   disabled,
   checked,
   onCheckedChange,
@@ -64,7 +64,12 @@ export function ToolsSwitchActionBar({
   );
 }
 
-export function UpdateToolsSwitchActionBar() {
+export const ToolsSwitchActionBar = memo(
+  ToolsSwitchActionBarBase,
+  (prevProps, nextProps) => prevProps.checked === nextProps.checked,
+);
+
+export function UpdateToolsSwitchActionBarBase() {
   const auth = useAuth((state) => state.auth);
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
@@ -127,3 +132,4 @@ export function UpdateToolsSwitchActionBar() {
     />
   );
 }
+export const UpdateToolsSwitchActionBar = memo(UpdateToolsSwitchActionBarBase);

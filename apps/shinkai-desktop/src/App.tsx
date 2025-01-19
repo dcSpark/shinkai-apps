@@ -1,6 +1,6 @@
 import { I18nProvider } from '@shinkai_network/shinkai-i18n';
 import { QueryProvider } from '@shinkai_network/shinkai-node-state';
-import { Toaster } from '@shinkai_network/shinkai-ui';
+import { Toaster, TooltipProvider } from '@shinkai_network/shinkai-ui';
 import { info } from '@tauri-apps/plugin-log';
 import { useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -18,19 +18,21 @@ function App() {
   }, []);
   useSyncStorageSecondary();
   return (
-    <I18nProvider>
-      <ErrorBoundary FallbackComponent={FullPageErrorFallback}>
-        <AnalyticsProvider>
-          <QueryProvider>
-            <OAuthConnect />
-            <Router>
-              <AppRoutes />
-            </Router>
-            <Toaster />
-          </QueryProvider>
-        </AnalyticsProvider>
-      </ErrorBoundary>
-    </I18nProvider>
+    <TooltipProvider delayDuration={0}>
+      <I18nProvider>
+        <ErrorBoundary FallbackComponent={FullPageErrorFallback}>
+          <AnalyticsProvider>
+            <QueryProvider>
+              <OAuthConnect />
+              <Router>
+                <AppRoutes />
+              </Router>
+              <Toaster />
+            </QueryProvider>
+          </AnalyticsProvider>
+        </ErrorBoundary>
+      </I18nProvider>
+    </TooltipProvider>
   );
 }
 

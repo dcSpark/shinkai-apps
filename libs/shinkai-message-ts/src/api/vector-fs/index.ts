@@ -9,6 +9,8 @@ import {
   CreateFolderResponse,
   GetListDirectoryContentsRequest,
   GetListDirectoryContentsResponse,
+  GetSearchDirectoryContentsRequest,
+  GetSearchDirectoryContentsResponse,
   MoveFolderRequest,
   MoveFolderResponse,
   MoveFsItemRequest,
@@ -33,6 +35,22 @@ export const getListDirectoryContents = async (
     },
   );
   return response.data as GetListDirectoryContentsResponse;
+};
+
+export const getSearchDirectoryContents = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetSearchDirectoryContentsRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/search_files_by_name'),
+    {
+      params: payload,
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetSearchDirectoryContentsResponse;
 };
 
 export const createFolder = async (

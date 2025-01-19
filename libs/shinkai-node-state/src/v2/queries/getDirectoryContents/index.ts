@@ -6,9 +6,11 @@ export const getListDirectoryContents = async ({
   nodeAddress,
   path,
   token,
+  depth,
 }: GetVRPathSimplifiedInput) => {
   const response = await getListDirectoryContentsApi(nodeAddress, token, {
     path: path,
+    depth,
   });
 
   return response;

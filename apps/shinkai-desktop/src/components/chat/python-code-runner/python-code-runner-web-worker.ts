@@ -232,12 +232,12 @@ const fetchPage = (
   method: 'GET' | 'POST',
   body: any = null,
 ): string => {
-  console.log('fetchPage called with url:', url);
-  console.log('fetchPage called with headers:', headers);
-  console.log('fetchPage called with method:', method);
-  if (body) {
-    console.log('fetchPage called with body:', body);
-  }
+  // console.log('fetchPage called with url:', url);
+  // console.log('fetchPage called with headers:', headers);
+  // console.log('fetchPage called with method:', method);
+  // if (body) {
+  //   console.log('fetchPage called with body:', body);
+  // }
 
   const filteredHeaders: Record<string, string> = {};
   for (const [key, value] of Object.entries(headers.toJs())) {
@@ -285,8 +285,6 @@ const fetchPage = (
       sharedBuffer,
     });
 
-    console.log('Posted message to main thread, waiting for response...');
-
     const textDecoder = new TextDecoder();
     let result = '';
     let moreChunks = true;
@@ -297,8 +295,6 @@ const fetchPage = (
         // This loop will block the thread until syncArray[0] changes
       }
 
-      console.log('Polling done with status: ', syncArray[0]);
-
       if (syncArray[0] === -1) {
         const errorMessage = textDecoder.decode(dataArray);
         console.error('Error fetching page:', errorMessage);
@@ -308,8 +304,6 @@ const fetchPage = (
       // Read the current chunk
       const chunk = textDecoder.decode(dataArray).replace(/\0/g, '').trim();
       result += chunk;
-
-      console.log(`Received chunk of length: ${chunk.length}`);
 
       // Check if more chunks are needed
       if (syncArray[0] === 1) {
@@ -377,48 +371,10 @@ const initialize = async () => {
   console.timeEnd('initialize');
 };
 
-// Function to print contents of a directory
-function printDirectoryContents(dirPath: string) {
-  try {
-    const entries = pyodide.FS.readdir(dirPath);
-    const folders: Array<string> = [];
-    const files: Array<string> = [];
-
-    entries.forEach((entry: string) => {
-      if (entry === '.' || entry === '..') return;
-      const path = `${dirPath}/${entry}`;
-      const stat = pyodide.FS.stat(path);
-      if (pyodide.FS.isDir(stat.mode)) {
-        folders.push(entry);
-      } else if (pyodide.FS.isFile(stat.mode)) {
-        files.push(entry);
-      }
-    });
-
-    console.log(`Contents of ${dirPath}:`);
-    console.log('Folders:', folders);
-    console.log('Files:', files);
-  } catch (error) {
-    console.error(`Error reading ${dirPath} directory:`, error);
-  }
-}
-
 // Function to synchronize the filesystem to IndexedDB
 const syncFilesystem = async (save = false) => {
   return new Promise<void>((resolve, reject) => {
     pyodide.FS.syncfs(save, (err: any) => {
-      printDirectoryContents('/home/pyodide');
-
-      printDirectoryContents('/home/web_user');
-
-      // Print contents inside the /home directory
-      printDirectoryContents('/home');
-
-      printDirectoryContents('/new_mnt');
-
-      // Print contents inside the root directory
-      printDirectoryContents('/');
-
       if (err) {
         console.error('syncfs error:', err);
         reject(err);

@@ -1,5 +1,11 @@
-import { Sheet, SheetContent } from '@shinkai_network/shinkai-ui';
+import { DialogClose } from '@shinkai_network/shinkai-artifacts';
+import {
+  buttonVariants,
+  Dialog,
+  DialogContent,
+} from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { XIcon } from 'lucide-react';
 
 import { useVectorFsStore } from '../context/vector-fs-context';
 import { VectorFolderSelectionProvider } from './folder-selection-list';
@@ -33,9 +39,9 @@ const VectorFSDrawer = () => {
     (state) => state.setSelectedFolder,
   );
   const setSelectedFile = useVectorFsStore((state) => state.setSelectedFile);
-  console.log('activeDrawerMenuOption', activeDrawerMenuOption);
+
   return (
-    <Sheet
+    <Dialog
       onOpenChange={(open) => {
         if (!open) {
           setActiveDrawerMenuOption(null);
@@ -45,19 +51,38 @@ const VectorFSDrawer = () => {
       }}
       open={!!activeDrawerMenuOption}
     >
-      <SheetContent
+      <DialogContent
         className={cn(
-          activeDrawerMenuOption === VectorFsGlobalAction.CreateTextFile ||
-          activeDrawerMenuOption === VectorFsItemAction.Edit
-            ? 'max-w-[85%]'
-            : 'max-w-md',
+          'flex max-w-lg flex-col bg-gray-300',
+          activeDrawerMenuOption === VectorFsGlobalAction.NewFolder &&
+            'max-w-md',
+          (activeDrawerMenuOption === VectorFsGlobalAction.CreateTextFile ||
+            activeDrawerMenuOption === VectorFsItemAction.Edit) &&
+            'h-full max-h-[90vh] max-w-[85%]',
+          activeDrawerMenuOption === VectorFsGlobalAction.VectorFileDetails &&
+            'size-full max-h-[99vh] max-w-[99vw] bg-transparent p-1',
+          (activeDrawerMenuOption === VectorFsItemAction.Move ||
+            activeDrawerMenuOption === VectorFsItemAction.Copy ||
+            activeDrawerMenuOption === VectorFsFolderAction.Move ||
+            activeDrawerMenuOption === VectorFsFolderAction.Copy) &&
+            'max-w-xl',
         )}
       >
+        <DialogClose
+          className={cn(
+            buttonVariants({ variant: 'tertiary', size: 'icon' }),
+            'absolute right-3 top-3 p-1',
+            activeDrawerMenuOption === VectorFsGlobalAction.VectorFileDetails &&
+              'right-5 top-5',
+          )}
+        >
+          <XIcon className="size-4" />
+        </DialogClose>
         <VectorFolderSelectionProvider>
           <VectorFSDrawerContent selectedOption={activeDrawerMenuOption} />
         </VectorFolderSelectionProvider>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 };
 export enum VectorFsGlobalAction {

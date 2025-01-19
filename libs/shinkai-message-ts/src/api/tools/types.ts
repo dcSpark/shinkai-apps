@@ -21,6 +21,7 @@ export type ToolConfig = {
     key_name: string;
     key_value: string | null;
     required: boolean;
+    type: string | null;
   };
 };
 
@@ -162,18 +163,20 @@ export type PayInvoiceRequest = {
 export type PayInvoiceResponse = any;
 
 export type Prompt = {
+  rowid: number;
   name: string;
   prompt: string;
   is_system: boolean;
   is_enabled: boolean;
   version: string;
   is_favorite: boolean;
-  embedding?: string;
-  useTools?: boolean;
+  useTools?: boolean; // flag for prompt templates
 };
+export type CreatePrompt = Omit<Prompt, 'rowid'>;
+
 export type GetAllPromptsResponse = Prompt[];
 export type SearchPromptsResponse = Prompt[];
-export type CreatePromptRequest = Prompt;
+export type CreatePromptRequest = CreatePrompt;
 export type CreatePromptResponse = Prompt;
 export type UpdatePromptRequest = Prompt;
 export type DeletePromptRequest = {
@@ -232,6 +235,7 @@ export type SaveToolCodeRequest = {
   job_id_history?: string[];
   code: string;
   language: CodeLanguage;
+  assets: string[];
 };
 
 export type ToolMetadata = {
@@ -342,4 +346,14 @@ export type SetOAuthTokenRequest = {
 export type SetOAuthTokenResponse = {
   message: string;
   status: string;
+};
+export type EnableAllToolsResponse = {
+  [toolKey: string]: {
+    activated: boolean;
+  };
+};
+export type DisableAllToolsResponse = {
+  [toolKey: string]: {
+    activated: boolean;
+  };
 };

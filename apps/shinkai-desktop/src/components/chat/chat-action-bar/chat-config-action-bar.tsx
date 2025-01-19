@@ -33,7 +33,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Settings2 } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { UseFormReturn } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
@@ -257,7 +257,7 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
   );
 }
 
-export function UpdateChatConfigActionBar() {
+export function UpdateChatConfigActionBarBase() {
   const auth = useAuth((state) => state.auth);
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
@@ -368,8 +368,9 @@ export function UpdateChatConfigActionBar() {
                   <div className="flex items-center justify-end gap-2">
                     <PopoverClose asChild>
                       <Button
-                        className="h-9 min-w-[100px] gap-2 rounded-xl"
-                        size="sm"
+                        className="min-w-[100px]"
+                        rounded="lg"
+                        size="xs"
                         variant="outline"
                       >
                         <span>{t('common.cancel')}</span>
@@ -377,8 +378,9 @@ export function UpdateChatConfigActionBar() {
                     </PopoverClose>
                     <PopoverClose asChild>
                       <Button
-                        className="h-9 min-w-[100px] gap-2 rounded-xl"
-                        size="sm"
+                        className="min-w-[100px]"
+                        rounded="lg"
+                        size="xs"
                         type={'submit'}
                       >
                         <span>{t('common.save')}</span>
@@ -395,11 +397,16 @@ export function UpdateChatConfigActionBar() {
     </div>
   );
 }
+
+export const UpdateChatConfigActionBar = memo(UpdateChatConfigActionBarBase);
+
 export function CreateChatConfigActionBar({
   form,
 }: {
   form: UseFormReturn<ChatConfigFormSchemaType>;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center gap-2">
       <ToolsDisabledAlert isToolsDisabled={!form.watch('useTools')} />
@@ -428,6 +435,25 @@ export function CreateChatConfigActionBar({
                   // onSubmit={form.handleSubmit(onSubmit)}
                 >
                   <ChatConfigForm form={form} />
+                  <div className="flex items-center justify-end gap-2">
+                    <PopoverClose asChild>
+                      <Button
+                        className="h-9 min-w-[100px] gap-2 rounded-xl"
+                        onClick={() => {
+                          form.reset();
+                        }}
+                        size="sm"
+                        variant="outline"
+                      >
+                        <span>Reset to defaults</span>
+                      </Button>
+                    </PopoverClose>
+                    <PopoverClose asChild>
+                      <Button className="min-w-[100px]" rounded="lg" size="xs">
+                        <span>{t('common.save')}</span>
+                      </Button>
+                    </PopoverClose>
+                  </div>
                 </form>
               </Form>
             </PopoverContent>
@@ -475,7 +501,7 @@ const ToolsDisabledAlert = ({
         </TooltipTrigger>
         <TooltipPortal>
           <TooltipContent>
-            <p>Turn on Enable Tools in chat config to allow tool usage.</p>
+            <p>Turn on Enable Tools in chat settings to allow tool usage.</p>
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>

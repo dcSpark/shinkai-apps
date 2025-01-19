@@ -11,23 +11,20 @@ import {
   ChatMessageFormSchema,
   chatMessageFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
-import {
-  CreateJobFormSchema,
-  createJobFormSchema,
-} from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { useSendMessageToInbox } from '@shinkai_network/shinkai-node-state/lib/mutations/sendMesssageToInbox/useSendMessageToInbox';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mutations/stopGeneratingLLM/useStopGeneratingLLM';
+import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
-import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
 import {
   Button,
   ChatInputArea,
+  CommandShortcut,
   Form,
   FormControl,
   FormField,
@@ -47,12 +44,14 @@ import {
 import { formatText, getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import equal from 'fast-deep-equal';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Paperclip, X, XIcon } from 'lucide-react';
-import { useEffect, useMemo, useRef } from 'react';
+import { Loader2, Paperclip, X, XIcon } from 'lucide-react';
+import { memo, useCallback, useEffect, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -91,87 +90,19 @@ export type ChatConversationLocationState = {
   llmProviderId: string;
 };
 
-function ConversationEmptyFooter() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { inboxId: encodedInboxId = '' } = useParams();
-  const inboxId = decodeURIComponent(encodedInboxId);
-
-  const onSelectedKeysChange = useSetJobScope(
-    (state) => state.onSelectedKeysChange,
-  );
-
+const useSelectedFilesChat = ({ inboxId }: { inboxId?: string }) => {
   const selectedFileKeysRef = useSetJobScope(
     (state) => state.selectedFileKeysRef,
   );
   const selectedFolderKeysRef = useSetJobScope(
     (state) => state.selectedFolderKeysRef,
   );
-  const promptSelected = usePromptSelectionStore(
-    (state) => state.promptSelected,
+  const onSelectedKeysChange = useSetJobScope(
+    (state) => state.onSelectedKeysChange,
   );
 
-  const auth = useAuth((state) => state.auth);
-  const { captureAnalyticEvent } = useAnalytics();
-
   const location = useLocation();
-
   const locationState = location.state as ChatConversationLocationState;
-  const isAgentInbox = locationState?.agentName;
-  const defaulAgentId = useSettings((state) => state.defaultAgentId);
-
-  const chatForm = useForm<CreateJobFormSchema>({
-    resolver: zodResolver(createJobFormSchema),
-    defaultValues: {
-      message: '',
-      files: [],
-    },
-  });
-  const selectedTool = chatForm.watch('tool');
-
-  const chatConfigForm = useForm<ChatConfigFormSchemaType>({
-    resolver: zodResolver(chatConfigFormSchema),
-    defaultValues: {
-      stream: DEFAULT_CHAT_CONFIG.stream,
-      customPrompt: '',
-      temperature: DEFAULT_CHAT_CONFIG.temperature,
-      topP: DEFAULT_CHAT_CONFIG.top_p,
-      topK: DEFAULT_CHAT_CONFIG.top_k,
-      useTools: DEFAULT_CHAT_CONFIG.use_tools,
-    },
-  });
-
-  const { llmProviders } = useGetLLMProviders({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
-
-  useEffect(() => {
-    if (llmProviders?.length && !defaulAgentId) {
-      chatForm.setValue('agent', llmProviders?.[0].id);
-    } else {
-      chatForm.setValue('agent', defaulAgentId);
-    }
-  }, [llmProviders, chatForm, defaulAgentId]);
-
-  useEffect(() => {
-    if (!locationState?.llmProviderId) {
-      return;
-    }
-    const llmProvider = llmProviders.find(
-      (agent) => agent.id === locationState.llmProviderId,
-    );
-    if (llmProvider) {
-      chatForm.setValue('agent', llmProvider.id);
-    }
-  }, [chatForm, locationState, llmProviders]);
-
-  useEffect(() => {
-    if (!locationState?.agentName) {
-      return;
-    }
-    chatForm.setValue('agent', locationState.agentName);
-  }, [chatForm, locationState, llmProviders]);
 
   useEffect(() => {
     if (
@@ -214,11 +145,128 @@ function ConversationEmptyFooter() {
     selectedFolderKeysRef,
     onSelectedKeysChange,
   ]);
+  return {
+    selectedFileKeysRef,
+    selectedFolderKeysRef,
+    clearSelectedFiles: () => {
+      onSelectedKeysChange(null);
+      selectedFileKeysRef.clear();
+      selectedFolderKeysRef.clear();
+    },
+  };
+};
 
-  const currentMessage = useWatch({
-    control: chatForm.control,
-    name: 'message',
+const SUGGESTED_TOOLS_COUNT = 3;
+
+function ConversationChatFooter({
+  inboxId,
+  isLoadingMessage,
+}: {
+  inboxId: string;
+  isLoadingMessage: boolean;
+}) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const auth = useAuth((state) => state.auth);
+  const { captureAnalyticEvent } = useAnalytics();
+
+  const { selectedFileKeysRef, selectedFolderKeysRef, clearSelectedFiles } =
+    useSelectedFilesChat({
+      inboxId,
+    });
+
+  const promptSelected = usePromptSelectionStore(
+    (state) => state.promptSelected,
+  );
+
+  const location = useLocation();
+
+  const locationState = location.state as ChatConversationLocationState;
+
+  const chatForm = useForm<ChatMessageFormSchema>({
+    resolver: zodResolver(chatMessageFormSchema),
+    defaultValues: {
+      message: '',
+      files: [],
+      agent: '',
+    },
   });
+
+  const defaulAgentId = useSettings((state) => state.defaultAgentId);
+
+  useEffect(() => {
+    chatForm.reset();
+  }, [chatForm, inboxId]);
+
+  useEffect(() => {
+    if (!defaulAgentId || inboxId) return;
+    chatForm.setValue('agent', defaulAgentId);
+  }, [chatForm, defaulAgentId, inboxId]);
+
+  const selectedTool = chatForm.watch('tool');
+  const currentMessage = chatForm.watch('message');
+  const currentFiles = chatForm.watch('files');
+  const currentAI = chatForm.watch('agent');
+
+  const { data: chatConfig } = useGetChatConfig(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+    },
+    { enabled: !!inboxId },
+  );
+
+  const chatConfigForm = useForm<ChatConfigFormSchemaType>({
+    resolver: zodResolver(chatConfigFormSchema),
+    defaultValues: {
+      stream: chatConfig?.stream ?? DEFAULT_CHAT_CONFIG.stream,
+      customPrompt: chatConfig?.custom_prompt ?? '',
+      temperature: chatConfig?.temperature ?? DEFAULT_CHAT_CONFIG.temperature,
+      topP: chatConfig?.top_p ?? DEFAULT_CHAT_CONFIG.top_p,
+      topK: chatConfig?.top_k ?? DEFAULT_CHAT_CONFIG.top_k,
+      useTools: chatConfig?.use_tools ?? DEFAULT_CHAT_CONFIG.use_tools,
+    },
+  });
+
+  useEffect(() => {
+    if (chatConfig) {
+      chatConfigForm.reset({
+        stream: chatConfig.stream,
+        customPrompt: chatConfig.custom_prompt ?? '',
+        temperature: chatConfig.temperature,
+        topP: chatConfig.top_p,
+        topK: chatConfig.top_k,
+        useTools: chatConfig.use_tools,
+      });
+    }
+  }, [chatConfig, chatConfigForm]);
+
+  useEffect(() => {
+    if (!locationState?.llmProviderId) {
+      return;
+    }
+    chatForm.setValue('agent', locationState.llmProviderId);
+  }, [chatForm, locationState]);
+
+  useEffect(() => {
+    if (!locationState?.agentName) {
+      return;
+    }
+    chatForm.setValue('agent', locationState.agentName);
+  }, [chatForm, locationState]);
+
+  const currentInbox = useGetCurrentInbox(inboxId);
+
+  const isAgentInbox =
+    currentInbox?.agent?.type === 'Agent' || locationState?.agentName;
+
+  const hasProviderEnableStreaming = streamingSupportedModels.includes(
+    currentInbox?.agent?.model.split(':')?.[0] as Models,
+  );
+
   const debounceMessage = useDebounce(currentMessage, 500);
 
   const { data: searchToolList, isSuccess: isSearchToolListSuccess } =
@@ -230,9 +278,79 @@ function ConversationEmptyFooter() {
       },
       {
         enabled: !!debounceMessage && !!currentMessage && !selectedTool,
-        select: (data) => data.slice(0, 3),
+        select: (data) => data.slice(0, SUGGESTED_TOOLS_COUNT),
       },
     );
+
+  // for suggested tools
+  useHotkeys(
+    ['mod+1', 'ctrl+1', 'mod+2', 'ctrl+2', 'mod+3', 'ctrl+3'],
+    (event) => {
+      if (!searchToolList?.length) return;
+
+      const toolNumber = parseInt(event.key);
+      if (toolNumber < 1 || toolNumber > SUGGESTED_TOOLS_COUNT) return;
+      const selectedTool = searchToolList[toolNumber - 1];
+      chatForm.setValue('tool', {
+        key: selectedTool.tool_router_key,
+        name: selectedTool.name,
+        description: selectedTool.description,
+        args: Object.keys(selectedTool.input_args.properties ?? {}),
+      });
+    },
+    {
+      enabled: !!searchToolList?.length && !!currentMessage && !selectedTool,
+      enableOnFormTags: true,
+    },
+  );
+
+  const { data: llmProviders } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+  const { data: agents } = useGetAgents({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  // For switching AIs
+  useHotkeys(
+    ['mod+[', 'mod+]', 'ctrl+[', 'ctrl+]'],
+    (event) => {
+      if (inboxId) return; // switch for only empty chat for now
+      if (!llmProviders || !agents) return;
+      const allAIs = [
+        ...(agents ?? []).map((a) => a.name),
+        ...(llmProviders ?? []).map((l) => l.id),
+      ];
+
+      const currentIndex = allAIs.indexOf(currentAI ?? '');
+      if (currentIndex === -1) return;
+
+      let newIndex;
+      if (event.key === '[') {
+        newIndex = currentIndex === 0 ? allAIs.length - 1 : currentIndex - 1;
+      } else {
+        newIndex = currentIndex === allAIs.length - 1 ? 0 : currentIndex + 1;
+      }
+
+      chatForm.setValue('agent', allAIs[newIndex]);
+    },
+    {
+      enableOnFormTags: true,
+      enabled: !!llmProviders?.length && !!agents?.length && !!currentAI,
+    },
+  );
+
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const previousFiles = chatForm.getValues('files') ?? [];
+      const newFiles = [...previousFiles, ...acceptedFiles];
+      chatForm.setValue('files', newFiles, { shouldValidate: true });
+      textareaRef.current?.focus();
+    },
+    [chatForm],
+  );
 
   const {
     getRootProps: getRootFileProps,
@@ -243,17 +361,9 @@ function ConversationEmptyFooter() {
     noClick: true,
     noKeyboard: true,
     multiple: true,
-    onDrop: (acceptedFiles) => {
-      const previousFiles = chatForm.getValues('files') ?? [];
-      const newFiles = [...previousFiles, ...acceptedFiles];
-      chatForm.setValue('files', newFiles, { shouldValidate: true });
-    },
+    onDrop,
   });
 
-  const currentFiles = useWatch({
-    control: chatForm.control,
-    name: 'files',
-  });
   const { mutateAsync: createJob, isPending } = useCreateJob({
     onError: (error) => {
       toast.error('Failed to send message', {
@@ -284,348 +394,6 @@ function ConversationEmptyFooter() {
       }
     },
   });
-
-  useEffect(() => {
-    chatForm.setValue('message', promptSelected?.prompt ?? '');
-  }, [chatForm, promptSelected]);
-
-  useEffect(() => {
-    chatConfigForm.setValue(
-      'useTools',
-      promptSelected?.useTools ? true : DEFAULT_CHAT_CONFIG.use_tools,
-    );
-  }, [chatConfigForm, chatForm, promptSelected]);
-
-  const onSubmit = async (data: CreateJobFormSchema) => {
-    if (!auth || data.message.trim() === '') return;
-    const selectedVRFiles =
-      selectedFileKeysRef.size > 0
-        ? Array.from(selectedFileKeysRef.values())
-        : [];
-    const selectedVRFolders =
-      selectedFolderKeysRef.size > 0
-        ? Array.from(selectedFolderKeysRef.values())
-        : [];
-
-    await createJob({
-      nodeAddress: auth.node_address,
-      token: auth.api_v2_key,
-      llmProvider: data.agent,
-      content: data.message,
-      files: currentFiles,
-      isHidden: false,
-      toolKey: data.tool?.key,
-      selectedVRFiles,
-      selectedVRFolders,
-      ...(!isAgentInbox && {
-        chatConfig: {
-          stream: chatConfigForm.getValues('stream'),
-          custom_prompt: chatConfigForm.getValues('customPrompt') ?? '',
-          temperature: chatConfigForm.getValues('temperature'),
-          top_p: chatConfigForm.getValues('topP'),
-          top_k: chatConfigForm.getValues('topK'),
-          use_tools: chatConfigForm.getValues('useTools'),
-        },
-      }),
-    });
-
-    chatForm.reset();
-    selectedFileKeysRef.clear();
-    selectedFolderKeysRef.clear();
-    onSelectedKeysChange(null);
-  };
-
-  return (
-    <div
-      {...getRootFileProps({
-        className: 'relative shrink-0',
-      })}
-    >
-      <div className="flex flex-col justify-start">
-        <div className="relative flex items-start gap-2 p-2 pb-3">
-          <Form {...chatForm}>
-            <FormField
-              control={chatForm.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem className="w-full space-y-0">
-                  <FormLabel className="sr-only">
-                    {t('chat.enterMessage')}
-                  </FormLabel>
-                  <FormControl>
-                    <div className="">
-                      <div className="flex items-center justify-between gap-4 px-1 pb-2 pt-1">
-                        <div className="flex items-center gap-2.5">
-                          <AIModelSelector
-                            onValueChange={(value) => {
-                              chatForm.setValue('agent', value);
-                            }}
-                            value={chatForm.watch('agent')}
-                          />
-                          <FileSelectionActionBar
-                            inputProps={{
-                              ...chatForm.register('files'),
-                              ...getInputFileProps(),
-                            }}
-                            onClick={openFilePicker}
-                          />
-                          <PromptSelectionActionBar />
-                          {!isAgentInbox && (
-                            <ToolsSwitchActionBar
-                              checked={chatConfigForm.watch('useTools')}
-                              onCheckedChange={(checked) => {
-                                chatConfigForm.setValue('useTools', checked);
-                              }}
-                            />
-                          )}
-                        </div>
-                        {!isAgentInbox && (
-                          <CreateChatConfigActionBar form={chatConfigForm} />
-                        )}
-                      </div>
-
-                      <ChatInputArea
-                        autoFocus
-                        bottomAddons={
-                          <div className="relative z-50 flex items-end gap-3 self-end">
-                            {!debounceMessage && (
-                              <span className="pb-1 text-xs font-light text-gray-100">
-                                <span className="font-medium">Enter</span> to
-                                send
-                              </span>
-                            )}
-                            <Button
-                              className={cn(
-                                'hover:bg-app-gradient h-[40px] w-[40px] cursor-pointer rounded-xl bg-gray-500 p-3 transition-colors',
-                                'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
-                              )}
-                              disabled={isPending || !chatForm.watch('message')}
-                              onClick={chatForm.handleSubmit(onSubmit)}
-                              size="icon"
-                              variant="tertiary"
-                            >
-                              <SendIcon className="h-full w-full" />
-                              <span className="sr-only">
-                                {t('chat.sendMessage')}
-                              </span>
-                            </Button>
-                          </div>
-                        }
-                        disabled={isPending}
-                        onChange={field.onChange}
-                        onSubmit={chatForm.handleSubmit(onSubmit)}
-                        topAddons={
-                          <>
-                            {isDragActive && <DropFileActive />}
-                            {selectedTool && (
-                              <SelectedToolChat
-                                args={selectedTool.args ?? []}
-                                description={selectedTool.description}
-                                name={formatText(selectedTool.name)}
-                                remove={() => {
-                                  chatForm.setValue('tool', undefined);
-                                }}
-                              />
-                            )}
-                            {!isDragActive &&
-                              currentFiles &&
-                              currentFiles.length > 0 && (
-                                <FileList
-                                  currentFiles={currentFiles}
-                                  onRemoveFile={(index) => {
-                                    const newFiles = [...currentFiles];
-                                    newFiles.splice(index, 1);
-                                    chatForm.setValue('files', newFiles, {
-                                      shouldValidate: true,
-                                    });
-                                  }}
-                                />
-                              )}
-                          </>
-                        }
-                        value={field.value}
-                      />
-                      <motion.div
-                        animate={{ opacity: 1 }}
-                        className="absolute inset-x-3 bottom-2 flex items-center justify-between gap-2"
-                        exit={{ opacity: 0 }}
-                        initial={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <div className="flex gap-2">
-                          {!!debounceMessage &&
-                            !selectedTool &&
-                            isSearchToolListSuccess &&
-                            searchToolList?.length > 0 &&
-                            searchToolList?.map((tool) => (
-                              <Tooltip key={tool.tool_router_key}>
-                                <TooltipTrigger asChild>
-                                  <motion.button
-                                    animate={{ opacity: 1, x: 0 }}
-                                    className={cn(
-                                      'bg-gray-375 hover:bg-gray-450 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
-                                    )}
-                                    exit={{ opacity: 0, x: -10 }}
-                                    initial={{ opacity: 0, x: -10 }}
-                                    key={tool.tool_router_key}
-                                    onClick={() => {
-                                      chatForm.setValue('tool', {
-                                        key: tool.tool_router_key,
-                                        name: tool.name,
-                                        description: tool.description,
-                                        args: Object.keys(
-                                          tool.input_args.properties ?? {},
-                                        ),
-                                      });
-                                    }}
-                                    type="button"
-                                  >
-                                    <ToolsIcon className="h-3 w-3" />
-                                    {formatText(tool.name)}
-                                  </motion.button>
-                                </TooltipTrigger>
-                                <TooltipPortal>
-                                  <TooltipContent
-                                    align="start"
-                                    className="max-w-[500px]"
-                                    side="top"
-                                  >
-                                    {tool.description}
-                                  </TooltipContent>
-                                </TooltipPortal>
-                              </Tooltip>
-                            ))}
-                          {!debounceMessage && (
-                            <span className="text-xs font-light text-gray-100">
-                              <span className="font-medium">Shift + Enter</span>{' '}
-                              for a new line
-                            </span>
-                          )}
-                        </div>
-                      </motion.div>
-                    </div>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </Form>
-        </div>
-      </div>
-    </div>
-  );
-}
-function ConversationChatFooter({ inboxId }: { inboxId: string }) {
-  const { t } = useTranslation();
-
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const auth = useAuth((state) => state.auth);
-  const { captureAnalyticEvent } = useAnalytics();
-
-  const chatForm = useForm<ChatMessageFormSchema>({
-    resolver: zodResolver(chatMessageFormSchema),
-    defaultValues: {
-      message: '',
-      files: [],
-    },
-  });
-
-  const { data: chatConfig } = useGetChatConfig(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      jobId: extractJobIdFromInbox(inboxId),
-    },
-    { enabled: !!inboxId },
-  );
-
-  const chatConfigForm = useForm<ChatConfigFormSchemaType>({
-    resolver: zodResolver(chatConfigFormSchema),
-    defaultValues: {
-      stream: chatConfig?.stream ?? DEFAULT_CHAT_CONFIG.stream,
-      customPrompt: chatConfig?.custom_prompt ?? '',
-      temperature: chatConfig?.temperature ?? DEFAULT_CHAT_CONFIG.temperature,
-      topP: chatConfig?.top_p ?? DEFAULT_CHAT_CONFIG.top_p,
-      topK: chatConfig?.top_k ?? DEFAULT_CHAT_CONFIG.top_k,
-      useTools: chatConfig?.use_tools ?? DEFAULT_CHAT_CONFIG.use_tools,
-    },
-  });
-
-  useEffect(() => {
-    if (chatConfig) {
-      chatConfigForm.reset({
-        stream: chatConfig.stream,
-        customPrompt: chatConfig.custom_prompt ?? '',
-        temperature: chatConfig.temperature,
-        topP: chatConfig.top_p,
-        topK: chatConfig.top_k,
-        useTools: chatConfig.use_tools,
-      });
-    }
-  }, [chatConfig, chatConfigForm]);
-
-  const selectedTool = chatForm.watch('tool');
-
-  const promptSelected = usePromptSelectionStore(
-    (state) => state.promptSelected,
-  );
-
-  const currentInbox = useGetCurrentInbox();
-  const isAgentInbox = currentInbox?.agent?.type === 'Agent';
-
-  const hasProviderEnableStreaming = streamingSupportedModels.includes(
-    currentInbox?.agent?.model.split(':')?.[0] as Models,
-  );
-
-  const { data } = useGetChatConversationWithPagination({
-    token: auth?.api_v2_key ?? '',
-    nodeAddress: auth?.node_address ?? '',
-    inboxId: inboxId as string,
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    profile: auth?.profile ?? '',
-    refetchIntervalEnabled:
-      !hasProviderEnableStreaming || chatConfig?.stream === false,
-  });
-
-  const currentMessage = useWatch({
-    control: chatForm.control,
-    name: 'message',
-  });
-  const debounceMessage = useDebounce(currentMessage, 500);
-
-  const { data: searchToolList, isSuccess: isSearchToolListSuccess } =
-    useGetSearchTools(
-      {
-        nodeAddress: auth?.node_address ?? '',
-        token: auth?.api_v2_key ?? '',
-        search: debounceMessage,
-      },
-      {
-        enabled: !!debounceMessage && !!currentMessage && !selectedTool,
-        select: (data) => data.slice(0, 3),
-      },
-    );
-
-  const {
-    getRootProps: getRootFileProps,
-    getInputProps: getInputFileProps,
-    isDragActive,
-    open: openFilePicker,
-  } = useDropzone({
-    noClick: true,
-    noKeyboard: true,
-    multiple: true,
-    onDrop: (acceptedFiles) => {
-      const previousFiles = chatForm.getValues('files') ?? [];
-      const newFiles = [...previousFiles, ...acceptedFiles];
-      chatForm.setValue('files', newFiles, { shouldValidate: true });
-    },
-  });
-
-  const currentFiles = useWatch({
-    control: chatForm.control,
-    name: 'files',
-  });
-
   const { mutateAsync: sendMessageToInbox } = useSendMessageToInbox();
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
     onSuccess: (_, variables) => {
@@ -644,18 +412,45 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
     },
   });
 
-  const isLoadingMessage = useMemo(() => {
-    const lastMessage = data?.pages?.at(-1)?.at(-1);
-    return (
-      !!inboxId &&
-      lastMessage?.role === 'assistant' &&
-      lastMessage?.status.type === 'running'
-    );
-  }, [data?.pages, inboxId]);
-
   const onSubmit = async (data: ChatMessageFormSchema) => {
     if (!auth || data.message.trim() === '') return;
+    if (!inboxId && data.agent) {
+      const selectedVRFiles =
+        selectedFileKeysRef.size > 0
+          ? Array.from(selectedFileKeysRef.values())
+          : [];
+      const selectedVRFolders =
+        selectedFolderKeysRef.size > 0
+          ? Array.from(selectedFolderKeysRef.values())
+          : [];
 
+      await createJob({
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
+        llmProvider: data.agent,
+        content: data.message,
+        files: currentFiles,
+        isHidden: false,
+        toolKey: data.tool?.key,
+        selectedVRFiles,
+        selectedVRFolders,
+        ...(!isAgentInbox && {
+          chatConfig: {
+            stream: chatConfigForm.getValues('stream'),
+            custom_prompt: chatConfigForm.getValues('customPrompt') ?? '',
+            temperature: chatConfigForm.getValues('temperature'),
+            top_p: chatConfigForm.getValues('topP'),
+            top_k: chatConfigForm.getValues('topK'),
+            use_tools: chatConfigForm.getValues('useTools'),
+          },
+        }),
+      });
+
+      chatForm.reset();
+      clearSelectedFiles();
+
+      return;
+    }
     if (isJobInbox(inboxId)) {
       const jobId = extractJobIdFromInbox(inboxId);
       await sendMessageToJob({
@@ -688,201 +483,254 @@ function ConversationChatFooter({ inboxId }: { inboxId: string }) {
   };
 
   useEffect(() => {
+    if (inboxId) return;
+    chatConfigForm.setValue(
+      'useTools',
+      promptSelected?.useTools ? true : DEFAULT_CHAT_CONFIG.use_tools,
+    );
+  }, [chatConfigForm, chatForm, promptSelected, inboxId]);
+
+  useEffect(() => {
     if (promptSelected) {
       chatForm.setValue('message', promptSelected.prompt);
-      setTimeout(() => {
-        if (!textareaRef.current) return;
-        textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
-        textareaRef.current.focus();
-      }, 10);
     }
   }, [chatForm, promptSelected]);
 
   useEffect(() => {
-    chatForm.reset();
-  }, [chatForm, inboxId]);
+    if (!textareaRef.current) return;
+    textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
+    textareaRef.current.focus();
+  }, [currentMessage]);
 
   return (
     <div
       {...getRootFileProps({
-        className: 'relative shrink-0',
+        className: 'relative shrink-0 p-2 pb-3',
       })}
     >
-      <div className="flex flex-col justify-start">
-        <div className="relative flex items-start gap-2 p-2 pb-3">
-          <StopGeneratingButton
-            shouldStopGenerating={
-              hasProviderEnableStreaming && isLoadingMessage
-            }
-          />
-          <Form {...chatForm}>
-            <FormField
-              control={chatForm.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem className="w-full space-y-0 overflow-hidden">
-                  <FormLabel className="sr-only">
-                    {t('chat.enterMessage')}
-                  </FormLabel>
-                  <FormControl>
-                    <div className="">
-                      <div className="flex items-center justify-between gap-4 px-1 pb-2 pt-1">
-                        <div className="flex items-center gap-2.5">
-                          <AiUpdateSelectionActionBar />
-                          <FileSelectionActionBar
-                            inputProps={{
-                              ...chatForm.register('files'),
-                              ...getInputFileProps(),
-                            }}
-                            onClick={openFilePicker}
-                          />
-                          <PromptSelectionActionBar />
-                          <UpdateToolsSwitchActionBar />
-                        </div>
-
-                        {!isAgentInbox && <UpdateChatConfigActionBar />}
-                      </div>
-
-                      <ChatInputArea
-                        autoFocus
-                        bottomAddons={
-                          <div className="relative z-50 flex items-end gap-3 self-end">
-                            {!debounceMessage && (
-                              <span className="pb-1 text-xs font-light text-gray-100">
-                                <span className="font-medium">Enter</span> to
-                                send
-                              </span>
-                            )}
-                            <Button
-                              className={cn(
-                                'hover:bg-app-gradient h-[40px] w-[40px] cursor-pointer rounded-xl bg-gray-500 p-3 transition-colors',
-                                'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
-                              )}
-                              disabled={
-                                isLoadingMessage || !chatForm.watch('message')
-                              }
-                              onClick={chatForm.handleSubmit(onSubmit)}
-                              size="icon"
-                              variant="tertiary"
-                            >
-                              <SendIcon className="h-full w-full" />
-                              <span className="sr-only">
-                                {t('chat.sendMessage')}
-                              </span>
-                            </Button>
-                          </div>
-                        }
-                        disabled={isLoadingMessage}
-                        onChange={field.onChange}
-                        onSubmit={chatForm.handleSubmit(onSubmit)}
-                        ref={textareaRef}
-                        topAddons={
-                          <>
-                            {isDragActive && <DropFileActive />}
-                            {selectedTool && (
-                              <SelectedToolChat
-                                args={selectedTool.args ?? []}
-                                description={selectedTool.description}
-                                name={formatText(selectedTool.name)}
-                                remove={() => {
-                                  chatForm.setValue('tool', undefined);
-                                }}
-                              />
-                            )}
-                            {!isDragActive &&
-                              currentFiles &&
-                              currentFiles.length > 0 && (
-                                <FileList
-                                  currentFiles={currentFiles}
-                                  onRemoveFile={(index) => {
-                                    const newFiles = [...currentFiles];
-                                    newFiles.splice(index, 1);
-                                    chatForm.setValue('files', newFiles, {
-                                      shouldValidate: true,
-                                    });
-                                  }}
-                                />
-                              )}
-                          </>
-                        }
-                        value={field.value}
+      <StopGeneratingButton
+        shouldStopGenerating={
+          hasProviderEnableStreaming && isLoadingMessage && !!inboxId
+        }
+      />
+      <Form {...chatForm}>
+        <FormField
+          control={chatForm.control}
+          name="message"
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel className="sr-only">
+                {t('chat.enterMessage')}
+              </FormLabel>
+              <FormControl>
+                <div className="">
+                  <div className="flex items-center justify-between gap-4 px-1 pb-2 pt-1">
+                    <div className="flex items-center gap-2.5">
+                      {inboxId ? (
+                        <AiUpdateSelectionActionBar />
+                      ) : (
+                        <AIModelSelector
+                          onValueChange={(value) => {
+                            chatForm.setValue('agent', value);
+                          }}
+                          value={currentAI ?? ''}
+                        />
+                      )}
+                      <FileSelectionActionBar
+                        inputProps={{
+                          ...chatForm.register('files'),
+                          ...getInputFileProps(),
+                        }}
+                        onClick={openFilePicker}
                       />
-                      <motion.div
-                        animate={{ opacity: 1 }}
-                        className="absolute inset-x-3 bottom-2 flex items-center justify-between gap-2"
-                        exit={{ opacity: 0 }}
-                        initial={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <div className="flex gap-2">
-                          {!!debounceMessage &&
-                            !selectedTool &&
-                            isSearchToolListSuccess &&
-                            searchToolList?.length > 0 &&
-                            searchToolList?.map((tool) => (
-                              <Tooltip key={tool.tool_router_key}>
-                                <TooltipTrigger asChild>
-                                  <motion.button
-                                    animate={{ opacity: 1, x: 0 }}
-                                    className={cn(
-                                      'bg-gray-375 hover:bg-gray-450 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
-                                    )}
-                                    exit={{ opacity: 0, x: -10 }}
-                                    initial={{ opacity: 0, x: -10 }}
-                                    key={tool.tool_router_key}
-                                    onClick={() => {
-                                      chatForm.setValue('tool', {
-                                        key: tool.tool_router_key,
-                                        name: tool.name,
-                                        description: tool.description,
-                                        args: Object.keys(
-                                          tool.input_args.properties ?? {},
-                                        ),
-                                      });
-                                    }}
-                                    type="button"
-                                  >
-                                    <ToolsIcon className="h-3 w-3" />
-                                    {formatText(tool.name)}
-                                  </motion.button>
-                                </TooltipTrigger>
-                                <TooltipPortal>
-                                  <TooltipContent align="start" side="top">
-                                    {tool.description}
-                                  </TooltipContent>
-                                </TooltipPortal>
-                              </Tooltip>
-                            ))}
-                          {!debounceMessage && (
-                            <span className="text-xs font-light text-gray-100">
-                              <span className="font-medium">Shift + Enter</span>{' '}
-                              for a new line
-                            </span>
-                          )}
-                        </div>
-                      </motion.div>
+                      <PromptSelectionActionBar />
+                      {isAgentInbox ? null : inboxId ? (
+                        <UpdateToolsSwitchActionBar />
+                      ) : (
+                        <ToolsSwitchActionBar
+                          checked={chatConfigForm.watch('useTools')}
+                          onCheckedChange={(checked) => {
+                            chatConfigForm.setValue('useTools', checked);
+                          }}
+                        />
+                      )}
                     </div>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </Form>
-        </div>
-      </div>
+
+                    {isAgentInbox ? null : inboxId ? (
+                      <UpdateChatConfigActionBar />
+                    ) : (
+                      <CreateChatConfigActionBar form={chatConfigForm} />
+                    )}
+                  </div>
+
+                  <ChatInputArea
+                    autoFocus
+                    bottomAddons={
+                      <div className="relative z-50 flex items-end gap-3 self-end">
+                        {!debounceMessage && (
+                          <span className="pb-1 text-xs font-light text-gray-100">
+                            <span className="font-medium">Enter</span> to send
+                          </span>
+                        )}
+                        <Button
+                          className={cn(
+                            'hover:bg-app-gradient h-[40px] w-[40px] cursor-pointer rounded-xl bg-gray-500 p-3 transition-colors',
+                            'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
+                          )}
+                          disabled={isLoadingMessage || !currentMessage}
+                          onClick={chatForm.handleSubmit(onSubmit)}
+                          size="icon"
+                          variant="tertiary"
+                        >
+                          <SendIcon className="h-full w-full" />
+                          <span className="sr-only">
+                            {t('chat.sendMessage')}
+                          </span>
+                        </Button>
+                      </div>
+                    }
+                    disabled={isLoadingMessage || isPending}
+                    onChange={field.onChange}
+                    onKeyDown={(e) => {
+                      if (
+                        (e.ctrlKey || e.metaKey) &&
+                        e.key === 'z' &&
+                        promptSelected?.prompt === chatForm.watch('message')
+                      ) {
+                        chatForm.setValue('message', '');
+                      }
+                    }}
+                    onPaste={(event) => {
+                      const items = event.clipboardData?.items;
+                      if (items) {
+                        for (let i = 0; i < items.length; i++) {
+                          if (items[i].type.indexOf('image') !== -1) {
+                            const file = items[i].getAsFile();
+                            if (file) {
+                              onDrop([file]);
+                            }
+                          }
+                        }
+                      }
+                    }}
+                    onSubmit={chatForm.handleSubmit(onSubmit)}
+                    ref={textareaRef}
+                    topAddons={
+                      <>
+                        {isDragActive && <DropFileActive />}
+                        {selectedTool && (
+                          <SelectedToolChat
+                            args={selectedTool.args ?? []}
+                            description={selectedTool.description}
+                            name={formatText(selectedTool.name)}
+                            remove={() => {
+                              chatForm.setValue('tool', undefined);
+                            }}
+                          />
+                        )}
+                        {!isDragActive &&
+                          currentFiles &&
+                          currentFiles.length > 0 && (
+                            <FileList
+                              currentFiles={currentFiles}
+                              isPending={isPending}
+                              onRemoveFile={(index) => {
+                                const newFiles = [...currentFiles];
+                                newFiles.splice(index, 1);
+                                chatForm.setValue('files', newFiles, {
+                                  shouldValidate: true,
+                                });
+                              }}
+                            />
+                          )}
+                      </>
+                    }
+                    value={field.value}
+                  />
+                  <motion.div
+                    animate={{ opacity: 1 }}
+                    className="absolute inset-x-3 bottom-2 flex items-center justify-between gap-2"
+                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="flex gap-2">
+                      {!!debounceMessage &&
+                        !selectedTool &&
+                        isSearchToolListSuccess &&
+                        searchToolList?.length > 0 &&
+                        searchToolList?.map((tool, idx) => (
+                          <Tooltip key={tool.tool_router_key}>
+                            <TooltipTrigger asChild>
+                              <motion.button
+                                animate={{ opacity: 1, x: 0 }}
+                                className={cn(
+                                  'bg-gray-375 hover:bg-gray-450 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
+                                )}
+                                exit={{ opacity: 0, x: -10 }}
+                                initial={{ opacity: 0, x: -10 }}
+                                key={tool.tool_router_key}
+                                onClick={() => {
+                                  chatForm.setValue('tool', {
+                                    key: tool.tool_router_key,
+                                    name: tool.name,
+                                    description: tool.description,
+                                    args: Object.keys(
+                                      tool.input_args.properties ?? {},
+                                    ),
+                                  });
+                                  chatConfigForm.setValue('useTools', true);
+                                }}
+                                type="button"
+                              >
+                                <ToolsIcon className="h-3 w-3" />
+                                {formatText(tool.name)}
+                              </motion.button>
+                            </TooltipTrigger>
+                            <TooltipPortal>
+                              <TooltipContent
+                                align="start"
+                                className="max-w-[500px]"
+                                side="top"
+                              >
+                                {tool.description}
+
+                                <br />
+                                <div className="flex items-center justify-end gap-2 text-xs text-gray-100">
+                                  <CommandShortcut>
+                                    ⌘ + {idx + 1}
+                                  </CommandShortcut>
+                                </div>
+                              </TooltipContent>
+                            </TooltipPortal>
+                          </Tooltip>
+                        ))}
+                      {!debounceMessage && (
+                        <span className="text-xs font-light text-gray-100">
+                          <span className="font-medium">Shift + Enter</span> for
+                          a new line
+                        </span>
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      </Form>
     </div>
   );
 }
 
-export default function ConversationFooter() {
-  const { inboxId: encodedInboxId = '' } = useParams();
-  const inboxId = decodeURIComponent(encodedInboxId);
-  if (!inboxId) {
-    return <ConversationEmptyFooter />;
-  }
-  return <ConversationChatFooter inboxId={inboxId} />;
-}
+export default memo(
+  ConversationChatFooter,
+  (prev, next) =>
+    prev.inboxId === next.inboxId &&
+    prev.isLoadingMessage === next.isLoadingMessage,
+);
 
-function StopGeneratingButton({
+function StopGeneratingButtonBase({
   shouldStopGenerating,
 }: {
   shouldStopGenerating: boolean;
@@ -921,13 +769,19 @@ function StopGeneratingButton({
     </AnimatePresence>
   );
 }
+const StopGeneratingButton = memo(StopGeneratingButtonBase);
 
 type FileListProps = {
   currentFiles: File[];
   onRemoveFile: (index: number) => void;
+  isPending?: boolean;
 };
 
-const FileList = ({ currentFiles, onRemoveFile }: FileListProps) => {
+const FileListBase = ({
+  currentFiles,
+  onRemoveFile,
+  isPending,
+}: FileListProps) => {
   const size = partial({ standard: 'jedec' });
 
   return (
@@ -939,7 +793,10 @@ const FileList = ({ currentFiles, onRemoveFile }: FileListProps) => {
             key={index}
           >
             <div className="flex w-6 shrink-0 items-center justify-center">
-              {getFileExt(file.name) && fileIconMap[getFileExt(file.name)] ? (
+              {isPending ? (
+                <Loader2 className="h-5 w-5 animate-spin text-gray-100" />
+              ) : getFileExt(file.name) &&
+                fileIconMap[getFileExt(file.name)] ? (
                 <FileTypeIcon
                   className="text-gray-80 h-[18px] w-[18px] shrink-0"
                   type={getFileExt(file.name)}
@@ -972,6 +829,11 @@ const FileList = ({ currentFiles, onRemoveFile }: FileListProps) => {
     </div>
   );
 };
+const FileList = memo(FileListBase, (prevProps, nextProps) => {
+  if (!equal(prevProps.currentFiles, nextProps.currentFiles)) return false;
+  if (prevProps.isPending !== nextProps.isPending) return false;
+  return true;
+});
 
 const DropFileActive = () => (
   <motion.div
@@ -1034,7 +896,7 @@ const SelectedToolChat = ({
             side="top"
             sideOffset={10}
           >
-            wellelele
+            <span className="text-xs text-gray-100">{description}</span>
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>

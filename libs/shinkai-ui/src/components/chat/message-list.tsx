@@ -1,13 +1,11 @@
-import {
-  Artifact,
-  ChatConversationInfiniteData,
-} from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import {
   FetchPreviousPageOptions,
   InfiniteQueryObserverResult,
 } from '@tanstack/react-query';
 import React, {
   Fragment,
+  memo,
   RefObject,
   useCallback,
   useEffect,
@@ -66,9 +64,6 @@ export const MessageList = ({
   regenerateFirstMessage,
   disabledRetryAndEdit,
   messageExtra,
-  setArtifact,
-  artifacts,
-  artifact,
   hidePythonExecution,
 }: {
   noMoreMessageLabel: string;
@@ -89,9 +84,6 @@ export const MessageList = ({
   lastMessageContent?: React.ReactNode;
   disabledRetryAndEdit?: boolean;
   messageExtra?: React.ReactNode;
-  artifacts?: Artifact[];
-  setArtifact?: (artifact: Artifact | null) => void;
-  artifact?: Artifact;
   hidePythonExecution?: boolean;
 }) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -304,8 +296,6 @@ export const MessageList = ({
 
                         return (
                           <Message
-                            artifact={artifact}
-                            artifacts={artifacts}
                             disabledEdit={disabledRetryAndEditValue}
                             handleEditMessage={handleEditMessage}
                             handleRetryMessage={
@@ -317,7 +307,6 @@ export const MessageList = ({
                             key={`${message.messageId}::${messageIndex}`}
                             message={message}
                             messageId={message.messageId}
-                            setArtifact={setArtifact}
                           />
                         );
                       })}

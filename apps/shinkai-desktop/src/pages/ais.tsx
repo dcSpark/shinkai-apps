@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DialogClose } from '@radix-ui/react-dialog';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
@@ -12,6 +13,11 @@ import {
   Badge,
   Button,
   buttonVariants,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -21,7 +27,6 @@ import {
   FormField,
   Sheet,
   SheetContent,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   Tabs,
@@ -101,9 +106,9 @@ const AIsPage = () => {
         <TabsContent className="h-full" value="ais">
           <div className="absolute right-3 top-0">
             <Button
-              className="h-[40px] gap-2"
+              className="min-w-[100px]"
               onClick={onAddAgentClick}
-              size="auto"
+              size="sm"
             >
               <Plus className="h-4 w-4" />
               <span>{t('llmProviders.add')}</span>
@@ -286,7 +291,7 @@ function LLMProviderCard({
         onOpenChange={setIsEditAgentDrawerOpen}
         open={isEditAgentDrawerOpen}
       />
-      <RemoveLLMProviderDrawer
+      <RemoveLLMProviderModal
         agentId={llmProviderId}
         onOpenChange={setIsDeleteAgentDrawerOpen}
         open={isDeleteAgentDrawerOpen}
@@ -451,7 +456,8 @@ const EditLLMProviderDrawer = ({
     </Sheet>
   );
 };
-const RemoveLLMProviderDrawer = ({
+
+const RemoveLLMProviderModal = ({
   open,
   onOpenChange,
   agentId,
@@ -475,35 +481,47 @@ const RemoveLLMProviderDrawer = ({
   });
 
   return (
-    <Sheet onOpenChange={onOpenChange} open={open}>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle className="font-normal">
-            {t('llmProviders.delete.label')}
-            <span className="font-medium">{agentId}</span>{' '}
-          </SheetTitle>
-        </SheetHeader>
-        <p className="text-gray-80 my-3 text-base">
+    <Dialog onOpenChange={onOpenChange} open={open}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogTitle className="pb-0">
+          {t('llmProviders.delete.label')}{' '}
+          <span className="font-mono font-medium">{agentId}</span>{' '}
+        </DialogTitle>
+        <DialogDescription>
           {t('llmProviders.delete.description')}
-        </p>
-        <SheetFooter>
-          <Button
-            className="mt-4"
-            isLoading={isPending}
-            onClick={async () => {
-              if (!auth) return;
-              await removeLLMProvider({
-                nodeAddress: auth?.node_address ?? '',
-                llmProviderId: agentId,
-                token: auth?.api_v2_key ?? '',
-              });
-            }}
-            variant="destructive"
-          >
-            {t('common.delete')}
-          </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </DialogDescription>
+
+        <DialogFooter>
+          <div className="flex gap-2 pt-4">
+            <DialogClose asChild className="flex-1">
+              <Button
+                className="min-w-[100px] flex-1"
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                {t('common.cancel')}
+              </Button>
+            </DialogClose>
+            <Button
+              className="min-w-[100px] flex-1"
+              isLoading={isPending}
+              onClick={async () => {
+                if (!auth) return;
+                await removeLLMProvider({
+                  nodeAddress: auth?.node_address ?? '',
+                  llmProviderId: agentId,
+                  token: auth?.api_v2_key ?? '',
+                });
+              }}
+              size="sm"
+              variant="destructive"
+            >
+              {t('common.delete')}
+            </Button>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

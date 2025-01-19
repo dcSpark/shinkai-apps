@@ -1,6 +1,6 @@
 {
   "name": "@shinkai/source",
-  "version": "0.9.3",
+  "version": "0.9.5",
   "license": "SEE LICENSE IN LICENSE",
   "files": [
     "LICENSE"
@@ -71,6 +71,7 @@
     "crx": "^5.0.1",
     "crypto-js": "^4.2.0",
     "date-fns": "^3.6.0",
+    "fast-deep-equal": "^3.1.3",
     "filesize": "^10.1.2",
     "follow-redirects": ">=1.14.8",
     "framer-motion": "^11.2.9",
@@ -96,12 +97,12 @@
     "react-i18next": "^14.1.2",
     "react-image-crop": "^11.0.5",
     "react-intersection-observer": "^9.10.2",
-    "react-jsonschema-form": "^1.6.1",
     "react-markdown": "^9.0.1",
     "react-plotly.js": "^2.6.0",
     "react-qrcode-logo": "^3.0.0",
     "react-resizable-panels": "^2.1.0",
     "react-router-dom": "^6.23.1",
+    "react-scan": "^0.0.54",
     "react-syntax-highlighter": "^15.6.1",
     "react-use-websocket": "^4.8.1",
     "react-virtualized-auto-sizer": "^1.0.24",

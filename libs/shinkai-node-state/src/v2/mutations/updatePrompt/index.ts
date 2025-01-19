@@ -11,6 +11,7 @@ export const updatePrompt = async ({
   isPromptEnabled,
   isPromptSystem,
   promptVersion,
+  id,
 }: UpdatePromptInput) => {
   return await updatePromptApi(nodeAddress, token, {
     is_favorite: isPromptFavorite,
@@ -19,5 +20,6 @@ export const updatePrompt = async ({
     is_enabled: isPromptEnabled,
     is_system: isPromptSystem,
     version: promptVersion,
+    rowid: id,
   });
 };

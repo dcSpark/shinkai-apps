@@ -1,8 +1,8 @@
 import { HomeIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
-import { useGetSearchVRItems } from '@shinkai_network/shinkai-node-state/lib/queries/getSearchVRItems/useGetSearchVRItems';
 import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
+import { useGetSearchDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getSearchDirectoryContents/useGetSearchDirectoryContents';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -20,6 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   Input,
+  // Input,
   ScrollArea,
   Separator,
   Tooltip,
@@ -42,6 +43,7 @@ import {
   FileType2Icon,
   PlusIcon,
   SearchIcon,
+  // SearchIcon,
   XIcon,
 } from 'lucide-react';
 import React, { useEffect } from 'react';
@@ -69,6 +71,7 @@ const AllFiles = () => {
   const currentGlobalPath = useVectorFsStore(
     (state) => state.currentGlobalPath,
   );
+
   const setCurrentGlobalPath = useVectorFsStore(
     (state) => state.setCurrentGlobalPath,
   );
@@ -108,18 +111,12 @@ const AllFiles = () => {
     data: searchVRItems,
     isSuccess: isSearchVRItemsSuccess,
     isLoading: isSearchVRItemsLoading,
-  } = useGetSearchVRItems(
+  } = useGetSearchDirectoryContents(
     {
       nodeAddress: auth?.node_address ?? '',
-      profile: auth?.profile ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      path: currentGlobalPath,
-      search: debouncedSearchQuery,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
+      token: auth?.api_v2_key ?? '',
+      // path: currentGlobalPath,
+      name: debouncedSearchQuery,
     },
     {
       enabled: !!debouncedSearchQuery,
@@ -427,21 +424,15 @@ const AllFiles = () => {
               return (
                 <button
                   className="relative flex items-center gap-2 text-ellipsis px-3 py-1.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
-                  key={item}
+                  key={item.path}
                   onClick={() => {
-                    const directoryMainPath = item.split('/').slice(0, -1);
-                    setCurrentGlobalPath(
-                      directoryMainPath.length > 1
-                        ? '/' + directoryMainPath.join('/')
-                        : '/' + directoryMainPath,
-                    );
+                    const directoryMainPath = item.path.split('/').slice(0, -1);
+                    setCurrentGlobalPath(directoryMainPath.join('/'));
                     setSearchQuery('');
                   }}
                 >
                   <FileTypeIcon />
-                  <span className="text-gray-80 text-sm">
-                    {item?.split('/').at(-1)?.replace(/_/g, ' ')}
-                  </span>
+                  <span className="text-gray-80 text-sm">{item?.name}</span>
                 </button>
               );
             })}

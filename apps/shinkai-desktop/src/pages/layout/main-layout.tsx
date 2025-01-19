@@ -353,19 +353,19 @@ export function MainNav() {
     //   icon: <MySubscriptionsIcon className="h-5 w-5" />,
     // },
     {
-      title: 'Shinkai Sheet',
-      href: '/sheets',
-      icon: <SheetIcon className="h-5 w-5" />,
-    },
-    optInExperimental && {
       title: 'Shinkai Tools',
       href: '/tools',
       icon: <ToolsIcon className="h-5 w-5" />,
     },
-    optInExperimental && {
+    {
       title: 'Scheduled Tasks',
       href: '/tasks',
       icon: <ScheduledTasksIcon className="h-5 w-5" />,
+    },
+    optInExperimental && {
+      title: 'Shinkai Sheet',
+      href: '/sheets',
+      icon: <SheetIcon className="h-5 w-5" />,
     },
   ].filter(Boolean) as NavigationLink[];
 
@@ -403,87 +403,84 @@ export function MainNav() {
           <ShinkaiCombinationMarkIcon className="text-gray-80 h-auto w-[80px]" />
         )}
 
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className={cn(
-                  'border-gray-350 text-gray-80 h-6 w-6 shrink-0 rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
-                )}
-                onClick={toggleSidebar}
-                size="auto"
-                type="button"
-                variant="ghost"
-              >
-                {sidebarExpanded ? (
-                  <ArrowLeftToLine className="h-3 w-3" />
-                ) : (
-                  <ArrowRightToLine className="h-3 w-3" />
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipPortal>
-              <TooltipContent align="center" side="right">
-                {t('layout.sidebar.toggle')}
-              </TooltipContent>
-            </TooltipPortal>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className={cn(
+                'border-gray-350 text-gray-80 h-6 w-6 shrink-0 rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
+              )}
+              onClick={toggleSidebar}
+              size="auto"
+              type="button"
+              variant="ghost"
+            >
+              {sidebarExpanded ? (
+                <ArrowLeftToLine className="h-3 w-3" />
+              ) : (
+                <ArrowRightToLine className="h-3 w-3" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent align="center" side="right">
+              {t('layout.sidebar.toggle')}
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
       </div>
 
       <div className="flex flex-1 flex-col justify-between">
         <div className="flex flex-col gap-1.5">
           {!isGetStartedChecklistHidden && <OnboardingStepper />}
-          <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <motion.button
-                  className={cn(
-                    'text-gray-80 mb-1.5 mt-4 flex h-8 items-center gap-2 bg-white/10 hover:bg-white/10 hover:text-white',
-                    sidebarExpanded
-                      ? 'w-full justify-start rounded-lg bg-transparent px-4 py-3 hover:bg-gray-500'
-                      : 'w-8 justify-center self-center rounded-full',
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <motion.button
+                className={cn(
+                  'text-gray-80 mb-1.5 mt-4 flex h-8 items-center gap-2 bg-white/10 hover:bg-white/10 hover:text-white',
+                  sidebarExpanded
+                    ? 'w-full justify-start rounded-lg bg-transparent px-4 py-3 hover:bg-gray-500'
+                    : 'w-8 justify-center self-center rounded-full',
+                )}
+                onClick={() => navigate('/inboxes')}
+                transition={{ duration: 0.3 }}
+                whileHover={{ scale: !sidebarExpanded ? 1.05 : 1 }}
+              >
+                <CreateAIIcon className="h-5 w-5 shrink-0" />
+                <AnimatePresence>
+                  {sidebarExpanded && (
+                    <motion.span
+                      animate="show"
+                      className="overflow-hidden whitespace-nowrap text-xs"
+                      exit="hidden"
+                      initial="hidden"
+                      variants={showAnimation}
+                    >
+                      {t('chat.create')}
+                    </motion.span>
                   )}
-                  onClick={() => navigate('/inboxes')}
-                  transition={{ duration: 0.3 }}
-                  whileHover={{ scale: !sidebarExpanded ? 1.05 : 1 }}
-                >
-                  <CreateAIIcon className="h-5 w-5 shrink-0" />
-                  <AnimatePresence>
-                    {sidebarExpanded && (
-                      <motion.span
-                        animate="show"
-                        className="overflow-hidden whitespace-nowrap text-xs"
-                        exit="hidden"
-                        initial="hidden"
-                        variants={showAnimation}
-                      >
-                        {t('chat.create')}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </motion.button>
-              </TooltipTrigger>
-              <TooltipPortal>
-                <TooltipContent
-                  align="center"
-                  className="flex flex-col items-center gap-1"
-                  side="right"
-                >
-                  <span>{t('chat.create')}</span>
-                  <div className="text-gray-80 flex items-center justify-center gap-2 text-center">
-                    <span>⌘</span>
-                    <span>N</span>
-                  </div>
-                </TooltipContent>
-              </TooltipPortal>
-            </Tooltip>
-          </TooltipProvider>
+                </AnimatePresence>
+              </motion.button>
+            </TooltipTrigger>
+            <TooltipPortal>
+              <TooltipContent
+                align="center"
+                className="flex flex-col items-center gap-1"
+                side="right"
+              >
+                <span>{t('chat.create')}</span>
+                <div className="text-gray-80 flex items-center justify-center gap-2 text-center">
+                  <span>⌘</span>
+                  <span>N</span>
+                </div>
+              </TooltipContent>
+            </TooltipPortal>
+          </Tooltip>
 
           {navigationLinks.map((item) => {
             return (
               <Fragment key={item.title}>
-                {optInExperimental && item.href === '/tools' && (
+                {optInExperimental && item.href === '/sheets' && (
                   <Separator className="my-0.5 w-full bg-gray-200" />
                 )}
                 <TooltipProvider
@@ -603,16 +600,19 @@ export function MainNav() {
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-4 flex gap-2">
+          <AlertDialogFooter className="mt-4 flex justify-end gap-2">
             <AlertDialogCancel
-              className="mt-0 flex-1"
+              className="mt-0 min-w-[120px]"
               onClick={() => {
                 setIsConfirmLogoutDialogOpened(false);
               }}
             >
               {t('common.cancel')}
             </AlertDialogCancel>
-            <AlertDialogAction className="flex-1" onClick={handleDisconnect}>
+            <AlertDialogAction
+              className="min-w-[120px]"
+              onClick={handleDisconnect}
+            >
               {t('common.disconnect')}
             </AlertDialogAction>
           </AlertDialogFooter>

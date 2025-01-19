@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Prompt } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useCreatePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/createPrompt/useCreatePrompt';
 import { useRemovePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/removePrompt/useRemovePrompt';
+import { useUpdatePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/updatePrompt/useUpdatePrompt';
 // import { useUpdatePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/updatePrompt/useUpdatePrompt';
 import { useGetPromptList } from '@shinkai_network/shinkai-node-state/v2/queries/getPromptList/useGetPromptList';
 import { useGetPromptSearch } from '@shinkai_network/shinkai-node-state/v2/queries/getPromptSearch/useGetPromptSearch';
@@ -88,9 +89,9 @@ const PromptSearchDrawer = () => {
   const setPromptSelected = usePromptSelectionStore(
     (state) => state.setPromptSelected,
   );
-  // const selectedPromptEdit = usePromptSelectionStore(
-  //   (state) => state.selectedPromptEdit,
-  // );
+  const selectedPromptEdit = usePromptSelectionStore(
+    (state) => state.selectedPromptEdit,
+  );
   const setSelectedPromptEdit = usePromptSelectionStore(
     (state) => state.setSelectedPromptEdit,
   );
@@ -275,6 +276,23 @@ const PromptSearchDrawer = () => {
               )}
           </div>
         </ScrollArea>
+        {selectedPromptEdit && (
+          <UpdatePromptDrawer
+            isPromptEnabled={selectedPromptEdit.is_enabled}
+            isPromptFavorite={selectedPromptEdit.is_favorite}
+            isPromptSystem={selectedPromptEdit.is_system}
+            open={!!selectedPromptEdit}
+            promptContent={selectedPromptEdit.prompt}
+            promptId={selectedPromptEdit.rowid}
+            promptName={selectedPromptEdit.name}
+            promptVersion={selectedPromptEdit.version}
+            setOpen={(open) => {
+              if (!open) {
+                setSelectedPromptEdit(undefined);
+              }
+            }}
+          />
+        )}
       </SheetContent>
     </Sheet>
   );
@@ -386,14 +404,160 @@ export function CreatePromptDrawer({
                     </FormItem>
                   )}
                 />
-                <Button
-                  className="mt-4"
-                  disabled={isPending}
-                  isLoading={isPending}
-                  type="submit"
-                >
-                  Create Prompt
-                </Button>
+                <div className="mt-4 flex justify-end gap-3">
+                  <Button
+                    onClick={() => setIsPromptDrawerOpen(false)}
+                    rounded="lg"
+                    size="xs"
+                    type="button"
+                    variant="outline"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    disabled={isPending}
+                    isLoading={isPending}
+                    rounded="lg"
+                    size="xs"
+                    type="submit"
+                  >
+                    Create Prompt
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function UpdatePromptDrawer({
+  promptId,
+  promptName,
+  promptContent,
+  isPromptFavorite,
+  isPromptEnabled,
+  isPromptSystem,
+  promptVersion,
+  open,
+  setOpen,
+}: {
+  promptId: number;
+  promptName: string;
+  promptContent: string;
+  isPromptFavorite: boolean;
+  isPromptEnabled: boolean;
+  isPromptSystem: boolean;
+  promptVersion: string;
+  open: boolean;
+  setOpen: (isOpen: boolean) => void;
+}) {
+  const auth = useAuth((state) => state.auth);
+  const createPromptForm = useForm<CreatePromptFormSchema>({
+    resolver: zodResolver(createPromptFormSchema),
+    defaultValues: {
+      promptContent: promptContent,
+      promptName: promptName,
+      isPromptFavorite: isPromptFavorite,
+      isPromptEnabled: isPromptEnabled,
+      isPromptSystem: isPromptSystem,
+      promptVersion: promptVersion,
+    },
+  });
+
+  const { mutateAsync: updatePrompt, isPending } = useUpdatePrompt({
+    onSuccess: () => {
+      toast.success('Prompt updated successfully');
+      setOpen(false);
+    },
+    onError: (error) => {
+      toast.error('Failed to update prompt', {
+        description: error.message,
+      });
+    },
+  });
+
+  const onSubmit = async (data: CreatePromptFormSchema) => {
+    await updatePrompt({
+      id: promptId,
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      promptName: data.promptName,
+      promptContent: data.promptContent,
+      isPromptFavorite: data.isPromptFavorite ?? false,
+      isPromptEnabled: data.isPromptEnabled ?? false,
+      isPromptSystem: data.isPromptSystem ?? false,
+      promptVersion: data.promptVersion ?? '1',
+    });
+  };
+  return (
+    <Dialog onOpenChange={setOpen} open={open}>
+      <DialogContent className="max-w-2xl bg-gray-600">
+        <DialogHeader>
+          <DialogTitle>Update Prompt</DialogTitle>
+          <div>
+            <Form {...createPromptForm}>
+              <form
+                className="mt-5 flex flex-col gap-3"
+                onSubmit={createPromptForm.handleSubmit(onSubmit)}
+              >
+                <FormField
+                  control={createPromptForm.control}
+                  name="promptName"
+                  render={({ field }) => (
+                    <TextField autoFocus field={field} label="Prompt Name" />
+                  )}
+                />
+                <FormField
+                  control={createPromptForm.control}
+                  name="promptContent"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Prompt Content</FormLabel>
+                      <FormControl>
+                        <div className="space-y-2">
+                          <Textarea
+                            className="!min-h-[340px] resize-none text-sm"
+                            onKeyDown={(event) => {
+                              if (
+                                event.key === 'Enter' &&
+                                (event.metaKey || event.ctrlKey)
+                              ) {
+                                createPromptForm.handleSubmit(onSubmit)();
+                                return;
+                              }
+                            }}
+                            spellCheck={false}
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="mt-4 flex justify-end gap-3">
+                  <Button
+                    onClick={() => setOpen(false)}
+                    rounded="lg"
+                    size="xs"
+                    type="button"
+                    variant="outline"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    disabled={isPending}
+                    isLoading={isPending}
+                    rounded="lg"
+                    size="xs"
+                    type="submit"
+                  >
+                    Update Prompt
+                  </Button>
+                </div>
               </form>
             </Form>
           </div>

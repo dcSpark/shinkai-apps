@@ -365,7 +365,7 @@ const QuickAskBodyWithResponseBase = ({
   const { data } = useChatConversationWithOptimisticUpdates({ inboxId });
 
   useWebSocketMessage({
-    enabled: hasProviderEnableStreaming,
+    enabled: hasProviderEnableStreaming && !!inboxId,
     inboxId: inboxId,
   });
 

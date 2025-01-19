@@ -6,6 +6,7 @@ export type UpdatePromptOutput = {
 
 export type UpdatePromptInput = Token & {
   nodeAddress: string;
+  id: number;
   promptName: string;
   promptContent: string;
   isPromptFavorite: boolean;

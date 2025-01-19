@@ -1,13 +1,5 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Badge,
   Tooltip,
   TooltipContent,
@@ -18,7 +10,6 @@ import {
 import {
   ExportIcon,
   PromptLibraryIcon,
-  QrIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
@@ -27,8 +18,8 @@ import {
   SettingsIcon,
   WalletMinimal,
 } from 'lucide-react';
-import React, { useState } from 'react';
-import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link, Outlet, useMatch } from 'react-router-dom';
 
 import galxeIcon from '../../assets/galxe-icon.png';
 import { openShinkaiNodeManagerWindow } from '../../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
@@ -106,20 +97,10 @@ const NavLink = ({
 };
 
 export function MainNav() {
-  const { t, Trans } = useTranslation();
+  const { t } = useTranslation();
   const isLocalShinkaiNodeInUse = useShinkaiNodeManager(
     (state) => state.isInUse,
   );
-  const navigate = useNavigate();
-  const logout = useAuth((state) => state.setLogout);
-
-  const [isConfirmLogoutDialogOpened, setIsConfirmLogoutDialogOpened] =
-    useState(false);
-
-  const handleDisconnect = () => {
-    logout();
-    navigate('/get-started');
-  };
 
   const navigationLinks = [
     {
@@ -144,11 +125,6 @@ export function MainNav() {
       title: t('settings.layout.exportConnection'),
       href: '/settings/export-connection',
       icon: <ExportIcon className="text-gray-80 h-4 w-4" />,
-    },
-    {
-      title: t('settings.layout.createRegistrationCode'),
-      href: '/settings/generate-code',
-      icon: <QrIcon className="text-gray-80 h-4 w-4" />,
     },
     {
       title: t('settings.layout.publicKeys'),
@@ -241,55 +217,6 @@ export function MainNav() {
           );
         })}
       </div>
-
-      <AlertDialog
-        onOpenChange={setIsConfirmLogoutDialogOpened}
-        open={isConfirmLogoutDialogOpened}
-      >
-        <AlertDialogContent className="w-[75%]">
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('disconnect.modalTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              <div className="flex flex-col space-y-3 text-left text-white/70">
-                <div className="flex flex-col space-y-1">
-                  <span className="text-sm">
-                    {t('disconnect.modalDescription')}
-                  </span>
-                </div>
-                <div className="text-sm">
-                  <Trans
-                    components={{
-                      Link: (
-                        <Link
-                          className="mx-0.5 inline-block cursor-pointer text-white underline"
-                          onClick={() => {
-                            setIsConfirmLogoutDialogOpened(false);
-                          }}
-                          to={'/export-connection'}
-                        />
-                      ),
-                    }}
-                    i18nKey="disconnect.exportConnection"
-                  />
-                </div>
-              </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="mt-4 flex gap-2">
-            <AlertDialogCancel
-              className="mt-0 flex-1"
-              onClick={() => {
-                setIsConfirmLogoutDialogOpened(false);
-              }}
-            >
-              {t('common.cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction className="flex-1" onClick={handleDisconnect}>
-              {t('common.disconnect')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </aside>
   );
 }

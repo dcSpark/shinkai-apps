@@ -44,6 +44,7 @@ export const treeOptions: TreePassThroughOptions = {
       context.isLeaf && 'invisible',
     ),
   }),
+
   nodeIcon: { className: 'mr-2 text-gray-50' },
   subgroup: {
     className: cn('m-0 list-none', 'space-y-1 p-0 pl-4'),

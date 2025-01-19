@@ -27,7 +27,6 @@ import {
   FormItem,
   FormLabel,
   JsonForm,
-  MessageList,
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
@@ -72,6 +71,7 @@ import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import { AIModelSelector } from '../../chat/chat-action-bar/ai-update-selection-action-bar';
+import { MessageList } from '../../chat/components/message-list';
 import { ToolErrorFallback } from '../error-boundary';
 import {
   CreateToolCodeFormSchema,
@@ -474,7 +474,7 @@ function PlaygroundToolEditor({
                       xShinkaiToolId={xShinkaiToolId}
                     />
                     <Button
-                      className="h-[30px] shrink-0 rounded-md text-xs"
+                      className="shrink-0"
                       disabled={
                         !toolCode ||
                         !metadataGenerationData ||
@@ -483,9 +483,10 @@ function PlaygroundToolEditor({
                       }
                       isLoading={isSavingTool}
                       onClick={handleSaveTool}
-                      size="sm"
+                      rounded="lg"
+                      size="xs"
                     >
-                      <Save className="mr-2 h-4 w-4" />
+                      <Save className="h-4 w-4" />
                       Save Tool
                     </Button>
                   </div>
@@ -578,14 +579,14 @@ function PlaygroundToolEditor({
                                       <Button
                                         className="!h-[28px] rounded-lg border-0 bg-transparent"
                                         onClick={resetToolCode}
-                                        size="sm"
+                                        size="xs"
                                         variant="ghost"
                                       >
                                         Reset
                                       </Button>
                                       <Button
                                         className="!h-[28px] rounded-lg border-0 bg-transparent"
-                                        size="sm"
+                                        size="xs"
                                         type="submit"
                                         variant="ghost"
                                       >
@@ -629,14 +630,15 @@ function PlaygroundToolEditor({
                           !isToolCodeGenerationPending &&
                           !isMetadataGenerationError && (
                             <Button
-                              className="h-[30px] rounded-lg border-gray-200 text-white"
+                              className="border-gray-200 text-white"
                               form="parameters-form"
                               isLoading={executeToolCodeQuery.isPending}
-                              size="sm"
+                              rounded="lg"
+                              size="xs"
                               variant="ghost"
                             >
                               {!executeToolCodeQuery.isPending && (
-                                <Play className="mr-2 h-4 w-4" />
+                                <Play className="h-4 w-4" />
                               )}
                               Run
                             </Button>
@@ -803,9 +805,10 @@ function PlaygroundToolEditor({
                     </div>
                     {isMetadataGenerationSuccess && (
                       <Button
-                        className="text-gray-80 h-[30px] gap-2 rounded-md text-xs"
+                        className="text-gray-80"
                         onClick={regenerateToolMetadata}
-                        size="sm"
+                        rounded="lg"
+                        size="xs"
                         variant="outline"
                       >
                         <ReloadIcon className="size-3.5" />
@@ -886,7 +889,6 @@ function ToolResultFileCard({ filePath }: { filePath: string }) {
 
   return (
     <Button
-      className="h-[30px] gap-1.5 rounded-lg text-xs"
       onClick={async () => {
         const response = await refetch();
         const file = new Blob([response.data ?? ''], {
@@ -917,7 +919,8 @@ function ToolResultFileCard({ filePath }: { filePath: string }) {
 
         toast.success(`${fileNameBase} downloaded successfully`);
       }}
-      size="auto"
+      rounded="lg"
+      size="xs"
       variant="outline"
     >
       <div className="flex shrink-0 items-center justify-center">
@@ -950,13 +953,14 @@ function ManageToolSourceModal({
       xShinkaiToolId,
     });
 
-  const { mutateAsync: uploadAssets } = useUploadAssetsTool({
-    onError: (error) => {
-      toast.error('Failed uploading source:', {
-        description: error.response?.data?.message ?? error.message,
-      });
-    },
-  });
+  const { mutateAsync: uploadAssets, isPending: isUploadingAssets } =
+    useUploadAssetsTool({
+      onError: (error) => {
+        toast.error('Failed uploading source:', {
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
 
   const { mutateAsync: removeAsset } = useRemoveAssetTool({
     onError: (error) => {
@@ -969,7 +973,6 @@ function ManageToolSourceModal({
   const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
     useDropzone({
       multiple: true,
-      maxFiles: 5,
       onDrop: async (acceptedFiles) => {
         await uploadAssets({
           nodeAddress: auth?.node_address ?? '',
@@ -985,20 +988,21 @@ function ManageToolSourceModal({
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          className="text-gray-80 h-[30px] shrink-0 rounded-md text-xs"
-          size="sm"
+          className="text-gray-80 shrink-0"
+          rounded="lg"
+          size="xs"
           variant="outline"
         >
           <ToolAssetsIcon className="text-gray-80 mr-2 h-4 w-4" />
-          Manage Sources ({isGetAllToolAssetsSuccess ? assets.length : '-'})
+          Manage Knowledge ({isGetAllToolAssetsSuccess ? assets.length : '-'})
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex h-[50vh] max-w-[500px] flex-col gap-4">
+      <DialogContent className="flex h-[60vh] max-w-[500px] flex-col gap-4">
         <DialogClose className="absolute right-4 top-4">
           <XIcon className="text-gray-80 h-5 w-5" />
         </DialogClose>
         <div className="space-y-2">
-          <DialogTitle className="pb-0">Manage Sources</DialogTitle>
+          <DialogTitle className="pb-0">Manage Knowledge</DialogTitle>
           <DialogDescription className="text-xs">
             Add knowledge directly to your tool. It is used to provide context
             to the large language model.
@@ -1035,6 +1039,14 @@ function ManageToolSourceModal({
             <span className="text-gray-80 text-center text-xs">
               No source files uploaded yet.
             </span>
+          )}
+          {isUploadingAssets && (
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 className="text-gray-80 shrink-0 animate-spin" />
+              <span className="text-gray-80 text-center text-xs">
+                Uploading files...
+              </span>
+            </div>
           )}
           {isGetAllToolAssetsSuccess &&
             assets.map((asset) => (

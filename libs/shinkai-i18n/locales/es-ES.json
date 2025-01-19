@@ -1,4 +1,6 @@
 {
+  "": {
+  },
   "aiFilesSearch": {
     "description": "Busca para encontrar contenido en todos los archivos de tus archivos AI fácilmente",
     "filesSelected": "Seleccionados {{count}} archivos",
@@ -128,6 +130,7 @@
     "restore": "Restaurar",
     "retry": "Reintentar",
     "save": "Guardar",
+    "saveChanges": "Guardar cambios",
     "search": "Buscar",
     "searchPlaceholder": "Buscar...",
     "seeOptions": "Ver Opciones",

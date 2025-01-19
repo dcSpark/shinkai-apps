@@ -5,9 +5,9 @@ import { useRemoveFsItem } from '@shinkai_network/shinkai-node-state/v2/mutation
 import { useGetDownloadFile } from '@shinkai_network/shinkai-node-state/v2/queries/getDownloadFile/useGetDownloadFile';
 import {
   Button,
-  DrawerFooter,
-  SheetHeader,
-  SheetTitle,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '@shinkai_network/shinkai-ui';
 import React, { useEffect } from 'react';
 import { toast } from 'sonner';
@@ -45,20 +45,20 @@ export const VectorFsItemMoveAction = () => {
 
   return (
     <React.Fragment>
-      <SheetHeader>
-        <SheetTitle className="font-normal">
+      <DialogHeader>
+        <DialogTitle className="font-normal">
           {t('vectorFs.actions.move')}
           <span className="font-medium">
             {' '}
             &quot;{selectedFile?.name}&quot;
           </span>{' '}
           to ...
-        </SheetTitle>
-      </SheetHeader>
+        </DialogTitle>
+      </DialogHeader>
       <FolderSelectionList />
-      <DrawerFooter>
+      <DialogFooter className="mt-4">
         <Button
-          className="mt-4"
+          className="min-w-[100px]"
           disabled={destinationFolderPath === selectedFile?.path}
           isLoading={isMovingFsItem}
           onClick={async () => {
@@ -70,10 +70,11 @@ export const VectorFsItemMoveAction = () => {
                 `${destinationFolderPath}/${selectedFile?.name}` ?? '/',
             });
           }}
+          size="sm"
         >
           {t('vectorFs.actions.move')}
         </Button>
-      </DrawerFooter>
+      </DialogFooter>
     </React.Fragment>
   );
 };
@@ -95,22 +96,22 @@ export const VectorFsItemDeleteAction = () => {
 
   return (
     <React.Fragment>
-      <SheetHeader>
-        <SheetTitle className="font-normal">
+      <DialogHeader>
+        <DialogTitle className="font-normal">
           {t('vectorFs.actions.delete')}
           <span className="font-medium">
             {' '}
             &quot;{selectedFile?.name}&quot;
           </span>{' '}
-        </SheetTitle>
-      </SheetHeader>
+        </DialogTitle>
+      </DialogHeader>
 
       <p className="text-gray-80 my-3 text-base">
         {t('vectorFs.deleteFileConfirmation')}
       </p>
-      <DrawerFooter>
+      <DialogFooter className="mt-4">
         <Button
-          className="mt-4"
+          className="min-w-[100px]"
           isLoading={isPending}
           onClick={async () => {
             await deleteVrItem({
@@ -119,11 +120,12 @@ export const VectorFsItemDeleteAction = () => {
               itemPath: selectedFile?.path ?? '',
             });
           }}
+          size="sm"
           variant="destructive"
         >
           {t('vectorFs.actions.delete')}
         </Button>
-      </DrawerFooter>
+      </DialogFooter>
     </React.Fragment>
   );
 };
@@ -153,20 +155,20 @@ export const VectorFsItemCopyAction = () => {
 
   return (
     <React.Fragment>
-      <SheetHeader>
-        <SheetTitle className="font-normal">
+      <DialogHeader>
+        <DialogTitle className="font-normal">
           {t('vectorFs.actions.copy')}
           <span className="font-medium">
             {' '}
             &quot;{selectedFile?.name}&quot;
           </span>{' '}
           to ...
-        </SheetTitle>
-      </SheetHeader>
+        </DialogTitle>
+      </DialogHeader>
       <FolderSelectionList />
-      <DrawerFooter>
+      <DialogFooter className="mt-4">
         <Button
-          className="mt-4"
+          className="min-w-[100px]"
           disabled={destinationFolderPath === selectedFile?.path}
           isLoading={isPending}
           onClick={async () => {
@@ -178,10 +180,11 @@ export const VectorFsItemCopyAction = () => {
                 `${destinationFolderPath}/${selectedFile?.name}` ?? '/',
             });
           }}
+          size="sm"
         >
           {t('vectorFs.actions.copy')}
         </Button>
-      </DrawerFooter>
+      </DialogFooter>
     </React.Fragment>
   );
 };

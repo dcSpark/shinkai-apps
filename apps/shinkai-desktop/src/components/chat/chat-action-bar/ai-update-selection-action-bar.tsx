@@ -4,6 +4,7 @@ import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mut
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
+  CommandShortcut,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
@@ -20,6 +21,7 @@ import {
 import { AIAgentIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BoltIcon, BotIcon, ChevronDownIcon } from 'lucide-react';
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -27,7 +29,7 @@ import { useGetCurrentInbox } from '../../../hooks/use-current-inbox';
 import { useAuth } from '../../../store/auth';
 import { actionButtonClassnames } from '../conversation-footer';
 
-export function AIModelSelector({
+export function AIModelSelectorBase({
   value,
   onValueChange,
 }: {
@@ -63,8 +65,23 @@ export function AIModelSelector({
             </DropdownMenuTrigger>
           </TooltipTrigger>
           <TooltipPortal>
-            <TooltipContent align="center" side="top">
-              {t('llmProviders.switch')}
+            <TooltipContent
+              align="center"
+              className="flex flex-col gap-1"
+              side="top"
+            >
+              <span className="text-center text-xs text-white">
+                {t('llmProviders.switch')}
+              </span>
+              <div className="flex items-center gap-4 text-left">
+                <div className="flex items-center justify-center gap-2 text-xs text-gray-100">
+                  <CommandShortcut>⌘ [</CommandShortcut> or
+                  <CommandShortcut>⌘ ]</CommandShortcut>
+                </div>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-xs text-gray-100">Prev / Next AI</span>
+                </div>
+              </div>
             </TooltipContent>
           </TooltipPortal>
           <DropdownMenuContent
@@ -143,7 +160,13 @@ export function AIModelSelector({
     </DropdownMenu>
   );
 }
-export function AiUpdateSelectionActionBar({ inboxId }: { inboxId?: string }) {
+export const AIModelSelector = memo(AIModelSelectorBase);
+
+export function AiUpdateSelectionActionBarBase({
+  inboxId,
+}: {
+  inboxId?: string;
+}) {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const currentInbox = useGetCurrentInbox(inboxId);
@@ -179,3 +202,7 @@ export function AiUpdateSelectionActionBar({ inboxId }: { inboxId?: string }) {
     />
   );
 }
+export const AiUpdateSelectionActionBar = memo(
+  AiUpdateSelectionActionBarBase,
+  (prevProps, nextProps) => prevProps.inboxId === nextProps.inboxId,
+);

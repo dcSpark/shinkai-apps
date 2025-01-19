@@ -16,14 +16,14 @@ import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-stat
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { MessageList } from '../../components/chat/components/message-list';
 import { streamingSupportedModels } from '../../components/chat/constants';
 import { useChatStore } from '../../components/chat/context/chat-context';
-import ConversationFooter from '../../components/chat/conversation-footer';
+import ConversationChatFooter from '../../components/chat/conversation-footer';
 import ConversationHeader from '../../components/chat/conversation-header';
 import MessageExtra from '../../components/chat/message-extra';
 import {
@@ -34,6 +34,7 @@ import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import EmptyMessage from './empty-message';
 
 export const useChatConversationWithOptimisticUpdates = ({
   inboxId,
@@ -143,8 +144,8 @@ const ChatConversation = () => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
 
-  useWebSocketMessage({ inboxId, enabled: true });
-  useWebSocketTools({ inboxId, enabled: true });
+  useWebSocketMessage({ inboxId, enabled: !!inboxId });
+  useWebSocketTools({ inboxId, enabled: !!inboxId });
 
   const setSelectedArtifact = useChatStore(
     (state) => state.setSelectedArtifact,
@@ -166,6 +167,16 @@ const ChatConversation = () => {
   } = useChatConversationWithOptimisticUpdates({
     inboxId,
   });
+
+  const isLoadingMessage = useMemo(() => {
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
+    return (
+      !!inboxId &&
+      lastMessage &&
+      lastMessage.role === 'assistant' &&
+      lastMessage.status.type === 'running'
+    );
+  }, [data?.pages, inboxId]);
 
   useEffect(() => {
     if (isError) {
@@ -250,22 +261,28 @@ const ChatConversation = () => {
   return (
     <div className="flex max-h-screen flex-1 flex-col overflow-hidden pt-2">
       <ConversationHeader />
-      <MessageList
-        containerClassName="px-5"
-        editAndRegenerateMessage={editAndRegenerateMessage}
-        fetchPreviousPage={fetchPreviousPage}
-        hasPreviousPage={hasPreviousPage}
-        isFetchingPreviousPage={isFetchingPreviousPage}
-        isLoading={isChatConversationLoading}
-        isSuccess={isChatConversationSuccess}
-        messageExtra={<MessageExtra />}
-        noMoreMessageLabel={t('chat.allMessagesLoaded')}
-        paginatedMessages={data}
-        regenerateFirstMessage={regenerateFirstMessage}
-        regenerateMessage={regenerateMessage}
+      {inboxId ? (
+        <MessageList
+          containerClassName="px-5"
+          editAndRegenerateMessage={editAndRegenerateMessage}
+          fetchPreviousPage={fetchPreviousPage}
+          hasPreviousPage={hasPreviousPage}
+          isFetchingPreviousPage={isFetchingPreviousPage}
+          isLoading={isChatConversationLoading}
+          isSuccess={isChatConversationSuccess}
+          messageExtra={<MessageExtra />}
+          noMoreMessageLabel={t('chat.allMessagesLoaded')}
+          paginatedMessages={data}
+          regenerateFirstMessage={regenerateFirstMessage}
+          regenerateMessage={regenerateMessage}
+        />
+      ) : (
+        <EmptyMessage />
+      )}
+      <ConversationChatFooter
+        inboxId={inboxId}
+        isLoadingMessage={!!isLoadingMessage}
       />
-
-      <ConversationFooter />
     </div>
   );
 };

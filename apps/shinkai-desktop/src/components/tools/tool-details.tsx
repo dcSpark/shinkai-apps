@@ -21,6 +21,12 @@ export function isDenoShinkaiTool(tool: ShinkaiTool): tool is DenoShinkaiTool {
   return (tool as DenoShinkaiTool).js_code !== undefined;
 }
 
+export function isPythonShinkaiTool(
+  tool: ShinkaiTool,
+): tool is PythonShinkaiTool {
+  return (tool as PythonShinkaiTool).py_code !== undefined;
+}
+
 export default function ToolDetails() {
   const auth = useAuth((state) => state.auth);
 
