@@ -1,5 +1,6 @@
 import { ExitIcon, GearIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { useImportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/importTool/useImportTool';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/v2/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/v2/queries/getEncryptionKeys/useGetEncryptionKeys';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
@@ -36,6 +37,7 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { listen } from '@tauri-apps/api/event';
 import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
 import { ArrowLeftToLine, ArrowRightToLine, BotIcon } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
@@ -254,7 +256,7 @@ const ResetConnectionDialog = ({
           <AlertDialogDescription>
             <div className="flex flex-col space-y-3 text-left text-white/70">
               <div className="text-sm">
-                We’re currently in beta and we made some significant updates to
+                We&apos;re currently in beta and we made some significant updates to
                 improve your experience. To apply these updates, we need to
                 reset your data.
                 <br /> <br />
@@ -626,11 +628,50 @@ const MainLayout = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const auth = useAuth((state) => state.auth);
+  const navigate = useNavigate();
   const [needsResetApp, setNeedsResetApp] = useState(false);
   const { nodeInfo, isSuccess, isFetching } = useGetHealth(
     { nodeAddress: auth?.node_address ?? '' },
     { refetchInterval: 35000, enabled: !!auth },
   );
+
+  const { mutateAsync: importTool } = useImportTool({
+    onSuccess: (data) => {
+      toast.success('Tool imported successfully', {
+        action: {
+          label: 'View',
+          onClick: () => {
+            navigate(`/tools/${data.tool_key}`);
+          },
+        },
+      });
+      navigate('/tools');
+    },
+    onError: (error) => {
+      toast.error('Failed to import tool', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
+
+  useEffect(() => {
+    const unlisten = listen('store-deep-link', (event) => {
+      if (!auth) return;
+
+      const payload = event.payload as { tool_type: string; tool_url: string };
+      if (payload.tool_type === 'tool') {
+        importTool({
+          nodeAddress: auth?.node_address ?? '',
+          token: auth?.api_v2_key ?? '',
+          url: payload.tool_url,
+        });
+      }
+    });
+
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, [importTool, auth]);
 
   useEffect(() => {
     if (isSuccess && nodeInfo?.status !== 'ok') {

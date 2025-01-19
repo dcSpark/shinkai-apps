@@ -35,7 +35,6 @@ import {
   getVersionFromTool,
 } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { listen } from '@tauri-apps/api/event';
 import {
   BoltIcon,
   CloudDownloadIcon,
@@ -46,7 +45,7 @@ import {
   SearchIcon,
   XIcon,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -388,25 +387,6 @@ function ImportToolModal() {
         });
       },
     });
-
-  useEffect(() => {
-    const unlisten = listen('store-deep-link', (event) => {
-      if (!auth) return;
-
-      const payload = event.payload as { tool_type: string; tool_url: string };
-      if (payload.tool_type === 'tool') {
-        importTool({
-          nodeAddress: auth?.node_address ?? '',
-          token: auth?.api_v2_key ?? '',
-          url: payload.tool_url,
-        });
-      }
-    });
-
-    return () => {
-      unlisten.then((fn) => fn());
-    };
-  }, [importTool, auth]);
 
   const onSubmit = async (data: ImportToolFormSchema) => {
     await importTool({
