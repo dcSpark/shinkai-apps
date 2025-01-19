@@ -256,47 +256,47 @@ jobs:
           NODE_OPTIONS: "--max_old_space_size=8192"
 
 # --- Signing process ---
-      - name: 'Google auth'
-        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
-        id: 'auth'
-        uses: 'google-github-actions/auth@v2'
-        with:
-          workload_identity_provider: '${{ secrets.WIF_PROVIDER }}'
-          service_account: '${{ secrets.SERVICE_ACCOUNT }}'
+      # - name: 'Google auth'
+      #   if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
+      #   id: 'auth'
+      #   uses: 'google-github-actions/auth@v2'
+      #   with:
+      #     workload_identity_provider: '${{ secrets.WIF_PROVIDER }}'
+      #     service_account: '${{ secrets.SERVICE_ACCOUNT }}'
 
-      - name: 'Set up Cloud SDK'
-        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
-        uses: 'google-github-actions/setup-gcloud@v2'
-        with:
-          project_id: 'shinkai-412316'
+      # - name: 'Set up Cloud SDK'
+      #   if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
+      #   uses: 'google-github-actions/setup-gcloud@v2'
+      #   with:
+      #     project_id: 'shinkai-412316'
 
 
-      - name: Set up Java
-        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: 'temurin'
-      - name: Download Jsign
-        run: wget https://github.com/ebourg/jsign/releases/download/7.0/jsign-7.0.jar
+      # - name: Set up Java
+      #   if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
+      #   uses: actions/setup-java@v4
+      #   with:
+      #     java-version: 17
+      #     distribution: 'temurin'
+      # - name: Download Jsign
+      #   run: wget https://github.com/ebourg/jsign/releases/download/7.0/jsign-7.0.jar
 
-      - name: Cert to file
-        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
-        run: |
-          echo -n "$EV_CODE_SIGNING_CERTIFICATE" | base64 --decode -o OS20241029372986.pem
+      # - name: Cert to file
+      #   if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
+      #   run: |
+      #     echo -n "$EV_CODE_SIGNING_CERTIFICATE" | base64 --decode -o OS20241029372986.pem
 
-      - name: Sign
-        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
-        run: >
-          java -jar jsign.jar \
-              --storetype GOOGLECLOUD \
-              --storepass "$(gcloud auth print-access-token)" \
-              --keystore "projects/shinkai-412316/locations/us/keyRings/shinkai-apps" \
-              --alias "EVCodeSigning" \
-              --certfile "OS20241029372986.pem" \
-              --tsmode RFC3161 \
-              --tsaurl http://timestamp.globalsign.com/tsa/r6advanced1 \
-              ${{ matrix.build_output_file_path }}
+      # - name: Sign
+      #   if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
+      #   run: >
+      #     java -jar jsign.jar \
+      #         --storetype GOOGLECLOUD \
+      #         --storepass "$(gcloud auth print-access-token)" \
+      #         --keystore "projects/shinkai-412316/locations/us/keyRings/shinkai-apps" \
+      #         --alias "EVCodeSigning" \
+      #         --certfile "OS20241029372986.pem" \
+      #         --tsmode RFC3161 \
+      #         --tsaurl http://timestamp.globalsign.com/tsa/r6advanced1 \
+      #         ${{ matrix.build_output_file_path }}
 # ---
 
       - name: Prepare binary files
