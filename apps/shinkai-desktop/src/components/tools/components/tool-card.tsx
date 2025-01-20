@@ -245,7 +245,10 @@ export default function ToolCard({
               Go Playground
             </Link>
           )}
-          <RemoveToolButton toolKey={toolKey as string} />
+          <RemoveToolButton
+            isPlaygroundTool={isPlaygroundTool}
+            toolKey={toolKey as string}
+          />
         </div>
       </div>
     </SubpageLayout>

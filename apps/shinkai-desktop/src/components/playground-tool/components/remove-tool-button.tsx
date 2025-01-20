@@ -5,7 +5,13 @@ import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 
-export default function RemoveToolButton({ toolKey }: { toolKey: string }) {
+export default function RemoveToolButton({
+  isPlaygroundTool,
+  toolKey,
+}: {
+  isPlaygroundTool: boolean;
+  toolKey: string;
+}) {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
 
@@ -32,6 +38,7 @@ export default function RemoveToolButton({ toolKey }: { toolKey: string }) {
           toolKey: toolKey ?? '',
           nodeAddress: auth?.node_address ?? '',
           token: auth?.api_v2_key ?? '',
+          isPlaygroundTool,
         });
       }}
       size="sm"
