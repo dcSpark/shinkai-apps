@@ -41,7 +41,7 @@ jobs:
 
       - name: Download Jsign
         shell: bash
-        run: curl -O https://github.com/ebourg/jsign/releases/download/7.0/jsign-7.0.jar
+        run: choco install jsign
 
       - name: Cert to file
         shell: bash
@@ -51,7 +51,7 @@ jobs:
       - name: Sign
         shell: bash
         run: >
-          java -jar jsign-7.0.jar \
+          jsign \
               --storetype GOOGLECLOUD \
               --storepass "$(gcloud auth print-access-token)" \
               --keystore "projects/shinkai-412316/locations/us/keyRings/shinkai-apps" \
