@@ -23,6 +23,7 @@ export const useRemoveTool = (options?: Options) => {
           {
             nodeAddress: variables.nodeAddress,
             token: variables.token,
+            isPlaygroundTool: variables.isPlaygroundTool,
           },
         ],
       });

@@ -28,6 +28,7 @@ import {
   ImportToolResponse,
   PayInvoiceRequest,
   RemovePlaygroundToolRequest,
+  RemoveToolRequest,
   RemoveToolRequestRequest,
   SaveToolCodeRequest,
   SaveToolCodeResponse,
@@ -331,6 +332,22 @@ export const restoreToolConversation = async (
     },
   );
   return response.data as UndoToolImplementationResponse;
+};
+
+export const removeTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: RemoveToolRequest,
+) => {
+  const response = await httpClient.delete(
+    urlJoin(nodeAddress, '/v2/remove_tool'),
+    {
+      params: { tool_key: payload.tool_key },
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
 };
 
 export const removePlaygroundTool = async (
