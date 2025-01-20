@@ -300,7 +300,7 @@ jobs:
               --certfile "OS20241029372986.cer" \
               --tsmode RFC3161 \
               --tsaurl http://timestamp.globalsign.com/tsa/r6advanced1 \
-              ${{ matrix.build_output_file_path }}
+              "${{ matrix.build_output_file_path }}"
 # ---
 
       - name: Prepare binary files
