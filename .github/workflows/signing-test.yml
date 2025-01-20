@@ -9,8 +9,8 @@ defaults:
     working-directory: ./
 
 jobs:
-  health-checks:
-    runs-on: x86_64-pc-windows-msvc
+  sign:
+    runs-on: windows-2022
     permissions:
       contents: 'read'
       id-token: 'write'
