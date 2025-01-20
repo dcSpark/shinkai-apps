@@ -38,8 +38,10 @@ jobs:
         with:
           java-version: 17
           distribution: 'temurin'
+
       - name: Download Jsign
-        run: wget https://github.com/ebourg/jsign/releases/download/7.0/jsign-7.0.jar
+        shell: bash
+        run: curl -O https://github.com/ebourg/jsign/releases/download/7.0/jsign-7.0.jar
 
       - name: Cert to file
         run: |
