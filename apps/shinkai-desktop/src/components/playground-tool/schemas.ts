@@ -5,7 +5,7 @@ export const ToolMetadataSchema = z.object({
     .string({ message: 'Tool name is required' })
     .min(1, 'Tool name is required')
     .max(100, 'Tool name must be less than 100 characters'),
-
+  homePage: z.string().optional().default(''),
   description: z
     .string({ message: 'Tool description is required' })
     .min(1, 'Tool description is required')
@@ -67,9 +67,9 @@ export const ToolMetadataSchema = z.object({
       clientId: z.string().default('YOUR_PROVIDER_CLIENT_ID'),
       clientSecret: z.string().default('YOUR_PROVIDER_CLIENT_SECRET'),
       scopes: z.array(z.string()).default([]),
-      grantType: z.string().default('authorization_code'),
+      responseType: z.string().default('code'),
+      pkceType: z.string().default(''),
       refreshToken: z.string().default(''),
-      accessToken: z.string().default(''),
     }),
   ).default([]),
 });
