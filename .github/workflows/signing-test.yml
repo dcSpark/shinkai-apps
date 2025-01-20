@@ -46,7 +46,7 @@ jobs:
       - name: Cert to file
         shell: bash
         run: |
-          echo -n "$EV_CODE_SIGNING_CERTIFICATE" | base64 --decode -o OS20241029372986.pem
+          echo -n "$EV_CODE_SIGNING_CERTIFICATE" > OS20241029372986.cer
 
       - name: Sign
         run: >
