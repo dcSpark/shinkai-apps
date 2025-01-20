@@ -258,32 +258,38 @@ jobs:
 # --- Signing process ---
       - name: 'Google auth'
         id: 'auth'
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         uses: 'google-github-actions/auth@v2'
         with:
           project_id: 'shinkai-412316'
           workload_identity_provider: 'projects/511721742630/locations/global/workloadIdentityPools/github/providers/shinkai-apps'
 
       - name: 'Set up Cloud SDK'
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         uses: 'google-github-actions/setup-gcloud@v2'
         with:
           project_id: 'shinkai-412316'
 
       - name: Set up Java
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'temurin'
 
       - name: Download Jsign
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         shell: bash
         run: choco install jsign
 
       - name: Cert to file
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         shell: bash
         run: |
           echo -n "$EV_CODE_SIGNING_CERTIFICATE" > OS20241029372986.cer
 
       - name: Sign
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         shell: bash
         run: >
           jsign \
