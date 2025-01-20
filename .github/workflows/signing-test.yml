@@ -1,4 +1,4 @@
-name: PR CI Health checks
+name: Sign test
 
 on:
   pull_request:
