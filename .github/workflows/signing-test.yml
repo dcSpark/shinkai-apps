@@ -44,6 +44,7 @@ jobs:
         run: curl -O https://github.com/ebourg/jsign/releases/download/7.0/jsign-7.0.jar
 
       - name: Cert to file
+        shell: bash
         run: |
           echo -n "$EV_CODE_SIGNING_CERTIFICATE" | base64 --decode -o OS20241029372986.pem
 
