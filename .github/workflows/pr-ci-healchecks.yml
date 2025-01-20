@@ -37,7 +37,7 @@ jobs:
       - name: Download side binaries
         env:
           ARCH: x86_64-unknown-linux-gnu
-          SHINKAI_NODE_VERSION: v0.9.5
+          SHINKAI_NODE_VERSION: v0.9.6
           OLLAMA_VERSION: v0.5.4
         run: |
           npx ts-node ./ci-scripts/download-side-binaries.ts
