@@ -305,6 +305,10 @@ export type RemovePlaygroundToolRequest = {
   tool_key: string;
 };
 
+export type RemoveToolRequest = {
+  tool_key: string;
+};
+
 export type ImportToolRequest = {
   url: string;
 };
