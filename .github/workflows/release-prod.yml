@@ -209,7 +209,7 @@ jobs:
       - name: Download side binaries
         env:
           ARCH: ${{ matrix.arch }}
-          SHINKAI_NODE_VERSION: v0.9.5
+          SHINKAI_NODE_VERSION: v0.9.6
           OLLAMA_VERSION: v0.5.4
         run: |
           npx ts-node ./ci-scripts/download-side-binaries.ts
@@ -257,12 +257,12 @@ jobs:
 
 # --- Signing process ---
       - name: 'Google auth'
-        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         id: 'auth'
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         uses: 'google-github-actions/auth@v2'
         with:
-          workload_identity_provider: '${{ secrets.WIF_PROVIDER }}'
-          service_account: '${{ secrets.SERVICE_ACCOUNT }}'
+          project_id: 'shinkai-412316'
+          workload_identity_provider: 'projects/511721742630/locations/global/workloadIdentityPools/github/providers/shinkai-apps'
 
       - name: 'Set up Cloud SDK'
         if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
@@ -270,33 +270,37 @@ jobs:
         with:
           project_id: 'shinkai-412316'
 
-
       - name: Set up Java
         if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'temurin'
+
       - name: Download Jsign
-        run: wget https://github.com/ebourg/jsign/releases/download/7.0/jsign-7.0.jar
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
+        shell: bash
+        run: choco install jsign
 
       - name: Cert to file
         if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
+        shell: bash
         run: |
-          echo -n "$EV_CODE_SIGNING_CERTIFICATE" | base64 --decode -o OS20241029372986.pem
+          echo -n "$EV_CODE_SIGNING_CERTIFICATE" > OS20241029372986.cer
 
       - name: Sign
         if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
+        shell: bash
         run: >
-          java -jar jsign.jar \
+          jsign \
               --storetype GOOGLECLOUD \
               --storepass "$(gcloud auth print-access-token)" \
               --keystore "projects/shinkai-412316/locations/us/keyRings/shinkai-apps" \
               --alias "EVCodeSigning" \
-              --certfile "OS20241029372986.pem" \
+              --certfile "OS20241029372986.cer" \
               --tsmode RFC3161 \
               --tsaurl http://timestamp.globalsign.com/tsa/r6advanced1 \
-              ${{ matrix.build_output_file_path }}
+              "${{ matrix.build_output_file_path }}"
 # ---
 
       - name: Prepare binary files
