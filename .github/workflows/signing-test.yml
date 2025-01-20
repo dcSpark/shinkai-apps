@@ -51,7 +51,7 @@ jobs:
       - name: Sign
         shell: bash
         run: >
-          java -jar jsign.jar \
+          java -jar jsign-7.0.jar \
               --storetype GOOGLECLOUD \
               --storepass "$(gcloud auth print-access-token)" \
               --keystore "projects/shinkai-412316/locations/us/keyRings/shinkai-apps" \
