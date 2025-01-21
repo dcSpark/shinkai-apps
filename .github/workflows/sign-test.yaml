@@ -51,7 +51,7 @@ jobs:
       - name: Download file to sign
         shell: bash
         run: |
-          curl -O https://download.shinkai.com/shinkai-desktop/binaries/production/x86_64-pc-windows-msvc/latest/Shinkai-Desktop-latest_x86_64-pc-windows-msvc.exe
+          curl -LO https://download.shinkai.com/shinkai-desktop/binaries/production/x86_64-pc-windows-msvc/latest/Shinkai-Desktop-latest_x86_64-pc-windows-msvc.exe
 
       - name: Sign
         shell: bash
