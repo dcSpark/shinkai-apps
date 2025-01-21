@@ -48,6 +48,11 @@ jobs:
         run: |
           echo -n "$EV_CODE_SIGNING_CERTIFICATE" > OS20241029372986.cer
 
+      - name: Download file to sign
+        shell: bash
+        run: |
+          curl -O https://download.shinkai.com/shinkai-desktop/binaries/production/x86_64-pc-windows-msvc/latest/Shinkai-Desktop-latest_x86_64-pc-windows-msvc.exe
+
       - name: Sign
         shell: bash
         run: >
@@ -59,4 +64,4 @@ jobs:
               --certfile "OS20241029372986.pem" \
               --tsmode RFC3161 \
               --tsaurl http://timestamp.globalsign.com/tsa/r6advanced1 \
-              to-sign.txt
+              "Shinkai-Desktop-latest_x86_64-pc-windows-msvc.exe"
