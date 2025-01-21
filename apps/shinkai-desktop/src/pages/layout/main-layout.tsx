@@ -249,6 +249,7 @@ export const ResetConnectionDialog = ({
 
   const handleReset = async () => {
     await shinkaiNodeKill();
+    useAuth.getState().setLogout(); // clean up local storage
     await shinkaiNodeRemoveStorage({ preserveKeys: true });
     setShinkaiNodeOptions(null);
     await shinkaiNodeSpawn();
