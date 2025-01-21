@@ -7,7 +7,6 @@ export class NodeManager {
     FIRST_DEVICE_NEEDS_REGISTRATION_CODE: false,
     GLOBAL_IDENTITY_NAME: '@@localhost.shinkai',
     EMBEDDINGS_SERVER_URL: 'https://internal.shinkai.com/x-embed-api',
-    UNSTRUCTURED_SERVER_URL: 'https://internal.shinkai.com/x-unstructured-api',
     NO_SECRET_FILE: true,
     NODE_STORAGE_PATH: path.join(__dirname, '../shinkai-node/db'),
     NODE_API_IP: '127.0.0.1',
