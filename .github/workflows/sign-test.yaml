@@ -25,7 +25,7 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           project_id: 'shinkai-412316'
-          workload_identity_provider: 'projects/511721742630/locations/global/workloadIdentityPools/github/providers/shinkai-apps'
+          workload_identity_provider: 'projects/511721742630/locations/global/workloadIdentityPools/github/attribute.repository/shinkai-apps'
 
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v2'
