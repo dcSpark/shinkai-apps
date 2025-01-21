@@ -239,6 +239,7 @@ export const ResetConnectionDialog = ({
           };
           setAuth(updatedSetupData);
           navigate('/ai-model-installation');
+          onOpenChange(false);
         } else {
           submitRegistrationNoCodeError();
         }

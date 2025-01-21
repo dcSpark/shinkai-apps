@@ -45,7 +45,6 @@ export const ShinkaiNodeRunningOverlay = ({
     { refetchInterval: 1000, enabled: !!healthError },
   );
 
-  console.log(lastNLogs, 'lastNLogs');
   const [isResetConnectionDialogOpen, setIsResetConnectionDialogOpen] =
     useState(false);
 
