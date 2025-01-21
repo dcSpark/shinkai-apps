@@ -38,6 +38,7 @@ import {
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { listen } from '@tauri-apps/api/event';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
 import { ArrowLeftToLine, ArrowRightToLine, BotIcon } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
@@ -668,6 +669,7 @@ const MainLayout = () => {
       }
     });
 
+    getCurrentWindow().emit('shinkai-app-ready');
     return () => {
       unlisten.then((fn) => fn());
     };
@@ -690,7 +692,7 @@ const MainLayout = () => {
     } else {
       setNeedsResetApp(false);
     }
-  }, [isSuccess, nodeInfo?.status, isFetching]);
+  }, [isSuccess, nodeInfo, isFetching, t]);
 
   const disabledSidebarRoutes = [
     '/connect-ai',
