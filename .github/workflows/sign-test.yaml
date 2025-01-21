@@ -25,7 +25,7 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           project_id: 'shinkai-412316'
-          workload_identity_provider: 'projects/511721742630/locations/global/workloadIdentityPools/github/attribute.repository/shinkai-apps'
+          workload_identity_provider: 'projects/511721742630/locations/global/workloadIdentityPools/github/providers/shinkai-apps'
 
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v2'
@@ -60,7 +60,7 @@ jobs:
               --storetype GOOGLECLOUD \
               --storepass "$(gcloud auth print-access-token)" \
               --keystore "projects/shinkai-412316/locations/us/keyRings/shinkai-apps" \
-              --alias "EVCodeSigning" \
+              --alias "EVCodeSigning/cryptoKeyVersions/1" \
               --certfile "OS20241029372986.cer" \
               --tsmode RFC3161 \
               --tsaurl http://timestamp.globalsign.com/tsa/r6advanced1 \
