@@ -257,7 +257,10 @@ export const ResetConnectionDialog = ({
     <AlertDialog onOpenChange={onOpenChange} open={isOpen}>
       <AlertDialogContent className="w-[75%]">
         {allowClose && (
-          <AlertDialogCancel className="absolute right-3 top-3 border-0">
+          <AlertDialogCancel
+            className="absolute right-3 top-3 border-0"
+            disabled={isResetLoading}
+          >
             <XIcon className="h-4 w-4" />
           </AlertDialogCancel>
         )}

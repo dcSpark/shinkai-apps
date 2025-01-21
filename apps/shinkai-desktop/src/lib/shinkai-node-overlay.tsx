@@ -33,17 +33,19 @@ export const ShinkaiNodeRunningOverlay = ({
     data: health,
     isPending: isHealthPending,
     error: healthError,
+    isError: isHealthError,
   } = useGetHealth(
     { nodeAddress: auth?.node_address ?? '' },
     { refetchInterval: 35000 },
   );
 
-  const { data: tauriLogs } = useRetrieveLogsQuery();
+  const { data: tauriLogs } = useRetrieveLogsQuery({ enabled: !!healthError });
   const { data: lastNLogs } = useShinkaiNodeGetLastNLogsQuery(
     { length: 100 },
-    { refetchInterval: 1000 },
+    { refetchInterval: 1000, enabled: !!healthError },
   );
 
+  console.log(lastNLogs, 'lastNLogs');
   const [isResetConnectionDialogOpen, setIsResetConnectionDialogOpen] =
     useState(false);
 
@@ -60,7 +62,7 @@ export const ShinkaiNodeRunningOverlay = ({
     );
   }
 
-  if (healthError) {
+  if (isHealthError) {
     return (
       <div className="flex size-full items-center justify-center">
         <div
@@ -73,9 +75,9 @@ export const ShinkaiNodeRunningOverlay = ({
               {healthError.message}
             </pre>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <Button
-              className="min-w-[120px]"
+              className="min-w-[140px]"
               onClick={async () => {
                 const file = new Blob(
                   [
@@ -84,7 +86,7 @@ export const ShinkaiNodeRunningOverlay = ({
                     '\n',
                     '\n',
                     '\n',
-                    '[[SHINKAI_LOGS]]: \n',
+                    '[[NODE_LOGS]]: \n',
                     (lastNLogs ?? [])
                       .map(
                         (log) =>
@@ -133,7 +135,7 @@ export const ShinkaiNodeRunningOverlay = ({
               Download Logs
             </Button>
             <Button
-              className="min-w-[120px]"
+              className="min-w-[140px]"
               onClick={() => setIsResetConnectionDialogOpen(true)}
               size="sm"
               type="button"
