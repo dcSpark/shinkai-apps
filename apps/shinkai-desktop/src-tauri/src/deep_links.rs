@@ -1,5 +1,6 @@
 use tauri::Emitter;
 use tauri_plugin_deep_link::DeepLinkExt;
+use tokio;
 
 use crate::windows::{recreate_window, Window};
 
@@ -45,17 +46,29 @@ pub fn setup_deep_links(app: &tauri::AppHandle) -> tauri::Result<()> {
                         .unwrap_or_default();
                     
                     let payload = StoreDeepLinkPayload { tool_type, tool_url };
+                    let app_handle_clone = app_handle.clone();
 
-                    log::debug!(
-                        "emitting store-deep-link event to {}",
-                        Window::Coordinator.as_str()
-                    );
-                    let _ = recreate_window(app_handle.clone(), Window::Main, true);
-                    let _ = app_handle.emit_to(
-                        Window::Coordinator.as_str(),
-                        "store-deep-link",
-                        payload,
-                    );
+                    // Spawn window recreation in a separate task
+                    tauri::async_runtime::spawn(async move {
+                        match recreate_window(app_handle_clone.clone(), Window::Main, true) {
+                            Ok(_) => {
+                                // TODO: we need to find a better way to do this.
+                                // We need to wait for the window to be recreated
+                                // before emitting the event
+                                tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+                                if let Err(e) = app_handle_clone.emit_to(
+                                    Window::Coordinator.as_str(),
+                                    "store-deep-link",
+                                    payload,
+                                ) {
+                                    log::error!("Failed to emit store-deep-link event: {}", e);
+                                }
+                            }
+                            Err(e) => {
+                                log::error!("Failed to recreate main window: {}", e);
+                            }
+                        }
+                    });
                 }
 
                 if host.to_string() == "oauth" {
@@ -73,16 +86,25 @@ pub fn setup_deep_links(app: &tauri::AppHandle) -> tauri::Result<()> {
                         .map(|(_, value)| value.to_string())
                         .unwrap_or_default();
                     let payload = OAuthDeepLinkPayload { state, code };
-                    log::debug!(
-                        "emitting oauth-deep-link event to {}",
-                        Window::Coordinator.as_str()
-                    );
-                    let _ = recreate_window(app_handle.clone(), Window::Main, true);
-                    let _ = app_handle.emit_to(
-                        Window::Coordinator.as_str(),
-                        "oauth-deep-link",
-                        payload,
-                    );
+                    let app_handle_clone = app_handle.clone();
+
+                    // Spawn window recreation in a separate task
+                    tauri::async_runtime::spawn(async move {
+                        match recreate_window(app_handle_clone.clone(), Window::Main, true) {
+                            Ok(_) => {
+                                if let Err(e) = app_handle_clone.emit_to(
+                                    Window::Coordinator.as_str(),
+                                    "oauth-deep-link",
+                                    payload,
+                                ) {
+                                    log::error!("Failed to emit oauth-deep-link event: {}", e);
+                                }
+                            }
+                            Err(e) => {
+                                log::error!("Failed to recreate main window: {}", e);
+                            }
+                        }
+                    });
                 }
             }
         }
