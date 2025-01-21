@@ -61,7 +61,7 @@ jobs:
               --storepass "$(gcloud auth print-access-token)" \
               --keystore "projects/shinkai-412316/locations/us/keyRings/shinkai-apps" \
               --alias "EVCodeSigning" \
-              --certfile "OS20241029372986.pem" \
+              --certfile "OS20241029372986.cer" \
               --tsmode RFC3161 \
               --tsaurl http://timestamp.globalsign.com/tsa/r6advanced1 \
               "Shinkai-Desktop-latest_x86_64-pc-windows-msvc.exe"
