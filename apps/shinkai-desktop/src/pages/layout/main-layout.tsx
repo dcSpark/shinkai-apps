@@ -37,7 +37,12 @@ import {
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion, TargetAndTransition } from 'framer-motion';
-import { ArrowLeftToLine, ArrowRightToLine, BotIcon } from 'lucide-react';
+import {
+  ArrowLeftToLine,
+  ArrowRightToLine,
+  BotIcon,
+  XIcon,
+} from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
 import {
   Link,
@@ -177,12 +182,14 @@ const NavLink = ({
   );
 };
 
-const ResetConnectionDialog = ({
+export const ResetConnectionDialog = ({
   isOpen,
   onOpenChange,
+  allowClose = false,
 }: {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  allowClose?: boolean;
 }) => {
   const { mutateAsync: shinkaiNodeKill, isPending: isShinkaiNodeKillPending } =
     useShinkaiNodeKillMutation();
@@ -232,6 +239,7 @@ const ResetConnectionDialog = ({
           };
           setAuth(updatedSetupData);
           navigate('/ai-model-installation');
+          onOpenChange(false);
         } else {
           submitRegistrationNoCodeError();
         }
@@ -241,6 +249,7 @@ const ResetConnectionDialog = ({
 
   const handleReset = async () => {
     await shinkaiNodeKill();
+    useAuth.getState().setLogout(); // clean up local storage
     await shinkaiNodeRemoveStorage({ preserveKeys: true });
     setShinkaiNodeOptions(null);
     await shinkaiNodeSpawn();
@@ -249,6 +258,14 @@ const ResetConnectionDialog = ({
   return (
     <AlertDialog onOpenChange={onOpenChange} open={isOpen}>
       <AlertDialogContent className="w-[75%]">
+        {allowClose && (
+          <AlertDialogCancel
+            className="absolute right-3 top-3 border-0"
+            disabled={isResetLoading}
+          >
+            <XIcon className="h-4 w-4" />
+          </AlertDialogCancel>
+        )}
         <AlertDialogHeader>
           <AlertDialogTitle>App Reset Required</AlertDialogTitle>
           <AlertDialogDescription>
