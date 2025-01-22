@@ -191,7 +191,9 @@ export default function ToolCard({
           .map(({ label, value }) => (
             <div className="flex flex-col gap-1 py-4" key={label}>
               <span className="text-gray-80 text-xs">{label}</span>
-              <span className="text-sm text-white">{value}</span>
+              <span className="whitespace-pre-wrap text-sm text-white">
+                {value}
+              </span>
             </div>
           ))}
 
@@ -246,7 +248,7 @@ export default function ToolCard({
             </Link>
           )}
           <RemoveToolButton
-            isPlaygroundTool={isPlaygroundTool}
+            isPlaygroundTool={!!isPlaygroundTool}
             toolKey={toolKey as string}
           />
         </div>
