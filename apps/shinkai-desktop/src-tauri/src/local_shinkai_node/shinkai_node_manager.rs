@@ -91,6 +91,7 @@ impl ShinkaiNodeManager {
                 self.emit_event(ShinkaiNodeManagerEvent::OllamaStarted);
             }
             Err(e) => {
+                log::info!("failed spawning ollama process {:?}", e);
                 self.kill().await;
                 self.emit_event(ShinkaiNodeManagerEvent::OllamaStartError { error: e.clone() });
                 return Err(e);
@@ -102,6 +103,7 @@ impl ShinkaiNodeManager {
 
         let installed_models_response = ollama_api.tags().await;
         if let Err(e) = installed_models_response {
+            log::info!("failed spawning ollama process api tags {:?}", e);
             self.kill().await;
             self.emit_event(ShinkaiNodeManagerEvent::OllamaStartError {
                 error: "unable to list installed models".to_string(),
