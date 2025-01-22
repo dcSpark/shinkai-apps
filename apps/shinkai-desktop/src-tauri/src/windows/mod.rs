@@ -1,4 +1,4 @@
-use tauri::{AppHandle, Manager, WebviewWindow, WebviewWindowBuilder};
+use tauri::{AppHandle, Error, Manager, WebviewWindow, WebviewWindowBuilder};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Window {
@@ -17,6 +17,25 @@ impl Window {
             Window::Coordinator => "coordinator",
         }
     }
+}
+
+pub fn get_window(app_handle: AppHandle, window_name: Window, focus: bool) -> tauri::Result<WebviewWindow> {
+    let label = window_name.as_str();
+    if let Some(window) = app_handle.get_webview_window(label) {
+        log::info!("window {} found, bringing to front", label);
+        if focus {
+            log::info!("focusing window {}", label);
+            if window.is_minimized().unwrap_or_default() {
+                let _ = window.unminimize();
+            }
+            window.show().unwrap();
+            // window.center().unwrap();
+            let _ = window.set_focus();
+        }
+        return Ok(window);
+    }
+    log::info!("window {} not found", label);
+    Err(Error::WindowNotFound)
 }
 
 pub fn recreate_window(app_handle: AppHandle, window_name: Window, focus: bool) -> tauri::Result<WebviewWindow> {
