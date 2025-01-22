@@ -10,10 +10,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "2.0.3", features = [] }
+tauri-build = { version = "2.0.5", features = [] }
 
 [dependencies]
-tauri = { version = "2.1.1", features = [ "macos-private-api", "tray-icon", "image-png"] }
+tauri = { version = "2.2.3", features = [ "macos-private-api", "tray-icon", "image-png"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 whisper-rs = "0.8.0"
@@ -50,9 +50,12 @@ tauri-plugin-fs ="2.2"
 tauri-plugin-os = "2.2"
 tauri-plugin-process = "2.2"
 tauri-plugin-log = "2.2"
-tauri-plugin-deep-link = "2.2"
+tauri-plugin-deep-link = "2.2.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
+
+[patch.crates-io]
+"tauri" = { git = "https://github.com/bastiankistner/tauri", branch = "feat/background-throttling-pr" }
