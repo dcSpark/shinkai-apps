@@ -419,16 +419,16 @@ export const MessageBase = ({
                       <DotsLoader />
                     </div>
                   )}
-                {pythonCode && !hidePythonExecution && (
-                  <PythonCodeRunner
-                    code={pythonCode}
-                    jobId={extractJobIdFromInbox(
-                      message.metadata.inboxId ?? '',
-                    )}
-                    nodeAddress={auth?.node_address ?? ''}
-                    token={auth?.api_v2_key ?? ''}
-                  />
-                )}
+                {pythonCode &&
+                  !hidePythonExecution &&
+                  message.metadata.inboxId && (
+                    <PythonCodeRunner
+                      code={pythonCode}
+                      jobId={extractJobIdFromInbox(message.metadata.inboxId)}
+                      nodeAddress={auth?.node_address ?? ''}
+                      token={auth?.api_v2_key ?? ''}
+                    />
+                  )}
 
                 {oauthUrl && (
                   <div className="mt-4 flex flex-col items-start rounded-lg bg-gray-900 p-4 shadow-md">
