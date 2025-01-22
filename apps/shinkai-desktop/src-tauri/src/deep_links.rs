@@ -70,7 +70,7 @@ pub fn setup_deep_links(app: &tauri::AppHandle) -> tauri::Result<()> {
                                             let _ = app_handle_clone.emit_to(
                                                 Window::Main.as_str(),
                                                 "store-deep-link",
-                                                payload.clone(),
+                                                payload,
                                             );
                                         });
                                     }
