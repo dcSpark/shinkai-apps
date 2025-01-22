@@ -26,6 +26,7 @@ jobs:
         with:
           project_id: 'shinkai-412316'
           workload_identity_provider: 'projects/511721742630/locations/global/workloadIdentityPools/github/providers/shinkai-apps'
+          service_account: 'github-ksm-ev-code-signing@shinkai-412316.iam.gserviceaccount.com'
 
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v2'
