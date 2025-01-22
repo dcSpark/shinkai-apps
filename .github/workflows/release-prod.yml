@@ -258,45 +258,53 @@ jobs:
 # --- Signing process ---
       - name: 'Google auth'
         id: 'auth'
-        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         uses: 'google-github-actions/auth@v2'
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         with:
           project_id: 'shinkai-412316'
           workload_identity_provider: 'projects/511721742630/locations/global/workloadIdentityPools/github/providers/shinkai-apps'
+          service_account: 'github-ksm-ev-code-signing@shinkai-412316.iam.gserviceaccount.com'
 
       - name: 'Set up Cloud SDK'
-        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         uses: 'google-github-actions/setup-gcloud@v2'
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         with:
           project_id: 'shinkai-412316'
 
+
       - name: Set up Java
-        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         uses: actions/setup-java@v4
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         with:
           java-version: 17
           distribution: 'temurin'
 
       - name: Download Jsign
-        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         shell: bash
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         run: choco install jsign
 
       - name: Cert to file
-        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         shell: bash
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         run: |
-          echo -n "$EV_CODE_SIGNING_CERTIFICATE" > OS20241029372986.cer
+          echo -n "${{ secrets.EV_CODE_SIGNING_CERTIFICATE }}" > OS20241029372986.cer
+
+      - name: Download file to sign
+        shell: bash
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
+        run: |
+          curl -LO https://download.shinkai.com/shinkai-desktop/binaries/production/x86_64-pc-windows-msvc/latest/Shinkai-Desktop-latest_x86_64-pc-windows-msvc.exe
 
       - name: Sign
-        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         shell: bash
+        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         run: >
           jsign \
               --storetype GOOGLECLOUD \
               --storepass "$(gcloud auth print-access-token)" \
               --keystore "projects/shinkai-412316/locations/us/keyRings/shinkai-apps" \
-              --alias "EVCodeSigning" \
+              --alias "EVCodeSigning/cryptoKeyVersions/1" \
               --certfile "OS20241029372986.cer" \
               --tsmode RFC3161 \
               --tsaurl http://timestamp.globalsign.com/tsa/r6advanced1 \

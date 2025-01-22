@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
+import { useSettings } from './settings';
+
 export type SetupData = {
   profile: string;
   permission_type: string;
@@ -31,7 +33,10 @@ export const useAuth = create<AuthStore>()(
       (set) => ({
         auth: null,
         setAuth: (auth: SetupData) => set({ auth }),
-        setLogout: () => set({ auth: null }),
+        setLogout: () => {
+          set({ auth: null });
+          useSettings.getState().resetSettings();
+        },
       }),
       {
         name: 'auth',

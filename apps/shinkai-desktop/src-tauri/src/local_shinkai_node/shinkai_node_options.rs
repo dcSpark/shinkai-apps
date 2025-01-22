@@ -14,7 +14,6 @@ pub struct ShinkaiNodeOptions {
     pub node_port: Option<String>,
     pub global_identity_name: Option<String>,
     pub node_storage_path: Option<String>,
-    pub unstructured_server_url: Option<String>,
     pub embeddings_server_url: Option<String>,
     pub first_device_needs_registration_code: Option<String>,
     pub initial_agent_names: Option<String>,
@@ -120,12 +119,6 @@ impl ShinkaiNodeOptions {
                 options
                     .node_storage_path
                     .or(base_options.node_storage_path)
-                    .unwrap_or_default(),
-            ),
-            unstructured_server_url: Some(
-                options
-                    .unstructured_server_url
-                    .or(base_options.unstructured_server_url)
                     .unwrap_or_default(),
             ),
             embeddings_server_url: Some(
@@ -251,7 +244,6 @@ impl Default for ShinkaiNodeOptions {
             node_https_port: Some("9553".to_string()),
             global_identity_name: None,
             node_storage_path: Some("./".to_string()),
-            unstructured_server_url: Some("https://public.shinkai.com/x-un".to_string()),
             embeddings_server_url: Some("http://127.0.0.1:11435".to_string()),
             first_device_needs_registration_code: Some("false".to_string()),
             initial_agent_urls: Some("http://127.0.0.1:11435".to_string()),

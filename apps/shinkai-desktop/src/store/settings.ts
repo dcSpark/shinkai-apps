@@ -28,6 +28,7 @@ type SettingsStore = {
   setCompatibilityBannerDismissed: (dismissed: boolean) => void;
   isChatSidebarCollapsed: boolean;
   setChatSidebarCollapsed: (isChatSidebarCollapsed: boolean) => void;
+  resetSettings: () => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -96,6 +97,23 @@ export const useSettings = create<SettingsStore>()(
         isChatSidebarCollapsed: false,
         setChatSidebarCollapsed: (isChatSidebarCollapsed) => {
           set({ isChatSidebarCollapsed });
+        },
+
+        resetSettings: () => {
+          set({
+            defaultAgentId: '',
+            defaultSpotlightAiId: '',
+            // sidebarExpanded: false,
+            // isGetStartedChecklistHidden: false,
+            // termsAndConditionsAccepted: undefined,
+            // optInAnalytics: undefined,
+            // optInExperimental: false,
+            // userLanguage: 'auto',
+            // evmAddress: '',
+            // heightRow: 'large',
+            // compatibilityBannerDismissed: false,
+            // isChatSidebarCollapsed: false,
+          });
         },
       }),
       {

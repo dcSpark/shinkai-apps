@@ -100,7 +100,6 @@ export type ShinkaiNodeOptions = {
    node_port?: string,
    global_identity_name?: string,
    node_storage_path?: string,
-   unstructured_server_url?: string,
    embeddings_server_url?: string,
    first_device_needs_registration_code?: string,
    initial_agent_names?: string,
