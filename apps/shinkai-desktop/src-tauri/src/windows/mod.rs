@@ -1,4 +1,4 @@
-use tauri::{AppHandle, Error, Manager, WebviewWindow, WebviewWindowBuilder};
+use tauri::{utils::config::BackgroundThrottlingPolicy, AppHandle, Error, Manager, WebviewWindow, WebviewWindowBuilder};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Window {
