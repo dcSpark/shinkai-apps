@@ -284,7 +284,7 @@ export default function ToolCard({
         </TabsList>
 
         <TabsContent className="space-y-4" value="description">
-          <div className={boxContainerClass}>
+          <div className={cn(boxContainerClass, 'gap-7')}>
             {[
               {
                 label: 'Description',
@@ -300,6 +300,14 @@ export default function ToolCard({
                   label: 'Keyword',
                   value: tool.keywords.join(', '),
                 },
+              {
+                label: 'Language',
+                value: toolType,
+              },
+              'version' in tool && {
+                label: 'Version',
+                value: tool.version,
+              },
             ]
               .filter((item) => !!item)
               .map(({ label, value }) => (
