@@ -46,3 +46,19 @@ export function getLanguage(language: string): CodeLanguage {
       return CodeLanguage.Typescript;
   }
 }
+
+export function parseJsonFromCodeBlock(
+  text: string,
+): Record<string, unknown> | null {
+  const regex = /```json([\s\S]*?)```/i;
+  const match = text.match(regex);
+  if (!match) return null;
+  const jsonString = match[1];
+  const sanitized = jsonString.replace(/,\s*([\]}])/g, '$1');
+  try {
+    return JSON.parse(sanitized);
+  } catch (error) {
+    console.error('Error parseJsonFromCodeBlock:', error);
+    return null;
+  }
+}

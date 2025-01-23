@@ -482,7 +482,7 @@ export function AuthorAvatarLink({ author }: { author: string }) {
   );
 }
 
-export function ToolIcon({ icon }: { icon?: string }) {
+export function ToolIcon() {
   return (
     <div className="from-brand-500 to-brand-600 flex size-10 items-center justify-center rounded-lg border border-gray-300 bg-gray-500 bg-gradient-to-tr text-gray-50">
       <svg
