@@ -55,5 +55,10 @@ export function parseJsonFromCodeBlock(
   if (!match) return null;
   const jsonString = match[1];
   const sanitized = jsonString.replace(/,\s*([\]}])/g, '$1');
-  return JSON.parse(sanitized);
+  try {
+    return JSON.parse(sanitized);
+  } catch (error) {
+    console.error('Error parseJsonFromCodeBlock:', error);
+    return null;
+  }
 }
