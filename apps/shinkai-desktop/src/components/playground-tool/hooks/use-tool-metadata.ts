@@ -9,6 +9,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
 import { ToolMetadataSchema } from '../schemas';
+import { JSONExtractor } from '../../../utils/JSONExtractor';
 
 export const useToolMetadata = ({
   chatInboxId,
@@ -94,12 +95,11 @@ export const useToolMetadata = ({
       metadata?.role === 'assistant' &&
       metadata?.status.type === 'complete'
     ) {
-      const jsonCodeMatch = metadata.content.match(/```json\n([\s\S]*?)\n```/);
-      if (jsonCodeMatch) {
+      const extractedMetadata = JSONExtractor.extractAndParseFirstJson(metadata.content);
+      if (extractedMetadata) {
         try {
-          const parsedJson = JSON.parse(jsonCodeMatch[1].trim());
           const parsedMetadata = ToolMetadataSchema.parse(
-            parsedJson,
+            extractedMetadata,
           ) as ToolMetadata;
           setMetadataData({
             ...parsedMetadata,
