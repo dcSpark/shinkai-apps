@@ -8,8 +8,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
-import { ToolMetadataSchema } from '../schemas';
 import { JSONExtractor } from '../../../utils/JSONExtractor';
+import { ToolMetadataSchema } from '../schemas';
 
 export const useToolMetadata = ({
   chatInboxId,
