@@ -8,8 +8,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
-import { JSONExtractor } from '../../../utils/JSONExtractor';
 import { ToolMetadataSchema } from '../schemas';
+import { parseJsonFromCodeBlock } from '../utils/code';
 
 export const useToolMetadata = ({
   chatInboxId,
@@ -95,7 +95,7 @@ export const useToolMetadata = ({
       metadata?.role === 'assistant' &&
       metadata?.status.type === 'complete'
     ) {
-      const extractedMetadata = JSONExtractor.extractAndParseFirstJson(metadata.content);
+      const extractedMetadata = parseJsonFromCodeBlock(metadata.content);
       if (extractedMetadata) {
         try {
           const parsedMetadata = ToolMetadataSchema.parse(
