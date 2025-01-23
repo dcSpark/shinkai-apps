@@ -8,6 +8,8 @@ import {
   StrictRJSFSchema,
 } from '@rjsf/utils';
 
+import { cn } from '../../../utils';
+
 export default function ArrayFieldTemplate<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
@@ -68,7 +70,7 @@ export default function ArrayFieldTemplate<
             schema={schema}
             uiSchema={uiSchema}
           />
-          <div className="m-0 w-full rounded-md border border-gray-200 bg-gray-400 p-4">
+          <div className={cn('m-0 w-full py-4', items.length === 1 && 'py-0')}>
             {items &&
               items.map(
                 ({

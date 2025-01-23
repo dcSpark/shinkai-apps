@@ -37,16 +37,17 @@ function EditToolPage() {
           ? 'success'
           : ('idle' as 'idle' | 'pending' | 'success' | 'error'),
     }),
-    [
-      isPlaygroundToolError,
-      isPlaygroundToolPending,
-      isPlaygroundToolSuccess,
-      playgroundTool?.code,
-    ],
+    [isPlaygroundToolPending, isPlaygroundToolSuccess, playgroundTool?.code],
   );
 
   const isValidSchema = validator.ajv.validateSchema(
     playgroundTool?.metadata?.parameters ?? {},
+  );
+
+  console.log(
+    playgroundTool?.metadata?.parameters,
+    'playgroundTool?.metadata?.parameters',
+    isValidSchema,
   );
 
   const toolMetadataInitialValues = useMemo(

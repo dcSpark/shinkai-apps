@@ -42,6 +42,21 @@ type JSToolResult = {
   properties: Record<string, string>;
   required: string[];
 };
+
+export type OAuth = {
+  name: string;
+  authorizationUrl: string;
+  tokenUrl: string;
+  clientId: string;
+  clientSecret: string;
+  redirectUrl: string;
+  version: '1.0' | '2.0';
+  responseType: 'code';
+  scopes: string[];
+  pkceType: 'plain' | undefined;
+  refreshToken: 'false' | 'true' | undefined;
+};
+
 export type DenoShinkaiTool = {
   toolkit_name: string;
   tool_router_key?: string;
@@ -51,6 +66,7 @@ export type DenoShinkaiTool = {
   config: ToolConfig[];
   description: string;
   keywords: string[];
+  oauth: OAuth[];
   input_args: ToolArgument[];
   config_set: boolean;
   activated: boolean;
@@ -65,7 +81,7 @@ export type PythonShinkaiTool = {
   description: string;
   config: ToolConfig[];
   name: string;
-  oauth: string;
+  oauth: OAuth[];
   py_code: string;
   output_arg: {
     json: string;
