@@ -68,7 +68,7 @@ export default function ArrayFieldTemplate<
             schema={schema}
             uiSchema={uiSchema}
           />
-          <div className="m-0 w-full rounded-md border border-gray-200 bg-gray-400 p-4">
+          <div className="m-0 w-full py-4">
             {items &&
               items.map(
                 ({

@@ -2,6 +2,7 @@ import { FormProps } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
+  OAuth,
   ShinkaiTool,
   ShinkaiToolType,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
@@ -44,6 +45,9 @@ export default function ToolCard({
   const auth = useAuth((state) => state.auth);
   const { toolKey } = useParams();
   const [formData, setFormData] = useState<Record<string, any> | null>(null);
+  const [oauthFormData, setOAuthFormData] = useState<{ oauth: OAuth[] } | null>(
+    null,
+  );
   const { t } = useTranslation();
 
   const { mutateAsync: updateTool, isPending } = useUpdateTool({
@@ -53,6 +57,9 @@ export default function ToolCard({
         variables.toolPayload.config?.length > 0
       ) {
         toast.success('Tool configuration updated successfully');
+      }
+      if ('oauth' in variables.toolPayload && variables.toolPayload.oauth) {
+        toast.success('OAuth settings updated successfully');
       }
     },
     onError: (error) => {
@@ -109,7 +116,13 @@ export default function ToolCard({
         ),
       );
     }
-  }, ['config' in tool && tool.config]);
+  }, [tool]);
+
+  useEffect(() => {
+    if ('oauth' in tool && tool.oauth) {
+      setOAuthFormData({ oauth: tool.oauth });
+    }
+  }, [tool]);
 
   const handleSaveToolConfig: FormProps['onSubmit'] = async (data) => {
     const formData = data.formData;
@@ -127,6 +140,20 @@ export default function ToolCard({
       isToolEnabled: true,
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
+    });
+  };
+
+  const handleSaveOAuthConfig: FormProps['onSubmit'] = async (data) => {
+    const oauth = data.formData.oauth;
+    await updateTool({
+      toolKey: toolKey ?? '',
+      toolType: toolType,
+      toolPayload: {
+        oauth,
+      } as ShinkaiTool,
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      isToolEnabled: true,
     });
   };
 
@@ -222,6 +249,78 @@ export default function ToolCard({
                 className="w-full min-w-[100px] rounded-lg border-gray-200 text-white"
                 disabled={isPending}
                 form="parameters-form"
+                isLoading={isPending}
+                size="sm"
+                variant="default"
+              >
+                {t('common.saveChanges')}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {'oauth' in tool && tool.oauth && tool.oauth.length > 0 && (
+          <div className="mx-auto mt-6 w-full border-b border-t border-gray-300 py-6">
+            <div className="mb-4">
+              <h2 className="text-lg font-medium text-white">OAuth</h2>
+              <p className="text-gray-80 text-xs">
+                Configure OAuth settings for this tool
+              </p>
+            </div>
+            <JsonForm
+              className="py-1"
+              formData={oauthFormData}
+              id="oauth-form"
+              noHtml5Validate={true}
+              onChange={(e) => setOAuthFormData(e.formData)}
+              onSubmit={handleSaveOAuthConfig}
+              schema={{
+                type: 'object',
+                properties: {
+                  oauth: {
+                    type: 'array',
+                    maxItems: tool.oauth.length,
+                    minItems: tool.oauth.length,
+                    items: {
+                      type: 'object',
+                      title: '',
+                      properties: {
+                        name: { type: 'string' },
+                        authorizationUrl: { type: 'string' },
+                        redirectUrl: { type: 'string' },
+                        tokenUrl: { type: 'string' },
+                        clientId: { type: 'string' },
+                        clientSecret: { type: 'string' },
+                        scopes: {
+                          type: 'array',
+                          items: { type: 'string' },
+                        },
+                        responseType: { type: 'string' },
+                        pkceType: { type: 'string' },
+                        refreshToken: { type: 'string' },
+                        version: { type: 'string' },
+                      },
+                    },
+                  },
+                },
+              }}
+              uiSchema={{
+                'ui:submitButtonOptions': { norender: true },
+                oauth: {
+                  'ui:options': {
+                    label: false,
+                    removable: false,
+                    addable: false,
+                  },
+                },
+              }}
+              validator={validator}
+            />
+            <div className="flex w-full justify-end">
+              <Button
+                className="w-full min-w-[100px] rounded-lg border-gray-200 text-white"
+                disabled={isPending}
+                form="oauth-form"
                 isLoading={isPending}
                 size="sm"
                 variant="default"
