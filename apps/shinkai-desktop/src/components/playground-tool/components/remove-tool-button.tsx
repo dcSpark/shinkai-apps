@@ -53,7 +53,7 @@ export default function RemoveToolButton({
     <Dialog onOpenChange={setIsOpen} open={isOpen}>
       <DialogTrigger asChild>
         <Button className="rounded-lg" size="sm" variant="outline">
-          Delete Tool
+          Remove Tool
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
