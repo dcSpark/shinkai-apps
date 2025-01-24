@@ -377,3 +377,16 @@ export type DisableAllToolsResponse = {
     activated: boolean;
   };
 };
+
+export type PublishToolRequest = {
+  tool_key_path: string;
+};
+export type PublishToolResponse = {
+  message: string;
+  response: {
+    message: string;
+    revisionId: string;
+  };
+  status: string;
+  tool_key: string;
+};

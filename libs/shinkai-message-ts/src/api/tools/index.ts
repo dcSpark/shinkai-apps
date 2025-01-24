@@ -27,6 +27,8 @@ import {
   ImportToolRequest,
   ImportToolResponse,
   PayInvoiceRequest,
+  PublishToolRequest,
+  PublishToolResponse,
   RemovePlaygroundToolRequest,
   RemoveToolRequest,
   RemoveToolRequestRequest,
@@ -563,4 +565,19 @@ export const disableAllTools = async (
     { headers: { Authorization: `Bearer ${bearerToken}` } },
   );
   return response.data;
+};
+export const publishTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: PublishToolRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/publish_tool'),
+    {
+      params: { tool_key_path: payload.tool_key_path },
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as PublishToolResponse;
 };

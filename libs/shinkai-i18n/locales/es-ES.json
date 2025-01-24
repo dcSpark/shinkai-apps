@@ -1,6 +1,4 @@
 {
-  "": {
-  },
   "aiFilesSearch": {
     "description": "Busca para encontrar contenido en todos los archivos de tus archivos AI fácilmente",
     "filesSelected": "Seleccionados {{count}} archivos",

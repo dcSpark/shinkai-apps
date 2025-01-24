@@ -7,6 +7,7 @@ import {
   ShinkaiToolType,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
+import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import {
   Avatar,
@@ -29,11 +30,13 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
+import { open } from '@tauri-apps/plugin-shell';
 import { DownloadIcon, MoreVertical, PlayCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { isLocalShinkaiNode } from '../../../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
 import { SubpageLayout } from '../../../pages/layout/simple-layout';
 import { useAuth } from '../../../store/auth';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
@@ -45,6 +48,9 @@ interface ToolDetailsProps {
   isPlaygroundTool?: boolean;
   toolType: ShinkaiToolType;
 }
+
+// const SHINKAI_STORE_URL = 'https://store.shinkai.com';
+const SHINKAI_STORE_URL = 'http://localhost:3000/';
 
 export default function ToolCard({
   tool,
@@ -59,6 +65,32 @@ export default function ToolCard({
     null,
   );
   const { t } = useTranslation();
+
+  const { mutateAsync: publishTool, isPending: isPublishingTool } =
+    usePublishTool({
+      // best ux to redirect into another page to fill out extra infromacion
+      onSuccess: (response, variables) => {
+        toast.loading(
+          'Redirecting to Shinkai Store to fill out extra information',
+        );
+        // create a anchor tag and open in a new page
+        // <a href="https://example.com" target="_tauri">
+        //   Example link
+        // </a>;
+        // const a = document.createElement('a');
+        // a.href = `${SHINKAI_DAPP_URL}/store/revisions/complete?id=${variables.toolKey}`;
+        // a.target = '_blank';
+        // a.click();
+        open(
+          `${SHINKAI_DAPP_URL}/store/revisions/complete?id=${variables.toolKey}`,
+        );
+      },
+      onError: (error) => {
+        toast.error('Failed to publish tool', {
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
 
   const { mutateAsync: updateTool, isPending } = useUpdateTool({
     onSuccess: (_, variables) => {
@@ -281,6 +313,17 @@ export default function ToolCard({
               OAuth & Permissions
             </TabsTrigger>
           )}
+
+          {isPlaygroundTool &&
+            'author' in tool &&
+            tool.author === auth?.shinkai_identity && (
+              <TabsTrigger
+                className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+                value="publish"
+              >
+                Publish
+              </TabsTrigger>
+            )}
         </TabsList>
 
         <TabsContent className="space-y-4" value="description">
@@ -452,6 +495,35 @@ export default function ToolCard({
             </div>
           </TabsContent>
         )}
+
+        {isPlaygroundTool &&
+          'author' in tool &&
+          tool.author === auth?.shinkai_identity && (
+            <TabsContent value="publish">
+              <div className={boxContainerClass}>
+                <div className="mb-4">
+                  <h2 className="text-base font-medium text-white">Publish</h2>
+                  <Button
+                    className="min-w-[100px]"
+                    disabled={isPublishingTool}
+                    isLoading={isPublishingTool}
+                    onClick={() => {
+                      publishTool({
+                        toolKey: toolKey ?? '',
+                        nodeAddress: auth?.node_address ?? '',
+                        token: auth?.api_v2_key ?? '',
+                      });
+                    }}
+                    rounded="lg"
+                    size="sm"
+                    variant="outline"
+                  >
+                    Publish
+                  </Button>
+                </div>
+              </div>
+            </TabsContent>
+          )}
       </Tabs>
     </SubpageLayout>
   );
