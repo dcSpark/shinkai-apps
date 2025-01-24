@@ -32,11 +32,12 @@ import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import { open } from '@tauri-apps/plugin-shell';
 import { DownloadIcon, MoreVertical, PlayCircle } from 'lucide-react';
+import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { isLocalShinkaiNode } from '../../../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
+import config from '../../../../src/config';
 import { SubpageLayout } from '../../../pages/layout/simple-layout';
 import { useAuth } from '../../../store/auth';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
@@ -49,8 +50,9 @@ interface ToolDetailsProps {
   toolType: ShinkaiToolType;
 }
 
-// const SHINKAI_STORE_URL = 'https://store.shinkai.com';
-const SHINKAI_STORE_URL = 'http://localhost:3000/';
+const SHINKAI_STORE_URL = config.isDev
+  ? 'http://localhost:3000'
+  : 'https://store.shinkai.com';
 
 export default function ToolCard({
   tool,
@@ -66,31 +68,23 @@ export default function ToolCard({
   );
   const { t } = useTranslation();
 
-  const { mutateAsync: publishTool, isPending: isPublishingTool } =
-    usePublishTool({
-      // best ux to redirect into another page to fill out extra infromacion
-      onSuccess: (response, variables) => {
-        toast.loading(
-          'Redirecting to Shinkai Store to fill out extra information',
-        );
-        // create a anchor tag and open in a new page
-        // <a href="https://example.com" target="_tauri">
-        //   Example link
-        // </a>;
-        // const a = document.createElement('a');
-        // a.href = `${SHINKAI_DAPP_URL}/store/revisions/complete?id=${variables.toolKey}`;
-        // a.target = '_blank';
-        // a.click();
-        open(
-          `${SHINKAI_DAPP_URL}/store/revisions/complete?id=${variables.toolKey}`,
-        );
-      },
-      onError: (error) => {
-        toast.error('Failed to publish tool', {
-          description: error.response?.data?.message ?? error.message,
-        });
-      },
-    });
+  const {
+    mutateAsync: publishTool,
+    isPending: isPublishingTool,
+    data: publishToolData,
+    isSuccess: isPublishToolSuccess,
+  } = usePublishTool({
+    onSuccess: (response) => {
+      open(
+        `${SHINKAI_STORE_URL}/store/revisions/complete?id=${response.response.revisionId}`,
+      );
+    },
+    onError: (error) => {
+      toast.error('Failed to publish tool', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
 
   const { mutateAsync: updateTool, isPending } = useUpdateTool({
     onSuccess: (_, variables) => {
@@ -500,27 +494,63 @@ export default function ToolCard({
           'author' in tool &&
           tool.author === auth?.shinkai_identity && (
             <TabsContent value="publish">
-              <div className={boxContainerClass}>
-                <div className="mb-4">
+              <div
+                className={cn(
+                  boxContainerClass,
+                  'flex-row items-center justify-between gap-7',
+                )}
+              >
+                <div className="space-y-2">
                   <h2 className="text-base font-medium text-white">Publish</h2>
-                  <Button
-                    className="min-w-[100px]"
-                    disabled={isPublishingTool}
-                    isLoading={isPublishingTool}
-                    onClick={() => {
-                      publishTool({
-                        toolKey: toolKey ?? '',
-                        nodeAddress: auth?.node_address ?? '',
-                        token: auth?.api_v2_key ?? '',
-                      });
-                    }}
-                    rounded="lg"
-                    size="sm"
-                    variant="outline"
-                  >
-                    Publish
-                  </Button>
+                  <p className="text-gray-80 text-sm">
+                    Publish your tool to the{' '}
+                    <a
+                      className="text-white underline"
+                      href={SHINKAI_STORE_URL}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      Shinkai App Store
+                    </a>{' '}
+                    to make it available to all Shinkai users.
+                  </p>
+                  {isPublishToolSuccess && (
+                    <div className="flex items-center gap-2 rounded-md py-2 text-xs text-cyan-400">
+                      <InfoCircleIcon className="h-4 w-4 text-inherit" />
+                      <p className="">
+                        Your tool will be validated in the Shinkai App Store.
+                        Click{' '}
+                        <a
+                          className="font-medium text-inherit underline"
+                          href={`${SHINKAI_STORE_URL}/store/revisions/complete?id=${publishToolData?.response.revisionId}`}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          here
+                        </a>{' '}
+                        to continue the process if you are not redirected.
+                      </p>
+                    </div>
+                  )}
                 </div>
+
+                <Button
+                  className="min-w-[100px]"
+                  disabled={isPublishingTool}
+                  isLoading={isPublishingTool}
+                  onClick={() => {
+                    publishTool({
+                      toolKey: toolKey ?? '',
+                      nodeAddress: auth?.node_address ?? '',
+                      token: auth?.api_v2_key ?? '',
+                    });
+                  }}
+                  rounded="lg"
+                  size="sm"
+                  variant="outline"
+                >
+                  Publish
+                </Button>
               </div>
             </TabsContent>
           )}
