@@ -14,6 +14,7 @@ import {
   AvatarFallback,
   Button,
   buttonVariants,
+  CopyToClipboardIcon,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -41,6 +42,7 @@ import config from '../../../../src/config';
 import { SubpageLayout } from '../../../pages/layout/simple-layout';
 import { useAuth } from '../../../store/auth';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
+import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import { parseConfigToJsonSchema } from '../utils/tool-config';
 
 interface ToolDetailsProps {
@@ -201,6 +203,9 @@ export default function ToolCard({
   const boxContainerClass = cn(
     'flex flex-col gap-4 rounded-lg bg-gray-300/20 p-8',
   );
+
+  const hasToolCode = 'js_code' in tool || 'py_code' in tool;
+
   return (
     <SubpageLayout className="max-w-4xl" title="">
       <div className="flex w-full flex-col gap-6 md:flex-row">
@@ -291,6 +296,16 @@ export default function ToolCard({
           >
             About
           </TabsTrigger>
+
+          {hasToolCode && (
+            <TabsTrigger
+              className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+              value="code"
+            >
+              Code
+            </TabsTrigger>
+          )}
+
           {'config' in tool && tool.config && tool.config.length > 0 && (
             <TabsTrigger
               className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
@@ -332,6 +347,10 @@ export default function ToolCard({
                   label: 'Author',
                   value: tool.author,
                 },
+              {
+                label: 'Tool Key',
+                value: toolKey,
+              },
               'keywords' in tool &&
                 tool.keywords.length > 0 && {
                   label: 'Keyword',
@@ -374,6 +393,52 @@ export default function ToolCard({
             </div>
           </div>
         </TabsContent>
+
+        {hasToolCode && (
+          <TabsContent value="code">
+            <div className={boxContainerClass}>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between gap-2 pr-4">
+                  <h2 className="text-base font-medium text-white">Code</h2>
+                  <CopyToClipboardIcon
+                    className="text-gray-80 h-4 w-auto bg-transparent"
+                    string={
+                      'py_code' in tool
+                        ? tool.py_code
+                        : 'js_code' in tool
+                          ? tool.js_code
+                          : ''
+                    }
+                  >
+                    <span className="text-xs">Copy</span>
+                  </CopyToClipboardIcon>
+                </div>
+                <ToolCodeEditor
+                  language={
+                    toolType === 'Python'
+                      ? 'python'
+                      : toolType === 'Deno'
+                        ? 'typescript'
+                        : 'txt'
+                  }
+                  name="code"
+                  readOnly
+                  style={{
+                    borderRadius: '0.5rem',
+                    overflowY: 'hidden',
+                  }}
+                  value={
+                    'py_code' in tool
+                      ? tool.py_code
+                      : 'js_code' in tool
+                        ? tool.js_code
+                        : ''
+                  }
+                />
+              </div>
+            </div>
+          </TabsContent>
+        )}
 
         {'config' in tool && tool.config.length > 0 && (
           <TabsContent value="configuration">
