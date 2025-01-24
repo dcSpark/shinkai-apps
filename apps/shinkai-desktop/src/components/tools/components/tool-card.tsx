@@ -614,9 +614,9 @@ export default function ToolCard({
                     </AlertTitle>
                     <AlertDescription className="text-xs">
                       <p className="">
-                        Great! Your tool has been successfully prepared for
-                        publishing. To complete the process, you’ll need to
-                        finalize the submission details on the app store.{' '}
+                        Your tool has been successfully prepared for publishing.
+                        To complete the process, you’ll need to finalize the
+                        submission details on the app store.{' '}
                         <a
                           className="font-medium text-inherit underline"
                           href={`${SHINKAI_STORE_URL}/store/revisions/complete?id=${publishToolData?.response.revisionId}`}
@@ -625,6 +625,7 @@ export default function ToolCard({
                         >
                           Go to the submission page
                         </a>{' '}
+                        if you are not redirected.
                       </p>
                     </AlertDescription>
                   </Alert>
