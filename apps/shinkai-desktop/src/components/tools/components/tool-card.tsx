@@ -518,7 +518,6 @@ export default function ToolCard({
                     <div className="flex items-center gap-2 rounded-md py-2 text-xs text-cyan-400">
                       <InfoCircleIcon className="h-4 w-4 text-inherit" />
                       <p className="">
-                        Your tool will be validated in the Shinkai App Store.
                         Click{' '}
                         <a
                           className="font-medium text-inherit underline"
@@ -528,7 +527,8 @@ export default function ToolCard({
                         >
                           here
                         </a>{' '}
-                        to continue the process if you are not redirected.
+                        to continue the process if you are not redirected to the
+                        Shinkai App Store.
                       </p>
                     </div>
                   )}
