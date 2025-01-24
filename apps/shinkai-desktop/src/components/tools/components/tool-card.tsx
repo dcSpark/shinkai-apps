@@ -568,7 +568,7 @@ export default function ToolCard({
           'author' in tool &&
           tool.author === auth?.shinkai_identity && (
             <TabsContent value="publish">
-              <div className={cn(boxContainerClass, 'w-full space-y-4')}>
+              <div className={cn(boxContainerClass, 'w-full space-y-2')}>
                 <div className="flex flex-row items-center justify-between gap-7">
                   <div className="space-y-2">
                     <h2 className="text-base font-medium text-white">
