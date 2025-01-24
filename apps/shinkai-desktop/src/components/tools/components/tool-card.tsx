@@ -10,6 +10,9 @@ import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
   Avatar,
   AvatarFallback,
   Button,
@@ -32,7 +35,13 @@ import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import { open } from '@tauri-apps/plugin-shell';
-import { DownloadIcon, MoreVertical, PlayCircle } from 'lucide-react';
+import {
+  CheckCircle,
+  DownloadIcon,
+  MoreVertical,
+  PlayCircle,
+  Rocket,
+} from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -559,63 +568,67 @@ export default function ToolCard({
           'author' in tool &&
           tool.author === auth?.shinkai_identity && (
             <TabsContent value="publish">
-              <div
-                className={cn(
-                  boxContainerClass,
-                  'flex-row items-center justify-between gap-7',
-                )}
-              >
-                <div className="space-y-2">
-                  <h2 className="text-base font-medium text-white">Publish</h2>
-                  <p className="text-gray-80 text-sm">
-                    Publish your tool to the{' '}
-                    <a
-                      className="text-white underline"
-                      href={SHINKAI_STORE_URL}
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      Shinkai App Store
-                    </a>{' '}
-                    to make it available to all Shinkai users.
-                  </p>
-                  {isPublishToolSuccess && (
-                    <div className="flex items-center gap-2 rounded-md py-2 text-xs text-cyan-400">
-                      <InfoCircleIcon className="h-4 w-4 text-inherit" />
+              <div className={cn(boxContainerClass, 'w-full space-y-4')}>
+                <div className="flex flex-row items-center justify-between gap-7">
+                  <div className="space-y-2">
+                    <h2 className="text-base font-medium text-white">
+                      Publish
+                    </h2>
+                    <p className="text-gray-80 text-sm">
+                      Publish your tool to the{' '}
+                      <a
+                        className="text-white underline"
+                        href={SHINKAI_STORE_URL}
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        Shinkai App Store
+                      </a>{' '}
+                      to make it available to all Shinkai users.
+                    </p>
+                  </div>
+
+                  <Button
+                    className="min-w-[100px]"
+                    disabled={isPublishingTool}
+                    isLoading={isPublishingTool}
+                    onClick={() => {
+                      publishTool({
+                        toolKey: toolKey ?? '',
+                        nodeAddress: auth?.node_address ?? '',
+                        token: auth?.api_v2_key ?? '',
+                      });
+                    }}
+                    rounded="lg"
+                    size="sm"
+                    variant="outline"
+                  >
+                    Publish
+                  </Button>
+                </div>
+                {isPublishToolSuccess && (
+                  <Alert className="shadow-lg" variant="success">
+                    <Rocket className="h-4 w-4" />
+                    <AlertTitle className="text-sm font-medium">
+                      Your tool is almost live!
+                    </AlertTitle>
+                    <AlertDescription className="text-xs">
                       <p className="">
-                        Click{' '}
+                        Great! Your tool has been successfully prepared for
+                        publishing. To complete the process, you’ll need to
+                        finalize the submission details on the app store.{' '}
                         <a
                           className="font-medium text-inherit underline"
                           href={`${SHINKAI_STORE_URL}/store/revisions/complete?id=${publishToolData?.response.revisionId}`}
                           rel="noreferrer"
                           target="_blank"
                         >
-                          here
+                          Go to the submission page
                         </a>{' '}
-                        to continue the process if you are not redirected to the
-                        Shinkai App Store.
                       </p>
-                    </div>
-                  )}
-                </div>
-
-                <Button
-                  className="min-w-[100px]"
-                  disabled={isPublishingTool}
-                  isLoading={isPublishingTool}
-                  onClick={() => {
-                    publishTool({
-                      toolKey: toolKey ?? '',
-                      nodeAddress: auth?.node_address ?? '',
-                      token: auth?.api_v2_key ?? '',
-                    });
-                  }}
-                  rounded="lg"
-                  size="sm"
-                  variant="outline"
-                >
-                  Publish
-                </Button>
+                    </AlertDescription>
+                  </Alert>
+                )}
               </div>
             </TabsContent>
           )}
