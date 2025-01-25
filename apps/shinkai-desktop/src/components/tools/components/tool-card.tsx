@@ -7,12 +7,17 @@ import {
   ShinkaiToolType,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
+import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
   Avatar,
   AvatarFallback,
   Button,
   buttonVariants,
+  CopyToClipboardIcon,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -29,14 +34,24 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
-import { DownloadIcon, MoreVertical, PlayCircle } from 'lucide-react';
+import { open } from '@tauri-apps/plugin-shell';
+import {
+  CheckCircle,
+  DownloadIcon,
+  MoreVertical,
+  PlayCircle,
+  Rocket,
+} from 'lucide-react';
+import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import config from '../../../../src/config';
 import { SubpageLayout } from '../../../pages/layout/simple-layout';
 import { useAuth } from '../../../store/auth';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
+import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import { parseConfigToJsonSchema } from '../utils/tool-config';
 
 interface ToolDetailsProps {
@@ -45,6 +60,10 @@ interface ToolDetailsProps {
   isPlaygroundTool?: boolean;
   toolType: ShinkaiToolType;
 }
+
+const SHINKAI_STORE_URL = config.isDev
+  ? 'http://localhost:3000'
+  : 'https://store.shinkai.com';
 
 export default function ToolCard({
   tool,
@@ -59,6 +78,24 @@ export default function ToolCard({
     null,
   );
   const { t } = useTranslation();
+
+  const {
+    mutateAsync: publishTool,
+    isPending: isPublishingTool,
+    data: publishToolData,
+    isSuccess: isPublishToolSuccess,
+  } = usePublishTool({
+    onSuccess: (response) => {
+      open(
+        `${SHINKAI_STORE_URL}/store/revisions/complete?id=${response.response.revisionId}`,
+      );
+    },
+    onError: (error) => {
+      toast.error('Failed to publish tool', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
 
   const { mutateAsync: updateTool, isPending } = useUpdateTool({
     onSuccess: (_, variables) => {
@@ -175,6 +212,9 @@ export default function ToolCard({
   const boxContainerClass = cn(
     'flex flex-col gap-4 rounded-lg bg-gray-300/20 p-8',
   );
+
+  const hasToolCode = 'js_code' in tool || 'py_code' in tool;
+
   return (
     <SubpageLayout className="max-w-4xl" title="">
       <div className="flex w-full flex-col gap-6 md:flex-row">
@@ -265,6 +305,16 @@ export default function ToolCard({
           >
             About
           </TabsTrigger>
+
+          {hasToolCode && (
+            <TabsTrigger
+              className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+              value="code"
+            >
+              Code
+            </TabsTrigger>
+          )}
+
           {'config' in tool && tool.config && tool.config.length > 0 && (
             <TabsTrigger
               className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
@@ -281,6 +331,17 @@ export default function ToolCard({
               OAuth & Permissions
             </TabsTrigger>
           )}
+
+          {isPlaygroundTool &&
+            'author' in tool &&
+            tool.author === auth?.shinkai_identity && (
+              <TabsTrigger
+                className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+                value="publish"
+              >
+                Publish
+              </TabsTrigger>
+            )}
         </TabsList>
 
         <TabsContent className="space-y-4" value="description">
@@ -295,6 +356,10 @@ export default function ToolCard({
                   label: 'Author',
                   value: tool.author,
                 },
+              {
+                label: 'Tool Key',
+                value: toolKey,
+              },
               'keywords' in tool &&
                 tool.keywords.length > 0 && {
                   label: 'Keyword',
@@ -337,6 +402,52 @@ export default function ToolCard({
             </div>
           </div>
         </TabsContent>
+
+        {hasToolCode && (
+          <TabsContent value="code">
+            <div className={boxContainerClass}>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between gap-2 pr-4">
+                  <h2 className="text-base font-medium text-white">Code</h2>
+                  <CopyToClipboardIcon
+                    className="text-gray-80 h-4 w-auto bg-transparent"
+                    string={
+                      'py_code' in tool
+                        ? tool.py_code
+                        : 'js_code' in tool
+                          ? tool.js_code
+                          : ''
+                    }
+                  >
+                    <span className="text-xs">Copy</span>
+                  </CopyToClipboardIcon>
+                </div>
+                <ToolCodeEditor
+                  language={
+                    toolType === 'Python'
+                      ? 'python'
+                      : toolType === 'Deno'
+                        ? 'typescript'
+                        : 'txt'
+                  }
+                  name="code"
+                  readOnly
+                  style={{
+                    borderRadius: '0.5rem',
+                    overflowY: 'hidden',
+                  }}
+                  value={
+                    'py_code' in tool
+                      ? tool.py_code
+                      : 'js_code' in tool
+                        ? tool.js_code
+                        : ''
+                  }
+                />
+              </div>
+            </div>
+          </TabsContent>
+        )}
 
         {'config' in tool && tool.config.length > 0 && (
           <TabsContent value="configuration">
@@ -452,6 +563,76 @@ export default function ToolCard({
             </div>
           </TabsContent>
         )}
+
+        {isPlaygroundTool &&
+          'author' in tool &&
+          tool.author === auth?.shinkai_identity && (
+            <TabsContent value="publish">
+              <div className={cn(boxContainerClass, 'w-full space-y-2')}>
+                <div className="flex flex-row items-center justify-between gap-7">
+                  <div className="space-y-2">
+                    <h2 className="text-base font-medium text-white">
+                      Publish
+                    </h2>
+                    <p className="text-gray-80 text-sm">
+                      Publish your tool to the{' '}
+                      <a
+                        className="text-white underline"
+                        href={SHINKAI_STORE_URL}
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        Shinkai App Store
+                      </a>{' '}
+                      to make it available to all Shinkai users.
+                    </p>
+                  </div>
+
+                  <Button
+                    className="min-w-[100px]"
+                    disabled={isPublishingTool}
+                    isLoading={isPublishingTool}
+                    onClick={() => {
+                      publishTool({
+                        toolKey: toolKey ?? '',
+                        nodeAddress: auth?.node_address ?? '',
+                        token: auth?.api_v2_key ?? '',
+                      });
+                    }}
+                    rounded="lg"
+                    size="sm"
+                    variant="outline"
+                  >
+                    Publish
+                  </Button>
+                </div>
+                {isPublishToolSuccess && (
+                  <Alert className="shadow-lg" variant="success">
+                    <Rocket className="h-4 w-4" />
+                    <AlertTitle className="text-sm font-medium">
+                      Your tool is almost live!
+                    </AlertTitle>
+                    <AlertDescription className="text-xs">
+                      <p className="">
+                        Your tool has been successfully prepared for publishing.
+                        To complete the process, you’ll need to finalize the
+                        submission details on the app store.{' '}
+                        <a
+                          className="font-medium text-inherit underline"
+                          href={`${SHINKAI_STORE_URL}/store/revisions/complete?id=${publishToolData?.response.revisionId}`}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          Go to the submission page
+                        </a>{' '}
+                        if you are not redirected.
+                      </p>
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            </TabsContent>
+          )}
       </Tabs>
     </SubpageLayout>
   );

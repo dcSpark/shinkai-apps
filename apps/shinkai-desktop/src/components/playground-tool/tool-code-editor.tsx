@@ -1,4 +1,5 @@
 import 'prism-react-editor/prism/languages/typescript';
+import 'prism-react-editor/prism/languages/python';
 import 'prism-react-editor/prism/languages/json';
 import 'prism-react-editor/prism/languages/yaml';
 import 'prism-react-editor/languages/typoscript';

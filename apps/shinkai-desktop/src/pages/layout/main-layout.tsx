@@ -274,9 +274,9 @@ export const ResetConnectionDialog = ({
           <AlertDialogDescription>
             <div className="flex flex-col space-y-3 text-left text-white/70">
               <div className="text-sm">
-                We&apos;re currently in beta and we made some significant updates to
-                improve your experience. To apply these updates, we need to
-                reset your data.
+                We&apos;re currently in beta and we made some significant
+                updates to improve your experience. To apply these updates, we
+                need to reset your data.
                 <br /> <br />
                 If you need assistance, please contact our support team.
               </div>
@@ -655,7 +655,9 @@ const MainLayout = () => {
 
   const { mutateAsync: importTool } = useImportTool({
     onSuccess: (data) => {
-      toast.success('Tool imported successfully', {
+      toast.success('Installation successful', {
+        description:
+          'Congratulations! Your tool is now installed and ready to use it in the app.',
         action: {
           label: 'View',
           onClick: () => {
@@ -666,7 +668,7 @@ const MainLayout = () => {
       navigate('/tools');
     },
     onError: (error) => {
-      toast.error('Failed to import tool', {
+      toast.error('Failed to install tool', {
         description: error.response?.data?.message ?? error.message,
       });
     },
