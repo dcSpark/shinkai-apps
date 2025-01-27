@@ -8,7 +8,7 @@ import { DownloadIcon, Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 
-import { ResetConnectionDialog } from '../pages/layout/main-layout';
+import { ResetConnectionDialog } from '../components/reset-connection-dialog';
 import { useAuth } from '../store/auth';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { useRetrieveLogsQuery } from './shinkai-logs/logs-client';
