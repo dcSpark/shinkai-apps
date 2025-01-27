@@ -19,7 +19,7 @@ export const treeOptions: TreePassThroughOptions = {
   root: {
     className: cn(
       '',
-      'my-3 w-full rounded-md border border-gray-400 bg-transparent p-0 text-white',
+      'w-full rounded-md border border-gray-400 bg-transparent p-0 text-white',
     ),
   },
   label: { className: 'text-white text-sm line-clamp-1 break-all' },

@@ -6,6 +6,8 @@ import { useStore } from 'zustand/index';
 type ChatStore = {
   selectedArtifact: Artifact | null;
   setSelectedArtifact: (selectedArtifact: Artifact | null) => void;
+  fileExplorerOpen: boolean;
+  setFileExplorerOpen: (fileExplorerOpen: boolean) => void;
 };
 
 const createChatStore = () =>
@@ -13,6 +15,10 @@ const createChatStore = () =>
     selectedArtifact: null,
     setSelectedArtifact: (selectedArtifact: Artifact | null) =>
       set({ selectedArtifact }),
+
+    fileExplorerOpen: false,
+    setFileExplorerOpen: (fileExplorerOpen: boolean) =>
+      set({ fileExplorerOpen }),
   }));
 
 const ChatContext = createContext<ReturnType<typeof createChatStore> | null>(

@@ -21,6 +21,7 @@ import { useParams } from 'react-router-dom';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import { useChatStore } from './context/chat-context';
 import { useSetJobScope } from './context/set-job-scope-context';
 
 const ConversationHeaderEmpty = () => {
@@ -118,6 +119,10 @@ const ConversationHeaderWithInboxId = () => {
 
   const setSetJobScopeOpen = useSetJobScope(
     (state) => state.setSetJobScopeOpen,
+  );
+
+  const setFileExplorerOpen = useChatStore(
+    (state) => state.setFileExplorerOpen,
   );
 
   const selectedKeys = useSetJobScope((state) => state.selectedKeys);
@@ -256,27 +261,45 @@ const ConversationHeaderWithInboxId = () => {
         </span>
       </div>
       {hasConversationContext ? (
-        <Button
-          className={cn(
-            'flex h-auto w-auto items-center gap-2 rounded-lg bg-gray-400 px-2.5 py-1.5',
-          )}
-          onClick={() => {
-            setSetJobScopeOpen(true);
-          }}
-          size="auto"
-          type="button"
-          variant="ghost"
-        >
-          <div className="flex items-center gap-2">
-            <FilesIcon className="h-4 w-4" />
-            <p className="text-xs text-white">{t('vectorFs.localFiles')}</p>
-          </div>
-          {filesAndFoldersCount > 0 && (
-            <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 p-0 text-center text-gray-50">
-              {filesAndFoldersCount}
-            </Badge>
-          )}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            className={cn(
+              'flex h-auto w-auto items-center gap-2 rounded-lg bg-gray-400 px-2.5 py-1.5',
+            )}
+            onClick={() => {
+              setSetJobScopeOpen(true);
+            }}
+            size="auto"
+            type="button"
+            variant="ghost"
+          >
+            <div className="flex items-center gap-2">
+              <FilesIcon className="h-4 w-4" />
+              <p className="text-xs text-white">{t('vectorFs.localFiles')}</p>
+            </div>
+            {filesAndFoldersCount > 0 && (
+              <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 p-0 text-center text-gray-50">
+                {filesAndFoldersCount}
+              </Badge>
+            )}
+          </Button>
+          <Button
+            className={cn(
+              'flex h-auto w-auto items-center gap-2 rounded-lg bg-gray-400 px-2.5 py-1.5',
+            )}
+            onClick={() => {
+              setFileExplorerOpen(true);
+            }}
+            size="auto"
+            type="button"
+            variant="ghost"
+          >
+            <div className="flex items-center gap-2">
+              <FilesIcon className="h-4 w-4" />
+              <p>File Explorer</p>
+            </div>
+          </Button>
+        </div>
       ) : (
         <Button
           className={cn(
