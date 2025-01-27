@@ -2,14 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
 import { getInboxes } from '.';
-import { GetInboxesInput, Options } from './types';
+import { GetInboxesInput } from './types';
 
-export const useGetInboxes = (
-  input: GetInboxesInput,
-  options?: Omit<Options, 'queryKey' | 'queryFn'>,
-) => {
+export const useGetInboxes = (input: GetInboxesInput) => {
   const response = useQuery({
-    queryKey: [FunctionKeyV2.GET_INBOXES, input],
+    queryKey: [FunctionKeyV2.GET_INBOXES_WITH_PAGINATION, input],
     queryFn: async () => getInboxes(input),
     select: (data) =>
       // display only job inboxes
@@ -18,7 +15,6 @@ export const useGetInboxes = (
           inbox?.inbox_id?.split('::')?.[0] === 'job_inbox' &&
           inbox.is_finished === false,
       ),
-    ...options,
   });
   return {
     ...response,

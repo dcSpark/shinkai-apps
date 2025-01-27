@@ -1,7 +1,7 @@
 import { flattenDirectoryContents } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
-import { useGetInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxes';
+import { useGetInboxesWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxesWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { useEffect } from 'react';
@@ -27,7 +27,7 @@ export const useOnboardingSteps = () => {
     token: auth?.api_v2_key ?? '',
   });
 
-  const { inboxes } = useGetInboxes({
+  const { data: inboxesPagination } = useGetInboxesWithPagination({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
@@ -69,6 +69,9 @@ export const useOnboardingSteps = () => {
   }, [VRFiles]);
 
   useEffect(() => {
+    const inboxes =
+      inboxesPagination?.pages.flatMap((page) => page.inboxes) ?? [];
+
     if (inboxes.length > 1) {
       currentStepsMap.set(GetStartedSteps.CreateAIChat, GetStartedStatus.Done);
     }
@@ -87,7 +90,7 @@ export const useOnboardingSteps = () => {
         GetStartedStatus.Done,
       );
     }
-  }, [inboxes]);
+  }, [inboxesPagination]);
 
   // useEffect(() => {
   //   if ((subscriptionFolder ?? [])?.length > 0) {

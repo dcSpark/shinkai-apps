@@ -3,7 +3,7 @@ import { CheckCircledIcon, CircleIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { Inbox } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
-import { useGetInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxes';
+import { useGetInboxesWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxesWithPagination';
 import { useGetMySubscriptions } from '@shinkai_network/shinkai-node-state/v2/queries/getMySubscriptions/useGetMySubscriptions';
 import {
   Button,
@@ -45,7 +45,7 @@ export const GalxeSusbcriptions = () => {
   const evmAddress = useSettings((store) => store.evmAddress);
   const setEvmAddress = useSettings((store) => store.setEvmAddress);
 
-  const { inboxes } = useGetInboxes({
+  const { data: inboxesWithPagination } = useGetInboxesWithPagination({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
@@ -80,7 +80,9 @@ export const GalxeSusbcriptions = () => {
 
   const isUserSubscribedToKnowledge = (subscriptionFolder ?? [])?.length > 0;
 
-  const inboxesWithSubscriptions: Inbox[] = inboxes.filter(
+  const inboxesWithSubscriptions: Inbox[] = (
+    inboxesWithPagination?.pages.flatMap((page) => page.inboxes) ?? []
+  ).filter(
     (inbox) =>
       (inbox?.job_scope?.vector_fs_folders ?? []).some((folder) =>
         folder?.includes(SUBSCRIPTION_PATH),
