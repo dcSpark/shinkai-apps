@@ -15,10 +15,12 @@ export const getInboxesWithPagination = async ({
   token,
   limit,
   offset,
+  show_hidden,
 }: GetInboxesInput) => {
   const inboxes = await getAllInboxesWithPaginationApi(nodeAddress, token, {
     limit,
     offset,
+    show_hidden,
   });
   return inboxes;
 };

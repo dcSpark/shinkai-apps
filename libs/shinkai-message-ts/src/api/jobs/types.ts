@@ -203,6 +203,7 @@ export type GetAllInboxesResponse = Inbox[];
 export type GetAllInboxesWithPaginationRequest = {
   limit?: number;
   offset?: string;
+  show_hidden?: boolean;
 };
 export type GetAllInboxesWithPaginationResponse = {
   inboxes: Inbox[];
