@@ -33,7 +33,7 @@ export const useGetInboxesWithPagination = (
       }),
     getNextPageParam: (lastPage, pages) => {
       if (lastPage?.inboxes.length < DEFAULT_LIMIT) return;
-      const lastInbox = pages.at(-1)?.inboxes.at(-1);
+      const lastInbox = pages.at(-1)?.inboxes?.at(-1);
       console.log('lastInbox', lastInbox?.custom_name);
       if (!lastInbox) return null;
       return { offset: lastInbox.inbox_id };

@@ -209,6 +209,15 @@ export type GetAllInboxesWithPaginationResponse = {
   hasNextPage: boolean;
 };
 
+export type UpdateInboxNameRequest = {
+  inbox_name: string;
+  custom_name: string;
+};
+export type UpdateInboxNameResponse = {
+  data: null;
+  status: string;
+};
+
 export type GetFileNamesRequest = {
   inboxName: string;
 };

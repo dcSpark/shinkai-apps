@@ -36,6 +36,8 @@ import {
   StopGeneratingLLMRequest,
   UpdateChatConfigRequest,
   UpdateChatConfigResponse,
+  UpdateInboxNameRequest,
+  UpdateInboxNameResponse,
   UpdateJobScopeRequest,
   UpdateLLMProviderRequest,
   UpdateLLMProviderResponse,
@@ -363,6 +365,22 @@ export const getAllInboxesWithPagination = async (
     },
   );
   return response.data as GetAllInboxesWithPaginationResponse;
+};
+
+export const updateInboxName = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: UpdateInboxNameRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/update_smart_inbox_name'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as UpdateInboxNameResponse;
 };
 
 export const getJobConfig = async (
