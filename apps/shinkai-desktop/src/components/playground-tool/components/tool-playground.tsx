@@ -228,27 +228,27 @@ function PlaygroundToolEditor({
                 <div className="grid grid-cols-1 items-center gap-3">
                   {[
                     {
-                      text: 'Tool for downloading a website content in markdown',
+                      text: 'Download a website content in markdown',
                       prompt:
                         'Generate a tool for downloading a website into markdown',
                     },
                     {
-                      text: 'Tool for getting tech-related stories from Hacker News',
+                      text: 'Get tech-related stories from Hacker News',
                       prompt:
                         'Generate a tool for getting top tech-related stories from Hacker News, include the title, author, and URL of the story',
                     },
                   ].map((suggestion) => (
-                    <Badge
-                      className="cursor-pointer justify-between bg-gray-300 py-2 text-left font-normal normal-case text-gray-50 transition-colors hover:bg-gray-200"
+                    <Button
                       key={suggestion.text}
                       onClick={() =>
                         form.setValue('message', suggestion.prompt)
                       }
+                      size="xs"
                       variant="outline"
                     >
                       {suggestion.text}
                       <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
-                    </Badge>
+                    </Button>
                   ))}
                 </div>
               </>
@@ -1090,6 +1090,20 @@ function ManageToolSourceModal({
     </Dialog>
   );
 }
+
+const logFileRegex = /log_app-id-\d+_task-id-\d+.log/;
+
+function formatTimestamp(timestamp: string) {
+  const year = timestamp.substring(0, 4);
+  const month = timestamp.substring(4, 6);
+  const day = timestamp.substring(6, 8);
+  const hour = timestamp.substring(9, 11);
+  const minute = timestamp.substring(11, 13);
+  const second = timestamp.substring(13, 15);
+
+  return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+}
+
 const ToolResultBase = ({
   toolResultFiles,
   toolResult,
@@ -1099,9 +1113,7 @@ const ToolResultBase = ({
 }) => {
   const auth = useAuth((state) => state.auth);
 
-  const logsFilePath = toolResultFiles.find((file) =>
-    /log_app-id-\d+_task-id-\d+.log/.test(file),
-  );
+  const logsFilePath = toolResultFiles.find((file) => logFileRegex.test(file));
 
   const [logsFile, setLogsFile] = useState<string | null>(null);
 
@@ -1129,31 +1141,40 @@ const ToolResultBase = ({
     }
   }, [logsFileBlob]);
 
-  const formatLogs = (logs: string) => {
-    return logs.split('\n').map((line, i) => {
-      if (!line.trim()) return null;
-      return (
-        <div className="border-b border-gray-300 py-2" key={i}>
-          <code className="text-xs">
-            {/* {line.split(',').at(0)}: {line.split(',').at(-1)} */}
-            {line}
-          </code>
-        </div>
-      );
-    });
-  };
+  function formatLogs(logString: string) {
+    return logString
+      .split('\n')
+      .filter((line) => !/<\/?shinkai-code-result>/.test(line))
+      .map((line, i) => {
+        const parts = line.split(',');
+        if (parts.length < 5) return line;
+        const timestamp = parts[0];
+        const logContent = parts.slice(4).join(',');
+        const readableDate = formatTimestamp(timestamp);
+
+        return (
+          <div
+            className="px-2 py-2 font-mono text-xs hover:bg-gray-500"
+            key={i}
+          >
+            <span className="text-gray-100">{readableDate} </span>
+            <span className="text-gray-50">{logContent}</span>
+          </div>
+        );
+      });
+  }
 
   return (
     <Tabs defaultValue="results">
       <TabsList className="h-[32px] w-full justify-start rounded-none border-b border-gray-200 bg-transparent">
         <TabsTrigger
-          className="data-[state=active]:border-b-gray-80 rounded-none px-2.5 text-xs font-medium data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+          className="data-[state=active]:border-b-gray-80 min-w-[70px] rounded-none px-2.5 text-xs font-medium data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
           value="results"
         >
           Output
         </TabsTrigger>
         <TabsTrigger
-          className="data-[state=active]:border-b-gray-80 rounded-none px-2.5 text-xs font-medium data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+          className="data-[state=active]:border-b-gray-80 min-w-[70px] rounded-none px-2.5 text-xs font-medium data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
           value="console"
         >
           Console
@@ -1161,31 +1182,37 @@ const ToolResultBase = ({
       </TabsList>
 
       <TabsContent value="results">
-        <div className="grid grid-cols-[1fr_200px] items-start gap-5 space-y-3 px-2 py-2 pr-6">
-          <ToolCodeEditor language="json" readOnly value={toolResult} />
-
+        <div className="flex flex-col gap-4 px-2 py-2 pr-6">
           {toolResultFiles.length > 0 && (
-            <div className="flex max-w-sm flex-col items-start gap-4">
-              <h1>Generated Files</h1>
-              <div className="flex w-full flex-col gap-2">
-                {toolResultFiles?.map((file) => (
-                  <ToolResultFileCard filePath={file} key={file} />
-                ))}
+            <div className="flex items-center gap-4">
+              <h1 className="text-gray-80 shrink-0 text-xs font-medium">
+                Generated Files
+              </h1>
+              <div className="flex w-full gap-2">
+                {toolResultFiles
+                  ?.filter((file) => !logFileRegex.test(file))
+                  ?.map((file) => (
+                    <ToolResultFileCard filePath={file} key={file} />
+                  ))}
               </div>
             </div>
           )}
+          <ToolCodeEditor language="json" readOnly value={toolResult} />
         </div>
       </TabsContent>
 
       <TabsContent value="console">
-        <div className="space-y-3 px-2 py-2">
-          <div className="text-gray-50">
-            {logsFile ? (
-              <div className="space-y-1 divide-y divide-gray-50/10">
-                {formatLogs(logsFile)}
-              </div>
-            ) : null}
-          </div>
+        <div className="rounded-md bg-gray-600 px-2 py-1 text-gray-50">
+          {logsFile ? (
+            <div className="space-y-1">
+              <div className="text-gray-80 px-2 py-2">Console</div>
+              {formatLogs(logsFile)}
+            </div>
+          ) : (
+            <div className="text-gray-80 px-2 py-2">
+              Results of your code will appear here when you run
+            </div>
+          )}
         </div>
       </TabsContent>
     </Tabs>
