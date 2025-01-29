@@ -248,21 +248,23 @@ export default function ToolCard({
                 }}
               />
             </div>
-            {isPlaygroundTool && (
-              <Link
-                className={cn(
-                  buttonVariants({
-                    size: 'sm',
-                    variant: 'outline',
-                  }),
-                  'rounded-lg',
-                )}
-                to={`/tools/edit/${toolKey}`}
-              >
-                <PlayCircle className="h-4 w-4" />
-                Open in Playground
-              </Link>
-            )}
+            {isPlaygroundTool &&
+              'author' in tool &&
+              tool.author === auth?.shinkai_identity && (
+                <Link
+                  className={cn(
+                    buttonVariants({
+                      size: 'sm',
+                      variant: 'outline',
+                    }),
+                    'rounded-lg',
+                  )}
+                  to={`/tools/edit/${toolKey}`}
+                >
+                  <PlayCircle className="h-4 w-4" />
+                  Open in Playground
+                </Link>
+              )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button rounded="lg" size="sm" variant="outline">
@@ -396,51 +398,53 @@ export default function ToolCard({
           </div>
         </TabsContent>
 
-        {hasToolCode && (
-          <TabsContent value="code">
-            <div className={boxContainerClass}>
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between gap-2 pr-4">
-                  <h2 className="text-base font-medium text-white">Code</h2>
-                  <CopyToClipboardIcon
-                    className="text-gray-80 h-4 w-auto bg-transparent"
-                    string={
+        {hasToolCode &&
+          'author' in tool &&
+          tool.author === auth?.shinkai_identity && (
+            <TabsContent value="code">
+              <div className={boxContainerClass}>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between gap-2 pr-4">
+                    <h2 className="text-base font-medium text-white">Code</h2>
+                    <CopyToClipboardIcon
+                      className="text-gray-80 h-4 w-auto bg-transparent"
+                      string={
+                        'py_code' in tool
+                          ? tool.py_code
+                          : 'js_code' in tool
+                            ? tool.js_code
+                            : ''
+                      }
+                    >
+                      <span className="text-xs">Copy</span>
+                    </CopyToClipboardIcon>
+                  </div>
+                  <ToolCodeEditor
+                    language={
+                      toolType === 'Python'
+                        ? 'python'
+                        : toolType === 'Deno'
+                          ? 'typescript'
+                          : 'txt'
+                    }
+                    name="code"
+                    readOnly
+                    style={{
+                      borderRadius: '0.5rem',
+                      overflowY: 'hidden',
+                    }}
+                    value={
                       'py_code' in tool
                         ? tool.py_code
                         : 'js_code' in tool
                           ? tool.js_code
                           : ''
                     }
-                  >
-                    <span className="text-xs">Copy</span>
-                  </CopyToClipboardIcon>
+                  />
                 </div>
-                <ToolCodeEditor
-                  language={
-                    toolType === 'Python'
-                      ? 'python'
-                      : toolType === 'Deno'
-                        ? 'typescript'
-                        : 'txt'
-                  }
-                  name="code"
-                  readOnly
-                  style={{
-                    borderRadius: '0.5rem',
-                    overflowY: 'hidden',
-                  }}
-                  value={
-                    'py_code' in tool
-                      ? tool.py_code
-                      : 'js_code' in tool
-                        ? tool.js_code
-                        : ''
-                  }
-                />
               </div>
-            </div>
-          </TabsContent>
-        )}
+            </TabsContent>
+          )}
 
         {'config' in tool && tool.config.length > 0 && (
           <TabsContent value="configuration">
