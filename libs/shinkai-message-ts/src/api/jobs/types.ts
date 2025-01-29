@@ -200,6 +200,25 @@ export type Inbox = {
 };
 export type GetAllInboxesResponse = Inbox[];
 
+export type GetAllInboxesWithPaginationRequest = {
+  limit?: number;
+  offset?: string;
+  show_hidden?: boolean;
+};
+export type GetAllInboxesWithPaginationResponse = {
+  inboxes: Inbox[];
+  hasNextPage: boolean;
+};
+
+export type UpdateInboxNameRequest = {
+  inbox_name: string;
+  custom_name: string;
+};
+export type UpdateInboxNameResponse = {
+  data: null;
+  status: string;
+};
+
 export type GetFileNamesRequest = {
   inboxName: string;
 };

@@ -9,9 +9,9 @@ import {
   UpdateInboxNameFormSchema,
   updateInboxNameFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/inbox';
-import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateInboxName/useUpdateInboxName';
 import { useRemoveJob } from '@shinkai_network/shinkai-node-state/v2/mutations/removeJob/useRemoveJob';
-import { useGetInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxes';
+import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/v2/mutations/updateInboxName/useUpdateInboxName';
+import { useGetInboxesWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxesWithPagination';
 import {
   Button,
   Dialog,
@@ -45,6 +45,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Edit3, Trash2Icon } from 'lucide-react';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useInView } from 'react-intersection-observer';
 import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -85,14 +86,7 @@ const InboxNameInput = ({
 
     await updateInboxName({
       nodeAddress: auth.node_address,
-      sender: auth.shinkai_identity,
-      senderSubidentity: auth.profile,
-      receiver: `${auth.shinkai_identity}`,
-      my_device_encryption_sk: auth.my_device_encryption_sk,
-      my_device_identity_sk: auth.my_device_identity_sk,
-      node_encryption_pk: auth.node_encryption_pk,
-      profile_encryption_sk: auth.profile_encryption_sk,
-      profile_identity_sk: auth.profile_identity_sk,
+      token: auth.api_v2_key,
       inboxId,
       inboxName: data.name,
     });
@@ -434,31 +428,51 @@ const ChatSidebar = () => {
     (state) => state.setPromptSelected,
   );
 
-  const { inboxes, isPending, isSuccess } = useGetInboxes(
+  const { ref, inView } = useInView();
+
+  const {
+    data: inboxesPagination,
+    isPending,
+    isSuccess,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useGetInboxesWithPagination(
     { nodeAddress: auth?.node_address ?? '', token: auth?.api_v2_key ?? '' },
-    {
-      refetchIntervalInBackground: true,
-      refetchInterval: (query) => {
-        const queryState = query?.state?.data?.filter(
-          (item) => !!item.last_message,
-        );
-        if (!queryState || !auth) return 0;
+    // {
+    //   refetchIntervalInBackground: true,
+    //   refetchInterval: (query) => {
+    //     const queryState = query?.state?.data?.filter(
+    //       (item) => !!item.last_message,
+    //     );
+    //     if (!queryState || !auth) return 0;
 
-        const allInboxesAreCompleted = queryState.every((inbox) => {
-          return (
-            inbox.last_message &&
-            inbox.last_message.sender &&
-            !(
-              inbox.last_message.sender === auth?.shinkai_identity &&
-              inbox.last_message.sender_subidentity === auth?.profile
-            )
-          );
-        });
+    //     const allInboxesAreCompleted = queryState.every((inbox) => {
+    //       return (
+    //         inbox.last_message &&
+    //         inbox.last_message.sender &&
+    //         !(
+    //           inbox.last_message.sender === auth?.shinkai_identity &&
+    //           inbox.last_message.sender_subidentity === auth?.profile
+    //         )
+    //       );
+    //     });
 
-        return allInboxesAreCompleted ? 0 : 5000;
-      },
-    },
+    //     return allInboxesAreCompleted ? 0 : 5000;
+    //   },
+    // },
   );
+
+  console.log(inboxesPagination, 'inboxes');
+
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const hasInboxes =
+    (inboxesPagination?.pages?.at(-1)?.inboxes ?? []).length > 0;
 
   return (
     <div className="flex h-full w-[240px] flex-col px-3 py-4 pt-6">
@@ -515,34 +529,45 @@ const ChatSidebar = () => {
             ))}
 
           {isSuccess &&
-            inboxes?.length > 0 &&
-            inboxes.map((inbox) => (
-              <InboxMessageButton
-                inboxId={inbox.inbox_id}
-                inboxName={
-                  inbox.last_message && inbox.custom_name === inbox.inbox_id
-                    ? inbox.last_message.job_message.content?.slice(0, 40)
-                    : inbox.custom_name?.slice(0, 40)
-                }
-                isJobLastMessage={
-                  inbox.last_message
-                    ? !(
-                        inbox.last_message.sender === auth?.shinkai_identity &&
-                        inbox.last_message.sender_subidentity === auth.profile
-                      )
-                    : false
-                }
-                key={inbox.inbox_id}
-                lastMessageTimestamp={
-                  inbox.last_message?.node_api_data.node_timestamp ?? ''
-                }
-                to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-              />
-            ))}
-          {isSuccess && inboxes?.length === 0 && (
+            inboxesPagination?.pages.map((page) =>
+              page.inboxes.map((inbox) => (
+                <InboxMessageButton
+                  inboxId={inbox.inbox_id}
+                  inboxName={
+                    inbox.last_message && inbox.custom_name === inbox.inbox_id
+                      ? inbox.last_message.job_message.content?.slice(0, 40)
+                      : inbox.custom_name?.slice(0, 40)
+                  }
+                  isJobLastMessage={
+                    inbox.last_message
+                      ? !(
+                          inbox.last_message.sender ===
+                            auth?.shinkai_identity &&
+                          inbox.last_message.sender_subidentity === auth.profile
+                        )
+                      : false
+                  }
+                  key={inbox.inbox_id}
+                  lastMessageTimestamp={
+                    inbox.last_message?.node_api_data.node_timestamp ?? ''
+                  }
+                  to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+                />
+              )),
+            )}
+          {isSuccess && !hasInboxes && (
             <p className="text-gray-80 py-3 text-center text-xs">
               {t('chat.actives.notFound')}{' '}
             </p>
+          )}
+          {hasNextPage && (
+            <button
+              className="mx-auto mb-4 w-full"
+              onClick={() => fetchNextPage()}
+              ref={ref}
+            >
+              {isFetchingNextPage ? 'Loading more...' : 'Load more'}
+            </button>
           )}
         </div>
       </ScrollArea>

@@ -1,7 +1,7 @@
 import { UseMutationOptions, useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
+import { FunctionKeyV2 } from '../../constants';
 import { updateInboxName } from '.';
 import type { UpdateInboxNameInput, UpdateInboxNameOutput } from './types';
 
@@ -16,7 +16,9 @@ export const useUpdateInboxName = (options?: Options) => {
   return useMutation({
     mutationFn: updateInboxName,
     onSuccess: (...onSuccessParameters) => {
-      queryClient.invalidateQueries({ queryKey: [FunctionKey.GET_INBOXES] });
+      queryClient.invalidateQueries({
+        queryKey: [FunctionKeyV2.GET_INBOXES_WITH_PAGINATION],
+      });
       if (options?.onSuccess) {
         options.onSuccess(...onSuccessParameters);
       }

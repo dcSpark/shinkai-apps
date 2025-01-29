@@ -35,14 +35,7 @@ import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import { open } from '@tauri-apps/plugin-shell';
-import {
-  CheckCircle,
-  DownloadIcon,
-  MoreVertical,
-  PlayCircle,
-  Rocket,
-} from 'lucide-react';
-import { InfoCircleIcon } from 'primereact/icons/infocircle';
+import { DownloadIcon, MoreVertical, PlayCircle, Rocket } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
