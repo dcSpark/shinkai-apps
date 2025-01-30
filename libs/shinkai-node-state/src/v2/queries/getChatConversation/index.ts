@@ -216,7 +216,6 @@ const createAssistantMessage = async (
                 }
               }),
             );
-            console.log('fileResults', fileResults);
             generatedFiles = fileResults;
           }
         } catch {
