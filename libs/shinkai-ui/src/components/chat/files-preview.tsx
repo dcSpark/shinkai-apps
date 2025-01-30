@@ -1,4 +1,8 @@
 import { DialogClose } from '@radix-ui/react-dialog';
+import {
+  Attachment,
+  FileTypeSupported,
+} from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
@@ -15,7 +19,7 @@ import { cn } from '../../utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../avatar';
 import { Button } from '../button';
 import { Dialog, DialogContent } from '../dialog';
-import { MarkdownText } from '../markdown-preview';
+// import { MarkdownText } from '../markdown-preview';
 import {
   Tooltip,
   TooltipContent,
@@ -24,7 +28,7 @@ import {
 } from '../tooltip';
 
 export type FileListProps = {
-  files: FilePreviewProps[];
+  files: Attachment[];
   className?: string;
 };
 
@@ -34,19 +38,12 @@ export const isImageFile = (file: string) => {
 
 const size = partial({ standard: 'jedec' });
 
-type FilePreviewProps = {
-  name: string;
-  preview?: string;
-  size?: number;
-  content?: string;
-  blob?: Blob;
-};
-
 const ImagePreview = ({
-  file,
+  name,
+  size,
+  url,
   onFullscreen,
-}: {
-  file: FilePreviewProps;
+}: Pick<Attachment, 'name' | 'size' | 'url'> & {
   onFullscreen: (open: boolean) => void;
 }) => (
   <button
@@ -55,15 +52,15 @@ const ImagePreview = ({
   >
     <Avatar className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-gray-300 text-gray-100 transition-colors">
       <AvatarImage
-        alt={file.name}
+        alt={name}
         className="aspect-square h-full w-full rounded-sm border border-gray-400 object-cover"
-        src={file.preview}
+        src={url}
       />
       <AvatarFallback>
         <CircleSlashIcon className="h-4 w-4 text-gray-100" />
       </AvatarFallback>
     </Avatar>
-    <FileInfo fileName={file.name} fileSize={file.size} />
+    <FileInfo fileName={name} fileSize={size} />
   </button>
 );
 
@@ -88,24 +85,22 @@ const FileInfo = ({
 
 const FullscreenDialog = ({
   open,
-  preview,
-  fileName,
-  onDownload,
+  name,
+  type,
+  url,
   content,
   setOpen,
-}: {
+  onDownload,
+}: Pick<Attachment, 'name' | 'url' | 'content' | 'type'> & {
   open: boolean;
   setOpen: (open: boolean) => void;
-  preview: string | null;
-  fileName: string;
-  content?: string;
   onDownload?: () => void;
 }) => (
   <Dialog onOpenChange={setOpen} open={open}>
-    <DialogContent className="flex size-full max-h-[99vh] max-w-[99vw] flex-col gap-2 bg-gray-600 bg-transparent p-1 py-8">
+    <DialogContent className="flex size-full max-h-[99vh] max-w-[99vw] flex-col gap-2 bg-transparent p-1 py-8">
       <div className="flex w-full items-center justify-between gap-16 px-10">
         <div className="text-gray-80 max-w-3xl truncate text-left text-sm">
-          {decodeURIComponent(fileName.split('/').at(-1) ?? '')}
+          {name}
         </div>
         <div className="flex items-center gap-4">
           <Button onClick={onDownload} size="xs" variant="outline">
@@ -119,9 +114,10 @@ const FullscreenDialog = ({
       </div>
       <div className="flex size-full flex-col overflow-hidden rounded-l-xl p-10 text-white">
         <FilePreviewAlternate
-          content={content ?? preview ?? ''}
-          extension={getFileExt(fileName)}
-          fileName={fileName}
+          content={content}
+          name={name}
+          type={type}
+          url={url}
         />
       </div>
     </DialogContent>
@@ -129,10 +125,11 @@ const FullscreenDialog = ({
 );
 const FileButton = ({
   name,
-  preview,
   size,
   onFullscreen,
-}: FilePreviewProps & { onFullscreen: (open: boolean) => void }) => (
+}: Pick<Attachment, 'name' | 'size'> & {
+  onFullscreen: (open: boolean) => void;
+}) => (
   <button
     className="flex h-14 w-full min-w-[210px] max-w-[210px] shrink-0 cursor-pointer items-center gap-2 rounded-md border border-gray-100/40 py-1.5 pl-2 pr-1.5 text-left hover:bg-gray-300/30"
     onClick={() => onFullscreen(true)}
@@ -151,54 +148,77 @@ const FileButton = ({
   </button>
 );
 
-type FilePreviewPropsA = {
-  extension: string;
-  fileName: string;
-  onDownload?: () => void;
-  content: string | null;
-};
+type FilePreviewPropsA = Pick<Attachment, 'name' | 'url' | 'content' | 'type'>;
 
 export const FilePreviewAlternate: React.FC<FilePreviewPropsA> = ({
+  name,
   content,
-  extension,
-  fileName,
+  url,
+  type,
 }) => {
-  if (!content) return <div>Loading preview...</div>;
-
-  switch (extension?.toLowerCase()) {
-    case 'txt':
-    case 'json':
-    case 'js':
-    case 'ts':
-    case 'log':
-    case 'tsx':
-    case 'jsx': {
+  switch (type) {
+    case FileTypeSupported.Text: {
       return (
         <pre className="h-full overflow-auto whitespace-pre-wrap break-words bg-gray-600 p-4 pt-10 font-mono text-xs">
           {content}
         </pre>
       );
     }
-    case 'md': {
-      return (
-        <div className="h-full overflow-auto p-4 pt-10">
-          <MarkdownText content={content ?? ''} />
-        </div>
-      );
-    }
-    case 'jpg':
-    case 'jpeg':
-    case 'png':
-    case 'gif':
+    // case 'md': {
+    //   return (
+    //     <div className="h-full overflow-auto p-4 pt-10">
+    //       <MarkdownText content={content ?? ''} />
+    //     </div>
+    //   );
+    // }
+    case FileTypeSupported.Image: {
       return (
         <div className="flex h-full w-full items-center justify-center">
           <img
-            alt={fileName}
+            alt={name}
             className="max-h-full max-w-full object-contain"
-            src={content}
+            src={url}
           />
         </div>
       );
+    }
+    case FileTypeSupported.Video: {
+      return (
+        <div className="flex h-full w-full items-center justify-center">
+          <video className="max-h-full max-w-full" controls src={url}>
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      );
+    }
+    case FileTypeSupported.Audio: {
+      return (
+        <div className="flex h-full w-full items-center justify-center">
+          <audio className="w-full" controls src={url}>
+            Your browser does not support the audio tag.
+          </audio>
+        </div>
+      );
+    }
+    // case FileTypeSupported.Pdf: {
+    //   return (
+    //     <div className="flex h-full w-full items-center justify-center">
+    //       <iframe className="h-full w-full bg-gray-50" src={url} title={name} />
+    //     </div>
+    //   );
+    // }
+    case FileTypeSupported.Html: {
+      return (
+        <div className="flex h-full w-full items-center justify-center">
+          <iframe
+            className="h-full w-full bg-gray-50"
+            sandbox="allow-same-origin"
+            src={url}
+            title={name}
+          />
+        </div>
+      );
+    }
     default:
       return (
         <div className="flex h-full flex-col items-center justify-center gap-6 text-gray-50">
@@ -210,28 +230,20 @@ export const FilePreviewAlternate: React.FC<FilePreviewPropsA> = ({
 
 export const FilePreview = ({
   name,
-  preview,
+  url,
   size,
   content,
   blob,
-}: FilePreviewProps) => {
+  type,
+}: Attachment) => {
   const [open, setOpen] = useState(false);
 
   const fileName = decodeURIComponent(name).split('/').at(-1) ?? '';
 
   const children = isImageFile(name) ? (
-    <ImagePreview
-      file={{ name, preview, size, content }}
-      onFullscreen={setOpen}
-    />
+    <ImagePreview name={name} onFullscreen={setOpen} size={size} url={url} />
   ) : (
-    <FileButton
-      content={content}
-      name={name}
-      onFullscreen={setOpen}
-      preview={preview}
-      size={size}
-    />
+    <FileButton name={name} onFullscreen={setOpen} size={size} />
   );
 
   return (
@@ -246,11 +258,11 @@ export const FilePreview = ({
       </TooltipPortal>
       <FullscreenDialog
         content={content}
-        fileName={name}
+        name={fileName}
         onDownload={async () => {
           const currentFile =
             blob ??
-            new Blob([content ?? ''], {
+            new Blob([content || url || ''], {
               type: 'application/octet-stream',
             });
           const arrayBuffer = await currentFile.arrayBuffer();
@@ -276,8 +288,9 @@ export const FilePreview = ({
           toast.success(`${fileName} downloaded successfully`);
         }}
         open={open}
-        preview={preview ?? ''}
         setOpen={setOpen}
+        type={type}
+        url={url}
       />
     </Tooltip>
   );

@@ -12,6 +12,7 @@ import {
   Artifact,
   AssistantMessage,
   Attachment,
+  FileTypeSupported,
   FormattedMessage,
   GetChatConversationInput,
   GetChatConversationOutput,
@@ -38,7 +39,10 @@ const createUserMessage = async (
         const file: Attachment = {
           name,
           id: name,
-          type: 'file',
+          type: FileTypeSupported.Unknown,
+          mimeType: 'application/octet-stream',
+          path: `${folderName}/${name}`,
+          extension: '',
         };
 
         if (name.match(/\.(jpg|jpeg|png|gif)$/i)) {
@@ -57,9 +61,12 @@ const createUserMessage = async (
               const blob = new Blob([byteArray], {
                 type: `image/${fileExtension}`,
               });
-              file.type = 'image';
-              file.preview = URL.createObjectURL(blob);
+              file.type = FileTypeSupported.Image;
+              file.url = URL.createObjectURL(blob);
               file.size = blob.size;
+              file.mimeType = `image/${fileExtension}`;
+              file.path = `${folderName}/${name}`;
+              file.extension = fileExtension;
             }
           } catch (error) {
             console.error(error);
@@ -93,55 +100,119 @@ const createAssistantMessage = async (
   const text = message.job_message.content;
   const toolCalls = await Promise.all(
     (message?.job_message?.metadata?.function_calls ?? []).map(async (tool) => {
-      let generatedFiles:
-        | {
-            path: string;
-            preview?: string; // image
-            size?: number;
-            content?: string; //md, markdown, txt, log
-            blob?: Blob;
-          }[]
-        | undefined;
+      let generatedFiles: Attachment[] | undefined;
 
       if (tool.response) {
         try {
           const response = JSON.parse(tool.response);
           if ('data' in response && '__created_files__' in response.data) {
             const files: string[] = response.data.__created_files__;
+            const filteredFiles = files.filter((file) => {
+              return !file.match(/log_jobid_[^/]+\.log$/);
+            });
+
             const fileResults = await Promise.all(
-              files.map(async (file) => {
+              filteredFiles.map(async (file) => {
                 try {
                   const response = await getShinkaiFileProtocol(
                     nodeAddress,
                     token,
-                    { file: file.replace('/main', '') }, // todo: remove this once we fix it in the node
+                    { file: file.replace('/main/', '/') }, // todo: remove this once we fix it in the node
                   );
+                  const fileNameBase = file.split('/')?.at(-1) ?? 'untitled';
+                  const fileExtension = fileNameBase.split('.')?.at(-1) ?? '';
+                  const blob = new Blob([response]);
+
+                  const fileInfo = {
+                    id: file,
+                    name: fileNameBase,
+                    extension: fileExtension,
+                    path: file,
+                    size: blob.size,
+                    blob,
+                    type: FileTypeSupported.Unknown,
+                    mimeType: 'application/octet-stream',
+                  };
 
                   if (file.match(/\.(jpg|jpeg|png|gif)$/i)) {
-                    const fileNameBase = file.split('/')?.at(-1) ?? 'untitled';
-                    const fileExtension = fileNameBase.split('.')?.at(-1) ?? '';
-
-                    const blob = new Blob([response], {
-                      type: `image/${fileExtension}`,
-                    });
-                    const preview = URL.createObjectURL(blob);
-                    return { path: file, preview, size: blob.size, blob };
-                  }
-
-                  if (file.match(/\.(md|markdown|txt|log)$/i)) {
-                    const content = await response.text();
                     return {
-                      path: file,
-                      size: response.size,
-                      content,
-                      blob: response,
+                      ...fileInfo,
+                      type: FileTypeSupported.Image,
+                      mimeType: `image/${fileExtension}`,
+                      url: URL.createObjectURL(
+                        new Blob([response], {
+                          type: `image/${fileExtension}`,
+                        }),
+                      ),
                     };
                   }
 
-                  return { path: file, size: new Blob([response]).size };
+                  if (file.match(/\.(mp4|webm|mov)$/i)) {
+                    return {
+                      ...fileInfo,
+                      type: FileTypeSupported.Video,
+                      mimeType: `video/${fileExtension}`,
+                      url: URL.createObjectURL(
+                        new Blob([response], {
+                          type: `video/${fileExtension}`,
+                        }),
+                      ),
+                    };
+                  }
+
+                  if (file.match(/\.(mp3|wav|aac)$/i)) {
+                    return {
+                      ...fileInfo,
+                      type: FileTypeSupported.Audio,
+                      mimeType: `audio/${fileExtension}`,
+                      url: URL.createObjectURL(
+                        new Blob([response], {
+                          type: `audio/${fileExtension}`,
+                        }),
+                      ),
+                    };
+                  }
+
+                  if (file.match(/\.(md|markdown|txt|log|tsx|json|js|jsx)$/i)) {
+                    const textContent = await response.text();
+                    return {
+                      ...fileInfo,
+                      type: FileTypeSupported.Text,
+                      mimeType: 'text/plain',
+                      content: textContent,
+                    };
+                  }
+
+                  if (file.match(/\.(htm|html)$/i)) {
+                    return {
+                      ...fileInfo,
+                      type: FileTypeSupported.Html,
+                      mimeType: 'text/html',
+                      url: URL.createObjectURL(
+                        new Blob([response], {
+                          type: 'text/html',
+                        }),
+                      ),
+                    };
+                  }
+
+                  return {
+                    ...fileInfo,
+                    mimeType: 'application/octet-stream',
+                  };
                 } catch (error) {
                   console.error(`Failed to fetch preview for ${file}:`, error);
-                  return { path: file };
+                  return {
+                    id: 'error',
+                    name: file.split('/').at(-1) ?? 'unknown',
+                    extension: 'txt',
+                    path: file,
+                    size: 0,
+                    type: FileTypeSupported.Error,
+                    mimeType: 'text/plain',
+                    error:
+                      error instanceof Error ? error.message : 'Unknown error',
+                  };
                 }
               }),
             );

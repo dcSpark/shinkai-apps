@@ -663,11 +663,16 @@ export const GeneratedFiles = ({ toolCalls }: { toolCalls: ToolCall[] }) => {
             <FileList
               className="mt-2"
               files={tool.generatedFiles.map((file) => ({
-                name: file.path,
-                preview: file.preview,
+                name: file.name,
+                path: file.path,
+                type: file.type,
                 size: file?.size,
                 content: file?.content,
                 blob: file?.blob,
+                id: file.id,
+                extension: file.extension,
+                mimeType: file.mimeType,
+                url: file.url,
               }))}
               key={tool.name}
             />

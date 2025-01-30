@@ -25,6 +25,17 @@ export type Artifact = {
   language?: string;
 };
 
+export enum FileTypeSupported {
+  Image = 'image',
+  Video = 'video',
+  Audio = 'audio',
+  Text = 'text',
+  Document = 'document',
+  Error = 'error',
+  Unknown = 'unknown',
+  Html = 'html',
+}
+
 export type ToolCall = {
   toolRouterKey: string;
   name: string;
@@ -32,22 +43,21 @@ export type ToolCall = {
   result?: string;
   status?: ToolStatusType; // TODO: remove
   isError?: boolean;
-  generatedFiles?: {
-    path: string;
-    preview?: string;
-    size?: number;
-    content?: string;
-    blob?: Blob;
-  }[];
+  generatedFiles?: Attachment[];
 };
 
 export type Attachment = {
   id: string;
-  type: 'image' | 'document' | 'file';
+  path: string;
   name: string;
-  file?: File;
-  preview?: string;
+  extension: string;
   size?: number;
+  blob?: Blob;
+  type: FileTypeSupported;
+  mimeType: string;
+  url?: string;
+  content?: string;
+  error?: string;
 };
 
 export type MessageStatus =

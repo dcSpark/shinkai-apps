@@ -6,7 +6,10 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2, generateOptimisticUserMessage } from '../../constants';
-import { ChatConversationInfiniteData } from '../../queries/getChatConversation/types';
+import {
+  ChatConversationInfiniteData,
+  FileTypeSupported,
+} from '../../queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '../../queries/getChatConversation/useGetChatConversationWithPagination';
 import { APIError } from '../../types';
 import { sendMessageToJob } from '.';
@@ -48,9 +51,12 @@ export const useSendMessageToJob = (options?: Options) => {
                 name: file.name,
                 id: file.name,
                 size: file.size,
-                type: 'file',
+                type: FileTypeSupported.Unknown,
                 preview: URL.createObjectURL(file),
                 file,
+                path: file.name,
+                extension: file.name.split('.').pop() ?? '',
+                mimeType: file.type,
               })),
             ),
           ];
