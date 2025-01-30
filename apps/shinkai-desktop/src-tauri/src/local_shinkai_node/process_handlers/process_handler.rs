@@ -186,7 +186,6 @@ impl ProcessHandler {
                     log::info!("[{}] process ready signal detected", process_name);
                     let mut is_ready = is_ready_mutex.lock().await;
                     *is_ready = true;
-                    break;
                 }
             }
         });
