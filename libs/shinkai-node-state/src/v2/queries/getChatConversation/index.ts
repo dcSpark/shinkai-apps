@@ -107,8 +107,12 @@ const createAssistantMessage = async (
           const response = JSON.parse(tool.response);
           if ('data' in response && '__created_files__' in response.data) {
             const files: string[] = response.data.__created_files__;
+            const filteredFiles = files.filter((file) => {
+              return !file.match(/log_jobid_[^/]+\.log$/);
+            });
+
             const fileResults = await Promise.all(
-              files.map(async (file) => {
+              filteredFiles.map(async (file) => {
                 try {
                   const response = await getShinkaiFileProtocol(
                     nodeAddress,
