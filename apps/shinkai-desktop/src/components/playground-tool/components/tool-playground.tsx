@@ -177,7 +177,10 @@ function PlaygroundToolEditor({
     initialState: toolMetadataInitialValues,
   });
 
+  const mountTimestamp = useRef(new Date());
+
   const handleRunCode: FormProps['onSubmit'] = async (data) => {
+    mountTimestamp.current = new Date();
     const { configs, params } = data.formData;
     const updatedCodeWithoutSave = codeEditorRef.current?.value ?? '';
     await executeToolCodeQuery.mutateAsync({
@@ -758,6 +761,9 @@ function PlaygroundToolEditor({
                                       {executeToolCodeQuery.isSuccess &&
                                         toolResult && (
                                           <ToolResult
+                                            mountTimestamp={
+                                              mountTimestamp.current
+                                            }
                                             toolResult={JSON.stringify(
                                               toolResult,
                                               null,
@@ -1108,9 +1114,11 @@ function formatTimestamp(timestamp: string) {
 const ToolResultBase = ({
   toolResultFiles,
   toolResult,
+  mountTimestamp,
 }: {
   toolResultFiles: string[];
   toolResult: string;
+  mountTimestamp: Date;
 }) => {
   const auth = useAuth((state) => state.auth);
 
@@ -1145,10 +1153,25 @@ const ToolResultBase = ({
   function formatLogs(logString: string) {
     return logString
       .split('\n')
-      .filter((line) => !/<\/?shinkai-code-result>/.test(line))
+      .filter((line) => {
+        if (/<\/?shinkai-code-result>/.test(line)) return false;
+
+        const parts = line.split(',');
+        if (parts.length < 5) return false;
+
+        const timestamp = parts[0];
+        const year = parseInt(timestamp.substring(0, 4));
+        const month = parseInt(timestamp.substring(4, 6)) - 1;
+        const day = parseInt(timestamp.substring(6, 8));
+        const hour = parseInt(timestamp.substring(9, 11));
+        const minute = parseInt(timestamp.substring(11, 13));
+        const second = parseInt(timestamp.substring(13, 15));
+
+        const logDate = new Date(year, month, day, hour, minute, second);
+        return logDate >= mountTimestamp;
+      })
       .map((line, i) => {
         const parts = line.split(',');
-        if (parts.length < 5) return line;
         const timestamp = parts[0];
         const logContent = parts.slice(4).join(',');
         const readableDate = formatTimestamp(timestamp);
@@ -1223,6 +1246,7 @@ const ToolResultBase = ({
 const ToolResult = memo(ToolResultBase, (prevProps, nextProps) => {
   if (!equal(prevProps.toolResultFiles, nextProps.toolResultFiles))
     return false;
+  if (prevProps.mountTimestamp !== nextProps.mountTimestamp) return false;
   if (prevProps.toolResult !== nextProps.toolResult) return false;
   return true;
 });
