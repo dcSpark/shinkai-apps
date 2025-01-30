@@ -2,7 +2,6 @@ import { useGetDownloadFile } from '@shinkai_network/shinkai-node-state/v2/queri
 import {
   Badge,
   Button,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   MarkdownText,
@@ -26,6 +25,80 @@ import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import { useVectorFsStore } from '../context/vector-fs-context';
+
+interface FilePreviewProps {
+  fileContentBase64: string | null;
+  extension?: string;
+  fileName?: string;
+  onDownload?: () => void;
+}
+
+export const FilePreview: React.FC<FilePreviewProps> = ({
+  fileContentBase64,
+  extension,
+  fileName,
+  onDownload,
+}) => {
+  if (!fileContentBase64) return <div>Loading preview...</div>;
+
+  switch (extension?.toLowerCase()) {
+    case 'txt':
+    case 'json':
+    case 'js':
+    case 'ts':
+    case 'tsx':
+    case 'jsx': {
+      const binaryString = atob(fileContentBase64);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      const textContent = new TextDecoder('utf-8').decode(bytes);
+      return (
+        <pre className="h-full overflow-auto whitespace-pre-wrap break-words bg-gray-600 p-4 font-mono text-sm">
+          {textContent}
+        </pre>
+      );
+    }
+    case 'md': {
+      const binaryString = atob(fileContentBase64);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      const textContent = new TextDecoder('utf-8').decode(bytes);
+      return (
+        <div className="h-full overflow-auto p-4">
+          <MarkdownText content={textContent} />
+        </div>
+      );
+    }
+    case 'jpg':
+    case 'jpeg':
+    case 'png':
+    case 'gif':
+      return (
+        <div className="flex aspect-square h-full items-center justify-center">
+          <img
+            alt={fileName}
+            className="max-h-full max-w-full object-contain"
+            src={`data:image/${extension};base64,${fileContentBase64}`}
+          />
+        </div>
+      );
+    default:
+      return (
+        <div className="flex h-full flex-col items-center justify-center gap-6 text-gray-50">
+          <span>Preview not available for this file type</span>
+          {onDownload && (
+            <Button onClick={onDownload} size="xs" variant="outline">
+              Download File
+            </Button>
+          )}
+        </div>
+      );
+  }
+};
 
 export const VectorFileDetails = () => {
   const selectedFile = useVectorFsStore((state) => state.selectedFile);
@@ -55,66 +128,6 @@ export const VectorFileDetails = () => {
 
     fetchFileContent();
   }, [selectedFile, auth, downloadFile]);
-
-  const renderFilePreview = () => {
-    if (!fileContent) return <div>Loading preview...</div>;
-
-    switch (fileExtension?.toLowerCase()) {
-      case 'txt':
-      case 'json':
-      case 'js':
-      case 'ts':
-      case 'tsx':
-      case 'jsx': {
-        const binaryString = atob(fileContent);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
-        const textContent = new TextDecoder('utf-8').decode(bytes);
-        return (
-          <pre className="h-full overflow-auto whitespace-pre-wrap break-words bg-gray-600 p-4 font-mono text-sm">
-            {textContent}
-          </pre>
-        );
-      }
-      case 'md': {
-        const binaryString = atob(fileContent);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
-        const textContent = new TextDecoder('utf-8').decode(bytes);
-        return (
-          <div className="h-full overflow-auto p-4">
-            <MarkdownText content={textContent} />
-          </div>
-        );
-      }
-      case 'jpg':
-      case 'jpeg':
-      case 'png':
-      case 'gif':
-        return (
-          <div className="flex aspect-square h-full items-center justify-center">
-            <img
-              alt={selectedFile?.name}
-              className="max-h-full max-w-full object-contain"
-              src={`data:image/${fileExtension};base64,${fileContent}`}
-            />
-          </div>
-        );
-      default:
-        return (
-          <div className="flex h-full flex-col items-center justify-center gap-6 text-gray-50">
-            <span>Preview not available for this file type</span>
-            <Button onClick={handleDownloadFile} size="xs" variant="outline">
-              Download File
-            </Button>
-          </div>
-        );
-    }
-  };
 
   const handleDownloadFile = async () => {
     if (!selectedFile || !auth) return;
@@ -168,9 +181,13 @@ export const VectorFileDetails = () => {
     <React.Fragment>
       <div className="flex size-full">
         <div className="flex max-w-[80%] flex-1 basis-[80%] flex-col overflow-hidden rounded-l-xl bg-gray-600 p-10 text-white">
-          {renderFilePreview()}
+          <FilePreview
+            extension={fileExtension}
+            fileContentBase64={fileContent}
+            fileName={selectedFile?.name}
+            onDownload={handleDownloadFile}
+          />
         </div>
-        {/* add a preview of the file on the right side of this screen,  */}
         <div className="flex min-w-[350px] flex-1 shrink-0 flex-col rounded-r-xl border-l border-gray-200 bg-gray-300 p-5 pl-4">
           <DialogHeader>
             <DialogTitle className={'sr-only'}>File Information</DialogTitle>

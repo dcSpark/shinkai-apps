@@ -299,7 +299,8 @@ function ConversationChatFooter({
       },
       {
         enabled: !!debounceMessage && !!currentMessage && !selectedTool,
-        select: (data) => data.slice(0, SUGGESTED_TOOLS_COUNT),
+        select: (data) =>
+          data.slice(0, SUGGESTED_TOOLS_COUNT).filter((item) => item.enabled),
       },
     );
 
@@ -855,6 +856,7 @@ type FileListProps = {
   isPending?: boolean;
 };
 
+// TODO: unify with file-preview.tsx
 const FileListBase = ({
   currentFiles,
   onRemoveFile,

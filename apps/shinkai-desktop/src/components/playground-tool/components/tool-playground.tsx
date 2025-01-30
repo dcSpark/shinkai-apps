@@ -51,6 +51,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
+import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowUpRight,
@@ -64,7 +65,7 @@ import {
   Upload,
   XIcon,
 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Link, To } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -227,27 +228,27 @@ function PlaygroundToolEditor({
                 <div className="grid grid-cols-1 items-center gap-3">
                   {[
                     {
-                      text: 'Tool for downloading a website content in markdown',
+                      text: 'Download a website content in markdown',
                       prompt:
                         'Generate a tool for downloading a website into markdown',
                     },
                     {
-                      text: 'Tool for getting tech-related stories from Hacker News',
+                      text: 'Get tech-related stories from Hacker News',
                       prompt:
                         'Generate a tool for getting top tech-related stories from Hacker News, include the title, author, and URL of the story',
                     },
                   ].map((suggestion) => (
-                    <Badge
-                      className="cursor-pointer justify-between bg-gray-300 py-2 text-left font-normal normal-case text-gray-50 transition-colors hover:bg-gray-200"
+                    <Button
                       key={suggestion.text}
                       onClick={() =>
                         form.setValue('message', suggestion.prompt)
                       }
+                      size="xs"
                       variant="outline"
                     >
                       {suggestion.text}
                       <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
-                    </Badge>
+                    </Button>
                   ))}
                 </div>
               </>
@@ -665,7 +666,22 @@ function PlaygroundToolEditor({
                           !isMetadataGenerationError && (
                             <div className="text-gray-80 size-full text-xs">
                               <JsonForm
-                                className="py-4"
+                                className={cn(
+                                  (metadataGenerationData?.configurations
+                                    ?.properties &&
+                                    Object.keys(
+                                      metadataGenerationData.configurations
+                                        .properties,
+                                    ).length > 0) ||
+                                    (metadataGenerationData?.parameters
+                                      ?.properties &&
+                                      Object.keys(
+                                        metadataGenerationData.parameters
+                                          .properties,
+                                      ).length > 0)
+                                    ? 'py-4'
+                                    : 'py-0',
+                                )}
                                 formData={formData}
                                 id="parameters-form"
                                 noHtml5Validate={true}
@@ -715,7 +731,7 @@ function PlaygroundToolEditor({
                                   executeToolCodeQuery.isSuccess) && (
                                   <motion.div
                                     animate={{ opacity: 1, x: 0 }}
-                                    className="flex flex-col overflow-x-hidden border-t border-gray-200 bg-gray-300 pt-2"
+                                    className="flex flex-col overflow-x-hidden bg-gray-300 pt-2"
                                     exit={{ opacity: 0, x: 20 }}
                                     initial={{ opacity: 0, x: 20 }}
                                   >
@@ -741,33 +757,14 @@ function PlaygroundToolEditor({
                                     <div ref={toolResultBoxRef}>
                                       {executeToolCodeQuery.isSuccess &&
                                         toolResult && (
-                                          <div className="space-y-3 py-3">
-                                            {toolResultFiles.length > 0 && (
-                                              <div className="inline-flex items-center gap-4">
-                                                <h1>Generated Files</h1>
-                                                <div className="flex flex-wrap gap-2">
-                                                  {toolResultFiles?.map(
-                                                    (file) => (
-                                                      <ToolResultFileCard
-                                                        filePath={file}
-                                                        key={file}
-                                                      />
-                                                    ),
-                                                  )}
-                                                </div>
-                                              </div>
+                                          <ToolResult
+                                            toolResult={JSON.stringify(
+                                              toolResult,
+                                              null,
+                                              2,
                                             )}
-
-                                            <ToolCodeEditor
-                                              language="json"
-                                              readOnly
-                                              value={JSON.stringify(
-                                                toolResult,
-                                                null,
-                                                2,
-                                              )}
-                                            />
-                                          </div>
+                                            toolResultFiles={toolResultFiles}
+                                          />
                                         )}
                                     </div>
                                   </motion.div>
@@ -889,6 +886,7 @@ function ToolResultFileCard({ filePath }: { filePath: string }) {
 
   return (
     <Button
+      className="flex justify-start gap-2"
       onClick={async () => {
         const response = await refetch();
         const file = new Blob([response.data ?? ''], {
@@ -923,7 +921,7 @@ function ToolResultFileCard({ filePath }: { filePath: string }) {
       size="xs"
       variant="outline"
     >
-      <div className="flex shrink-0 items-center justify-center">
+      <div className="flex shrink-0 items-center">
         {fileExtension && fileIconMap[fileExtension] ? (
           <FileTypeIcon
             className="text-gray-80 h-[18px] w-[18px] shrink-0"
@@ -933,7 +931,9 @@ function ToolResultFileCard({ filePath }: { filePath: string }) {
           <Paperclip className="text-gray-80 h-3.5 w-3.5 shrink-0" />
         )}
       </div>
-      <div className="text-left text-xs">{filePath.split('/')?.at(-1)}</div>
+      <div className="truncate text-left text-xs">
+        {filePath.split('/')?.at(-1)}
+      </div>
     </Button>
   );
 }
@@ -1090,3 +1090,138 @@ function ManageToolSourceModal({
     </Dialog>
   );
 }
+
+const logFileRegex = /log_app-id-\d+_task-id-\d+.log/;
+
+function formatTimestamp(timestamp: string) {
+  const year = timestamp.substring(0, 4);
+  const month = timestamp.substring(4, 6);
+  const day = timestamp.substring(6, 8);
+  const hour = timestamp.substring(9, 11);
+  const minute = timestamp.substring(11, 13);
+  const second = timestamp.substring(13, 15);
+
+  return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+}
+
+const ToolResultBase = ({
+  toolResultFiles,
+  toolResult,
+}: {
+  toolResultFiles: string[];
+  toolResult: string;
+}) => {
+  const auth = useAuth((state) => state.auth);
+
+  const logsFilePath = toolResultFiles.find((file) => logFileRegex.test(file));
+
+  const [logsFile, setLogsFile] = useState<string | null>(null);
+
+  const { data: logsFileBlob } = useGetShinkaiFileProtocol(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      file: logsFilePath ?? '',
+    },
+    {
+      enabled: !!logsFilePath,
+    },
+  );
+
+  useEffect(() => {
+    if (logsFileBlob) {
+      const handleLogsFile = async () => {
+        const logsFile = new Blob([logsFileBlob], {
+          type: 'text/plain',
+        });
+        const logsFileText = await logsFile.text();
+        setLogsFile(logsFileText);
+      };
+      handleLogsFile();
+    }
+  }, [logsFileBlob]);
+
+  function formatLogs(logString: string) {
+    return logString
+      .split('\n')
+      .filter((line) => !/<\/?shinkai-code-result>/.test(line))
+      .map((line, i) => {
+        const parts = line.split(',');
+        if (parts.length < 5) return line;
+        const timestamp = parts[0];
+        const logContent = parts.slice(4).join(',');
+        const readableDate = formatTimestamp(timestamp);
+
+        return (
+          <div
+            className="px-2 py-2 font-mono text-xs hover:bg-gray-500"
+            key={i}
+          >
+            <span className="text-gray-100">{readableDate} </span>
+            <span className="text-gray-50">{logContent}</span>
+          </div>
+        );
+      });
+  }
+
+  return (
+    <Tabs defaultValue="results">
+      <TabsList className="h-[32px] w-full justify-start rounded-none border-b border-gray-200 bg-transparent">
+        <TabsTrigger
+          className="data-[state=active]:border-b-gray-80 min-w-[70px] rounded-none px-2.5 text-xs font-medium data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+          value="results"
+        >
+          Output
+        </TabsTrigger>
+        <TabsTrigger
+          className="data-[state=active]:border-b-gray-80 min-w-[70px] rounded-none px-2.5 text-xs font-medium data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+          value="console"
+        >
+          Console
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="results">
+        <div className="flex flex-col gap-4 px-2 py-2 pr-6">
+          {toolResultFiles.length > 0 && (
+            <div className="flex items-center gap-4">
+              <h1 className="text-gray-80 shrink-0 text-xs font-medium">
+                Generated Files
+              </h1>
+              <div className="flex w-full gap-2">
+                {toolResultFiles
+                  ?.filter((file) => !logFileRegex.test(file))
+                  ?.map((file) => (
+                    <ToolResultFileCard filePath={file} key={file} />
+                  ))}
+              </div>
+            </div>
+          )}
+          <ToolCodeEditor language="json" readOnly value={toolResult} />
+        </div>
+      </TabsContent>
+
+      <TabsContent value="console">
+        <div className="rounded-md bg-gray-600 px-2 py-1 text-gray-50">
+          {logsFile ? (
+            <div className="space-y-1">
+              <div className="text-gray-80 px-2 py-2">Console</div>
+              {formatLogs(logsFile)}
+            </div>
+          ) : (
+            <div className="text-gray-80 px-2 py-2">
+              Results of your code will appear here when you run
+            </div>
+          )}
+        </div>
+      </TabsContent>
+    </Tabs>
+  );
+};
+
+const ToolResult = memo(ToolResultBase, (prevProps, nextProps) => {
+  if (!equal(prevProps.toolResultFiles, nextProps.toolResultFiles))
+    return false;
+  if (prevProps.toolResult !== nextProps.toolResult) return false;
+  return true;
+});

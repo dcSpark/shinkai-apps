@@ -463,8 +463,6 @@ const ChatSidebar = () => {
     // },
   );
 
-  console.log(inboxesPagination, 'inboxes');
-
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();

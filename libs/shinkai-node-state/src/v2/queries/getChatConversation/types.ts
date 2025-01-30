@@ -25,13 +25,20 @@ export type Artifact = {
   language?: string;
 };
 
-type ToolCall = {
+export type ToolCall = {
   toolRouterKey: string;
   name: string;
   args: ToolArgs;
   result?: string;
   status?: ToolStatusType; // TODO: remove
   isError?: boolean;
+  generatedFiles?: {
+    path: string;
+    preview?: string;
+    size?: number;
+    content?: string;
+    blob?: Blob;
+  }[];
 };
 
 export type Attachment = {
@@ -40,6 +47,7 @@ export type Attachment = {
   name: string;
   file?: File;
   preview?: string;
+  size?: number;
 };
 
 export type MessageStatus =

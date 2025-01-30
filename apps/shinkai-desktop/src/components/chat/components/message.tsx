@@ -5,7 +5,10 @@ import {
   ToolStatusType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
-import { FormattedMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import {
+  FormattedMessage,
+  ToolCall,
+} from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import {
   Accordion,
   AccordionContent,
@@ -456,10 +459,7 @@ export const MessageBase = ({
                 )}
 
                 {message.role === 'user' && !!message.attachments.length && (
-                  <FileList
-                    className="mt-2 min-w-[200px] max-w-[70vw]"
-                    files={message.attachments}
-                  />
+                  <FileList className="mt-2" files={message.attachments} />
                 )}
                 {message.role === 'user' && message.workflowName && (
                   <div className="mt-2 flex items-center gap-1.5 border-t pt-1.5">
@@ -469,6 +469,10 @@ export const MessageBase = ({
                     </span>
                   </div>
                 )}
+                {message.role === 'assistant' &&
+                  message.toolCalls?.some((tool) => !!tool.generatedFiles) && (
+                    <GeneratedFiles toolCalls={message.toolCalls} />
+                  )}
               </div>
               {!isPending && (
                 <motion.div
@@ -647,3 +651,29 @@ export function ToolCard({
     </AnimatePresence>
   );
 }
+
+export const GeneratedFiles = ({ toolCalls }: { toolCalls: ToolCall[] }) => {
+  return (
+    toolCalls?.some((tool) => !!tool.generatedFiles) && (
+      <div className="mt-4 flex flex-col items-start gap-1 rounded-md border py-4 pt-1.5">
+        <span className="text-gray-80 text-xs">Generated Files</span>
+        {toolCalls.map((tool) => {
+          if (!tool.generatedFiles || !tool.generatedFiles.length) return null;
+          return (
+            <FileList
+              className="mt-2"
+              files={tool.generatedFiles.map((file) => ({
+                name: file.path,
+                preview: file.preview,
+                size: file?.size,
+                content: file?.content,
+                blob: file?.blob,
+              }))}
+              key={tool.name}
+            />
+          );
+        })}
+      </div>
+    )
+  );
+};

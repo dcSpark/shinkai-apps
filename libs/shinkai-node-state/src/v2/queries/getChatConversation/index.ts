@@ -5,6 +5,7 @@ import {
   getLastMessagesWithBranches,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 import { ChatMessage } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { getShinkaiFileProtocol } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 
 import {
@@ -58,6 +59,7 @@ const createUserMessage = async (
               });
               file.type = 'image';
               file.preview = URL.createObjectURL(blob);
+              file.size = blob.size;
             }
           } catch (error) {
             console.error(error);
@@ -83,16 +85,81 @@ const createUserMessage = async (
   };
 };
 
-const createAssistantMessage = (message: ChatMessage): AssistantMessage => {
+const createAssistantMessage = async (
+  message: ChatMessage,
+  nodeAddress: string,
+  token: string,
+): Promise<AssistantMessage> => {
   const text = message.job_message.content;
+  const toolCalls = await Promise.all(
+    (message?.job_message?.metadata?.function_calls ?? []).map(async (tool) => {
+      let generatedFiles:
+        | {
+            path: string;
+            preview?: string; // image
+            size?: number;
+            content?: string; //md, markdown, txt, log
+            blob?: Blob;
+          }[]
+        | undefined;
 
-  const toolCalls = (message?.job_message?.metadata?.function_calls ?? []).map(
-    (tool) => ({
-      toolRouterKey: tool.tool_router_key,
-      name: tool.name,
-      args: tool.arguments,
-      status: ToolStatusType.Complete,
-      result: tool?.response ?? '',
+      if (tool.response) {
+        try {
+          const response = JSON.parse(tool.response);
+          if ('data' in response && '__created_files__' in response.data) {
+            const files: string[] = response.data.__created_files__;
+            const fileResults = await Promise.all(
+              files.map(async (file) => {
+                try {
+                  const response = await getShinkaiFileProtocol(
+                    nodeAddress,
+                    token,
+                    { file: file.replace('/main', '') }, // todo: remove this once we fix it in the node
+                  );
+
+                  if (file.match(/\.(jpg|jpeg|png|gif)$/i)) {
+                    const fileNameBase = file.split('/')?.at(-1) ?? 'untitled';
+                    const fileExtension = fileNameBase.split('.')?.at(-1) ?? '';
+
+                    const blob = new Blob([response], {
+                      type: `image/${fileExtension}`,
+                    });
+                    const preview = URL.createObjectURL(blob);
+                    return { path: file, preview, size: blob.size, blob };
+                  }
+
+                  if (file.match(/\.(md|markdown|txt|log)$/i)) {
+                    const content = await response.text();
+                    return {
+                      path: file,
+                      size: response.size,
+                      content,
+                      blob: response,
+                    };
+                  }
+
+                  return { path: file, size: new Blob([response]).size };
+                } catch (error) {
+                  console.error(`Failed to fetch preview for ${file}:`, error);
+                  return { path: file };
+                }
+              }),
+            );
+            generatedFiles = fileResults;
+          }
+        } catch {
+          generatedFiles = undefined;
+        }
+      }
+
+      return {
+        toolRouterKey: tool.tool_router_key,
+        name: tool.name,
+        args: tool.arguments,
+        status: ToolStatusType.Complete,
+        result: tool?.response ?? '',
+        generatedFiles,
+      };
     }),
   );
 
@@ -193,7 +260,11 @@ export const getChatConversation = async ({
       );
       messagesV2.push(userMessage);
     } else {
-      const assistantMessage = createAssistantMessage(message);
+      const assistantMessage = await createAssistantMessage(
+        message,
+        nodeAddress,
+        token,
+      );
       messagesV2.push(assistantMessage);
     }
   }
