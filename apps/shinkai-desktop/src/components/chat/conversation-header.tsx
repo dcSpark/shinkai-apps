@@ -251,14 +251,14 @@ const ConversationHeaderWithInboxId = () => {
           </TooltipPortal>
         </Tooltip>
 
-        <span className="mr-2.5 line-clamp-1 inline text-sm font-medium capitalize text-white">
+        <span className="mr-2.5 line-clamp-1 inline w-full text-sm font-medium capitalize text-white">
           {currentInbox?.custom_name || currentInbox?.inbox_id}
         </span>
       </div>
       {hasConversationContext ? (
         <Button
           className={cn(
-            'flex h-auto w-auto items-center gap-2 rounded-lg bg-gray-400 px-2.5 py-1.5',
+            'flex h-auto w-auto shrink-0 items-center gap-2 rounded-lg bg-gray-400 px-2.5 py-1.5',
           )}
           onClick={() => {
             setSetJobScopeOpen(true);
@@ -280,7 +280,7 @@ const ConversationHeaderWithInboxId = () => {
       ) : (
         <Button
           className={cn(
-            'flex h-auto w-auto items-center gap-2 rounded-lg bg-gray-400 px-2.5 py-1.5',
+            'flex h-auto w-auto shrink-0 items-center gap-2 rounded-lg bg-gray-400 px-2.5 py-1.5',
           )}
           onClick={() => {
             setSetJobScopeOpen(true);

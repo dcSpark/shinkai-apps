@@ -855,6 +855,7 @@ type FileListProps = {
   isPending?: boolean;
 };
 
+// TODO: unify with file-preview.tsx
 const FileListBase = ({
   currentFiles,
   onRemoveFile,
