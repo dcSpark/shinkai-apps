@@ -881,8 +881,9 @@ function ToolResultFileCard({ filePath }: { filePath: string }) {
     },
   );
 
-  const fileNameBase = filePath.split('/')?.at(-1) ?? 'untitled_tool';
-  const fileExtension = fileNameBase.split('.')?.at(-1) ?? '';
+  const fileNameBase =
+    filePath.split('/')?.at(-1)?.split('.')?.at(0) ?? 'untitled_tool';
+  const fileExtension = filePath.split('/')?.at(-1)?.split('.')?.at(-1) ?? '';
 
   return (
     <Button
