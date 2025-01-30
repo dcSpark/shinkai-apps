@@ -60,9 +60,9 @@ npx ts-node ./ci-scripts/download-side-binaries.ts
 
 #### Windows
 ```
-$ENV:OLLAMA_VERSION="v0.5.4"
-$ENV:SHINKAI_NODE_VERSION="v0.9.8"
-$ENV:ARCH="x86_64-pc-windows-msvc"
+$ENV:OLLAMA_VERSION="v0.5.4";
+$ENV:SHINKAI_NODE_VERSION="v0.9.8";
+$ENV:ARCH="x86_64-pc-windows-msvc";
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
