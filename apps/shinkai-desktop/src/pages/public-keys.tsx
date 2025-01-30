@@ -86,7 +86,7 @@ export const PublicKeys = () => {
                   />
                 </div>
               </div>
-              <div>
+              {/* <div>
                 <h2 className="text-gray-80 mb-2 text-sm">
                   {t('settings.publicKeys.profilePublicKeys')}
                 </h2>
@@ -134,8 +134,8 @@ export const PublicKeys = () => {
                     )}
                   />
                 </div>
-              </div>
-              <div>
+              </div> */}
+              {/* <div>
                 <h2 className="text-gray-80 mb-2 text-sm">
                   {t('settings.publicKeys.myDevicePublicKeys')}
                 </h2>
@@ -183,7 +183,7 @@ export const PublicKeys = () => {
                     )}
                   />
                 </div>
-              </div>
+              </div> */}
             </div>
             <div>
               <h2 className="text-gray-80 mb-2 text-sm">API Bearer Token</h2>
