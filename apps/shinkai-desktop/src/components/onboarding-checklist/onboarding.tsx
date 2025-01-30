@@ -31,8 +31,8 @@ export enum GetStartedSteps {
   CreateAIChat = 'CreateAIChat',
   UploadAFile = 'UploadAFile',
   AskQuestionToFiles = 'AskQuestionToFiles',
-  SubscribeToKnowledge = 'SubscribeToKnowledge',
-  ShareFolder = 'ShareFolder',
+  // SubscribeToKnowledge = 'SubscribeToKnowledge',
+  // ShareFolder = 'ShareFolder',
 }
 
 export enum GetStartedStatus {

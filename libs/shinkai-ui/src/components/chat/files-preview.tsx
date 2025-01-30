@@ -200,20 +200,20 @@ export const FilePreviewAlternate: React.FC<FilePreviewPropsA> = ({
         </div>
       );
     }
-    case FileTypeSupported.Pdf: {
-      return (
-        <div className="flex h-full w-full items-center justify-center">
-          <iframe className="h-full w-full bg-gray-50" src={url} title={name} />
-        </div>
-      );
-    }
+    // case FileTypeSupported.Pdf: {
+    //   return (
+    //     <div className="flex h-full w-full items-center justify-center">
+    //       <iframe className="h-full w-full bg-gray-50" src={url} title={name} />
+    //     </div>
+    //   );
+    // }
     case FileTypeSupported.Html: {
       return (
         <div className="flex h-full w-full items-center justify-center">
           <iframe
             className="h-full w-full bg-gray-50"
             sandbox="allow-same-origin"
-            src={content}
+            src={url}
             title={name}
           />
         </div>

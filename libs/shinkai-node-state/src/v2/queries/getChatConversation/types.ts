@@ -33,7 +33,6 @@ export enum FileTypeSupported {
   Document = 'document',
   Error = 'error',
   Unknown = 'unknown',
-  Pdf = 'pdf',
   Html = 'html',
 }
 

@@ -184,16 +184,11 @@ const createAssistantMessage = async (
                       ...fileInfo,
                       type: FileTypeSupported.Html,
                       mimeType: 'text/html',
-                      content: textContent,
-                    };
-                  }
-
-                  if (file.match(/\.(pdf)$/i)) {
-                    return {
-                      ...fileInfo,
-                      type: FileTypeSupported.Pdf,
-                      mimeType: 'application/pdf',
-                      url: URL.createObjectURL(blob),
+                      url: URL.createObjectURL(
+                        new Blob([response], {
+                          type: 'text/html',
+                        }),
+                      ),
                     };
                   }
 
