@@ -43,6 +43,7 @@ import {
   MoreVerticalIcon,
   PlusIcon,
   SearchIcon,
+  StoreIcon,
   XIcon,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -53,6 +54,7 @@ import { z } from 'zod';
 
 import { useDebounce } from '../hooks/use-debounce';
 import { useAuth } from '../store/auth';
+import { SHINKAI_STORE_URL } from '../utils/store';
 import { SimpleLayout } from './layout/simple-layout';
 
 export const Tools = () => {
@@ -105,7 +107,7 @@ export const Tools = () => {
           <Link
             className={cn(
               buttonVariants({
-                variant: 'default',
+                variant: 'outline',
                 size: 'xs',
                 rounded: 'lg',
               }),
@@ -115,6 +117,23 @@ export const Tools = () => {
             <PlusIcon className="size-4" />
             Create Tool
           </Link>
+
+          <Link
+            className={cn(
+              buttonVariants({
+                size: 'xs',
+                variant: 'default',
+                rounded: 'lg',
+              }),
+            )}
+            rel="noreferrer"
+            target="_blank"
+            to={SHINKAI_STORE_URL}
+          >
+            <StoreIcon className="size-4" />
+            Install from Store
+          </Link>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -339,6 +358,38 @@ export const Tools = () => {
                 </Tooltip>
               </div>
             ))}
+
+          <div className="p-4">
+            <div className="flex items-center justify-center gap-6 rounded-lg border border-dashed border-gray-400/30 bg-gray-200/30 px-6 py-6">
+              <SearchIcon className="text-gray-80 h-8 w-8" />
+              <div className="flex flex-col items-start gap-1.5">
+                <h3 className="text-sm font-medium text-gray-100">
+                  Looking for more tools?
+                </h3>
+                <p className="text-gray-80 text-sm">
+                  Visit the Shinkai Store to discover and install additional
+                  tools to enhance your workflow
+                </p>
+              </div>
+              <Link
+                className={cn(
+                  buttonVariants({
+                    size: 'xs',
+                    variant: 'default',
+                    rounded: 'lg',
+                  }),
+                  'shrink-0',
+                )}
+                rel="noreferrer"
+                target="_blank"
+                to={`${SHINKAI_STORE_URL}?search=${searchQuery}`}
+              >
+                <StoreIcon className="size-4" />
+                Install from Store
+              </Link>
+            </div>
+          </div>
+
           {searchQuery &&
             isSearchQuerySynced &&
             searchToolList?.length === 0 && (
@@ -361,7 +412,7 @@ type ImportToolFormSchema = z.infer<typeof importToolFormSchema>;
 
 function ImportToolModal() {
   const auth = useAuth((state) => state.auth);
-  
+
   const navigate = useNavigate();
   const importToolForm = useForm<ImportToolFormSchema>({
     resolver: zodResolver(importToolFormSchema),

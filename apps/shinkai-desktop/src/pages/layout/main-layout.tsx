@@ -37,7 +37,12 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { listen } from '@tauri-apps/api/event';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeftToLine, ArrowRightToLine, BotIcon } from 'lucide-react';
+import {
+  ArrowLeftToLine,
+  ArrowRightToLine,
+  BotIcon,
+  StoreIcon,
+} from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
 import {
   Link,
@@ -55,6 +60,7 @@ import { ResetConnectionDialog } from '../../components/reset-connection-dialog'
 import config from '../../config';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import { SHINKAI_STORE_URL } from '../../utils/store';
 
 type NavigationLink = {
   title: string;
@@ -243,6 +249,12 @@ export function MainNav() {
       title: 'Shinkai Tools',
       href: '/tools',
       icon: <ToolsIcon className="h-5 w-5" />,
+    },
+    {
+      title: 'Store',
+      href: SHINKAI_STORE_URL,
+      icon: <StoreIcon className="h-5 w-5" />,
+      external: true,
     },
     {
       title: 'Scheduled Tasks',
