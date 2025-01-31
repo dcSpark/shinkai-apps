@@ -163,9 +163,9 @@ const GetStartedPage = () => {
         'mistral-small:22b-instruct-2409-q4_1'
       )
         return [
-          'desktop.model.mistralSmallBenefits.performance' as const,
-          'desktop.model.mistralSmallBenefits.fast' as const,
-          'desktop.model.mistralSmallBenefits.lightweight' as const,
+          'desktop.model.mistralSmallBenefits.resource' as const,
+          'desktop.model.mistralSmallBenefits.language' as const,
+          'desktop.model.mistralSmallBenefits.multilingual' as const,
         ];
 
       return [];
