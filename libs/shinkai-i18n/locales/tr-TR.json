@@ -151,6 +151,11 @@
     },
     "localAI": "Shinkai Yerel AI",
     "model": {
+      "commandr7bBenefits": {
+        "fast": "<b>Hızlı Çalışma:</b> Kullanıcılar, orta seviye donanımda verimli çalıştığını ve önemli bir gecikme olmadan daha hızlı yanıtlar ve daha akıcı etkileşimler sağladığını belirtmişlerdir.",
+        "lightweight": "<b>Hafif:</b> Bu hafif yapı, daha az bellek ve hesaplama gücü gerektirdiği anlamına gelir, bu da daha geniş bir kullanıcı ve uygulama yelpazesi için erişilebilir olmasını sağlar.",
+        "performance": "<b>Kompakt Boyutta Yüksek Performans:</b> command-r7b modeli, mükemmel performans sunacak şekilde tasarlanmıştır ve aynı zamanda nispeten küçük bir boyut korumaktadır."
+      },
       "downloading": "İndiriliyor",
       "embeddingBenefits": {
         "dataAnalysis": "<b>Geliştirilmiş Veri Analizi:</b> Yapısal olmayan verilerden anlamlı içgörüler çıkararak karar verme süreçlerini ve operasyonel verimliliği artırır.",
@@ -163,6 +168,11 @@
         "performance": "<b>Kompakt Boyutta Yüksek Performans:</b> gemma2:2b modeli, 2 milyar parametre ile sınıfının en iyisi performansı sunacak şekilde tasarlanmıştır."
       },
       "installation": "{{modelName}} kuruluyor...",
+      "mistralSmallBenefits": {
+        "language": "<b>Güçlü Dil Üretimi:</b> İçerik üretimi, dil çevirisi ve kodlama yardımı gibi çeşitli uygulamalarda insan benzeri metinler üretebilir.",
+        "multilingual": "<b>Çok Dilli Destek:</b> Model, İngilizce, İspanyolca, Fransızca, Almanca ve daha fazlası dahil olmak üzere birden fazla dilde diyalogları desteklemektedir.",
+        "resource": "<b>Verimli Kaynak Kullanımı:</b> Daha büyük modellere kıyasla hafif ve ultra hızlı bir modeldir."
+      },
       "ollamaBenefits": {
         "language": "<b>Güçlü Dil Üretimi:</b> İçerik üretimi, dil çevirisi ve kodlama yardımı gibi çeşitli uygulamalarda insan benzeri metinler üretebilir.",
         "multilingual": "<b>Çok Dilli Destek:</b> Model, İngilizce, İspanyolca, Fransızca, Almanca ve daha fazlası dahil olmak üzere birden fazla dilde diyalogları destekler.",

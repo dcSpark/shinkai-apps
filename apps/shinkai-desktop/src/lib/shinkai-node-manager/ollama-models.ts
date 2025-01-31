@@ -1,3 +1,5 @@
+import { platform } from '@tauri-apps/plugin-os';
+
 import OLLAMA_MODELS_REPOSITORY from './ollama-models-repository.json';
 
 export enum OllamaModelQuality {
@@ -38,35 +40,76 @@ export const FILTERED_OLLAMA_MODELS_REPOSITORY =
 export const ALLOWED_OLLAMA_MODELS = FILTERED_OLLAMA_MODELS_REPOSITORY.flatMap(
   (model) => model.tags.map((tag) => `${model.name}:${tag.name}`),
 );
+
+const currentPlatform = platform();
+
 export const OLLAMA_MODELS: OllamaModel[] = [
-  {
-    model: 'llama3.2',
-    tag: 'latest',
-    name: 'Llama 3.2 3b',
-    description:
-      'Meta\'s Llama 3.2 is a multilingual large language model optimized for multilingual dialogue use cases, including agentic retrieval and summarization tasks.',
-    contextLength: 128000,
-    quality: OllamaModelQuality.Low,
-    speed: OllamaModelSpeed.VeryFast,
-    capabilities: [OllamaModelCapability.TextGeneration],
-    size: 1.8,
-    fullName: '',
-    provider: 'Meta',
-  },
-  {
-    model: 'llama3.1',
-    tag: '8b-instruct-q4_1',
-    name: 'Llama 3.1 8b',
-    description:
-      'A powerful AI model for understanding and generating text, optimized for tasks like writing and processing language',
-    contextLength: 128000,
-    quality: OllamaModelQuality.Medium,
-    speed: OllamaModelSpeed.Fast,
-    capabilities: [OllamaModelCapability.TextGeneration],
-    size: 4.7,
-    fullName: '',
-    provider: 'Meta',
-  },
+  ...(currentPlatform === 'windows' || currentPlatform === 'linux'
+    ? [
+        {
+          model: 'gemma2',
+          tag: '2b-instruct-q4_1',
+          name: 'Google Gemma 2',
+          description:
+            'Google Gemma 2 is a high-performing and efficient model available in three sizes: 2B, 9B, and 27B.',
+          contextLength: 8192,
+          quality: OllamaModelQuality.Low,
+          speed: OllamaModelSpeed.VeryFast,
+          capabilities: [OllamaModelCapability.TextGeneration],
+          size: 1.8,
+          fullName: '',
+          provider: 'Google',
+        },
+        {
+          model: 'llama3.1',
+          tag: '8b-instruct-q4_1',
+          name: 'Llama 3.1 8b',
+          description:
+            'A powerful AI model for understanding and generating text, optimized for tasks like writing and processing language',
+          contextLength: 128000,
+          quality: OllamaModelQuality.Medium,
+          speed: OllamaModelSpeed.Fast,
+          capabilities: [OllamaModelCapability.TextGeneration],
+          size: 4.7,
+          fullName: '',
+          provider: 'Meta',
+        },
+      ]
+    : []),
+  ...(currentPlatform === 'macos'
+    ? [
+        {
+          model: 'command-r7b',
+          tag: '7b-12-2024-q4_K_M',
+          name: 'Command R 7B',
+          description:
+            "The smallest model in Cohere's R series delivers top-tier speed, efficiency, and quality to build powerful AI applications on commodity GPUs and edge devices.",
+          contextLength: 4096,
+          quality: OllamaModelQuality.Low,
+          speed: OllamaModelSpeed.VeryFast,
+          capabilities: [OllamaModelCapability.TextGeneration],
+          size: 5.1,
+          fullName: '',
+          provider: 'C4AI',
+          platforms: ['macos'],
+        },
+        {
+          model: 'mistral-small',
+          tag: '22b-instruct-2409-q4_1',
+          name: 'Mistral Small 3',
+          description:
+            'Mistral Small 3 sets a new benchmark in the “small” Large Language Models category below 70B.',
+          contextLength: 32000,
+          quality: OllamaModelQuality.Medium,
+          speed: OllamaModelSpeed.Fast,
+          capabilities: [OllamaModelCapability.TextGeneration],
+          size: 13,
+          fullName: '',
+          provider: 'Mistral',
+          platforms: ['macos'],
+        },
+      ]
+    : []),
   {
     model: 'mistral-nemo',
     tag: '12b-instruct-2407-q4_0',
@@ -80,12 +123,14 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     size: 7.1,
     fullName: '',
     provider: 'Mistral',
+    platforms: ['windows', 'linux', 'macos'],
   },
   {
     model: 'llama3.2-vision',
     tag: 'latest',
     name: 'Llama 3.2 Vision 11b',
-    description: 'Llama 3.2 Vision is an instruction-tuned image reasoning generative model optimized for visual recognition, image reasoning, captioning, and answering general questions about images.',
+    description:
+      'Llama 3.2 Vision is an instruction-tuned image reasoning generative model optimized for visual recognition, image reasoning, captioning, and answering general questions about images.',
     contextLength: 128000,
     quality: OllamaModelQuality.Good,
     speed: OllamaModelSpeed.Average,
@@ -96,6 +141,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     size: 7.9,
     fullName: '',
     provider: 'Meta',
+    platforms: ['windows', 'linux', 'macos'],
   },
 ].map((model) => {
   model.fullName = `${model.model}:${model.tag}` as const;

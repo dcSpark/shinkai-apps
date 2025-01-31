@@ -60,16 +60,22 @@ impl ShinkaiNodeOptions {
     }
 
     pub fn default_initial_model() -> String {
-        let mut model = "llama3.1:8b-instruct-q4_1".to_string();
         let hardware_summary = hardware_get_summary();
-        match hardware_summary.requirements_status {
-            RequirementsStatus::Minimum
-            | RequirementsStatus::StillUsable
-            | RequirementsStatus::Unmeet => {
-                model = "gemma2:2b-instruct-q4_1".to_string();
+        log::info!("hardware summary: {:?}", hardware_summary);
+
+        let model = if cfg!(target_os = "macos") && hardware_summary.hardware.memory >= 32 {
+            "mistral-small:22b-instruct-2409-q4_1".to_string()
+        } else if cfg!(target_os = "macos") {
+            "command-r7b:7b-12-2024-q4_K_M".to_string()
+        } else {
+            match hardware_summary.requirements_status {
+                RequirementsStatus::Minimum
+                | RequirementsStatus::StillUsable
+                | RequirementsStatus::Unmeet => "gemma2:2b-instruct-q4_1".to_string(),
+                _ => "llama3.1:8b-instruct-q4_1".to_string(),
             }
-            _ => {}
-        }
+        };
+        log::info!("default initial model: {:?}", model);
         model
     }
 

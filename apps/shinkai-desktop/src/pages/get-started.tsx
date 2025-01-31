@@ -34,6 +34,8 @@ export const modelNameMap: Record<string, string> = {
   'snowflake-arctic-embed:xs': "Snowflake's Arctic-embed-xs",
   'llama3.1:8b-instruct-q4_1': 'Llama 3.1 8B',
   'gemma2:2b-instruct-q4_1': 'Gemma 2 2B',
+  'command-r7b:7b-12-2024-q4_K_M': 'Command R 7B',
+  'mistral-small:22b-instruct-2409-q4_1': 'Mistral Small 3',
 };
 const GetStartedPage = () => {
   const navigate = useNavigate();
@@ -146,6 +148,24 @@ const GetStartedPage = () => {
           'desktop.model.gemmaBenefits.performance' as const,
           'desktop.model.gemmaBenefits.fast' as const,
           'desktop.model.gemmaBenefits.lightweight' as const,
+        ];
+      if (
+        shinkaiNodeEventState?.payload?.model ===
+        'command-r7b:7b-12-2024-q4_K_M'
+      )
+        return [
+          'desktop.model.commandr7bBenefits.performance' as const,
+          'desktop.model.commandr7bBenefits.fast' as const,
+          'desktop.model.commandr7bBenefits.lightweight' as const,
+        ];
+      if (
+        shinkaiNodeEventState?.payload?.model ===
+        'mistral-small:22b-instruct-2409-q4_1'
+      )
+        return [
+          'desktop.model.mistralSmallBenefits.resource' as const,
+          'desktop.model.mistralSmallBenefits.language' as const,
+          'desktop.model.mistralSmallBenefits.multilingual' as const,
         ];
 
       return [];
