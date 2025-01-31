@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 
 import PlaygroundToolEditor from '../components/playground-tool/components/tool-playground';
+import { ToolMetadataSchemaType } from '../components/playground-tool/schemas';
 import { getLanguage } from '../components/playground-tool/utils/code';
 import { useAuth } from '../store/auth';
 
@@ -52,7 +53,7 @@ function EditToolPage() {
 
   const toolMetadataInitialValues = useMemo(
     () => ({
-      metadata: playgroundTool?.metadata ?? null,
+      metadata: playgroundTool?.metadata as ToolMetadataSchemaType | null,
       state: isPlaygroundToolPending
         ? 'pending'
         : isPlaygroundToolError || !isValidSchema

@@ -8,7 +8,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
-import { ToolMetadataSchema } from '../schemas';
+import { ToolMetadataSchema, ToolMetadataSchemaType } from '../schemas';
 import { parseJsonFromCodeBlock } from '../utils/code';
 
 export const useToolMetadata = ({
@@ -100,7 +100,7 @@ export const useToolMetadata = ({
         try {
           const parsedMetadata = ToolMetadataSchema.parse(
             extractedMetadata,
-          ) as ToolMetadata;
+          ) as ToolMetadataSchemaType;
           setMetadataData(parsedMetadata);
           setMetadataState('success');
           setError(null);

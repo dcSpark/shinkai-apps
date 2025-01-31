@@ -4,10 +4,7 @@ import { FormProps } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { CustomToolHeaders } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import {
-  CodeLanguage,
-  ToolMetadata,
-} from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useRemoveAssetTool } from '@shinkai_network/shinkai-node-state/v2/mutations/removeAssetTool/useRemoveAssetTool';
 import { useUploadAssetsTool } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadAssetsTool/useUploadAssetsTool';
 import { useGetAllToolAssets } from '@shinkai_network/shinkai-node-state/v2/queries/getAllToolAssets/useGetAllToolAssets';
@@ -81,6 +78,7 @@ import {
 } from '../hooks/use-tool-code';
 import { useToolMetadata } from '../hooks/use-tool-metadata';
 import PlaygroundToolLayout from '../layout';
+import { ToolMetadataSchemaType } from '../schemas';
 import ToolCodeEditor from '../tool-code-editor';
 import { detectLanguage } from '../utils/code';
 import { LanguageToolSelector } from './language-tool-selector';
@@ -97,7 +95,7 @@ function PlaygroundToolEditor({
   mode: 'create' | 'edit';
   createToolCodeFormInitialValues?: Partial<CreateToolCodeFormSchema>;
   toolMetadataInitialValues?: {
-    metadata: ToolMetadata | null;
+    metadata: ToolMetadataSchemaType | null;
     state?: 'idle' | 'pending' | 'success' | 'error';
     error?: string | null;
   };
