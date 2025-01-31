@@ -54,7 +54,8 @@
       "mySubscriptions": "My Subscriptions",
       "agents": "AIs",
       "settings": "Settings",
-      "disconnect": "Disconnect"
+      "disconnect": "Disconnect",
+      "helpAndSupport": "Help and Support"
     }
   },
   "chatDM": {
