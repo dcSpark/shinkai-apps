@@ -116,6 +116,7 @@
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "tiptap-markdown": "^0.8.10",
+    "ts-deepmerge": "^7.0.2",
     "tslib": "^2.6.2",
     "unified": "^11.0.5",
     "unist-util-visit-children": "^3.0.0",

@@ -4,10 +4,7 @@ import { FormProps } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { CustomToolHeaders } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import {
-  CodeLanguage,
-  ToolMetadata,
-} from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useRemoveAssetTool } from '@shinkai_network/shinkai-node-state/v2/mutations/removeAssetTool/useRemoveAssetTool';
 import { useUploadAssetsTool } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadAssetsTool/useUploadAssetsTool';
 import { useGetAllToolAssets } from '@shinkai_network/shinkai-node-state/v2/queries/getAllToolAssets/useGetAllToolAssets';
@@ -81,6 +78,7 @@ import {
 } from '../hooks/use-tool-code';
 import { useToolMetadata } from '../hooks/use-tool-metadata';
 import PlaygroundToolLayout from '../layout';
+import { ToolMetadataSchemaType } from '../schemas';
 import ToolCodeEditor from '../tool-code-editor';
 import { detectLanguage } from '../utils/code';
 import { LanguageToolSelector } from './language-tool-selector';
@@ -97,7 +95,7 @@ function PlaygroundToolEditor({
   mode: 'create' | 'edit';
   createToolCodeFormInitialValues?: Partial<CreateToolCodeFormSchema>;
   toolMetadataInitialValues?: {
-    metadata: ToolMetadata | null;
+    metadata: ToolMetadataSchemaType | null;
     state?: 'idle' | 'pending' | 'success' | 'error';
     error?: string | null;
   };
@@ -159,6 +157,7 @@ function PlaygroundToolEditor({
     createToolCodeForm: form,
     initialState: toolCodeInitialValues,
     initialChatInboxId,
+    initialToolName: toolMetadataInitialValues?.metadata?.name ?? '',
   });
 
   const {
@@ -177,7 +176,10 @@ function PlaygroundToolEditor({
     initialState: toolMetadataInitialValues,
   });
 
+  const mountTimestamp = useRef(new Date());
+
   const handleRunCode: FormProps['onSubmit'] = async (data) => {
+    mountTimestamp.current = new Date();
     const { configs, params } = data.formData;
     const updatedCodeWithoutSave = codeEditorRef.current?.value ?? '';
     await executeToolCodeQuery.mutateAsync({
@@ -341,7 +343,6 @@ function PlaygroundToolEditor({
                             }
                             onChange={field.onChange}
                             onSubmit={form.handleSubmit(handleCreateToolCode)}
-                            topAddons={<></>}
                             value={field.value}
                           />
                         </div>
@@ -758,6 +759,9 @@ function PlaygroundToolEditor({
                                       {executeToolCodeQuery.isSuccess &&
                                         toolResult && (
                                           <ToolResult
+                                            mountTimestamp={
+                                              mountTimestamp.current
+                                            }
                                             toolResult={JSON.stringify(
                                               toolResult,
                                               null,
@@ -839,7 +843,15 @@ function PlaygroundToolEditor({
                             value={
                               metadataGenerationData != null
                                 ? JSON.stringify(
-                                    metadataGenerationData,
+                                    {
+                                      ...metadataGenerationData,
+                                      name:
+                                        mode === 'edit'
+                                          ? undefined
+                                          : metadataGenerationData.name,
+                                      tools: undefined,
+                                      author: undefined,
+                                    },
                                     null,
                                     2,
                                   )
@@ -1108,9 +1120,11 @@ function formatTimestamp(timestamp: string) {
 const ToolResultBase = ({
   toolResultFiles,
   toolResult,
+  mountTimestamp,
 }: {
   toolResultFiles: string[];
   toolResult: string;
+  mountTimestamp: Date;
 }) => {
   const auth = useAuth((state) => state.auth);
 
@@ -1145,10 +1159,25 @@ const ToolResultBase = ({
   function formatLogs(logString: string) {
     return logString
       .split('\n')
-      .filter((line) => !/<\/?shinkai-code-result>/.test(line))
+      .filter((line) => {
+        if (/<\/?shinkai-code-result>/.test(line)) return false;
+
+        const parts = line.split(',');
+        if (parts.length < 5) return false;
+
+        const timestamp = parts[0];
+        const year = parseInt(timestamp.substring(0, 4));
+        const month = parseInt(timestamp.substring(4, 6)) - 1;
+        const day = parseInt(timestamp.substring(6, 8));
+        const hour = parseInt(timestamp.substring(9, 11));
+        const minute = parseInt(timestamp.substring(11, 13));
+        const second = parseInt(timestamp.substring(13, 15));
+
+        const logDate = new Date(year, month, day, hour, minute, second);
+        return logDate >= mountTimestamp;
+      })
       .map((line, i) => {
         const parts = line.split(',');
-        if (parts.length < 5) return line;
         const timestamp = parts[0];
         const logContent = parts.slice(4).join(',');
         const readableDate = formatTimestamp(timestamp);
@@ -1223,6 +1252,7 @@ const ToolResultBase = ({
 const ToolResult = memo(ToolResultBase, (prevProps, nextProps) => {
   if (!equal(prevProps.toolResultFiles, nextProps.toolResultFiles))
     return false;
+  if (prevProps.mountTimestamp !== nextProps.mountTimestamp) return false;
   if (prevProps.toolResult !== nextProps.toolResult) return false;
   return true;
 });

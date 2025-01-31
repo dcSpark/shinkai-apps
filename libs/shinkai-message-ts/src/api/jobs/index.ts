@@ -249,23 +249,34 @@ export const getLLMProviders = async (
   return response.data as GetLLMProvidersResponse;
 };
 
+export enum ModelPrefix {
+  OpenAI = 'openai',
+  TogetherAI = 'togetherai',
+  Ollama = 'ollama',
+  Gemini = 'gemini',
+  Groq = 'groq',
+  OpenRouter = 'openrouter',
+  Exo = 'exo',
+  Claude = 'claude',
+}
+
 function getModelString(model: LLMProviderInterface): string {
   if (model?.OpenAI?.model_type) {
-    return 'openai:' + model.OpenAI.model_type;
+    return ModelPrefix.OpenAI + ':' + model.OpenAI.model_type;
   } else if (model?.TogetherAI?.model_type) {
-    return 'togetherai:' + model.TogetherAI.model_type;
+    return ModelPrefix.TogetherAI + ':' + model.TogetherAI.model_type;
   } else if (model?.Ollama?.model_type) {
-    return 'ollama:' + model.Ollama.model_type;
+    return ModelPrefix.Ollama + ':' + model.Ollama.model_type;
   } else if (model?.Gemini?.model_type) {
-    return 'gemini:' + model.Gemini.model_type;
+    return ModelPrefix.Gemini + ':' + model.Gemini.model_type;
   } else if (model?.Groq?.model_type) {
-    return 'groq:' + model.Groq.model_type;
+    return ModelPrefix.Groq + ':' + model.Groq.model_type;
   } else if (model?.OpenRouter?.model_type) {
-    return 'openrouter:' + model.OpenRouter.model_type;
+    return ModelPrefix.OpenRouter + ':' + model.OpenRouter.model_type;
   } else if (model?.Exo?.model_type) {
-    return 'exo:' + model.Exo.model_type;
+    return ModelPrefix.Exo + ':' + model.Exo.model_type;
   } else if (model?.Claude?.model_type) {
-    return 'claude:' + model.Claude.model_type;
+    return ModelPrefix.Claude + ':' + model.Claude.model_type;
   } else if (Object.keys(model).length > 0) {
     const customModelProvider = Object.keys(model)[0];
     return `${customModelProvider}:${model[customModelProvider].model_type}`;

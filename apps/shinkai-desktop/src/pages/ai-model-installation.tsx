@@ -1,5 +1,7 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { ModelPrefix } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
   Button,
   buttonVariants,
@@ -15,17 +17,19 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ArrowRight, Plus, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { ResourcesBanner } from '../components/hardware-capabilities/resources-banner';
 import { OllamaModels } from '../components/shinkai-node-manager/ollama-models';
 import { shinkaiNodeQueryClient } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
+import { useAuth } from '../store/auth';
 import { FixedHeaderLayout } from './layout/simple-layout';
 
 const cloudProviders = [
   {
     id: Models.OpenAI,
+    prefix: ModelPrefix.OpenAI,
     name: 'OpenAI',
     icon: (
       <svg
@@ -38,12 +42,13 @@ const cloudProviders = [
         <path d="M21.55 10.004a5.416 5.416 0 00-.478-4.501c-1.217-2.09-3.662-3.166-6.05-2.66A5.59 5.59 0 0010.831 1C8.39.995 6.224 2.546 5.473 4.838A5.553 5.553 0 001.76 7.496a5.487 5.487 0 00.691 6.5 5.416 5.416 0 00.477 4.502c1.217 2.09 3.662 3.165 6.05 2.66A5.586 5.586 0 0013.168 23c2.443.006 4.61-1.546 5.361-3.84a5.553 5.553 0 003.715-2.66 5.488 5.488 0 00-.693-6.497v.001zm-8.381 11.558a4.199 4.199 0 01-2.675-.954c.034-.018.093-.05.132-.074l4.44-2.53a.71.71 0 00.364-.623v-6.176l1.877 1.069c.02.01.033.029.036.05v5.115c-.003 2.274-1.87 4.118-4.174 4.123zM4.192 17.78a4.059 4.059 0 01-.498-2.763c.032.02.09.055.131.078l4.44 2.53c.225.13.504.13.73 0l5.42-3.088v2.138a.068.068 0 01-.027.057L9.9 19.288c-1.999 1.136-4.552.46-5.707-1.51h-.001zM3.023 8.216A4.15 4.15 0 015.198 6.41l-.002.151v5.06a.711.711 0 00.364.624l5.42 3.087-1.876 1.07a.067.067 0 01-.063.005l-4.489-2.559c-1.995-1.14-2.679-3.658-1.53-5.63h.001zm15.417 3.54l-5.42-3.088L14.896 7.6a.067.067 0 01.063-.006l4.489 2.557c1.998 1.14 2.683 3.662 1.529 5.633a4.163 4.163 0 01-2.174 1.807V12.38a.71.71 0 00-.363-.623zm1.867-2.773a6.04 6.04 0 00-.132-.078l-4.44-2.53a.731.731 0 00-.729 0l-5.42 3.088V7.325a.068.068 0 01.027-.057L14.1 4.713c2-1.137 4.555-.46 5.707 1.513.487.833.664 1.809.499 2.757h.001zm-11.741 3.81l-1.877-1.068a.065.065 0 01-.036-.051V6.559c.001-2.277 1.873-4.122 4.181-4.12.976 0 1.92.338 2.671.954-.034.018-.092.05-.131.073l-4.44 2.53a.71.71 0 00-.365.623l-.003 6.173v.002zm1.02-2.168L12 9.25l2.414 1.375v2.75L12 14.75l-2.415-1.375v-2.75z" />
       </svg>
     ),
-    models: ['GPT 4o Mini', 'GPT 4o'],
+    models: [],
     description:
       'OpenAI is an AI research lab that aims to ensure that artificial general intelligence benefits all of humanity.',
   },
   {
     id: Models.TogetherComputer,
+    prefix: ModelPrefix.TogetherAI,
     name: 'Together AI',
     icon: (
       <svg
@@ -63,15 +68,13 @@ const cloudProviders = [
         </g>
       </svg>
     ),
-    models: [
-      'Meta - LlaMa-2 Chat (70B)',
-      'MistralAI - Mistral (7B) Instruct',
-      'Teknium - OpenHermes-2-Mistral (7B)',
-      'OpenOrca - OpenOrca Mistral (7B) 8K',
-    ],
+    models: [],
+    description:
+      'Together AI focus on efficient AI compute with high-performance inference and training on open ModelPrefix.',
   },
   {
     id: Models.Gemini,
+    prefix: ModelPrefix.Gemini,
     name: 'Gemini',
     description:
       ' A state-of-the-art large language model offering advanced reasoning, multimodal capabilities, and extended context handling.',
@@ -102,6 +105,7 @@ const cloudProviders = [
   },
   {
     id: Models.Groq,
+    prefix: ModelPrefix.Groq,
     name: 'Groq',
     description:
       'A hardware-accelerated inference solution optimized for low-latency and high-throughput deployments.',
@@ -122,6 +126,7 @@ const cloudProviders = [
   },
   {
     id: Models.OpenRouter,
+    prefix: ModelPrefix.OpenRouter,
     name: 'OpenRouter',
     description:
       'A scalable orchestration layer that intelligently routes queries across multiple AI models, optimizing performance and cost.',
@@ -141,6 +146,7 @@ const cloudProviders = [
   },
   {
     id: Models.Exo,
+    prefix: ModelPrefix.Exo,
     name: 'Exo',
     description:
       'A specialized model platform focused on precise information extraction, efficient summarization, and reliable knowledge retrieval.',
@@ -327,13 +333,9 @@ const cloudProviders = [
   },
   {
     id: Models.Claude,
+    prefix: ModelPrefix.Claude,
     name: 'Claude',
-    models: [
-      'Claude 3.5 Sonnet',
-      'Claude 3 Opus',
-      'Claude 3 Sonnet',
-      'Claude 3 Haiku',
-    ],
+    models: [],
     docUrl: 'https://docs.anthropic.com/en/docs/intro-to-claude',
     icon: (
       <svg height="1em" viewBox="0 0 24 24" width="1em">
@@ -345,6 +347,8 @@ const cloudProviders = [
         />
       </svg>
     ),
+    description:
+      'Claude is a powerful AI model that can be used to generate text, images, and code.',
   },
 ];
 const AIModelInstallation = ({
@@ -353,7 +357,39 @@ const AIModelInstallation = ({
   isOnboardingStep?: boolean;
 }) => {
   const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
   const [showAllOllamaModels, setShowAllOllamaModels] = useState(false);
+
+  const { data: llmProviders } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const providerModels = useMemo(() => {
+    if (!llmProviders) return {};
+
+    return llmProviders.reduce(
+      (acc, provider) => {
+        const [providerName] = provider.model.split(':');
+        if (providerName === ModelPrefix.Ollama) {
+          return acc;
+        }
+        if (!acc[providerName]) {
+          acc[providerName] = [];
+        }
+        acc[providerName].push(provider.model.split(':')[1]);
+        return acc;
+      },
+      {} as Record<string, string[]>,
+    );
+  }, [llmProviders]);
+
+  const cloudProvidersWithInstalledModels = useMemo(() => {
+    return cloudProviders.map((provider) => ({
+      ...provider,
+      models: providerModels[provider.prefix] || [],
+    }));
+  }, [providerModels]);
 
   const navigate = useNavigate();
   return (
@@ -473,7 +509,7 @@ const AIModelInstallation = ({
               </Button>
             </div>
             <div className="grid grid-cols-4 gap-4">
-              {cloudProviders.map((model) => (
+              {cloudProvidersWithInstalledModels.map((model) => (
                 <Card
                   className="flex h-[235px] flex-col justify-between"
                   key={model.name}
@@ -492,7 +528,7 @@ const AIModelInstallation = ({
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4 px-4">
-                      {model.models ? (
+                      {model.models && model.models.length > 0 ? (
                         <div>
                           <p className="text-gray-80 mb-2 text-xs uppercase">
                             Available Models
