@@ -523,12 +523,19 @@
     "runNow": "Jalankan Sekarang"
   },
   "tools": {
+    "create": "Buat Alat",
     "emptyState": {
       "search": {
         "text": "Tidak ada alat ditemukan untuk kueri pencarian"
       }
     },
-    "label": "Alat-alat Shinkai"
+    "installFromStore": "Instal dari Toko",
+    "label": "Alat-alat Shinkai",
+    "lookingForMoreTools": "Mencari lebih banyak alat?",
+    "store": {
+      "label": "Toko"
+    },
+    "visitStore": "Kunjungi Toko Shinkai untuk menemukan dan menginstal alat tambahan yang dapat meningkatkan alur kerja Anda"
   },
   "vectorFs": {
     "actions": {

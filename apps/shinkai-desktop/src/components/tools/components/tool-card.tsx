@@ -40,9 +40,9 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import config from '../../../../src/config';
 import { SubpageLayout } from '../../../pages/layout/simple-layout';
 import { useAuth } from '../../../store/auth';
+import { SHINKAI_STORE_URL } from '../../../utils/store';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import { parseConfigToJsonSchema } from '../utils/tool-config';
@@ -53,10 +53,6 @@ interface ToolDetailsProps {
   isPlaygroundTool?: boolean;
   toolType: ShinkaiToolType;
 }
-
-const SHINKAI_STORE_URL = config.isDev
-  ? 'http://localhost:3000'
-  : 'https://store.shinkai.com';
 
 export default function ToolCard({
   tool,

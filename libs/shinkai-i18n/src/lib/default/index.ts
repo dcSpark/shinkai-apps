@@ -615,6 +615,14 @@ export default {
         text: 'No tools found for the search query',
       },
     },
+    store: {
+      label: 'Store',
+    },
+    create: 'Create Tool',
+    installFromStore: 'Install from Store',
+    lookingForMoreTools: 'Looking for more tools?',
+    visitStore:
+      'Visit the Shinkai Store to discover and install additional tools to enhance your workflow',
   },
   disconnect: {
     modalTitle: 'Disconnect Shinkai',

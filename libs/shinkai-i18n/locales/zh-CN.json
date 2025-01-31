@@ -523,12 +523,19 @@
     "runNow": "立即运行"
   },
   "tools": {
+    "create": "创建工具",
     "emptyState": {
       "search": {
         "text": "未找到与搜索查询匹配的工具"
       }
     },
-    "label": "深海工具"
+    "installFromStore": "从商店安装",
+    "label": "深海工具",
+    "lookingForMoreTools": "寻找更多工具？",
+    "store": {
+      "label": "商店"
+    },
+    "visitStore": "访问深海商店，发现并安装更多工具以增强您的工作流程"
   },
   "vectorFs": {
     "actions": {

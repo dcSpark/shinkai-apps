@@ -523,12 +523,19 @@
     "runNow": "今すぐ実行"
   },
   "tools": {
+    "create": "ツールを作成",
     "emptyState": {
       "search": {
         "text": "検索クエリに一致するツールは見つかりませんでした"
       }
     },
-    "label": "深海ツール"
+    "installFromStore": "ストアからインストール",
+    "label": "深海ツール",
+    "lookingForMoreTools": "さらにツールを探していますか？",
+    "store": {
+      "label": "ストア"
+    },
+    "visitStore": "作業を向上させるための追加ツールを発見し、インストールするには新海ストアを訪れてください"
   },
   "vectorFs": {
     "actions": {

@@ -523,12 +523,19 @@
     "runNow": "Şimdi Çalıştır"
   },
   "tools": {
+    "create": "Araç Oluştur",
     "emptyState": {
       "search": {
         "text": "Arama sorgusu için hiçbir araç bulunamadı"
       }
     },
-    "label": "Shinkai Araçları"
+    "installFromStore": "Mağazadan Yükle",
+    "label": "Shinkai Araçları",
+    "lookingForMoreTools": "Daha fazla araç mı arıyorsunuz?",
+    "store": {
+      "label": "Mağaza"
+    },
+    "visitStore": "İş akışınızı geliştirmek için ek araçlar keşfetmek ve yüklemek üzere Shinkai Mağazası'nı ziyaret edin"
   },
   "vectorFs": {
     "actions": {
