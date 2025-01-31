@@ -41,6 +41,7 @@ import {
   ArrowLeftToLine,
   ArrowRightToLine,
   BotIcon,
+  HelpCircleIcon,
   StoreIcon,
 } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
@@ -61,6 +62,8 @@ import config from '../../config';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { SHINKAI_STORE_URL } from '../../utils/store';
+
+const SUPPORT_EMAIL = 'app.support@shinkai.com';
 
 type NavigationLink = {
   title: string;
@@ -229,11 +232,12 @@ export function MainNav() {
       href: '/vector-fs',
       icon: <FilesIcon className="h-5 w-5" />,
     },
-    config.isDev && {
-      title: t('layout.menuItems.vectorSearch'),
-      href: '/vector-search',
-      icon: <AISearchContentIcon className="h-5 w-5" />,
-    },
+    config.isDev &&
+      optInExperimental && {
+        title: t('layout.menuItems.vectorSearch'),
+        href: '/vector-search',
+        icon: <AISearchContentIcon className="h-5 w-5" />,
+      },
 
     // {
     //   title: t('layout.menuItems.subscriptions'),
@@ -273,6 +277,12 @@ export function MainNav() {
       title: t('layout.menuItems.agents'),
       href: '/ais',
       icon: <BotIcon className="h-5 w-5" />,
+    },
+    {
+      title: t('layout.menuItems.helpAndSupport'),
+      href: `mailto:${SUPPORT_EMAIL}?subject=Shinkai%20App%20Support%20Request`,
+      icon: <HelpCircleIcon className="h-5 w-5" />,
+      external: true,
     },
     {
       title: t('layout.menuItems.settings'),

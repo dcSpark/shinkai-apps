@@ -73,6 +73,7 @@ export default {
       agents: 'AIs',
       settings: 'Settings',
       disconnect: 'Disconnect',
+      helpAndSupport: 'Help and Support',
     },
   },
   chatDM: {
