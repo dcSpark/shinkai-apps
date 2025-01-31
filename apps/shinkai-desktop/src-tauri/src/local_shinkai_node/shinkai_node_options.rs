@@ -63,7 +63,7 @@ impl ShinkaiNodeOptions {
         let hardware_summary = hardware_get_summary();
         log::info!("hardware summary: {:?}", hardware_summary);
 
-        let model = if cfg!(target_os = "macos") && hardware_summary.hardware.memory >= 32 {
+        let model = if cfg!(target_os = "macos") && hardware_summary.hardware.memory >= 16 {
             "mistral-small:22b-instruct-2409-q4_1".to_string()
         } else if cfg!(target_os = "macos") {
             "command-r7b:7b-12-2024-q4_K_M".to_string()
