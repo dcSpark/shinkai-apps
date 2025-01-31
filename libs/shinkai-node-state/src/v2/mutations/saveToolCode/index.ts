@@ -25,8 +25,6 @@ export const saveToolCode = async ({
     tools,
   });
 
-  console.log(mergedToolMetadata, 'mergedToolMetadata');
-
   return await saveToolCodeApi(
     nodeAddress,
     token,

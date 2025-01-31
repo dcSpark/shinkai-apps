@@ -45,12 +45,6 @@ function EditToolPage() {
     playgroundTool?.metadata?.parameters ?? {},
   );
 
-  console.log(
-    playgroundTool?.metadata?.parameters,
-    'playgroundTool?.metadata?.parameters',
-    isValidSchema,
-  );
-
   const toolMetadataInitialValues = useMemo(
     () => ({
       metadata: playgroundTool?.metadata as ToolMetadataSchemaType | null,
