@@ -118,7 +118,7 @@ function PlaygroundToolEditor({
     if (createToolCodeFormInitialValues?.language) {
       form.setValue('language', createToolCodeFormInitialValues.language);
     }
-  }, [form]);
+  }, [createToolCodeFormInitialValues?.language, form]);
 
   const {
     chatInboxId,
