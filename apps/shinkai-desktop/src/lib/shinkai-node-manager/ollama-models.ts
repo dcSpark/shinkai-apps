@@ -94,7 +94,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
           platforms: ['macos'],
         },
         {
-          model: 'mistrall-small',
+          model: 'mistral-small',
           tag: '22b-instruct-2409-q4_1',
           name: 'Mistral Small 3',
           description:
