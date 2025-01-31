@@ -2,21 +2,21 @@ use serde::Serialize;
 use sysinfo::System;
 use wgpu::DeviceType;
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct Hardware {
-    cpus: usize,
-    memory: u64,
-    discrete_gpu: bool,
+    pub cpus: usize,
+    pub memory: u64,
+    pub discrete_gpu: bool,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct Requirement {
     cpus: usize,
     memory: u64,
     discrete_gpu: bool,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct Requirements {
     still_usable: Requirement,
     minimum: Requirement,
@@ -24,7 +24,7 @@ pub struct Requirements {
     optimal: Requirement,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub enum RequirementsStatus {
     Unmeet,
     StillUsable,
@@ -33,7 +33,7 @@ pub enum RequirementsStatus {
     Optimal,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct HardwareSummary {
     pub hardware: Hardware,
     pub requirements: Requirements,
