@@ -115,7 +115,7 @@ export const Tools = () => {
             to="/tools/create"
           >
             <PlusIcon className="size-4" />
-            Create Tool
+            {t('tools.create')}
           </Link>
 
           <Link
@@ -131,7 +131,7 @@ export const Tools = () => {
             to={SHINKAI_STORE_URL}
           >
             <StoreIcon className="size-4" />
-            Install from Store
+            {t('tools.installFromStore')}
           </Link>
 
           <DropdownMenu>
@@ -366,10 +366,7 @@ export const Tools = () => {
                 <h3 className="text-sm font-medium text-gray-100">
                   Looking for more tools?
                 </h3>
-                <p className="text-gray-80 text-sm">
-                  Visit the Shinkai Store to discover and install additional
-                  tools to enhance your workflow
-                </p>
+                <p className="text-gray-80 text-sm">{t('tools.visitStore')}</p>
               </div>
               <Link
                 className={cn(
@@ -385,7 +382,7 @@ export const Tools = () => {
                 to={`${SHINKAI_STORE_URL}?search=${searchQuery}`}
               >
                 <StoreIcon className="size-4" />
-                Install from Store
+                {t('tools.installFromStore')}
               </Link>
             </div>
           </div>

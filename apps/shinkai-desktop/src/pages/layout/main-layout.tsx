@@ -246,12 +246,12 @@ export function MainNav() {
     //   icon: <MySubscriptionsIcon className="h-5 w-5" />,
     // },
     {
-      title: 'Shinkai Tools',
+      title: t('tools.label'),
       href: '/tools',
       icon: <ToolsIcon className="h-5 w-5" />,
     },
     {
-      title: 'Store',
+      title: t('tools.store.label'),
       href: SHINKAI_STORE_URL,
       icon: <StoreIcon className="h-5 w-5" />,
       external: true,

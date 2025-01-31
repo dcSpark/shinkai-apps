@@ -523,12 +523,19 @@
     "runNow": "Ejecutar ahora"
   },
   "tools": {
+    "create": "Crear herramienta",
     "emptyState": {
       "search": {
         "text": "No se encontraron herramientas para la consulta de búsqueda"
       }
     },
-    "label": "Herramientas Shinkai"
+    "installFromStore": "Instalar desde la tienda",
+    "label": "Herramientas Shinkai",
+    "lookingForMoreTools": "¿Buscas más herramientas?",
+    "store": {
+      "label": "Tienda"
+    },
+    "visitStore": "Visita la tienda Shinkai para descubrir e instalar herramientas adicionales que mejoren tu flujo de trabajo"
   },
   "vectorFs": {
     "actions": {
