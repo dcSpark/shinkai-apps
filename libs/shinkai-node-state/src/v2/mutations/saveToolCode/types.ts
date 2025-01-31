@@ -13,6 +13,11 @@ export type SaveToolCodeInput = Token & {
   language: CodeLanguage;
   xShinkaiAppId: string;
   xShinkaiToolId: string;
+} & {
+  name: string;
+  description: string;
+  version: string;
+  tools: string[];
 };
 
 export type SaveToolCodeOutput = SaveToolCodeResponse;

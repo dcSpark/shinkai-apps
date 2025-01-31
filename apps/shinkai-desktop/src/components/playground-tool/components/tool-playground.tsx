@@ -159,6 +159,7 @@ function PlaygroundToolEditor({
     createToolCodeForm: form,
     initialState: toolCodeInitialValues,
     initialChatInboxId,
+    initialToolName: toolMetadataInitialValues?.metadata?.name ?? '',
   });
 
   const {
@@ -344,7 +345,6 @@ function PlaygroundToolEditor({
                             }
                             onChange={field.onChange}
                             onSubmit={form.handleSubmit(handleCreateToolCode)}
-                            topAddons={<></>}
                             value={field.value}
                           />
                         </div>
@@ -845,7 +845,15 @@ function PlaygroundToolEditor({
                             value={
                               metadataGenerationData != null
                                 ? JSON.stringify(
-                                    metadataGenerationData,
+                                    {
+                                      ...metadataGenerationData,
+                                      name:
+                                        mode === 'edit'
+                                          ? undefined
+                                          : metadataGenerationData.name,
+                                      tools: undefined,
+                                      author: undefined,
+                                    },
                                     null,
                                     2,
                                   )

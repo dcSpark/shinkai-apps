@@ -101,10 +101,7 @@ export const useToolMetadata = ({
           const parsedMetadata = ToolMetadataSchema.parse(
             extractedMetadata,
           ) as ToolMetadata;
-          setMetadataData({
-            ...parsedMetadata,
-            author: auth?.shinkai_identity ?? '',
-          });
+          setMetadataData(parsedMetadata);
           setMetadataState('success');
           setError(null);
         } catch (error) {

@@ -15,12 +15,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
 
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
-import { ToolMetadataSchema } from '../schemas';
+import { ToolMetadataSchema, ToolMetadataSchemaType } from '../schemas';
 import { extractCodeByLanguage, extractCodeLanguage } from '../utils/code';
 
 export const createToolCodeFormSchema = z.object({
@@ -115,6 +116,7 @@ export const useToolCode = ({
   initialChatInboxId,
   initialState,
   createToolCodeForm,
+  initialToolName,
 }: {
   initialChatInboxId?: string;
   initialState?: {
@@ -123,6 +125,7 @@ export const useToolCode = ({
     error?: string | null;
   };
   createToolCodeForm: UseFormReturn<CreateToolCodeFormSchema>;
+  initialToolName?: string;
 }) => {
   const {
     chatInboxId,
@@ -315,11 +318,21 @@ export const useToolCode = ({
     const metadataCode = metadataEditorRef.current?.value;
     const toolCode = codeEditorRef.current?.value;
 
-    let parsedMetadata: ToolMetadata;
+    let parsedMetadata: ToolMetadataSchemaType;
 
     try {
-      const parseResult = JSON.parse(metadataCode as string) as ToolMetadata;
-      parsedMetadata = ToolMetadataSchema.parse(parseResult);
+      const parseResult = JSON.parse(
+        metadataCode as string,
+      ) as ToolMetadataSchemaType;
+
+      const mergedMetadata = merge(parseResult, {
+        // override values
+        name: initialChatInboxId ? initialToolName ?? '' : parseResult.name,
+        tools: createToolCodeForm.getValues('tools') ?? [],
+        author: auth?.shinkai_identity ?? '',
+      });
+
+      parsedMetadata = ToolMetadataSchema.parse(mergedMetadata);
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast.error('Invalid Metadata JSON Value', {
@@ -336,6 +349,10 @@ export const useToolCode = ({
     }
 
     await saveToolCode({
+      name: parsedMetadata.name,
+      description: parsedMetadata.description,
+      version: parsedMetadata.version,
+      tools: parsedMetadata.tools,
       code: toolCode,
       metadata: parsedMetadata,
       jobId: extractJobIdFromInbox(chatInboxId),
