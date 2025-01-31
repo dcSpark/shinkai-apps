@@ -1,5 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { ModelPrefix } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
+import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
   Button,
@@ -27,7 +28,8 @@ import { FixedHeaderLayout } from './layout/simple-layout';
 
 const cloudProviders = [
   {
-    id: ModelPrefix.OpenAI,
+    id: Models.OpenAI,
+    prefix: ModelPrefix.OpenAI,
     name: 'OpenAI',
     icon: (
       <svg
@@ -45,7 +47,8 @@ const cloudProviders = [
       'OpenAI is an AI research lab that aims to ensure that artificial general intelligence benefits all of humanity.',
   },
   {
-    id: ModelPrefix.TogetherAI,
+    id: Models.TogetherComputer,
+    prefix: ModelPrefix.TogetherAI,
     name: 'Together AI',
     icon: (
       <svg
@@ -70,7 +73,8 @@ const cloudProviders = [
       'Together AI focus on efficient AI compute with high-performance inference and training on open ModelPrefix.',
   },
   {
-    id: ModelPrefix.Gemini,
+    id: Models.Gemini,
+    prefix: ModelPrefix.Gemini,
     name: 'Gemini',
     description:
       ' A state-of-the-art large language model offering advanced reasoning, multimodal capabilities, and extended context handling.',
@@ -100,7 +104,8 @@ const cloudProviders = [
     ),
   },
   {
-    id: ModelPrefix.Groq,
+    id: Models.Groq,
+    prefix: ModelPrefix.Groq,
     name: 'Groq',
     description:
       'A hardware-accelerated inference solution optimized for low-latency and high-throughput deployments.',
@@ -120,7 +125,8 @@ const cloudProviders = [
     ),
   },
   {
-    id: ModelPrefix.OpenRouter,
+    id: Models.OpenRouter,
+    prefix: ModelPrefix.OpenRouter,
     name: 'OpenRouter',
     description:
       'A scalable orchestration layer that intelligently routes queries across multiple AI models, optimizing performance and cost.',
@@ -139,7 +145,8 @@ const cloudProviders = [
     ),
   },
   {
-    id: ModelPrefix.Exo,
+    id: Models.Exo,
+    prefix: ModelPrefix.Exo,
     name: 'Exo',
     description:
       'A specialized model platform focused on precise information extraction, efficient summarization, and reliable knowledge retrieval.',
@@ -325,7 +332,8 @@ const cloudProviders = [
     ),
   },
   {
-    id: ModelPrefix.Claude,
+    id: Models.Claude,
+    prefix: ModelPrefix.Claude,
     name: 'Claude',
     models: [],
     docUrl: 'https://docs.anthropic.com/en/docs/intro-to-claude',
@@ -379,7 +387,7 @@ const AIModelInstallation = ({
   const cloudProvidersWithInstalledModels = useMemo(() => {
     return cloudProviders.map((provider) => ({
       ...provider,
-      models: providerModels[provider.id] || [],
+      models: providerModels[provider.prefix] || [],
     }));
   }, [providerModels]);
 
