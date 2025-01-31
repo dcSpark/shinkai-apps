@@ -151,6 +151,11 @@
     },
     "localAI": "Kecerdasan Buatan Lokal Shinkai",
     "model": {
+      "commandr7bBenefits": {
+        "fast": "<b>Eksekusi Cepat:</b> Pengguna telah mencatat bahwa model ini berjalan efisien pada perangkat keras menengah, memungkinkan respons yang lebih cepat dan interaksi yang lebih lancar tanpa penundaan yang signifikan.",
+        "lightweight": "<b>Ringan:</b> Sifat ringan ini berarti memerlukan lebih sedikit memori dan daya komputasi, sehingga dapat diakses oleh lebih banyak pengguna dan aplikasi.",
+        "performance": "<b>Kinerja Tinggi dalam Ukuran Kompak:</b> Model command-r7b dirancang untuk memberikan kinerja yang sangat baik sambil mempertahankan ukuran yang relatif kecil."
+      },
       "downloading": "Mengunduh",
       "embeddingBenefits": {
         "dataAnalysis": "<b>Analisis Data yang Ditingkatkan:</b> Ekstrak wawasan yang bermakna dari data tak terstruktur, meningkatkan proses pengambilan keputusan dan efisiensi operasional.",
@@ -163,6 +168,11 @@
         "performance": "<b>Kinerja Tinggi dalam Ukuran Kompak:</b> Model gemma2:2b dirancang untuk memberikan kinerja terkemuka sambil mempertahankan ukuran relatif kecil sebesar 2 miliar parameter."
       },
       "installation": "Menginstal {{modelName}}...",
+      "mistralSmallBenefits": {
+        "language": "<b>Generasi Bahasa yang Kuat:</b> Menghasilkan teks yang mirip manusia di berbagai aplikasi seperti pembuatan konten, terjemahan bahasa, dan bantuan pemrograman.",
+        "multilingual": "<b>Dukungan Multibahasa:</b> Model ini mendukung dialog dalam berbagai bahasa termasuk Inggris, Spanyol, Prancis, Jerman, dan lainnya.",
+        "resource": "<b>Penggunaan Sumber Daya yang Efisien:</b> Ini adalah model ringan dan ultra-cepat dibandingkan dengan model yang lebih besar."
+      },
       "ollamaBenefits": {
         "language": "<b>Generasi Bahasa yang Kuat:</b> Menghasilkan teks mirip manusia di berbagai aplikasi seperti generasi konten, terjemahan bahasa, dan bantuan pengkodean.",
         "multilingual": "<b>Dukungan Multibahasa:</b> Model ini mendukung dialog dalam beberapa bahasa termasuk Bahasa Inggris, Spanyol, Perancis, Jerman, dan lainnya",

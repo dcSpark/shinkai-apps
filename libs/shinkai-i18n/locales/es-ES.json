@@ -151,6 +151,11 @@
     },
     "localAI": "IA Local de Shinkai",
     "model": {
+      "commandr7bBenefits": {
+        "fast": "<b>Ejecución Rápida:</b> Los usuarios han señalado que funciona de manera eficiente en hardware de gama media, lo que permite respuestas más rápidas e interacciones más fluidas sin un retraso significativo.",
+        "lightweight": "<b>Ligero:</b> Esta naturaleza ligera significa que requiere menos memoria y potencia de cálculo, lo que lo hace accesible para una gama más amplia de usuarios y aplicaciones.",
+        "performance": "<b>Alto Rendimiento en un Tamaño Compacto:</b> El modelo command-r7b está diseñado para ofrecer un excelente rendimiento mientras mantiene un tamaño relativamente pequeño."
+      },
       "downloading": "Descargando",
       "embeddingBenefits": {
         "dataAnalysis": "<b>Mejora del Análisis de Datos:</b> Extrae ideas significativas de datos no estructurados, mejorando los procesos de toma de decisiones y la eficiencia operativa.",
@@ -163,6 +168,11 @@
         "performance": "<b>Alto Rendimiento en un Tamaño Compacto:</b> El modelo gemma2:2b está diseñado para ofrecer un rendimiento líder en su clase manteniendo un tamaño relativamente pequeño de 2 mil millones de parámetros."
       },
       "installation": "Instalando {{modelName}}...",
+      "mistralSmallBenefits": {
+        "language": "<b>Generación de Lenguaje Poderosa:</b> Genera texto similar al humano en una variedad de aplicaciones como generación de contenido, traducción de idiomas y asistencia en programación.",
+        "multilingual": "<b>Soporte Multilingüe:</b> El modelo admite diálogos en múltiples idiomas, incluyendo inglés, español, francés, alemán y más.",
+        "resource": "<b>Uso Eficiente de Recursos:</b> Es un modelo ligero y ultra-rápido en comparación con modelos más grandes."
+      },
       "ollamaBenefits": {
         "language": "<b>Generación de Lenguaje Potente:</b> Genera texto similar al humano en una variedad de aplicaciones como generación de contenido, traducción de idiomas y asistencia en codificación.",
         "multilingual": "<b>Soporte Multilingüe:</b> El modelo admite diálogos en varios idiomas, incluidos inglés, español, francés, alemán y más.",

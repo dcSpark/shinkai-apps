@@ -28,6 +28,16 @@
         "resource": "<b>Efficient Resource Usage:</b> It's a light-weight, ultra-fast model compared to larger models.",
         "language": "<b>Powerful Language Generation:</b> Generate human-like text across a variety of applications such as content generation, language translation, and coding assistance.",
         "multilingual": "<b>Multilingual Support:</b> The model supports dialogues in multiple languages including English, Spanish, French, German and more"
+      },
+      "commandr7bBenefits": {
+        "performance": "<b>High Performance in a Compact Size:</b> The command-r7b model is designed to deliver excellent performance while maintaining a relatively small size.",
+        "fast": "<b>Fast Execution:</b> Users have noted that it runs efficiently on mid-range hardware, enabling faster responses and smoother interactions without significant lag.",
+        "lightweight": "<b>Lightweight:</b> This lightweight nature means it requires less memory and computational power, making it accessible for a wider range of users and applications."
+      },
+      "mistralSmallBenefits": {
+        "resource": "<b>Efficient Resource Usage:</b> It's a light-weight, ultra-fast model compared to larger models.",
+        "language": "<b>Powerful Language Generation:</b> Generate human-like text across a variety of applications such as content generation, language translation, and coding assistance.",
+        "multilingual": "<b>Multilingual Support:</b> The model supports dialogues in multiple languages including English, Spanish, French, German and more"
       }
     }
   },
