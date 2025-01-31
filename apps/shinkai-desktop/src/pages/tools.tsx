@@ -364,7 +364,7 @@ export const Tools = () => {
               <SearchIcon className="text-gray-80 h-8 w-8" />
               <div className="flex flex-col items-start gap-1.5">
                 <h3 className="text-sm font-medium text-gray-100">
-                  Looking for more tools?
+                  {t('tools.lookingForMoreTools')}
                 </h3>
                 <p className="text-gray-80 text-sm">{t('tools.visitStore')}</p>
               </div>
