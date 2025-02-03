@@ -52,8 +52,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { VideoBanner } from '../components/video-banner';
 import { useDebounce } from '../hooks/use-debounce';
 import { useAuth } from '../store/auth';
+import { TutorialBanner } from '../store/settings';
 import { SHINKAI_STORE_URL } from '../utils/store';
 import { SimpleLayout } from './layout/simple-layout';
 
@@ -176,6 +178,12 @@ export const Tools = () => {
       }
       title={t('tools.label')}
     >
+      <VideoBanner
+        description="Watch this tutorial to learn how it works. If you're already familiar with this feature, you can dismiss this video"
+        docsUrl="https://www.youtube.com/"
+        name={TutorialBanner.SHINKAI_TOOLS}
+        title="Welcome to the Shinkai Tools"
+      />
       <div className="flex h-full flex-1 flex-col">
         <div className="relative mb-4 flex h-10 w-full items-center">
           <Input
