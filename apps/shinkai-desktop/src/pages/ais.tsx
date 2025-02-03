@@ -417,6 +417,7 @@ const EditLLMProviderDrawer = ({
                   <TextField
                     field={field}
                     label={t('llmProviders.form.apiKey')}
+                    type="password"
                   />
                 )}
               />
