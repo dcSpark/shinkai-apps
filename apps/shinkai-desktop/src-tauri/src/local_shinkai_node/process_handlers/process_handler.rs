@@ -115,9 +115,13 @@ impl ProcessHandler {
             args,
             env
         );
-
-        self.kill().await;
-        tokio::time::sleep(std::time::Duration::from_millis(Self::PORT_RELEASE_DELAY_MS)).await;
+        {
+            let process = self.process.lock().await;
+            if process.is_some() {
+                log::warn!("[{}] process is already running", self.process_name);
+                return Ok(());
+            }
+        }
 
         let mut logger = self.logger.write().await;
         let shell = self.app.shell();
@@ -165,9 +169,8 @@ impl ProcessHandler {
             while let Some(event) = rx.recv().await {
                 let message = Self::command_event_to_message(event.clone());
                 log::debug!(
-                    "[{}] received process event: {:?} with message: {}",
+                    "[{}] received process event with message: {}",
                     process_name,
-                    event,
                     message
                 );
                 let log_entry;
@@ -242,7 +245,7 @@ impl ProcessHandler {
                         let event_sender = event_sender_mutex.lock().await;
                         let _ = event_sender.send(ProcessHandlerEvent::Log(log_entry)).await;
                     }
-                    break;
+                    return Err(message.to_string());
                 } else if *is_ready {
                     log::info!(
                         "[{}] process passed minimum alive time check after {:?}",
