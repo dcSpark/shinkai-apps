@@ -72,6 +72,9 @@ export const ToolMetadataSchema = z.object({
       refreshToken: z.string().default(''),
     }),
   ).default([]),
+  runner: z.string().default('any'),
+  operating_system: z.array(z.string()).default(['linux', 'macos', 'windows']),
+  tool_set: z.string().default(''),
 });
 
 export type ToolMetadataSchemaType = z.infer<typeof ToolMetadataSchema>;
