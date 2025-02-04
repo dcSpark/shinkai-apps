@@ -143,9 +143,6 @@ fn main() {
                     }
                 }
             });
-
-
-
             Ok(())
         })
         .build(tauri::generate_context!())

@@ -205,6 +205,10 @@ jobs:
           npm cache verify
           npm ci --no-audit --prefer-offline
 
+      - name: Setup cargo version from npm
+        run: |
+          cargo set-version ${{ needs.prebuild.outputs.version }}
+
       - name: Download side binaries
         env:
           ARCH: ${{ matrix.arch }}

@@ -95,7 +95,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
         },
         {
           model: 'mistral-small',
-          tag: '22b-instruct-2409-q4_1',
+          tag: '24b-instruct-2501-q4_K_M',
           name: 'Mistral Small 3',
           description:
             'Mistral Small 3 sets a new benchmark in the “small” Large Language Models category below 70B.',
