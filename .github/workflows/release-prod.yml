@@ -209,6 +209,7 @@ jobs:
       - name: Setup cargo version from npm
         run: |
           cd ./apps/shinkai-desktop/src-tauri
+          cargo install cargo-edit --force
           cargo set-version ${{ needs.prebuild.outputs.version }}
 
       - name: Download side binaries
