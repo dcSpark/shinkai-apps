@@ -507,7 +507,7 @@
       "syncedOllama": "Los modelos locales de Ollama se han sincronizado con tu Nodo Shinkai"
     },
     "resetNodeWarning": {
-      "description": "Su nodo Shinkai está actualmente bloqueado por claves existentes. Para volver a conectarse, tiene tres opciones:",
+      "description": "Tu nodo Shinkai está actualmente bloqueado por claves existentes. Para volver a conectarte, puedes restablecer todos los datos de tu nodo Shinkai.",
       "option1": "<b>Restaurar:</b> Intente restaurar su conexión utilizando las claves respaldadas.",
       "option2": "<b>Restablecer datos:</b> Eliminar permanentemente todos los datos de tu Nodo Shinkai.",
       "option3": "<b>Restablecer todo:</b> Eliminar permanentemente todos los datos de tu Nodo Shinkai, incluyendo las claves de encriptación y firma.",
