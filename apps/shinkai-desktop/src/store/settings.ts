@@ -2,6 +2,13 @@ import { LocaleMode, switchLanguage } from '@shinkai_network/shinkai-i18n';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
+export enum TutorialBanner {
+  SHINKAI_TOOLS = 'shinkai-tools',
+  FILES_EXPLORER = 'files-explorer',
+  SCHEDULED_TASKS = 'scheduled-tasks',
+  AIS_AND_AGENTS = 'ais-and-agents',
+}
+
 type SettingsStore = {
   defaultAgentId: string;
   setDefaultAgentId: (defaultAgentId: string) => void;
@@ -29,12 +36,14 @@ type SettingsStore = {
   isChatSidebarCollapsed: boolean;
   setChatSidebarCollapsed: (isChatSidebarCollapsed: boolean) => void;
   resetSettings: () => void;
+  dismissedTutorialBanners: TutorialBanner[];
+  dismissTutorialBanner: (bannerId: TutorialBanner) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
   devtools(
     persist(
-      (set) => ({
+      (set, get) => ({
         defaultAgentId: '',
         setDefaultAgentId: (defaultAgentId) => {
           set({ defaultAgentId });
@@ -97,6 +106,14 @@ export const useSettings = create<SettingsStore>()(
         isChatSidebarCollapsed: false,
         setChatSidebarCollapsed: (isChatSidebarCollapsed) => {
           set({ isChatSidebarCollapsed });
+        },
+        dismissedTutorialBanners: [] as TutorialBanner[],
+        dismissTutorialBanner: (bannerId: TutorialBanner) => {
+          set((state) => ({
+            dismissedTutorialBanners: Array.from(
+              new Set([...state.dismissedTutorialBanners, bannerId]),
+            ),
+          }));
         },
 
         resetSettings: () => {

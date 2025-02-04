@@ -31,6 +31,7 @@ import {
   // MySubscriptionsIcon,
   SheetIcon,
   ShinkaiCombinationMarkIcon,
+  StoreIcon,
   ToolsIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -42,7 +43,6 @@ import {
   ArrowRightToLine,
   BotIcon,
   HelpCircleIcon,
-  StoreIcon,
 } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
 import {

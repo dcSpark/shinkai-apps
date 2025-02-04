@@ -306,12 +306,14 @@ function RemoveInboxMessageModal({
   const navigate = useNavigate();
   const { mutateAsync: removeJob, isPending } = useRemoveJob({
     onSuccess: () => {
+      onOpenChange(false);
       navigate('/inboxes');
     },
     onError: (error) => {
       toast.error('Failed to remove chat', {
         description: error?.response?.data?.message ?? error.message,
       });
+      onOpenChange(false);
     },
   });
 

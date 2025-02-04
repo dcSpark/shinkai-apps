@@ -654,7 +654,10 @@ export function ToolCard({
 
 export const GeneratedFiles = ({ toolCalls }: { toolCalls: ToolCall[] }) => {
   return (
-    toolCalls?.some((tool) => !!tool.generatedFiles) && (
+    toolCalls.length > 0 &&
+    toolCalls?.some(
+      (tool) => !!tool.generatedFiles && tool.generatedFiles.length > 0,
+    ) && (
       <div className="mt-4 flex flex-col items-start gap-1 rounded-md border py-4 pt-1.5">
         <span className="text-gray-80 text-xs">Generated Files</span>
         {toolCalls.map((tool) => {

@@ -43,7 +43,10 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { VideoBanner } from '../components/video-banner';
 import { useAuth } from '../store/auth';
+import { TutorialBanner } from '../store/settings';
+import { SHINKAI_TUTORIALS } from '../utils/constants';
 import { SimpleLayout } from './layout/simple-layout';
 
 export const Tasks = () => {
@@ -166,6 +169,11 @@ export const Tasks = () => {
       }
       title="Scheduled Tasks"
     >
+      <VideoBanner
+        name={TutorialBanner.SCHEDULED_TASKS}
+        title="Welcome to the Scheduled Tasks"
+        videoUrl={SHINKAI_TUTORIALS['scheduled-tasks']}
+      />
       <div className="divide-y divide-gray-300 pt-4">
         {isPending &&
           Array.from({ length: 8 }).map((_, idx) => (
@@ -230,8 +238,12 @@ export const Tasks = () => {
             />
           ))}
         {isSuccess && tasks?.length === 0 && (
-          <div className="flex h-20 items-center justify-center">
-            <p className="text-gray-80 text-sm">No scheduled tasks found</p>
+          <div className="mx-auto flex h-28 max-w-lg flex-col items-center justify-center gap-2 text-center">
+            <h1 className="text-base font-medium">No scheduled tasks found</h1>
+            <p className="text-gray-80 text-sm">
+              Create your first scheduled task to automate reminders, summaries,
+              or any other tasks you need to manage
+            </p>
           </div>
         )}
       </div>

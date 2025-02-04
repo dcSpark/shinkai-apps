@@ -19,7 +19,7 @@ export const useRemoveJob = (options?: Options) => {
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: [
-          FunctionKeyV2.GET_INBOXES,
+          FunctionKeyV2.GET_INBOXES_WITH_PAGINATION,
           {
             nodeAddress: variables.nodeAddress,
             token: variables.token,
