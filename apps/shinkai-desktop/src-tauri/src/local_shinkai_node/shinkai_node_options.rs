@@ -63,18 +63,28 @@ impl ShinkaiNodeOptions {
         let hardware_summary = hardware_get_summary();
         log::info!("hardware summary: {:?}", hardware_summary);
 
-        let model = if cfg!(target_os = "macos") && hardware_summary.hardware.memory >= 16 {
-            "mistral-small:22b-instruct-2409-q4_1".to_string()
-        } else if cfg!(target_os = "macos") {
-            "command-r7b:7b-12-2024-q4_K_M".to_string()
-        } else {
-            match hardware_summary.requirements_status {
-                RequirementsStatus::Minimum
-                | RequirementsStatus::StillUsable
-                | RequirementsStatus::Unmeet => "gemma2:2b-instruct-q4_1".to_string(),
-                _ => "llama3.1:8b-instruct-q4_1".to_string(),
-            }
-        };
+        // This is a workaround to avoid critical issues when users update from this node version
+        // We changed the default model to a more performant one and that produces errors starting the node
+        let dev_req = semver::VersionReq::parse("0.0.0").unwrap();
+        let req = semver::VersionReq::parse(">=0.9.8").unwrap();
+        log::debug!("new default modelsversion requirement: {:?}", req);
+        let version = semver::Version::parse(env!("CARGO_PKG_VERSION")).unwrap();
+        log::debug!("current version: {:?}", version);
+        let meets_req = req.matches(&version) || dev_req.matches(&version);
+        log::debug!("meets version requirement: {:?}", meets_req);
+        let model =
+            if cfg!(target_os = "macos") && meets_req && hardware_summary.hardware.memory >= 16 {
+                "mistral-small:24b-instruct-2501-q4_K_M".to_string()
+            } else if cfg!(target_os = "macos") && meets_req {
+                "command-r7b:7b-12-2024-q4_K_M".to_string()
+            } else {
+                match hardware_summary.requirements_status {
+                    RequirementsStatus::Minimum
+                    | RequirementsStatus::StillUsable
+                    | RequirementsStatus::Unmeet => "gemma2:2b-instruct-q4_1".to_string(),
+                    _ => "llama3.1:8b-instruct-q4_1".to_string(),
+                }
+            };
         log::info!("default initial model: {:?}", model);
         model
     }
