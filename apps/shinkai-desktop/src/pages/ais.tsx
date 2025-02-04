@@ -50,9 +50,12 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import Agents from '../components/agent/agents';
+import { VideoBanner } from '../components/video-banner';
 import { useURLQueryParams } from '../hooks/use-url-query-params';
 import { useAuth } from '../store/auth';
+import { TutorialBanner } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
+import { SHINKAI_TUTORIALS } from '../utils/constants';
 import { getModelObject } from './add-ai';
 import { SimpleLayout } from './layout/simple-layout';
 
@@ -81,6 +84,11 @@ const AIsPage = () => {
 
   return (
     <SimpleLayout>
+      <VideoBanner
+        name={TutorialBanner.SHINKAI_TOOLS}
+        title="Welcome to the AIs & Agents"
+        videoUrl={SHINKAI_TUTORIALS['add-ai']}
+      />
       <Tabs
         className="relative flex h-full flex-col"
         defaultValue={tabSelected}

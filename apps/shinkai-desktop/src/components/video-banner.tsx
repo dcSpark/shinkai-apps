@@ -1,10 +1,12 @@
 import {
   Button,
+  buttonVariants,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import React from 'react';
@@ -15,16 +17,18 @@ import { useSettings } from '../store/settings';
 interface VideoBannerProps {
   onClose?: () => void;
   title: string;
-  description: string;
-  docsUrl: string;
+  description?: string;
+  docsUrl?: string;
   name: TutorialBanner;
+  videoUrl: string;
 }
-
+export const SHINKAI_DOCS_URL = 'https://docs.shinkai.com';
 export function VideoBanner({
   title,
-  description,
-  docsUrl,
+  description = "Watch this tutorial to learn how it works. If you're already familiar with this feature, you can dismiss this video",
+  docsUrl = SHINKAI_DOCS_URL,
   name,
+  videoUrl,
 }: VideoBannerProps) {
   const [isVideoDialogOpen, setIsVideoDialogOpen] = React.useState(false);
 
@@ -65,11 +69,7 @@ export function VideoBanner({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <video
-                  className="h-full w-full"
-                  controls
-                  src="/path-to-your-video.mp4"
-                >
+                <video className="h-full w-full" controls src={videoUrl}>
                   Your browser does not support the video tag.
                 </video>
               </motion.div>
@@ -97,12 +97,18 @@ export function VideoBanner({
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
               >
-                <Button
-                  className="flex h-auto w-full items-center gap-1"
-                  onClick={() => window.open(docsUrl, '_blank')}
-                  rounded="lg"
-                  size="sm"
-                  variant="outline"
+                <a
+                  className={cn(
+                    buttonVariants({
+                      variant: 'outline',
+                      size: 'sm',
+                      rounded: 'lg',
+                    }),
+                    'flex h-auto w-full items-center gap-1 hover:bg-gray-500',
+                  )}
+                  href={docsUrl}
+                  rel="noreferrer"
+                  target="_blank"
                 >
                   See Docs
                   <svg
@@ -119,7 +125,7 @@ export function VideoBanner({
                       fillRule="evenodd"
                     />
                   </svg>
-                </Button>
+                </a>
               </motion.div>
             </div>
           </div>
@@ -130,11 +136,7 @@ export function VideoBanner({
                 <DialogTitle>{title}</DialogTitle>
               </DialogHeader>
               <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-                <video
-                  className="h-full w-full"
-                  controls
-                  src="/path-to-your-video.mp4"
-                >
+                <video className="h-full w-full" controls src={videoUrl}>
                   Your browser does not support the video tag.
                 </video>
               </div>
