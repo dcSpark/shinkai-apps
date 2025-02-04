@@ -173,7 +173,6 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
   const { mutateAsync: createRecurringTask, isPending } =
     useCreateRecurringTask({
       onSuccess: () => {
-        toast.success('Task created successfully');
         navigate('/tasks');
       },
       onError: (error) => {

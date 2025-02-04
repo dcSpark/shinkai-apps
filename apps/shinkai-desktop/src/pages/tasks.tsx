@@ -230,8 +230,12 @@ export const Tasks = () => {
             />
           ))}
         {isSuccess && tasks?.length === 0 && (
-          <div className="flex h-20 items-center justify-center">
-            <p className="text-gray-80 text-sm">No scheduled tasks found</p>
+          <div className="mx-auto flex h-28 max-w-lg flex-col items-center justify-center gap-2 text-center">
+            <h1 className="text-base font-medium">No scheduled tasks found</h1>
+            <p className="text-gray-80 text-sm">
+              Create your first scheduled task to automate reminders, summaries,
+              or any other tasks you need to manage
+            </p>
           </div>
         )}
       </div>
