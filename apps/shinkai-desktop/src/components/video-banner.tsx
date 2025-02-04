@@ -8,7 +8,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { PlayIcon, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import React from 'react';
 
 import { TutorialBanner } from '../store/settings';
