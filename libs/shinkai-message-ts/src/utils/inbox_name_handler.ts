@@ -20,7 +20,7 @@ export const getOtherPersonIdentity = (
 export const isShinkaiIdentityLocalhost = (
   shinkaiIdentity: string,
 ): boolean => {
-  return shinkaiIdentity.includes('localhost.arb-sep-shinkai') || shinkaiIdentity.includes('localhost.sep-shinkai');
+  return shinkaiIdentity.includes('localhost.arb-sep-shinkai') || shinkaiIdentity.includes('localhost.sep-shinkai') || shinkaiIdentity.includes('localhost.shinkai');
 };
 
 export const extractReceiverShinkaiName = (
