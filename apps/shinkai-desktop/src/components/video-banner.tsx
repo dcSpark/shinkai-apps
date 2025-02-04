@@ -8,7 +8,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X } from 'lucide-react';
+import { PlayIcon, X } from 'lucide-react';
 import React from 'react';
 
 import { TutorialBanner } from '../store/settings';
@@ -47,7 +47,7 @@ export function VideoBanner({
       {!isDismissed && (
         <motion.div
           animate={{ opacity: 1, y: 0 }}
-          className="relative mb-8 mt-2 w-full rounded-lg bg-gray-600 backdrop-blur"
+          className="relative mb-4 mt-2 w-full rounded-lg bg-gray-600 backdrop-blur"
           exit={{ opacity: 0, y: -10 }}
           initial={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
@@ -69,9 +69,36 @@ export function VideoBanner({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <video className="h-full w-full" controls src={videoUrl}>
-                  Your browser does not support the video tag.
-                </video>
+                <div className="relative h-full w-full">
+                  <img
+                    alt="Video thumbnail"
+                    className="h-full w-full object-cover"
+                    src={'/video-portrait.png'}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="bg-gray-450/80 flex h-12 w-12 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-110">
+                      <svg
+                        fill={'none'}
+                        height={24}
+                        viewBox="0 0 24 24"
+                        width={24}
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                        />
+                        <path
+                          d="M9.5 11.1998V12.8002C9.5 14.3195 9.5 15.0791 9.95576 15.3862C10.4115 15.6932 11.0348 15.3535 12.2815 14.6741L13.7497 13.8738C15.2499 13.0562 16 12.6474 16 12C16 11.3526 15.2499 10.9438 13.7497 10.1262L12.2815 9.32594C11.0348 8.6465 10.4115 8.30678 9.95576 8.61382C9.5 8.92086 9.5 9.6805 9.5 11.1998Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
 
               <div className="flex-1 space-y-4">
