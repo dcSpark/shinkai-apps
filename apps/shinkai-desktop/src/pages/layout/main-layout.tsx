@@ -280,7 +280,7 @@ export function MainNav() {
     },
     {
       title: t('layout.menuItems.helpAndSupport'),
-      href: `mailto:${SUPPORT_EMAIL}?subject=Shinkai%20App%20Support%20Request`,
+      href: `https://docs.shinkai.com/`,
       icon: <HelpCircleIcon className="h-5 w-5" />,
       external: true,
     },
