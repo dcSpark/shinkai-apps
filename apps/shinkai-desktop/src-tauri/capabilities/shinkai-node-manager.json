@@ -8,7 +8,9 @@
   "permissions": [
     "core:default",
     "core:window:allow-start-dragging",
-    "log:default"
+    "log:default",
+    "dialog:allow-save",
+    "fs:allow-download-write"
   ],
   "commands.allow": [
     "shinkai_node_is_running",
