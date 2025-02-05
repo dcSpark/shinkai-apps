@@ -66,7 +66,7 @@ impl ShinkaiNodeOptions {
         // This is a workaround to avoid critical issues when users update from this node version
         // We changed the default model to a more performant one and that produces errors starting the node
         let dev_req = semver::VersionReq::parse("0.0.0").unwrap();
-        let req = semver::VersionReq::parse(">=0.9.8").unwrap();
+        let req = semver::VersionReq::parse(">=0.10.0").unwrap();
         log::debug!("new default modelsversion requirement: {:?}", req);
         let version = semver::Version::parse(env!("CARGO_PKG_VERSION")).unwrap();
         log::debug!("current version: {:?}", version);
