@@ -9,7 +9,15 @@
     "log:default",
     "dialog:allow-save",
     "fs:allow-download-write",
-    "dialog:allow-open"
+    "dialog:allow-open",
+    {
+      "identifier": "opener:allow-open-path",
+      "allow": [
+        {
+          "path": "$HOME/Downloads/*"
+        }
+      ]
+    }
   ],
   "commands.allow": [
     "shinkai_node_is_running",
