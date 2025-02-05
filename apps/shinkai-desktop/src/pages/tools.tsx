@@ -179,11 +179,6 @@ export const Tools = () => {
       }
       title={t('tools.label')}
     >
-      <VideoBanner
-        name={TutorialBanner.SHINKAI_TOOLS}
-        title="Welcome to the Shinkai Tools"
-        videoUrl={SHINKAI_TUTORIALS['shinkai-tools']}
-      />
       <div className="flex h-full flex-1 flex-col">
         <div className="relative mb-4 flex h-10 w-full items-center">
           <Input
@@ -211,6 +206,11 @@ export const Tools = () => {
             </Button>
           )}
         </div>
+        <VideoBanner
+          name={TutorialBanner.SHINKAI_TOOLS}
+          title="Welcome to the Shinkai Tools"
+          videoUrl={SHINKAI_TUTORIALS['shinkai-tools']}
+        />
         <div
           className="h-full divide-y divide-gray-300 overflow-y-auto"
           style={{
