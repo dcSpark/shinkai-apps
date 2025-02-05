@@ -35,10 +35,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { useWebSocketMessage } from '../components/chat/websocket-message';
 import { CreatePromptDrawer } from '../components/prompt/context/prompt-selection-context';
 import { useDebounce } from '../hooks/use-debounce';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
+import { useChatConversationWithOptimisticUpdates } from './chat/chat-conversation';
 import { SimpleLayout } from './layout/simple-layout';
 
 export const PromptLibrary = () => {
@@ -458,14 +460,13 @@ export const PromptTryOut = ({
     },
   });
 
-  const { data } = useGetChatConversationWithPagination({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
+  const { data } = useChatConversationWithOptimisticUpdates({
     inboxId: chatInboxId ?? '',
-    shinkaiIdentity: auth?.shinkai_identity ?? '',
-    profile: auth?.profile ?? '',
+  });
+
+  useWebSocketMessage({
     enabled: !!chatInboxId,
-    refetchIntervalEnabled: true,
+    inboxId: chatInboxId ?? '',
   });
 
   const isLoadingMessage = useMemo(() => {
