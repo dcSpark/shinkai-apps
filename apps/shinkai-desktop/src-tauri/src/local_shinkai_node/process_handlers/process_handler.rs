@@ -34,6 +34,7 @@ pub struct ProcessHandler {
 impl ProcessHandler {
     const MAX_LOGS_LENGTH: usize = 500;
     const MIN_MS_ALIVE: u64 = 5000;
+    const PORT_RELEASE_DELAY_MS: u64 = 1000;
 
     /// Initializes a new ShinkaiNodeManager with default or provided options
     pub(crate) fn new(
@@ -109,9 +110,10 @@ impl ProcessHandler {
         current_dir: Option<PathBuf>,
     ) -> Result<(), String> {
         log::info!(
-            "[{}] attempting to spawn process with args {:?}",
+            "[{}] attempting to spawn process with args {:?} and env {:?}",
             self.process_name,
-            args
+            args,
+            env
         );
         {
             let process = self.process.lock().await;
@@ -141,12 +143,18 @@ impl ProcessHandler {
                 logger.add_log(message.clone());
                 message
             })?;
+
+        log::info!(
+            "[{}] process spawned successfully with pid: {:?}",
+            self.process_name,
+            child.pid()
+        );
         drop(logger);
 
         {
             let mut process = self.process.lock().await;
             *process = Some(child);
-            log::info!("[{}] process spawned successfully", self.process_name);
+            log::info!("[{}] process stored in state", self.process_name);
         }
 
         let process_mutex = Arc::clone(&self.process);
@@ -160,7 +168,11 @@ impl ProcessHandler {
         tauri::async_runtime::spawn(async move {
             while let Some(event) = rx.recv().await {
                 let message = Self::command_event_to_message(event.clone());
-                log::debug!("[{}] received process event: {}", process_name, message);
+                log::debug!(
+                    "[{}] received process event with message: {}",
+                    process_name,
+                    message
+                );
                 let log_entry;
                 {
                     let mut logger = logger_mutex.write().await;
@@ -170,8 +182,13 @@ impl ProcessHandler {
                     let event_sender = event_sender_mutex.lock().await;
                     let _ = event_sender.send(ProcessHandlerEvent::Log(log_entry)).await;
                 }
-                if matches!(event, CommandEvent::Terminated { .. }) {
-                    log::info!("[{}] process terminated", process_name);
+                if let CommandEvent::Terminated(payload) = event {
+                    log::info!(
+                        "[{}] process terminated with code: {:?} and signal: {:?}",
+                        process_name,
+                        payload.code,
+                        payload.signal
+                    );
                     {
                         let mut process = process_mutex.lock().await;
                         *process = None;
@@ -182,8 +199,13 @@ impl ProcessHandler {
                     }
                     break;
                 }
+
                 if ready_matcher.is_match(&message) {
-                    log::info!("[{}] process ready signal detected", process_name);
+                    log::info!(
+                        "[{}] process ready signal detected in message: {}",
+                        process_name,
+                        message
+                    );
                     let mut is_ready = is_ready_mutex.lock().await;
                     *is_ready = true;
                 }
@@ -201,10 +223,19 @@ impl ProcessHandler {
             {
                 let process = process_mutex.lock().await;
                 let is_ready = is_ready_mutex_clone.lock().await;
+                log::debug!(
+                    "[{}] alive-check: process.is_none={}, is_ready={}, elapsed={:?}",
+                    process_name,
+                    process.is_none(),
+                    *is_ready,
+                    std::time::Instant::now().duration_since(start_time)
+                );
+
                 if process.is_none() {
-                    let message =
-                        "failed to spawn process, it crashed before min time alive".to_string();
-                    log::error!("[{}] {}", process_name, message);
+                    let message = format!(
+                        "Process ended before min time alive (this may be normal if it completed its task)"
+                    );
+                    log::warn!("[{}] {}", process_name, message);
                     let log_entry: LogEntry;
                     {
                         let mut logger = logger_mutex.write().await;
@@ -216,14 +247,18 @@ impl ProcessHandler {
                     }
                     return Err(message.to_string());
                 } else if *is_ready {
-                    log::info!("[{}] process passed minimum alive time check", process_name);
+                    log::info!(
+                        "[{}] process passed minimum alive time check after {:?}",
+                        process_name,
+                        std::time::Instant::now().duration_since(start_time)
+                    );
                     break;
                 }
                 drop(process);
                 drop(is_ready);
-                std::thread::sleep(std::time::Duration::from_millis(500));
+                tokio::time::sleep(std::time::Duration::from_millis(500)).await;
             }
-            Ok(())
+            Ok::<(), String>(())
         })
         .await
         .unwrap()?;
@@ -241,17 +276,35 @@ impl ProcessHandler {
         log::info!("[{}] attempting to kill process", self.process_name);
         let mut process = self.process.lock().await;
         if let Some(child) = process.take() {
-            let kill_result = kill_tree::tokio::kill_tree(child.pid()).await;
+            let pid = child.pid();
+            log::warn!(
+                "[{}] about to kill process with pid={:?} via kill_tree",
+                self.process_name,
+                pid
+            );
+            let kill_result = kill_tree::tokio::kill_tree(pid).await;
             match kill_result {
-                Ok(_) => log::info!("[{}] process killed", self.process_name),
-                Err(e) => log::warn!("[{}] failed to kill: {}", self.process_name, e),
+                Ok(_) => {
+                    log::info!(
+                        "[{}] process with pid={:?} killed successfully via kill_tree",
+                        self.process_name,
+                        pid
+                    );
+                    tokio::time::sleep(std::time::Duration::from_millis(Self::PORT_RELEASE_DELAY_MS)).await;
+                }
+                Err(e) => log::warn!(
+                    "[{}] failed to kill process with pid={:?}: {}",
+                    self.process_name,
+                    pid,
+                    e
+                ),
             }
             *process = None;
             drop(process);
             let event_sender = self.event_sender.lock().await;
             let _ = event_sender.send(ProcessHandlerEvent::Stopped).await;
         } else {
-            log::error!("[{}] no process is running", self.process_name);
+            log::error!("[{}] no process is running to kill", self.process_name);
         }
     }
 }
