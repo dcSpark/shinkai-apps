@@ -28,6 +28,8 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { downloadDir } from '@tauri-apps/api/path';
+import { open } from '@tauri-apps/plugin-dialog';
 import { info } from '@tauri-apps/plugin-log';
 import {
   Bot,
@@ -103,7 +105,20 @@ const App = () => {
   const { mutate: downloadTauriLogs } = useDownloadTauriLogsMutation({
     onSuccess: (result) => {
       toast.success('Logs downloaded successfully', {
-        description: `You can find the logs file in your downloads folder: ${result.savePath}`,
+        description: `You can find the logs file in your downloads folder`,
+        action: {
+          label: 'Open',
+          onClick: async () => {
+            const downloadsDir = await downloadDir();
+            await open({
+              title: result.fileName,
+              filters: [{ name: result.fileName, extensions: ['txt'] }],
+              multiple: false,
+              directory: false,
+              defaultPath: downloadsDir,
+            });
+          },
+        },
       });
     },
     onError: (error) => {
@@ -325,7 +340,7 @@ const App = () => {
 
       <Tabs
         className="flex h-full w-full flex-col overflow-hidden"
-        defaultValue="logs"
+        defaultValue="app-logs"
       >
         <TabsList className="w-full">
           <TabsTrigger
@@ -375,13 +390,13 @@ const App = () => {
               {tauriLogs}
             </div>
           </ScrollArea>
-          <div className="fixed bottom-4 right-20">
+          <div className="fixed bottom-6 right-8">
             <Button
               onClick={(e) => {
-                console.log('downloading logs');
                 downloadTauriLogs();
               }}
-              size="xs"
+              rounded="lg"
+              size="sm"
               type="button"
               variant="default"
             >

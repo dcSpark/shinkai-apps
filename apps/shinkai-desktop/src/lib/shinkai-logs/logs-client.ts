@@ -24,10 +24,14 @@ export const useRetrieveLogsQuery = (
 };
 
 export const useDownloadTauriLogsMutation = (
-  options?: UseMutationOptions<{ savePath: string }, Error, void>,
-): UseMutationResult<{ savePath: string }, Error, void> => {
+  options?: UseMutationOptions<
+    { savePath: string; fileName: string },
+    Error,
+    void
+  >,
+): UseMutationResult<{ savePath: string; fileName: string }, Error, void> => {
   return useMutation({
-    mutationFn: async (): Promise<{ savePath: string }> => {
+    mutationFn: async (): Promise<{ savePath: string; fileName: string }> => {
       const tauriLogs = await retrieveLogs();
       info('retrieved logs from Tauri backend');
 
@@ -62,7 +66,7 @@ export const useDownloadTauriLogsMutation = (
       });
       info('successfully wrote logs to file');
 
-      return { savePath };
+      return { savePath, fileName };
     },
     ...options,
   });

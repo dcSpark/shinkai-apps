@@ -1,6 +1,8 @@
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { Button } from '@shinkai_network/shinkai-ui';
+import { downloadDir } from '@tauri-apps/api/path';
+import { open } from '@tauri-apps/plugin-dialog';
 import { DownloadIcon, Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
@@ -36,7 +38,20 @@ export const ShinkaiNodeRunningOverlay = ({
   const { mutate: downloadTauriLogs } = useDownloadTauriLogsMutation({
     onSuccess: (result) => {
       toast.success('Logs downloaded successfully', {
-        description: `You can find the logs file in your downloads folder: ${result.savePath}`,
+        description: `You can find the logs file in your downloads folder`,
+        action: {
+          label: 'Open',
+          onClick: async () => {
+            const downloadsDir = await downloadDir();
+            await open({
+              title: result.fileName,
+              filters: [{ name: result.fileName, extensions: ['txt'] }],
+              multiple: false,
+              directory: false,
+              defaultPath: downloadsDir,
+            });
+          },
+        },
       });
     },
     onError: (error) => {
