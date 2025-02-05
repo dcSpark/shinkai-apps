@@ -45,7 +45,9 @@ export const ShinkaiNodeRunningOverlay = ({
             const downloadsDir = await downloadDir();
             await open({
               title: result.fileName,
-              filters: [{ name: result.fileName, extensions: ['txt'] }],
+              filters: [
+                { name: result.fileName.split('.txt')[0], extensions: ['txt'] },
+              ],
               multiple: false,
               directory: false,
               defaultPath: downloadsDir,
