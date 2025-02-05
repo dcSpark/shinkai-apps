@@ -28,14 +28,16 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { downloadDir } from '@tauri-apps/api/path';
-import { open } from '@tauri-apps/plugin-dialog';
 import { info } from '@tauri-apps/plugin-log';
+import { openPath } from '@tauri-apps/plugin-opener';
 import {
   Bot,
   ListRestart,
   Loader2,
   PlayCircle,
+  RotateCw,
   StopCircle,
   Trash,
 } from 'lucide-react';
@@ -89,8 +91,6 @@ const App = () => {
   const auth = useAuth((auth) => auth.auth);
   const setLogout = useAuth((auth) => auth.setLogout);
   const { setShinkaiNodeOptions } = useShinkaiNodeManager();
-  const logsScrollRef = useRef<HTMLDivElement | null>(null);
-  const tauriLogsScrollRef = useRef<HTMLDivElement | null>(null);
   const [isConfirmResetDialogOpened, setIsConfirmResetDialogOpened] =
     useState<boolean>(false);
   const { data: shinkaiNodeIsRunning } = useShinkaiNodeIsRunningQuery({
@@ -100,35 +100,31 @@ const App = () => {
     refetchInterval: 1000,
   });
 
-  const { data: tauriLogs } = useRetrieveLogsQuery();
+  const {
+    data: tauriLogs,
+    refetch: refetchTauriLogs,
+    isLoading: tauriLogsLoading,
+  } = useRetrieveLogsQuery();
 
-  const { mutate: downloadTauriLogs } = useDownloadTauriLogsMutation({
-    onSuccess: (result) => {
-      toast.success('Logs downloaded successfully', {
-        description: `You can find the logs file in your downloads folder`,
-        action: {
-          label: 'Open',
-          onClick: async () => {
-            const downloadsDir = await downloadDir();
-            await open({
-              title: result.fileName,
-              filters: [
-                { name: result.fileName.split('.txt')[0], extensions: ['txt'] },
-              ],
-              multiple: false,
-              directory: false,
-              defaultPath: downloadsDir,
-            });
+  const { mutate: downloadTauriLogs, isPending: downloadTauriLogsIsPending } =
+    useDownloadTauriLogsMutation({
+      onSuccess: (result) => {
+        toast.success('Logs downloaded successfully', {
+          description: `You can find the logs file in your downloads folder`,
+          action: {
+            label: 'Open',
+            onClick: async () => {
+              openPath(result.savePath);
+            },
           },
-        },
-      });
-    },
-    onError: (error) => {
-      toast.error('Failed to download logs', {
-        description: error.message,
-      });
-    },
-  });
+        });
+      },
+      onError: (error) => {
+        toast.error('Failed to download logs', {
+          description: error.message,
+        });
+      },
+    });
 
   const {
     isPending: shinkaiNodeSpawnIsPending,
@@ -201,12 +197,6 @@ const App = () => {
   });
 
   useShinkaiNodeEventsToast();
-  useEffect(() => {
-    logsScrollRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'end',
-    });
-  }, [tauriLogs]);
 
   useEffect(() => {
     shinkaiNodeSetOptions(shinkaiNodeOptionsFormWatch as ShinkaiNodeOptions);
@@ -230,6 +220,33 @@ const App = () => {
       profile_identity_sk: auth?.profile_identity_sk ?? '',
     });
   };
+
+  const [logs, setLogs] = useState<string[]>([]);
+  useEffect(() => {
+    const tauriLogsLines = tauriLogs?.split('\n') ?? [];
+    if (tauriLogsLines?.length && tauriLogsLines?.length !== logs?.length) {
+      setLogs(tauriLogsLines);
+    }
+  }, [tauriLogs, logs]);
+
+  const virtualizerParentRef = useRef<HTMLDivElement>(null);
+  const virtualizer = useVirtualizer({
+    count: logs?.length ?? 0,
+    getScrollElement: () => virtualizerParentRef.current,
+    estimateSize: () => 50, // Estimated height of each log line
+    overscan: 20, // Number of items to render outside of the visible area
+  });
+
+  useEffect(() => {
+    virtualizer.scrollToIndex(logs.length - 1, {
+      behavior: 'auto',
+    });
+  }, [logs, virtualizer]);
+
+  const refetchLogs = (): void => {
+    refetchTauriLogs();
+  };
+
   return (
     <div className="flex h-screen w-full flex-col space-y-2 p-8">
       <div
@@ -345,16 +362,7 @@ const App = () => {
         defaultValue="app-logs"
       >
         <TabsList className="w-full">
-          <TabsTrigger
-            className="grow"
-            onClick={() => {
-              tauriLogsScrollRef.current?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'end',
-              });
-            }}
-            value="app-logs"
-          >
+          <TabsTrigger className="grow" value="app-logs">
             App Logs
           </TabsTrigger>
           <TabsTrigger className="grow" value="options">
@@ -364,46 +372,58 @@ const App = () => {
             Models
           </TabsTrigger>
         </TabsList>
-        {/* <TabsContent className="h-full overflow-hidden" value="logs">
-          <ScrollArea className="flex h-full flex-1 flex-col overflow-auto [&>div>div]:!block">
-            <div className="p-1" ref={logsScrollRef}>
-              {lastNLogs?.length
-                ? lastNLogs?.map((log, index) => {
-                    return (
-                      <React.Fragment key={index}>
-                        <div className="text-gray-80 text-sm" key={index}>
-                          {'i'} {new Date(log.timestamp * 1000).toISOString()} |{' '}
-                          {log.process} | {log.message}
-                        </div>
-                        <Separator className="my-2" />
-                      </React.Fragment>
-                    );
-                  })
-                : undefined}
-            </div>
-          </ScrollArea>
-        </TabsContent> */}
         <TabsContent className="h-full overflow-hidden" value="app-logs">
-          <ScrollArea className="flex h-full flex-1 flex-col overflow-auto [&>div>div]:!block">
+          <div className="h-full overflow-auto" ref={virtualizerParentRef}>
             <div
-              className="text-gray-80 whitespace-pre-wrap p-1 font-mono text-xs leading-relaxed"
-              ref={tauriLogsScrollRef}
-            >
-              {tauriLogs}
-            </div>
-          </ScrollArea>
-          <div className="fixed bottom-6 right-8">
-            <Button
-              onClick={(e) => {
-                downloadTauriLogs();
+              style={{
+                height: `${virtualizer.getTotalSize()}px`,
+                width: '100%',
+                position: 'relative',
               }}
+            >
+              {virtualizer.getVirtualItems().map((virtualRow) => (
+                <div
+                  className="text-gray-80 absolute left-0 top-0 w-full font-mono text-xs leading-relaxed"
+                  key={virtualRow.index}
+                  style={{
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  {logs[virtualRow.index]}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="fixed bottom-6 right-12 flex gap-2">
+            <Button
+              disabled={tauriLogsLoading}
+              onClick={() => refetchLogs()}
               rounded="lg"
               size="sm"
               type="button"
               variant="default"
             >
+              {tauriLogsLoading ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <RotateCw className="size-3.5" />
+              )}
+            </Button>
+            <Button
+              disabled={downloadTauriLogsIsPending}
+              onClick={() => downloadTauriLogs()}
+              rounded="lg"
+              size="sm"
+              type="button"
+              variant="default"
+            >
+              {downloadTauriLogsIsPending ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <DownloadIcon className="ml-2 size-3.5" />
+              )}
               Download Logs
-              <DownloadIcon className="size-3.5" />
             </Button>
           </div>
         </TabsContent>

@@ -73,6 +73,7 @@ fn main() {
                 .build(),
         )
         .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             hide_spotlight_window_app,
             show_spotlight_window_app,
