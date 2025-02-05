@@ -29,6 +29,7 @@ pub struct ShinkaiNodeOptions {
     pub shinkai_tools_runner_deno_binary_path: Option<String>,
     pub shinkai_tools_runner_uv_binary_path: Option<String>,
     pub pdfium_dynamic_lib_path: Option<String>,
+    pub shinkai_store_url: Option<String>,
 }
 
 impl ShinkaiNodeOptions {
@@ -215,6 +216,12 @@ impl ShinkaiNodeOptions {
                 Some(ref path) if !path.is_empty() => path.clone(),
                 _ => base_options.pdfium_dynamic_lib_path.unwrap_or_default(),
             }),
+            shinkai_store_url: Some(
+                options
+                    .shinkai_store_url
+                    .or(base_options.shinkai_store_url)
+                    .unwrap_or_default(),
+            ),
         }
     }
 }
@@ -275,6 +282,7 @@ impl Default for ShinkaiNodeOptions {
             shinkai_tools_runner_deno_binary_path: Some(shinkai_tools_runner_deno_binary_path),
             shinkai_tools_runner_uv_binary_path: Some(shinkai_tools_runner_uv_binary_path),
             pdfium_dynamic_lib_path: None,
+            shinkai_store_url: Some("https://store-api.shinkai.com".to_string()),
         }
     }
 }
