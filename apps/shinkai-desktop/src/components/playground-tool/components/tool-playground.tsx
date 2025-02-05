@@ -16,6 +16,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogTitle,
   DialogTrigger,
   Form,
@@ -1064,10 +1065,10 @@ function ManageToolSourceModal({
           {isGetAllToolAssetsSuccess &&
             assets.map((asset) => (
               <div
-                className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 px-1.5 py-1.5 py-2"
+                className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 px-1.5 py-4 overflow-hidden"
                 key={asset}
               >
-                <div className="flex items-center gap-2 text-gray-50">
+                <div className="flex items-center gap-2 text-gray-50 overflow-hidden">
                   <div className="w-4.5 flex aspect-square shrink-0 items-center justify-center">
                     {getFileExt(asset) && fileIconMap[getFileExt(asset)] ? (
                       <FileTypeIcon
@@ -1078,10 +1079,19 @@ function ManageToolSourceModal({
                       <Paperclip className="text-gray-80 h-3.5 w-3.5 shrink-0" />
                     )}
                   </div>
-                  <span className="text-sm">{decodeURIComponent(asset)}</span>
+                  <Tooltip delayDuration={1000}>
+                    <TooltipTrigger>
+                      <span className="text-sm overflow-hidden text-ellipsis">{decodeURIComponent(asset)}</span>
+                    </TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent align="start" side="top">
+                        {decodeURIComponent(asset)}
+                      </TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
                 </div>
                 <Button
-                  className="text-gray-80 !size-5 border-0 p-0.5 hover:text-white"
+                  className="shrink-0 text-gray-80 !size-5 border-0 p-0.5 hover:text-white"
                   onClick={async () => {
                     await removeAsset({
                       nodeAddress: auth?.node_address ?? '',
@@ -1099,6 +1109,13 @@ function ManageToolSourceModal({
               </div>
             ))}
         </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="default">
+              Close
+            </Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
