@@ -1,6 +1,7 @@
 import './globals.css';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DownloadIcon } from '@radix-ui/react-icons';
 import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
 import {
   AlertDialog,
@@ -15,7 +16,6 @@ import {
   Form,
   FormField,
   ScrollArea,
-  Separator,
   Tabs,
   TabsContent,
   TabsList,
@@ -28,6 +28,8 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { downloadDir } from '@tauri-apps/api/path';
+import { open } from '@tauri-apps/plugin-dialog';
 import { info } from '@tauri-apps/plugin-log';
 import {
   Bot,
@@ -40,15 +42,18 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { useForm, useWatch } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import logo from '../../../src-tauri/icons/128x128@2x.png';
 import { OllamaModels } from '../../components/shinkai-node-manager/ollama-models';
-import { useRetrieveLogsQuery } from '../../lib/shinkai-logs/logs-client';
+import {
+  useDownloadTauriLogsMutation,
+  useRetrieveLogsQuery,
+} from '../../lib/shinkai-logs/logs-client';
 import { ALLOWED_OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama-models';
 import {
   shinkaiNodeQueryClient,
-  useShinkaiNodeGetLastNLogsQuery,
   useShinkaiNodeGetOptionsQuery,
   useShinkaiNodeIsRunningQuery,
   useShinkaiNodeKillMutation,
@@ -94,12 +99,36 @@ const App = () => {
   const { data: shinkaiNodeOptions } = useShinkaiNodeGetOptionsQuery({
     refetchInterval: 1000,
   });
-  const { data: lastNLogs } = useShinkaiNodeGetLastNLogsQuery(
-    { length: 100 },
-    { refetchInterval: 1000 },
-  );
 
   const { data: tauriLogs } = useRetrieveLogsQuery();
+
+  const { mutate: downloadTauriLogs } = useDownloadTauriLogsMutation({
+    onSuccess: (result) => {
+      toast.success('Logs downloaded successfully', {
+        description: `You can find the logs file in your downloads folder`,
+        action: {
+          label: 'Open',
+          onClick: async () => {
+            const downloadsDir = await downloadDir();
+            await open({
+              title: result.fileName,
+              filters: [
+                { name: result.fileName.split('.txt')[0], extensions: ['txt'] },
+              ],
+              multiple: false,
+              directory: false,
+              defaultPath: downloadsDir,
+            });
+          },
+        },
+      });
+    },
+    onError: (error) => {
+      toast.error('Failed to download logs', {
+        description: error.message,
+      });
+    },
+  });
 
   const {
     isPending: shinkaiNodeSpawnIsPending,
@@ -177,7 +206,7 @@ const App = () => {
       behavior: 'smooth',
       block: 'end',
     });
-  }, [lastNLogs]);
+  }, [tauriLogs]);
 
   useEffect(() => {
     shinkaiNodeSetOptions(shinkaiNodeOptionsFormWatch as ShinkaiNodeOptions);
@@ -313,12 +342,9 @@ const App = () => {
 
       <Tabs
         className="flex h-full w-full flex-col overflow-hidden"
-        defaultValue="logs"
+        defaultValue="app-logs"
       >
         <TabsList className="w-full">
-          <TabsTrigger className="grow" value="logs">
-            Shinkai Node Logs
-          </TabsTrigger>
           <TabsTrigger
             className="grow"
             onClick={() => {
@@ -327,9 +353,9 @@ const App = () => {
                 block: 'end',
               });
             }}
-            value="tauri-logs"
+            value="app-logs"
           >
-            Tauri Logs
+            App Logs
           </TabsTrigger>
           <TabsTrigger className="grow" value="options">
             Options
@@ -338,7 +364,7 @@ const App = () => {
             Models
           </TabsTrigger>
         </TabsList>
-        <TabsContent className="h-full overflow-hidden" value="logs">
+        {/* <TabsContent className="h-full overflow-hidden" value="logs">
           <ScrollArea className="flex h-full flex-1 flex-col overflow-auto [&>div>div]:!block">
             <div className="p-1" ref={logsScrollRef}>
               {lastNLogs?.length
@@ -356,8 +382,8 @@ const App = () => {
                 : undefined}
             </div>
           </ScrollArea>
-        </TabsContent>
-        <TabsContent className="h-full overflow-hidden" value="tauri-logs">
+        </TabsContent> */}
+        <TabsContent className="h-full overflow-hidden" value="app-logs">
           <ScrollArea className="flex h-full flex-1 flex-col overflow-auto [&>div>div]:!block">
             <div
               className="text-gray-80 whitespace-pre-wrap p-1 font-mono text-xs leading-relaxed"
@@ -366,6 +392,20 @@ const App = () => {
               {tauriLogs}
             </div>
           </ScrollArea>
+          <div className="fixed bottom-6 right-8">
+            <Button
+              onClick={(e) => {
+                downloadTauriLogs();
+              }}
+              rounded="lg"
+              size="sm"
+              type="button"
+              variant="default"
+            >
+              Download Logs
+              <DownloadIcon className="size-3.5" />
+            </Button>
+          </div>
         </TabsContent>
         <TabsContent className="h-full overflow-hidden" value="options">
           <ScrollArea className="flex h-full flex-1 flex-col overflow-auto [&>div>div]:!block">

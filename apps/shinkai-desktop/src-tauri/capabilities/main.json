@@ -2,10 +2,7 @@
   "identifier": "main",
   "description": "permissions that were migrated from v1",
   "local": true,
-  "windows": [
-    "main",
-    "spotlight"
-  ],
+  "windows": ["main", "spotlight"],
   "permissions": [
     "core:default",
     "dialog:allow-save",
@@ -17,7 +14,8 @@
     "updater:allow-install",
     "updater:allow-download-and-install",
     "process:allow-restart",
-    "log:default"
+    "log:default",
+    "dialog:allow-open"
   ],
   "commands.allow": [
     "shinkai_node_is_running",

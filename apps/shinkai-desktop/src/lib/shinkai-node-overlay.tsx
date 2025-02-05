@@ -1,9 +1,8 @@
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { Button } from '@shinkai_network/shinkai-ui';
-import { save } from '@tauri-apps/plugin-dialog';
-import * as fs from '@tauri-apps/plugin-fs';
-import { BaseDirectory } from '@tauri-apps/plugin-fs';
+import { downloadDir } from '@tauri-apps/api/path';
+import { open } from '@tauri-apps/plugin-dialog';
 import { DownloadIcon, Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
@@ -11,11 +10,8 @@ import { toast } from 'sonner';
 import { ResetConnectionDialog } from '../components/reset-connection-dialog';
 import { useAuth } from '../store/auth';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
-import { useRetrieveLogsQuery } from './shinkai-logs/logs-client';
-import {
-  useShinkaiNodeGetLastNLogsQuery,
-  useShinkaiNodeIsRunningQuery,
-} from './shinkai-node-manager/shinkai-node-manager-client';
+import { useDownloadTauriLogsMutation } from './shinkai-logs/logs-client';
+import { useShinkaiNodeIsRunningQuery } from './shinkai-node-manager/shinkai-node-manager-client';
 import { openShinkaiNodeManagerWindow } from './shinkai-node-manager/shinkai-node-manager-windows-utils';
 
 export const ShinkaiNodeRunningOverlay = ({
@@ -39,11 +35,33 @@ export const ShinkaiNodeRunningOverlay = ({
     { refetchInterval: 35000 },
   );
 
-  const { data: tauriLogs } = useRetrieveLogsQuery({ enabled: !!healthError });
-  const { data: lastNLogs } = useShinkaiNodeGetLastNLogsQuery(
-    { length: 100 },
-    { refetchInterval: 1000, enabled: !!healthError },
-  );
+  const { mutate: downloadTauriLogs } = useDownloadTauriLogsMutation({
+    onSuccess: (result) => {
+      toast.success('Logs downloaded successfully', {
+        description: `You can find the logs file in your downloads folder`,
+        action: {
+          label: 'Open',
+          onClick: async () => {
+            const downloadsDir = await downloadDir();
+            await open({
+              title: result.fileName,
+              filters: [
+                { name: result.fileName.split('.txt')[0], extensions: ['txt'] },
+              ],
+              multiple: false,
+              directory: false,
+              defaultPath: downloadsDir,
+            });
+          },
+        },
+      });
+    },
+    onError: (error) => {
+      toast.error('Failed to download logs', {
+        description: error.message,
+      });
+    },
+  });
 
   const [isResetConnectionDialogOpen, setIsResetConnectionDialogOpen] =
     useState(false);
@@ -77,54 +95,8 @@ export const ShinkaiNodeRunningOverlay = ({
           <div className="flex items-center gap-4">
             <Button
               className="min-w-[140px]"
-              onClick={async () => {
-                const file = new Blob(
-                  [
-                    '[[TAURI_LOGS]]: \n',
-                    tauriLogs ?? '',
-                    '\n',
-                    '\n',
-                    '\n',
-                    '[[NODE_LOGS]]: \n',
-                    (lastNLogs ?? [])
-                      .map(
-                        (log) =>
-                          `${new Date(log.timestamp * 1000).toISOString()} | [${log.process}] ${log.message}\n`,
-                      )
-                      .join('\n') ?? '',
-                  ],
-                  {
-                    type: 'text/plain',
-                  },
-                );
-
-                const arrayBuffer = await file.arrayBuffer();
-                const content = new Uint8Array(arrayBuffer);
-                const fileName = `tauri-logs-${new Date().toISOString()}.txt`;
-
-                const savePath = await save({
-                  defaultPath: fileName,
-                  filters: [
-                    {
-                      name: 'File',
-                      extensions: ['txt'],
-                    },
-                  ],
-                });
-
-                if (!savePath) {
-                  toast.info('Logs saving cancelled');
-                  return;
-                }
-
-                await fs.writeFile(savePath, content, {
-                  baseDir: BaseDirectory.Download,
-                });
-
-                toast.success(`Logs downloaded successfully`, {
-                  description:
-                    'You can find the logs file in your downloads folder',
-                });
+              onClick={() => {
+                downloadTauriLogs();
               }}
               size="sm"
               type="button"

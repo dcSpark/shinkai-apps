@@ -2,13 +2,14 @@
   "identifier": "shinkai-node-manager",
   "description": "permissions that were migrated from v1",
   "local": true,
-  "windows": [
-    "shinkai-node-manager"
-  ],
+  "windows": ["shinkai-node-manager"],
   "permissions": [
     "core:default",
     "core:window:allow-start-dragging",
-    "log:default"
+    "log:default",
+    "dialog:allow-save",
+    "fs:allow-download-write",
+    "dialog:allow-open"
   ],
   "commands.allow": [
     "shinkai_node_is_running",
