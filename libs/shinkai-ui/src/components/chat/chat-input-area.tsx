@@ -60,7 +60,9 @@ export const ChatInputArea = React.forwardRef<
             onKeyDown={onKeyDown}
             onPaste={onPaste}
             onSend={onSubmit}
-            placeholder={placeholder ?? 'Send a message'}
+            placeholder={
+              placeholder ?? 'Send a message, or press "/" to access tools'
+            }
             ref={textareaRef}
             value={value}
           />
