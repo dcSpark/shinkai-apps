@@ -17,6 +17,7 @@ import { ToolsProvider } from '../../components/chat/context/tools-context';
 import FullPageErrorFallback from '../../components/error-boundary';
 import { shinkaiNodeQueryClient } from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeEventsToast } from '../../lib/shinkai-node-manager/shinkai-node-manager-hooks';
+import { ShinkaiNodeRunningOverlay } from '../../lib/shinkai-node-overlay';
 import { useSyncStorageSecondary } from '../../store/sync-utils';
 import QuickAsk from './components/quick-ask';
 import { QuickAskProvider } from './context/quick-ask';
@@ -30,14 +31,16 @@ const App = () => {
       <ErrorBoundary FallbackComponent={FullPageErrorFallback}>
         <QuickAskProvider>
           <ToolsProvider>
-            <TooltipProvider delayDuration={0}>
-              <Router>
-                {/*<Routes>*/}
-                <QuickAsk />
-                {/*</Routes>*/}
-              </Router>
-              <Toaster />
-            </TooltipProvider>
+            <ShinkaiNodeRunningOverlay>
+              <TooltipProvider delayDuration={0}>
+                <Router>
+                  {/*<Routes>*/}
+                  <QuickAsk />
+                  {/*</Routes>*/}
+                </Router>
+                <Toaster />
+              </TooltipProvider>
+            </ShinkaiNodeRunningOverlay>
           </ToolsProvider>
         </QuickAskProvider>
       </ErrorBoundary>
