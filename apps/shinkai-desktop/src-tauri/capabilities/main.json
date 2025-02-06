@@ -15,7 +15,15 @@
     "updater:allow-download-and-install",
     "process:allow-restart",
     "log:default",
-    "dialog:allow-open"
+    "dialog:allow-open",
+    {
+      "identifier": "opener:allow-open-path",
+      "allow": [
+        {
+          "path": "$HOME/Downloads/*"
+        }
+      ]
+    }
   ],
   "commands.allow": [
     "shinkai_node_is_running",

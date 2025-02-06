@@ -29,7 +29,6 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { downloadDir } from '@tauri-apps/api/path';
 import { info } from '@tauri-apps/plugin-log';
 import { openPath } from '@tauri-apps/plugin-opener';
 import {
