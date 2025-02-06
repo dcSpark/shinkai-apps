@@ -3,6 +3,7 @@ import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/get
 import { Button } from '@shinkai_network/shinkai-ui';
 import { downloadDir } from '@tauri-apps/api/path';
 import { open } from '@tauri-apps/plugin-dialog';
+import { openPath } from '@tauri-apps/plugin-opener';
 import { DownloadIcon, Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
@@ -41,17 +42,8 @@ export const ShinkaiNodeRunningOverlay = ({
         description: `You can find the logs file in your downloads folder`,
         action: {
           label: 'Open',
-          onClick: async () => {
-            const downloadsDir = await downloadDir();
-            await open({
-              title: result.fileName,
-              filters: [
-                { name: result.fileName.split('.txt')[0], extensions: ['txt'] },
-              ],
-              multiple: false,
-              directory: false,
-              defaultPath: downloadsDir,
-            });
+          onClick: () => {
+            openPath(result.savePath);
           },
         },
       });
