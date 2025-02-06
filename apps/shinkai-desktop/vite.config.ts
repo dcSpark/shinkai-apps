@@ -36,10 +36,10 @@ export default defineConfig(() => ({
       // Exclude output.wav from being watched
       ignored: ['**/output.wav'],
     },
-    headers: {
-      'Cross-Origin-Embedder-Policy': 'require-corp',
-      'Cross-Origin-Opener-Policy': 'same-origin',
-    },
+    // headers: {
+    // 'Cross-Origin-Embedder-Policy': 'require-corp',
+    // 'Cross-Origin-Opener-Policy': 'cross-origin',
+    // },
   },
   // 3. to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand

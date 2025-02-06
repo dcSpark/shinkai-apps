@@ -70,8 +70,6 @@ export default function ToolCard({
     toolRouterKey: toolKey ?? '',
   });
 
-  // TODO: fails node backend
-
   const [formData, setFormData] = useState<Record<string, any> | null>(null);
   const [oauthFormData, setOAuthFormData] = useState<{ oauth: OAuth[] } | null>(
     null,
@@ -217,7 +215,14 @@ export default function ToolCard({
   return (
     <SubpageLayout className="max-w-4xl" title="">
       <div className="flex w-full flex-col gap-6 md:flex-row">
-        <ToolIcon />
+        <div className="size-12 overflow-hidden rounded-2xl border bg-gray-500 object-cover">
+          <img
+            alt=""
+            className="size-full"
+            src={toolStoreDetails?.assets?.iconUrl ?? ''}
+          />
+        </div>
+
         <div className="flex-1">
           <h1 className="mb-2 text-lg font-bold">
             {formatText(tool.name ?? '')}
@@ -347,6 +352,16 @@ export default function ToolCard({
 
         <TabsContent className="space-y-4" value="description">
           <div className={cn(boxContainerClass, 'gap-7')}>
+            <section>
+              <h2 className="mb-4 text-xl font-semibold">Preview</h2>
+              <div className="aspect-video rounded-lg border border-zinc-800 object-cover object-top">
+                <img
+                  alt=""
+                  className="size-full"
+                  src={toolStoreDetails?.assets?.bannerUrl ?? ''}
+                />
+              </div>
+            </section>
             {[
               {
                 label: 'Description',
