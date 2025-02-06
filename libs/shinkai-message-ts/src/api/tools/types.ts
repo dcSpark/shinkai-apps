@@ -390,3 +390,13 @@ export type PublishToolResponse = {
   status: string;
   tool_key: string;
 };
+
+export type GetToolStoreDetailsRequest = {
+  tool_router_key: string;
+};
+export type GetToolStoreDetailsResponse = {
+  message: string;
+  response: {
+    message: string;
+  };
+};

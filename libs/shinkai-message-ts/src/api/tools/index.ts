@@ -24,6 +24,8 @@ import {
   GetShinkaiFileProtocolResponse,
   GetToolResponse,
   GetToolsResponse,
+  GetToolStoreDetailsRequest,
+  GetToolStoreDetailsResponse,
   ImportToolRequest,
   ImportToolResponse,
   PayInvoiceRequest,
@@ -580,4 +582,19 @@ export const publishTool = async (
     },
   );
   return response.data as PublishToolResponse;
+};
+
+export const getToolStoreDetails = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetToolStoreDetailsRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, `/v2/tool_store_proxy/${payload.tool_router_key}`),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetToolStoreDetailsResponse;
 };

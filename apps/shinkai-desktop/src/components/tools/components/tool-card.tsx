@@ -9,6 +9,7 @@ import {
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
+import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
 import {
   Alert,
   AlertDescription,
@@ -62,6 +63,15 @@ export default function ToolCard({
 }: ToolDetailsProps) {
   const auth = useAuth((state) => state.auth);
   const { toolKey } = useParams();
+
+  const { data: toolStoreDetails } = useGetToolStoreDetails({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    toolRouterKey: toolKey ?? '',
+  });
+
+  // TODO: fails node backend
+
   const [formData, setFormData] = useState<Record<string, any> | null>(null);
   const [oauthFormData, setOAuthFormData] = useState<{ oauth: OAuth[] } | null>(
     null,
