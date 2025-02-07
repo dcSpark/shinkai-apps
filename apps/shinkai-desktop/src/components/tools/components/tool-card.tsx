@@ -9,6 +9,7 @@ import {
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
+import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
 import {
   Alert,
   AlertDescription,
@@ -35,7 +36,13 @@ import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import { open } from '@tauri-apps/plugin-shell';
-import { DownloadIcon, MoreVertical, PlayCircle, Rocket } from 'lucide-react';
+import {
+  DownloadIcon,
+  ExternalLinkIcon,
+  MoreVertical,
+  PlayCircle,
+  Rocket,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -62,6 +69,13 @@ export default function ToolCard({
 }: ToolDetailsProps) {
   const auth = useAuth((state) => state.auth);
   const { toolKey } = useParams();
+
+  const { data: toolStoreDetails } = useGetToolStoreDetails({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    toolRouterKey: toolKey ?? '',
+  });
+
   const [formData, setFormData] = useState<Record<string, any> | null>(null);
   const [oauthFormData, setOAuthFormData] = useState<{ oauth: OAuth[] } | null>(
     null,
@@ -207,7 +221,14 @@ export default function ToolCard({
   return (
     <SubpageLayout className="max-w-4xl" title="">
       <div className="flex w-full flex-col gap-6 md:flex-row">
-        <ToolIcon />
+        <div className="size-12 overflow-hidden rounded-2xl border bg-gray-500 object-cover">
+          <img
+            alt=""
+            className="size-full"
+            src={toolStoreDetails?.assets?.iconUrl ?? ''}
+          />
+        </div>
+
         <div className="flex-1">
           <h1 className="mb-2 text-lg font-bold">
             {formatText(tool.name ?? '')}
@@ -342,6 +363,11 @@ export default function ToolCard({
                 label: 'Description',
                 value: tool.description,
               },
+              toolStoreDetails?.product?.product?.category && {
+                label: 'Category',
+                value: toolStoreDetails?.product?.product?.category.name,
+                href: `${SHINKAI_STORE_URL}/category/${toolStoreDetails?.product?.product?.category.id}`,
+              },
               'author' in tool &&
                 tool.author && {
                   label: 'Author',
@@ -366,14 +392,42 @@ export default function ToolCard({
               },
             ]
               .filter((item) => !!item)
-              .map(({ label, value }) => (
-                <div className="flex flex-col gap-1" key={label}>
-                  <span className="text-gray-80 text-xs">{label}</span>
-                  <span className="whitespace-pre-wrap text-sm text-white">
-                    {value}
-                  </span>
-                </div>
-              ))}
+              .map(({ label, value, href }) => {
+                if (href) {
+                  return (
+                    <div className="flex flex-col gap-1" key={label}>
+                      <span className="text-gray-80 text-xs">{label}</span>
+                      <a
+                        className="inline-flex items-center gap-2 whitespace-pre-wrap text-sm text-white hover:underline"
+                        href={href}
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        {value}
+                        <ExternalLinkIcon className="h-4 w-4" />
+                      </a>
+                    </div>
+                  );
+                }
+                return (
+                  <div className="flex flex-col gap-1" key={label}>
+                    <span className="text-gray-80 text-xs">{label}</span>
+                    <span className="whitespace-pre-wrap text-sm text-white">
+                      {value}
+                    </span>
+                  </div>
+                );
+              })}
+            <div className="flex flex-col gap-1">
+              <span className="text-gray-80 text-xs">Preview</span>
+              <div className="aspect-video overflow-hidden rounded-lg border border-zinc-800 bg-gray-500 object-cover object-top">
+                <img
+                  alt=""
+                  className="size-full"
+                  src={toolStoreDetails?.assets?.bannerUrl ?? ''}
+                />
+              </div>
+            </div>
           </div>
           <div className={boxContainerClass}>
             <div className="flex items-center justify-between gap-4">

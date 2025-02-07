@@ -20,6 +20,11 @@ export const useUpdateTool = (options?: Options) => {
       queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
       });
+
+      queryClient.invalidateQueries({
+        queryKey: [FunctionKeyV2.GET_SEARCH_TOOLS],
+      });
+
       queryClient.invalidateQueries({
         queryKey: [
           FunctionKeyV2.GET_TOOL,

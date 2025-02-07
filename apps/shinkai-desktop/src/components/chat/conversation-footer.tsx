@@ -691,7 +691,7 @@ function ConversationChatFooter({
                         <CommandInput placeholder="Search tools..." />
                         <CommandList>
                           <CommandEmpty>No tools found.</CommandEmpty>
-                          <CommandGroup heading="Your ActiveTools">
+                          <CommandGroup heading="Your Active Tools">
                             {isToolsListSuccess &&
                               toolsList?.map((tool) => (
                                 <CommandItem

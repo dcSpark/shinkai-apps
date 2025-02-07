@@ -390,3 +390,50 @@ export type PublishToolResponse = {
   status: string;
   tool_key: string;
 };
+
+export type GetToolStoreDetailsRequest = {
+  tool_router_key: string;
+};
+export type GetToolStoreDetailsResponse = {
+  assets: {
+    bannerUrl: string;
+    iconUrl: string;
+  };
+  product: {
+    product: {
+      author: string;
+      banner_url: string;
+      categoryId: string;
+      createdAt: string;
+      description: string;
+      downloads: number;
+      featured: boolean;
+      icon_url: string;
+      id: string;
+      isActive: boolean;
+      keywords: string[];
+      name: string;
+      operating_system: string[];
+      price_usd: number;
+      routerKey: string;
+      runner: string;
+      stripeProductId: string;
+      toolLanguage: string;
+      tool_set: string;
+      type: string;
+      category: {
+        id: string;
+        name: string;
+        description: string;
+        examples: string;
+      };
+    };
+    versions: {
+      file: string;
+      hash: string;
+      id: string;
+      node_version: string;
+      version: string;
+    }[];
+  };
+};
