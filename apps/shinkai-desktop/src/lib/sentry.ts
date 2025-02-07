@@ -28,6 +28,7 @@ useSettings.subscribe((state) => {
 
 export const initSentry = () =>
   Sentry.init({
+    // Logs are sent to the rust main process using the IPC and from there to sentry so here we don't really need a valid dsn
     dsn: 'https://dummy@dummy.ingest.us.sentry.io/1',
     integrations: [
       Sentry.captureConsoleIntegration({ levels: ['error'] }),
