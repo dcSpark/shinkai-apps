@@ -420,7 +420,7 @@ export default function ToolCard({
               })}
             <div className="flex flex-col gap-1">
               <span className="text-gray-80 text-xs">Preview</span>
-              <div className="aspect-video rounded-lg border border-zinc-800 object-cover object-top">
+              <div className="aspect-video overflow-hidden rounded-lg border border-zinc-800 bg-gray-500 object-cover object-top">
                 <img
                   alt=""
                   className="size-full"
