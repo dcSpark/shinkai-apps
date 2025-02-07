@@ -36,7 +36,13 @@ import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import { open } from '@tauri-apps/plugin-shell';
-import { DownloadIcon, MoreVertical, PlayCircle, Rocket } from 'lucide-react';
+import {
+  DownloadIcon,
+  ExternalLinkIcon,
+  MoreVertical,
+  PlayCircle,
+  Rocket,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -392,12 +398,13 @@ export default function ToolCard({
                     <div className="flex flex-col gap-1" key={label}>
                       <span className="text-gray-80 text-xs">{label}</span>
                       <a
-                        className="whitespace-pre-wrap text-sm text-white underline"
+                        className="inline-flex items-center gap-2 whitespace-pre-wrap text-sm text-white hover:underline"
                         href={href}
                         rel="noreferrer"
                         target="_blank"
                       >
                         {value}
+                        <ExternalLinkIcon className="h-4 w-4" />
                       </a>
                     </div>
                   );
