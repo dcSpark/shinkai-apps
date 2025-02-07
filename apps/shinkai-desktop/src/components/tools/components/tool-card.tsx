@@ -352,20 +352,15 @@ export default function ToolCard({
 
         <TabsContent className="space-y-4" value="description">
           <div className={cn(boxContainerClass, 'gap-7')}>
-            <section>
-              <h2 className="mb-4 text-xl font-semibold">Preview</h2>
-              <div className="aspect-video rounded-lg border border-zinc-800 object-cover object-top">
-                <img
-                  alt=""
-                  className="size-full"
-                  src={toolStoreDetails?.assets?.bannerUrl ?? ''}
-                />
-              </div>
-            </section>
             {[
               {
                 label: 'Description',
                 value: tool.description,
+              },
+              toolStoreDetails?.product?.product?.category && {
+                label: 'Category',
+                value: toolStoreDetails?.product?.product?.category.name,
+                href: `${SHINKAI_STORE_URL}/category/${toolStoreDetails?.product?.product?.category.id}`,
               },
               'author' in tool &&
                 tool.author && {
@@ -391,14 +386,41 @@ export default function ToolCard({
               },
             ]
               .filter((item) => !!item)
-              .map(({ label, value }) => (
-                <div className="flex flex-col gap-1" key={label}>
-                  <span className="text-gray-80 text-xs">{label}</span>
-                  <span className="whitespace-pre-wrap text-sm text-white">
-                    {value}
-                  </span>
-                </div>
-              ))}
+              .map(({ label, value, href }) => {
+                if (href) {
+                  return (
+                    <div className="flex flex-col gap-1" key={label}>
+                      <span className="text-gray-80 text-xs">{label}</span>
+                      <a
+                        className="whitespace-pre-wrap text-sm text-white underline"
+                        href={href}
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        {value}
+                      </a>
+                    </div>
+                  );
+                }
+                return (
+                  <div className="flex flex-col gap-1" key={label}>
+                    <span className="text-gray-80 text-xs">{label}</span>
+                    <span className="whitespace-pre-wrap text-sm text-white">
+                      {value}
+                    </span>
+                  </div>
+                );
+              })}
+            <div className="flex flex-col gap-1">
+              <span className="text-gray-80 text-xs">Preview</span>
+              <div className="aspect-video rounded-lg border border-zinc-800 object-cover object-top">
+                <img
+                  alt=""
+                  className="size-full"
+                  src={toolStoreDetails?.assets?.bannerUrl ?? ''}
+                />
+              </div>
+            </div>
           </div>
           <div className={boxContainerClass}>
             <div className="flex items-center justify-between gap-4">

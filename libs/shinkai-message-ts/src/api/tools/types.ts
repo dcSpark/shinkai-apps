@@ -421,6 +421,12 @@ export type GetToolStoreDetailsResponse = {
       toolLanguage: string;
       tool_set: string;
       type: string;
+      category: {
+        id: string;
+        name: string;
+        description: string;
+        examples: string;
+      };
     };
     versions: {
       file: string;
