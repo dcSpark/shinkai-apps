@@ -2,14 +2,13 @@
   "identifier": "spotlight",
   "description": "permissions for spotlight window",
   "local": true,
-  "windows": [
-    "spotlight"
-  ],
+  "windows": ["spotlight"],
   "permissions": [
     "core:event:allow-listen",
     "core:event:allow-unlisten",
     "core:event:allow-emit",
-    "log:default"
+    "log:default",
+    "sentry:default"
   ],
   "commands.allow": []
 }

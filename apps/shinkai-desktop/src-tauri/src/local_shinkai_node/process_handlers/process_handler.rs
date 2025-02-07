@@ -304,7 +304,7 @@ impl ProcessHandler {
             let event_sender = self.event_sender.lock().await;
             let _ = event_sender.send(ProcessHandlerEvent::Stopped).await;
         } else {
-            log::error!("[{}] no process is running to kill", self.process_name);
+            log::warn!("[{}] no process is running to kill", self.process_name);
         }
     }
 }

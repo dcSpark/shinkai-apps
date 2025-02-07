@@ -48,6 +48,7 @@ import { z } from 'zod';
 
 import logo from '../../../src-tauri/icons/128x128@2x.png';
 import { OllamaModels } from '../../components/shinkai-node-manager/ollama-models';
+import { initSentry } from '../../lib/sentry';
 import {
   useDownloadTauriLogsMutation,
   useRetrieveLogsQuery,
@@ -81,6 +82,8 @@ import {
 import { useAuth } from '../../store/auth';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 import { useSyncStorageSecondary } from '../../store/sync-utils';
+
+initSentry();
 
 const App = () => {
   useEffect(() => {
