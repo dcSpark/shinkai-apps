@@ -1,3 +1,4 @@
+import { CheckCircledIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { Button, Progress } from '@shinkai_network/shinkai-ui';
 import {
@@ -7,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@shinkai_network/shinkai-ui';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { CircleIcon, Loader2, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -97,22 +98,30 @@ export const GalxeValidation = () => {
         {quests.map((quest, index) => (
           <Card key={index}>
             <CardHeader>
-              <CardTitle className="text-lg font-semibold">
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+                {quest.progress === 100 ? (
+                  <CheckCircledIcon className="size-5 text-green-400" />
+                ) : (
+                  <CircleIcon className="size-5 text-green-400" />
+                )}
+
                 {quest.name}
               </CardTitle>
               <CardDescription className="text-gray-80 text-sm">
                 {quest.description}
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Progress
-                className="h-2 w-full rounded-md"
-                value={quest.progress}
-              />
-              <p className="text-gray-80 mt-2 text-xs">
-                Progress: {quest.progress}%
-              </p>
-            </CardContent>
+            {quest.progress !== 100 && (
+              <CardContent>
+                <Progress
+                  className="h-2 w-full rounded-md"
+                  value={quest.progress}
+                />
+                <p className="text-gray-80 mt-2 text-xs">
+                  Progress: {quest.progress}%
+                </p>
+              </CardContent>
+            )}
           </Card>
         ))}
       </div>
