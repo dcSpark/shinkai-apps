@@ -13,7 +13,7 @@ import {
 import { useForm } from 'react-hook-form';
 
 import { useAuth } from '../store/auth';
-import { SubpageLayout } from './layout/simple-layout';
+import { SimpleLayout } from './layout/simple-layout';
 
 export const PublicKeys = () => {
   const { t } = useTranslation();
@@ -32,7 +32,7 @@ export const PublicKeys = () => {
   });
 
   return (
-    <SubpageLayout title={t('settings.publicKeys.label')}>
+    <SimpleLayout classname="max-w-xl" title={t('settings.publicKeys.label')}>
       <div className="flex grow flex-col space-y-2">
         <Form {...form}>
           <form className="flex flex-col justify-between space-y-8">
@@ -214,6 +214,6 @@ export const PublicKeys = () => {
           </form>
         </Form>
       </div>
-    </SubpageLayout>
+    </SimpleLayout>
   );
 };

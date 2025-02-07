@@ -34,7 +34,10 @@ import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-import { useShinkaiNodeGetOllamaVersionQuery, useShinkaiNodeRespawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
+import {
+  useShinkaiNodeGetOllamaVersionQuery,
+  useShinkaiNodeRespawnMutation,
+} from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { isHostingShinkaiNode } from '../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
 import { SetupData, useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
@@ -197,7 +200,7 @@ const SettingsPage = () => {
     auth?.shinkai_identity ?? '',
   );
   return (
-    <SimpleLayout classname="max-w-lg" title={t('settings.layout.general')}>
+    <SimpleLayout classname="max-w-xl" title={t('settings.layout.general')}>
       <p className="mb-3">{t('settings.description')}</p>
       <div className="flex flex-col space-y-8 pr-2.5">
         <div className="flex flex-col space-y-8">
@@ -409,10 +412,7 @@ const SettingsPage = () => {
                 disabled
                 name="ollamaVersion"
                 render={({ field }) => (
-                  <TextField
-                    field={field}
-                    label={t('ollama.version')}
-                  />
+                  <TextField field={field} label={t('ollama.version')} />
                 )}
               />
               <FormField

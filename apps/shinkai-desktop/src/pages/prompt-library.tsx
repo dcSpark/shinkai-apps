@@ -95,7 +95,7 @@ export const PromptLibrary = () => {
             );
           }}
         >
-          <Button rounded="lg" size="xs">
+          <Button size="xs">
             <PlusIcon className="h-5 w-5" />
             New Prompt
           </Button>

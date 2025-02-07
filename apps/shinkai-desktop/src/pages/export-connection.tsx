@@ -21,7 +21,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useAuth } from '../store/auth';
-import { SubpageLayout } from './layout/simple-layout';
+import { SimpleLayout, SubpageLayout } from './layout/simple-layout';
 
 export const ExportConnection = () => {
   const { t } = useTranslation();
@@ -75,8 +75,8 @@ export const ExportConnection = () => {
     }
   };
   return (
-    <SubpageLayout title={t('exportConnection.label')}>
-      <div className="flex grow flex-col space-y-2">
+    <SimpleLayout classname="max-w-xl" title={t('exportConnection.label')}>
+      <div className="flex grow flex-col space-y-4">
         <Form {...form}>
           <form
             className="flex flex-col justify-between space-y-8"
@@ -106,7 +106,7 @@ export const ExportConnection = () => {
                 )}
               />
             </div>
-            <Button className="w-full" type="submit">
+            <Button className="w-full" size="sm" type="submit">
               {t('exportConnection.generateFile')}
             </Button>
           </form>
@@ -135,6 +135,6 @@ export const ExportConnection = () => {
           </div>
         )}
       </div>
-    </SubpageLayout>
+    </SimpleLayout>
   );
 };
