@@ -21,6 +21,18 @@ export const modelsConfig = {
         name: 'GPT 4o',
         value: 'gpt-4o',
       },
+      {
+        name: 'O1',
+        value: 'o1',
+      },
+      {
+        name: 'O1 Mini',
+        value: 'o1-mini',
+      },
+      {
+        name: 'O3 Mini',
+        value: 'o3-mini',
+      },
     ],
   },
   [Models.TogetherComputer]: {
@@ -64,6 +76,14 @@ export const modelsConfig = {
   [Models.Gemini]: {
     apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
     modelTypes: [
+      {
+        name: 'Gemini 2.0 Flash',
+        value: 'gemini-2.0-flash',
+      },
+      {
+        name: 'Gemini 2.0 Flash Lite',
+        value: 'gemini-2.0-flash-lite-preview-02-05',
+      },
       {
         name: 'Gemini 1.5 Flash',
         value: 'gemini-1.5-flash',
