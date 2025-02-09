@@ -29,6 +29,8 @@ import {
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { open } from '@tauri-apps/plugin-shell';
+import { HelpCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -244,8 +246,55 @@ const AddAIPage = () => {
     });
   };
 
+  const getHelpUrl = () => {
+    console.log('Current model:', currentModel);
+    
+    if (!currentModel) {
+      return 'https://docs.shinkai.com/advanced/models';
+    }
+
+    const urlMap = {
+      [Models.OpenAI]: 'https://docs.shinkai.com/advanced/models/gpt',
+      [Models.TogetherComputer]: 'https://docs.shinkai.com/advanced/models/together-ai',
+      [Models.Ollama]: 'https://docs.shinkai.com/advanced/models/ollama',
+      [Models.Gemini]: 'https://docs.shinkai.com/advanced/models/gemini',
+      [Models.Groq]: 'https://docs.shinkai.com/advanced/models/groq',
+      [Models.OpenRouter]: 'https://docs.shinkai.com/advanced/models/openrouter',
+      [Models.Exo]: 'https://docs.shinkai.com/advanced/models/exo',
+      [Models.Claude]: 'https://docs.shinkai.com/advanced/models/claude',
+    };
+
+    return urlMap[currentModel] || 'https://docs.shinkai.com/advanced/models';
+  };
+
+  const handleHelpClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    const url = getHelpUrl();
+    console.log('Opening help URL:', url);
+    
+    try {
+      await open(url);
+    } catch (error) {
+      console.error('Error opening URL in browser:', error);
+    }
+  };
+
   return (
-    <SubpageLayout className="max-w-lg" title={t('llmProviders.add')}>
+    <SubpageLayout 
+      className="max-w-lg" 
+      rightElement={
+        <Button
+          className="gap-2"
+          onClick={handleHelpClick}
+          size="sm"
+          variant="ghost"
+        >
+          <HelpCircle className="h-4 w-4" />
+          Help
+        </Button>
+      }
+      title={t('llmProviders.add')}
+    >
       <Form {...addAgentForm}>
         <form
           className="space-y-10"
