@@ -22,15 +22,15 @@ export const modelsConfig = {
         value: 'gpt-4o',
       },
       {
-        name: 'O1',
+        name: 'o1',
         value: 'o1',
       },
       {
-        name: 'O1 Mini',
+        name: 'o1 Mini',
         value: 'o1-mini',
       },
       {
-        name: 'O3 Mini',
+        name: 'o3 Mini',
         value: 'o3-mini',
       },
     ],
