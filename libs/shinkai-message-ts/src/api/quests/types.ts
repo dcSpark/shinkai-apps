@@ -23,5 +23,6 @@ export type GetQuestsStatusResponse = {
     }[];
     signature: string;
   };
+  message: string;
   status: string;
 };
