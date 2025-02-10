@@ -1,17 +1,15 @@
-import { CheckCircledIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { QuestNames } from '@shinkai_network/shinkai-message-ts/api/quests/types';
 import { useUpdateQuestsStatus } from '@shinkai_network/shinkai-node-state/v2/mutations/updateQuestsStatus/useUpdateQuestsStatus';
 import { useGetQuestsStatus } from '@shinkai_network/shinkai-node-state/v2/queries/getQuestsStatus/useGetQuestsStatus';
-import { Button, Progress, Skeleton } from '@shinkai_network/shinkai-ui';
+import { Button, Skeleton } from '@shinkai_network/shinkai-ui';
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@shinkai_network/shinkai-ui';
-import { Check, CircleIcon, Loader2, RefreshCw } from 'lucide-react';
+import { Check, CircleIcon, RefreshCw } from 'lucide-react';
 import { useMemo } from 'react';
 
 import { useAuth } from '../store/auth';
@@ -148,7 +146,6 @@ export const GalxeValidation = () => {
               <CardHeader className="flex flex-row items-start gap-2.5 space-y-0 p-0">
                 <span className="pt-1">
                   {quest.progress === 100 ? (
-                    // <CheckCircledIcon className="size-[18px] bg-green-400 text-white" />
                     <div className="flex size-5 items-center justify-center rounded-full bg-green-600 p-0.5">
                       <Check className="text-white" />
                     </div>
@@ -165,17 +162,6 @@ export const GalxeValidation = () => {
                   </CardDescription>
                 </div>
               </CardHeader>
-              {/* {quest.progress !== 100 && (
-                <CardContent>
-                  <Progress
-                    className="h-2 w-full rounded-md"
-                    value={quest.progress}
-                  />
-                  <p className="text-gray-80 mt-2 text-xs">
-                    Progress: {quest.progress}%
-                  </p>
-                </CardContent>
-              )} */}
             </Card>
           ))}
       </div>
