@@ -4,7 +4,7 @@ import { CheckIcon, XIcon } from 'lucide-react';
 
 import { analyticsBulletPoints } from '../constants/analytics';
 import { useSettings } from '../store/settings';
-import { SubpageLayout } from './layout/simple-layout';
+import { SimpleLayout } from './layout/simple-layout';
 
 const AnalyticsSettingsPage = () => {
   const { t, Trans } = useTranslation();
@@ -13,9 +13,9 @@ const AnalyticsSettingsPage = () => {
   const acceptAnalytics = useSettings((state) => state.acceptAnalytics);
 
   return (
-    <SubpageLayout title="Analytics">
+    <SimpleLayout classname="max-w-xl" title="Analytics">
       <div className="flex flex-col justify-between space-y-8">
-        <p className="font-clash text-xl font-medium">{t('analytics.title')}</p>
+        <p>{t('analytics.title')}</p>
         <div className="mt-10 flex flex-1 flex-col gap-10 text-sm text-gray-50">
           <ul className="text-gray-80 space-y-5">
             {analyticsBulletPoints().map((item) => (
@@ -54,7 +54,7 @@ const AnalyticsSettingsPage = () => {
               onClick={() => {
                 denyAnalytics();
               }}
-              size="lg"
+              size="sm"
             >
               {t('common.optOut')}
             </Button>
@@ -64,14 +64,14 @@ const AnalyticsSettingsPage = () => {
               onClick={() => {
                 acceptAnalytics();
               }}
-              size="lg"
+              size="sm"
             >
               {t('common.optIn')}
             </Button>
           )}
         </div>
       </div>
-    </SubpageLayout>
+    </SimpleLayout>
   );
 };
 

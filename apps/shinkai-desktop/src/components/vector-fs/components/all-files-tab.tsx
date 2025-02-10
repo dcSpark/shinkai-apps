@@ -228,8 +228,8 @@ const AllFiles = () => {
       >
         <DropdownMenuTrigger asChild>
           <Button
-            className="absolute -top-12 right-0 flex gap-2 self-end px-6"
-            size="sm"
+            className="absolute -top-12 right-0 flex gap-2 self-end px-5"
+            size="xs"
           >
             <PlusIcon className="h-4 w-4" /> {t('vectorFs.actions.addNew')}
           </Button>

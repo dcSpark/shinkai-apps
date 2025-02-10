@@ -159,12 +159,11 @@ export function MainNav() {
           <img alt="galxe icon" className="h-4 w-4" src={galxeIcon} />
         </div>
       ),
-      disabled: true,
     },
   ].filter(Boolean) as NavigationLink[];
 
   return (
-    <aside className="flex max-w-[250px] flex-1 shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r border-gray-400 px-2 py-6 pt-9">
+    <aside className="flex max-w-[250px] flex-1 shrink-0 flex-col gap-2 overflow-x-hidden border-r border-gray-400 px-2 py-6 pt-9">
       <div className="flex flex-col gap-1.5">
         {navigationLinks.map((item) => {
           if (item.disabled) {
@@ -225,9 +224,9 @@ const SettingsLayout = () => {
   const auth = useAuth((state) => state.auth);
 
   return (
-    <div className={cn('flex min-h-screen flex-1', !!auth && '')}>
+    <div className={cn('flex h-screen overflow-hidden', !!auth && '')}>
       <MainNav />
-      <div className={cn('flex-1 overflow-hidden')}>
+      <div className={cn('flex-1 overflow-y-auto')}>
         <Outlet />
       </div>
     </div>
