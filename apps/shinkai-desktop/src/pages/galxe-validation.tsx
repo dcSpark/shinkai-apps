@@ -20,79 +20,73 @@ const questStatusInfoMap: Record<
   { name: string; description: string }
 > = {
   [QuestNames.InstalledApp]: {
-    name: 'App Installation',
-    description: 'Install Shinkai Desktop App.',
+    name: 'Install Shinkai Desktop App',
+    description: 'Install Shinkai Desktop App',
   },
   [QuestNames.CreateIdentity]: {
     name: 'Create Your Shinkai Identity',
-    description:
-      'Get started by creating your unique identity on Shinkai. This is your first step to becoming part of the community.',
+    description: 'Get started by creating your unique identity on Shinkai.',
   },
   [QuestNames.DownloadFromStore]: {
-    name: 'First Store Download',
-    description:
-      'Download your first file from the Shinkai store. Explore the available resources and tools.',
+    name: 'Download Your First Tool',
+    description: 'Download your first tool from the Shinkai App store.',
   },
   [QuestNames.ComeBack2Days]: {
-    name: 'Daily Explorer 2 Days',
-    description:
-      'Show your commitment by returning to Shinkai for 2 consecutive days. Build a habit of regular engagement.',
+    name: 'Return to Shinkai 2 Days',
+    description: 'Return to Shinkai in 2 days.',
   },
   [QuestNames.ComeBack4Days]: {
-    name: 'Daily Explorer 4 Days',
-    description:
-      'Show your commitment by returning to Shinkai for 4 consecutive days. Build a habit of regular engagement.',
+    name: 'Return to Shinkai 4 Days',
+    description: 'Return to Shinkai in 4 days.',
   },
   [QuestNames.ComeBack7Days]: {
-    name: 'Daily Explorer 7 Days',
-    description:
-      'Show your commitment by returning to Shinkai for 7 consecutive days. Build a habit of regular engagement.',
+    name: 'Return to Shinkai 7 Days',
+    description: 'Return to Shinkai in 7 days.',
   },
   [QuestNames.CreateTool]: {
-    name: 'Tool Creator',
+    name: 'Create Your First Tool',
     description:
       'Create and publish your first tool on Shinkai. Share your creativity with the community.',
   },
   [QuestNames.SubmitAndGetApprovalForTool]: {
-    name: 'Submit and Get Approval for Tool',
+    name: 'Submit and Get Approval for 1 Tool',
     description:
-      'Submit your tool for review and get it approved by the Shinkai team. Ensure your creation meets our quality standards.',
+      'Submit your tool for review and get it approved by the Shinkai team.',
   },
   [QuestNames.SubmitAndGetApprovalFor2Tool]: {
     name: 'Submit and Get Approval for 2 Tools',
     description:
-      'Submit your tool for review and get it approved by the Shinkai team. Ensure your creation meets our quality standards.',
+      'Submit your tool for review and get it approved by the Shinkai team.',
   },
   [QuestNames.SubmitAndGetApprovalFor3Tool]: {
     name: 'Submit and Get Approval for 3 Tools',
     description:
-      'Submit your tool for review and get it approved by the Shinkai team. Ensure your creation meets our quality standards.',
+      'Submit your tool for review and get it approved by the Shinkai team.',
   },
   [QuestNames.FeaturedInRanking]: {
     name: 'Featured in Ranking',
-    description: 'Get featured in the Shinkai ranking.',
+    description: 'Get featured in the Shinkai App Store',
   },
   [QuestNames.WriteHonestReview]: {
-    name: 'Honest Reviewer',
+    name: 'Write a Review',
     description:
-      'Write a detailed and honest review about your experience with Shinkai. Help others make informed decisions.',
+      'Write a detailed and honest review about your experience with Shinkai.',
   },
   [QuestNames.Write5HonestReview]: {
-    name: 'Community Contributor',
-    description:
-      'Help improve Shinkai by providing constructive feedback. Your input shapes the future of the platform.',
+    name: 'Write 5 Reviews',
+    description: 'Help improve Shinkai by providing constructive feedback.',
   },
   [QuestNames.Write10HonestReview]: {
-    name: 'Community Contributor',
-    description:
-      'Help improve Shinkai by providing constructive feedback. Your input shapes the future of the platform.',
+    name: 'Write 10 Reviews',
+    description: 'Help improve Shinkai by providing constructive feedback.',
   },
   [QuestNames.UseRAG3Days]: {
-    name: 'RAG Explorer',
+    name: 'Use RAG 3 Days',
     description:
-      'Experience the power of Retrieval-Augmented Generation (RAG) by using it for 3 days. Discover how it enhances your workflow.',
+      'Experience the power of Retrieval-Augmented Generation (RAG) by using it for 3 days.',
   },
 };
+
 export const GalxeValidation = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
