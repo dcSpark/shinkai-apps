@@ -14,9 +14,14 @@ export enum QuestNames {
 }
 
 export type GetQuestsStatusResponse = {
-  message: string;
-  quests_status: {
-    [key in QuestNames]: boolean;
+  data: {
+    node_name: string;
+    proof: string;
+    quests: {
+      name: QuestNames;
+      status: boolean;
+    }[];
+    signature: string;
   };
   status: string;
 };

@@ -16,7 +16,10 @@ import { useMemo } from 'react';
 import { useAuth } from '../store/auth';
 import { SimpleLayout } from './layout/simple-layout';
 
-const questStatusInfoMap = {
+const questStatusInfoMap: Record<
+  QuestNames,
+  { name: string; description: string }
+> = {
   [QuestNames.CreateIdentity]: {
     name: 'Create Your Shinkai Identity',
     description:
@@ -88,11 +91,11 @@ export const GalxeValidation = () => {
   });
 
   const quests = useMemo(() => {
-    return Object.entries(data?.quests_status ?? {}).map(([key, value]) => ({
-      key,
-      name: questStatusInfoMap[key as QuestNames].name,
-      description: questStatusInfoMap[key as QuestNames].description,
-      progress: value ? 100 : 0,
+    return data?.data?.quests.map((quest) => ({
+      key: quest.name,
+      name: questStatusInfoMap[quest.name].name,
+      description: questStatusInfoMap[quest.name].description,
+      progress: quest.status ? 100 : 0,
     }));
   }, [data]);
 
@@ -122,7 +125,7 @@ export const GalxeValidation = () => {
             <Skeleton className="h-20 w-full" key={index} />
           ))}
         {isSuccess &&
-          quests.map((quest, index) => (
+          quests?.map((quest, index) => (
             <Card key={index}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg font-semibold">

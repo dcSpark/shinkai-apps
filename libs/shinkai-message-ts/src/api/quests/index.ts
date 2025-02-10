@@ -6,8 +6,10 @@ export const getQuestsStatus = async (
   nodeAddress: string,
   bearerToken: string,
 ) => {
-  const response = await httpClient.get(
+  // use get instead of post (node side)
+  const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/compute_quests_status'),
+    null,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
