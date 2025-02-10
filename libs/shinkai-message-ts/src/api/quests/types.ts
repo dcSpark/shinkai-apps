@@ -29,3 +29,10 @@ export type GetQuestsStatusResponse = {
   message: string;
   status: string;
 };
+
+export type UpdateQuestsStatusResponse = {
+  data: {
+    node_name: string;
+    proof: string;
+  };
+};

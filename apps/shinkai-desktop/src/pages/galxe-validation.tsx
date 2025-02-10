@@ -1,6 +1,7 @@
 import { CheckCircledIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { QuestNames } from '@shinkai_network/shinkai-message-ts/api/quests/types';
+import { useUpdateQuestsStatus } from '@shinkai_network/shinkai-node-state/v2/mutations/updateQuestsStatus/useUpdateQuestsStatus';
 import { useGetQuestsStatus } from '@shinkai_network/shinkai-node-state/v2/queries/getQuestsStatus/useGetQuestsStatus';
 import { Button, Progress, Skeleton } from '@shinkai_network/shinkai-ui';
 import {
@@ -10,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@shinkai_network/shinkai-ui';
-import { CircleIcon, Loader2, RefreshCw } from 'lucide-react';
+import { Check, CircleIcon, Loader2, RefreshCw } from 'lucide-react';
 import { useMemo } from 'react';
 
 import { useAuth } from '../store/auth';
@@ -98,10 +99,13 @@ export const GalxeValidation = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
 
-  const { data, isPending, refetch, isSuccess } = useGetQuestsStatus({
+  const { data, isPending, isSuccess } = useGetQuestsStatus({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
+
+  const { mutate: updateQuestsStatus, isPending: isQuestsStatusUpdating } =
+    useUpdateQuestsStatus();
 
   const quests = useMemo(() => {
     return data?.data?.quests.map((quest) => ({
@@ -114,47 +118,54 @@ export const GalxeValidation = () => {
 
   return (
     <SimpleLayout
-      classname="max-w-3xl"
+      classname="max-w-4xl"
       headerRightElement={
-        <Button disabled={isPending} onClick={() => refetch()} size="xs">
-          {isPending ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Syncing...
-            </>
-          ) : (
-            <>
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Sync Progress
-            </>
-          )}
+        <Button
+          disabled={isQuestsStatusUpdating}
+          isLoading={isQuestsStatusUpdating}
+          onClick={() =>
+            updateQuestsStatus({
+              nodeAddress: auth?.node_address ?? '',
+              token: auth?.api_v2_key ?? '',
+            })
+          }
+          size="xs"
+        >
+          {isQuestsStatusUpdating ? null : <RefreshCw className="h-4 w-4" />}
+          {isQuestsStatusUpdating ? 'Syncing...' : 'Sync Quests'}
         </Button>
       }
       title={t('galxe.label')}
     >
-      <div className="space-y-6 py-2 pb-10">
+      <div className="space-y-4 py-2 pb-10">
         {isPending &&
           Array.from({ length: 10 }).map((_, index) => (
             <Skeleton className="h-20 w-full" key={index} />
           ))}
         {isSuccess &&
           quests?.map((quest, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+            <Card className="m-0 p-3 px-4" key={index}>
+              <CardHeader className="flex flex-row items-start gap-2.5 space-y-0 p-0">
+                <span className="pt-1">
                   {quest.progress === 100 ? (
-                    <CheckCircledIcon className="size-5 text-green-400" />
+                    // <CheckCircledIcon className="size-[18px] bg-green-400 text-white" />
+                    <div className="flex size-5 items-center justify-center rounded-full bg-green-600 p-0.5">
+                      <Check className="text-white" />
+                    </div>
                   ) : (
                     <CircleIcon className="size-5 text-green-400" />
                   )}
-
-                  {quest.name}
-                </CardTitle>
-                <CardDescription className="text-gray-80 text-sm">
-                  {quest.description}
-                </CardDescription>
+                </span>
+                <div className="m-0 flex flex-1 flex-col gap-1">
+                  <CardTitle className="flex items-center gap-2 p-0 text-base font-semibold">
+                    {quest.name}
+                  </CardTitle>
+                  <CardDescription className="text-gray-80 p-0 text-sm">
+                    {quest.description}
+                  </CardDescription>
+                </div>
               </CardHeader>
-              {quest.progress !== 100 && (
+              {/* {quest.progress !== 100 && (
                 <CardContent>
                   <Progress
                     className="h-2 w-full rounded-md"
@@ -164,7 +175,7 @@ export const GalxeValidation = () => {
                     Progress: {quest.progress}%
                   </p>
                 </CardContent>
-              )}
+              )} */}
             </Card>
           ))}
       </div>
