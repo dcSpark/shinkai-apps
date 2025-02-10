@@ -20,6 +20,10 @@ const questStatusInfoMap: Record<
   QuestNames,
   { name: string; description: string }
 > = {
+  [QuestNames.InstalledApp]: {
+    name: 'App Installation',
+    description: 'Install Shinkai Desktop App.',
+  },
   [QuestNames.CreateIdentity]: {
     name: 'Create Your Shinkai Identity',
     description:
@@ -30,8 +34,18 @@ const questStatusInfoMap: Record<
     description:
       'Download your first file from the Shinkai store. Explore the available resources and tools.',
   },
+  [QuestNames.ComeBack2Days]: {
+    name: 'Daily Explorer 2 Days',
+    description:
+      'Show your commitment by returning to Shinkai for 2 consecutive days. Build a habit of regular engagement.',
+  },
+  [QuestNames.ComeBack4Days]: {
+    name: 'Daily Explorer 4 Days',
+    description:
+      'Show your commitment by returning to Shinkai for 4 consecutive days. Build a habit of regular engagement.',
+  },
   [QuestNames.ComeBack7Days]: {
-    name: 'Daily Explorer',
+    name: 'Daily Explorer 7 Days',
     description:
       'Show your commitment by returning to Shinkai for 7 consecutive days. Build a habit of regular engagement.',
   },
@@ -41,44 +55,43 @@ const questStatusInfoMap: Record<
       'Create and publish your first tool on Shinkai. Share your creativity with the community.',
   },
   [QuestNames.SubmitAndGetApprovalForTool]: {
-    name: 'Verified Tool Publisher',
+    name: 'Submit and Get Approval for Tool',
     description:
       'Submit your tool for review and get it approved by the Shinkai team. Ensure your creation meets our quality standards.',
   },
-  [QuestNames.Top50Ranking]: {
-    name: 'Top 50 Community Member',
+  [QuestNames.SubmitAndGetApprovalFor2Tool]: {
+    name: 'Submit and Get Approval for 2 Tools',
     description:
-      'Reach the top 50 ranking through active participation and valuable contributions to the Shinkai ecosystem.',
+      'Submit your tool for review and get it approved by the Shinkai team. Ensure your creation meets our quality standards.',
   },
-  [QuestNames.WriteFeedback]: {
+  [QuestNames.SubmitAndGetApprovalFor3Tool]: {
+    name: 'Submit and Get Approval for 3 Tools',
+    description:
+      'Submit your tool for review and get it approved by the Shinkai team. Ensure your creation meets our quality standards.',
+  },
+  [QuestNames.FeaturedInRanking]: {
+    name: 'Featured in Ranking',
+    description: 'Get featured in the Shinkai ranking.',
+  },
+  [QuestNames.WriteHonestReview]: {
+    name: 'Honest Reviewer',
+    description:
+      'Write a detailed and honest review about your experience with Shinkai. Help others make informed decisions.',
+  },
+  [QuestNames.Write5HonestReview]: {
     name: 'Community Contributor',
     description:
       'Help improve Shinkai by providing constructive feedback. Your input shapes the future of the platform.',
   },
-  [QuestNames.WriteHonestReview]: {
-    name: 'Thoughtful Reviewer',
+  [QuestNames.Write10HonestReview]: {
+    name: 'Community Contributor',
     description:
-      'Write a detailed and honest review about your experience with Shinkai. Help others make informed decisions.',
+      'Help improve Shinkai by providing constructive feedback. Your input shapes the future of the platform.',
   },
   [QuestNames.UseRAG3Days]: {
     name: 'RAG Explorer',
     description:
       'Experience the power of Retrieval-Augmented Generation (RAG) by using it for 3 days. Discover how it enhances your workflow.',
-  },
-  [QuestNames.UseSpotlight3Days]: {
-    name: 'Spotlight Power User',
-    description:
-      'Master the Spotlight feature by using it for 3 days. Learn how it can boost your productivity.',
-  },
-  [QuestNames.Install3PlusCommunityTools]: {
-    name: 'Community Tools Enthusiast',
-    description:
-      'Install and try at least 3 community-created tools. Support fellow creators and expand your toolkit.',
-  },
-  [QuestNames.Write3PlusAppReviews]: {
-    name: 'Expert Reviewer',
-    description:
-      'Write detailed reviews for 3 or more apps. Share your insights to help the community make better choices.',
   },
 };
 export const GalxeValidation = () => {
