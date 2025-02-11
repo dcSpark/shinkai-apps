@@ -30,6 +30,7 @@ pub struct ShinkaiNodeOptions {
     pub shinkai_tools_runner_uv_binary_path: Option<String>,
     pub pdfium_dynamic_lib_path: Option<String>,
     pub shinkai_store_url: Option<String>,
+    pub secret_desktop_installation_proof_key: Option<String>,
 }
 
 impl ShinkaiNodeOptions {
@@ -222,6 +223,12 @@ impl ShinkaiNodeOptions {
                     .or(base_options.shinkai_store_url)
                     .unwrap_or_default(),
             ),
+            secret_desktop_installation_proof_key: Some(
+                options
+                    .secret_desktop_installation_proof_key
+                    .or(base_options.secret_desktop_installation_proof_key)
+                    .unwrap_or_default(),
+            ),
         }
     }
 }
@@ -283,6 +290,10 @@ impl Default for ShinkaiNodeOptions {
             shinkai_tools_runner_uv_binary_path: Some(shinkai_tools_runner_uv_binary_path),
             pdfium_dynamic_lib_path: None,
             shinkai_store_url: Some("https://store-api.shinkai.com".to_string()),
+            secret_desktop_installation_proof_key: option_env!(
+                "SECRET_DESKTOP_INSTALLATION_PROOF_KEY"
+            )
+            .and_then(|s| Some(s.to_string())),
         }
     }
 }
