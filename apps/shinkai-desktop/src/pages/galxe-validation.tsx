@@ -33,15 +33,16 @@ const questStatusInfoMap: Record<
   },
   [QuestNames.ComeBack2Days]: {
     name: 'Return to Shinkai 2 Days',
-    description: 'Return to Shinkai in 2 days.',
+    description: 'Return to Shinkai in 2 days. Remember to create new jobs each day!',
   },
   [QuestNames.ComeBack4Days]: {
     name: 'Return to Shinkai 4 Days',
-    description: 'Return to Shinkai in 4 days.',
+    description: 'Return to Shinkai in 4 days. Remember to create new jobs each day!',
   },
   [QuestNames.ComeBack7Days]: {
     name: 'Return to Shinkai 7 Days',
-    description: 'Return to Shinkai in 7 days.',
+    description:
+      'Return to Shinkai in 7 days. Remember to create new jobs each day!',
   },
   [QuestNames.CreateTool]: {
     name: 'Create Your First Tool',
