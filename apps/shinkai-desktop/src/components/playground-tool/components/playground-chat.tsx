@@ -122,7 +122,7 @@ const PlaygroundChatBase = ({
 
         {chatInboxId && (
           <MessageList
-            containerClassName="px-5"
+            containerClassName="px-2"
             disabledRetryAndEdit={true}
             fetchPreviousPage={fetchPreviousPage}
             hasPreviousPage={hasPreviousPage}
@@ -130,6 +130,7 @@ const PlaygroundChatBase = ({
             isFetchingPreviousPage={isFetchingPreviousPage}
             isLoading={isChatConversationLoading}
             isSuccess={isChatConversationSuccess}
+            minimalistMode
             noMoreMessageLabel={t('chat.allMessagesLoaded')}
             paginatedMessages={chatConversationData}
           />

@@ -69,6 +69,7 @@ export const MessageList = memo(
     disabledRetryAndEdit,
     messageExtra,
     hidePythonExecution,
+    minimalistMode,
   }: {
     noMoreMessageLabel: string;
     isSuccess: boolean;
@@ -89,6 +90,7 @@ export const MessageList = memo(
     disabledRetryAndEdit?: boolean;
     messageExtra?: React.ReactNode;
     hidePythonExecution?: boolean;
+    minimalistMode?: boolean;
   }) => {
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const previousChatHeightRef = useRef<number>(0);
@@ -313,6 +315,7 @@ export const MessageList = memo(
                               key={`${message.messageId}::${messageIndex}`}
                               message={message}
                               messageId={message.messageId}
+                              minimalistMode={minimalistMode}
                             />
                           );
                         })}
