@@ -9,10 +9,11 @@ import {
   FormItem,
   FormLabel,
 } from '@shinkai_network/shinkai-ui';
+import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { InfiniteQueryObserverResult } from '@tanstack/react-query';
 import { FetchPreviousPageOptions } from '@tanstack/react-query';
-import { ArrowUpRight, LucideArrowLeft, SendIcon } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { memo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { To } from 'react-router-dom';
@@ -66,7 +67,7 @@ const PlaygroundChatBase = ({
 
   return (
     <>
-      <div className="flex items-center gap-3 px-2">
+      {/* <div className="flex items-center gap-3 px-2">
         <Link to={-1 as To}>
           <LucideArrowLeft className="text-gray-80 size-[18px]" />
           <span className="sr-only">{t('common.back')}</span>
@@ -74,7 +75,7 @@ const PlaygroundChatBase = ({
         <h1 className="py-2 text-sm font-bold tracking-tight">
           {mode === 'create' ? 'Tool Playground' : `Edit ${toolName}`}
         </h1>
-      </div>
+      </div> */}
       <div
         className={cn(
           'flex flex-1 flex-col overflow-y-auto',
