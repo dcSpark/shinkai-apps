@@ -2,14 +2,20 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { QuestNames } from '@shinkai_network/shinkai-message-ts/api/quests/types';
 import { useUpdateQuestsStatus } from '@shinkai_network/shinkai-node-state/v2/mutations/updateQuestsStatus/useUpdateQuestsStatus';
 import { useGetQuestsStatus } from '@shinkai_network/shinkai-node-state/v2/queries/getQuestsStatus/useGetQuestsStatus';
-import { Button, Skeleton } from '@shinkai_network/shinkai-ui';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Button,
+  Skeleton,
+} from '@shinkai_network/shinkai-ui';
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@shinkai_network/shinkai-ui';
-import { Check, CircleIcon, RefreshCw } from 'lucide-react';
+import { Check, CircleIcon, Info, RefreshCw } from 'lucide-react';
 import { useMemo } from 'react';
 
 import { useAuth } from '../store/auth';
@@ -20,29 +26,32 @@ const questStatusInfoMap: Record<
   { name: string; description: string }
 > = {
   [QuestNames.InstalledApp]: {
-    name: 'Install Shinkai Desktop App',
-    description: 'Install Shinkai Desktop App',
+    name: 'Try Shinkai Desktop',
+    description: 'Download and Install Shinkai Desktop.',
   },
   [QuestNames.CreateIdentity]: {
     name: 'Create Your Shinkai Identity',
-    description: 'Get started by creating your unique identity on Shinkai.',
+    description:
+      'Create an on-chain Shinkai Identity! This is require to participate in the decentralized peer to peer network.',
   },
   [QuestNames.DownloadFromStore]: {
     name: 'Download Your First Tool',
-    description: 'Download your first tool from the Shinkai App store.',
+    description: 'Download your first tool from the Shinkai Store.',
   },
   [QuestNames.ComeBack2Days]: {
-    name: 'Return to Shinkai 2 Days',
-    description: 'Return to Shinkai in 2 days. Remember to create new jobs each day!',
+    name: 'Return to Shinkai in 2 different days',
+    description:
+      'Return to Shinkai in 2 different days. Remember to create new chats each day!',
   },
   [QuestNames.ComeBack4Days]: {
-    name: 'Return to Shinkai 4 Days',
-    description: 'Return to Shinkai in 4 days. Remember to create new jobs each day!',
+    name: 'Return to Shinkai in 4 different days',
+    description:
+      'Return to Shinkai in 4 different days. Remember to create new chats each day!',
   },
   [QuestNames.ComeBack7Days]: {
-    name: 'Return to Shinkai 7 Days',
+    name: 'Return to Shinkai in 7 different days',
     description:
-      'Return to Shinkai in 7 days. Remember to create new jobs each day!',
+      'Return to Shinkai in 7 different days. Remember to create new chats each day!',
   },
   [QuestNames.CreateTool]: {
     name: 'Create Your First Tool',
@@ -71,20 +80,22 @@ const questStatusInfoMap: Record<
   [QuestNames.WriteHonestReview]: {
     name: 'Write a Review',
     description:
-      'Write a detailed and honest review about your experience with Shinkai.',
+      'Go to Shinkai Store and write a detailed and honest review about your experience with a Shinkai tool.',
   },
   [QuestNames.Write5HonestReview]: {
     name: 'Write 5 Reviews',
-    description: 'Help improve Shinkai by providing constructive feedback.',
+    description:
+      'Go to Shinkai Store and write 5 detailed and honest reviews about your experience with Shinkai tools.',
   },
   [QuestNames.Write10HonestReview]: {
     name: 'Write 10 Reviews',
-    description: 'Help improve Shinkai by providing constructive feedback.',
+    description:
+      'Go to Shinkai Store and write 10 detailed and honest reviews about your experience with Shinkai tools.',
   },
   [QuestNames.UseRAG3Days]: {
-    name: 'Use RAG 3 Days',
+    name: 'Chat with files 3 different days',
     description:
-      'Experience the power of Retrieval-Augmented Generation (RAG) by using it for 3 days.',
+      'Experience the power of Retrieval-Augmented Generation (RAG) while chat with your files in 3 different days.',
   },
 };
 
@@ -131,9 +142,19 @@ export const GalxeValidation = () => {
       title={t('galxe.label')}
     >
       <div className="space-y-4 py-2 pb-10">
+        <Alert className="rounded-sm border-none bg-cyan-900/20 p-3.5 shadow-none">
+          <Info className="mt-1 size-4 text-cyan-400" />
+          <AlertTitle className="text-sm">
+            Setup Your Shinkai Identity
+          </AlertTitle>
+          <AlertDescription className="text-gray-80 text-xs">
+            Before you can sync and track your quest progress, you&apos;ll need
+            to set up your Shinkai identity.
+          </AlertDescription>
+        </Alert>
         {isPending &&
           Array.from({ length: 10 }).map((_, index) => (
-            <Skeleton className="h-20 w-full" key={index} />
+            <Skeleton className="h-20 w-full bg-gray-300" key={index} />
           ))}
         {isSuccess &&
           quests?.map((quest, index) => (
