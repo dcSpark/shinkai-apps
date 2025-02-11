@@ -21,6 +21,7 @@ import { z } from 'zod';
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
+import { usePlaygroundStore } from '../context/playground-context';
 import { ToolMetadataSchema, ToolMetadataSchemaType } from '../schemas';
 import { extractCodeByLanguage, extractCodeLanguage } from '../utils/code';
 
@@ -149,7 +150,19 @@ export const useToolCode = ({
 
   const [isDirtyCodeEditor, setIsDirtyCodeEditor] = useState(false);
   const [resetCounter, setResetCounter] = useState(0);
-  const [toolResult, setToolResult] = useState<object | null>(null);
+
+  const toolCode = usePlaygroundStore((state) => state.toolCode);
+  const setToolCode = usePlaygroundStore((state) => state.setToolCode);
+  const toolCodeStatus = usePlaygroundStore((state) => state.toolCodeStatus);
+  const setToolCodeStatus = usePlaygroundStore(
+    (state) => state.setToolCodeStatus,
+  );
+  const toolCodeError = usePlaygroundStore((state) => state.toolCodeError);
+  const setToolCodeError = usePlaygroundStore(
+    (state) => state.setToolCodeError,
+  );
+  const toolResult = usePlaygroundStore((state) => state.toolResult);
+  const setToolResult = usePlaygroundStore((state) => state.setToolResult);
 
   const currentLanguage = createToolCodeForm.watch('language');
 
@@ -177,14 +190,6 @@ export const useToolCode = ({
     return toolCodesFound;
   }, [conversationData?.pages, currentLanguage]);
 
-  const [toolCode, setToolCode] = useState<string>(initialState?.code ?? '');
-  const [error, setError] = useState<string | null>(
-    initialState?.error ?? null,
-  );
-  const [toolCodeState, setToolCodeState] = useState<
-    'idle' | 'pending' | 'success' | 'error'
-  >(initialState?.state ?? 'idle');
-
   const [xShinkaiAppId] = useState(() => `app-id-${Date.now()}`);
   const [xShinkaiToolId] = useState(() => `task-id-${Date.now()}`);
 
@@ -202,9 +207,12 @@ export const useToolCode = ({
       setToolCode(initialState.code);
     }
     if (initialState?.state) {
-      setToolCodeState(initialState.state);
+      setToolCodeStatus(initialState.state);
     }
-  }, [initialState?.code, initialState?.state]);
+    if (initialState?.error) {
+      setToolCodeError(initialState.error);
+    }
+  }, [initialState?.code, initialState?.state, initialState?.error]);
 
   useEffect(() => {
     const lastMessage = conversationData?.pages?.at(-1)?.at(-1);
@@ -214,7 +222,7 @@ export const useToolCode = ({
       lastMessage?.role === 'assistant' &&
       lastMessage?.status.type === 'running'
     ) {
-      setToolCodeState('pending');
+      setToolCodeStatus('pending');
       return;
     }
     if (
@@ -231,20 +239,20 @@ export const useToolCode = ({
       if (generatedCode) {
         baseToolCodeRef.current = generatedCode;
         setToolCode(generatedCode);
-        setToolCodeState('success');
+        setToolCodeStatus('success');
       } else {
-        setError('Failed to generate tool code');
-        setToolCodeState('error');
+        setToolCodeError('Failed to generate tool code');
+        setToolCodeStatus('error');
       }
     }
   }, [conversationData?.pages, currentLanguage]);
 
-  const isToolCodeGenerationPending = toolCodeState === 'pending';
-  const isToolCodeGenerationSuccess = toolCodeState === 'success';
-  const isToolCodeGenerationIdle = toolCodeState === 'idle';
-  const isToolCodeGenerationError = toolCodeState === 'error';
+  const isToolCodeGenerationPending = toolCodeStatus === 'pending';
+  const isToolCodeGenerationSuccess = toolCodeStatus === 'success';
+  const isToolCodeGenerationIdle = toolCodeStatus === 'idle';
+  const isToolCodeGenerationError = toolCodeStatus === 'error';
   const toolCodeGenerationData = toolCode;
-  const toolCodeGenerationError = error;
+  const toolCodeGenerationError = toolCodeError;
 
   const executeToolCodeQuery = useExecuteToolCode({
     onSuccess: (data) => {

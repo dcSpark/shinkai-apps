@@ -1,30 +1,8 @@
-import { DialogClose } from '@radix-ui/react-dialog';
-import { ReloadIcon } from '@radix-ui/react-icons';
 import { FormProps } from '@rjsf/core';
-import validator from '@rjsf/validator-ajv8';
-import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { CustomToolHeaders } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
-import { useRemoveAssetTool } from '@shinkai_network/shinkai-node-state/v2/mutations/removeAssetTool/useRemoveAssetTool';
-import { useUploadAssetsTool } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadAssetsTool/useUploadAssetsTool';
-import { useGetAllToolAssets } from '@shinkai_network/shinkai-node-state/v2/queries/getAllToolAssets/useGetAllToolAssets';
-import { useGetShinkaiFileProtocol } from '@shinkai_network/shinkai-node-state/v2/queries/getShinkaiFileProtocol/useGetShinkaiFileProtocol';
 import {
   Badge,
   Button,
-  ChatInputArea,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogTitle,
-  DialogTrigger,
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  JsonForm,
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
@@ -38,40 +16,11 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import {
-  fileIconMap,
-  FileTypeIcon,
-  SendIcon,
-  ToolAssetsIcon,
-} from '@shinkai_network/shinkai-ui/assets';
-import { getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { save } from '@tauri-apps/plugin-dialog';
-import * as fs from '@tauri-apps/plugin-fs';
-import { BaseDirectory } from '@tauri-apps/plugin-fs';
-import equal from 'fast-deep-equal';
-import { AnimatePresence, motion } from 'framer-motion';
-import {
-  ArrowUpRight,
-  Loader2,
-  LucideArrowLeft,
-  Paperclip,
-  Play,
-  Redo2Icon,
-  Save,
-  Undo2Icon,
-  Upload,
-  XIcon,
-} from 'lucide-react';
-import { memo, useEffect, useRef, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { Link, To } from 'react-router-dom';
-import { toast } from 'sonner';
+import { Loader2, Redo2Icon, Save, Undo2Icon } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 
 import { useAuth } from '../../../store/auth';
-import { AIModelSelector } from '../../chat/chat-action-bar/ai-update-selection-action-bar';
-import { MessageList } from '../../chat/components/message-list';
-import { ToolErrorFallback } from '../error-boundary';
 import {
   CreateToolCodeFormSchema,
   useToolCode,
@@ -80,10 +29,11 @@ import {
 import { useToolMetadata } from '../hooks/use-tool-metadata';
 import PlaygroundToolLayout from '../layout';
 import { ToolMetadataSchemaType } from '../schemas';
-import ToolCodeEditor from '../tool-code-editor';
-import { detectLanguage } from '../utils/code';
-import { LanguageToolSelector } from './language-tool-selector';
-import { ToolsSelection } from './tools-selection';
+import { CodePanel } from './code-panel';
+import { ExecutionPanel } from './execution-panel';
+import { ManageSourcesButton } from './manage-sources-button';
+import { MetadataPanel } from './metadata-panel';
+import { PlaygroundChat } from './playground-chat';
 
 function PlaygroundToolEditor({
   mode,
@@ -109,9 +59,6 @@ function PlaygroundToolEditor({
   initialChatInboxId?: string;
 }) {
   const auth = useAuth((state) => state.auth);
-  const { t } = useTranslation();
-  const toolResultBoxRef = useRef<HTMLDivElement>(null);
-  const [formData, setFormData] = useState(null);
 
   const form = useToolForm(createToolCodeFormInitialValues);
 
@@ -125,8 +72,6 @@ function PlaygroundToolEditor({
     chatInboxId,
     toolCode,
     baseToolCodeRef,
-    isToolCodeGenerationPending,
-    isToolCodeGenerationSuccess,
     fetchPreviousPage,
     hasPreviousPage,
     isChatConversationLoading,
@@ -137,7 +82,6 @@ function PlaygroundToolEditor({
     codeEditorRef,
     metadataEditorRef,
     executeToolCodeQuery,
-    toolResult,
     toolResultFiles,
     isDirtyCodeEditor,
     setIsDirtyCodeEditor,
@@ -161,15 +105,7 @@ function PlaygroundToolEditor({
     initialToolName: toolMetadataInitialValues?.metadata?.name ?? '',
   });
 
-  const {
-    isMetadataGenerationPending,
-    isMetadataGenerationSuccess,
-    isMetadataGenerationIdle,
-    metadataGenerationData,
-    metadataGenerationError,
-    isMetadataGenerationError,
-    regenerateToolMetadata,
-  } = useToolMetadata({
+  const { metadataGenerationData, regenerateToolMetadata } = useToolMetadata({
     chatInboxId,
     toolCode,
     tools: form.watch('tools'),
@@ -200,161 +136,20 @@ function PlaygroundToolEditor({
   return (
     <PlaygroundToolLayout
       leftElement={
-        <>
-          <div className="flex items-center gap-3 px-2">
-            <Link to={-1 as To}>
-              <LucideArrowLeft className="text-gray-80 size-[18px]" />
-              <span className="sr-only">{t('common.back')}</span>
-            </Link>
-            <h1 className="py-2 text-sm font-bold tracking-tight">
-              {mode === 'create' ? 'Tool Playground' : `Edit ${toolName}`}
-            </h1>
-          </div>
-          <div
-            className={cn(
-              'flex flex-1 flex-col overflow-y-auto',
-              !chatInboxId && 'items-center justify-center gap-2 text-center',
-            )}
-          >
-            {!chatInboxId && (
-              <>
-                <span aria-hidden className="text-3xl">
-                  🤖
-                </span>
-                <h2 className="text-base font-medium">
-                  Generate your tool using AI
-                </h2>
-                <p className="text-gray-80 mb-8 text-xs">
-                  Ask Shinkai AI to generate a tool for you. Provide a prompt
-                  and Shinkai AI will generate a tool code for you.
-                </p>
-                <div className="grid grid-cols-1 items-center gap-3">
-                  {[
-                    {
-                      text: 'Download a website content in markdown',
-                      prompt:
-                        'Generate a tool for downloading a website into markdown',
-                    },
-                    {
-                      text: 'Get tech-related stories from Hacker News',
-                      prompt:
-                        'Generate a tool for getting top tech-related stories from Hacker News, include the title, author, and URL of the story',
-                    },
-                  ].map((suggestion) => (
-                    <Button
-                      key={suggestion.text}
-                      onClick={() =>
-                        form.setValue('message', suggestion.prompt)
-                      }
-                      size="xs"
-                      variant="outline"
-                    >
-                      {suggestion.text}
-                      <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
-                    </Button>
-                  ))}
-                </div>
-              </>
-            )}
-
-            {chatInboxId && (
-              <MessageList
-                containerClassName="px-5"
-                disabledRetryAndEdit={true}
-                fetchPreviousPage={fetchPreviousPage}
-                hasPreviousPage={hasPreviousPage}
-                hidePythonExecution={true}
-                isFetchingPreviousPage={isFetchingPreviousPage}
-                isLoading={isChatConversationLoading}
-                isSuccess={isChatConversationSuccess}
-                noMoreMessageLabel={t('chat.allMessagesLoaded')}
-                paginatedMessages={chatConversationData}
-              />
-            )}
-          </div>
-
-          <Form {...form}>
-            <form
-              className="shrink-0 space-y-2 pt-2"
-              onSubmit={form.handleSubmit(handleCreateToolCode)}
-            >
-              <div className="flex shrink-0 items-center gap-1">
-                <FormField
-                  control={form.control}
-                  name="message"
-                  render={({ field }) => (
-                    <FormItem className="flex-1 space-y-0">
-                      <FormLabel className="sr-only">
-                        {t('chat.enterMessage')}
-                      </FormLabel>
-                      <FormControl>
-                        <div className="space-y-1.5">
-                          <div className="flex items-center gap-2">
-                            <AIModelSelector
-                              onValueChange={(value) => {
-                                form.setValue('llmProviderId', value);
-                              }}
-                              value={form.watch('llmProviderId')}
-                            />
-                            <LanguageToolSelector
-                              onValueChange={(value) => {
-                                form.setValue(
-                                  'language',
-                                  value as CodeLanguage,
-                                );
-                              }}
-                              value={form.watch('language')}
-                            />
-                            <ToolsSelection form={form} />
-                          </div>
-                          <ChatInputArea
-                            autoFocus
-                            bottomAddons={
-                              <div className="relative z-50 flex items-end gap-3 self-end">
-                                <span className="pb-1 text-xs font-light text-gray-100">
-                                  <span className="font-medium">Enter</span> to
-                                  send
-                                </span>
-                                <Button
-                                  className={cn(
-                                    'hover:bg-app-gradient h-[40px] w-[40px] cursor-pointer rounded-xl bg-gray-500 p-3 transition-colors',
-                                    'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
-                                  )}
-                                  disabled={
-                                    isToolCodeGenerationPending ||
-                                    isMetadataGenerationPending ||
-                                    !form.watch('message')
-                                  }
-                                  onClick={form.handleSubmit(
-                                    handleCreateToolCode,
-                                  )}
-                                  size="icon"
-                                  variant="tertiary"
-                                >
-                                  <SendIcon className="h-full w-full" />
-                                  <span className="sr-only">
-                                    {t('chat.sendMessage')}
-                                  </span>
-                                </Button>
-                              </div>
-                            }
-                            disabled={
-                              isToolCodeGenerationPending ||
-                              isMetadataGenerationPending
-                            }
-                            onChange={field.onChange}
-                            onSubmit={form.handleSubmit(handleCreateToolCode)}
-                            value={field.value}
-                          />
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </form>
-          </Form>
-        </>
+        <Form {...form}>
+          <PlaygroundChat
+            chatConversationData={chatConversationData}
+            chatInboxId={chatInboxId ?? ''}
+            fetchPreviousPage={fetchPreviousPage}
+            handleCreateToolCode={handleCreateToolCode}
+            hasPreviousPage={hasPreviousPage}
+            isChatConversationLoading={isChatConversationLoading}
+            isChatConversationSuccess={isChatConversationSuccess}
+            isFetchingPreviousPage={isFetchingPreviousPage}
+            mode={mode}
+            toolName={toolName ?? ''}
+          />
+        </Form>
       }
       rightElement={
         <Tabs
@@ -472,7 +267,7 @@ function PlaygroundToolEditor({
                     </div>
                   )}
                   <div className="flex items-center gap-2.5">
-                    <ManageToolSourceModal
+                    <ManageSourcesButton
                       xShinkaiAppId={xShinkaiAppId}
                       xShinkaiToolId={xShinkaiToolId}
                     />
@@ -507,286 +302,38 @@ function PlaygroundToolEditor({
                     maxSize={70}
                     minSize={30}
                   >
-                    <div className="flex size-full min-h-[220px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
-                      <div className="flex h-full flex-col">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
-                            <h2 className="flex items-center gap-2 font-mono font-semibold text-gray-50">
-                              Code{' '}
-                            </h2>
-                            {toolCode && (
-                              <p>
-                                {/* eslint-disable-next-line react/no-unescaped-entities */}
-                                Here's the code generated by Shinkai AI based on
-                                your prompt.
-                              </p>
-                            )}
-                          </div>
-
-                          {/*{toolCode && (*/}
-                          {/*  <Tooltip>*/}
-                          {/*    <TooltipTrigger asChild>*/}
-                          {/*      <div>*/}
-                          {/*        <CopyToClipboardIcon*/}
-                          {/*          className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"*/}
-                          {/*          string={toolCode ?? ''}*/}
-                          {/*        />*/}
-                          {/*      </div>*/}
-                          {/*    </TooltipTrigger>*/}
-                          {/*    <TooltipPortal>*/}
-                          {/*      <TooltipContent className="flex flex-col items-center gap-1">*/}
-                          {/*        <p>Copy Code</p>*/}
-                          {/*      </TooltipContent>*/}
-                          {/*    </TooltipPortal>*/}
-                          {/*  </Tooltip>*/}
-                          {/*)}*/}
-                        </div>
-                        <div className="flex-1 overflow-auto">
-                          {isToolCodeGenerationPending && (
-                            <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-                              <Loader2 className="shrink-0 animate-spin" />
-                              Generating Code...
-                            </div>
-                          )}
-                          {!isToolCodeGenerationPending &&
-                            !toolCode &&
-                            !isToolCodeGenerationSuccess && (
-                              <p className="text-gray-80 pt-6 text-center text-xs">
-                                No code generated yet. <br />
-                                Ask Shinkai AI to generate your tool code.
-                              </p>
-                            )}
-                          {isToolCodeGenerationSuccess && toolCode && (
-                            <form
-                              className="flex size-full flex-col"
-                              key={resetCounter}
-                              onSubmit={handleApplyChangesCodeSubmit}
-                            >
-                              <div className="flex h-[40px] shrink-0 items-center justify-between rounded-t-lg border-b border-gray-400 bg-[#0d1117] px-3 py-2">
-                                <span className="text-gray-80 inline-flex items-center gap-2 pl-2 text-xs font-medium">
-                                  {' '}
-                                  {detectLanguage(toolCode)}{' '}
-                                  {isDirtyCodeEditor && (
-                                    <span className="size-2 shrink-0 rounded-full bg-orange-500" />
-                                  )}
-                                </span>
-                                <AnimatePresence mode="popLayout">
-                                  {isDirtyCodeEditor && (
-                                    <motion.div
-                                      animate={{ opacity: 1 }}
-                                      className="flex items-center justify-end gap-2"
-                                      exit={{ opacity: 0 }}
-                                      initial={{ opacity: 0 }}
-                                      transition={{ duration: 0.2 }}
-                                    >
-                                      <Button
-                                        className="!h-[28px] rounded-lg border-0 bg-transparent"
-                                        onClick={resetToolCode}
-                                        size="xs"
-                                        variant="ghost"
-                                      >
-                                        Reset
-                                      </Button>
-                                      <Button
-                                        className="!h-[28px] rounded-lg border-0 bg-transparent"
-                                        size="xs"
-                                        type="submit"
-                                        variant="ghost"
-                                      >
-                                        Apply Changes
-                                      </Button>
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
-                              </div>
-                              <ToolCodeEditor
-                                language="ts"
-                                name="editor"
-                                onUpdate={(currentCode) => {
-                                  setIsDirtyCodeEditor(
-                                    currentCode !== baseToolCodeRef.current,
-                                  );
-                                }}
-                                ref={codeEditorRef}
-                                value={toolCode}
-                              />
-                            </form>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                    <CodePanel
+                      baseToolCodeRef={baseToolCodeRef}
+                      codeEditorRef={codeEditorRef}
+                      handleApplyChangesCodeSubmit={
+                        handleApplyChangesCodeSubmit
+                      }
+                      isDirtyCodeEditor={isDirtyCodeEditor}
+                      resetCounter={resetCounter}
+                      resetToolCode={resetToolCode}
+                      setIsDirtyCodeEditor={setIsDirtyCodeEditor}
+                    />
                   </ResizablePanel>
                   <ResizableHandle className="my-4 bg-gray-300" withHandle />
 
                   <ResizablePanel className="flex flex-col">
-                    <div className="flex size-full min-h-[220px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
-                      <div className="flex items-center justify-between">
-                        <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
-                          <h2 className="flex font-mono font-semibold text-gray-50">
-                            Run
-                          </h2>
-                          {metadataGenerationData && (
-                            <p>Fill in the options above to run your tool.</p>
-                          )}
-                        </div>
-                        {isMetadataGenerationSuccess &&
-                          !isToolCodeGenerationPending &&
-                          !isMetadataGenerationError && (
-                            <Button
-                              className="border-gray-200 text-white"
-                              form="parameters-form"
-                              isLoading={executeToolCodeQuery.isPending}
-                              rounded="lg"
-                              size="xs"
-                              variant="ghost"
-                            >
-                              {!executeToolCodeQuery.isPending && (
-                                <Play className="h-4 w-4" />
-                              )}
-                              Run
-                            </Button>
-                          )}
-                      </div>
-                      <div className="flex-1 overflow-auto">
-                        {(isMetadataGenerationPending ||
-                          isToolCodeGenerationPending) && (
-                          <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-                            <Loader2 className="shrink-0 animate-spin" />
-                            Generating...
-                          </div>
-                        )}
-                        {!isMetadataGenerationPending &&
-                          !isToolCodeGenerationPending &&
-                          isMetadataGenerationError && (
-                            <ToolErrorFallback
-                              error={new Error(metadataGenerationError ?? '')}
-                              resetErrorBoundary={regenerateToolMetadata}
-                            />
-                          )}
-                        {isMetadataGenerationSuccess &&
-                          !isToolCodeGenerationPending &&
-                          !isMetadataGenerationError && (
-                            <div className="text-gray-80 size-full text-xs">
-                              <JsonForm
-                                className={cn(
-                                  (metadataGenerationData?.configurations
-                                    ?.properties &&
-                                    Object.keys(
-                                      metadataGenerationData.configurations
-                                        .properties,
-                                    ).length > 0) ||
-                                    (metadataGenerationData?.parameters
-                                      ?.properties &&
-                                      Object.keys(
-                                        metadataGenerationData.parameters
-                                          .properties,
-                                      ).length > 0)
-                                    ? 'py-4'
-                                    : 'py-0',
-                                )}
-                                formData={formData}
-                                id="parameters-form"
-                                noHtml5Validate={true}
-                                onChange={(e) => setFormData(e.formData)}
-                                onSubmit={handleRunCode}
-                                schema={{
-                                  type: 'object',
-                                  properties: {
-                                    ...(metadataGenerationData?.configurations
-                                      ?.properties &&
-                                    Object.keys(
-                                      metadataGenerationData.configurations
-                                        .properties,
-                                    ).length > 0
-                                      ? {
-                                          configs:
-                                            metadataGenerationData.configurations,
-                                        }
-                                      : {}),
-                                    ...(metadataGenerationData?.parameters
-                                      ?.properties &&
-                                    Object.keys(
-                                      metadataGenerationData.parameters
-                                        .properties,
-                                    ).length > 0
-                                      ? {
-                                          params:
-                                            metadataGenerationData.parameters,
-                                        }
-                                      : {}),
-                                  },
-                                }}
-                                uiSchema={{
-                                  'ui:submitButtonOptions': { norender: true },
-                                  configs: {
-                                    'ui:title': 'Config',
-                                  },
-                                  params: {
-                                    'ui:title': 'Inputs',
-                                  },
-                                }}
-                                validator={validator}
-                              />
-                              <AnimatePresence>
-                                {(executeToolCodeQuery.isPending ||
-                                  executeToolCodeQuery.isError ||
-                                  executeToolCodeQuery.isSuccess) && (
-                                  <motion.div
-                                    animate={{ opacity: 1, x: 0 }}
-                                    className="flex flex-col overflow-x-hidden bg-gray-300 pt-2"
-                                    exit={{ opacity: 0, x: 20 }}
-                                    initial={{ opacity: 0, x: 20 }}
-                                  >
-                                    {executeToolCodeQuery.isPending && (
-                                      <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-                                        <Loader2 className="shrink-0 animate-spin" />
-                                        Running Tool...
-                                      </div>
-                                    )}
-                                    {executeToolCodeQuery.isError && (
-                                      <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
-                                        <p>
-                                          Tool execution failed. Try generating
-                                          the tool code again.
-                                        </p>
-                                        <pre className="whitespace-break-spaces px-4 text-center">
-                                          {executeToolCodeQuery.error?.response
-                                            ?.data?.message ??
-                                            executeToolCodeQuery.error?.message}
-                                        </pre>
-                                      </div>
-                                    )}
-                                    <div ref={toolResultBoxRef}>
-                                      {executeToolCodeQuery.isSuccess &&
-                                        toolResult && (
-                                          <ToolResult
-                                            mountTimestamp={
-                                              mountTimestamp.current
-                                            }
-                                            toolResult={JSON.stringify(
-                                              toolResult,
-                                              null,
-                                              2,
-                                            )}
-                                            toolResultFiles={toolResultFiles}
-                                          />
-                                        )}
-                                    </div>
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            </div>
-                          )}
-                        {isMetadataGenerationIdle &&
-                          !isToolCodeGenerationPending && (
-                            <div>
-                              <p className="text-gray-80 py-4 pt-6 text-center text-xs">
-                                No metadata generated yet.
-                              </p>
-                            </div>
-                          )}
-                      </div>
-                    </div>
+                    <ExecutionPanel
+                      executionToolCodeError={
+                        executeToolCodeQuery.error?.response?.data?.message ??
+                        executeToolCodeQuery.error?.message
+                      }
+                      handleRunCode={handleRunCode}
+                      isExecutionToolCodeError={executeToolCodeQuery.isError}
+                      isExecutionToolCodePending={
+                        executeToolCodeQuery.isPending
+                      }
+                      isExecutionToolCodeSuccess={
+                        executeToolCodeQuery.isSuccess
+                      }
+                      mountTimestampRef={mountTimestamp}
+                      regenerateToolMetadata={regenerateToolMetadata}
+                      toolResultFiles={toolResultFiles}
+                    />
                   </ResizablePanel>
                 </ResizablePanelGroup>
               </TabsContent>
@@ -795,81 +342,11 @@ function PlaygroundToolEditor({
                 forceMount
                 value="preview"
               >
-                <div className="flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
-                  <div className="flex items-start justify-between gap-2 py-3">
-                    <div className="text-gray-80 flex flex-col gap-1 text-xs">
-                      <h2 className="flex font-mono font-semibold text-gray-50">
-                        Metadata
-                      </h2>
-                      {metadataGenerationData && (
-                        <p>Fill in the options above to run your tool.</p>
-                      )}
-                    </div>
-                    {isMetadataGenerationSuccess && (
-                      <Button
-                        className="text-gray-80"
-                        onClick={regenerateToolMetadata}
-                        rounded="lg"
-                        size="xs"
-                        variant="outline"
-                      >
-                        <ReloadIcon className="size-3.5" />
-                        Regenerate Metadata
-                      </Button>
-                    )}
-                  </div>
-                  {isMetadataGenerationPending && (
-                    <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-                      <Loader2 className="shrink-0 animate-spin" />
-                      Generating Metadata...
-                    </div>
-                  )}
-                  {!isMetadataGenerationPending &&
-                    !isToolCodeGenerationPending &&
-                    isMetadataGenerationError && (
-                      <ToolErrorFallback
-                        error={new Error(metadataGenerationError ?? '')}
-                        resetErrorBoundary={regenerateToolMetadata}
-                      />
-                    )}
-
-                  {isMetadataGenerationSuccess &&
-                    !isMetadataGenerationError && (
-                      <div className="text-gray-80 text-xs">
-                        <div className="py-2">
-                          <ToolCodeEditor
-                            language="json"
-                            ref={metadataEditorRef}
-                            style={{ height: '80vh' }}
-                            value={
-                              metadataGenerationData != null
-                                ? JSON.stringify(
-                                    {
-                                      ...metadataGenerationData,
-                                      name:
-                                        mode === 'edit'
-                                          ? undefined
-                                          : metadataGenerationData.name,
-                                      tools: undefined,
-                                      author: undefined,
-                                    },
-                                    null,
-                                    2,
-                                  )
-                                : 'Invalid metadata'
-                            }
-                          />
-                        </div>
-                      </div>
-                    )}
-                  {isMetadataGenerationIdle && (
-                    <div>
-                      <p className="text-gray-80 py-4 pt-6 text-center text-xs">
-                        No metadata generated yet.
-                      </p>
-                    </div>
-                  )}
-                </div>
+                <MetadataPanel
+                  metadataEditorRef={metadataEditorRef}
+                  mode={mode}
+                  regenerateToolMetadata={regenerateToolMetadata}
+                />
               </TabsContent>
             </div>
           </div>
@@ -880,396 +357,3 @@ function PlaygroundToolEditor({
 }
 
 export default PlaygroundToolEditor;
-
-function ToolResultFileCard({ filePath }: { filePath: string }) {
-  const auth = useAuth((state) => state.auth);
-  const { refetch } = useGetShinkaiFileProtocol(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      file: filePath,
-    },
-    {
-      enabled: false,
-    },
-  );
-
-  const fileNameBase =
-    filePath.split('/')?.at(-1)?.split('.')?.at(0) ?? 'untitled_tool';
-  const fileExtension = filePath.split('/')?.at(-1)?.split('.')?.at(-1) ?? '';
-
-  return (
-    <Button
-      className="flex justify-start gap-2"
-      onClick={async () => {
-        const response = await refetch();
-        const file = new Blob([response.data ?? ''], {
-          type: 'application/octet-stream',
-        });
-
-        const arrayBuffer = await file.arrayBuffer();
-        const content = new Uint8Array(arrayBuffer);
-
-        const savePath = await save({
-          defaultPath: `${fileNameBase}.${fileExtension}`,
-          filters: [
-            {
-              name: 'File',
-              extensions: [fileExtension],
-            },
-          ],
-        });
-
-        if (!savePath) {
-          toast.info('File saving cancelled');
-          return;
-        }
-
-        await fs.writeFile(savePath, content, {
-          baseDir: BaseDirectory.Download,
-        });
-
-        toast.success(`${fileNameBase} downloaded successfully`);
-      }}
-      rounded="lg"
-      size="xs"
-      variant="outline"
-    >
-      <div className="flex shrink-0 items-center">
-        {fileExtension && fileIconMap[fileExtension] ? (
-          <FileTypeIcon
-            className="text-gray-80 h-[18px] w-[18px] shrink-0"
-            type={fileExtension}
-          />
-        ) : (
-          <Paperclip className="text-gray-80 h-3.5 w-3.5 shrink-0" />
-        )}
-      </div>
-      <div className="truncate text-left text-xs">
-        {filePath.split('/')?.at(-1)}
-      </div>
-    </Button>
-  );
-}
-
-function ManageToolSourceModal({
-  xShinkaiAppId,
-  xShinkaiToolId,
-}: CustomToolHeaders) {
-  const auth = useAuth((state) => state.auth);
-  const { t } = useTranslation();
-
-  const { data: assets, isSuccess: isGetAllToolAssetsSuccess } =
-    useGetAllToolAssets({
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      xShinkaiAppId,
-      xShinkaiToolId,
-    });
-
-  const { mutateAsync: uploadAssets, isPending: isUploadingAssets } =
-    useUploadAssetsTool({
-      onError: (error) => {
-        toast.error('Failed uploading source:', {
-          description: error.response?.data?.message ?? error.message,
-        });
-      },
-    });
-
-  const { mutateAsync: removeAsset } = useRemoveAssetTool({
-    onError: (error) => {
-      toast.error('Failed removing source:', {
-        description: error.response?.data?.message ?? error.message,
-      });
-    },
-  });
-
-  const { getRootProps: getRootFileProps, getInputProps: getInputFileProps } =
-    useDropzone({
-      multiple: true,
-      onDrop: async (acceptedFiles) => {
-        await uploadAssets({
-          nodeAddress: auth?.node_address ?? '',
-          token: auth?.api_v2_key ?? '',
-          files: acceptedFiles,
-          xShinkaiAppId,
-          xShinkaiToolId,
-        });
-      },
-    });
-
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button
-          className="text-gray-80 shrink-0"
-          rounded="lg"
-          size="xs"
-          variant="outline"
-        >
-          <ToolAssetsIcon className="text-gray-80 mr-2 h-4 w-4" />
-          Manage Knowledge ({isGetAllToolAssetsSuccess ? assets.length : '-'})
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="flex h-[60vh] max-w-[500px] flex-col gap-4">
-        <DialogClose className="absolute right-4 top-4">
-          <XIcon className="text-gray-80 h-5 w-5" />
-        </DialogClose>
-        <div className="space-y-2">
-          <DialogTitle className="pb-0">Manage Knowledge</DialogTitle>
-          <DialogDescription className="text-xs">
-            Add knowledge directly to your tool. It is used to provide context
-            to the large language model.
-          </DialogDescription>
-        </div>
-
-        <div
-          {...getRootFileProps({
-            className:
-              'dropzone py-4 bg-gray-400 group relative  flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed border-gray-200 transition-colors hover:border-gray-100',
-          })}
-        >
-          <div className="flex flex-col items-center justify-center space-y-1 px-2">
-            <div className="bg-gray-350 rounded-full p-2 shadow-sm">
-              <Upload className="h-4 w-4" />
-            </div>
-            <p className="text-sm text-white">{t('common.clickToUpload')}</p>
-
-            <p className="text-gray-80 line-clamp-1 text-xs">
-              {t('common.uploadAFileDescription')}
-            </p>
-          </div>
-
-          <input {...getInputFileProps({})} />
-        </div>
-        <Separator className="my-1 bg-gray-200" orientation="horizontal" />
-        <div
-          className={cn(
-            'flex flex-1 flex-col gap-2 overflow-y-auto pr-2',
-            (assets ?? []).length > 5,
-          )}
-        >
-          {isGetAllToolAssetsSuccess && assets.length === 0 && (
-            <span className="text-gray-80 text-center text-xs">
-              No source files uploaded yet.
-            </span>
-          )}
-          {isUploadingAssets && (
-            <div className="flex flex-col items-center gap-2">
-              <Loader2 className="text-gray-80 shrink-0 animate-spin" />
-              <span className="text-gray-80 text-center text-xs">
-                Uploading files...
-              </span>
-            </div>
-          )}
-          {isGetAllToolAssetsSuccess &&
-            assets.map((asset) => (
-              <div
-                className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 px-1.5 py-4 overflow-hidden"
-                key={asset}
-              >
-                <div className="flex items-center gap-2 text-gray-50 overflow-hidden">
-                  <div className="w-4.5 flex aspect-square shrink-0 items-center justify-center">
-                    {getFileExt(asset) && fileIconMap[getFileExt(asset)] ? (
-                      <FileTypeIcon
-                        className="text-gray-80 h-[18px] w-[18px] shrink-0"
-                        type={getFileExt(asset)}
-                      />
-                    ) : (
-                      <Paperclip className="text-gray-80 h-3.5 w-3.5 shrink-0" />
-                    )}
-                  </div>
-                  <Tooltip delayDuration={1000}>
-                    <TooltipTrigger>
-                      <span className="text-sm overflow-hidden text-ellipsis">{decodeURIComponent(asset)}</span>
-                    </TooltipTrigger>
-                    <TooltipPortal>
-                      <TooltipContent align="start" side="top">
-                        {decodeURIComponent(asset)}
-                      </TooltipContent>
-                    </TooltipPortal>
-                  </Tooltip>
-                </div>
-                <Button
-                  className="shrink-0 text-gray-80 !size-5 border-0 p-0.5 hover:text-white"
-                  onClick={async () => {
-                    await removeAsset({
-                      nodeAddress: auth?.node_address ?? '',
-                      token: auth?.api_v2_key ?? '',
-                      xShinkaiAppId,
-                      xShinkaiToolId,
-                      filename: asset,
-                    });
-                  }}
-                  size="auto"
-                  variant="outline"
-                >
-                  <XIcon className="size-full" />
-                </Button>
-              </div>
-            ))}
-        </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button type="button" variant="default">
-              Close
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-const logFileRegex = /log_app-id-\d+_task-id-\d+.log/;
-
-function formatTimestamp(timestamp: string) {
-  const year = timestamp.substring(0, 4);
-  const month = timestamp.substring(4, 6);
-  const day = timestamp.substring(6, 8);
-  const hour = timestamp.substring(9, 11);
-  const minute = timestamp.substring(11, 13);
-  const second = timestamp.substring(13, 15);
-
-  return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-}
-
-const ToolResultBase = ({
-  toolResultFiles,
-  toolResult,
-  mountTimestamp,
-}: {
-  toolResultFiles: string[];
-  toolResult: string;
-  mountTimestamp: Date;
-}) => {
-  const auth = useAuth((state) => state.auth);
-
-  const logsFilePath = toolResultFiles.find((file) => logFileRegex.test(file));
-
-  const [logsFile, setLogsFile] = useState<string | null>(null);
-
-  const { data: logsFileBlob } = useGetShinkaiFileProtocol(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      file: logsFilePath ?? '',
-    },
-    {
-      enabled: !!logsFilePath,
-    },
-  );
-
-  useEffect(() => {
-    if (logsFileBlob) {
-      const handleLogsFile = async () => {
-        const logsFile = new Blob([logsFileBlob], {
-          type: 'text/plain',
-        });
-        const logsFileText = await logsFile.text();
-        setLogsFile(logsFileText);
-      };
-      handleLogsFile();
-    }
-  }, [logsFileBlob]);
-
-  function formatLogs(logString: string) {
-    return logString
-      .split('\n')
-      .filter((line) => {
-        if (/<\/?shinkai-code-result>/.test(line)) return false;
-
-        const parts = line.split(',');
-        if (parts.length < 5) return false;
-
-        const timestamp = parts[0];
-        const year = parseInt(timestamp.substring(0, 4));
-        const month = parseInt(timestamp.substring(4, 6)) - 1;
-        const day = parseInt(timestamp.substring(6, 8));
-        const hour = parseInt(timestamp.substring(9, 11));
-        const minute = parseInt(timestamp.substring(11, 13));
-        const second = parseInt(timestamp.substring(13, 15));
-
-        const logDate = new Date(year, month, day, hour, minute, second);
-        return logDate >= mountTimestamp;
-      })
-      .map((line, i) => {
-        const parts = line.split(',');
-        const timestamp = parts[0];
-        const logContent = parts.slice(4).join(',');
-        const readableDate = formatTimestamp(timestamp);
-
-        return (
-          <div
-            className="px-2 py-2 font-mono text-xs hover:bg-gray-500"
-            key={i}
-          >
-            <span className="text-gray-100">{readableDate} </span>
-            <span className="text-gray-50">{logContent}</span>
-          </div>
-        );
-      });
-  }
-
-  return (
-    <Tabs defaultValue="results">
-      <TabsList className="h-[32px] w-full justify-start rounded-none border-b border-gray-200 bg-transparent">
-        <TabsTrigger
-          className="data-[state=active]:border-b-gray-80 min-w-[70px] rounded-none px-2.5 text-xs font-medium data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
-          value="results"
-        >
-          Output
-        </TabsTrigger>
-        <TabsTrigger
-          className="data-[state=active]:border-b-gray-80 min-w-[70px] rounded-none px-2.5 text-xs font-medium data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
-          value="console"
-        >
-          Console
-        </TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="results">
-        <div className="flex flex-col gap-4 px-2 py-2 pr-6">
-          {toolResultFiles.length > 0 && (
-            <div className="flex items-center gap-4">
-              <h1 className="text-gray-80 shrink-0 text-xs font-medium">
-                Generated Files
-              </h1>
-              <div className="flex w-full gap-2">
-                {toolResultFiles
-                  ?.filter((file) => !logFileRegex.test(file))
-                  ?.map((file) => (
-                    <ToolResultFileCard filePath={file} key={file} />
-                  ))}
-              </div>
-            </div>
-          )}
-          <ToolCodeEditor language="json" readOnly value={toolResult} />
-        </div>
-      </TabsContent>
-
-      <TabsContent value="console">
-        <div className="rounded-md bg-gray-600 px-2 py-1 text-gray-50">
-          {logsFile ? (
-            <div className="space-y-1">
-              <div className="text-gray-80 px-2 py-2">Console</div>
-              {formatLogs(logsFile)}
-            </div>
-          ) : (
-            <div className="text-gray-80 px-2 py-2">
-              Results of your code will appear here when you run
-            </div>
-          )}
-        </div>
-      </TabsContent>
-    </Tabs>
-  );
-};
-
-const ToolResult = memo(ToolResultBase, (prevProps, nextProps) => {
-  if (!equal(prevProps.toolResultFiles, nextProps.toolResultFiles))
-    return false;
-  if (prevProps.mountTimestamp !== nextProps.mountTimestamp) return false;
-  if (prevProps.toolResult !== nextProps.toolResult) return false;
-  return true;
-});

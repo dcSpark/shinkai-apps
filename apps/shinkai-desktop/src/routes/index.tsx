@@ -11,6 +11,7 @@ import { ChatProvider } from '../components/chat/context/chat-context';
 import { SetJobScopeProvider } from '../components/chat/context/set-job-scope-context';
 import { ToolsProvider } from '../components/chat/context/tools-context';
 import { WalletsProvider } from '../components/crypto-wallet/context/wallets-context';
+import { PlaygroundProvider } from '../components/playground-tool/context/playground-context';
 import { PromptSelectionProvider } from '../components/prompt/context/prompt-selection-context';
 import { TableSheetProvider } from '../components/sheet/context/table-context';
 import PublicSharedFolderSubscription from '../components/subscriptions/public-shared-folders';
@@ -319,9 +320,11 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <TooltipProvider delayDuration={0}>
-                <ChatProvider>
-                  <Outlet />
-                </ChatProvider>
+                <PlaygroundProvider>
+                  <ChatProvider>
+                    <Outlet />
+                  </ChatProvider>
+                </PlaygroundProvider>
               </TooltipProvider>
             </ProtectedRoute>
           }
