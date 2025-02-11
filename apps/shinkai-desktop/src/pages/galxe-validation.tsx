@@ -32,7 +32,7 @@ const questStatusInfoMap: Record<
   [QuestNames.CreateIdentity]: {
     name: 'Create Your Shinkai Identity',
     description:
-      'On this step, you will create an on-chain Shinkai Identity! This is require to participate in the decentralized peer to peer network.',
+      'Create an on-chain Shinkai Identity! This is require to participate in the decentralized peer to peer network.',
   },
   [QuestNames.DownloadFromStore]: {
     name: 'Download Your First Tool',
