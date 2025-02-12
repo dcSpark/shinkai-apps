@@ -428,6 +428,7 @@
       "goToShinkaiIdentity": "Benim Shinkai Kimliğime git",
       "label": "Shinkai Kimliği",
       "registerIdentity": "Shinkai Kimliğinizi kaydedin",
+      "saveWillRestartApp": "Kaydetme, değişiklikleri uygulamak için uygulamayı yeniden başlatacaktır.",
       "success": "Shinkai Kimliği başarıyla güncellendi",
       "troubleRegisterIdentity": "Kimliğinizi kaydederken sorun mu yaşıyorsunuz?",
       "updatedIdentity": "Shinkai Kimliği başarıyla güncellendi."
