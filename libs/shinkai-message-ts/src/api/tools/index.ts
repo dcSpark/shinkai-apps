@@ -11,6 +11,8 @@ import {
   CreateToolMetadataRequest,
   CreateToolMetadataResponse,
   DeletePromptRequest,
+  DuplicateToolRequest,
+  DuplicateToolResponse,
   ExecuteToolCodeRequest,
   ExecuteToolCodeResponse,
   ExportToolRequest,
@@ -28,6 +30,8 @@ import {
   GetToolStoreDetailsResponse,
   ImportToolRequest,
   ImportToolResponse,
+  OpenToolInCodeEditorRequest,
+  OpenToolInCodeEditorResponse,
   PayInvoiceRequest,
   PublishToolRequest,
   PublishToolResponse,
@@ -376,7 +380,7 @@ export const updateToolCodeImplementation = async (
   payload: UpdateToolCodeImplementationRequest,
 ) => {
   const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v2/tool_implementation_code_update'),
+    urlJoin(nodeAddress, '/v2/tools_standalone_playground"'),
     payload,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
@@ -384,6 +388,37 @@ export const updateToolCodeImplementation = async (
     },
   );
   return response.data as UpdateToolCodeImplementationResponse;
+};
+
+export const openToolInCodeEditor = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: OpenToolInCodeEditorRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/tools_standalone_playground'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as OpenToolInCodeEditorResponse;
+};
+export const duplicateTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: DuplicateToolRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/duplicate_tool'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as DuplicateToolResponse;
 };
 
 export const importTool = async (
