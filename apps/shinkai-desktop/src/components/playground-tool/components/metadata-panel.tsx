@@ -35,12 +35,12 @@ function MetadataPanelBase({
   const isMetadataGenerationError = toolMetadataStatus === 'error';
 
   return (
-    <div className="flex min-h-[200px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
+    <div className="flex min-h-[200px] flex-col pb-4 pl-4 pr-3">
       <div className="flex items-start justify-between gap-2 py-3">
         <div className="text-gray-80 flex flex-col gap-1 text-xs">
-          <h2 className="flex font-mono font-semibold text-gray-50">
+          {/* <h2 className="flex font-mono font-semibold text-gray-50">
             Metadata
-          </h2>
+          </h2> */}
           {toolMetadata && <p>Fill in the options above to run your tool.</p>}
         </div>
         {isMetadataGenerationSuccess && (

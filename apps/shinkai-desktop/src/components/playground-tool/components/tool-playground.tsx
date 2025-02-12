@@ -1,4 +1,5 @@
 import { FormProps } from '@rjsf/core';
+import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   Badge,
   Button,
@@ -16,6 +17,12 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import {
+  MetadataIcon,
+  PythonIcon,
+  TypeScriptIcon,
+  UnknownLanguageIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Loader2, Redo2Icon, Save, Undo2Icon } from 'lucide-react';
 import { useEffect, useRef } from 'react';
@@ -29,19 +36,23 @@ import {
 import { useToolMetadata } from '../hooks/use-tool-metadata';
 import PlaygroundToolLayout from '../layout';
 import { ToolMetadataSchemaType } from '../schemas';
+import { detectLanguage } from '../utils/code';
 import { CodePanel } from './code-panel';
 import { ExecutionPanel } from './execution-panel';
+import { LANGUAGE_TOOLS } from './language-tool-selector';
 import { ManageSourcesButton } from './manage-sources-button';
 import { MetadataPanel } from './metadata-panel';
 import { PlaygroundChat } from './playground-chat';
 
-// export const languageIconMap = {
-//   python: <PythonIcon />,
-//   javascript: <JavaScriptIcon />,
-//   typescript: <TypeScriptIcon />,
-//   go: <GoIcon />,
-
-// };
+export const getLanguageIcon = (currentLanguage: string) => {
+  if (currentLanguage === 'Python') {
+    return <PythonIcon className="size-4" />;
+  }
+  if (currentLanguage === 'TypeScript') {
+    return <TypeScriptIcon className="size-4" />;
+  }
+  return <UnknownLanguageIcon className="size-4" />;
+};
 
 function PlaygroundToolEditor({
   mode,
@@ -165,56 +176,34 @@ function PlaygroundToolEditor({
           defaultValue="code"
         >
           <div className={'flex flex-grow justify-stretch'}>
-            <div className="flex size-full flex-col gap-2">
-              <div className="flex shrink-0 items-center justify-between gap-2">
-                <TabsList className="grid grid-cols-2 rounded-lg border border-gray-400 bg-transparent p-0.5">
+            <div className="flex size-full flex-col">
+              <div className="flex w-full shrink-0 items-center justify-between gap-2 border-b border-gray-500">
+                <TabsList className="grid h-8 grid-cols-2 rounded-none bg-transparent p-0">
                   <TabsTrigger
-                    className="font-regular flex h-8 items-center gap-1.5 text-xs"
+                    className={cn(
+                      'rounded-xs relative flex size-full min-w-[120px] p-0 pt-0.5',
+                      'data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#16171a]',
+                      'before:data-[state=active]:absolute before:data-[state=active]:left-0 before:data-[state=active]:right-0 before:data-[state=active]:top-0 before:data-[state=active]:h-0.5 before:data-[state=active]:bg-cyan-500',
+                    )}
                     value="code"
                   >
-                    <svg
-                      className="size-4"
-                      fill="none"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      width="24"
-                    >
-                      <path
-                        d="M18 16L19.8398 17.5858C20.6133 18.2525 21 18.5858 21 19C21 19.4142 20.6133 19.7475 19.8398 20.4142L18 22"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="1.5"
-                      />
-                      <path
-                        d="M14 16L12.1602 17.5858C11.3867 18.2525 11 18.5858 11 19C11 19.4142 11.3867 19.7475 12.1602 20.4142L14 22"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="1.5"
-                      />
-                      <path
-                        d="M20 13.0032L20 7.8199C20 6.12616 20 5.27929 19.732 4.60291C19.3013 3.51555 18.3902 2.65784 17.2352 2.25228C16.5168 2 15.6173 2 13.8182 2C10.6698 2 9.09563 2 7.83836 2.44148C5.81714 3.15122 4.22281 4.6522 3.46894 6.55509C3 7.73875 3 9.22077 3 12.1848L3 14.731C3 17.8013 3 19.3364 3.8477 20.4025C4.09058 20.708 4.37862 20.9792 4.70307 21.2078C5.61506 21.8506 6.85019 21.9757 9 22"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="1.5"
-                      />
-                      <path
-                        d="M3 12C3 10.159 4.49238 8.66667 6.33333 8.66667C6.99912 8.66667 7.78404 8.78333 8.43137 8.60988C9.00652 8.45576 9.45576 8.00652 9.60988 7.43136C9.78333 6.78404 9.66667 5.99912 9.66667 5.33333C9.66667 3.49238 11.1591 2 13 2"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="1.5"
-                      />
-                    </svg>
-                    Code
+                    <div className="flex size-full items-center justify-start gap-2 border-r border-gray-500 pl-3 pr-5 text-xs font-normal">
+                      {getLanguageIcon(detectLanguage(toolCode))}
+                      Code
+                    </div>
                   </TabsTrigger>
                   <TabsTrigger
-                    className="flex h-8 items-center gap-1.5 text-xs font-semibold"
+                    className={cn(
+                      'rounded-xs relative flex size-full p-0 pt-0.5',
+                      'data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#16171a]',
+                      'before:data-[state=active]:absolute before:data-[state=active]:left-0 before:data-[state=active]:right-0 before:data-[state=active]:top-0 before:data-[state=active]:h-0.5 before:data-[state=active]:bg-cyan-500',
+                    )}
                     value="preview"
                   >
-                    Metadata
+                    <div className="flex size-full items-center justify-start gap-2 border-r border-gray-500 pl-3 pr-5 text-xs font-normal">
+                      <MetadataIcon className="size-4 text-inherit" />
+                      Metadata
+                    </div>
                   </TabsTrigger>
                 </TabsList>
                 <div className="flex items-stretch gap-6">
@@ -310,7 +299,7 @@ function PlaygroundToolEditor({
                       />
                     </div>
                   )}
-                  <div className="flex items-center gap-2.5">
+                  {/* <div className="flex items-center gap-2.5">
                     <ManageSourcesButton
                       xShinkaiAppId={xShinkaiAppId}
                       xShinkaiToolId={xShinkaiToolId}
@@ -331,7 +320,7 @@ function PlaygroundToolEditor({
                       <Save className="h-4 w-4" />
                       Save Tool
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <TabsContent
@@ -343,8 +332,7 @@ function PlaygroundToolEditor({
                   <ResizablePanel
                     className="flex flex-col"
                     defaultSize={60}
-                    maxSize={70}
-                    minSize={30}
+                    minSize={0.3}
                   >
                     <CodePanel
                       baseToolCodeRef={baseToolCodeRef}
@@ -358,9 +346,9 @@ function PlaygroundToolEditor({
                       setIsDirtyCodeEditor={setIsDirtyCodeEditor}
                     />
                   </ResizablePanel>
-                  <ResizableHandle className="my-4 bg-gray-300" withHandle />
+                  <ResizableHandle className="!h-1 bg-gray-500" />
 
-                  <ResizablePanel className="flex flex-col">
+                  <ResizablePanel className="flex flex-col" minSize={2.5}>
                     <ExecutionPanel
                       executionToolCodeError={
                         executeToolCodeQuery.error?.response?.data?.message ??

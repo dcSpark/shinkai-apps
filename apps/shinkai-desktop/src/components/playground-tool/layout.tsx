@@ -22,7 +22,7 @@ export default function PlaygroundToolLayout({
   rightElement,
 }: PlaygroundToolLayoutProps) {
   return (
-    <div className="flex h-full flex-col gap-1 pt-5">
+    <div className="playground flex h-full flex-col gap-1 pt-5">
       <div className="grid grid-cols-3 items-center justify-between gap-2 px-4 pb-2">
         <Popover>
           <PopoverTrigger className="flex items-center gap-1 rounded-lg p-1 text-base font-medium hover:bg-gray-600">
@@ -77,14 +77,14 @@ export default function PlaygroundToolLayout({
       <div className="flex h-full bg-gray-600" style={{ contain: 'strict' }}>
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
-            className="flex h-full flex-col rounded-md px-3 py-4 pt-6"
+            className="flex h-full flex-col rounded-sm pb-3"
             maxSize={40}
           >
             {leftElement}
           </ResizablePanel>
           <ResizableHandle className="w-1 bg-gray-500" />
           <ResizablePanel
-            className="flex h-full flex-col overflow-hidden rounded-md px-3 py-4 pt-6"
+            className="flex h-full flex-col overflow-hidden rounded-sm pb-3"
             collapsible
             defaultSize={70}
             maxSize={80}

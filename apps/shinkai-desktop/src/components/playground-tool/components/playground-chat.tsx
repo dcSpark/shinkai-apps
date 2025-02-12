@@ -16,8 +16,6 @@ import { FetchPreviousPageOptions } from '@tanstack/react-query';
 import { ArrowUpRight } from 'lucide-react';
 import { memo } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { To } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 
 import { AIModelSelector } from '../../chat/chat-action-bar/ai-update-selection-action-bar';
 import { MessageList } from '../../chat/components/message-list';
@@ -123,7 +121,7 @@ const PlaygroundChatBase = ({
 
         {chatInboxId && (
           <MessageList
-            containerClassName="px-2"
+            containerClassName="playground-scroll px-3"
             disabledRetryAndEdit={true}
             fetchPreviousPage={fetchPreviousPage}
             hasPreviousPage={hasPreviousPage}
@@ -139,7 +137,7 @@ const PlaygroundChatBase = ({
       </div>
 
       <form
-        className="shrink-0 space-y-2 pt-2"
+        className="shrink-0 space-y-2 px-3 pt-2"
         onSubmit={form.handleSubmit(handleCreateToolCode)}
       >
         <div className="flex shrink-0 items-center gap-1">
