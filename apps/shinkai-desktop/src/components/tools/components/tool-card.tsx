@@ -2,6 +2,7 @@ import { FormProps } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
+  CodeLanguage,
   OAuth,
   ShinkaiTool,
   ShinkaiToolType,
@@ -42,6 +43,8 @@ import {
   MoreVertical,
   PlayCircle,
   Rocket,
+  CopyIcon,
+  SquareChevronRightIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -53,6 +56,7 @@ import { SHINKAI_STORE_URL } from '../../../utils/store';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import { parseConfigToJsonSchema } from '../utils/tool-config';
+import { duplicateTool, openToolInCodeEditor } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
 interface ToolDetailsProps {
   tool: ShinkaiTool;
@@ -302,6 +306,68 @@ export default function ToolCard({
                 >
                   <DownloadIcon className="mr-2 h-4 w-4" />
                   Export
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-xs"
+                  disabled={toolType !== 'Python' && toolType !== 'Deno'}
+                  onClick={async () => {
+                    const duplicateToolResponse = await duplicateTool(
+                      auth?.node_address ?? '',
+                      auth?.api_v2_key ?? '',
+                      { tool_key_path: toolKey ?? '' },
+                    );
+                    console.log(duplicateToolResponse); // TODO: message popup to open the new tool details
+                  }}
+                >
+                  <CopyIcon className="mr-2 h-4 w-4" />
+                  Duplicate
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-xs"
+                  hidden={!hasToolCode}
+                  disabled={toolType !== 'Python' && toolType !== 'Deno'}
+                  onClick={async () => {
+                    if (toolType !== 'Python' && toolType !== 'Deno') {
+                      toast.error('This tool is not supported in the code editor');
+                      return;
+                    }
+                    const openToolInCodeEditorResponse = await openToolInCodeEditor(
+                      auth?.node_address ?? '',
+                      auth?.api_v2_key ?? '',
+                      {
+                        code: ('py_code' in tool
+                        ? tool.py_code
+                        : 'js_code' in tool
+                          ? tool.js_code
+                          : ''),
+                        language: toolType === 'Python' ? CodeLanguage.Python : CodeLanguage.Typescript,
+                        config: 'config' in tool ? tool.config : [],
+                        parameters: {},
+                        oauth: 'oauth' in tool ? tool.oauth : [],
+                        tools: [toolKey ?? ''],
+                        metadata: {
+                          name: tool.name,
+                          description: tool.description,
+                          author: 'author' in tool ? tool.author : '',
+                          keywords: 'keywords' in tool ? tool.keywords : [],
+                          version: 'version' in tool ? tool.version : '',
+                          configurations: toolConfigSchema as {
+                            type: 'object';
+                            properties: Record<string, any>;
+                            required: string[];
+                          },
+                          parameters: 'parameters' in tool ? tool.parameters as any : {},
+                          result: 'result' in tool ? tool.result as any : {},
+                        },
+                      },
+                      `app-id-${new Date().getTime()}`,
+                      `tool-id-${new Date().getTime()}`,
+                    );
+                    console.log(openToolInCodeEditorResponse); // TODO: message popup to open the new tool details
+                  }}
+                >
+                <SquareChevronRightIcon className="mr-2 h-4 w-4" />
+                  Open in Code Editor
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
