@@ -350,6 +350,7 @@ export default {
       label: 'Shinkai Identity',
       updatedIdentity: 'Shinkai Identity updated successfully.',
       registerIdentity: 'Register your Shinkai Identity',
+      troubleRegisterIdentity: 'Trouble registering your Identity?',
       goToShinkaiIdentity: 'Go to My Shinkai Identity',
       success: 'Shinkai Identity updated successfully',
       error: 'Error updating Shinkai Identity',
