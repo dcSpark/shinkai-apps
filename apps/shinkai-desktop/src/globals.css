@@ -41,15 +41,14 @@ html {
   }
 }
 
+::-webkit-scrollbar-thumb,
 .prism-code-editor::-webkit-scrollbar-thumb,
 .playground-scroll::-webkit-scrollbar-thumb {
-  @apply !bg-gray-450;
+  @apply !bg-neutral-800;
 }
+
+::-webkit-scrollbar-track,
 .prism-code-editor::-webkit-scrollbar-track,
 .playground-scroll::-webkit-scrollbar-track {
   @apply !bg-gray-600;
-}
-
-.playground-scroll:hover {
-  --fix: ; /* This custom property invalidates styles on hover, thereby enforcing a style recomputation. This is needed to work around a bug in Safari. */
 }

@@ -1,6 +1,5 @@
 import {
   Button,
-  Input,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -8,7 +7,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@shinkai_network/shinkai-ui';
-import { ChevronDown, PlayIcon, Save } from 'lucide-react';
+import { Play, Save } from 'lucide-react';
 import { ReactNode } from 'react';
 
 import { ManageSourcesButton } from './components/manage-sources-button';
@@ -16,44 +15,68 @@ import { ManageSourcesButton } from './components/manage-sources-button';
 type PlaygroundToolLayoutProps = {
   leftElement: ReactNode;
   rightElement: ReactNode;
+  mode: 'create' | 'edit';
+  toolName: string;
+  xShinkaiAppId: string;
+  xShinkaiToolId: string;
+  isExecutionToolCodePending: boolean;
+  isMetadataGenerationSuccess: boolean;
+  isToolCodeGenerationPending: boolean;
+  isMetadataGenerationError: boolean;
+  handleSaveTool: () => void;
 };
 export default function PlaygroundToolLayout({
   leftElement,
   rightElement,
+  mode,
+  toolName,
+  xShinkaiAppId,
+  xShinkaiToolId,
+  isExecutionToolCodePending,
+  isMetadataGenerationSuccess,
+  isToolCodeGenerationPending,
+  isMetadataGenerationError,
+  handleSaveTool,
 }: PlaygroundToolLayoutProps) {
   return (
     <div className="playground flex h-full flex-col gap-1 pt-5">
       <div className="grid grid-cols-3 items-center justify-between gap-2 px-4 pb-2">
         <Popover>
-          <PopoverTrigger className="flex items-center gap-1 rounded-lg p-1 text-base font-medium hover:bg-gray-600">
-            Playground Name
-            <ChevronDown className="ml-1 h-4 w-4" />
+          <PopoverTrigger
+            className="flex items-center gap-1 rounded-lg p-1 text-base font-medium"
+            disabled
+          >
+            {mode === 'create' ? 'New Tool' : toolName}
+            {/* <ChevronDown className="ml-1 h-4 w-4" /> */}
           </PopoverTrigger>
           <PopoverContent
             align="start"
             className="w-64 bg-gray-600"
             sideOffset={10}
-          >
-            <form action="">
-              <Input name="name" placeholder="Name" type="text" />
-              <Input name="description" placeholder="Description" type="text" />
-              <Button size="sm" type="submit">
-                Save
-              </Button>
-            </form>
-          </PopoverContent>
+          />
         </Popover>
 
         <div className="flex items-center justify-center gap-2.5">
-          <Button rounded="lg" size="xs">
-            <PlayIcon className="h-4 w-4" />
-            <span>Run</span>
+          <Button
+            className="text-white"
+            disabled={
+              !isMetadataGenerationSuccess ||
+              isToolCodeGenerationPending ||
+              isMetadataGenerationError
+            }
+            form="parameters-form"
+            isLoading={isExecutionToolCodePending}
+            rounded="lg"
+            size="xs"
+          >
+            {!isExecutionToolCodePending && <Play className="h-4 w-4" />}
+            Run
           </Button>
         </div>
         <div className="flex items-center justify-end gap-2.5">
           <ManageSourcesButton
-          // xShinkaiAppId={xShinkaiAppId}
-          // xShinkaiToolId={xShinkaiToolId}
+            xShinkaiAppId={xShinkaiAppId}
+            xShinkaiToolId={xShinkaiToolId}
           />
           <Button
             className="shrink-0"
@@ -64,7 +87,7 @@ export default function PlaygroundToolLayout({
             //   isSavingTool
             // }
             // isLoading={isSavingTool}
-            // onClick={handleSaveTool}
+            onClick={handleSaveTool}
             rounded="lg"
             size="xs"
             variant="outline"
@@ -82,7 +105,7 @@ export default function PlaygroundToolLayout({
           >
             {leftElement}
           </ResizablePanel>
-          <ResizableHandle className="w-1 bg-gray-500" />
+          <ResizableHandle className="w-1.5 bg-gray-500" />
           <ResizablePanel
             className="flex h-full flex-col overflow-hidden rounded-sm pb-3"
             collapsible

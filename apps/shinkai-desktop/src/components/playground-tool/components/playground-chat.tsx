@@ -76,7 +76,7 @@ const PlaygroundChatBase = ({
       </div> */}
       <div
         className={cn(
-          'flex flex-1 flex-col overflow-y-auto',
+          'flex flex-1 flex-col overflow-y-auto px-2',
           !chatInboxId && 'items-center justify-center gap-2 text-center',
         )}
       >

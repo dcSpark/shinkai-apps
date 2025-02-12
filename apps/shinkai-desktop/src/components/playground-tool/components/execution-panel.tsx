@@ -16,13 +16,7 @@ import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  AppWindow,
-  Loader2,
-  Paperclip,
-  Play,
-  TerminalIcon,
-} from 'lucide-react';
+import { AppWindow, Loader2, Paperclip, TerminalIcon } from 'lucide-react';
 import { memo, MutableRefObject, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -70,7 +64,7 @@ function ExecutionPanelBase({
   const isMetadataGenerationPending = toolMetadataStatus === 'pending';
 
   return (
-    <Tabs defaultValue="view">
+    <Tabs className="flex size-full flex-col" defaultValue="view">
       <div className="flex w-full shrink-0 items-center justify-between gap-2 border-b border-gray-500">
         <TabsList className="grid h-8 grid-cols-2 rounded-none bg-transparent p-0">
           <TabsTrigger
@@ -83,7 +77,7 @@ function ExecutionPanelBase({
           >
             <div className="flex size-full items-center justify-start gap-2 border-r border-gray-500 pl-3 pr-5 text-xs font-normal">
               <AppWindow className="size-4 text-inherit" />
-              View
+              Preview
             </div>
           </TabsTrigger>
           <TabsTrigger
@@ -101,30 +95,24 @@ function ExecutionPanelBase({
           </TabsTrigger>
         </TabsList>
       </div>
-      <TabsContent value="view">
+      <TabsContent
+        className="mt-0 h-full overflow-y-auto whitespace-pre-line break-words"
+        value="view"
+      >
         <div className="flex size-full min-h-[220px] flex-col pb-4 pl-4 pr-3">
           <div className="flex items-center justify-between">
             <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
-              <h2 className="flex font-mono font-semibold text-gray-50">Run</h2>
               {toolMetadata && (
-                <p>Fill in the options above to run your tool.</p>
+                <div className="flex flex-col gap-1">
+                  <h1 className="text-sm font-medium text-white">
+                    {toolMetadata.name}
+                  </h1>
+                  <p className="text-gray-80 text-xs">
+                    {toolMetadata.description}
+                  </p>
+                </div>
               )}
             </div>
-            {isMetadataGenerationSuccess &&
-              !isToolCodeGenerationPending &&
-              !isMetadataGenerationError && (
-                <Button
-                  className="border-gray-200 text-white"
-                  form="parameters-form"
-                  isLoading={isExecutionToolCodePending}
-                  rounded="lg"
-                  size="xs"
-                  variant="ghost"
-                >
-                  {!isExecutionToolCodePending && <Play className="h-4 w-4" />}
-                  Run
-                </Button>
-              )}
           </div>
           <div className="flex-1 overflow-auto">
             {(isMetadataGenerationPending || isToolCodeGenerationPending) && (
@@ -197,7 +185,7 @@ function ExecutionPanelBase({
                       isExecutionToolCodeSuccess) && (
                       <motion.div
                         animate={{ opacity: 1, x: 0 }}
-                        className="flex flex-col overflow-x-hidden bg-gray-300 pt-2"
+                        className="flex flex-col overflow-x-hidden pt-2"
                         exit={{ opacity: 0, x: 20 }}
                         initial={{ opacity: 0, x: 20 }}
                       >
@@ -241,7 +229,10 @@ function ExecutionPanelBase({
           </div>
         </div>
       </TabsContent>
-      <TabsContent value="console">
+      <TabsContent
+        className="mt-0 h-full overflow-y-auto whitespace-pre-line break-words"
+        value="console"
+      >
         <ToolLogs
           mountTimestamp={mountTimestampRef.current}
           toolResultFiles={toolResultFiles}
@@ -297,20 +288,23 @@ const ToolResultBase = ({
   toolResult: string;
 }) => {
   return (
-    <div className="flex flex-col gap-4 px-2 py-2 pr-6">
+    <div className="flex flex-col gap-4 py-2">
       {toolResultFiles.length > 0 && (
-        <div className="flex items-center gap-4">
-          <h1 className="text-gray-80 shrink-0 text-xs font-medium">
-            Generated Files
-          </h1>
-          <div className="flex w-full gap-2">
-            {toolResultFiles
-              ?.filter((file) => !logFileRegex.test(file))
-              ?.map((file) => (
-                <ToolResultFileCard filePath={file} key={file} />
-              ))}
+        <>
+          <h5 className="text-xs uppercase text-gray-50">Output</h5>
+          <div className="flex items-center gap-4">
+            <h1 className="text-gray-80 shrink-0 text-xs font-medium">
+              Generated Files
+            </h1>
+            <div className="flex w-full gap-2">
+              {toolResultFiles
+                ?.filter((file) => !logFileRegex.test(file))
+                ?.map((file) => (
+                  <ToolResultFileCard filePath={file} key={file} />
+                ))}
+            </div>
           </div>
-        </div>
+        </>
       )}
       <ToolCodeEditor language="json" readOnly value={toolResult} />
     </div>
@@ -402,12 +396,9 @@ const ToolLogsBase = ({
   return (
     <div className="rounded-md bg-gray-600 px-2 py-1 text-gray-50">
       {logsFile ? (
-        <div className="space-y-1">
-          <div className="text-gray-80 px-2 py-2">Console</div>
-          {formatLogs(logsFile)}
-        </div>
+        <div className="space-y-1">{formatLogs(logsFile)}</div>
       ) : (
-        <div className="text-gray-80 px-2 py-2 text-sm">
+        <div className="text-gray-80 px-2 py-2 text-center text-xs">
           Results of your code will appear here when you run
         </div>
       )}
