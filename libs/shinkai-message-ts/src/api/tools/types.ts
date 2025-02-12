@@ -269,6 +269,7 @@ export type ToolMetadata = {
   description: string;
   author: string;
   keywords: string[];
+  version?: string;
   configurations: {
     type: 'object';
     properties: Record<string, any>;

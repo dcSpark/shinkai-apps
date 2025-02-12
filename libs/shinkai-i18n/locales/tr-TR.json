@@ -539,6 +539,7 @@
     "store": {
       "label": "Yapay Zeka Mağazasını Keşfet"
     },
+    "successDuplicateTool": "Araç başarıyla kopyalandı",
     "visitStore": "İş akışınızı geliştirmek için ek araçlar keşfetmek ve yüklemek üzere Shinkai Mağazası'nı ziyaret edin"
   },
   "vectorFs": {

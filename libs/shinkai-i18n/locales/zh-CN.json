@@ -539,6 +539,7 @@
     "store": {
       "label": "探索人工智能商店"
     },
+    "successDuplicateTool": "工具复制成功",
     "visitStore": "访问深海商店，发现并安装更多工具以增强您的工作流程"
   },
   "vectorFs": {

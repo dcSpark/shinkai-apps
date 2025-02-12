@@ -539,6 +539,7 @@
     "store": {
       "label": "Jelajahi Toko AI"
     },
+    "successDuplicateTool": "Alat berhasil diduplikasi",
     "visitStore": "Kunjungi Toko Shinkai untuk menemukan dan menginstal alat tambahan yang dapat meningkatkan alur kerja Anda"
   },
   "vectorFs": {

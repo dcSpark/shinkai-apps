@@ -623,6 +623,8 @@ export default {
       label: 'Explore AI Store',
     },
     create: 'Create Tool',
+    successDuplicateTool: 'Tool duplicated successfully',
+    successOpenToolInCodeEditor: 'Tool opened in code editor',
     installFromStore: 'Install from Store',
     lookingForMoreTools: 'Looking for more tools?',
     visitStore:

@@ -539,6 +539,7 @@
     "store": {
       "label": "AIストアを探る"
     },
+    "successDuplicateTool": "ツールが正常に複製されました",
     "visitStore": "作業を向上させるための追加ツールを発見し、インストールするには新海ストアを訪れてください"
   },
   "vectorFs": {
