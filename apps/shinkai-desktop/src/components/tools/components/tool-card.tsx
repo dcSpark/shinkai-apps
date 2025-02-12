@@ -57,6 +57,7 @@ import RemoveToolButton from '../../playground-tool/components/remove-tool-butto
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import { parseConfigToJsonSchema } from '../utils/tool-config';
 import { duplicateTool, openToolInCodeEditor } from '@shinkai_network/shinkai-message-ts/api/tools/index';
+import { useSettings } from '../../../store/settings';
 
 interface ToolDetailsProps {
   tool: ShinkaiTool;
@@ -85,6 +86,7 @@ export default function ToolCard({
     null,
   );
   const { t } = useTranslation();
+  const defaultAgent = useSettings((state) => state.defaultAgentId);
 
   const {
     mutateAsync: publishTool,
@@ -362,6 +364,7 @@ export default function ToolCard({
                       },
                       `app-id-${new Date().getTime()}`,
                       `tool-id-${new Date().getTime()}`,
+                      defaultAgent,
                     );
                     console.log(openToolInCodeEditorResponse); // TODO: message popup to open the new tool details
                   }}
