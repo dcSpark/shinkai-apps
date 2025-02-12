@@ -121,7 +121,7 @@ const PlaygroundChatBase = ({
 
         {chatInboxId && (
           <MessageList
-            containerClassName="playground-scroll px-3"
+            containerClassName="px-3"
             disabledRetryAndEdit={true}
             fetchPreviousPage={fetchPreviousPage}
             hasPreviousPage={hasPreviousPage}

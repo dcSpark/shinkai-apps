@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-sort-props */
 import { FormProps } from '@rjsf/core';
 import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
@@ -158,6 +159,10 @@ function PlaygroundToolEditor({
 
   return (
     <PlaygroundToolLayout
+      disabledSaveTool={
+        !toolCode || !metadataGenerationData || !chatInboxId || isSavingTool
+      }
+      isSavingTool={isSavingTool}
       handleSaveTool={handleSaveTool}
       isExecutionToolCodePending={executeToolCodeQuery.isPending}
       isMetadataGenerationError={isMetadataGenerationError}
@@ -184,138 +189,114 @@ function PlaygroundToolEditor({
         <div className={'flex flex-grow justify-stretch'}>
           <div className="flex size-full flex-col">
             <div className="flex w-full shrink-0 items-center justify-between gap-2 border-b border-gray-500">
-              <div className="flex items-stretch gap-6">
-                {toolHistory.length > 1 && (
-                  <div className="flex items-center gap-4">
-                    {toolCode === toolHistory?.at(-1)?.code ? (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Badge
-                            className="border-cyan-600 bg-cyan-900/20 font-normal text-cyan-400"
-                            variant="inputAdornment"
-                          >
-                            Latest
-                          </Badge>
-                        </TooltipTrigger>
-                        <TooltipPortal>
-                          <TooltipContent side="bottom">
-                            <p>This is your latest version</p>
-                          </TooltipContent>
-                        </TooltipPortal>
-                      </Tooltip>
-                    ) : (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Badge
-                            className="bg-gray-350 cursor-pointer border-0 px-2.5 py-2 hover:bg-gray-400"
-                            onClick={restoreCode}
-                            variant="secondary"
-                          >
-                            {isRestoringToolConversation ? (
-                              <Loader2
-                                className={cn('mr-2 h-4 w-4 animate-spin')}
-                              />
-                            ) : null}
-                            <span>Restore</span>
-                          </Badge>
-                        </TooltipTrigger>
-                        <TooltipPortal>
-                          <TooltipContent className="max-w-sm" side="bottom">
-                            <p>
-                              Restore to this version. This action will undo all
-                              changes made since the selected version
-                            </p>
-                          </TooltipContent>
-                        </TooltipPortal>
-                      </Tooltip>
-                    )}
-                    <div className="flex items-center gap-2">
-                      <Tooltip>
-                        <TooltipTrigger
-                          asChild
-                          disabled={toolCode === toolHistory?.at(0)?.code}
+              {toolHistory.length > 1 && (
+                <div className="flex items-center gap-4">
+                  {toolCode === toolHistory?.at(-1)?.code ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge
+                          className="border-cyan-600 bg-cyan-900/20 font-normal text-cyan-400"
+                          variant="inputAdornment"
                         >
-                          <Button
-                            className="size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent disabled:text-gray-100"
-                            onClick={goPreviousToolCode}
-                            size="auto"
-                            variant="ghost"
-                          >
-                            <Undo2Icon className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipPortal>
-                          <TooltipContent side="bottom">
-                            <p>View previous version</p>
-                          </TooltipContent>
-                        </TooltipPortal>
-                      </Tooltip>
-                      <Tooltip>
-                        <TooltipTrigger
-                          asChild
-                          disabled={toolCode === toolHistory?.at(-1)?.code}
+                          Latest
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent side="bottom">
+                          <p>This is your latest version</p>
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge
+                          className="bg-gray-350 cursor-pointer border-0 px-2.5 py-2 hover:bg-gray-400"
+                          onClick={restoreCode}
+                          variant="secondary"
                         >
-                          <Button
-                            className="size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent disabled:text-gray-100"
-                            onClick={goNextToolCode}
-                            size="auto"
-                            variant="ghost"
-                          >
-                            <Redo2Icon className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipPortal>
-                          <TooltipContent side="bottom">
-                            <p>View next version</p>
-                          </TooltipContent>
-                        </TooltipPortal>
-                      </Tooltip>
-                    </div>
-                    <Separator
-                      className="my-1 bg-gray-300"
-                      orientation="vertical"
-                    />
+                          {isRestoringToolConversation ? (
+                            <Loader2
+                              className={cn('mr-2 h-4 w-4 animate-spin')}
+                            />
+                          ) : null}
+                          <span>Restore</span>
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent className="max-w-sm" side="bottom">
+                          <p>
+                            Restore to this version. This action will undo all
+                            changes made since the selected version
+                          </p>
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <Tooltip>
+                      <TooltipTrigger
+                        asChild
+                        disabled={toolCode === toolHistory?.at(0)?.code}
+                      >
+                        <Button
+                          className="size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent disabled:text-gray-100"
+                          onClick={goPreviousToolCode}
+                          size="auto"
+                          variant="ghost"
+                        >
+                          <Undo2Icon className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent side="bottom">
+                          <p>View previous version</p>
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger
+                        asChild
+                        disabled={toolCode === toolHistory?.at(-1)?.code}
+                      >
+                        <Button
+                          className="size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent disabled:text-gray-100"
+                          onClick={goNextToolCode}
+                          size="auto"
+                          variant="ghost"
+                        >
+                          <Redo2Icon className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent side="bottom">
+                          <p>View next version</p>
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
                   </div>
-                )}
-                {/* <div className="flex items-center gap-2.5">
-                    <ManageSourcesButton
-                      xShinkaiAppId={xShinkaiAppId}
-                      xShinkaiToolId={xShinkaiToolId}
-                    />
-                    <Button
-                      className="shrink-0"
-                      disabled={
-                        !toolCode ||
-                        !metadataGenerationData ||
-                        !chatInboxId ||
-                        isSavingTool
-                      }
-                      isLoading={isSavingTool}
-                      onClick={handleSaveTool}
-                      rounded="lg"
-                      size="xs"
-                    >
-                      <Save className="h-4 w-4" />
-                      Save Tool
-                    </Button>
-                  </div> */}
-              </div>
+                  <Separator
+                    className="my-1 bg-gray-300"
+                    orientation="vertical"
+                  />
+                </div>
+              )}
             </div>
 
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={60} minSize={3}>
                 <Tabs className="flex size-full flex-col" defaultValue="code">
-                  <div className="flex w-full shrink-0 items-center justify-between gap-2 border-b border-gray-500">
+                  <div className="flex w-full shrink-0 items-center justify-between gap-2 border-b border-gray-400">
                     <TabsList className="grid h-8 grid-cols-2 rounded-none bg-transparent p-0">
                       <TabsTrigger
                         className={cn(
                           'rounded-xs relative flex size-full min-w-[120px] p-0 pt-0.5',
-                          'data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#16171a]',
+                          'data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#212226]',
                           'before:data-[state=active]:absolute before:data-[state=active]:left-0 before:data-[state=active]:right-0 before:data-[state=active]:top-0 before:data-[state=active]:h-0.5 before:data-[state=active]:bg-cyan-500',
                         )}
                         value="code"
                       >
-                        <div className="flex size-full items-center justify-start gap-2 border-r border-gray-500 pl-3 pr-5 text-xs font-normal">
+                        <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
                           {getLanguageIcon(detectLanguage(toolCode))}
                           Code
                         </div>
@@ -323,12 +304,12 @@ function PlaygroundToolEditor({
                       <TabsTrigger
                         className={cn(
                           'rounded-xs relative flex size-full p-0 pt-0.5',
-                          'data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#16171a]',
+                          'data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#212226]',
                           'before:data-[state=active]:absolute before:data-[state=active]:left-0 before:data-[state=active]:right-0 before:data-[state=active]:top-0 before:data-[state=active]:h-0.5 before:data-[state=active]:bg-cyan-500',
                         )}
                         value="metadata"
                       >
-                        <div className="flex size-full items-center justify-start gap-2 border-r border-gray-500 pl-3 pr-5 text-xs font-normal">
+                        <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
                           <MetadataIcon className="size-4 text-inherit" />
                           Metadata
                         </div>
@@ -365,8 +346,7 @@ function PlaygroundToolEditor({
                   </TabsContent>
                 </Tabs>
               </ResizablePanel>
-              <ResizableHandle className="!h-1.5 bg-gray-500" />
-
+              <ResizableHandle className="!h-1.5 bg-gray-600" />
               <ResizablePanel minSize={3}>
                 <ExecutionPanel
                   executionToolCodeError={

@@ -17,7 +17,7 @@ import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AppWindow, Loader2, Paperclip, TerminalIcon } from 'lucide-react';
-import { memo, MutableRefObject, useEffect, useState } from 'react';
+import { memo, MutableRefObject, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
@@ -44,6 +44,7 @@ function ExecutionPanelBase({
   handleRunCode: FormProps['onSubmit'];
   regenerateToolMetadata: () => void;
 }) {
+  const viewTabRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState(null);
 
   const toolCodeStatus = usePlaygroundStore((state) => state.toolCodeStatus);
@@ -63,6 +64,25 @@ function ExecutionPanelBase({
   const isMetadataGenerationError = toolMetadataStatus === 'error';
   const isMetadataGenerationPending = toolMetadataStatus === 'pending';
 
+  useEffect(() => {
+    if (
+      isExecutionToolCodeSuccess ||
+      isExecutionToolCodeError ||
+      isExecutionToolCodePending
+    ) {
+      setTimeout(() => {
+        viewTabRef.current?.scrollTo({
+          top: viewTabRef.current?.scrollHeight,
+          behavior: 'smooth',
+        });
+      }, 100);
+    }
+  }, [
+    isExecutionToolCodeSuccess,
+    isExecutionToolCodeError,
+    isExecutionToolCodePending,
+  ]);
+
   return (
     <Tabs className="flex size-full flex-col" defaultValue="view">
       <div className="flex w-full shrink-0 items-center justify-between gap-2 border-b border-gray-500">
@@ -70,12 +90,12 @@ function ExecutionPanelBase({
           <TabsTrigger
             className={cn(
               'rounded-xs relative flex size-full min-w-[120px] p-0 pt-0.5',
-              'data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#16171a]',
+              'data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#212226]',
               'before:data-[state=active]:absolute before:data-[state=active]:left-0 before:data-[state=active]:right-0 before:data-[state=active]:top-0 before:data-[state=active]:h-0.5 before:data-[state=active]:bg-cyan-500',
             )}
             value="view"
           >
-            <div className="flex size-full items-center justify-start gap-2 border-r border-gray-500 pl-3 pr-5 text-xs font-normal">
+            <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
               <AppWindow className="size-4 text-inherit" />
               Preview
             </div>
@@ -83,12 +103,12 @@ function ExecutionPanelBase({
           <TabsTrigger
             className={cn(
               'rounded-xs relative flex size-full min-w-[120px] p-0 pt-0.5',
-              'data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#16171a]',
+              'data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#212226]',
               'before:data-[state=active]:absolute before:data-[state=active]:left-0 before:data-[state=active]:right-0 before:data-[state=active]:top-0 before:data-[state=active]:h-0.5 before:data-[state=active]:bg-cyan-500',
             )}
             value="console"
           >
-            <div className="flex size-full items-center justify-start gap-2 border-r border-gray-500 pl-3 pr-5 text-xs font-normal">
+            <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
               <TerminalIcon className="size-4 text-inherit" />
               Console
             </div>
@@ -96,7 +116,7 @@ function ExecutionPanelBase({
         </TabsList>
       </div>
       <TabsContent
-        className="mt-0 h-full overflow-y-auto whitespace-pre-line break-words"
+        className="mt-0 h-full whitespace-pre-line break-words"
         value="view"
       >
         <div className="flex size-full min-h-[220px] flex-col pb-4 pl-4 pr-3">
@@ -114,7 +134,7 @@ function ExecutionPanelBase({
               )}
             </div>
           </div>
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-auto" ref={viewTabRef}>
             {(isMetadataGenerationPending || isToolCodeGenerationPending) && (
               <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
                 <Loader2 className="shrink-0 animate-spin" />
@@ -288,7 +308,7 @@ const ToolResultBase = ({
   toolResult: string;
 }) => {
   return (
-    <div className="flex flex-col gap-4 py-2">
+    <div className="flex flex-col gap-4 pb-6">
       {toolResultFiles.length > 0 && (
         <>
           <h5 className="text-xs uppercase text-gray-50">Output</h5>

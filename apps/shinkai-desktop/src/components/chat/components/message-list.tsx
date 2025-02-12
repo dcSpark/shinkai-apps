@@ -258,18 +258,20 @@ export const MessageList = memo(
                 ([date, messages]) => {
                   return (
                     <div key={date}>
-                      <div
-                        className={cn(
-                          'relative z-10 m-auto my-2 flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5 capitalize',
-                          'sticky top-5',
-                        )}
-                      >
-                        <span className="text-gray-80 text-xs font-medium">
-                          {getRelativeDateLabel(
-                            new Date(messages[0].createdAt || ''),
+                      {!minimalistMode && (
+                        <div
+                          className={cn(
+                            'relative z-10 m-auto my-2 flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5 capitalize',
+                            'sticky top-5',
                           )}
-                        </span>
-                      </div>
+                        >
+                          <span className="text-gray-80 text-xs font-medium">
+                            {getRelativeDateLabel(
+                              new Date(messages[0].createdAt || ''),
+                            )}
+                          </span>
+                        </div>
+                      )}
                       <div className="flex flex-col">
                         {messages.map((message, messageIndex) => {
                           const previousMessage = messages[messageIndex - 1];

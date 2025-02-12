@@ -23,9 +23,13 @@ type PlaygroundToolLayoutProps = {
   isMetadataGenerationSuccess: boolean;
   isToolCodeGenerationPending: boolean;
   isMetadataGenerationError: boolean;
+  disabledSaveTool: boolean;
+  isSavingTool: boolean;
   handleSaveTool: () => void;
 };
 export default function PlaygroundToolLayout({
+  disabledSaveTool,
+  isSavingTool,
   leftElement,
   rightElement,
   mode,
@@ -39,8 +43,8 @@ export default function PlaygroundToolLayout({
   handleSaveTool,
 }: PlaygroundToolLayoutProps) {
   return (
-    <div className="playground flex h-full flex-col gap-1 pt-5">
-      <div className="grid grid-cols-3 items-center justify-between gap-2 px-4 pb-2">
+    <div className="flex h-full flex-col gap-1 pt-4">
+      <div className="grid grid-cols-3 items-center justify-between gap-2 border-b border-gray-400 px-4 pb-2.5">
         <Popover>
           <PopoverTrigger
             className="flex items-center gap-1 rounded-lg p-1 text-base font-medium"
@@ -80,13 +84,8 @@ export default function PlaygroundToolLayout({
           />
           <Button
             className="shrink-0"
-            // disabled={
-            //   !toolCode ||
-            //   !metadataGenerationData ||
-            //   !chatInboxId ||
-            //   isSavingTool
-            // }
-            // isLoading={isSavingTool}
+            disabled={disabledSaveTool}
+            isLoading={isSavingTool}
             onClick={handleSaveTool}
             rounded="lg"
             size="xs"
@@ -97,7 +96,7 @@ export default function PlaygroundToolLayout({
           </Button>
         </div>
       </div>
-      <div className="flex h-full bg-gray-600" style={{ contain: 'strict' }}>
+      <div className="flex h-full" style={{ contain: 'strict' }}>
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
             className="flex h-full flex-col rounded-sm pb-3"
@@ -105,7 +104,7 @@ export default function PlaygroundToolLayout({
           >
             {leftElement}
           </ResizablePanel>
-          <ResizableHandle className="w-1.5 bg-gray-500" />
+          <ResizableHandle className="w-1.5 bg-gray-600" />
           <ResizablePanel
             className="flex h-full flex-col overflow-hidden rounded-sm pb-3"
             collapsible

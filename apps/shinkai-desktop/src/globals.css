@@ -44,11 +44,11 @@ html {
 ::-webkit-scrollbar-thumb,
 .prism-code-editor::-webkit-scrollbar-thumb,
 .playground-scroll::-webkit-scrollbar-thumb {
-  @apply !bg-neutral-800;
+  @apply !bg-gray-400;
 }
 
 ::-webkit-scrollbar-track,
 .prism-code-editor::-webkit-scrollbar-track,
 .playground-scroll::-webkit-scrollbar-track {
-  @apply !bg-gray-600;
+  @apply !bg-gray-500;
 }

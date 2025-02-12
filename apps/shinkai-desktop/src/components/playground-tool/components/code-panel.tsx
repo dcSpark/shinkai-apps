@@ -81,7 +81,7 @@ function CodePanelBase({
               key={resetCounter}
               onSubmit={handleApplyChangesCodeSubmit}
             >
-              <div className="flex h-[40px] shrink-0 items-center justify-between rounded-t-sm border-b border-gray-400 bg-gray-600 px-3 py-2">
+              <div className="flex h-[40px] shrink-0 items-center justify-between rounded-t-sm border-b border-gray-400 px-3 py-2">
                 <span className="text-gray-80 inline-flex items-center gap-2 pl-2 text-xs font-medium">
                   {' '}
                   {detectLanguage(toolCode)}{' '}
