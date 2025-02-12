@@ -129,6 +129,7 @@ const ToolCodeEditor = forwardRef<
       overflow: 'auto',
       // @ts-expect-error css variables
       '--editor__bg': '#212226',
+      '--padding-left': '32px',
       ...style,
     }}
     textareaProps={{ name: name ?? 'editor' }}
