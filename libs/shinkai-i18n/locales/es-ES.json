@@ -429,6 +429,7 @@
       "label": "Identidad Shinkai",
       "registerIdentity": "Registrar tu Identidad Shinkai",
       "success": "Identidad Shinkai actualizada exitosamente",
+      "troubleRegisterIdentity": "¿Problemas para registrar tu identidad?",
       "updatedIdentity": "Identidad Shinkai actualizada con éxito."
     },
     "shinkaiVersion": "Versión de Shinkai Desktop:",

@@ -429,6 +429,7 @@
       "label": "Shinkaiアイデンティティ",
       "registerIdentity": "Shinkai Identityを登録",
       "success": "Shinkai Identityが正常に更新されました",
+      "troubleRegisterIdentity": "あなたのアイデンティティの登録に問題がありますか？",
       "updatedIdentity": "Shinkaiアイデンティティが正常に更新されました"
     },
     "shinkaiVersion": "Shinkai Desktopバージョン：",

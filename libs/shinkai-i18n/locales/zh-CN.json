@@ -429,6 +429,7 @@
       "label": "Shinkai 身份",
       "registerIdentity": "注册您的Shinkai身份",
       "success": "Shinkai身份更新成功",
+      "troubleRegisterIdentity": "注册您的身份时遇到问题？",
       "updatedIdentity": "Shinkai 身份更新成功。"
     },
     "shinkaiVersion": "Shinkai Desktop版本：",

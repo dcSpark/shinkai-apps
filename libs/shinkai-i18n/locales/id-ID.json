@@ -429,6 +429,7 @@
       "label": "Identitas Shinkai",
       "registerIdentity": "Daftarkan Identitas Shinkai Anda",
       "success": "Identitas Shinkai berhasil diperbarui",
+      "troubleRegisterIdentity": "Masalah mendaftar Identitas Anda?",
       "updatedIdentity": "Identitas Shinkai berhasil diperbarui."
     },
     "shinkaiVersion": "Versi Desktop Shinkai:",

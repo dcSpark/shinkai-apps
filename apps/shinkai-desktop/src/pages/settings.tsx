@@ -297,43 +297,63 @@ const SettingsPage = () => {
                       },
                     }}
                     helperMessage={
-                      <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
-                        {isIdentityLocalhost ? (
-                          <a
-                            className={cn(
-                              buttonVariants({
-                                size: 'auto',
-                                variant: 'link',
-                              }),
-                              'rounded-lg p-0 text-xs text-inherit underline',
-                            )}
-                            href={`https://shinkai-contracts.pages.dev?encryption_pk=${auth?.node_encryption_pk}&signature_pk=${auth?.node_signature_pk}&node_address=${auth?.node_address}`}
-                            rel="noreferrer"
-                            target="_blank"
-                          >
-                            {t('settings.shinkaiIdentity.registerIdentity')}
-                          </a>
-                        ) : (
-                          <a
-                            className={cn(
-                              buttonVariants({
-                                size: 'auto',
-                                variant: 'link',
-                              }),
-                              'rounded-lg p-0 text-xs text-inherit underline',
-                            )}
-                            href={`https://shinkai-contracts.pages.dev/identity/${auth?.shinkai_identity?.replace(
-                              '@@',
-                              '',
-                            )}`}
-                            rel="noreferrer"
-                            target="_blank"
-                          >
-                            {t('settings.shinkaiIdentity.goToShinkaiIdentity')}
-                          </a>
-                        )}
-                        <ExternalLinkIcon className="h-4 w-4" />
-                      </span>
+                      <div className="flex items-center justify-start gap-3">
+                        <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
+                          {isIdentityLocalhost ? (
+                            <a
+                              className={cn(
+                                buttonVariants({
+                                  size: 'auto',
+                                  variant: 'link',
+                                }),
+                                'rounded-lg p-0 text-xs text-inherit underline',
+                              )}
+                              href={`https://shinkai-contracts.pages.dev?encryption_pk=${auth?.node_encryption_pk}&signature_pk=${auth?.node_signature_pk}&node_address=${auth?.node_address}`}
+                              rel="noreferrer"
+                              target="_blank"
+                            >
+                              {t('settings.shinkaiIdentity.registerIdentity')}
+                            </a>
+                          ) : (
+                            <a
+                              className={cn(
+                                buttonVariants({
+                                  size: 'auto',
+                                  variant: 'link',
+                                }),
+                                'rounded-lg p-0 text-xs text-inherit underline',
+                              )}
+                              href={`https://shinkai-contracts.pages.dev/identity/${auth?.shinkai_identity?.replace(
+                                '@@',
+                                '',
+                              )}`}
+                              rel="noreferrer"
+                              target="_blank"
+                            >
+                              {t(
+                                'settings.shinkaiIdentity.goToShinkaiIdentity',
+                              )}
+                            </a>
+                          )}
+                          <ExternalLinkIcon className="h-4 w-4" />
+                        </span>
+                        <a
+                          className={cn(
+                            buttonVariants({
+                              size: 'auto',
+                              variant: 'link',
+                            }),
+                            'text-gray-80 rounded-lg p-0 text-xs underline hover:text-white',
+                          )}
+                          href="https://docs.shinkai.com/advanced/shinkai-identity-troubleshooting"
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          {t(
+                            'settings.shinkaiIdentity.troubleRegisterIdentity',
+                          )}
+                        </a>
+                      </div>
                     }
                     label={t('settings.shinkaiIdentity.label')}
                   />

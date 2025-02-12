@@ -429,6 +429,7 @@
       "label": "Shinkai Kimliği",
       "registerIdentity": "Shinkai Kimliğinizi kaydedin",
       "success": "Shinkai Kimliği başarıyla güncellendi",
+      "troubleRegisterIdentity": "Kimliğinizi kaydederken sorun mu yaşıyorsunuz?",
       "updatedIdentity": "Shinkai Kimliği başarıyla güncellendi."
     },
     "shinkaiVersion": "Shinkai Masaüstü Sürümü:",
