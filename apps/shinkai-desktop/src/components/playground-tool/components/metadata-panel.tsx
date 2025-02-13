@@ -1,10 +1,15 @@
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { Button, Skeleton } from '@shinkai_network/shinkai-ui';
+import { SaveIcon } from 'lucide-react';
 import { PrismEditor } from 'prism-react-editor';
 import { memo, MutableRefObject } from 'react';
+import { toast } from 'sonner';
+import { merge } from 'ts-deepmerge';
+import { z } from 'zod';
 
 import { usePlaygroundStore } from '../context/playground-context';
 import { ToolErrorFallback } from '../error-boundary';
+import { ToolMetadataSchema } from '../schemas';
 import ToolCodeEditor from '../tool-code-editor';
 
 function MetadataPanelBase({
@@ -17,6 +22,9 @@ function MetadataPanelBase({
   metadataEditorRef: MutableRefObject<PrismEditor | null>;
 }) {
   const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
+  const updateToolMetadata = usePlaygroundStore(
+    (state) => state.updateToolMetadata,
+  );
   const toolMetadataStatus = usePlaygroundStore(
     (state) => state.toolMetadataStatus,
   );
@@ -33,20 +41,49 @@ function MetadataPanelBase({
   const isMetadataGenerationPending = toolMetadataStatus === 'pending';
   const isMetadataGenerationError = toolMetadataStatus === 'error';
 
+  const handleApplyMetadataChanges = () => {
+    const currentMetadata = metadataEditorRef.current?.value;
+    if (!currentMetadata) return;
+
+    try {
+      const parsedMetadata = JSON.parse(currentMetadata);
+      const mergedMetadata = merge(parsedMetadata, {
+        // override values
+        name: toolMetadata?.name ?? '',
+        author: toolMetadata?.author ?? '',
+      });
+
+      const parsedAll = ToolMetadataSchema.parse(mergedMetadata);
+
+      updateToolMetadata(parsedAll);
+      toast.success('Metadata updated successfully');
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast.error('Invalid metadata format', {
+          description: error.issues.map((issue) => issue.message).join(', '),
+        });
+      } else {
+        toast.error('Invalid JSON format', {
+          description: (error as Error).message,
+        });
+      }
+    }
+  };
+
   return (
     <div className="flex h-full flex-col pb-4 pl-4 pr-3">
       {isMetadataGenerationSuccess && (
         <div className="flex items-center justify-end gap-2 py-1">
-          {/* <Button
+          <Button
             className="!h-[28px] rounded-lg border-0 bg-transparent"
-            onClick={regenerateToolMetadata}
+            onClick={handleApplyMetadataChanges}
             size="xs"
             type="button"
             variant="ghost"
           >
             <SaveIcon className="size-3.5" />
-            Save Metadata
-          </Button> */}
+            Apply Changes
+          </Button>
           <Button
             className="!h-[28px] rounded-lg border-0 bg-transparent"
             onClick={regenerateToolMetadata}

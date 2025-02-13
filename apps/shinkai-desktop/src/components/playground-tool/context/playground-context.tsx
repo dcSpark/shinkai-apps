@@ -23,6 +23,8 @@ type PlaygroundStore = {
   setToolMetadata: (toolMetadata: ToolMetadata | null) => void;
   toolMetadataError: string | null;
   setToolMetadataError: (toolMetadataError: string | null) => void;
+  updateToolMetadata: (metadata: ToolMetadata) => void;
+
   // execution result
   toolResult: object | null;
   setToolResult: (toolResult: object | null) => void;
@@ -58,6 +60,12 @@ const createPlaygroundStore = () =>
     setToolMetadata: (toolMetadata) => set({ toolMetadata }),
     toolMetadataError: null,
     setToolMetadataError: (toolMetadataError) => set({ toolMetadataError }),
+    updateToolMetadata: (toolMetadata) =>
+      set((state) => ({
+        toolMetadata: toolMetadata,
+        toolMetadataStatus: 'success',
+        toolMetadataError: null,
+      })),
     // execution result
     toolResult: null,
     setToolResult: (toolResult) => set({ toolResult }),
