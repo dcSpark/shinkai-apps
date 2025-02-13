@@ -428,6 +428,7 @@
       "goToShinkaiIdentity": "私のShinkai Identityに移動",
       "label": "Shinkaiアイデンティティ",
       "registerIdentity": "Shinkai Identityを登録",
+      "saveWillRestartApp": "保存すると、変更を適用するためにアプリが再起動します",
       "success": "Shinkai Identityが正常に更新されました",
       "troubleRegisterIdentity": "あなたのアイデンティティの登録に問題がありますか？",
       "updatedIdentity": "Shinkaiアイデンティティが正常に更新されました"

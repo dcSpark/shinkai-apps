@@ -428,6 +428,7 @@
       "goToShinkaiIdentity": "Ir a Mi Identidad Shinkai",
       "label": "Identidad Shinkai",
       "registerIdentity": "Registrar tu Identidad Shinkai",
+      "saveWillRestartApp": "Guardar reiniciará la aplicación para aplicar los cambios",
       "success": "Identidad Shinkai actualizada exitosamente",
       "troubleRegisterIdentity": "¿Problemas para registrar tu identidad?",
       "updatedIdentity": "Identidad Shinkai actualizada con éxito."

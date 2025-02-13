@@ -28,7 +28,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { getVersion } from '@tauri-apps/api/app';
 import { motion } from 'framer-motion';
-import { ExternalLinkIcon, ShieldCheck } from 'lucide-react';
+import { ExternalLinkIcon, InfoIcon, ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -281,141 +281,149 @@ const SettingsPage = () => {
                   />
                 )}
               />
-              <FormField
-                control={form.control}
-                name="shinkaiIdentity"
-                render={({ field }) => (
-                  <TextField
-                    field={{
-                      ...field,
-                      onKeyDown: (event) => {
-                        if (currentShinkaiIdentity === auth?.shinkai_identity)
-                          return;
-                        if (event.key === 'Enter') {
-                          handleUpdateNodeName();
-                        }
-                      },
-                    }}
-                    helperMessage={
-                      <div className="flex items-center justify-start gap-3">
-                        <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
-                          {isIdentityLocalhost ? (
-                            <a
-                              className={cn(
-                                buttonVariants({
-                                  size: 'auto',
-                                  variant: 'link',
-                                }),
-                                'rounded-lg p-0 text-xs text-inherit underline',
-                              )}
-                              href={`https://shinkai-contracts.pages.dev?encryption_pk=${auth?.node_encryption_pk}&signature_pk=${auth?.node_signature_pk}&node_address=${auth?.node_address}`}
-                              rel="noreferrer"
-                              target="_blank"
-                            >
-                              {t('settings.shinkaiIdentity.registerIdentity')}
-                            </a>
-                          ) : (
-                            <a
-                              className={cn(
-                                buttonVariants({
-                                  size: 'auto',
-                                  variant: 'link',
-                                }),
-                                'rounded-lg p-0 text-xs text-inherit underline',
-                              )}
-                              href={`https://shinkai-contracts.pages.dev/identity/${auth?.shinkai_identity?.replace(
-                                '@@',
-                                '',
-                              )}`}
-                              rel="noreferrer"
-                              target="_blank"
-                            >
-                              {t(
-                                'settings.shinkaiIdentity.goToShinkaiIdentity',
-                              )}
-                            </a>
-                          )}
-                          <ExternalLinkIcon className="h-4 w-4" />
-                        </span>
-                        <a
-                          className={cn(
-                            buttonVariants({
-                              size: 'auto',
-                              variant: 'link',
-                            }),
-                            'text-gray-80 rounded-lg p-0 text-xs underline hover:text-white',
-                          )}
-                          href="https://docs.shinkai.com/advanced/shinkai-identity-troubleshooting"
-                          rel="noreferrer"
-                          target="_blank"
-                        >
-                          {t(
-                            'settings.shinkaiIdentity.troubleRegisterIdentity',
-                          )}
-                        </a>
-                      </div>
-                    }
-                    label={t('settings.shinkaiIdentity.label')}
-                  />
-                )}
-              />
-              {currentShinkaiIdentity !== auth?.shinkai_identity && (
-                <div className="flex items-center gap-3">
-                  <MotionButton
-                    className="h-10 min-w-[100px] rounded-lg text-sm"
-                    isLoading={isUpdateNodeNamePending}
-                    layout
-                    onClick={handleUpdateNodeName}
-                    size="auto"
-                    type="button"
-                  >
-                    {t('common.save')}
-                  </MotionButton>
-                  <Button
-                    className="h-10 min-w-10 rounded-lg text-sm"
-                    onClick={() => {
-                      form.setValue(
-                        'shinkaiIdentity',
-                        auth?.shinkai_identity ?? '',
-                      );
-                    }}
-                    type="button"
-                    variant="outline"
-                  >
-                    {t('common.cancel')}
-                  </Button>
-                </div>
-              )}
-
-              {!isIdentityLocalhost && (
-                <a
-                  className={cn(
-                    buttonVariants({
-                      size: 'auto',
-                      variant: 'ghost',
-                    }),
-                    'flex cursor-pointer items-start justify-start gap-2 rounded-lg text-xs',
+              <div className="space-y-1">
+                <FormField
+                  control={form.control}
+                  name="shinkaiIdentity"
+                  render={({ field }) => (
+                    <TextField
+                      field={{
+                        ...field,
+                        onKeyDown: (event) => {
+                          if (currentShinkaiIdentity === auth?.shinkai_identity)
+                            return;
+                          if (event.key === 'Enter') {
+                            handleUpdateNodeName();
+                          }
+                        },
+                      }}
+                      helperMessage={
+                        <div className="flex items-center justify-start gap-3">
+                          <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
+                            {isIdentityLocalhost ? (
+                              <a
+                                className={cn(
+                                  buttonVariants({
+                                    size: 'auto',
+                                    variant: 'link',
+                                  }),
+                                  'rounded-lg p-0 text-xs text-inherit underline',
+                                )}
+                                href={`https://shinkai-contracts.pages.dev?encryption_pk=${auth?.node_encryption_pk}&signature_pk=${auth?.node_signature_pk}&node_address=${auth?.node_address}`}
+                                rel="noreferrer"
+                                target="_blank"
+                              >
+                                {t('settings.shinkaiIdentity.registerIdentity')}
+                              </a>
+                            ) : (
+                              <a
+                                className={cn(
+                                  buttonVariants({
+                                    size: 'auto',
+                                    variant: 'link',
+                                  }),
+                                  'rounded-lg p-0 text-xs text-inherit underline',
+                                )}
+                                href={`https://shinkai-contracts.pages.dev/identity/${auth?.shinkai_identity?.replace(
+                                  '@@',
+                                  '',
+                                )}`}
+                                rel="noreferrer"
+                                target="_blank"
+                              >
+                                {t(
+                                  'settings.shinkaiIdentity.goToShinkaiIdentity',
+                                )}
+                              </a>
+                            )}
+                            <ExternalLinkIcon className="h-4 w-4" />
+                          </span>
+                          <a
+                            className={cn(
+                              buttonVariants({
+                                size: 'auto',
+                                variant: 'link',
+                              }),
+                              'text-gray-80 rounded-lg p-0 text-xs underline hover:text-white',
+                            )}
+                            href="https://docs.shinkai.com/advanced/shinkai-identity-troubleshooting"
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            {t(
+                              'settings.shinkaiIdentity.troubleRegisterIdentity',
+                            )}
+                          </a>
+                        </div>
+                      }
+                      label={t('settings.shinkaiIdentity.label')}
+                    />
                   )}
-                  href={`https://shinkai-contracts.pages.dev/identity/${auth?.shinkai_identity?.replace(
-                    '@@',
-                    '',
-                  )}?encryption_pk=${auth?.node_encryption_pk}&signature_pk=${auth?.node_signature_pk}`}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  <ShieldCheck className="h-5 w-5" />
-                  <span className="flex flex-col gap-0.5">
-                    <span className="capitalize">
-                      {t('settings.shinkaiIdentity.checkIdentityInSync')}
+                />
+                {currentShinkaiIdentity !== auth?.shinkai_identity && (
+                  <div className="space-y-1.5">
+                    <p className="text-gray-80/80 flex items-center gap-1 text-xs">
+                      <InfoIcon className="size-3" />
+                      {t('settings.shinkaiIdentity.saveWillRestartApp')}
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <MotionButton
+                        className="h-10 min-w-[100px] rounded-lg text-sm"
+                        isLoading={isUpdateNodeNamePending}
+                        layout
+                        onClick={handleUpdateNodeName}
+                        size="auto"
+                        type="button"
+                      >
+                        {t('common.save')}
+                      </MotionButton>
+                      <Button
+                        className="h-10 min-w-10 rounded-lg text-sm"
+                        onClick={() => {
+                          form.setValue(
+                            'shinkaiIdentity',
+                            auth?.shinkai_identity ?? '',
+                          );
+                        }}
+                        type="button"
+                        variant="outline"
+                      >
+                        {t('common.cancel')}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {!isIdentityLocalhost && (
+                  <a
+                    className={cn(
+                      buttonVariants({
+                        size: 'auto',
+                        variant: 'ghost',
+                      }),
+                      'flex cursor-pointer items-start justify-start gap-2 rounded-lg text-xs',
+                    )}
+                    href={`https://shinkai-contracts.pages.dev/identity/${auth?.shinkai_identity?.replace(
+                      '@@',
+                      '',
+                    )}?encryption_pk=${auth?.node_encryption_pk}&signature_pk=${auth?.node_signature_pk}`}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <ShieldCheck className="h-5 w-5" />
+                    <span className="flex flex-col gap-0.5">
+                      <span className="capitalize">
+                        {t('settings.shinkaiIdentity.checkIdentityInSync')}
+                      </span>
+                      <span className="text-gray-80">
+                        {t(
+                          'settings.shinkaiIdentity.checkIdentityInSyncDescription',
+                        )}
+                      </span>
                     </span>
-                    <span className="text-gray-80">
-                      {t(
-                        'settings.shinkaiIdentity.checkIdentityInSyncDescription',
-                      )}
-                    </span>
-                  </span>
-                </a>
-              )}
+                  </a>
+                )}
+              </div>
               <FormField
                 control={form.control}
                 disabled

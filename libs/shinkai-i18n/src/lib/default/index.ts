@@ -351,6 +351,7 @@ export default {
       updatedIdentity: 'Shinkai Identity updated successfully.',
       registerIdentity: 'Register your Shinkai Identity',
       troubleRegisterIdentity: 'Trouble registering your Identity?',
+      saveWillRestartApp: 'Save will restart the App to apply changes',
       goToShinkaiIdentity: 'Go to My Shinkai Identity',
       success: 'Shinkai Identity updated successfully',
       error: 'Error updating Shinkai Identity',
