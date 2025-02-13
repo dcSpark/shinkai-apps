@@ -17,13 +17,7 @@ import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  AppWindow,
-  Loader2,
-  LoaderIcon,
-  Paperclip,
-  TerminalIcon,
-} from 'lucide-react';
+import { AppWindow, LoaderIcon, Paperclip, TerminalIcon } from 'lucide-react';
 import { memo, MutableRefObject, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 

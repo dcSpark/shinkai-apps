@@ -1,6 +1,5 @@
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { Button, Skeleton } from '@shinkai_network/shinkai-ui';
-import { Loader2, SaveIcon } from 'lucide-react';
 import { PrismEditor } from 'prism-react-editor';
 import { memo, MutableRefObject } from 'react';
 

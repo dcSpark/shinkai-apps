@@ -1,22 +1,14 @@
 /* eslint-disable react/jsx-sort-props */
 import { FormProps } from '@rjsf/core';
-import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
-  Badge,
-  Button,
   Form,
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-  Separator,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-  Tooltip,
-  TooltipContent,
-  TooltipPortal,
-  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
   MetadataIcon,
@@ -25,8 +17,8 @@ import {
   UnknownLanguageIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Loader2, LoaderIcon, Redo2Icon, Save, Undo2Icon } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { LoaderIcon } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 
 import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
