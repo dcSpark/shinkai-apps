@@ -1,13 +1,28 @@
 import { Button, Skeleton } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
 import { PrismEditor } from 'prism-react-editor';
 import { memo, MutableRefObject } from 'react';
 
 import { usePlaygroundStore } from '../context/playground-context';
 import ToolCodeEditor from '../tool-code-editor';
 import { detectLanguage } from '../utils/code';
+
+const getRandomWidth = () => {
+  const widths = [
+    'w-12',
+    'w-16',
+    'w-20',
+    'w-24',
+    'w-32',
+    'w-40',
+    'w-48',
+    'w-56',
+    'w-64',
+    'w-72',
+  ];
+  return widths[Math.floor(Math.random() * widths.length)];
+};
 
 function CodePanelBase({
   codeEditorRef,
@@ -55,15 +70,26 @@ function CodePanelBase({
         {/* </div> */}
         <div className="flex-1 overflow-auto">
           {isToolCodeGenerationPending && (
-            <div className="text-gray-80 relative flex w-full flex-col items-start gap-2 px-4 py-4 text-xs">
-              {[...Array(15)].map((_, i) => (
-                <Skeleton
-                  className={cn(
-                    'bg-official-gray-900 h-4 animate-pulse rounded',
-                    i % 3 === 0 ? 'w-2/3' : i % 5 === 0 ? 'w-1/2' : 'w-3/4',
-                  )}
-                  key={i}
-                />
+            <div className="flex w-full flex-col items-start gap-1 px-4 py-4 text-xs">
+              {[...Array(20)].map((_, lineIndex) => (
+                <div className="mb-2 flex gap-3" key={lineIndex}>
+                  <Skeleton className="bg-official-gray-900 h-4 w-12 rounded" />
+                  <div className="flex-1">
+                    <div className="flex flex-wrap gap-2">
+                      {[...Array(Math.floor(Math.random() * 4) + 1)].map(
+                        (_, blockIndex) => (
+                          <Skeleton
+                            className={cn(
+                              getRandomWidth(),
+                              'bg-official-gray-900 h-4 rounded',
+                            )}
+                            key={blockIndex}
+                          />
+                        ),
+                      )}
+                    </div>
+                  </div>
+                </div>
               ))}
               <p className="sr-only">Generating Code...</p>
             </div>

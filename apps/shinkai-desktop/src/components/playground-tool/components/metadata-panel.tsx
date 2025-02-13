@@ -1,6 +1,6 @@
 import { ReloadIcon } from '@radix-ui/react-icons';
-import { Button } from '@shinkai_network/shinkai-ui';
-import { Loader2 } from 'lucide-react';
+import { Button, Skeleton } from '@shinkai_network/shinkai-ui';
+import { Loader2, SaveIcon } from 'lucide-react';
 import { PrismEditor } from 'prism-react-editor';
 import { memo, MutableRefObject } from 'react';
 
@@ -37,16 +37,23 @@ function MetadataPanelBase({
   return (
     <div className="flex h-full flex-col pb-4 pl-4 pr-3">
       {isMetadataGenerationSuccess && (
-        <div className="flex items-center justify-between gap-2 py-1">
-          <p className="text-gray-80 text-xs">
-            You can update the metadata to regenerate the tool code.
-          </p>
-          <Button
-            className="text-gray-80"
+        <div className="flex items-center justify-end gap-2 py-1">
+          {/* <Button
+            className="!h-[28px] rounded-lg border-0 bg-transparent"
             onClick={regenerateToolMetadata}
-            rounded="lg"
             size="xs"
-            variant="outline"
+            type="button"
+            variant="ghost"
+          >
+            <SaveIcon className="size-3.5" />
+            Save Metadata
+          </Button> */}
+          <Button
+            className="!h-[28px] rounded-lg border-0 bg-transparent"
+            onClick={regenerateToolMetadata}
+            size="xs"
+            type="button"
+            variant="ghost"
           >
             <ReloadIcon className="size-3.5" />
             Regenerate Metadata
@@ -54,9 +61,54 @@ function MetadataPanelBase({
         </div>
       )}
       {isMetadataGenerationPending && (
-        <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-          <Loader2 className="shrink-0 animate-spin" />
-          Generating Metadata...
+        <div className="text-gray-80 flex flex-col gap-2 py-4 text-xs">
+          <div className="space-y-3 font-mono text-sm">
+            <div className="ml-4 flex items-center gap-2">
+              <Skeleton className="h-4 w-24 bg-zinc-800" />
+              <Skeleton className="h-4 w-32 bg-zinc-800" />
+            </div>
+            <div className="ml-4 flex items-center gap-2">
+              <Skeleton className="h-4 w-28 bg-zinc-800" />
+              <Skeleton className="h-4 w-96 bg-zinc-800" />
+            </div>
+            <div className="ml-4 flex items-center gap-2">
+              <Skeleton className="h-4 w-20 bg-zinc-800" />
+              <Skeleton className="h-4 w-4 bg-zinc-800" />
+            </div>
+            {[...Array(3)].map((_, i) => (
+              <div className="ml-8 flex items-center gap-2" key={i}>
+                <Skeleton className="h-4 w-28 bg-zinc-800" />
+              </div>
+            ))}
+            <div className="ml-4 flex items-center gap-2">
+              <Skeleton className="h-4 w-4 bg-zinc-800" />
+            </div>
+            {/* Configurations */}
+            <div className="ml-4 flex items-center gap-2">
+              <Skeleton className="h-4 w-32 bg-zinc-800" />
+              <Skeleton className="h-4 w-4 bg-zinc-800" />
+            </div>
+            {/* Nested configuration content */}
+            {[...Array(4)].map((_, i) => (
+              <div className="ml-8 flex items-center gap-2" key={i}>
+                <Skeleton className="h-4 w-40 bg-zinc-800" />
+                <Skeleton className="h-4 w-24 bg-zinc-800" />
+              </div>
+            ))}
+            {/* Parameters section */}
+            <div className="ml-4 flex items-center gap-2">
+              <Skeleton className="h-4 w-28 bg-zinc-800" />
+              <Skeleton className="h-4 w-4 bg-zinc-800" />
+            </div>
+            {/* Nested parameters content */}
+            {[...Array(5)].map((_, i) => (
+              <div className="ml-8 flex items-center gap-2" key={i}>
+                <Skeleton className="h-4 w-36 bg-zinc-800" />
+                {i % 2 === 0 && <Skeleton className="h-4 w-48 bg-zinc-800" />}
+              </div>
+            ))}
+          </div>
+          <span className="sr-only">Generating Metadata...</span>
         </div>
       )}
       {!isMetadataGenerationPending &&
@@ -69,26 +121,24 @@ function MetadataPanelBase({
         )}
 
       {isMetadataGenerationSuccess && !isMetadataGenerationError && (
-        <div className="py-2">
-          <ToolCodeEditor
-            language="json"
-            ref={metadataEditorRef}
-            value={
-              toolMetadata != null
-                ? JSON.stringify(
-                    {
-                      ...toolMetadata,
-                      name: mode === 'edit' ? undefined : toolMetadata.name,
-                      tools: undefined,
-                      author: undefined,
-                    },
-                    null,
-                    2,
-                  )
-                : 'Invalid metadata'
-            }
-          />
-        </div>
+        <ToolCodeEditor
+          language="json"
+          ref={metadataEditorRef}
+          value={
+            toolMetadata != null
+              ? JSON.stringify(
+                  {
+                    ...toolMetadata,
+                    name: mode === 'edit' ? undefined : toolMetadata.name,
+                    tools: undefined,
+                    author: undefined,
+                  },
+                  null,
+                  2,
+                )
+              : 'Invalid metadata'
+          }
+        />
       )}
       {isMetadataGenerationIdle && (
         <div>
@@ -102,5 +152,11 @@ function MetadataPanelBase({
 }
 
 export const MetadataPanel = memo(MetadataPanelBase, (prevProps, nextProps) => {
-  return prevProps.mode === nextProps.mode;
+  if (prevProps.regenerateToolMetadata !== nextProps.regenerateToolMetadata) {
+    return false;
+  }
+  if (prevProps.mode !== nextProps.mode) {
+    return false;
+  }
+  return true;
 });

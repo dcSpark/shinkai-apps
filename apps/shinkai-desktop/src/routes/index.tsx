@@ -320,11 +320,9 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <TooltipProvider delayDuration={0}>
-                <PlaygroundProvider>
-                  <ChatProvider>
-                    <Outlet />
-                  </ChatProvider>
-                </PlaygroundProvider>
+                <ChatProvider>
+                  <Outlet />
+                </ChatProvider>
               </TooltipProvider>
             </ProtectedRoute>
           }
@@ -332,8 +330,22 @@ const AppRoutes = () => {
         >
           <Route element={<Tools />} index />
           <Route element={<ToolDetails />} path={':toolKey'} />
-          <Route element={<CreateToolPage />} path={'create'} />
-          <Route element={<EditToolPage />} path={'edit/:toolRouterKey'} />
+          <Route
+            element={
+              <PlaygroundProvider>
+                <CreateToolPage />
+              </PlaygroundProvider>
+            }
+            path={'create'}
+          />
+          <Route
+            element={
+              <PlaygroundProvider>
+                <EditToolPage />
+              </PlaygroundProvider>
+            }
+            path={'edit/:toolRouterKey'}
+          />
         </Route>
         <Route
           element={

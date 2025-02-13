@@ -17,7 +17,13 @@ import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AppWindow, Loader2, Paperclip, TerminalIcon } from 'lucide-react';
+import {
+  AppWindow,
+  Loader2,
+  LoaderIcon,
+  Paperclip,
+  TerminalIcon,
+} from 'lucide-react';
 import { memo, MutableRefObject, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -61,6 +67,9 @@ function ExecutionPanelBase({
   const toolMetadataError = usePlaygroundStore(
     (state) => state.toolMetadataError,
   );
+  const focusedPanel = usePlaygroundStore((state) => state.focusedPanel);
+  const setFocusedPanel = usePlaygroundStore((state) => state.setFocusedPanel);
+
   const isMetadataGenerationIdle = toolMetadataStatus === 'idle';
   const isMetadataGenerationSuccess = toolMetadataStatus === 'success';
   const isMetadataGenerationError = toolMetadataStatus === 'error';
@@ -87,15 +96,29 @@ function ExecutionPanelBase({
 
   return (
     <Tabs className="flex size-full flex-col" defaultValue="view">
-      <div className="flex w-full shrink-0 items-center justify-between gap-2 border-b border-gray-500">
+      <div className="bg-official-gray-1000 flex w-full shrink-0 items-center justify-between gap-2 border-b border-gray-500">
         <TabsList className="grid h-8 grid-cols-2 rounded-none bg-transparent p-0">
-          <TabsTrigger className={cn(tabTriggerClassnames)} value="view">
+          <TabsTrigger
+            className={cn(tabTriggerClassnames)}
+            data-focused={focusedPanel === 'preview'}
+            onClick={() => setFocusedPanel('preview')}
+            value="view"
+          >
             <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
-              <AppWindow className="size-4 text-inherit" />
+              {isExecutionToolCodePending || isMetadataGenerationPending ? (
+                <LoaderIcon className="size-4 animate-spin" />
+              ) : (
+                <AppWindow className="size-4 text-inherit" />
+              )}
               Preview
             </div>
           </TabsTrigger>
-          <TabsTrigger className={cn(tabTriggerClassnames)} value="console">
+          <TabsTrigger
+            className={cn(tabTriggerClassnames)}
+            data-focused={focusedPanel === 'console'}
+            onClick={() => setFocusedPanel('console')}
+            value="console"
+          >
             <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
               <TerminalIcon className="size-4 text-inherit" />
               Console
@@ -104,10 +127,13 @@ function ExecutionPanelBase({
         </TabsList>
       </div>
       <TabsContent
-        className="mt-0 h-full whitespace-pre-line break-words"
+        className="mt-0 flex-1 overflow-auto whitespace-pre-line break-words"
+        onBlur={() => setFocusedPanel(null)}
+        onFocus={() => setFocusedPanel('preview')}
+        ref={viewTabRef}
         value="view"
       >
-        <div className="flex size-full min-h-[220px] flex-col pb-4 pl-4 pr-3">
+        <div className="flex size-full flex-col pb-4 pl-4 pr-3">
           <div className="flex items-center justify-between">
             <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
               {toolMetadata && (
@@ -122,7 +148,7 @@ function ExecutionPanelBase({
               )}
             </div>
           </div>
-          <div className="flex-1 overflow-auto" ref={viewTabRef}>
+          <div className="pb-6">
             {(isMetadataGenerationPending || isToolCodeGenerationPending) && (
               <div className="text-gray-80 flex w-full flex-col items-start gap-5 text-xs">
                 <div className="w-full space-y-2">
@@ -196,19 +222,19 @@ function ExecutionPanelBase({
                     }}
                     validator={validator}
                   />
-                  <AnimatePresence>
+                  <AnimatePresence mode="popLayout">
                     {(isExecutionToolCodePending ||
                       isExecutionToolCodeError ||
                       isExecutionToolCodeSuccess) && (
                       <motion.div
                         animate={{ opacity: 1, x: 0 }}
-                        className="flex flex-col overflow-x-hidden pt-2"
+                        className="flex flex-col pt-2"
                         exit={{ opacity: 0, x: 20 }}
                         initial={{ opacity: 0, x: 20 }}
                       >
                         {isExecutionToolCodePending && (
                           <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-                            <Loader2 className="shrink-0 animate-spin" />
+                            <LoaderIcon className="shrink-0 animate-spin" />
                             Running Tool...
                           </div>
                         )}
@@ -248,6 +274,8 @@ function ExecutionPanelBase({
       </TabsContent>
       <TabsContent
         className="mt-0 h-full overflow-y-auto whitespace-pre-line break-words"
+        onBlur={() => setFocusedPanel(null)}
+        onFocus={() => setFocusedPanel('console')}
         value="console"
       >
         <ToolLogs

@@ -121,7 +121,7 @@ function PlaygroundHeaderBase({
     await restoreToolConversation({
       token: auth?.api_v2_key ?? '',
       nodeAddress: auth?.node_address ?? '',
-      jobId: extractJobIdFromInbox(chatInboxId ?? ''),
+      jobId: chatInboxId ? extractJobIdFromInbox(chatInboxId ?? '') : '',
       messageId: toolHistory[currentIdx].messageId,
     });
   };
@@ -222,10 +222,10 @@ function PlaygroundHeaderBase({
 
   return (
     <div className="grid grid-cols-3 items-center justify-between gap-2 border-b border-gray-400 px-4 pb-2.5">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         <Popover>
           <PopoverTrigger
-            className="flex items-center gap-1 rounded-lg p-1 text-base font-medium"
+            className="flex items-center gap-1 truncate rounded-lg p-1 text-base font-medium"
             disabled
           >
             {mode === 'create' ? 'New Tool' : toolName}
@@ -237,6 +237,26 @@ function PlaygroundHeaderBase({
             sideOffset={10}
           />
         </Popover>
+      </div>
+
+      <div className="flex items-center justify-center gap-2.5">
+        <Button
+          className="text-white"
+          disabled={
+            !isMetadataGenerationSuccess ||
+            isToolCodeGenerationPending ||
+            isMetadataGenerationError
+          }
+          form="parameters-form"
+          isLoading={isExecutionToolCodePending}
+          rounded="lg"
+          size="xs"
+        >
+          {!isExecutionToolCodePending && <Play className="h-4 w-4" />}
+          Run
+        </Button>
+      </div>
+      <div className="flex items-center justify-end gap-2.5">
         {toolHistory.length > 1 && (
           <div className="flex items-center gap-4">
             {toolCode === toolHistory?.at(-1)?.code ? (
@@ -324,26 +344,6 @@ function PlaygroundHeaderBase({
             <Separator className="my-1 bg-gray-300" orientation="vertical" />
           </div>
         )}
-      </div>
-
-      <div className="flex items-center justify-center gap-2.5">
-        <Button
-          className="text-white"
-          disabled={
-            !isMetadataGenerationSuccess ||
-            isToolCodeGenerationPending ||
-            isMetadataGenerationError
-          }
-          form="parameters-form"
-          isLoading={isExecutionToolCodePending}
-          rounded="lg"
-          size="xs"
-        >
-          {!isExecutionToolCodePending && <Play className="h-4 w-4" />}
-          Run
-        </Button>
-      </div>
-      <div className="flex items-center justify-end gap-2.5">
         <ManageSourcesButton />
         <Button
           className="shrink-0"

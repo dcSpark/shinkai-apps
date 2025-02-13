@@ -16,10 +16,8 @@ export const useToolMetadata = ({
   forceGenerateMetadata,
   initialState,
   tools,
-  toolCode,
 }: {
   chatInboxId?: string;
-  toolCode?: string;
   initialState?: {
     metadata: ToolMetadata | null;
     state?: 'idle' | 'pending' | 'success' | 'error';
@@ -30,7 +28,7 @@ export const useToolMetadata = ({
 }) => {
   const auth = useAuth((state) => state.auth);
   const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
-
+  const toolCode = usePlaygroundStore((state) => state.toolCode);
   const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
   const setToolMetadata = usePlaygroundStore((state) => state.setToolMetadata);
   const toolMetadataStatus = usePlaygroundStore(
@@ -65,12 +63,13 @@ export const useToolMetadata = ({
     setToolMetadataStatus(initialState?.state ?? 'idle');
   }, [initialState?.error, initialState?.metadata, initialState?.state]);
 
-  const regenerateToolMetadata = useCallback(async () => {
-    return await createToolMetadata(
+  const regenerateToolMetadata = async () => {
+    if (!chatInboxId) return;
+    await createToolMetadata(
       {
         nodeAddress: auth?.node_address ?? '',
         token: auth?.api_v2_key ?? '',
-        jobId: extractJobIdFromInbox(chatInboxId ?? '') ?? '',
+        jobId: chatInboxId ? extractJobIdFromInbox(chatInboxId) : '',
         tools: tools,
       },
       {
@@ -79,13 +78,7 @@ export const useToolMetadata = ({
         },
       },
     );
-  }, [
-    auth?.api_v2_key,
-    auth?.node_address,
-    chatInboxId,
-    createToolMetadata,
-    tools,
-  ]);
+  };
 
   useEffect(() => {
     const metadata = metadataChatConversation?.pages?.at(-1)?.at(-1);
@@ -129,13 +122,13 @@ export const useToolMetadata = ({
   }, [auth?.shinkai_identity, metadataChatConversation?.pages]);
 
   useEffect(() => {
-    if (!toolCode || !forceGenerateMetadata.current) return;
+    if (!toolCode || !forceGenerateMetadata.current || !chatInboxId) return;
     const run = async () => {
       await createToolMetadata(
         {
           nodeAddress: auth?.node_address ?? '',
           token: auth?.api_v2_key ?? '',
-          jobId: extractJobIdFromInbox(chatInboxId ?? ''),
+          jobId: chatInboxId ? extractJobIdFromInbox(chatInboxId) : '',
           tools: tools,
         },
         {

@@ -32,6 +32,11 @@ type PlaygroundStore = {
 
   xShinkaiAppId: string;
   xShinkaiToolId: string;
+
+  focusedPanel: 'code' | 'metadata' | 'console' | 'preview' | null;
+  setFocusedPanel: (
+    focusedPanel: 'code' | 'metadata' | 'console' | 'preview' | null,
+  ) => void;
 };
 
 const createPlaygroundStore = () =>
@@ -65,9 +70,12 @@ const createPlaygroundStore = () =>
             ? resetCounter(state.resetCounter)
             : resetCounter,
       })),
-    //
+
     xShinkaiAppId: `app-id-${Date.now()}`,
     xShinkaiToolId: `task-id-${Date.now()}`,
+
+    focusedPanel: null,
+    setFocusedPanel: (focusedPanel) => set({ focusedPanel }),
   }));
 
 const PlaygroundContext = createContext<ReturnType<

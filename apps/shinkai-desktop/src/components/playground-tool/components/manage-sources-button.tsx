@@ -87,8 +87,8 @@ function ManageSourcesButtonBase() {
           size="xs"
           variant="outline"
         >
-          <ToolAssetsIcon className="text-gray-80 mr-2 h-4 w-4" />
-          Manage Knowledge ({isGetAllToolAssetsSuccess ? assets.length : '-'})
+          <ToolAssetsIcon className="text-gray-80 h-4 w-4" />
+          Assets ({isGetAllToolAssetsSuccess ? assets.length : '-'})
         </Button>
       </DialogTrigger>
       <DialogContent className="flex h-[60vh] max-w-[500px] flex-col gap-4">
