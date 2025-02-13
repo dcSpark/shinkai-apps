@@ -61,6 +61,7 @@ import { TaskLogs } from '../pages/task-logs';
 import { Tasks } from '../pages/tasks';
 import TermsAndConditionsPage from '../pages/terms-conditions';
 import { Tools } from '../pages/tools';
+import { ToolsHomepage } from '../pages/tools-homepage';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
@@ -329,6 +330,7 @@ const AppRoutes = () => {
           path={'tools'}
         >
           <Route element={<Tools />} index />
+          <Route element={<ToolsHomepage />} path="homepage" />
           <Route element={<ToolDetails />} path={':toolKey'} />
           <Route
             element={
