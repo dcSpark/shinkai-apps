@@ -149,8 +149,8 @@ const NavLink = ({
       className={cn(
         'flex w-full items-center gap-2 rounded-lg px-4 py-3 text-white transition-colors',
         isMatch
-          ? 'bg-gray-500 text-white shadow-xl'
-          : 'opacity-60 hover:bg-gray-500 hover:opacity-100',
+          ? 'bg-official-gray-1000 text-white shadow-xl'
+          : 'hover:bg-official-gray-1000 opacity-60 hover:opacity-100',
       )}
       onClick={onClick}
       rel={external ? 'noreferrer' : ''}
@@ -302,7 +302,7 @@ export function MainNav() {
       animate={{
         width: sidebarExpanded ? '230px' : '70px',
       }}
-      className="relative z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r border-gray-400/30 bg-gradient-to-b from-gray-300 to-gray-400/70 px-2 py-6 pt-9 shadow-xl"
+      className="bg-official-gray-900 border-official-gray-780 relative z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r px-2 py-6 pt-9 shadow-xl"
       exit={{ width: 0, opacity: 0 }}
       initial={{ width: 0, opacity: 0 }}
       transition={{ duration: 0.3 }}
@@ -613,7 +613,7 @@ const MainLayout = () => {
     !!auth && !disabledSidebarRoutes.includes(location.pathname);
 
   return (
-    <div className="relative flex h-screen min-h-full flex-col overflow-hidden bg-gray-500 text-white">
+    <div className="bg-official-gray-950 rfelative flex h-screen min-h-full flex-col overflow-hidden text-white">
       <div
         className="absolute top-0 z-50 h-6 w-full"
         data-tauri-drag-region={true}

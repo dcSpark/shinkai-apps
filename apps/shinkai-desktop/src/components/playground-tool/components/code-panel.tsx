@@ -1,4 +1,4 @@
-import { Button } from '@shinkai_network/shinkai-ui';
+import { Button, Skeleton } from '@shinkai_network/shinkai-ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import { PrismEditor } from 'prism-react-editor';
@@ -61,10 +61,18 @@ function CodePanelBase({
         {/*)}*/}
         {/* </div> */}
         <div className="flex-1 overflow-auto">
-          {isToolCodeGenerationPending && (
-            <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-              <Loader2 className="shrink-0 animate-spin" />
-              Generating Code...
+          {!isToolCodeGenerationPending && (
+            <div className="text-gray-80 relative flex w-full flex-col items-center gap-2 px-4 py-4 text-xs">
+              {[...Array(15)].map((_, i) => (
+                <Skeleton
+                  className="bg-official-gray-900 h-4 w-full animate-pulse rounded"
+                  key={i}
+                />
+              ))}
+              <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-2">
+                {/* <Loader2 className="shrink-0 animate-spin" /> */}
+                Generating Code...
+              </div>
             </div>
           )}
           {!isToolCodeGenerationPending &&

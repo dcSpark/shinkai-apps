@@ -377,7 +377,7 @@ const ChatLayout = () => {
         {!isChatSidebarCollapsed && (
           <motion.div
             animate={{ width: 240, opacity: 1 }}
-            className="flex h-full shrink-0 flex-col overflow-hidden border-r border-gray-300"
+            className="border-official-gray-780 flex h-full shrink-0 flex-col overflow-hidden border-r"
             exit={{ width: 0, opacity: 0 }}
             initial={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}

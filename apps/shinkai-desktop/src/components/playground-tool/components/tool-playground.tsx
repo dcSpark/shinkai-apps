@@ -53,6 +53,12 @@ export const getLanguageIcon = (currentLanguage: string) => {
   return <UnknownLanguageIcon className="size-4" />;
 };
 
+export const tabTriggerClassnames = cn(
+  'rounded-xs relative flex size-full min-w-[120px] p-0 pt-0.5',
+  'data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#1a1a1d]',
+  'before:data-[state=active]:absolute before:data-[state=active]:left-0 before:data-[state=active]:right-0 before:data-[state=active]:top-0 before:data-[state=active]:h-0.5 before:data-[state=active]:bg-cyan-500',
+);
+
 function PlaygroundToolEditor({
   mode,
   createToolCodeFormInitialValues,
@@ -286,14 +292,10 @@ function PlaygroundToolEditor({
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={60} minSize={3}>
                 <Tabs className="flex size-full flex-col" defaultValue="code">
-                  <div className="flex w-full shrink-0 items-center justify-between gap-2 border-b border-gray-400">
-                    <TabsList className="grid h-8 grid-cols-2 rounded-none bg-transparent p-0">
+                  <div className="flex h-8 w-full shrink-0 items-center justify-between gap-2 border-b border-gray-400">
+                    <TabsList className="grid h-full grid-cols-2 rounded-none bg-transparent p-0">
                       <TabsTrigger
-                        className={cn(
-                          'rounded-xs relative flex size-full min-w-[120px] p-0 pt-0.5',
-                          'data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#212226]',
-                          'before:data-[state=active]:absolute before:data-[state=active]:left-0 before:data-[state=active]:right-0 before:data-[state=active]:top-0 before:data-[state=active]:h-0.5 before:data-[state=active]:bg-cyan-500',
-                        )}
+                        className={cn(tabTriggerClassnames)}
                         value="code"
                       >
                         <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
@@ -302,11 +304,7 @@ function PlaygroundToolEditor({
                         </div>
                       </TabsTrigger>
                       <TabsTrigger
-                        className={cn(
-                          'rounded-xs relative flex size-full p-0 pt-0.5',
-                          'data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#212226]',
-                          'before:data-[state=active]:absolute before:data-[state=active]:left-0 before:data-[state=active]:right-0 before:data-[state=active]:top-0 before:data-[state=active]:h-0.5 before:data-[state=active]:bg-cyan-500',
-                        )}
+                        className={cn(tabTriggerClassnames)}
                         value="metadata"
                       >
                         <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
@@ -346,7 +344,7 @@ function PlaygroundToolEditor({
                   </TabsContent>
                 </Tabs>
               </ResizablePanel>
-              <ResizableHandle className="!h-1.5 bg-gray-600" />
+              <ResizableHandle className="bg-official-gray-1000 !h-1.5" />
               <ResizablePanel minSize={3}>
                 <ExecutionPanel
                   executionToolCodeError={

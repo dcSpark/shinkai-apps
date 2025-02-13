@@ -229,7 +229,7 @@ export const Tools = () => {
             Array.from({ length: 8 }).map((_, idx) => (
               <div
                 className={cn(
-                  'grid animate-pulse grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm bg-gray-500 px-2 py-4 pr-4 text-left text-sm',
+                  'grid animate-pulse grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
                 )}
                 key={idx}
               >
@@ -249,7 +249,7 @@ export const Tools = () => {
             toolsList?.map((tool) => (
               <div
                 className={cn(
-                  'grid grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm bg-gray-500 px-2 py-4 pr-4 text-left text-sm',
+                  'grid grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
                 )}
                 key={tool.tool_router_key}
               >
@@ -313,7 +313,7 @@ export const Tools = () => {
             searchToolList?.map((tool) => (
               <div
                 className={cn(
-                  'grid grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm bg-gray-500 px-2 py-4 pr-4 text-left text-sm',
+                  'grid grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
                 )}
                 key={tool.tool_router_key}
               >

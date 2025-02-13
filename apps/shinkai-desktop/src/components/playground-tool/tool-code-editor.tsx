@@ -128,7 +128,7 @@ const ToolCodeEditor = forwardRef<
       height: '100%',
       overflow: 'auto',
       // @ts-expect-error css variables
-      '--editor__bg': '#212226',
+      '--editor__bg': '#1a1a1d',
       '--padding-left': '32px',
       ...style,
     }}

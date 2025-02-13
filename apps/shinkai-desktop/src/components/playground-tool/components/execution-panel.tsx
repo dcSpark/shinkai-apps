@@ -24,6 +24,7 @@ import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
 import { ToolErrorFallback } from '../error-boundary';
 import ToolCodeEditor from '../tool-code-editor';
+import { tabTriggerClassnames } from './tool-playground';
 
 function ExecutionPanelBase({
   isExecutionToolCodeSuccess,
@@ -87,27 +88,13 @@ function ExecutionPanelBase({
     <Tabs className="flex size-full flex-col" defaultValue="view">
       <div className="flex w-full shrink-0 items-center justify-between gap-2 border-b border-gray-500">
         <TabsList className="grid h-8 grid-cols-2 rounded-none bg-transparent p-0">
-          <TabsTrigger
-            className={cn(
-              'rounded-xs relative flex size-full min-w-[120px] p-0 pt-0.5',
-              'data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#212226]',
-              'before:data-[state=active]:absolute before:data-[state=active]:left-0 before:data-[state=active]:right-0 before:data-[state=active]:top-0 before:data-[state=active]:h-0.5 before:data-[state=active]:bg-cyan-500',
-            )}
-            value="view"
-          >
+          <TabsTrigger className={cn(tabTriggerClassnames)} value="view">
             <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
               <AppWindow className="size-4 text-inherit" />
               Preview
             </div>
           </TabsTrigger>
-          <TabsTrigger
-            className={cn(
-              'rounded-xs relative flex size-full min-w-[120px] p-0 pt-0.5',
-              'data-[state=active]:bg-transparent data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#212226]',
-              'before:data-[state=active]:absolute before:data-[state=active]:left-0 before:data-[state=active]:right-0 before:data-[state=active]:top-0 before:data-[state=active]:h-0.5 before:data-[state=active]:bg-cyan-500',
-            )}
-            value="console"
-          >
+          <TabsTrigger className={cn(tabTriggerClassnames)} value="console">
             <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
               <TerminalIcon className="size-4 text-inherit" />
               Console

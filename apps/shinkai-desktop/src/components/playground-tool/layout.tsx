@@ -43,7 +43,7 @@ export default function PlaygroundToolLayout({
   handleSaveTool,
 }: PlaygroundToolLayoutProps) {
   return (
-    <div className="flex h-full flex-col gap-1 pt-4">
+    <div className="bg-official-gray-950 flex h-full flex-col pt-4">
       <div className="grid grid-cols-3 items-center justify-between gap-2 border-b border-gray-400 px-4 pb-2.5">
         <Popover>
           <PopoverTrigger
@@ -104,7 +104,7 @@ export default function PlaygroundToolLayout({
           >
             {leftElement}
           </ResizablePanel>
-          <ResizableHandle className="w-1.5 bg-gray-600" />
+          <ResizableHandle className="bg-official-gray-1000 w-1.5" />
           <ResizablePanel
             className="flex h-full flex-col overflow-hidden rounded-sm pb-3"
             collapsible
