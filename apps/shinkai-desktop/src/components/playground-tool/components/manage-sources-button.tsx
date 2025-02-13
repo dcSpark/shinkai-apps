@@ -30,13 +30,14 @@ import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
+import { usePlaygroundStore } from '../context/playground-context';
 
-function ManageSourcesButtonBase({
-  xShinkaiAppId,
-  xShinkaiToolId,
-}: CustomToolHeaders) {
+function ManageSourcesButtonBase() {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
+
+  const xShinkaiAppId = usePlaygroundStore((state) => state.xShinkaiAppId);
+  const xShinkaiToolId = usePlaygroundStore((state) => state.xShinkaiToolId);
 
   const { data: assets, isSuccess: isGetAllToolAssetsSuccess } =
     useGetAllToolAssets({
@@ -202,9 +203,4 @@ function ManageSourcesButtonBase({
   );
 }
 
-export const ManageSourcesButton = memo(
-  ManageSourcesButtonBase,
-  (prev, next) =>
-    prev.xShinkaiAppId === next.xShinkaiAppId &&
-    prev.xShinkaiToolId === next.xShinkaiToolId,
-);
+export const ManageSourcesButton = memo(ManageSourcesButtonBase, () => true);

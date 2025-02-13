@@ -6,6 +6,9 @@ import { useStore } from 'zustand/index';
 type Status = 'idle' | 'pending' | 'success' | 'error';
 
 type PlaygroundStore = {
+  // inboxId
+  chatInboxId: string | undefined;
+  setChatInboxId: (chatInboxId: string | undefined) => void;
   // code
   toolCodeStatus: Status;
   setToolCodeStatus: (toolCodeStatus: Status) => void;
@@ -23,10 +26,19 @@ type PlaygroundStore = {
   // execution result
   toolResult: object | null;
   setToolResult: (toolResult: object | null) => void;
+  // reset counter for updating tool code
+  resetCounter: number;
+  setResetCounter: (resetCounter: number | ((prev: number) => number)) => void;
+
+  xShinkaiAppId: string;
+  xShinkaiToolId: string;
 };
 
 const createPlaygroundStore = () =>
   createStore<PlaygroundStore>((set) => ({
+    // inboxId
+    chatInboxId: undefined,
+    setChatInboxId: (chatInboxId) => set({ chatInboxId }),
     // code
     toolCodeStatus: 'idle',
     setToolCodeStatus: (toolCodeStatus) => set({ toolCodeStatus }),
@@ -44,6 +56,18 @@ const createPlaygroundStore = () =>
     // execution result
     toolResult: null,
     setToolResult: (toolResult) => set({ toolResult }),
+    // reset counter for updating tool code
+    resetCounter: 0,
+    setResetCounter: (resetCounter) =>
+      set((state) => ({
+        resetCounter:
+          typeof resetCounter === 'function'
+            ? resetCounter(state.resetCounter)
+            : resetCounter,
+      })),
+    //
+    xShinkaiAppId: `app-id-${Date.now()}`,
+    xShinkaiToolId: `task-id-${Date.now()}`,
   }));
 
 const PlaygroundContext = createContext<ReturnType<

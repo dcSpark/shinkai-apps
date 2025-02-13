@@ -65,15 +65,6 @@ const PlaygroundChatBase = ({
 
   return (
     <>
-      {/* <div className="flex items-center gap-3 px-2">
-        <Link to={-1 as To}>
-          <LucideArrowLeft className="text-gray-80 size-[18px]" />
-          <span className="sr-only">{t('common.back')}</span>
-        </Link>
-        <h1 className="py-2 text-sm font-bold tracking-tight">
-          {mode === 'create' ? 'Tool Playground' : `Edit ${toolName}`}
-        </h1>
-      </div> */}
       <div
         className={cn(
           'flex flex-1 flex-col overflow-y-auto px-2',

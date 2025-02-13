@@ -4,6 +4,7 @@ import { useGetShinkaiFileProtocol } from '@shinkai_network/shinkai-node-state/v
 import {
   Button,
   JsonForm,
+  Skeleton,
   Tabs,
   TabsContent,
   TabsList,
@@ -123,9 +124,18 @@ function ExecutionPanelBase({
           </div>
           <div className="flex-1 overflow-auto" ref={viewTabRef}>
             {(isMetadataGenerationPending || isToolCodeGenerationPending) && (
-              <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
-                <Loader2 className="shrink-0 animate-spin" />
-                Generating...
+              <div className="text-gray-80 flex w-full flex-col items-start gap-5 text-xs">
+                <div className="w-full space-y-2">
+                  <Skeleton className="bg-official-gray-900 h-6 w-2/4 animate-pulse rounded" />
+                  <Skeleton className="bg-official-gray-900 h-10 w-3/4 animate-pulse rounded" />
+                </div>
+                <div className="w-full space-y-3">
+                  <Skeleton className="bg-official-gray-900 h-4 w-1/4 animate-pulse rounded" />
+                  <Skeleton className="bg-official-gray-900 h-8 w-full animate-pulse rounded" />
+                  <Skeleton className="bg-official-gray-900 h-4 w-1/4 animate-pulse rounded" />
+                  <Skeleton className="bg-official-gray-900 h-10 w-full animate-pulse rounded" />
+                </div>
+                <p className="sr-only">Generating Metadata...</p>
               </div>
             )}
             {!isMetadataGenerationPending &&

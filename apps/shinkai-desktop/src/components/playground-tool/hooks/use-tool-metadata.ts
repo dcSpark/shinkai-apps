@@ -13,7 +13,6 @@ import { ToolMetadataSchema, ToolMetadataSchemaType } from '../schemas';
 import { parseJsonFromCodeBlock } from '../utils/code';
 
 export const useToolMetadata = ({
-  chatInboxId,
   forceGenerateMetadata,
   initialState,
   tools,
@@ -30,6 +29,7 @@ export const useToolMetadata = ({
   forceGenerateMetadata: React.MutableRefObject<boolean>;
 }) => {
   const auth = useAuth((state) => state.auth);
+  const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
 
   const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
   const setToolMetadata = usePlaygroundStore((state) => state.setToolMetadata);
