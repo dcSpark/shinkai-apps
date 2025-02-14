@@ -44,7 +44,7 @@ html {
 ::-webkit-scrollbar-thumb,
 .prism-code-editor::-webkit-scrollbar-thumb,
 .playground-scroll::-webkit-scrollbar-thumb {
-  @apply !bg-official-gray-800;
+  @apply !bg-official-gray-780;
 }
 
 ::-webkit-scrollbar-track,

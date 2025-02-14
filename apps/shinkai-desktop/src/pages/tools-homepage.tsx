@@ -265,6 +265,7 @@ export const ToolsHomepage = () => {
     token: auth?.api_v2_key ?? '',
   });
 
+  const [searchQuery, setSearchQuery] = useState('');
   const { t } = useTranslation();
   const [isPlaying, setIsPlaying] = useState(true);
 
@@ -287,6 +288,8 @@ export const ToolsHomepage = () => {
   }, []);
 
   const form = useToolForm();
+
+  const { mutateAsync: updateTool } = useUpdateTool();
 
   return (
     <div className="mx-auto flex h-full max-w-4xl flex-col gap-4 px-5 py-10">
@@ -389,8 +392,8 @@ export const ToolsHomepage = () => {
           </Form>
         </div>
       </div>
-      <div className="bg-official-gray-1100 relative left-[50%] right-[50%] -ml-[calc(50vw-40px)] -mr-[calc(50vw-40px)] mb-12 w-[calc(100vw-80px)]">
-        <div className="relative z-10 mx-auto flex max-w-[1400px] flex-col items-center gap-8 p-10 text-center">
+      <div className="bg-official-gray-1100 relative mb-12 rounded-lg">
+        <div className="mx-auto flex max-w-[1400px] flex-col items-center gap-8 p-10 text-center">
           <div className="flex flex-col gap-2">
             <h3 className="font-clash max-w-xl text-2xl font-semibold tracking-normal">
               Discover More Tools
@@ -415,222 +418,282 @@ export const ToolsHomepage = () => {
       </div>
 
       <Tabs className="flex w-full flex-col gap-6" defaultValue="my-projects">
-        <div className="flex w-full items-center justify-center">
-          <TabsList className="border-official-gray-780 inline-flex h-[48px] items-center justify-center rounded-full border bg-transparent p-1">
-            <TabsTrigger
-              className="data-[state=active]:bg-official-gray-900 data-[state=inactive]:text-official-gray-400 inline-flex items-center justify-center whitespace-nowrap rounded-full px-5 py-2.5 text-sm transition-all data-[state=active]:text-white"
-              value="my-projects"
-            >
-              My Tools
-            </TabsTrigger>
-            <TabsTrigger
-              className="data-[state=active]:bg-official-gray-900 data-[state=inactive]:text-official-gray-400 inline-flex items-center justify-center whitespace-nowrap rounded-full px-5 py-2.5 text-sm transition-all data-[state=active]:text-white"
-              value="latest"
-            >
-              Latest
-            </TabsTrigger>
-            <TabsTrigger
-              className="data-[state=active]:bg-official-gray-900 data-[state=inactive]:text-official-gray-400 inline-flex items-center justify-center whitespace-nowrap rounded-full px-5 py-2.5 text-sm transition-all data-[state=active]:text-white"
-              value="featured"
-            >
-              Featured
-            </TabsTrigger>
-            <TabsTrigger
-              className="data-[state=active]:bg-official-gray-900 data-[state=inactive]:text-official-gray-400 inline-flex items-center justify-center whitespace-nowrap rounded-full px-5 py-2.5 text-sm transition-all data-[state=active]:text-white"
-              value="templates"
-            >
-              Templates
-            </TabsTrigger>
-          </TabsList>
+        <div>
+          <div className="mb-8 flex items-center justify-between">
+            <div className="space-y-1">
+              <h2 className="text-2xl font-semibold tracking-tight">
+                Shinkai Tools
+              </h2>
+              <p className="text-muted-foreground text-sm">
+                Manage and configure your AI tools
+              </p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="relative mb-4 flex h-10 w-full items-center">
+                <Input
+                  className="placeholder-gray-80 !h-full border-none bg-gray-400 py-2 pl-10"
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                  }}
+                  placeholder="Search..."
+                  spellCheck={false}
+                  value={searchQuery}
+                />
+                <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
+                {searchQuery && (
+                  <Button
+                    className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
+                    onClick={() => {
+                      setSearchQuery('');
+                    }}
+                    size="auto"
+                    type="button"
+                    variant="ghost"
+                  >
+                    <XIcon />
+                    <span className="sr-only">{t('common.clearSearch')}</span>
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="flex w-full items-center justify-start">
+            <TabsList className="border-official-gray-780 inline-flex h-[48px] items-center justify-center rounded-full border bg-transparent p-1">
+              <TabsTrigger
+                className="data-[state=active]:bg-official-gray-900 data-[state=inactive]:text-official-gray-400 inline-flex items-center justify-center whitespace-nowrap rounded-full px-5 py-2.5 text-sm transition-all data-[state=active]:text-white"
+                value="my-projects"
+              >
+                My Tools
+              </TabsTrigger>
+              <TabsTrigger
+                className="data-[state=active]:bg-official-gray-900 data-[state=inactive]:text-official-gray-400 inline-flex items-center justify-center whitespace-nowrap rounded-full px-5 py-2.5 text-sm transition-all data-[state=active]:text-white"
+                value="latest"
+              >
+                Latest
+              </TabsTrigger>
+              <TabsTrigger
+                className="data-[state=active]:bg-official-gray-900 data-[state=inactive]:text-official-gray-400 inline-flex items-center justify-center whitespace-nowrap rounded-full px-5 py-2.5 text-sm transition-all data-[state=active]:text-white"
+                value="featured"
+              >
+                Featured
+              </TabsTrigger>
+              <TabsTrigger
+                className="data-[state=active]:bg-official-gray-900 data-[state=inactive]:text-official-gray-400 inline-flex items-center justify-center whitespace-nowrap rounded-full px-5 py-2.5 text-sm transition-all data-[state=active]:text-white"
+                value="templates"
+              >
+                Templates
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent className="mt-0" value="my-projects">
+            <div className="divide-official-gray-780 h-full divide-y">
+              {toolsList?.map((tool) => (
+                <div
+                  className={cn(
+                    'grid grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
+                  )}
+                  key={tool.tool_router_key}
+                >
+                  <div className="flex flex-col gap-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium capitalize text-white">
+                        {formatText(tool.name)}{' '}
+                      </span>
+                      <Badge className="text-gray-80 bg-gray-200 text-xs font-normal">
+                        {getVersionFromTool(tool)}
+                      </Badge>
+                      {tool.author !== '@@official.shinkai' && (
+                        <Badge className="text-gray-80 bg-gray-200 text-xs font-normal">
+                          {tool.author}
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-gray-80 line-clamp-2 text-xs">
+                      {tool.description}
+                    </p>
+                  </div>
+                  <Link
+                    className={cn(
+                      buttonVariants({
+                        variant: 'outline',
+                        size: 'sm',
+                      }),
+                      'min-h-auto h-auto rounded-md py-2',
+                    )}
+                    to={`/tools/${tool.tool_router_key}`}
+                  >
+                    <BoltIcon className="mr-1.5 h-4 w-4" />
+                    {t('common.configure')}
+                  </Link>
+                  <Tooltip>
+                    <TooltipTrigger className="flex items-center gap-1">
+                      <Switch
+                        checked={tool.enabled}
+                        onCheckedChange={async () => {
+                          await updateTool({
+                            toolKey: tool.tool_router_key,
+                            toolType: tool.tool_type,
+                            toolPayload: {} as ShinkaiTool,
+                            isToolEnabled: !tool.enabled,
+                            nodeAddress: auth?.node_address ?? '',
+                            token: auth?.api_v2_key ?? '',
+                          });
+                        }}
+                      />
+                    </TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent align="center" side="top">
+                        {t('common.enabled')}
+                      </TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent className="mt-0" value="latest">
+            <div className="grid grid-cols-1 gap-3">
+              {toolsList?.map((tool) => (
+                <div key={tool.tool_router_key}>
+                  <div className="bg-official-gray-950 relative flex gap-4 rounded-lg border border-gray-400 px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-500/80">
+                    <Link
+                      className="absolute inset-0 z-0"
+                      to={`/product/${tool.tool_router_key}`}
+                    >
+                      <span className="sr-only"> Go to Details</span>
+                    </Link>
+                    <img
+                      alt={tool.name}
+                      className="size-12 rounded-lg object-cover"
+                      src={tool?.icon_url ?? '/placeholder.png'}
+                    />
+                    <div className="flex-1 space-y-3">
+                      <div>
+                        <h3 className="font-semibold text-white hover:underline">
+                          {tool.name}
+                        </h3>
+                        <p className="text-gray-80 line-clamp-2 h-[40px] text-sm">
+                          {tool.description}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex h-6 items-center gap-4 text-xs">
+                          {/* {product.category &&
+                            window.location.pathname === '/' && (
+                              <span className="flex items-center gap-1.5">
+                                <CategoryIcon className="h-5 w-5" />
+                                <span className="text-gray-80 text-xs">
+                                  {product.category.name}
+                                </span>
+                              </span>
+                            )} */}
+
+                          <AuthorAvatarLink author={tool.author} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent className="mt-0" value="featured">
+            <div className="grid grid-cols-1 gap-3">
+              {toolsList?.map((tool) => (
+                <div key={tool.tool_router_key}>
+                  <div className="bg-official-gray-950 relative flex gap-4 rounded-lg border border-gray-400 px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-500/80">
+                    <Link
+                      className="absolute inset-0 z-0"
+                      to={`/product/${tool.tool_router_key}`}
+                    >
+                      <span className="sr-only"> Go to Details</span>
+                    </Link>
+                    <img
+                      alt={tool.name}
+                      className="size-12 rounded-lg object-cover"
+                      src={tool?.icon_url ?? '/placeholder.png'}
+                    />
+                    <div className="flex-1 space-y-3">
+                      <div>
+                        <h3 className="font-semibold text-white hover:underline">
+                          {tool.name}
+                        </h3>
+                        <p className="text-gray-80 line-clamp-2 h-[40px] text-sm">
+                          {tool.description}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex h-6 items-center gap-4 text-xs">
+                          {/* {product.category &&
+                            window.location.pathname === '/' && (
+                              <span className="flex items-center gap-1.5">
+                                <CategoryIcon className="h-5 w-5" />
+                                <span className="text-gray-80 text-xs">
+                                  {product.category.name}
+                                </span>
+                              </span>
+                            )} */}
+
+                          <AuthorAvatarLink author={tool.author} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent className="mt-0" value="templates">
+            <div className="grid grid-cols-1 gap-3">
+              {toolsList?.map((tool) => (
+                <div key={tool.tool_router_key}>
+                  <div className="bg-official-gray-950 relative flex gap-4 rounded-lg border border-gray-400 px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-500/80">
+                    <Link
+                      className="absolute inset-0 z-0"
+                      to={`/product/${tool.tool_router_key}`}
+                    >
+                      <span className="sr-only"> Go to Details</span>
+                    </Link>
+                    <img
+                      alt={tool.name}
+                      className="size-12 rounded-lg object-cover"
+                      src={tool?.icon_url ?? '/placeholder.png'}
+                    />
+                    <div className="flex-1 space-y-3">
+                      <div>
+                        <h3 className="font-semibold text-white hover:underline">
+                          {tool.name}
+                        </h3>
+                        <p className="text-gray-80 line-clamp-2 h-[40px] text-sm">
+                          {tool.description}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex h-6 items-center gap-4 text-xs">
+                          {/* {product.category &&
+                            window.location.pathname === '/' && (
+                              <span className="flex items-center gap-1.5">
+                                <CategoryIcon className="h-5 w-5" />
+                                <span className="text-gray-80 text-xs">
+                                  {product.category.name}
+                                </span>
+                              </span>
+                            )} */}
+
+                          <AuthorAvatarLink author={tool.author} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
         </div>
-
-        <TabsContent className="mt-0" value="my-projects">
-          <div className="grid grid-cols-1 gap-3">
-            {toolsList?.map((tool) => (
-              <div key={tool.tool_router_key}>
-                <div className="bg-official-gray-950 relative flex gap-4 rounded-lg border border-gray-400 px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-500/80">
-                  <Link
-                    className="absolute inset-0 z-0"
-                    to={`/product/${tool.tool_router_key}`}
-                  >
-                    <span className="sr-only"> Go to Details</span>
-                  </Link>
-                  <img
-                    alt={tool.name}
-                    className="size-12 rounded-lg object-cover"
-                    src={tool?.icon_url ?? '/placeholder.png'}
-                  />
-                  <div className="flex-1 space-y-3">
-                    <div>
-                      <h3 className="font-semibold text-white hover:underline">
-                        {tool.name}
-                      </h3>
-                      <p className="text-gray-80 line-clamp-2 h-[40px] text-sm">
-                        {tool.description}
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex h-6 items-center gap-4 text-xs">
-                        {/* {product.category &&
-                            window.location.pathname === '/' && (
-                              <span className="flex items-center gap-1.5">
-                                <CategoryIcon className="h-5 w-5" />
-                                <span className="text-gray-80 text-xs">
-                                  {product.category.name}
-                                </span>
-                              </span>
-                            )} */}
-
-                        <AuthorAvatarLink author={tool.author} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent className="mt-0" value="latest">
-          <div className="grid grid-cols-1 gap-3">
-            {toolsList?.map((tool) => (
-              <div key={tool.tool_router_key}>
-                <div className="bg-official-gray-950 relative flex gap-4 rounded-lg border border-gray-400 px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-500/80">
-                  <Link
-                    className="absolute inset-0 z-0"
-                    to={`/product/${tool.tool_router_key}`}
-                  >
-                    <span className="sr-only"> Go to Details</span>
-                  </Link>
-                  <img
-                    alt={tool.name}
-                    className="size-12 rounded-lg object-cover"
-                    src={tool?.icon_url ?? '/placeholder.png'}
-                  />
-                  <div className="flex-1 space-y-3">
-                    <div>
-                      <h3 className="font-semibold text-white hover:underline">
-                        {tool.name}
-                      </h3>
-                      <p className="text-gray-80 line-clamp-2 h-[40px] text-sm">
-                        {tool.description}
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex h-6 items-center gap-4 text-xs">
-                        {/* {product.category &&
-                            window.location.pathname === '/' && (
-                              <span className="flex items-center gap-1.5">
-                                <CategoryIcon className="h-5 w-5" />
-                                <span className="text-gray-80 text-xs">
-                                  {product.category.name}
-                                </span>
-                              </span>
-                            )} */}
-
-                        <AuthorAvatarLink author={tool.author} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent className="mt-0" value="featured">
-          <div className="grid grid-cols-1 gap-3">
-            {toolsList?.map((tool) => (
-              <div key={tool.tool_router_key}>
-                <div className="bg-official-gray-950 relative flex gap-4 rounded-lg border border-gray-400 px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-500/80">
-                  <Link
-                    className="absolute inset-0 z-0"
-                    to={`/product/${tool.tool_router_key}`}
-                  >
-                    <span className="sr-only"> Go to Details</span>
-                  </Link>
-                  <img
-                    alt={tool.name}
-                    className="size-12 rounded-lg object-cover"
-                    src={tool?.icon_url ?? '/placeholder.png'}
-                  />
-                  <div className="flex-1 space-y-3">
-                    <div>
-                      <h3 className="font-semibold text-white hover:underline">
-                        {tool.name}
-                      </h3>
-                      <p className="text-gray-80 line-clamp-2 h-[40px] text-sm">
-                        {tool.description}
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex h-6 items-center gap-4 text-xs">
-                        {/* {product.category &&
-                            window.location.pathname === '/' && (
-                              <span className="flex items-center gap-1.5">
-                                <CategoryIcon className="h-5 w-5" />
-                                <span className="text-gray-80 text-xs">
-                                  {product.category.name}
-                                </span>
-                              </span>
-                            )} */}
-
-                        <AuthorAvatarLink author={tool.author} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent className="mt-0" value="templates">
-          <div className="grid grid-cols-1 gap-3">
-            {toolsList?.map((tool) => (
-              <div key={tool.tool_router_key}>
-                <div className="bg-official-gray-950 relative flex gap-4 rounded-lg border border-gray-400 px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-500/80">
-                  <Link
-                    className="absolute inset-0 z-0"
-                    to={`/product/${tool.tool_router_key}`}
-                  >
-                    <span className="sr-only"> Go to Details</span>
-                  </Link>
-                  <img
-                    alt={tool.name}
-                    className="size-12 rounded-lg object-cover"
-                    src={tool?.icon_url ?? '/placeholder.png'}
-                  />
-                  <div className="flex-1 space-y-3">
-                    <div>
-                      <h3 className="font-semibold text-white hover:underline">
-                        {tool.name}
-                      </h3>
-                      <p className="text-gray-80 line-clamp-2 h-[40px] text-sm">
-                        {tool.description}
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex h-6 items-center gap-4 text-xs">
-                        {/* {product.category &&
-                            window.location.pathname === '/' && (
-                              <span className="flex items-center gap-1.5">
-                                <CategoryIcon className="h-5 w-5" />
-                                <span className="text-gray-80 text-xs">
-                                  {product.category.name}
-                                </span>
-                              </span>
-                            )} */}
-
-                        <AuthorAvatarLink author={tool.author} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </TabsContent>
       </Tabs>
     </div>
   );
