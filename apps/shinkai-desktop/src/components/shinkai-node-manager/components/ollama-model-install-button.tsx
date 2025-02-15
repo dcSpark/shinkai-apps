@@ -1,5 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
+import { useRemoveLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/removeLLMProvider/useRemoveLLMProvider';
 import { Button, Progress } from '@shinkai_network/shinkai-ui';
 import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -18,6 +19,7 @@ import {
 import { ALLOWED_OLLAMA_MODELS } from '../../../lib/shinkai-node-manager/ollama-models';
 import { useShinkaiNodeGetOllamaApiUrlQuery } from '../../../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useAuth } from '../../../store/auth';
+
 export const OllamaModelInstallButton = ({ model }: { model: string }) => {
   const { data: ollamaApiUrl } = useShinkaiNodeGetOllamaApiUrlQuery();
 
@@ -35,6 +37,16 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
   const { mutateAsync: syncOllamaModels } = useSyncOllamaModels(
     ALLOWED_OLLAMA_MODELS,
   );
+  const { mutateAsync: removeLLMProvider } = useRemoveLLMProvider({
+    onSuccess: () => {
+      toast.success(t('llmProviders.success.deleteAgent'));
+    },
+    onError: (error) => {
+      toast.error(t('llmProviders.errors.deleteAgent'), {
+        description: typeof error === 'string' ? error : error.message,
+      });
+    },
+  });
   const { mutateAsync: ollamaRemove } = useOllamaRemoveMutation(ollamaConfig, {
     onSuccess: (_, input) => {
       toast.success(
@@ -121,6 +133,11 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
         <RemoveAIModelButton
           onClick={() => {
             ollamaRemove({ model: model });
+            removeLLMProvider({
+              nodeAddress: auth?.node_address ?? '',
+              token: auth?.api_v2_key ?? '',
+              llmProviderId: model,
+            });
           }}
         />
       ) : pullingModelsMap?.get(model) ? (

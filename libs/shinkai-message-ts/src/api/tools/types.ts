@@ -259,6 +259,7 @@ export type ToolMetadata = {
   description: string;
   author: string;
   keywords: string[];
+  version?: string;
   configurations: {
     type: 'object';
     properties: Record<string, any>;
@@ -316,7 +317,29 @@ export type UpdateToolCodeImplementationResponse = {
   message: string;
   status: string;
 };
-
+export type OpenToolInCodeEditorRequest = {
+  code: string;
+  language: CodeLanguage;
+  config: Record<string, any>;
+  parameters: Record<string, any>;
+  oauth: OAuth[];
+  tools: string[];
+  metadata: ToolMetadata;
+};
+export type OpenToolInCodeEditorResponse = {
+  message: string;
+  status: 'success' | 'error';
+  files: Record<string, string>;
+  playground_path: string;
+};
+export type DuplicateToolRequest = {
+  tool_key_path: string;
+};
+export type DuplicateToolResponse = {
+  job_id: string;
+  tool_router_key: string;
+  version: string;
+};
 export type RemovePlaygroundToolRequest = {
   tool_key: string;
 };
