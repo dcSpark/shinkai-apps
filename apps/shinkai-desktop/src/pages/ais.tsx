@@ -58,6 +58,8 @@ import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { SHINKAI_TUTORIALS } from '../utils/constants';
 import { getModelObject } from './add-ai';
 import { SimpleLayout } from './layout/simple-layout';
+import { useOllamaRemoveMutation } from '../lib/shinkai-node-manager/ollama-client';
+import { useShinkaiNodeGetOllamaApiUrlQuery } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 
 const AIsPage = () => {
   const { t } = useTranslation();
@@ -488,7 +490,19 @@ const RemoveLLMProviderModal = ({
       });
     },
   });
-
+  const { data: ollamaApiUrl } = useShinkaiNodeGetOllamaApiUrlQuery();
+  const ollamaConfig = { host: ollamaApiUrl || 'http://127.0.0.1:11435' };
+  const { mutateAsync: removeOllamaModel } = useOllamaRemoveMutation(ollamaConfig, {
+    onSuccess: () => {
+      console.log('ollama model removed:', agentId);
+    },
+    onError: (error) => {
+      toast.error(t('llmProviders.errors.deleteAgent'), {
+        description: typeof error === 'string' ? error : error.message,
+      });
+      console.error('ollama model removal error:', error);
+    },
+  });
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-[425px]">
@@ -522,6 +536,7 @@ const RemoveLLMProviderModal = ({
                   llmProviderId: agentId,
                   token: auth?.api_v2_key ?? '',
                 });
+                await removeOllamaModel({ model: agentId });
               }}
               size="sm"
               variant="destructive"

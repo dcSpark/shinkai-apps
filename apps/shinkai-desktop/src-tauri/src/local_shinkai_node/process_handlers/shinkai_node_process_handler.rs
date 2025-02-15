@@ -3,6 +3,7 @@ use std::{fs, path::PathBuf, time::Duration};
 use regex::Regex;
 use tauri::AppHandle;
 use tokio::sync::mpsc::Sender;
+use opener::open;
 
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 
@@ -12,7 +13,7 @@ use super::{
     process_utils::{kill_existing_processes_using_ports, options_to_env},
 };
 
-pub struct ShinkaiNodeProcessHandler {
+pub struct ShinkaiNodeProcessHandler {      
     app: AppHandle,
     process_handler: ProcessHandler,
     app_resource_dir: PathBuf,
@@ -187,5 +188,49 @@ impl ShinkaiNodeProcessHandler {
     pub async fn kill(&self) {
         self.process_handler.kill().await;
         let _ = self.kill_existing_processes_using_ports().await;
+    }
+
+    pub fn open_storage_location(&self) -> Result<(), String> {
+        let options = self.options.clone();
+        let storage_path: PathBuf = options.node_storage_path
+            .ok_or_else(|| "Storage path not set".to_string())?
+            .into();
+        
+        opener::open(&storage_path)
+            .map_err(|e| format!("Failed to open storage location: {}", e))
+    }
+
+    pub fn open_storage_location_with_path(&self, relative_path: &str) -> Result<(), String> {
+        let options = self.options.clone();
+        let storage_path: PathBuf = options.node_storage_path
+            .ok_or_else(|| "Storage path not set".to_string())?
+            .into();
+        
+        // Sanitize the relative path to prevent directory traversal
+        let safe_path = relative_path
+            .split(['/', '\\']) // Handle both Unix and Windows path separators
+            .filter(|component| {
+                !component.is_empty() && 
+                component != &"." && 
+                component != &".."
+            });
+
+        // Build the target path by joining components
+        let target_path = safe_path.fold(storage_path.clone(), |acc: PathBuf, component| {
+            acc.join(component)
+        });
+
+        // Verify the target path is within storage_path
+        if !target_path.starts_with(&storage_path) {
+            return Err("Invalid path: attempting to access outside storage directory".to_string());
+        }
+
+        // Check if path exists
+        if !target_path.exists() {
+            return Err(format!("Path does not exist: {}", target_path.display()));
+        }
+
+        opener::open(&target_path)
+            .map_err(|e| format!("Failed to open location: {}", e))
     }
 }

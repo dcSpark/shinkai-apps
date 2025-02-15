@@ -56,6 +56,7 @@ import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import equal from 'fast-deep-equal';
 import { partial } from 'filesize';
+import { invoke } from '@tauri-apps/api/core';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Loader2, Paperclip, X, XIcon } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -88,6 +89,8 @@ import {
 } from './chat-action-bar/tools-switch-action-bar';
 import { streamingSupportedModels } from './constants';
 import { useSetJobScope } from './context/set-job-scope-context';
+import { OpenChatFolderActionBar } from './chat-action-bar/open-chat-folder-action-bar';
+import { getJobFolderName } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
 export const actionButtonClassnames =
   'shrink-0 bg-gray-350 inline-flex h-[30px] w-[30px] cursor-pointer items-center justify-center gap-1.5 truncate border border-gray-200 px-[7px] py-1.5 text-left text-xs rounded-lg font-normal text-gray-50 hover:bg-gray-300 hover:text-white';
@@ -524,6 +527,18 @@ function ConversationChatFooter({
     textareaRef.current.focus();
   }, [currentMessage]);
 
+  const [isChatFolderDisabled, setIsChatFolderDisabled] = useState(() => {
+    return !inboxId;
+  });
+
+  // Update state whenever inboxId changes
+  useEffect(() => {
+    const isDisabled = !inboxId;
+    if (isChatFolderDisabled !== isDisabled) {
+      setIsChatFolderDisabled(isDisabled);
+    }
+  }, [inboxId, isChatFolderDisabled]);
+
   return (
     <div
       {...getRootFileProps({
@@ -564,6 +579,21 @@ function ConversationChatFooter({
                           ...getInputFileProps(),
                         }}
                         onClick={openFilePicker}
+                      />
+                      <OpenChatFolderActionBar
+                        disabled={isChatFolderDisabled}
+                        onClick={async () => {
+                          const jobId = extractJobIdFromInbox(inboxId);
+                          const { folder_name } = await getJobFolderName(
+                            auth?.node_address ?? '',
+                            auth?.api_v2_key ?? '',
+                            { job_id: jobId },
+                          );
+                          console.log('folderName:', folder_name);
+                          invoke('shinkai_node_open_storage_location_with_path', {
+                            relativePath: 'filesystem/'+folder_name,
+                          });
+                        }}
                       />
                       <PromptSelectionActionBar />
                       {isAgentInbox ? null : inboxId ? (
