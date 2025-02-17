@@ -37,29 +37,10 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { animate } from 'framer-motion';
 import { motion } from 'framer-motion';
-import {
-  AlertCircle,
-  ArrowRight,
-  ArrowUpRight,
-  BoltIcon,
-  CheckCircle2,
-  CloudDownloadIcon,
-  Eye,
-  EyeOff,
-  ImportIcon,
-  MoreVerticalIcon,
-  PlusIcon,
-  SearchIcon,
-  StoreIcon,
-  XCircle,
-  XIcon,
-} from 'lucide-react';
+import { AlertCircle, ArrowRight, ArrowUpRight, StoreIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import React from 'react';
-import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import { LanguageToolSelector } from '../components/playground-tool/components/language-tool-selector';
@@ -251,25 +232,6 @@ export const ToolsHomepage = () => {
   const navigate = useNavigate();
 
   const { t } = useTranslation();
-  const [isPlaying, setIsPlaying] = useState(true);
-
-  const chunkText = useAnimatedText(
-    isPlaying
-      ? 'Ask AI to create tools that transform your workflow and boost productivity...'
-      : '',
-    '',
-  );
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsPlaying(false);
-      setTimeout(() => {
-        setIsPlaying(true);
-      }, 100);
-    }, 7000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const form = useToolForm();
 
@@ -290,11 +252,11 @@ export const ToolsHomepage = () => {
           to={SHINKAI_STORE_URL}
         >
           <StoreIcon className="size-4" />
-          Explore App Store
+          Visit App Store
         </Link>
       </div>
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-20">
           <div className="flex min-h-[400px] w-full flex-col items-center justify-center gap-10 pt-2">
             <div className="flex flex-col gap-2">
               <h1 className="font-clash text-center text-5xl font-semibold">
@@ -312,7 +274,7 @@ export const ToolsHomepage = () => {
                   <ChatInputArea
                     autoFocus
                     onSubmit={console.log}
-                    placeholder={chunkText}
+                    placeholder={'Ask AI to create a tool for you...'}
                     textareaClassName="min-h-[90px]"
                     bottomAddons={
                       <div className="flex items-end justify-between gap-3 pb-1 pl-1">

@@ -16,7 +16,6 @@ import { PromptSelectionProvider } from '../components/prompt/context/prompt-sel
 import { TableSheetProvider } from '../components/sheet/context/table-context';
 import PublicSharedFolderSubscription from '../components/subscriptions/public-shared-folders';
 import MySubscriptions from '../components/subscriptions/subscriptions';
-import { ToolCollection } from '../components/tools/tool-collection';
 import ToolDetails from '../components/tools/tool-details';
 import { VectorFolderSelectionProvider } from '../components/vector-fs/components/folder-selection-list';
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
@@ -329,8 +328,7 @@ const AppRoutes = () => {
           }
           path={'tools'}
         >
-          <Route element={<ToolCollection />} index />
-          <Route element={<ToolsHomepage />} path="homepage" />
+          <Route element={<ToolsHomepage />} index />
           <Route element={<ToolDetails />} path={':toolKey'} />
           <Route
             element={

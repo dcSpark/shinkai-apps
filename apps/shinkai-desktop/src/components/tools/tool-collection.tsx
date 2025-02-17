@@ -100,21 +100,21 @@ export const ToolCollection = () => {
   // });
 
   const toolsGroup = [
-    // {
-    //   label: 'System Tools',
-    //   value: 'system-tools',
-    //   items: toolsList,
-    // },
+    {
+      label: 'All',
+      value: 'all-tools',
+      items: toolsList,
+    },
     {
       label: 'Default Tools',
       value: 'tools',
-      items: toolsList,
+      items: toolsList?.filter(
+        (tool) => 'author' in tool && tool.author === '@@official.shinkai',
+      ),
     },
     {
       label: 'My Tools',
       value: 'my-tools',
-      //     "author": "@@localhost.sep-shinkai",
-
       items: toolsList?.filter(
         (tool) => 'author' in tool && tool.author === auth?.shinkai_identity,
       ),
@@ -122,7 +122,7 @@ export const ToolCollection = () => {
     {
       label: 'Downloaded',
       value: 'downloaded',
-      items: toolsList,
+      items: toolsList, // TODO
     },
   ];
 
@@ -134,7 +134,7 @@ export const ToolCollection = () => {
       <div className="flex flex-col gap-8">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <h2 className="font-clash text-2xl font-semibold tracking-tight">
+            <h2 className="text-lg font-semibold tracking-tight">
               Shinkai Tools
             </h2>
             <p className="text-muted-foreground text-sm">
@@ -223,21 +223,7 @@ export const ToolCollection = () => {
         //     {t('tools.create')}
         //   </Link>
 
-        //   <Link
-        //     className={cn(
-        //       buttonVariants({
-        //         size: 'xs',
-        //         variant: 'default',
-        //         rounded: 'lg',
-        //       }),
-        //     )}
-        //     rel="noreferrer"
-        //     target="_blank"
-        //     to={SHINKAI_STORE_URL}
-        //   >
-        //     <StoreIcon className="size-4" />
-        //     {t('tools.installFromStore')}
-        //   </Link>
+
 
         //   <DropdownMenu>
         //     <DropdownMenuTrigger asChild>

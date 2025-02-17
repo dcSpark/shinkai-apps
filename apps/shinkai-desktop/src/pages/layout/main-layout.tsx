@@ -251,7 +251,7 @@ export function MainNav() {
     // },
     {
       title: t('tools.label'),
-      href: '/tools/homepage',
+      href: '/tools',
       icon: <ToolsIcon className="h-5 w-5" />,
     },
     {
