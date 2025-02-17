@@ -1,5 +1,4 @@
 use crate::globals::SHINKAI_NODE_MANAGER_INSTANCE;
-use crate::local_shinkai_node::process_handlers::logger::LogEntry;
 use crate::local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 use crate::windows::{recreate_window, Window};
@@ -14,15 +13,6 @@ pub async fn shinkai_node_is_running() -> Result<bool, String> {
     let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
     let is_running = shinkai_node_manager_guard.is_running().await;
     Ok(is_running)
-}
-
-#[tauri::command]
-pub async fn shinkai_node_get_last_n_logs(length: usize) -> Result<Vec<LogEntry>, String> {
-    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
-    let logs = shinkai_node_manager_guard
-        .get_last_n_shinkai_node_logs(length)
-        .await;
-    Ok(logs)
 }
 
 #[tauri::command]

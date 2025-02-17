@@ -7,7 +7,7 @@ use crate::commands::fetch::{get_request, post_request};
 use crate::commands::galxe::galxe_generate_proof;
 use crate::commands::hardware::hardware_get_summary;
 use crate::commands::shinkai_node_manager_commands::{
-    shinkai_node_get_default_model, shinkai_node_get_last_n_logs, shinkai_node_get_ollama_api_url,
+    shinkai_node_get_default_model, shinkai_node_get_ollama_api_url,
     shinkai_node_get_ollama_version, shinkai_node_get_options, shinkai_node_is_running,
     shinkai_node_kill, shinkai_node_remove_storage, shinkai_node_set_default_options,
     shinkai_node_set_options, shinkai_node_spawn, show_shinkai_node_manager_window,
@@ -15,6 +15,7 @@ use crate::commands::shinkai_node_manager_commands::{
 
 use commands::logs::retrieve_logs;
 use commands::spotlight_commands::{hide_spotlight_window_app, show_spotlight_window_app};
+use deep_links::setup_deep_links;
 use global_shortcuts::global_shortcut_handler;
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
@@ -23,9 +24,9 @@ use tauri::{Manager, RunEvent};
 use tokio::sync::Mutex;
 use tray::create_tray;
 use windows::{recreate_window, Window};
-use deep_links::setup_deep_links;
 mod audio;
 mod commands;
+mod deep_links;
 mod galxe;
 mod global_shortcuts;
 mod globals;
@@ -33,7 +34,6 @@ mod hardware;
 mod local_shinkai_node;
 mod tray;
 mod windows;
-mod deep_links;
 
 #[derive(Clone, serde::Serialize)]
 struct Payload {
@@ -79,7 +79,6 @@ fn main() {
             show_spotlight_window_app,
             show_shinkai_node_manager_window,
             shinkai_node_is_running,
-            shinkai_node_get_last_n_logs,
             shinkai_node_get_options,
             shinkai_node_set_options,
             shinkai_node_spawn,
