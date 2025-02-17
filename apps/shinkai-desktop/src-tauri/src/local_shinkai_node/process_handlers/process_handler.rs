@@ -152,7 +152,7 @@ impl ProcessHandler {
                         }
                         break;
                     }
-                    CommandEvent::Stdout(message) => {
+                    CommandEvent::Stdout(message) | CommandEvent::Stderr(message) => {
                         let message_str = String::from_utf8_lossy(&message);
                         if ready_matcher.is_match(&message_str) {
                             log::info!(
