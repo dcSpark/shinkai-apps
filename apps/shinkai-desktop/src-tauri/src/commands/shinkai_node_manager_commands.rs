@@ -5,7 +5,7 @@ use crate::windows::{recreate_window, Window};
 
 #[tauri::command]
 pub async fn show_shinkai_node_manager_window(app_handle: tauri::AppHandle) {
-    recreate_window(app_handle, Window::ShinkaiNodeManager, true);
+    let _ = recreate_window(app_handle, Window::ShinkaiNodeManager, true);
 }
 
 #[tauri::command]
