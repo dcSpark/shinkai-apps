@@ -33,7 +33,7 @@ pub fn retrieve_logs(app_handle: tauri::AppHandle) -> Result<Vec<LogEntry>, Stri
         .filter(|line| !line.is_empty())
         .filter_map(|line| {
             // Expected format: [timestamp][level][target] message
-            let re = regex::Regex::new(r"\[(.*?)\]\[(.*?)\]\[(.*?)\] (.*)").unwrap();
+            let re = regex::Regex::new(r"\[(.*?)\]\[(.*?)\]\[(.*?)\] ((?s).*)").unwrap();
             if let Some(captures) = re.captures(line) {
                 let timestamp = captures.get(1).unwrap().as_str().to_string();
                 let level = captures.get(2).unwrap().as_str().to_string();

@@ -63,7 +63,7 @@ export const LogItem = ({ log, onLogClick }: LogEntryProps) => {
     >
       <div className="h-full flex w-full min-w-0 items-center gap-1.5">
         <LogIcon level={log.level} />
-        <span className="shrink-0 text-white/40">{log.timestamp}</span>
+        <span className="shrink-0 text-white/40">[{log.timestamp}]</span>
         <span className="shrink-0 text-white/40">[{log.target}]</span>
         <div className="flex-1 truncate">{log.message}</div>
       </div>
