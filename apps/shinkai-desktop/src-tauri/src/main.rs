@@ -21,7 +21,7 @@ use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
 use tauri::{Emitter, WindowEvent};
 use tauri::{Manager, RunEvent};
-use tokio::sync::Mutex;
+use tokio::sync::{Mutex, RwLock};
 use tray::create_tray;
 use windows::{recreate_window, Window};
 mod audio;
@@ -113,7 +113,7 @@ fn main() {
             let app_data_dir = app.path().app_data_dir()?;
 
             {
-                let _ = SHINKAI_NODE_MANAGER_INSTANCE.set(Arc::new(Mutex::new(
+                let _ = SHINKAI_NODE_MANAGER_INSTANCE.set(Arc::new(RwLock::new(
                     ShinkaiNodeManager::new(app.handle().clone(), app_resource_dir, app_data_dir),
                 )));
             }
@@ -130,7 +130,7 @@ fn main() {
                 async move {
                     // Kill any existing process related to shinkai and/or using shinkai ports
                     let mut shinkai_node_manager_guard =
-                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
                     shinkai_node_manager_guard.kill().await;
                     drop(shinkai_node_manager_guard);
 
@@ -144,7 +144,7 @@ fn main() {
                 let app_handle = app.handle().clone();
                 async move {
                     let mut shinkai_node_manager_guard =
-                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
                     let mut receiver = shinkai_node_manager_guard.subscribe_to_events();
                     drop(shinkai_node_manager_guard);
                     while let Ok(state_change) = receiver.recv().await {
@@ -170,7 +170,7 @@ fn main() {
 
                     // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
                     let mut shinkai_node_manager_guard =
-                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
                     shinkai_node_manager_guard.kill().await;
                     drop(shinkai_node_manager_guard);
                     // Force exit the application

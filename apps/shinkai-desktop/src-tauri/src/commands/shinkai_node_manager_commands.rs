@@ -10,7 +10,7 @@ pub async fn show_shinkai_node_manager_window(app_handle: tauri::AppHandle) {
 
 #[tauri::command]
 pub async fn shinkai_node_is_running() -> Result<bool, String> {
-    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().read().await;
     let is_running = shinkai_node_manager_guard.is_running().await;
     Ok(is_running)
 }
@@ -19,7 +19,7 @@ pub async fn shinkai_node_is_running() -> Result<bool, String> {
 pub async fn shinkai_node_set_options(
     options: ShinkaiNodeOptions,
 ) -> Result<ShinkaiNodeOptions, String> {
-    let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+    let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
     let options = shinkai_node_manager_guard
         .set_shinkai_node_options(options)
         .await;
@@ -28,14 +28,14 @@ pub async fn shinkai_node_set_options(
 
 #[tauri::command]
 pub async fn shinkai_node_get_options() -> Result<ShinkaiNodeOptions, String> {
-    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().read().await;
     let options = shinkai_node_manager_guard.get_shinkai_node_options().await;
     Ok(options)
 }
 
 #[tauri::command]
 pub async fn shinkai_node_spawn() -> Result<(), String> {
-    let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+    let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
     match shinkai_node_manager_guard.spawn().await {
         Ok(_) => Ok(()),
         Err(message) => Err(message),
@@ -44,14 +44,14 @@ pub async fn shinkai_node_spawn() -> Result<(), String> {
 
 #[tauri::command]
 pub async fn shinkai_node_kill() -> Result<(), String> {
-    let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+    let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
     shinkai_node_manager_guard.kill().await;
     Ok(())
 }
 
 #[tauri::command]
 pub async fn shinkai_node_remove_storage(preserve_keys: bool) -> Result<(), String> {
-    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
     match shinkai_node_manager_guard
         .remove_storage(preserve_keys)
         .await
@@ -63,7 +63,7 @@ pub async fn shinkai_node_remove_storage(preserve_keys: bool) -> Result<(), Stri
 
 #[tauri::command]
 pub async fn shinkai_node_set_default_options() -> Result<ShinkaiNodeOptions, String> {
-    let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+    let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
     let options = shinkai_node_manager_guard
         .set_default_shinkai_node_options()
         .await;
@@ -72,7 +72,7 @@ pub async fn shinkai_node_set_default_options() -> Result<ShinkaiNodeOptions, St
 
 #[tauri::command]
 pub async fn shinkai_node_get_ollama_api_url() -> Result<String, String> {
-    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().read().await;
     let ollama_api_url = shinkai_node_manager_guard.get_ollama_api_url();
     Ok(ollama_api_url)
 }

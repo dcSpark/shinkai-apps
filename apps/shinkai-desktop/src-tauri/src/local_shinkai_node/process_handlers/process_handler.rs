@@ -6,8 +6,8 @@ use tauri_plugin_shell::{
     process::{CommandChild, CommandEvent},
     ShellExt,
 };
-use tokio::sync::mpsc::Sender;
 use tokio::sync::Mutex;
+use tokio::sync::{mpsc::Sender, RwLock};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum ProcessHandlerEvent {
@@ -20,12 +20,11 @@ pub struct ProcessHandler {
     app: AppHandle,
     process_name: String,
     ready_matcher: Regex,
-    process: Arc<Mutex<Option<CommandChild>>>,
+    process: Arc<RwLock<Option<CommandChild>>>,
     event_sender: Arc<Mutex<Sender<ProcessHandlerEvent>>>,
 }
 
 impl ProcessHandler {
-    const MAX_LOGS_LENGTH: usize = 500;
     const MIN_MS_ALIVE: u64 = 5000;
     const PORT_RELEASE_DELAY_MS: u64 = 1000;
 
@@ -42,7 +41,7 @@ impl ProcessHandler {
             process_name: process_name.clone(),
             ready_matcher,
             event_sender: Arc::new(Mutex::new(event_sender)),
-            process: Arc::new(Mutex::new(None)),
+            process: Arc::new(RwLock::new(None)),
         }
     }
 
@@ -76,13 +75,8 @@ impl ProcessHandler {
     }
 
     pub async fn is_running(&self) -> bool {
-        let process = self.process.lock().await;
+        let process = self.process.read().await;
         let running = process.is_some();
-        log::debug!(
-            "[{}] checking if process is running: {}",
-            self.process_name,
-            running
-        );
         running
     }
 
@@ -99,7 +93,7 @@ impl ProcessHandler {
             env
         );
         {
-            let process = self.process.lock().await;
+            let process = self.process.read().await;
             if process.is_some() {
                 log::warn!("[{}] process is already running", self.process_name);
                 return Ok(());
@@ -131,7 +125,7 @@ impl ProcessHandler {
         );
 
         {
-            let mut process = self.process.lock().await;
+            let mut process = self.process.write().await;
             *process = Some(child);
             log::info!("[{}] process stored in state", self.process_name);
         }
@@ -149,7 +143,7 @@ impl ProcessHandler {
                 match event {
                     CommandEvent::Terminated(_) => {
                         {
-                            let mut process = process_mutex.lock().await;
+                            let mut process = process_mutex.write().await;
                             *process = None;
                         }
                         {
@@ -182,7 +176,7 @@ impl ProcessHandler {
             while std::time::Instant::now().duration_since(start_time)
                 < std::time::Duration::from_millis(Self::MIN_MS_ALIVE)
             {
-                let process = process_mutex.lock().await;
+                let process = process_mutex.read().await;
                 let is_ready = is_ready_mutex_clone.lock().await;
                 log::debug!(
                     "[{}] alive-check: process.is_none={}, is_ready={}, elapsed={:?}",
@@ -226,7 +220,7 @@ impl ProcessHandler {
 
     pub async fn kill(&self) {
         log::info!("[{}] attempting to kill process", self.process_name);
-        let mut process = self.process.lock().await;
+        let mut process = self.process.write().await;
         if let Some(child) = process.take() {
             let pid = child.pid();
             log::warn!(
