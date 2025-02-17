@@ -202,7 +202,7 @@ impl ProcessHandler {
                 }
                 drop(process);
                 drop(is_ready);
-                tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+                tokio::time::sleep(std::time::Duration::from_millis(50)).await;
             }
             Ok::<(), String>(())
         })
