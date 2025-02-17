@@ -16,6 +16,7 @@ import { PromptSelectionProvider } from '../components/prompt/context/prompt-sel
 import { TableSheetProvider } from '../components/sheet/context/table-context';
 import PublicSharedFolderSubscription from '../components/subscriptions/public-shared-folders';
 import MySubscriptions from '../components/subscriptions/subscriptions';
+import { ToolCollection } from '../components/tools/tool-collection';
 import ToolDetails from '../components/tools/tool-details';
 import { VectorFolderSelectionProvider } from '../components/vector-fs/components/folder-selection-list';
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
@@ -60,7 +61,6 @@ import ShinkaiPrivatePage from '../pages/shinkai-private';
 import { TaskLogs } from '../pages/task-logs';
 import { Tasks } from '../pages/tasks';
 import TermsAndConditionsPage from '../pages/terms-conditions';
-import { Tools } from '../pages/tools';
 import { ToolsHomepage } from '../pages/tools-homepage';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
@@ -329,7 +329,7 @@ const AppRoutes = () => {
           }
           path={'tools'}
         >
-          <Route element={<Tools />} index />
+          <Route element={<ToolCollection />} index />
           <Route element={<ToolsHomepage />} path="homepage" />
           <Route element={<ToolDetails />} path={':toolKey'} />
           <Route
