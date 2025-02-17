@@ -94,6 +94,7 @@ export const Logs = () => {
         ref={virtualizerParentRef}
       >
         <div
+          className="relative z-0"
           style={{
             height: `${virtualizer.getTotalSize()}px`,
             width: '100%',
@@ -123,7 +124,7 @@ export const Logs = () => {
           })}
         </div>
       </div>
-      <div className="fixed bottom-6 right-12 z-[100000] flex gap-2">
+      <div className="fixed bottom-6 right-12 flex gap-2">
         <Button
           disabled={tauriLogsLoading}
           onClick={() => refetchLogs()}

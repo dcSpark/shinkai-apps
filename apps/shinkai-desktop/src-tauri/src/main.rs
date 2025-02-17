@@ -108,7 +108,7 @@ fn main() {
             retrieve_logs,
         ])
         .setup(|app| {
-            log::info!("startin app version: {}", env!("CARGO_PKG_VERSION"));
+            log::info!("starting app version: {}", env!("CARGO_PKG_VERSION"));
             let app_resource_dir = app.path().resource_dir()?;
             let app_data_dir = app.path().app_data_dir()?;
 
