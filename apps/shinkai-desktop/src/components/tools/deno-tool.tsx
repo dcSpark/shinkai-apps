@@ -1,6 +1,6 @@
 import { DenoShinkaiTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
-import ToolCard from './components/tool-card';
+import ToolDetailsCard from './components/tool-details-card';
 
 export default function DenoTool({
   tool,
@@ -12,7 +12,7 @@ export default function DenoTool({
   isPlaygroundTool?: boolean;
 }) {
   return (
-    <ToolCard
+    <ToolDetailsCard
       isEnabled={isEnabled}
       isPlaygroundTool={isPlaygroundTool}
       tool={tool}
