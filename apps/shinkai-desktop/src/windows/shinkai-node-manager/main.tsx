@@ -72,7 +72,7 @@ import {
 import { useAuth } from '../../store/auth';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 import { useSyncStorageSecondary } from '../../store/sync-utils';
-import { Logs } from './logs';
+import { Logs } from './components/logs';
 
 const App = () => {
   useEffect(() => {
@@ -187,12 +187,12 @@ const App = () => {
   };
 
   return (
-    <div className="flex h-screen w-full flex-col space-y-2 p-8">
+    <div className="flex h-screen w-full flex-col space-y-2">
       <div
         className="absolute top-0 z-50 h-6 w-full"
         data-tauri-drag-region={true}
       />
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row items-center p-4">
         <img alt="shinkai logo" className="h-10 w-10" src={logo} />
         <div className="ml-4 flex flex-col">
           <span className="text-lg">Local Shinkai Node</span>
@@ -297,7 +297,7 @@ const App = () => {
       </div>
 
       <Tabs
-        className="flex h-full w-full flex-col overflow-hidden"
+        className="mt-4 p-4 flex h-full w-full flex-col overflow-hidden"
         defaultValue="app-logs"
       >
         <TabsList className="w-full">
@@ -356,11 +356,10 @@ const App = () => {
           </ScrollArea>
         </TabsContent>
 
-        <TabsContent className="h-full overflow-hidden" value="models">
+        <TabsContent className="h-full overflow-hidden pb-2" value="models">
           <OllamaModels />
         </TabsContent>
       </Tabs>
-
       <AlertDialog
         onOpenChange={setIsConfirmResetDialogOpened}
         open={isConfirmResetDialogOpened}

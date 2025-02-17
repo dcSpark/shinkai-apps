@@ -47,7 +47,20 @@ fn main() {
             app.emit("single-instance", Payload { args: argv, cwd })
                 .unwrap();
         }))
-        .plugin(tauri_plugin_log::Builder::new().build())
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .format(|out, message, record| {
+                    // Ending with a triple ideographic space as separator so then we can group texts that belongs to the same log
+                    out.finish(format_args!(
+                        "[{}][{}][{}] {}　　　",
+                        chrono::Local::now().format("%Y-%m-%d %H:%M:%S"),
+                        record.level(),
+                        record.target(),
+                        message
+                    ))
+                })
+                .build(),
+        )
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
