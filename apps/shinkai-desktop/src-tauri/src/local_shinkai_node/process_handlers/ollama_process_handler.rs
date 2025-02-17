@@ -10,7 +10,6 @@ use tokio::sync::mpsc::Sender;
 use crate::local_shinkai_node::ollama_api::ollama_api_client::OllamaApiClient;
 
 use super::{
-    logger::LogEntry,
     process_handler::{ProcessHandler, ProcessHandlerEvent},
     process_utils::{kill_process_by_name, kill_process_by_pid, options_to_env},
 };
@@ -119,10 +118,6 @@ impl OllamaProcessHandler {
             }
         }
         Ok(())
-    }
-
-    pub async fn get_last_n_logs(&self, n: usize) -> Vec<LogEntry> {
-        self.process_handler.get_last_n_logs(n).await
     }
 
     pub async fn is_running(&self) -> bool {

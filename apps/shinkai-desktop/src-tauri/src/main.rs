@@ -7,7 +7,7 @@ use crate::commands::fetch::{get_request, post_request};
 use crate::commands::galxe::galxe_generate_proof;
 use crate::commands::hardware::hardware_get_summary;
 use crate::commands::shinkai_node_manager_commands::{
-    shinkai_node_get_default_model, shinkai_node_get_last_n_logs, shinkai_node_get_ollama_api_url,
+    shinkai_node_get_default_model, shinkai_node_get_ollama_api_url,
     shinkai_node_get_ollama_version, shinkai_node_get_options, shinkai_node_is_running,
     shinkai_node_kill, shinkai_node_remove_storage, shinkai_node_set_default_options,
     shinkai_node_set_options, shinkai_node_spawn, show_shinkai_node_manager_window,
@@ -15,17 +15,18 @@ use crate::commands::shinkai_node_manager_commands::{
 
 use commands::logs::retrieve_logs;
 use commands::spotlight_commands::{hide_spotlight_window_app, show_spotlight_window_app};
+use deep_links::setup_deep_links;
 use global_shortcuts::global_shortcut_handler;
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
 use tauri::{Emitter, WindowEvent};
 use tauri::{Manager, RunEvent};
-use tokio::sync::Mutex;
+use tokio::sync::{Mutex, RwLock};
 use tray::create_tray;
 use windows::{recreate_window, Window};
-use deep_links::setup_deep_links;
 mod audio;
 mod commands;
+mod deep_links;
 mod galxe;
 mod global_shortcuts;
 mod globals;
@@ -33,7 +34,6 @@ mod hardware;
 mod local_shinkai_node;
 mod tray;
 mod windows;
-mod deep_links;
 
 #[derive(Clone, serde::Serialize)]
 struct Payload {
@@ -47,7 +47,20 @@ fn main() {
             app.emit("single-instance", Payload { args: argv, cwd })
                 .unwrap();
         }))
-        .plugin(tauri_plugin_log::Builder::new().build())
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .format(|out, message, record| {
+                    // Ending with a triple ideographic space as separator so then we can group texts that belongs to the same log
+                    out.finish(format_args!(
+                        "[{}][{}][{}] {}　　　",
+                        chrono::Local::now().format("%Y-%m-%d %H:%M:%S"),
+                        record.level(),
+                        record.target(),
+                        message
+                    ))
+                })
+                .build(),
+        )
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
@@ -79,7 +92,6 @@ fn main() {
             show_spotlight_window_app,
             show_shinkai_node_manager_window,
             shinkai_node_is_running,
-            shinkai_node_get_last_n_logs,
             shinkai_node_get_options,
             shinkai_node_set_options,
             shinkai_node_spawn,
@@ -96,12 +108,12 @@ fn main() {
             retrieve_logs,
         ])
         .setup(|app| {
-            log::info!("startin app version: {}", env!("CARGO_PKG_VERSION"));
+            log::info!("starting app version: {}", env!("CARGO_PKG_VERSION"));
             let app_resource_dir = app.path().resource_dir()?;
             let app_data_dir = app.path().app_data_dir()?;
 
             {
-                let _ = SHINKAI_NODE_MANAGER_INSTANCE.set(Arc::new(Mutex::new(
+                let _ = SHINKAI_NODE_MANAGER_INSTANCE.set(Arc::new(RwLock::new(
                     ShinkaiNodeManager::new(app.handle().clone(), app_resource_dir, app_data_dir),
                 )));
             }
@@ -118,7 +130,7 @@ fn main() {
                 async move {
                     // Kill any existing process related to shinkai and/or using shinkai ports
                     let mut shinkai_node_manager_guard =
-                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
                     shinkai_node_manager_guard.kill().await;
                     drop(shinkai_node_manager_guard);
 
@@ -132,7 +144,7 @@ fn main() {
                 let app_handle = app.handle().clone();
                 async move {
                     let mut shinkai_node_manager_guard =
-                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
                     let mut receiver = shinkai_node_manager_guard.subscribe_to_events();
                     drop(shinkai_node_manager_guard);
                     while let Ok(state_change) = receiver.recv().await {
@@ -158,7 +170,7 @@ fn main() {
 
                     // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
                     let mut shinkai_node_manager_guard =
-                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
                     shinkai_node_manager_guard.kill().await;
                     drop(shinkai_node_manager_guard);
                     // Force exit the application

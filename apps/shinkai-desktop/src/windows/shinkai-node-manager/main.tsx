@@ -1,7 +1,6 @@
 import './globals.css';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DownloadIcon } from '@radix-ui/react-icons';
 import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
 import {
   AlertDialog,
@@ -28,30 +27,22 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { useVirtualizer } from '@tanstack/react-virtual';
 import { info } from '@tauri-apps/plugin-log';
-import { openPath } from '@tauri-apps/plugin-opener';
 import {
   Bot,
   ListRestart,
   Loader2,
   PlayCircle,
-  RotateCw,
   StopCircle,
   Trash,
 } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { useForm, useWatch } from 'react-hook-form';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 import logo from '../../../src-tauri/icons/128x128@2x.png';
 import { OllamaModels } from '../../components/shinkai-node-manager/ollama-models';
-import {
-  useDownloadTauriLogsMutation,
-  useRetrieveLogsQuery,
-} from '../../lib/shinkai-logs/logs-client';
 import { ALLOWED_OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama-models';
 import {
   shinkaiNodeQueryClient,
@@ -81,6 +72,7 @@ import {
 import { useAuth } from '../../store/auth';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
 import { useSyncStorageSecondary } from '../../store/sync-utils';
+import { Logs } from './components/logs';
 
 const App = () => {
   useEffect(() => {
@@ -98,32 +90,6 @@ const App = () => {
   const { data: shinkaiNodeOptions } = useShinkaiNodeGetOptionsQuery({
     refetchInterval: 1000,
   });
-
-  const {
-    data: tauriLogs,
-    refetch: refetchTauriLogs,
-    isLoading: tauriLogsLoading,
-  } = useRetrieveLogsQuery();
-
-  const { mutate: downloadTauriLogs, isPending: downloadTauriLogsIsPending } =
-    useDownloadTauriLogsMutation({
-      onSuccess: (result) => {
-        toast.success('Logs downloaded successfully', {
-          description: `You can find the logs file in your downloads folder`,
-          action: {
-            label: 'Open',
-            onClick: async () => {
-              openPath(result.savePath);
-            },
-          },
-        });
-      },
-      onError: (error) => {
-        toast.error('Failed to download logs', {
-          description: error.message,
-        });
-      },
-    });
 
   const {
     isPending: shinkaiNodeSpawnIsPending,
@@ -220,39 +186,13 @@ const App = () => {
     });
   };
 
-  const [logs, setLogs] = useState<string[]>([]);
-  useEffect(() => {
-    const tauriLogsLines = tauriLogs?.split('\n') ?? [];
-    if (tauriLogsLines?.length && tauriLogsLines?.length !== logs?.length) {
-      setLogs(tauriLogsLines);
-    }
-  }, [tauriLogs, logs]);
-
-  const virtualizerParentRef = useRef<HTMLDivElement>(null);
-  const virtualizer = useVirtualizer({
-    count: logs?.length ?? 0,
-    getScrollElement: () => virtualizerParentRef.current,
-    estimateSize: () => 50, // Estimated height of each log line
-    overscan: 20, // Number of items to render outside of the visible area
-  });
-
-  useEffect(() => {
-    virtualizer.scrollToIndex(logs.length - 1, {
-      behavior: 'auto',
-    });
-  }, [logs, virtualizer]);
-
-  const refetchLogs = (): void => {
-    refetchTauriLogs();
-  };
-
   return (
-    <div className="flex h-screen w-full flex-col space-y-2 p-8">
+    <div className="flex h-screen w-full flex-col space-y-2">
       <div
         className="absolute top-0 z-50 h-6 w-full"
         data-tauri-drag-region={true}
       />
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row items-center p-4">
         <img alt="shinkai logo" className="h-10 w-10" src={logo} />
         <div className="ml-4 flex flex-col">
           <span className="text-lg">Local Shinkai Node</span>
@@ -357,7 +297,7 @@ const App = () => {
       </div>
 
       <Tabs
-        className="flex h-full w-full flex-col overflow-hidden"
+        className="mt-4 p-4 flex h-full w-full flex-col overflow-hidden"
         defaultValue="app-logs"
       >
         <TabsList className="w-full">
@@ -372,59 +312,7 @@ const App = () => {
           </TabsTrigger>
         </TabsList>
         <TabsContent className="h-full overflow-hidden" value="app-logs">
-          <div className="h-full overflow-auto" ref={virtualizerParentRef}>
-            <div
-              style={{
-                height: `${virtualizer.getTotalSize()}px`,
-                width: '100%',
-                position: 'relative',
-              }}
-            >
-              {virtualizer.getVirtualItems().map((virtualRow) => (
-                <div
-                  className="text-gray-80 absolute left-0 top-0 w-full font-mono text-xs leading-relaxed"
-                  key={virtualRow.index}
-                  style={{
-                    height: `${virtualRow.size}px`,
-                    transform: `translateY(${virtualRow.start}px)`,
-                  }}
-                >
-                  {logs[virtualRow.index]}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="fixed bottom-6 right-12 flex gap-2">
-            <Button
-              disabled={tauriLogsLoading}
-              onClick={() => refetchLogs()}
-              rounded="lg"
-              size="sm"
-              type="button"
-              variant="default"
-            >
-              {tauriLogsLoading ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                <RotateCw className="size-3.5" />
-              )}
-            </Button>
-            <Button
-              disabled={downloadTauriLogsIsPending}
-              onClick={() => downloadTauriLogs()}
-              rounded="lg"
-              size="sm"
-              type="button"
-              variant="default"
-            >
-              {downloadTauriLogsIsPending ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                <DownloadIcon className="ml-2 size-3.5" />
-              )}
-              Download Logs
-            </Button>
-          </div>
+          <Logs />
         </TabsContent>
         <TabsContent className="h-full overflow-hidden" value="options">
           <ScrollArea className="flex h-full flex-1 flex-col overflow-auto [&>div>div]:!block">
@@ -468,11 +356,10 @@ const App = () => {
           </ScrollArea>
         </TabsContent>
 
-        <TabsContent className="h-full overflow-hidden" value="models">
+        <TabsContent className="h-full overflow-hidden pb-2" value="models">
           <OllamaModels />
         </TabsContent>
       </Tabs>
-
       <AlertDialog
         onOpenChange={setIsConfirmResetDialogOpened}
         open={isConfirmResetDialogOpened}

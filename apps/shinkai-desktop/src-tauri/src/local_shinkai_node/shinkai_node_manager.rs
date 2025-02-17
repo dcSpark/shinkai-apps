@@ -2,16 +2,15 @@ use std::path::PathBuf;
 
 use super::ollama_api::ollama_api_client::OllamaApiClient;
 use super::ollama_api::ollama_api_types::OllamaApiPullResponse;
-use super::process_handlers::logger::LogEntry;
 use super::process_handlers::ollama_process_handler::OllamaProcessHandler;
 use super::process_handlers::shinkai_node_process_handler::ShinkaiNodeProcessHandler;
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
+use anyhow::Result;
 use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use tokio::sync::broadcast;
 use tokio::sync::mpsc::channel;
-use anyhow::Result;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub enum ShinkaiNodeManagerEvent {
@@ -63,16 +62,6 @@ impl ShinkaiNodeManager {
             ),
             event_broadcaster,
         }
-    }
-
-    pub async fn get_last_n_shinkai_node_logs(&self, n: usize) -> Vec<LogEntry> {
-        let shinkai_logs = self.shinkai_node_process.get_last_n_logs(n).await;
-        let ollama_logs = self.ollama_process.get_last_n_logs(n).await;
-
-        let mut merged_logs = shinkai_logs;
-        merged_logs.extend(ollama_logs.into_iter());
-        merged_logs.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
-        merged_logs
     }
 
     pub async fn get_shinkai_node_options(&self) -> ShinkaiNodeOptions {

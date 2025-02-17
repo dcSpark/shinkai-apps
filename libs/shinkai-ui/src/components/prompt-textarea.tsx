@@ -23,7 +23,7 @@ export interface PromptTextareaProps
 const PromptTextarea = React.forwardRef<
   HTMLTextAreaElement,
   PromptTextareaProps
->(({ className, ...props }) => {
+>(({ className, ...props }, ref) => {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   React.useLayoutEffect(() => {

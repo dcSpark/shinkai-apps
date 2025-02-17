@@ -7,7 +7,6 @@ use tokio::sync::mpsc::Sender;
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 
 use super::{
-    logger::LogEntry,
     process_handler::{ProcessHandler, ProcessHandlerEvent},
     process_utils::{kill_existing_processes_using_ports, options_to_env},
 };
@@ -147,10 +146,6 @@ impl ShinkaiNodeProcessHandler {
             return Err(e);
         }
         Ok(())
-    }
-
-    pub async fn get_last_n_logs(&self, n: usize) -> Vec<LogEntry> {
-        self.process_handler.get_last_n_logs(n).await
     }
 
     pub fn set_default_options(&mut self) -> ShinkaiNodeOptions {

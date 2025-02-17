@@ -1,4 +1,3 @@
-pub mod logger;
 pub mod ollama_process_handler;
 pub mod process_handler;
 pub mod process_utils;
