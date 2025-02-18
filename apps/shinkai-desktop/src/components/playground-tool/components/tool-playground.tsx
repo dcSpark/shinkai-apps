@@ -19,6 +19,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Loader2, Redo2Icon, Save, Undo2Icon } from 'lucide-react';
 import { useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import {
@@ -34,6 +35,8 @@ import { ExecutionPanel } from './execution-panel';
 import { ManageSourcesButton } from './manage-sources-button';
 import { MetadataPanel } from './metadata-panel';
 import { PlaygroundChat } from './playground-chat';
+import { usePlaygroundStore } from '../context/playground-context';
+import PrismEditor from '../tool-code-editor';
 
 function PlaygroundToolEditor({
   mode,
@@ -131,6 +134,26 @@ function PlaygroundToolEditor({
       xShinkaiAppId,
       xShinkaiToolId,
     });
+  };
+
+  // Get the store's setter for toolMetadata
+  const setToolMetadata = usePlaygroundStore((state) => state.setToolMetadata);
+
+  // This function reads the current value from the metadata editor,
+  // validates it as JSON, and updates the store
+  const refreshMetadataFromEditor = () => {
+    if (metadataEditorRef.current) {
+      const metadataCode = metadataEditorRef.current.value;
+      try {
+        const newMetadata = JSON.parse(metadataCode);
+        setToolMetadata(newMetadata);
+        toast.success("Metadata updated successfully.");
+      } catch (error) {
+        toast.error("Invalid JSON in metadata editor. Please fix errors before refreshing.");
+      }
+    } else {
+      toast.error("Metadata editor not available.");
+    }
   };
 
   return (
@@ -324,15 +347,12 @@ function PlaygroundToolEditor({
                       }
                       handleRunCode={handleRunCode}
                       isExecutionToolCodeError={executeToolCodeQuery.isError}
-                      isExecutionToolCodePending={
-                        executeToolCodeQuery.isPending
-                      }
-                      isExecutionToolCodeSuccess={
-                        executeToolCodeQuery.isSuccess
-                      }
+                      isExecutionToolCodePending={executeToolCodeQuery.isPending}
+                      isExecutionToolCodeSuccess={executeToolCodeQuery.isSuccess}
                       mountTimestampRef={mountTimestamp}
                       regenerateToolMetadata={regenerateToolMetadata}
                       toolResultFiles={toolResultFiles}
+                      onRefreshMetadata={refreshMetadataFromEditor}
                     />
                   </ResizablePanel>
                 </ResizablePanelGroup>

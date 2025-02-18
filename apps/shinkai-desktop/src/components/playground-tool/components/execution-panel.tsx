@@ -16,7 +16,7 @@ import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Loader2, Paperclip, Play } from 'lucide-react';
+import { Loader2, Paperclip, Play, RefreshCw } from 'lucide-react';
 import { memo, MutableRefObject, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -34,6 +34,7 @@ function ExecutionPanelBase({
   toolResultFiles,
   handleRunCode,
   regenerateToolMetadata,
+  onRefreshMetadata,
 }: {
   isExecutionToolCodeSuccess: boolean;
   isExecutionToolCodeError: boolean;
@@ -43,8 +44,11 @@ function ExecutionPanelBase({
   toolResultFiles: string[];
   handleRunCode: FormProps['onSubmit'];
   regenerateToolMetadata: () => void;
+  onRefreshMetadata?: () => void;
 }) {
   const [formData, setFormData] = useState(null);
+  // Add a key state to force re-mounting of the JsonForm when needed.
+  const [formKey, setFormKey] = useState(0);
 
   const toolCodeStatus = usePlaygroundStore((state) => state.toolCodeStatus);
   const isToolCodeGenerationPending = toolCodeStatus === 'pending';
@@ -63,6 +67,34 @@ function ExecutionPanelBase({
   const isMetadataGenerationError = toolMetadataStatus === 'error';
   const isMetadataGenerationPending = toolMetadataStatus === 'pending';
 
+  // Add useEffect to reset form when metadata changes
+  useEffect(() => {
+    if (toolMetadata) {
+      setFormData(null);
+      setFormKey(prev => prev + 1);
+    }
+  }, [toolMetadata]);
+
+  // Modify the handleRefreshJsonForm function
+  const handleRefreshJsonForm = () => {
+    // First trigger the refresh of the store's metadata from the editor
+    onRefreshMetadata?.();
+    
+    try {
+      // Try to stringify the metadata to ensure it is valid JSON
+      JSON.stringify(toolMetadata);
+      // First set formData to null
+      setFormData(null);
+      // Use setTimeout to ensure state updates happen in sequence
+      setTimeout(() => {
+        setFormKey(prev => prev + 1);
+        toast.success('Metadata is valid and the form has been refreshed.');
+      }, 0);
+    } catch (e) {
+      toast.error('The metadata is not valid JSON.');
+    }
+  };
+
   return (
     <div className="flex size-full min-h-[220px] flex-col rounded-lg bg-gray-300 pb-4 pl-4 pr-3">
       <div className="flex items-center justify-between">
@@ -73,17 +105,29 @@ function ExecutionPanelBase({
         {isMetadataGenerationSuccess &&
           !isToolCodeGenerationPending &&
           !isMetadataGenerationError && (
-            <Button
-              className="border-gray-200 text-white"
-              form="parameters-form"
-              isLoading={isExecutionToolCodePending}
-              rounded="lg"
-              size="xs"
-              variant="ghost"
-            >
-              {!isExecutionToolCodePending && <Play className="h-4 w-4" />}
-              Run
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={handleRefreshJsonForm}
+                className="border-gray-200 text-white"
+                rounded="lg"
+                size="xs"
+                variant="ghost"
+              >
+                <RefreshCw className="h-4 w-4" />
+                <span className="hidden sm:inline">Refresh Form</span>
+              </Button>
+              <Button
+                className="border-gray-200 text-white"
+                form="parameters-form"
+                isLoading={isExecutionToolCodePending}
+                rounded="lg"
+                size="xs"
+                variant="ghost"
+              >
+                {!isExecutionToolCodePending && <Play className="h-4 w-4" />}
+                Run
+              </Button>
+            </div>
           )}
       </div>
       <div className="flex-1 overflow-auto">
@@ -106,6 +150,7 @@ function ExecutionPanelBase({
           !isMetadataGenerationError && (
             <div className="text-gray-80 size-full text-xs">
               <JsonForm
+                key={`form-${formKey}`}
                 className={cn(
                   (toolMetadata?.configurations?.properties &&
                     Object.keys(toolMetadata.configurations.properties).length >

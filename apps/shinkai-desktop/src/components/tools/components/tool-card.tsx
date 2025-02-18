@@ -13,6 +13,11 @@ import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/
 import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
 import {
   Alert,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipPortal,
   AlertDescription,
   AlertTitle,
   Avatar,
@@ -46,6 +51,7 @@ import {
   CopyIcon,
   SquareChevronRightIcon,
 } from 'lucide-react';
+import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -321,8 +327,27 @@ export default function ToolCard({
                     console.log(duplicateToolResponse); // TODO: message popup to open the new tool details
                   }}
                 >
-                  <CopyIcon className="mr-2 h-4 w-4" />
-                  Duplicate
+                  <div className="flex items-center gap-1">
+                    <CopyIcon className="mr-2 h-4 w-4" />
+                    Duplicate
+                    {(toolType !== 'Python' && toolType !== 'Deno') && (
+                      <Tooltip>
+                        <TooltipTrigger className="flex shrink-0 items-center">
+                          <InfoCircleIcon className="h-3 w-3 text-gray-100" />
+                        </TooltipTrigger>
+                        <TooltipPortal>
+                          <TooltipContent
+                            align="center"
+                            alignOffset={-10}
+                            className="max-w-md"
+                            side="top"
+                          >
+                            System tools cannot be copied or modified
+                          </TooltipContent>
+                        </TooltipPortal>
+                      </Tooltip>
+                    )}
+                  </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-xs"
@@ -729,7 +754,7 @@ export default function ToolCard({
                     <AlertDescription className="text-xs">
                       <p className="">
                         Your tool has been successfully prepared for publishing.
-                        To complete the process, you’ll need to finalize the
+                        To complete the process, you'll need to finalize the
                         submission details on the app store.{' '}
                         <a
                           className="font-medium text-inherit underline"

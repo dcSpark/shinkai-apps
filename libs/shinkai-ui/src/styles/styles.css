@@ -106,6 +106,26 @@
   content: url("data:image/svg+xml,%3Csvg data-v-88732935='' xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-file-text lucide-icon customizable'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'%3E%3C/path%3E%3Cpath d='M14 2v4a2 2 0 0 0 2 2h4'%3E%3C/path%3E%3Cpath d='M10 9H8'%3E%3C/path%3E%3Cpath d='M16 13H8'%3E%3C/path%3E%3Cpath d='M16 17H8'%3E%3C/path%3E%3C/svg%3E");
 }
 
+.tooltip-menu-item:hover {
+  position: relative;
+}
+
+.tooltip-menu-item[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  margin-left: 8px;
+  z-index: 100;
+}
+
 @keyframes loaderDots {
   0% {
     opacity: 1;
