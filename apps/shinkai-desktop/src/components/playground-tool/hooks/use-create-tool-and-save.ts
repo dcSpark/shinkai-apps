@@ -39,6 +39,8 @@ export const useAutoSaveTool = ({
     mutateAsync: saveToolCode,
     isPending: isSavingTool,
     isSuccess: isSaveToolSuccess,
+    isError: isSaveToolError,
+    error: saveToolCodeError,
   } = useSaveToolCode({
     onSuccess: (data) => {
       shouldAutoSaveRef.current = false;
@@ -120,6 +122,8 @@ export const useAutoSaveTool = ({
     handleAutoSave,
     isSavingTool,
     isSaveToolSuccess,
+    isSaveToolError,
+    saveToolCodeError,
   };
 };
 
@@ -143,22 +147,32 @@ export const useCreateToolAndSave = ({
   const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
 
   const toolCodeStatus = usePlaygroundStore((state) => state.toolCodeStatus);
+  const toolCodeError = usePlaygroundStore((state) => state.toolCodeError);
   const isToolCodeGenerationPending = toolCodeStatus === 'pending';
   const isToolCodeGenerationSuccess = toolCodeStatus === 'success';
-
+  const isToolCodeGenerationError = toolCodeStatus === 'error';
   const toolMetadataStatus = usePlaygroundStore(
     (state) => state.toolMetadataStatus,
   );
-
+  const toolMetadataError = usePlaygroundStore(
+    (state) => state.toolMetadataError,
+  );
   const isMetadataGenerationPending = toolMetadataStatus === 'pending';
   const isMetadataGenerationSuccess = toolMetadataStatus === 'success';
+  const isMetadataGenerationError = toolMetadataStatus === 'error';
 
   useToolMetadata({
     tools: form.watch('tools'),
     forceGenerateMetadata,
   });
 
-  const { handleAutoSave, isSavingTool, isSaveToolSuccess } = useAutoSaveTool({
+  const {
+    handleAutoSave,
+    isSavingTool,
+    isSaveToolSuccess,
+    isSaveToolError,
+    saveToolCodeError,
+  } = useAutoSaveTool({
     form,
   });
 
@@ -199,5 +213,12 @@ export const useCreateToolAndSave = ({
       isToolCodeGenerationSuccess &&
       isMetadataGenerationSuccess &&
       isSaveToolSuccess,
+    isError:
+      isToolCodeGenerationError || isMetadataGenerationError || isSaveToolError,
+    error:
+      toolCodeError ||
+      toolMetadataError ||
+      (saveToolCodeError?.response?.data?.message ??
+        saveToolCodeError?.message),
   };
 };
