@@ -16,79 +16,25 @@ import {
   buttonVariants,
   ChatInputArea,
   Form,
-  FormField,
-  Input,
-  Switch,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  TextField,
-  Tooltip,
-  TooltipContent,
-  TooltipPortal,
-  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
-import {
-  formatText,
-  getVersionFromTool,
-} from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { animate } from 'framer-motion';
 import { motion } from 'framer-motion';
-import { AlertCircle, ArrowRight, ArrowUpRight, StoreIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ArrowRight, ArrowUpRight, StoreIcon } from 'lucide-react';
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import { LanguageToolSelector } from '../components/playground-tool/components/language-tool-selector';
 import { ToolsSelection } from '../components/playground-tool/components/tools-selection';
+import { useCreateToolAndSave } from '../components/playground-tool/hooks/use-create-tool-and-save';
 import { useToolForm } from '../components/playground-tool/hooks/use-tool-code';
-import { AuthorAvatarLink } from '../components/tools/components/tool-details-card';
 import {
   DockerStatus,
   ToolCollection,
 } from '../components/tools/tool-collection';
-import { VideoBanner } from '../components/video-banner';
-import { useDebounce } from '../hooks/use-debounce';
-import { useAuth } from '../store/auth';
-import { TutorialBanner } from '../store/settings';
 import { SHINKAI_STORE_URL } from '../utils/store';
-
-export function useAnimatedText(text: string, delimiter = '') {
-  const [cursor, setCursor] = useState(0);
-  const [startingCursor, setStartingCursor] = useState(0);
-  const [prevText, setPrevText] = useState(text);
-
-  if (prevText !== text) {
-    setPrevText(text);
-    setStartingCursor(text.startsWith(prevText) ? cursor : 0);
-  }
-
-  useEffect(() => {
-    const parts = text.split(delimiter);
-    const duration =
-      delimiter === ''
-        ? 2 // Character animation
-        : delimiter === ' '
-          ? 4 // Word animation
-          : 2; // Chunk animation
-
-    const controls = animate(startingCursor, parts.length, {
-      duration,
-      ease: 'easeOut',
-      onUpdate(latest) {
-        setCursor(Math.floor(latest));
-      },
-    });
-
-    return () => controls.stop();
-  }, [startingCursor, text, delimiter]);
-
-  return text.split(delimiter).slice(0, cursor).join(delimiter);
-}
 
 export const BackgroundBeams = React.memo(
   ({ className }: { className?: string }) => {
@@ -228,12 +174,13 @@ export const BackgroundBeams = React.memo(
 BackgroundBeams.displayName = 'BackgroundBeams';
 
 export const ToolsHomepage = () => {
-  const auth = useAuth((state) => state.auth);
-  const navigate = useNavigate();
-
   const { t } = useTranslation();
-
   const form = useToolForm();
+
+  const { createToolAndSaveTool, isProcessing, isSuccess } =
+    useCreateToolAndSave({
+      form,
+    });
 
   return (
     <div className="mx-auto max-w-4xl pb-[80px]">
@@ -273,9 +220,6 @@ export const ToolsHomepage = () => {
                 <form>
                   <ChatInputArea
                     autoFocus
-                    onSubmit={console.log}
-                    placeholder={'Ask AI to create a tool for you...'}
-                    textareaClassName="min-h-[90px]"
                     bottomAddons={
                       <div className="flex items-end justify-between gap-3 pb-1 pl-1">
                         <div className="flex items-center gap-3">
@@ -304,9 +248,13 @@ export const ToolsHomepage = () => {
                             'hover:bg-app-gradient bg-official-gray-800 h-[40px] w-[40px] cursor-pointer rounded-xl p-3 transition-colors',
                             'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
                           )}
+                          isLoading={isProcessing}
+                          onClick={() =>
+                            createToolAndSaveTool(form.getValues())
+                          }
                           size="icon"
+                          type="button"
                           variant="tertiary"
-                          onClick={() => navigate('/tools/create')}
                         >
                           <SendIcon className="h-full w-full" />
                           <span className="sr-only">
@@ -315,13 +263,13 @@ export const ToolsHomepage = () => {
                         </Button>
                       </div>
                     }
-                    // disabled={
-                    //   isToolCodeGenerationPending || isMetadataGenerationPending
-                    // }
+                    disabled={isProcessing}
                     onChange={(value) => {
                       form.setValue('message', value);
                     }}
-                    // onSubmit={() => {}}
+                    onSubmit={form.handleSubmit(createToolAndSaveTool)}
+                    placeholder={'Ask AI to create a tool for you...'}
+                    textareaClassName="min-h-[90px]"
                     value={form.watch('message')}
                   />
 

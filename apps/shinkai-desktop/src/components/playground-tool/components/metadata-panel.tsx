@@ -3,12 +3,15 @@ import { Button, Skeleton } from '@shinkai_network/shinkai-ui';
 import { SaveIcon } from 'lucide-react';
 import { PrismEditor } from 'prism-react-editor';
 import { memo, MutableRefObject } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { toast } from 'sonner';
 import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
 
 import { usePlaygroundStore } from '../context/playground-context';
 import { ToolErrorFallback } from '../error-boundary';
+import { useAutoSaveTool } from '../hooks/use-create-tool-and-save';
+import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 import { ToolMetadataSchema } from '../schemas';
 import ToolCodeEditor from '../tool-code-editor';
 
@@ -41,6 +44,13 @@ function MetadataPanelBase({
   const isMetadataGenerationPending = toolMetadataStatus === 'pending';
   const isMetadataGenerationError = toolMetadataStatus === 'error';
 
+  const form = useFormContext<CreateToolCodeFormSchema>();
+
+  const { handleAutoSave, isSavingTool, isSaveToolSuccess } = useAutoSaveTool({
+    form,
+    metadataEditorRef,
+  });
+
   const handleApplyMetadataChanges = () => {
     const currentMetadata = metadataEditorRef.current?.value;
     if (!currentMetadata) return;
@@ -56,7 +66,7 @@ function MetadataPanelBase({
       const parsedAll = ToolMetadataSchema.parse(mergedMetadata);
 
       updateToolMetadata(parsedAll);
-      toast.success('Metadata updated successfully');
+      handleAutoSave();
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast.error('Invalid metadata format', {

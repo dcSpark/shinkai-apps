@@ -1,5 +1,12 @@
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
-import { createContext, useContext, useState } from 'react';
+import {
+  createContext,
+  createRef,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import { useLocation } from 'react-router-dom';
 import { createStore } from 'zustand';
 import { useStore } from 'zustand/index';
 
@@ -39,10 +46,17 @@ type PlaygroundStore = {
   setFocusedPanel: (
     focusedPanel: 'code' | 'metadata' | 'console' | 'preview' | null,
   ) => void;
+
+  resetPlaygroundStore: () => void;
+  shouldAutoSaveRef: React.MutableRefObject<boolean>;
 };
 
-const createPlaygroundStore = () =>
-  createStore<PlaygroundStore>((set) => ({
+const shouldAutoSaveRef =
+  createRef<boolean>() as React.MutableRefObject<boolean>;
+shouldAutoSaveRef.current = false;
+
+const createPlaygroundStore = () => {
+  return createStore<PlaygroundStore>((set) => ({
     // inboxId
     chatInboxId: undefined,
     setChatInboxId: (chatInboxId) => set({ chatInboxId }),
@@ -84,7 +98,24 @@ const createPlaygroundStore = () =>
 
     focusedPanel: null,
     setFocusedPanel: (focusedPanel) => set({ focusedPanel }),
+    shouldAutoSaveRef,
+    resetPlaygroundStore: () =>
+      set({
+        chatInboxId: undefined,
+        toolCodeStatus: 'idle',
+        toolCode: '',
+        toolCodeError: null,
+        toolMetadataStatus: 'idle',
+        toolMetadata: null,
+        toolMetadataError: null,
+        toolResult: null,
+        resetCounter: 0,
+        focusedPanel: null,
+        xShinkaiAppId: `app-id-${Date.now()}`,
+        xShinkaiToolId: `task-id-${Date.now()}`,
+      }),
   }));
+};
 
 const PlaygroundContext = createContext<ReturnType<
   typeof createPlaygroundStore
@@ -95,9 +126,17 @@ export const PlaygroundProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const location = useLocation();
   const [store] = useState<ReturnType<typeof createPlaygroundStore>>(
     createPlaygroundStore(),
   );
+
+  useEffect(() => {
+    if (location.pathname === '/tools' && store.getState().shouldAutoSaveRef) {
+      store.getState().resetPlaygroundStore();
+      store.getState().shouldAutoSaveRef.current = false;
+    }
+  }, [location.pathname, store]);
 
   return (
     <PlaygroundContext.Provider value={store}>

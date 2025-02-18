@@ -111,7 +111,7 @@ const NavLink = ({
 
   const isMatch = useMatch({
     path: href,
-    end: false,
+    end: true,
   });
 
   if (disabled) {

@@ -14,6 +14,7 @@ import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import { usePlaygroundStore } from '../context/playground-context';
 import { extractCodeByLanguage, extractCodeLanguage } from '../utils/code';
+import { useAutoSaveTool } from './use-create-tool-and-save';
 
 export const createToolCodeFormSchema = z.object({
   message: z.string().min(1),
@@ -251,6 +252,12 @@ export const useToolCode = ({
   const { mutateAsync: updateToolCodeImplementation } =
     useUpdateToolCodeImplementation();
 
+  const { handleAutoSave, isSavingTool, isSaveToolSuccess } = useAutoSaveTool({
+    form: createToolCodeForm,
+    codeEditorRef,
+    metadataEditorRef,
+  });
+
   const handleCreateToolCode = async (data: CreateToolCodeFormSchema) => {
     if (!auth) return;
 
@@ -287,6 +294,7 @@ export const useToolCode = ({
 
     setTimeout(() => {
       setToolCode(currentEditorValue as string);
+      handleAutoSave();
     }, 100);
   };
 
@@ -337,5 +345,8 @@ export const useToolCode = ({
     handleCreateToolCode,
     handleApplyChangesCodeSubmit,
     resetToolCode,
+
+    isSavingTool,
+    isSaveToolSuccess,
   };
 };
