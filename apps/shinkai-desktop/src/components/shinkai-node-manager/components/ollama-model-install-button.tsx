@@ -18,6 +18,8 @@ import {
 import { ALLOWED_OLLAMA_MODELS } from '../../../lib/shinkai-node-manager/ollama-models';
 import { useShinkaiNodeGetOllamaApiUrlQuery } from '../../../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useAuth } from '../../../store/auth';
+import { removeLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/removeLLMProvider/index';
+import { getLLMProviders } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 export const OllamaModelInstallButton = ({ model }: { model: string }) => {
   const { data: ollamaApiUrl } = useShinkaiNodeGetOllamaApiUrlQuery();
 
@@ -119,8 +121,23 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
         <Loader2 className="animate-spin" />
       ) : installedOllamaModelsMap.has(model) ? (
         <RemoveAIModelButton
-          onClick={() => {
-            ollamaRemove({ model: model });
+          onClick={async () => {
+            await ollamaRemove({ model: model });
+            const providers = await getLLMProviders(
+              auth?.node_address ?? '',
+              auth?.api_v2_key ?? '',
+            );
+            const llmProviderId = providers.find(
+              (provider) => provider.model.endsWith(model),
+            )?.id;
+            if (llmProviderId) {
+              await removeLLMProvider({
+                nodeAddress: auth?.node_address ?? '',
+                token: auth?.api_v2_key ?? '',
+                llmProviderId: llmProviderId,
+              });
+              console.log('llmProviderId removed for model:', model);
+            } else console.warn('llmProviderId not found for model:', model);
           }}
         />
       ) : pullingModelsMap?.get(model) ? (

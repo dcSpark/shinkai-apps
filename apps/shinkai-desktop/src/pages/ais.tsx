@@ -58,6 +58,8 @@ import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { SHINKAI_TUTORIALS } from '../utils/constants';
 import { getModelObject } from './add-ai';
 import { SimpleLayout } from './layout/simple-layout';
+import { useOllamaRemoveMutation } from '../lib/shinkai-node-manager/ollama-client';
+import { getLLMProviders } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
 const AIsPage = () => {
   const { t } = useTranslation();
@@ -488,7 +490,17 @@ const RemoveLLMProviderModal = ({
       });
     },
   });
-
+  const ollamaConfig = { host: 'http://127.0.0.1:11435' };
+  const { mutateAsync: removeOllamaModel } = useOllamaRemoveMutation(ollamaConfig, {
+    onSuccess: () => {
+      console.log('ollama model removed:', agentId);
+    },
+    onError: (error) => {
+      toast.error(t('llmProviders.errors.deleteAgent'), {
+        description: typeof error === 'string' ? error : error.message,
+      });
+    },
+  });
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-[425px]">
@@ -517,11 +529,24 @@ const RemoveLLMProviderModal = ({
               isLoading={isPending}
               onClick={async () => {
                 if (!auth) return;
+                const providers = await getLLMProviders(
+                  auth?.node_address ?? '',
+                  auth?.api_v2_key ?? '',
+                );
                 await removeLLMProvider({
                   nodeAddress: auth?.node_address ?? '',
                   llmProviderId: agentId,
                   token: auth?.api_v2_key ?? '',
                 });
+                let llmProviderModel = providers.find(
+                  (provider) => provider.id === agentId,
+                )?.model;
+                const isOllama = llmProviderModel?.split(':')[0] === 'ollama'
+                if (isOllama && llmProviderModel) {
+                  llmProviderModel = llmProviderModel.slice(llmProviderModel.indexOf(':') + 1);
+                  console.log('llmProviderModel', llmProviderModel);
+                  await removeOllamaModel({ model: llmProviderModel });
+                } else console.warn('llmProviderModel not found for agentId:', agentId);
               }}
               size="sm"
               variant="destructive"
