@@ -135,7 +135,7 @@ export const ToolsHomepage = () => {
             to={SHINKAI_STORE_URL}
           >
             <StoreIcon className="size-4" />
-            Visit App Store
+            {t('tools.store.label')}
           </Link>
         </div>
         <div className="flex flex-col gap-4">

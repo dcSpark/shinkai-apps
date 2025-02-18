@@ -1,5 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import {
+  GetToolResponse,
+  ShinkaiToolHeader,
+} from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDisableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/disableAllTools/useDisableAllTools';
 import { useEnableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/enableAllTools/useEnableAllTools';
 import { useImportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/importTool/useImportTool';
@@ -51,6 +55,10 @@ import { z } from 'zod';
 
 import { useDebounce } from '../../hooks/use-debounce';
 import { useAuth } from '../../store/auth';
+import {
+  ToolGroup,
+  usePlaygroundStore,
+} from '../playground-tool/context/playground-context';
 import ToolCard from './components/tool-card';
 
 export const ToolCollection = () => {
@@ -95,37 +103,54 @@ export const ToolCollection = () => {
     },
   });
 
-  const toolsGroup = [
+  const selectedToolGroup = usePlaygroundStore(
+    (state) => state.selectedToolGroup,
+  );
+
+  const setSelectedToolGroup = usePlaygroundStore(
+    (state) => state.setSelectedToolGroup,
+  );
+
+  const toolsGroup: {
+    label: string;
+    value: ToolGroup;
+    items: ShinkaiToolHeader[];
+  }[] = [
     {
       label: 'All',
       value: 'all-tools',
-      items: toolsList,
+      items: toolsList ?? [],
     },
     {
       label: 'Default Tools',
       value: 'tools',
-      items: toolsList?.filter(
-        (tool) => 'author' in tool && tool.author === '@@official.shinkai',
-      ),
+      items:
+        toolsList?.filter(
+          (tool) => 'author' in tool && tool.author === '@@official.shinkai',
+        ) ?? [],
     },
     {
       label: 'My Tools',
       value: 'my-tools',
-      items: toolsList?.filter(
-        (tool) => 'author' in tool && tool.author === auth?.shinkai_identity,
-      ),
+      items:
+        toolsList?.filter(
+          (tool) => 'author' in tool && tool.author === auth?.shinkai_identity,
+        ) ?? [],
     },
-    {
-      label: 'Downloaded',
-      value: 'downloaded',
-      items: toolsList, // TODO
-    },
+    // {
+    //   label: 'Downloaded',
+    //   value: 'downloaded',
+    //   items: toolsList ?? [], // TODO: add downloaded tools
+    // },
   ];
-
+  console.log(selectedToolGroup, 'selectedToolGroup');
   return (
     <Tabs
       className="flex w-full flex-col gap-6"
-      defaultValue={toolsGroup[0].value}
+      onValueChange={(value) => {
+        setSelectedToolGroup(value as ToolGroup);
+      }}
+      value={selectedToolGroup}
     >
       <div className="flex flex-col gap-8">
         <div className="flex items-center justify-between">
@@ -134,12 +159,12 @@ export const ToolCollection = () => {
               Shinkai Tools
             </h2>
             <p className="text-muted-foreground text-sm">
-              Manage, customize, and expand your AI tools.
+              {t('tools.description')}
             </p>
           </div>
-          <div className="relative flex h-10 items-center">
+          <div className="shadow-official-gray-950 focus-within:shadow-official-gray-700 relative flex h-10 items-center rounded-lg shadow-[0_0_0_1px_currentColor] transition-shadow">
             <Input
-              className="placeholder-gray-80 bg-official-gray-900 shadow-official-gray-750 focus-within:shadow-official-gray-700 !h-full border-none py-2 pl-10"
+              className="placeholder-gray-80 bg-official-gray-900 !h-full border-none py-2 pl-10"
               onChange={(e) => {
                 setSearchQuery(e.target.value);
               }}

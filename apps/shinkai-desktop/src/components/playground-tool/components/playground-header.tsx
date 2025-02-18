@@ -333,18 +333,6 @@ function PlaygroundHeaderBase({
           </div>
         )}
         <ManageSourcesButton />
-        {/* <Button
-          className="shrink-0"
-          disabled={!toolCode || !toolMetadata || !chatInboxId || isSavingTool}
-          isLoading={isSavingTool}
-          onClick={handleSaveTool}
-          rounded="lg"
-          size="xs"
-          variant="outline"
-        >
-          <Save className="h-4 w-4" />
-          Save Tool
-        </Button> */}
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -378,7 +366,7 @@ function PlaygroundHeaderBase({
                     rel="noreferrer"
                     target="_blank"
                   >
-                    Shinkai App Store
+                    Shinkai AI Store
                   </a>{' '}
                   . Please ensure it works as expected.
                 </p>

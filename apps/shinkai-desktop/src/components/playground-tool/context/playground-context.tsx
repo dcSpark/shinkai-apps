@@ -11,6 +11,7 @@ import { createStore } from 'zustand';
 import { useStore } from 'zustand/index';
 
 type Status = 'idle' | 'pending' | 'success' | 'error';
+export type ToolGroup = 'all-tools' | 'tools' | 'my-tools' | 'downloaded';
 
 type PlaygroundStore = {
   // inboxId
@@ -53,6 +54,9 @@ type PlaygroundStore = {
   toolHomepageScrollPositionRef: React.MutableRefObject<{
     [key: string]: number;
   } | null>;
+
+  selectedToolGroup: ToolGroup;
+  setSelectedToolGroup: (selectedToolGroup: ToolGroup) => void;
 };
 
 const shouldAutoSaveRef =
@@ -113,6 +117,8 @@ const createPlaygroundStore = () => {
     shouldAutoSaveRef,
 
     toolHomepageScrollPositionRef,
+    selectedToolGroup: 'all-tools',
+    setSelectedToolGroup: (selectedToolGroup) => set({ selectedToolGroup }),
 
     resetPlaygroundStore: () =>
       set({

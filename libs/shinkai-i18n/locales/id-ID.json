@@ -525,6 +525,7 @@
   },
   "tools": {
     "create": "Buat Alat",
+    "description": "Kelola, sesuaikan, dan kembangkan alat AI Anda.",
     "emptyState": {
       "search": {
         "text": "Tidak ada alat ditemukan untuk kueri pencarian"
@@ -534,7 +535,7 @@
     "label": "Alat-alat Shinkai",
     "lookingForMoreTools": "Mencari lebih banyak alat?",
     "store": {
-      "label": "Toko"
+      "label": "Jelajahi Toko AI"
     },
     "visitStore": "Kunjungi Toko Shinkai untuk menemukan dan menginstal alat tambahan yang dapat meningkatkan alur kerja Anda"
   },

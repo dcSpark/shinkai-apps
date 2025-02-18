@@ -629,7 +629,7 @@ export default function ToolDetailsCard({
                         rel="noreferrer"
                         target="_blank"
                       >
-                        Shinkai App Store
+                        Shinkai AI Store
                       </a>{' '}
                       to make it available to all Shinkai users.
                     </p>
