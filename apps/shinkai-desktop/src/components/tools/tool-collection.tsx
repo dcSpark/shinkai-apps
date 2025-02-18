@@ -40,24 +40,17 @@ import {
   Eye,
   EyeOff,
   MoreVerticalIcon,
-  PlusIcon,
   SearchIcon,
-  StoreIcon,
   XIcon,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useDebounce } from '../../hooks/use-debounce';
-import { SimpleLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
-import { TutorialBanner } from '../../store/settings';
-import { SHINKAI_TUTORIALS } from '../../utils/constants';
-import { SHINKAI_STORE_URL } from '../../utils/store';
-import { VideoBanner } from '../video-banner';
 import ToolCard from './components/tool-card';
 
 export const ToolCollection = () => {
@@ -82,22 +75,22 @@ export const ToolCollection = () => {
       { enabled: isSearchQuerySynced && !!searchQuery },
     );
 
-  // const { mutateAsync: enableAllTools } = useEnableAllTools({
-  //   onSuccess: () => {
-  //     toast.success('All tools were enabled successfully');
-  //   },
-  //   onError: (error) => {
-  //     toast.error(error.response?.data?.message ?? error.message);
-  //   },
-  // });
-  // const { mutateAsync: disableAllTools } = useDisableAllTools({
-  //   onSuccess: () => {
-  //     toast.success('All tools were disabled successfully');
-  //   },
-  //   onError: (error) => {
-  //     toast.error(error.response?.data?.message ?? error.message);
-  //   },
-  // });
+  const { mutateAsync: enableAllTools } = useEnableAllTools({
+    onSuccess: () => {
+      toast.success('All tools were enabled successfully');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message ?? error.message);
+    },
+  });
+  const { mutateAsync: disableAllTools } = useDisableAllTools({
+    onSuccess: () => {
+      toast.success('All tools were disabled successfully');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message ?? error.message);
+    },
+  });
 
   const toolsGroup = [
     {
@@ -182,7 +175,7 @@ export const ToolCollection = () => {
         )}
         {!searchQuery && isSearchQuerySynced && (
           <div>
-            <div className="flex w-full items-center justify-start">
+            <div className="flex w-full items-center justify-between">
               <TabsList className="border-official-gray-780 inline-flex h-[42px] items-center justify-center rounded-full border bg-transparent px-0.5 py-1">
                 {toolsGroup.map((tool) => (
                   <TabsTrigger
@@ -194,6 +187,45 @@ export const ToolCollection = () => {
                   </TabsTrigger>
                 ))}
               </TabsList>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    className="text-gray-80"
+                    rounded="lg"
+                    size="icon"
+                    variant="outline"
+                  >
+                    <MoreVerticalIcon className="size-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
+                  <DropdownMenuItem
+                    className="text-xs"
+                    onClick={() => {
+                      enableAllTools({
+                        nodeAddress: auth?.node_address ?? '',
+                        token: auth?.api_v2_key ?? '',
+                      });
+                    }}
+                  >
+                    <Eye className="mr-2 h-4 w-4" />
+                    Enable All Tools
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-xs"
+                    onClick={() => {
+                      disableAllTools({
+                        nodeAddress: auth?.node_address ?? '',
+                        token: auth?.api_v2_key ?? '',
+                      });
+                    }}
+                  >
+                    <EyeOff className="mr-2 h-4 w-4" />
+                    Disable All Tools
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
             {toolsGroup.map((tool) => (
               <TabsContent className="mt-0" key={tool.value} value={tool.value}>
@@ -207,70 +239,7 @@ export const ToolCollection = () => {
           </div>
         )}
 
-        {/* // <div className="flex items-center gap-2">
-        //   <ImportToolModal />
-        //   <Link
-        //     className={cn(
-        //       buttonVariants({
-        //         variant: 'outline',
-        //         size: 'xs',
-        //         rounded: 'lg',
-        //       }),
-        //     )}
-        //     to="/tools/create"
-        //   >
-        //     <PlusIcon className="size-4" />
-        //     {t('tools.create')}
-        //   </Link>
-
-
-
-        //   <DropdownMenu>
-        //     <DropdownMenuTrigger asChild>
-        //       <Button
-        //         className="text-gray-80"
-        //         rounded="lg"
-        //         size="icon"
-        //         variant="outline"
-        //       >
-        //         <MoreVerticalIcon className="size-4" />
-        //       </Button>
-        //     </DropdownMenuTrigger>
-        //     <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
-        //       <DropdownMenuItem
-        //         className="text-xs"
-        //         onClick={() => {
-        //           enableAllTools({
-        //             nodeAddress: auth?.node_address ?? '',
-        //             token: auth?.api_v2_key ?? '',
-        //           });
-        //         }}
-        //       >
-        //         <Eye className="mr-2 h-4 w-4" />
-        //         Enable All Tools
-        //       </DropdownMenuItem>
-        //       <DropdownMenuItem
-        //         className="text-xs"
-        //         onClick={() => {
-        //           disableAllTools({
-        //             nodeAddress: auth?.node_address ?? '',
-        //             token: auth?.api_v2_key ?? '',
-        //           });
-        //         }}
-        //       >
-        //         <EyeOff className="mr-2 h-4 w-4" />
-        //         Disable All Tools
-        //       </DropdownMenuItem>
-        //     </DropdownMenuContent>
-        //   </DropdownMenu>
-        // </div> */}
-
         <div className="flex flex-1 flex-col">
-          <VideoBanner
-            name={TutorialBanner.SHINKAI_TOOLS}
-            title="Welcome to the Shinkai Tools"
-            videoUrl={SHINKAI_TUTORIALS['shinkai-tools']}
-          />
           <div className="divide-y divide-gray-300">
             {(isPending || !isSearchQuerySynced || isSearchToolListPending) &&
               Array.from({ length: 8 }).map((_, idx) => (
@@ -291,36 +260,6 @@ export const ToolCollection = () => {
                   <span className="h-5 w-[36px] rounded-full bg-gray-300" />
                 </div>
               ))}
-
-            {/* <div className="p-4">
-              <div className="flex items-center justify-center gap-6 rounded-lg border border-dashed border-gray-400/30 bg-gray-200/30 px-6 py-6">
-                <SearchIcon className="text-gray-80 h-8 w-8" />
-                <div className="flex flex-col items-start gap-1.5">
-                  <h3 className="text-sm font-medium text-gray-100">
-                    {t('tools.lookingForMoreTools')}
-                  </h3>
-                  <p className="text-gray-80 text-sm">
-                    {t('tools.visitStore')}
-                  </p>
-                </div>
-                <Link
-                  className={cn(
-                    buttonVariants({
-                      size: 'xs',
-                      variant: 'default',
-                      rounded: 'lg',
-                    }),
-                    'shrink-0',
-                  )}
-                  rel="noreferrer"
-                  target="_blank"
-                  to={`${SHINKAI_STORE_URL}?search=${searchQuery}`}
-                >
-                  <StoreIcon className="size-4" />
-                  {t('tools.installFromStore')}
-                </Link>
-              </div>
-            </div> */}
           </div>
         </div>
       </div>
@@ -333,7 +272,7 @@ const importToolFormSchema = z.object({
 });
 type ImportToolFormSchema = z.infer<typeof importToolFormSchema>;
 
-function ImportToolModal() {
+export function ImportToolModal() {
   const auth = useAuth((state) => state.auth);
 
   const navigate = useNavigate();
@@ -382,9 +321,9 @@ function ImportToolModal() {
         )}
       >
         <CloudDownloadIcon className="size-4" />
-        Import Tool
+        Import
       </DialogTrigger>
-      <DialogContent className="max-w-[500px]">
+      <DialogContent className="bg-official-gray-950 max-w-[500px]">
         <DialogTitle className="pb-0">Import Tool</DialogTitle>
         <Form {...importToolForm}>
           <form
@@ -460,7 +399,7 @@ export function DockerStatus() {
 
   return (
     <Tooltip>
-      <TooltipTrigger className="flex items-center gap-2">
+      <TooltipTrigger className="flex items-center gap-2 px-1">
         <span
           className={`h-2 w-2 rounded-full ${config.color} ${config.borderColor}`}
         />

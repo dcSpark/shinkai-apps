@@ -49,11 +49,22 @@ type PlaygroundStore = {
 
   resetPlaygroundStore: () => void;
   shouldAutoSaveRef: React.MutableRefObject<boolean>;
+
+  toolHomepageScrollPositionRef: React.MutableRefObject<{
+    [key: string]: number;
+  } | null>;
 };
 
 const shouldAutoSaveRef =
   createRef<boolean>() as React.MutableRefObject<boolean>;
 shouldAutoSaveRef.current = false;
+
+export const toolHomepageScrollPositionRef = createRef<{
+  [key: string]: number;
+}>() as React.MutableRefObject<{
+  [key: string]: number;
+}>;
+toolHomepageScrollPositionRef.current = {};
 
 const createPlaygroundStore = () => {
   return createStore<PlaygroundStore>((set) => ({
@@ -98,7 +109,11 @@ const createPlaygroundStore = () => {
 
     focusedPanel: null,
     setFocusedPanel: (focusedPanel) => set({ focusedPanel }),
+
     shouldAutoSaveRef,
+
+    toolHomepageScrollPositionRef,
+
     resetPlaygroundStore: () =>
       set({
         chatInboxId: undefined,

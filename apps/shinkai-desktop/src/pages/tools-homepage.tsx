@@ -16,24 +16,32 @@ import {
   buttonVariants,
   ChatInputArea,
   Form,
+  Skeleton,
 } from '@shinkai_network/shinkai-ui';
 import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
+import { useScrollRestoration } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { animate } from 'framer-motion';
 import { motion } from 'framer-motion';
 import { ArrowRight, ArrowUpRight, StoreIcon } from 'lucide-react';
-import React from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import { LanguageToolSelector } from '../components/playground-tool/components/language-tool-selector';
 import { ToolsSelection } from '../components/playground-tool/components/tools-selection';
+import { usePlaygroundStore } from '../components/playground-tool/context/playground-context';
 import { useCreateToolAndSave } from '../components/playground-tool/hooks/use-create-tool-and-save';
 import { useToolForm } from '../components/playground-tool/hooks/use-tool-code';
+import PlaygroundToolLayout from '../components/playground-tool/layout';
 import {
   DockerStatus,
+  ImportToolModal,
   ToolCollection,
 } from '../components/tools/tool-collection';
+import { VideoBanner } from '../components/video-banner';
+import { TutorialBanner } from '../store/settings';
+import { SHINKAI_TUTORIALS } from '../utils/constants';
 import { SHINKAI_STORE_URL } from '../utils/store';
 
 export const BackgroundBeams = React.memo(
@@ -61,6 +69,7 @@ export const BackgroundBeams = React.memo(
       'M-247 -341C-247 -341 -179 64 285 191C749 318 817 723 817 723',
       'M-240 -349C-240 -349 -172 56 292 183C756 310 824 715 824 715',
       'M-233 -357C-233 -357 -165 48 299 175C763 302 831 707 831 707',
+
       'M-226 -365C-226 -365 -158 40 306 167C770 294 838 699 838 699',
       'M-219 -373C-219 -373 -151 32 313 159C777 286 845 691 845 691',
       'M-212 -381C-212 -381 -144 24 320 151C784 278 852 683 852 683',
@@ -176,165 +185,217 @@ BackgroundBeams.displayName = 'BackgroundBeams';
 export const ToolsHomepage = () => {
   const { t } = useTranslation();
   const form = useToolForm();
+  const toolHomepageScrollPositionRef = usePlaygroundStore(
+    (state) => state.toolHomepageScrollPositionRef,
+  );
+
+  const scrollElementRef = useRef<HTMLDivElement>(null);
+  useScrollRestoration({
+    key: 'tools',
+    containerRef: scrollElementRef,
+    scrollTopStateRef: toolHomepageScrollPositionRef,
+  });
 
   const { createToolAndSaveTool, isProcessing, isSuccess } =
     useCreateToolAndSave({
       form,
     });
 
-  return (
-    <div className="mx-auto max-w-4xl pb-[80px]">
-      <div className="mb-[80px] flex items-center justify-end gap-4 px-0 py-4">
-        <DockerStatus />
-        <Link
-          className={cn(
-            buttonVariants({
-              size: 'xs',
-              variant: 'outline',
-              rounded: 'lg',
-            }),
-          )}
-          rel="noreferrer"
-          target="_blank"
-          to={SHINKAI_STORE_URL}
-        >
-          <StoreIcon className="size-4" />
-          Visit App Store
-        </Link>
+  if (isProcessing) {
+    return (
+      <div className={cn('min-h-full flex-1 overflow-auto')}>
+        <PlaygroundToolLayout
+          leftElement={
+            <div className="flex w-full flex-col gap-4 p-4">
+              <Skeleton className="bg-official-gray-900 h-6 w-32" />
+              <Skeleton className="bg-official-gray-900 h-24 w-full" />
+              <Skeleton className="bg-official-gray-900 h-24 w-full" />
+            </div>
+          }
+          rightElement={
+            <div className="flex w-full flex-col gap-4 p-4">
+              <Skeleton className="bg-official-gray-900 h-6 w-32" />
+              <Skeleton className="bg-official-gray-900 h-[400px] w-full" />
+            </div>
+          }
+          topElement={
+            <div className="flex items-center justify-center p-4">
+              <Skeleton className="bg-official-gray-900 h-8 w-48" />
+            </div>
+          }
+        />
       </div>
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-20">
-          <div className="flex min-h-[400px] w-full flex-col items-center justify-center gap-10 pt-2">
-            <div className="flex flex-col gap-2">
-              <h1 className="font-clash text-center text-5xl font-semibold">
-                Build AI Tools in Minutes
-              </h1>
-              <p className="text-official-gray-400 text-center text-lg">
-                Create, automate, and optimize your workflow with powerful AI
-                tools.
-              </p>
-            </div>
+    );
+  }
 
-            <div className="w-full max-w-3xl">
-              <Form {...form}>
-                <form>
-                  <ChatInputArea
-                    autoFocus
-                    bottomAddons={
-                      <div className="flex items-end justify-between gap-3 pb-1 pl-1">
-                        <div className="flex items-center gap-3">
-                          <AIModelSelector
-                            onValueChange={(value) => {
-                              form.setValue('llmProviderId', value);
-                            }}
-                            value={form.watch('llmProviderId')}
-                          />
-                          <LanguageToolSelector
-                            onValueChange={(value) => {
-                              form.setValue('language', value as CodeLanguage);
-                            }}
-                            value={form.watch('language')}
-                          />
-                          <ToolsSelection
-                            onChange={(value) => {
-                              form.setValue('tools', value);
-                            }}
-                            value={form.watch('tools')}
-                          />
-                        </div>
-
-                        <Button
-                          className={cn(
-                            'hover:bg-app-gradient bg-official-gray-800 h-[40px] w-[40px] cursor-pointer rounded-xl p-3 transition-colors',
-                            'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
-                          )}
-                          isLoading={isProcessing}
-                          onClick={() =>
-                            createToolAndSaveTool(form.getValues())
-                          }
-                          size="icon"
-                          type="button"
-                          variant="tertiary"
-                        >
-                          <SendIcon className="h-full w-full" />
-                          <span className="sr-only">
-                            {t('chat.sendMessage')}
-                          </span>
-                        </Button>
-                      </div>
-                    }
-                    disabled={isProcessing}
-                    onChange={(value) => {
-                      form.setValue('message', value);
-                    }}
-                    onSubmit={form.handleSubmit(createToolAndSaveTool)}
-                    placeholder={'Ask AI to create a tool for you...'}
-                    textareaClassName="min-h-[90px]"
-                    value={form.watch('message')}
-                  />
-
-                  <div className="flex w-full items-center justify-center gap-3 py-6">
-                    {[
-                      {
-                        text: 'Download website as markdown',
-                        prompt:
-                          'Generate a tool for downloading a website into markdown',
-                      },
-                      {
-                        text: 'Get Hacker News stories',
-                        prompt:
-                          'Generate a tool for getting top tech-related stories from Hacker News, include the title, author, and URL of the story',
-                      },
-                      {
-                        text: 'Podcast summary',
-                        prompt:
-                          'Generate a tool for summarizing a podcast, include the title, author, and URL of the story',
-                      },
-                    ].map((suggestion) => (
-                      <Button
-                        key={suggestion.text}
-                        onClick={() =>
-                          form.setValue('message', suggestion.prompt)
-                        }
-                        size="xs"
-                        type="button"
-                        variant="outline"
-                      >
-                        {suggestion.text}
-                        <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
-                      </Button>
-                    ))}
-                  </div>
-                </form>
-              </Form>
-            </div>
-          </div>
-
-          <ToolCollection />
-
-          <div className="bg-official-gray-1100 relative rounded-lg">
-            <div className="mx-auto flex max-w-[1400px] flex-col items-center gap-8 p-10 text-center">
+  return (
+    <div
+      className={cn('min-h-full flex-1 overflow-auto')}
+      ref={scrollElementRef}
+    >
+      <div className="mx-auto max-w-4xl pb-[80px]">
+        <div className="mb-[80px] flex items-center justify-end gap-3 px-0 py-4">
+          <DockerStatus />
+          <ImportToolModal />
+          <Link
+            className={cn(
+              buttonVariants({
+                size: 'xs',
+                variant: 'outline',
+                rounded: 'lg',
+              }),
+            )}
+            rel="noreferrer"
+            target="_blank"
+            to={SHINKAI_STORE_URL}
+          >
+            <StoreIcon className="size-4" />
+            Visit App Store
+          </Link>
+        </div>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-20">
+            <div className="flex min-h-[300px] w-full flex-col items-center justify-between gap-10 pt-2">
               <div className="flex flex-col gap-2">
-                <h3 className="font-clash max-w-xl text-2xl font-semibold tracking-normal">
-                  Discover More Tools
-                </h3>
-                <p className="text-official-gray-400 max-w-xl text-base leading-relaxed tracking-tight">
-                  Explore and install tools from our App Store to boost your
-                  productivity and automate your workflow.
+                <h1 className="font-clash text-center text-5xl font-semibold">
+                  Build AI Tools in Minutes
+                </h1>
+                <p className="text-official-gray-400 text-center text-lg">
+                  Create, automate, and optimize your workflow with powerful AI
+                  tools.
                 </p>
               </div>
-              <div className="isolate flex flex-row gap-4">
-                <a
-                  className={cn(buttonVariants({ size: 'sm' }), 'gap-4 px-4')}
-                  href={SHINKAI_STORE_URL}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  Visit App Store <ArrowRight className="h-4 w-4" />
-                </a>
+
+              <div className="w-full max-w-3xl">
+                <Form {...form}>
+                  <form>
+                    <ChatInputArea
+                      autoFocus
+                      bottomAddons={
+                        <div className="flex items-end justify-between gap-3 pb-1 pl-1">
+                          <div className="flex items-center gap-3">
+                            <AIModelSelector
+                              onValueChange={(value) => {
+                                form.setValue('llmProviderId', value);
+                              }}
+                              value={form.watch('llmProviderId')}
+                            />
+                            <LanguageToolSelector
+                              onValueChange={(value) => {
+                                form.setValue(
+                                  'language',
+                                  value as CodeLanguage,
+                                );
+                              }}
+                              value={form.watch('language')}
+                            />
+                            <ToolsSelection
+                              onChange={(value) => {
+                                form.setValue('tools', value);
+                              }}
+                              value={form.watch('tools')}
+                            />
+                          </div>
+
+                          <Button
+                            className={cn(
+                              'hover:bg-app-gradient bg-official-gray-800 h-[40px] w-[40px] cursor-pointer rounded-xl p-3 transition-colors',
+                              'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
+                            )}
+                            isLoading={isProcessing}
+                            onClick={() =>
+                              createToolAndSaveTool(form.getValues())
+                            }
+                            size="icon"
+                            type="button"
+                            variant="tertiary"
+                          >
+                            <SendIcon className="h-full w-full" />
+                            <span className="sr-only">
+                              {t('chat.sendMessage')}
+                            </span>
+                          </Button>
+                        </div>
+                      }
+                      disabled={isProcessing}
+                      onChange={(value) => {
+                        form.setValue('message', value);
+                      }}
+                      onSubmit={form.handleSubmit(createToolAndSaveTool)}
+                      placeholder={'Ask AI to create a tool for you...'}
+                      textareaClassName="min-h-[90px]"
+                      value={form.watch('message')}
+                    />
+
+                    <div className="flex w-full items-center justify-center gap-3 py-6">
+                      {[
+                        {
+                          text: 'Download website as markdown',
+                          prompt:
+                            'Generate a tool for downloading a website into markdown',
+                        },
+                        {
+                          text: 'Get Hacker News stories',
+                          prompt:
+                            'Generate a tool for getting top tech-related stories from Hacker News, include the title, author, and URL of the story',
+                        },
+                        {
+                          text: 'Podcast summary',
+                          prompt:
+                            'Generate a tool for summarizing a podcast, include the title, author, and URL of the story',
+                        },
+                      ].map((suggestion) => (
+                        <Button
+                          key={suggestion.text}
+                          onClick={() =>
+                            form.setValue('message', suggestion.prompt)
+                          }
+                          size="xs"
+                          type="button"
+                          variant="outline"
+                        >
+                          {suggestion.text}
+                          <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
+                        </Button>
+                      ))}
+                    </div>
+                  </form>
+                </Form>
               </div>
             </div>
-            <BackgroundBeams />
+
+            <VideoBanner
+              name={TutorialBanner.SHINKAI_TOOLS}
+              title="Welcome to the Shinkai Tools"
+              videoUrl={SHINKAI_TUTORIALS['shinkai-tools']}
+            />
+
+            <ToolCollection />
+
+            <div className="bg-official-gray-1100 relative rounded-lg">
+              <div className="mx-auto flex max-w-[1400px] flex-col items-center gap-8 p-10 text-center">
+                <div className="flex flex-col gap-2">
+                  <h3 className="font-clash max-w-xl text-2xl font-semibold tracking-normal">
+                    Discover More Tools
+                  </h3>
+                  <p className="text-official-gray-400 max-w-xl text-base leading-relaxed tracking-tight">
+                    Explore and install tools from our App Store to boost your
+                    productivity and automate your workflow.
+                  </p>
+                </div>
+                <div className="isolate flex flex-row gap-4">
+                  <a
+                    className={cn(buttonVariants({ size: 'sm' }), 'gap-4 px-4')}
+                    href={SHINKAI_STORE_URL}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    Visit App Store <ArrowRight className="h-4 w-4" />
+                  </a>
+                </div>
+              </div>
+              <BackgroundBeams />
+            </div>
           </div>
         </div>
       </div>

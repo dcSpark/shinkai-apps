@@ -104,23 +104,19 @@ function PlaygroundHeaderBase({
       },
     });
 
-  const {
-    mutateAsync: publishTool,
-    isPending: isPublishingTool,
-    data: publishToolData,
-    isSuccess: isPublishToolSuccess,
-  } = usePublishTool({
-    onSuccess: (response) => {
-      open(
-        `${SHINKAI_STORE_URL}/store/revisions/complete?id=${response.response.revisionId}`,
-      );
-    },
-    onError: (error) => {
-      toast.error('Failed to publish tool', {
-        description: error.response?.data?.message ?? error.message,
-      });
-    },
-  });
+  const { mutateAsync: publishTool, isPending: isPublishingTool } =
+    usePublishTool({
+      onSuccess: (response) => {
+        open(
+          `${SHINKAI_STORE_URL}/store/revisions/complete?id=${response.response.revisionId}`,
+        );
+      },
+      onError: (error) => {
+        toast.error('Failed to publish tool', {
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
 
   const restoreCode = async () => {
     const currentIdx = toolHistory.findIndex(
@@ -337,7 +333,7 @@ function PlaygroundHeaderBase({
           </div>
         )}
         <ManageSourcesButton />
-        <Button
+        {/* <Button
           className="shrink-0"
           disabled={!toolCode || !toolMetadata || !chatInboxId || isSavingTool}
           isLoading={isSavingTool}
@@ -348,7 +344,7 @@ function PlaygroundHeaderBase({
         >
           <Save className="h-4 w-4" />
           Save Tool
-        </Button>
+        </Button> */}
         <Popover>
           <PopoverTrigger asChild>
             <Button

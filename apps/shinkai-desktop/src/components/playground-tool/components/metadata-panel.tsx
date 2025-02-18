@@ -1,5 +1,12 @@
 import { ReloadIcon } from '@radix-ui/react-icons';
-import { Button, Skeleton } from '@shinkai_network/shinkai-ui';
+import {
+  Button,
+  Skeleton,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipTrigger,
+} from '@shinkai_network/shinkai-ui';
 import { SaveIcon } from 'lucide-react';
 import { PrismEditor } from 'prism-react-editor';
 import { memo, MutableRefObject } from 'react';
@@ -83,7 +90,25 @@ function MetadataPanelBase({
   return (
     <div className="flex h-full flex-col pb-4 pl-4 pr-3">
       {isMetadataGenerationSuccess && (
-        <div className="flex items-center justify-end gap-2 py-1">
+        <div className="flex items-center justify-end gap-2 py-1.5">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="!size-[28px] rounded-lg border-0 bg-transparent p-2"
+                onClick={regenerateToolMetadata}
+                size="xs"
+                type="button"
+                variant="ghost"
+              >
+                <ReloadIcon className="size-full" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipPortal>
+              <TooltipContent side="left">
+                <p>Regenerate metadata</p>
+              </TooltipContent>
+            </TooltipPortal>
+          </Tooltip>
           <Button
             className="!h-[28px] rounded-lg border-0 bg-transparent"
             onClick={handleApplyMetadataChanges}
@@ -91,18 +116,7 @@ function MetadataPanelBase({
             type="button"
             variant="ghost"
           >
-            <SaveIcon className="size-3.5" />
             Apply Changes
-          </Button>
-          <Button
-            className="!h-[28px] rounded-lg border-0 bg-transparent"
-            onClick={regenerateToolMetadata}
-            size="xs"
-            type="button"
-            variant="ghost"
-          >
-            <ReloadIcon className="size-3.5" />
-            Regenerate Metadata
           </Button>
         </div>
       )}

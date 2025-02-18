@@ -612,6 +612,9 @@ const MainLayout = () => {
   const displaySidebar =
     !!auth && !disabledSidebarRoutes.includes(location.pathname);
 
+  const disableScrollRoutes = ['/tools'];
+  const hideScrollbar = disableScrollRoutes.includes(location.pathname);
+
   return (
     <div className="bg-official-gray-950 rfelative flex h-screen min-h-full flex-col overflow-hidden text-white">
       <div
@@ -622,9 +625,13 @@ const MainLayout = () => {
         <AnimatePresence initial={false}>
           {displaySidebar && <MainNav />}
         </AnimatePresence>
-        <div className={cn('min-h-full flex-1 overflow-auto')}>
+        {hideScrollbar ? (
           <Outlet />
-        </div>
+        ) : (
+          <div className={cn('min-h-full flex-1 overflow-auto')}>
+            <Outlet />
+          </div>
+        )}
       </div>
       <ResetConnectionDialog
         isOpen={needsResetApp}
