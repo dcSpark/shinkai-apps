@@ -3,6 +3,7 @@ import validator from '@rjsf/validator-ajv8';
 import { useGetShinkaiFileProtocol } from '@shinkai_network/shinkai-node-state/v2/queries/getShinkaiFileProtocol/useGetShinkaiFileProtocol';
 import {
   Button,
+  CommandShortcut,
   JsonForm,
   Skeleton,
   Tabs,
@@ -17,7 +18,13 @@ import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AppWindow, LoaderIcon, Paperclip, TerminalIcon } from 'lucide-react';
+import {
+  AppWindow,
+  LoaderIcon,
+  Paperclip,
+  Play,
+  TerminalIcon,
+} from 'lucide-react';
 import { memo, MutableRefObject, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -128,8 +135,8 @@ function ExecutionPanelBase({
         value="view"
       >
         <div className="flex size-full flex-col pb-4 pl-4 pr-3">
-          <div className="flex items-center justify-between">
-            <div className="text-gray-80 flex flex-col gap-1 py-3 text-xs">
+          <div className="flex items-start justify-between py-3">
+            <div className="text-gray-80 flex flex-col gap-1 text-xs">
               {toolMetadata && (
                 <div className="flex flex-col gap-1">
                   <h1 className="text-sm font-medium text-white">
@@ -141,6 +148,27 @@ function ExecutionPanelBase({
                 </div>
               )}
             </div>
+            {isMetadataGenerationSuccess &&
+              !isToolCodeGenerationPending &&
+              !isMetadataGenerationError && (
+                <Button
+                  className="text-white"
+                  disabled={
+                    !isMetadataGenerationSuccess ||
+                    isToolCodeGenerationPending ||
+                    isMetadataGenerationError
+                  }
+                  form="parameters-form"
+                  isLoading={isExecutionToolCodePending}
+                  rounded="lg"
+                  size="xs"
+                >
+                  Run
+                  <CommandShortcut className="font-clash flex items-center text-xs text-white">
+                    ⌘⏎
+                  </CommandShortcut>
+                </Button>
+              )}
           </div>
           <div className="pb-6">
             {(isMetadataGenerationPending || isToolCodeGenerationPending) && (
@@ -216,6 +244,7 @@ function ExecutionPanelBase({
                     }}
                     validator={validator}
                   />
+
                   <AnimatePresence mode="popLayout">
                     {(isExecutionToolCodePending ||
                       isExecutionToolCodeError ||

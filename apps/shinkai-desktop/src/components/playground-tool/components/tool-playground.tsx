@@ -162,7 +162,6 @@ function PlaygroundToolEditor({
             toolHistory={toolHistory}
             mode={mode}
             toolName={toolName ?? ''}
-            isExecutionToolCodePending={executeToolCodeQuery.isPending}
             baseToolCodeRef={baseToolCodeRef}
             metadataEditorRef={metadataEditorRef}
             codeEditorRef={codeEditorRef}

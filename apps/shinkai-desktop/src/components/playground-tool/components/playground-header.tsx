@@ -1,4 +1,5 @@
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
+import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useRestoreToolConversation } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreToolConversation/useRestoreToolConversation';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
 import { useGetAllToolAssets } from '@shinkai_network/shinkai-node-state/v2/queries/getAllToolAssets/useGetAllToolAssets';
@@ -12,17 +13,19 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { Badge, Separator, Tooltip } from '@shinkai_network/shinkai-ui';
+import { StoreIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Loader2, Play, Redo2Icon, Save, Undo2Icon } from 'lucide-react';
+import { Loader2, Redo2Icon, Save, Undo2Icon } from 'lucide-react';
 import { PrismEditor } from 'prism-react-editor';
 import { memo } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
+import { SHINKAI_STORE_URL } from '../../../utils/store';
 import { usePlaygroundStore } from '../context/playground-context';
 import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 import { ToolMetadataSchemaType } from '../schemas';
@@ -33,7 +36,6 @@ function PlaygroundHeaderBase({
   toolHistory,
   mode,
   toolName,
-  isExecutionToolCodePending,
   baseToolCodeRef,
   metadataEditorRef,
   codeEditorRef,
@@ -46,7 +48,6 @@ function PlaygroundHeaderBase({
   }[];
   mode: 'create' | 'edit';
   toolName: string;
-  isExecutionToolCodePending: boolean;
   baseToolCodeRef: React.MutableRefObject<string>;
   metadataEditorRef: React.MutableRefObject<PrismEditor | null>;
   codeEditorRef: React.MutableRefObject<PrismEditor | null>;
@@ -65,17 +66,7 @@ function PlaygroundHeaderBase({
   const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
 
   const createToolCodeForm = useFormContext<CreateToolCodeFormSchema>();
-
-  const isToolCodeGenerationPending = usePlaygroundStore(
-    (state) => state.toolCodeStatus === 'pending',
-  );
-
-  const isMetadataGenerationSuccess = usePlaygroundStore(
-    (state) => state.toolMetadataStatus === 'success',
-  );
-  const isMetadataGenerationError = usePlaygroundStore(
-    (state) => state.toolMetadataStatus === 'error',
-  );
+  const { toolRouterKey } = useParams();
 
   const { data: assets } = useGetAllToolAssets({
     nodeAddress: auth?.node_address ?? '',
@@ -112,6 +103,24 @@ function PlaygroundHeaderBase({
         });
       },
     });
+
+  const {
+    mutateAsync: publishTool,
+    isPending: isPublishingTool,
+    data: publishToolData,
+    isSuccess: isPublishToolSuccess,
+  } = usePublishTool({
+    onSuccess: (response) => {
+      open(
+        `${SHINKAI_STORE_URL}/store/revisions/complete?id=${response.response.revisionId}`,
+      );
+    },
+    onError: (error) => {
+      toast.error('Failed to publish tool', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
 
   const restoreCode = async () => {
     const currentIdx = toolHistory.findIndex(
@@ -221,7 +230,7 @@ function PlaygroundHeaderBase({
   };
 
   return (
-    <div className="grid grid-cols-3 items-center justify-between gap-2 border-b border-gray-400 px-4 pb-2.5">
+    <div className="flex items-center justify-between gap-2 border-b border-gray-400 px-4 pb-2.5">
       <div className="flex items-center gap-4">
         <Popover>
           <PopoverTrigger
@@ -239,23 +248,6 @@ function PlaygroundHeaderBase({
         </Popover>
       </div>
 
-      <div className="flex items-center justify-center gap-2.5">
-        <Button
-          className="text-white"
-          disabled={
-            !isMetadataGenerationSuccess ||
-            isToolCodeGenerationPending ||
-            isMetadataGenerationError
-          }
-          form="parameters-form"
-          isLoading={isExecutionToolCodePending}
-          rounded="lg"
-          size="xs"
-        >
-          {!isExecutionToolCodePending && <Play className="h-4 w-4" />}
-          Run
-        </Button>
-      </div>
       <div className="flex items-center justify-end gap-2.5">
         {toolHistory.length > 1 && (
           <div className="flex items-center gap-4">
@@ -357,6 +349,71 @@ function PlaygroundHeaderBase({
           <Save className="h-4 w-4" />
           Save Tool
         </Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              className="min-w-[100px]"
+              disabled={
+                !toolCode || !toolMetadata || !chatInboxId || isSavingTool
+              }
+              isLoading={isPublishingTool}
+              rounded="lg"
+              size="xs"
+            >
+              Publish
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            align="end"
+            className="bg-official-gray-1000 w-[450px]"
+            sideOffset={10}
+          >
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <h4 className="flex items-center gap-2 font-medium leading-none">
+                  <StoreIcon className="h-4 w-4" />
+                  Publish to the App Store
+                </h4>
+                <p className="text-official-gray-300 text-xs">
+                  Publishing will make your tool available in the{' '}
+                  <a
+                    className="text-white underline"
+                    href={SHINKAI_STORE_URL}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    Shinkai App Store
+                  </a>{' '}
+                  . Please ensure it works as expected.
+                </p>
+              </div>
+              {/* create short preview with the tool name and description */}
+              <div className="bg-official-gray-900 flex flex-col gap-2 rounded-lg p-4 text-white">
+                <h5 className="text-sm font-medium leading-none">
+                  {toolMetadata?.name}
+                </h5>
+                <p className="text-xs">{toolMetadata?.description}</p>
+                <p className="text-xs text-white">
+                  Author: {auth?.shinkai_identity}
+                </p>
+              </div>
+              <Button
+                className="w-full"
+                onClick={() => {
+                  publishTool({
+                    toolKey: toolRouterKey ?? '',
+                    nodeAddress: auth?.node_address ?? '',
+                    token: auth?.api_v2_key ?? '',
+                  });
+                }}
+                rounded="lg"
+                size="xs"
+              >
+                Publish
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );
