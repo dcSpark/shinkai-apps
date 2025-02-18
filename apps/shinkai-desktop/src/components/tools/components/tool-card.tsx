@@ -1,9 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import {
-  ShinkaiTool,
-  ShinkaiToolHeader,
-} from '@shinkai_network/shinkai-message-ts/api/tools/types';
-import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
+import { ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import {
   Badge,
   buttonVariants,
@@ -26,7 +23,8 @@ import { useAuth } from '../../../store/auth';
 export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
-  const { mutateAsync: updateTool } = useUpdateTool();
+
+  const { mutateAsync: toggleEnableTool, isPending } = useToggleEnableTool();
 
   return (
     <div
@@ -70,11 +68,10 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
         <TooltipTrigger className="flex items-center gap-1">
           <Switch
             checked={tool.enabled}
+            disabled={isPending}
             onCheckedChange={async () => {
-              await updateTool({
+              await toggleEnableTool({
                 toolKey: tool.tool_router_key,
-                toolType: tool.tool_type,
-                toolPayload: {} as ShinkaiTool,
                 isToolEnabled: !tool.enabled,
                 nodeAddress: auth?.node_address ?? '',
                 token: auth?.api_v2_key ?? '',

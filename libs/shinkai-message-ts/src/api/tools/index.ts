@@ -39,6 +39,8 @@ import {
   SearchPromptsResponse,
   SetOAuthTokenRequest,
   SetOAuthTokenResponse,
+  ToggleEnableToolRequest,
+  ToggleEnableToolResponse,
   UndoToolImplementationRequest,
   UndoToolImplementationResponse,
   UpdatePromptRequest,
@@ -123,6 +125,19 @@ export const updateTool = async (
     },
   );
   return response.data as UpdateToolResponse;
+};
+
+export const toggleEnableTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: ToggleEnableToolRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/set_tool_enabled'),
+    { tool_router_key: payload.tool_router_key, enabled: payload.enabled },
+    { headers: { Authorization: `Bearer ${bearerToken}` } },
+  );
+  return response.data as ToggleEnableToolResponse;
 };
 
 export const payInvoice = async (

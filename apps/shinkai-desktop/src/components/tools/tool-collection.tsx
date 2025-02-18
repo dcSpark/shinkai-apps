@@ -239,9 +239,18 @@ export const ToolCollection = () => {
             {toolsGroup.map((tool) => (
               <TabsContent className="mt-0" key={tool.value} value={tool.value}>
                 <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
-                  {tool.items?.map((item) => (
-                    <ToolCard key={item.tool_router_key} tool={item} />
-                  ))}
+                  {tool.items?.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center gap-2 py-8">
+                      <p className="text-official-gray-400 text-sm">
+                        No tools found in this category. Create a new tool or
+                        install from the App Store.
+                      </p>
+                    </div>
+                  ) : (
+                    tool.items?.map((item) => (
+                      <ToolCard key={item.tool_router_key} tool={item} />
+                    ))
+                  )}
                 </div>
               </TabsContent>
             ))}

@@ -8,6 +8,7 @@ import {
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
+import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
 import {
@@ -118,6 +119,9 @@ export default function ToolDetailsCard({
       });
     },
   });
+
+  const { mutateAsync: toggleEnableTool, isPending: isTogglingEnableTool } =
+    useToggleEnableTool();
 
   const { mutateAsync: exportTool, isPending: isExportingTool } = useExportTool(
     {
@@ -251,13 +255,11 @@ export default function ToolDetailsCard({
               </label>
               <Switch
                 checked={isEnabled}
-                disabled={isPending}
+                disabled={isTogglingEnableTool}
                 id="tool-switch"
                 onCheckedChange={async () => {
-                  await updateTool({
+                  await toggleEnableTool({
                     toolKey: toolKey ?? '',
-                    toolType: toolType,
-                    toolPayload: {} as ShinkaiTool,
                     isToolEnabled: !isEnabled,
                     nodeAddress: auth?.node_address ?? '',
                     token: auth?.api_v2_key ?? '',
