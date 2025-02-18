@@ -65,15 +65,18 @@ export const ToolCollection = () => {
     token: auth?.api_v2_key ?? '',
   });
 
-  const { data: searchToolList, isLoading: isSearchToolListPending } =
-    useGetSearchTools(
-      {
-        nodeAddress: auth?.node_address ?? '',
-        token: auth?.api_v2_key ?? '',
-        search: debouncedSearchQuery,
-      },
-      { enabled: isSearchQuerySynced && !!searchQuery },
-    );
+  const {
+    data: searchToolList,
+    isLoading: isSearchToolListPending,
+    isSuccess: isSearchToolListSuccess,
+  } = useGetSearchTools(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      search: debouncedSearchQuery,
+    },
+    { enabled: isSearchQuerySynced && !!searchQuery },
+  );
 
   const { mutateAsync: enableAllTools } = useEnableAllTools({
     onSuccess: () => {
@@ -161,11 +164,7 @@ export const ToolCollection = () => {
             )}
           </div>
         </div>
-        {searchQuery &&
-          isSearchQuerySynced &&
-          searchToolList?.map((tool) => (
-            <ToolCard key={tool.tool_router_key} tool={tool} />
-          ))}
+
         {searchQuery && isSearchQuerySynced && searchToolList?.length === 0 && (
           <div className="flex h-20 items-center justify-center">
             <p className="text-gray-80 text-sm">
@@ -173,6 +172,16 @@ export const ToolCollection = () => {
             </p>
           </div>
         )}
+        {searchQuery &&
+          isSearchQuerySynced &&
+          isSearchToolListSuccess &&
+          searchToolList?.length > 0 && (
+            <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
+              {searchToolList?.map((tool) => (
+                <ToolCard key={tool.tool_router_key} tool={tool} />
+              ))}
+            </div>
+          )}
         {!searchQuery && isSearchQuerySynced && (
           <div>
             <div className="flex w-full items-center justify-between">
@@ -229,7 +238,7 @@ export const ToolCollection = () => {
             </div>
             {toolsGroup.map((tool) => (
               <TabsContent className="mt-0" key={tool.value} value={tool.value}>
-                <div className="divide-official-gray-780 grid grid-cols-1 gap-3 divide-y py-4">
+                <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
                   {tool.items?.map((item) => (
                     <ToolCard key={item.tool_router_key} tool={item} />
                   ))}
@@ -239,29 +248,28 @@ export const ToolCollection = () => {
           </div>
         )}
 
-        <div className="flex flex-1 flex-col">
-          <div className="divide-y divide-gray-300">
-            {(isPending || !isSearchQuerySynced || isSearchToolListPending) &&
-              Array.from({ length: 8 }).map((_, idx) => (
-                <div
-                  className={cn(
-                    'grid animate-pulse grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
-                  )}
-                  key={idx}
-                >
-                  <div className="flex w-full flex-1 flex-col gap-3">
-                    <span className="h-4 w-36 rounded-sm bg-gray-300" />
-                    <div className="flex flex-col gap-1">
-                      <span className="h-3 w-full rounded-sm bg-gray-300" />
-                      <span className="h-3 w-2/4 rounded-sm bg-gray-300" />
-                    </div>
+        {(isPending || !isSearchQuerySynced || isSearchToolListPending) && (
+          <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
+            {Array.from({ length: 8 }).map((_, idx) => (
+              <div
+                className={cn(
+                  'grid animate-pulse grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm px-2 py-3 pr-4 text-left text-sm',
+                )}
+                key={idx}
+              >
+                <div className="flex w-full flex-1 flex-col gap-3">
+                  <span className="h-4 w-36 rounded-sm bg-gray-300" />
+                  <div className="flex flex-col gap-1">
+                    <span className="h-3 w-full rounded-sm bg-gray-300" />
+                    <span className="h-3 w-2/4 rounded-sm bg-gray-300" />
                   </div>
-                  <span className="h-7 w-full rounded-md bg-gray-300" />
-                  <span className="h-5 w-[36px] rounded-full bg-gray-300" />
                 </div>
-              ))}
+                <span className="h-7 w-full rounded-md bg-gray-300" />
+                <span className="h-5 w-[36px] rounded-full bg-gray-300" />
+              </div>
+            ))}
           </div>
-        </div>
+        )}
       </div>
     </Tabs>
   );
