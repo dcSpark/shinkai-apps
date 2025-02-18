@@ -8,7 +8,7 @@ import { usePlaygroundStore } from '../context/playground-context';
 import ToolCodeEditor from '../tool-code-editor';
 import { detectLanguage } from '../utils/code';
 
-const getRandomWidth = () => {
+export const getRandomWidth = () => {
   const widths = [
     'w-12',
     'w-16',

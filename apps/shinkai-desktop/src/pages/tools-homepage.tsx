@@ -28,6 +28,7 @@ import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
+import { getRandomWidth } from '../components/playground-tool/components/code-panel';
 import { LanguageToolSelector } from '../components/playground-tool/components/language-tool-selector';
 import { ToolsSelection } from '../components/playground-tool/components/tools-selection';
 import { usePlaygroundStore } from '../components/playground-tool/context/playground-context';
@@ -206,21 +207,46 @@ export const ToolsHomepage = () => {
       <div className={cn('min-h-full flex-1 overflow-auto')}>
         <PlaygroundToolLayout
           leftElement={
-            <div className="flex w-full flex-col gap-4 p-4">
+            <div className="bg-official-gray-950 flex w-full flex-col gap-4 p-4">
               <Skeleton className="bg-official-gray-900 h-6 w-32" />
               <Skeleton className="bg-official-gray-900 h-24 w-full" />
+              <Skeleton className="bg-official-gray-900 h-24 w-full" />
+              <Skeleton className="bg-official-gray-900 h-6 w-32" />
+              <Skeleton className="bg-official-gray-900 h-24 w-full" />
+              <Skeleton className="bg-official-gray-900 h-24 w-full" />
+              <Skeleton className="bg-official-gray-900 h-6 w-32" />
               <Skeleton className="bg-official-gray-900 h-24 w-full" />
             </div>
           }
           rightElement={
-            <div className="flex w-full flex-col gap-4 p-4">
-              <Skeleton className="bg-official-gray-900 h-6 w-32" />
-              <Skeleton className="bg-official-gray-900 h-[400px] w-full" />
+            <div className="flex w-full flex-col items-start gap-1 px-4 py-4 text-xs">
+              {[...Array(20)].map((_, lineIndex) => (
+                <div className="mb-2 flex gap-3" key={lineIndex}>
+                  <Skeleton className="bg-official-gray-900 h-4 w-12 rounded" />
+                  <div className="flex-1">
+                    <div className="flex flex-wrap gap-2">
+                      {[...Array(Math.floor(Math.random() * 4) + 1)].map(
+                        (_, blockIndex) => (
+                          <Skeleton
+                            className={cn(
+                              getRandomWidth(),
+                              'bg-official-gray-900 h-4 rounded',
+                            )}
+                            key={blockIndex}
+                          />
+                        ),
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <p className="sr-only">Generating Code...</p>
             </div>
           }
           topElement={
-            <div className="flex items-center justify-center p-4">
+            <div className="bg-official-gray-950 border-official-gray-780 flex items-center justify-between border-b p-4">
               <Skeleton className="bg-official-gray-900 h-8 w-48" />
+              <Skeleton className="bg-official-gray-900 h-8 w-[300px]" />
             </div>
           }
         />
@@ -298,19 +324,16 @@ export const ToolsHomepage = () => {
                           </div>
 
                           <Button
-                            className={cn(
-                              'hover:bg-app-gradient bg-official-gray-800 h-[40px] w-[40px] cursor-pointer rounded-xl p-3 transition-colors',
-                              'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
-                            )}
+                            disabled={form.watch('message') === ''}
                             isLoading={isProcessing}
                             onClick={() =>
                               createToolAndSaveTool(form.getValues())
                             }
-                            size="icon"
+                            rounded="lg"
+                            size="xs"
                             type="button"
-                            variant="tertiary"
                           >
-                            <SendIcon className="h-full w-full" />
+                            <SendIcon className="size-4" />
                             <span className="sr-only">
                               {t('chat.sendMessage')}
                             </span>

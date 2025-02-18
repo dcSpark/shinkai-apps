@@ -1,7 +1,7 @@
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
 import { PrismEditor } from 'prism-react-editor';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -128,6 +128,7 @@ export const useCreateToolAndSave = ({
 }: {
   form: UseFormReturn<CreateToolCodeFormSchema>;
 }) => {
+  const [isProcessing, setIsProcessing] = useState(false);
   const shouldAutoSaveRef = usePlaygroundStore(
     (state) => state.shouldAutoSaveRef,
   );
@@ -162,6 +163,7 @@ export const useCreateToolAndSave = ({
   });
 
   const createToolAndSaveTool = async (data: CreateToolCodeFormSchema) => {
+    setIsProcessing(true);
     shouldAutoSaveRef.current = true;
     await handleCreateToolCode(data);
   };
@@ -183,13 +185,16 @@ export const useCreateToolAndSave = ({
     shouldAutoSaveRef,
   ]);
 
+  useEffect(() => {
+    if (isSaveToolSuccess) {
+      setIsProcessing(false);
+    }
+  }, [isSaveToolSuccess]);
+
   return {
     createToolCodeForm: form,
     createToolAndSaveTool,
-    isProcessing:
-      isToolCodeGenerationPending ||
-      isMetadataGenerationPending ||
-      isSavingTool,
+    isProcessing,
     isSuccess:
       isToolCodeGenerationSuccess &&
       isMetadataGenerationSuccess &&
