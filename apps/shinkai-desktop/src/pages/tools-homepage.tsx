@@ -78,9 +78,6 @@ export const ToolsHomepage = () => {
   const resetPlaygroundStore = usePlaygroundStore(
     (state) => state.resetPlaygroundStore,
   );
-  const shouldAutoSaveRef = usePlaygroundStore(
-    (state) => state.shouldAutoSaveRef,
-  );
 
   const {
     conversationData,
@@ -97,9 +94,8 @@ export const ToolsHomepage = () => {
         description: error,
       });
       resetPlaygroundStore();
-      shouldAutoSaveRef.current = false;
     }
-  }, [isError, error, shouldAutoSaveRef]);
+  }, [isError, error, resetPlaygroundStore]);
 
   useEffect(() => {
     if (toolCode && !toolMetadata) {

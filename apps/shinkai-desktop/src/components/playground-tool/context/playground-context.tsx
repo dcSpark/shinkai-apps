@@ -50,7 +50,7 @@ type PlaygroundStore = {
   ) => void;
 
   resetPlaygroundStore: () => void;
-  shouldAutoSaveRef: React.MutableRefObject<boolean>;
+
   metadataEditorRef: React.MutableRefObject<PrismEditor | null>;
   codeEditorRef: React.MutableRefObject<PrismEditor | null>;
 
@@ -61,10 +61,6 @@ type PlaygroundStore = {
   selectedToolGroup: ToolGroup;
   setSelectedToolGroup: (selectedToolGroup: ToolGroup) => void;
 };
-
-const shouldAutoSaveRef =
-  createRef<boolean>() as React.MutableRefObject<boolean>;
-shouldAutoSaveRef.current = false;
 
 export const toolHomepageScrollPositionRef = createRef<{
   [key: string]: number;
@@ -117,8 +113,6 @@ const createPlaygroundStore = () => {
     focusedPanel: null,
     setFocusedPanel: (focusedPanel) => set({ focusedPanel }),
 
-    shouldAutoSaveRef,
-
     toolHomepageScrollPositionRef,
     selectedToolGroup: 'all-tools',
     setSelectedToolGroup: (selectedToolGroup) => set({ selectedToolGroup }),
@@ -160,12 +154,12 @@ export const PlaygroundProvider = ({
   );
 
   useEffect(() => {
-    console.log(store.getState());
-    if (location.pathname === '/tools' && store.getState().shouldAutoSaveRef) {
-      store.getState().resetPlaygroundStore();
-      store.getState().shouldAutoSaveRef.current = false;
+    if (location.pathname.startsWith('/tools/edit/')) {
+      return;
     }
-  }, [location.pathname, store]);
+
+    store.getState().resetPlaygroundStore();
+  }, [location, location.pathname, store]);
 
   return (
     <PlaygroundContext.Provider value={store}>

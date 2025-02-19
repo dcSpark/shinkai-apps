@@ -106,7 +106,6 @@ export const useAutoSaveTool = () => {
         {
           onSuccess: async (data) => {
             setTimeout(() => {
-              shouldAutoSaveRef.current = false;
               navigate(`/tools/edit/${data.metadata.tool_router_key}`);
               onSuccess?.();
             }, 800);
@@ -128,7 +127,6 @@ export const useAutoSaveTool = () => {
       auth?.shinkai_identity,
       xShinkaiAppId,
       xShinkaiToolId,
-      shouldAutoSaveRef,
       navigate,
     ],
   );
@@ -191,17 +189,11 @@ export const useCreateToolAndSave = ({
 
   const createToolAndSaveTool = async (data: CreateToolCodeFormSchema) => {
     setIsProcessing(true);
-    shouldAutoSaveRef.current = true;
     await handleCreateToolCode(data);
   };
 
   useEffect(() => {
-    if (
-      toolCode &&
-      toolMetadata &&
-      isToolCodeGenerationSuccess &&
-      shouldAutoSaveRef.current
-    ) {
+    if (toolCode && toolMetadata && isToolCodeGenerationSuccess) {
       handleAutoSave({
         toolMetadata: toolMetadata,
         toolCode: toolCode,

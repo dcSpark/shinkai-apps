@@ -1,3 +1,4 @@
+import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useRestoreToolConversation } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreToolConversation/useRestoreToolConversation';
@@ -13,14 +14,26 @@ import {
 import { Badge, Separator, Tooltip } from '@shinkai_network/shinkai-ui';
 import { StoreIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Loader2, Redo2Icon, Undo2Icon } from 'lucide-react';
+import {
+  ArrowLeftIcon,
+  ChevronLeft,
+  Loader2,
+  Redo2Icon,
+  Save,
+  SaveIcon,
+  Undo2Icon,
+} from 'lucide-react';
 import { memo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useFormContext } from 'react-hook-form';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
+import { DockerStatus } from '../../tools/tool-collection';
 import { usePlaygroundStore } from '../context/playground-context';
+import { useAutoSaveTool } from '../hooks/use-create-tool-and-save';
+import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 import { ManageSourcesButton } from './manage-sources-button';
 
 function PlaygroundHeaderBase({
@@ -44,8 +57,22 @@ function PlaygroundHeaderBase({
   const setResetCounter = usePlaygroundStore((state) => state.setResetCounter);
 
   const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
+  const form = useFormContext<CreateToolCodeFormSchema>();
+  const codeEditorRef = usePlaygroundStore((state) => state.codeEditorRef);
 
+  const navigate = useNavigate();
   const { toolRouterKey } = useParams();
+
+  const { handleAutoSave } = useAutoSaveTool();
+
+  const handleSaveChanges = () => {
+    handleAutoSave({
+      toolMetadata: toolMetadata as ToolMetadata,
+      toolCode: codeEditorRef?.current?.value ?? '',
+      tools: form.getValues('tools'),
+      language: form.getValues('language'),
+    });
+  };
 
   const {
     mutateAsync: restoreToolConversation,
@@ -132,7 +159,16 @@ function PlaygroundHeaderBase({
 
   return (
     <div className="flex items-center justify-between gap-2 border-b border-gray-400 px-4 pb-2.5">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
+        <Button
+          className="size-7 border-none p-1"
+          onClick={() => navigate(-1)}
+          size="auto"
+          type="button"
+          variant="outline"
+        >
+          <ChevronLeft className="size-full" />
+        </Button>
         <Popover>
           <PopoverTrigger
             className="flex items-center gap-1 truncate rounded-lg p-1 text-base font-medium"
@@ -150,6 +186,7 @@ function PlaygroundHeaderBase({
       </div>
 
       <div className="flex items-center justify-end gap-2.5">
+        <DockerStatus />
         {toolHistory.length > 1 && (
           <div className="flex items-center gap-4">
             {toolCode === toolHistory?.at(-1)?.code ? (
@@ -238,6 +275,50 @@ function PlaygroundHeaderBase({
           </div>
         )}
         <ManageSourcesButton />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={handleSaveChanges}
+              rounded="lg"
+              size="xs"
+              type="button"
+              variant="outline"
+            >
+              <svg
+                className="h-4 w-4"
+                fill={'none'}
+                height={24}
+                viewBox="0 0 24 24"
+                width={24}
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8 22V19C8 17.1144 8 16.1716 8.58579 15.5858C9.17157 15 10.1144 15 12 15C13.8856 15 14.8284 15 15.4142 15.5858C16 16.1716 16 17.1144 16 19V22"
+                  stroke="currentColor"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M10 7H14"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M3 11.8584C3 7.28199 3 4.99376 4.38674 3.54394C4.43797 3.49038 4.49038 3.43797 4.54394 3.38674C5.99376 2 8.28199 2 12.8584 2C13.943 2 14.4655 2.00376 14.9628 2.18936C15.4417 2.3681 15.8429 2.70239 16.6452 3.37099L18.8411 5.20092C19.9027 6.08561 20.4335 6.52795 20.7168 7.13266C21 7.73737 21 8.42833 21 9.81025V13C21 16.7497 21 18.6246 20.0451 19.9389C19.7367 20.3634 19.3634 20.7367 18.9389 21.0451C17.6246 22 15.7497 22 12 22C8.25027 22 6.3754 22 5.06107 21.0451C4.6366 20.7367 4.26331 20.3634 3.95491 19.9389C3 18.6246 3 16.7497 3 13V11.8584Z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+              </svg>
+            </Button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent side="bottom">
+              <p>Save Changes</p>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
         <Popover>
           <PopoverTrigger asChild>
             <Button
