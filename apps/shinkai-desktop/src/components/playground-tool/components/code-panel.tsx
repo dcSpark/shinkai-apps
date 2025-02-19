@@ -54,7 +54,6 @@ function CodePanelBase({
 
   const handleCodeUpdate = debounce((currentCode: string) => {
     setIsDirtyCodeEditor(currentCode !== baseToolCodeRef.current);
-    console.log('toolMetadata', toolMetadata);
     handleAutoSave({
       toolMetadata: toolMetadata as ToolMetadata,
       toolCode: currentCode,

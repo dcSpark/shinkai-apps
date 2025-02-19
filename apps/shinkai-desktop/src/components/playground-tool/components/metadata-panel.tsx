@@ -78,7 +78,7 @@ function MetadataPanelBase({
       setValidateMetadataEditorValue((err as Error).message);
       return;
     }
-  }, 350);
+  }, 750);
 
   return (
     <div
@@ -159,24 +159,20 @@ function MetadataPanelBase({
             <div className="ml-4 flex items-center gap-2">
               <Skeleton className="h-4 w-4 bg-zinc-800" />
             </div>
-            {/* Configurations */}
             <div className="ml-4 flex items-center gap-2">
               <Skeleton className="h-4 w-32 bg-zinc-800" />
               <Skeleton className="h-4 w-4 bg-zinc-800" />
             </div>
-            {/* Nested configuration content */}
             {[...Array(4)].map((_, i) => (
               <div className="ml-8 flex items-center gap-2" key={i}>
                 <Skeleton className="h-4 w-40 bg-zinc-800" />
                 <Skeleton className="h-4 w-24 bg-zinc-800" />
               </div>
             ))}
-            {/* Parameters section */}
             <div className="ml-4 flex items-center gap-2">
               <Skeleton className="h-4 w-28 bg-zinc-800" />
               <Skeleton className="h-4 w-4 bg-zinc-800" />
             </div>
-            {/* Nested parameters content */}
             {[...Array(5)].map((_, i) => (
               <div className="ml-8 flex items-center gap-2" key={i}>
                 <Skeleton className="h-4 w-36 bg-zinc-800" />
@@ -196,18 +192,16 @@ function MetadataPanelBase({
           />
         )}
 
-      {isMetadataGenerationSuccess && !isMetadataGenerationError && (
-        <ToolCodeEditor
-          language="json"
-          onUpdate={handleMetadataUpdate}
-          ref={metadataEditorRef}
-          value={
-            toolMetadata != null
-              ? JSON.stringify(toolMetadata, null, 2)
-              : 'Invalid metadata'
-          }
-        />
-      )}
+      {isMetadataGenerationSuccess &&
+        !isMetadataGenerationError &&
+        toolMetadata && (
+          <ToolCodeEditor
+            language="json"
+            onUpdate={handleMetadataUpdate}
+            ref={metadataEditorRef}
+            value={JSON.stringify(toolMetadata, null, 2)}
+          />
+        )}
       {isMetadataGenerationIdle && (
         <div>
           <p className="text-gray-80 py-4 pt-6 text-center text-xs">
