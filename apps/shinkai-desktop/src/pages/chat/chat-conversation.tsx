@@ -217,18 +217,6 @@ const ChatConversation = () => {
     },
   });
 
-  const regenerateFirstMessage = async (message: string) => {
-    if (!auth) return;
-
-    await createJob({
-      nodeAddress: auth.node_address,
-      token: auth.api_v2_key,
-      content: message,
-      llmProvider: currentInbox?.agent?.id ?? '',
-      isHidden: false,
-    });
-  };
-
   const regenerateMessage = async (messageId: string) => {
     if (!auth) return;
     const decodedInboxId = decodeURIComponent(inboxId);
@@ -273,7 +261,6 @@ const ChatConversation = () => {
           messageExtra={<MessageExtra />}
           noMoreMessageLabel={t('chat.allMessagesLoaded')}
           paginatedMessages={data}
-          regenerateFirstMessage={regenerateFirstMessage}
           regenerateMessage={regenerateMessage}
         />
       ) : (
