@@ -3,7 +3,7 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useRemoveAssetTool } from '@shinkai_network/shinkai-node-state/v2/mutations/removeAssetTool/useRemoveAssetTool';
 import { useUploadAssetsTool } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadAssetsTool/useUploadAssetsTool';
 import { useGetAllToolAssets } from '@shinkai_network/shinkai-node-state/v2/queries/getAllToolAssets/useGetAllToolAssets';
-import { Button, Separator } from '@shinkai_network/shinkai-ui';
+import { Badge, Button, Separator } from '@shinkai_network/shinkai-ui';
 import {
   Dialog,
   DialogContent,
@@ -81,13 +81,18 @@ function ManageSourcesButtonBase() {
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          className="text-gray-80 shrink-0"
+          className="text-gray-80 relative shrink-0"
           rounded="lg"
           size="xs"
           variant="outline"
         >
           <ToolAssetsIcon className="text-gray-80 h-4 w-4" />
-          Assets ({isGetAllToolAssetsSuccess ? assets.length : '-'})
+          File Attachment
+          {isGetAllToolAssetsSuccess && assets.length > 0 && (
+            <Badge className="bg-official-gray-800 min-w-5 rounded-full px-1 text-white">
+              {assets.length}
+            </Badge>
+          )}
         </Button>
       </DialogTrigger>
       <DialogContent className="flex h-[60vh] max-w-[500px] flex-col gap-4">

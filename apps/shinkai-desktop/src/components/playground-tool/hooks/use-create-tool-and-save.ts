@@ -205,7 +205,6 @@ export const useCreateToolAndSave = ({
     toolMetadata,
     isToolCodeGenerationSuccess,
     handleAutoSave,
-    shouldAutoSaveRef,
     form,
   ]);
 
