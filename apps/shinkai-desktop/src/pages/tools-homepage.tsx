@@ -11,19 +11,25 @@ import {
 import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { useScrollRestoration } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { ArrowRight, ArrowUpRight, StoreIcon } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowRight, ArrowUpRight, Loader2, StoreIcon } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
+import { MessageList } from '../components/chat/components/message-list';
 import { getRandomWidth } from '../components/playground-tool/components/code-panel';
 import { LanguageToolSelector } from '../components/playground-tool/components/language-tool-selector';
 import { ToolsSelection } from '../components/playground-tool/components/tools-selection';
 import { usePlaygroundStore } from '../components/playground-tool/context/playground-context';
 import { useCreateToolAndSave } from '../components/playground-tool/hooks/use-create-tool-and-save';
-import { useToolForm } from '../components/playground-tool/hooks/use-tool-code';
+import {
+  useChatConversation,
+  useToolForm,
+} from '../components/playground-tool/hooks/use-tool-code';
 import PlaygroundToolLayout from '../components/playground-tool/layout';
+import ToolCodeEditor from '../components/playground-tool/tool-code-editor';
 import {
   DockerStatus,
   ImportToolModal,
@@ -53,11 +59,37 @@ export const ToolsHomepage = () => {
       form,
     });
 
+  const toolCode = usePlaygroundStore((state) => state.toolCode);
+  const toolCodeStatus = usePlaygroundStore((state) => state.toolCodeStatus);
+  const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
+  const toolMetadataStatus = usePlaygroundStore(
+    (state) => state.toolMetadataStatus,
+  );
+
+  const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
+  const resetPlaygroundStore = usePlaygroundStore(
+    (state) => state.resetPlaygroundStore,
+  );
+  const shouldAutoSaveRef = usePlaygroundStore(
+    (state) => state.shouldAutoSaveRef,
+  );
+
+  const {
+    conversationData,
+    fetchPreviousPage,
+    hasPreviousPage,
+    isChatConversationLoading,
+    isFetchingPreviousPage,
+    isChatConversationSuccess,
+  } = useChatConversation(chatInboxId);
+
   useEffect(() => {
     if (isError) {
       toast.error('Failed to create a tool', {
         description: error,
       });
+      resetPlaygroundStore();
+      shouldAutoSaveRef.current = false;
     }
   }, [isError, error]);
 
@@ -66,46 +98,210 @@ export const ToolsHomepage = () => {
       <div className={cn('min-h-full flex-1 overflow-auto')}>
         <PlaygroundToolLayout
           leftElement={
-            <div className="bg-official-gray-950 flex w-full flex-col gap-4 p-4">
-              <Skeleton className="bg-official-gray-900 h-6 w-32" />
-              <Skeleton className="bg-official-gray-900 h-24 w-full" />
-              <Skeleton className="bg-official-gray-900 h-24 w-full" />
-              <Skeleton className="bg-official-gray-900 h-6 w-32" />
-              <Skeleton className="bg-official-gray-900 h-24 w-full" />
-              <Skeleton className="bg-official-gray-900 h-24 w-full" />
-              <Skeleton className="bg-official-gray-900 h-6 w-32" />
-              <Skeleton className="bg-official-gray-900 h-24 w-full" />
-            </div>
+            chatInboxId ? (
+              <MessageList
+                containerClassName="px-3"
+                disabledRetryAndEdit={true}
+                fetchPreviousPage={fetchPreviousPage}
+                hasPreviousPage={hasPreviousPage}
+                hidePythonExecution={true}
+                isFetchingPreviousPage={isFetchingPreviousPage}
+                isLoading={isChatConversationLoading}
+                isSuccess={isChatConversationSuccess}
+                minimalistMode
+                noMoreMessageLabel={t('chat.allMessagesLoaded')}
+                paginatedMessages={conversationData}
+              />
+            ) : (
+              <div className="bg-official-gray-950 flex w-full flex-col gap-4 p-4">
+                <Skeleton className="bg-official-gray-900 h-6 w-32" />
+                <Skeleton className="bg-official-gray-900 h-24 w-full" />
+                <Skeleton className="bg-official-gray-900 h-24 w-full" />
+                <Skeleton className="bg-official-gray-900 h-6 w-32" />
+                <Skeleton className="bg-official-gray-900 h-24 w-full" />
+                <Skeleton className="bg-official-gray-900 h-24 w-full" />
+                <Skeleton className="bg-official-gray-900 h-6 w-32" />
+                <Skeleton className="bg-official-gray-900 h-24 w-full" />
+              </div>
+            )
           }
           rightElement={
-            <div className="flex w-full flex-col items-start gap-1 px-4 py-4 text-xs">
-              {[...Array(20)].map((_, lineIndex) => (
-                <div className="mb-2 flex gap-3" key={lineIndex}>
-                  <Skeleton className="bg-official-gray-900 h-4 w-12 rounded" />
-                  <div className="flex-1">
-                    <div className="flex flex-wrap gap-2">
-                      {[...Array(Math.floor(Math.random() * 4) + 1)].map(
-                        (_, blockIndex) => (
-                          <Skeleton
-                            className={cn(
-                              getRandomWidth(),
-                              'bg-official-gray-900 h-4 rounded',
-                            )}
-                            key={blockIndex}
-                          />
-                        ),
+            <div className="flex size-full flex-col items-start justify-center gap-1 p-1 text-xs">
+              <AnimatePresence>
+                <motion.div
+                  animate={{ opacity: 1, y: 0 }}
+                  className="border-official-gray-800 bg-official-gray-1000 mb-1 flex w-full flex-1 flex-col overflow-auto p-2.5"
+                  exit={{ opacity: 0, y: -100 }}
+                  initial={{ opacity: 0, y: 50 }}
+                  layout
+                  transition={{
+                    opacity: { duration: 0.2 },
+                    y: { duration: 0.4 },
+                  }}
+                >
+                  <div className="mb-4 flex items-center gap-3">
+                    {toolCodeStatus === 'pending' ? (
+                      <Loader2 className="h-5 w-5 animate-spin text-cyan-500" />
+                    ) : toolCodeStatus === 'success' ? (
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-500">
+                        ✓
+                      </div>
+                    ) : toolCodeStatus === 'error' ? (
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500/20 text-red-500">
+                        ✗
+                      </div>
+                    ) : null}
+                    <h3 className="font-medium text-zinc-100">
+                      {toolCodeStatus === 'pending'
+                        ? 'Generating Code...'
+                        : toolCodeStatus === 'error'
+                          ? 'Generating Code Failed'
+                          : toolCodeStatus === 'success'
+                            ? 'Code Generated'
+                            : null}
+                    </h3>
+                  </div>
+                  <div
+                    className={cn(
+                      'bg-official-gray-1000 flex-1 overflow-auto rounded-md',
+                      toolCodeStatus === 'pending' && 'overflow-hidden',
+                    )}
+                  >
+                    {toolCodeStatus === 'pending' && (
+                      <div className="size-w flex flex-col items-start gap-1 px-4 py-4 text-xs">
+                        {[...Array(20)].map((_, lineIndex) => (
+                          <div className="mb-2 flex gap-3" key={lineIndex}>
+                            <Skeleton className="bg-official-gray-900 h-4 w-12 rounded" />
+                            <div className="flex-1">
+                              <div className="flex flex-wrap gap-2">
+                                {[
+                                  ...Array(Math.floor(Math.random() * 4) + 1),
+                                ].map((_, blockIndex) => (
+                                  <Skeleton
+                                    className={cn(
+                                      getRandomWidth(),
+                                      'bg-official-gray-900 h-4 rounded',
+                                    )}
+                                    key={blockIndex}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {toolCodeStatus === 'success' && (
+                      <ToolCodeEditor
+                        language={form.watch('language').toLowerCase()}
+                        value={toolCode}
+                      />
+                    )}
+                    {toolCodeStatus === 'error' && (
+                      <div className="flex size-full flex-col items-start gap-1 px-4 py-4 text-xs">
+                        <p className="text-red-500">Failed to generate code</p>
+                        <p className="text-red-500">{error}</p>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+
+                {toolCode && (
+                  <motion.div
+                    animate={{ opacity: 1, y: 0 }}
+                    className="border-official-gray-800 bg-official-gray-1000 flex w-full flex-1 flex-col overflow-auto p-2.5"
+                    exit={{ opacity: 0, y: -100 }}
+                    initial={{ opacity: 0, y: 50 }}
+                    transition={{
+                      opacity: { duration: 0.2 },
+                      y: { duration: 0.4 },
+                    }}
+                  >
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        {toolMetadataStatus === 'pending' && (
+                          <>
+                            <Loader2 className="h-5 w-5 animate-spin text-cyan-500" />
+                            <h3 className="font-medium text-zinc-100">
+                              Generating Preview + Metadata...
+                            </h3>
+                          </>
+                        )}
+                        {toolMetadataStatus === 'success' && (
+                          <>
+                            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-500">
+                              <span className="font-bold">✓</span>
+                            </div>
+                            <h3 className="font-medium text-zinc-100">
+                              Metadata Successfully Generated
+                            </h3>
+                          </>
+                        )}
+                        {toolMetadataStatus === 'error' && (
+                          <h3 className="font-medium text-red-500">
+                            Failed to Generate Metadata
+                          </h3>
+                        )}
+                      </div>
+                    </div>
+                    <div
+                      className={cn(
+                        'bg-official-gray-1000 flex-1 overflow-auto rounded-md',
+                        toolMetadataStatus === 'pending' && 'overflow-hidden',
+                      )}
+                    >
+                      {toolMetadataStatus === 'pending' && (
+                        <div className="flex size-full flex-col items-start gap-1 px-4 py-4 text-xs">
+                          {[...Array(20)].map((_, lineIndex) => (
+                            <div className="mb-2 flex gap-3" key={lineIndex}>
+                              <Skeleton className="bg-official-gray-900 h-4 w-12 rounded" />
+                              <div className="flex-1">
+                                <div className="flex flex-wrap gap-2">
+                                  {[
+                                    ...Array(Math.floor(Math.random() * 4) + 1),
+                                  ].map((_, blockIndex) => (
+                                    <Skeleton
+                                      className={cn(
+                                        getRandomWidth(),
+                                        'bg-official-gray-900 h-4 rounded',
+                                      )}
+                                      key={blockIndex}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {toolMetadataStatus === 'success' && (
+                        <ToolCodeEditor
+                          language="json"
+                          readOnly
+                          value={JSON.stringify(toolMetadata, null, 2)}
+                        />
+                      )}
+                      {toolMetadataStatus === 'error' && (
+                        <div className="flex size-full flex-col items-start gap-1 px-4 py-4 text-xs">
+                          <p className="text-red-500">
+                            Failed to generate metadata
+                          </p>
+                          <p className="text-red-500">{error}</p>
+                        </div>
                       )}
                     </div>
-                  </div>
-                </div>
-              ))}
-              <p className="sr-only">Generating Code...</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           }
           topElement={
             <div className="bg-official-gray-950 border-official-gray-780 flex items-center justify-between border-b p-4">
               <Skeleton className="bg-official-gray-900 h-8 w-48" />
-              <Skeleton className="bg-official-gray-900 h-8 w-[300px]" />
+              <div className="flex items-center gap-2">
+                <Skeleton className="bg-official-gray-900 h-8 w-[100px]" />
+                <Skeleton className="bg-official-gray-900 h-8 w-20" />
+              </div>
             </div>
           }
         />

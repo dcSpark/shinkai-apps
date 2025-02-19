@@ -51,7 +51,7 @@ export const useToolForm = (
   return form;
 };
 
-const useChatConversation = (initialInboxId?: string) => {
+export const useChatConversation = (initialInboxId?: string) => {
   const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
   const setChatInboxId = usePlaygroundStore((state) => state.setChatInboxId);
 

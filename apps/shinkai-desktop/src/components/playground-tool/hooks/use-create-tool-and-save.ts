@@ -206,11 +206,24 @@ export const useCreateToolAndSave = ({
     form,
   ]);
 
+  const isSuccess =
+    isToolCodeGenerationSuccess &&
+    isMetadataGenerationSuccess &&
+    isSaveToolSuccess;
   useEffect(() => {
-    if (isSaveToolSuccess) {
+    if (isSuccess) {
       setIsProcessing(false);
     }
-  }, [isSaveToolSuccess]);
+  }, [isSuccess]);
+
+  const isError =
+    isToolCodeGenerationError || isMetadataGenerationError || isSaveToolError;
+
+  useEffect(() => {
+    if (isError) {
+      setIsProcessing(false);
+    }
+  }, [isError]);
 
   return {
     createToolCodeForm: form,
