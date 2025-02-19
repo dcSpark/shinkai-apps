@@ -7,3 +7,4 @@ export * from './canvas';
 export * from './copy-to-clipboard';
 export * from './format-text';
 export * from './toasts';
+export * from './debounce';

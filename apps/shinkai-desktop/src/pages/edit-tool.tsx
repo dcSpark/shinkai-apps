@@ -28,8 +28,6 @@ function EditToolPage() {
     ? buildInboxIdFromJobId(playgroundTool.job_id)
     : '';
 
-  console.log(toolRouterKey, 'toolRouterKey');
-
   const toolCodeInitialValues = useMemo(
     () => ({
       code: playgroundTool?.code ?? '',
@@ -66,12 +64,6 @@ function EditToolPage() {
       isPlaygroundToolError,
       isValidSchema,
     ],
-  );
-
-  console.log(
-    toolRouterKey,
-    'toolRouterKey',
-    toolRouterKey + ':::' + playgroundTool?.metadata?.version,
   );
 
   return (

@@ -1,10 +1,14 @@
+import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { Button, Skeleton } from '@shinkai_network/shinkai-ui';
+import { debounce } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { PrismEditor } from 'prism-react-editor';
 import { memo, MutableRefObject } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 import { usePlaygroundStore } from '../context/playground-context';
+import { useAutoSaveTool } from '../hooks/use-create-tool-and-save';
+import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 import ToolCodeEditor from '../tool-code-editor';
 import { detectLanguage } from '../utils/code';
 
@@ -38,12 +42,26 @@ function CodePanelBase({
   baseToolCodeRef: MutableRefObject<string>;
 }) {
   const resetCounter = usePlaygroundStore((state) => state.resetCounter);
-  const codeEditorRef = usePlaygroundStore((state) => state.codeEditorRef);
+  const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
   const toolCode = usePlaygroundStore((state) => state.toolCode);
   const toolCodeStatus = usePlaygroundStore((state) => state.toolCodeStatus);
+  const form = useFormContext<CreateToolCodeFormSchema>();
+  const codeEditorRef = usePlaygroundStore((state) => state.codeEditorRef);
+  const { handleAutoSave } = useAutoSaveTool();
 
   const isToolCodeGenerationPending = toolCodeStatus === 'pending';
   const isToolCodeGenerationSuccess = toolCodeStatus === 'success';
+
+  const handleCodeUpdate = debounce((currentCode: string) => {
+    setIsDirtyCodeEditor(currentCode !== baseToolCodeRef.current);
+    console.log('toolMetadata', toolMetadata);
+    handleAutoSave({
+      toolMetadata: toolMetadata as ToolMetadata,
+      toolCode: currentCode,
+      tools: form.getValues('tools'),
+      language: form.getValues('language'),
+    });
+  }, 350);
 
   return (
     <div className="flex size-full min-h-[220px] flex-col">
@@ -146,9 +164,7 @@ function CodePanelBase({
               <ToolCodeEditor
                 language="ts"
                 name="editor"
-                onUpdate={(currentCode) => {
-                  setIsDirtyCodeEditor(currentCode !== baseToolCodeRef.current);
-                }}
+                onUpdate={handleCodeUpdate}
                 ref={codeEditorRef}
                 value={toolCode}
               />

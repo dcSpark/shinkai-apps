@@ -22,7 +22,6 @@ import { useEffect, useRef } from 'react';
 
 import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
-import { useAutoSaveTool } from '../hooks/use-create-tool-and-save';
 import {
   CreateToolCodeFormSchema,
   useToolCode,
@@ -156,8 +155,6 @@ function PlaygroundToolEditor({
     });
   };
 
-  const { handleAutoSave, isSavingTool, isSaveToolSuccess } = useAutoSaveTool();
-
   return (
     <Form {...form}>
       <PlaygroundToolLayout
@@ -167,10 +164,8 @@ function PlaygroundToolEditor({
             mode={mode}
             toolName={toolName ?? ''}
             baseToolCodeRef={baseToolCodeRef}
-            metadataEditorRef={metadataEditorRef}
-            codeEditorRef={codeEditorRef}
-            initialToolName={toolMetadataInitialValues?.metadata?.name}
-            initialChatInboxId={initialChatInboxId}
+            // initialToolName={toolMetadataInitialValues?.metadata?.name}
+            // initialChatInboxId={initialChatInboxId}
           />
         }
         leftElement={
@@ -252,7 +247,6 @@ function PlaygroundToolEditor({
                       onBlur={() => setFocusedPanel(null)}
                     >
                       <MetadataPanel
-                        mode={mode}
                         initialToolRouterKeyWithVersion={
                           initialToolRouterKeyWithVersion ?? ''
                         }
@@ -261,7 +255,7 @@ function PlaygroundToolEditor({
                     </TabsContent>
                   </Tabs>
                 </ResizablePanel>
-                <ResizableHandle className="bg-official-gray-1000/80 !h-1.5" />
+                <ResizableHandle className="bg-official-gray-1000/80 !h-2" />
                 <ResizablePanel minSize={3}>
                   <ExecutionPanel
                     executionToolCodeError={

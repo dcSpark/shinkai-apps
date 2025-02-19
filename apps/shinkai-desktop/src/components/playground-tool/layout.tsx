@@ -26,7 +26,7 @@ export default function PlaygroundToolLayout({
           >
             {leftElement}
           </ResizablePanel>
-          <ResizableHandle className="bg-official-gray-1000 w-1.5" />
+          <ResizableHandle className="bg-official-gray-1000 w-2" />
           <ResizablePanel
             className="flex h-full flex-col overflow-hidden rounded-sm pb-3"
             collapsible

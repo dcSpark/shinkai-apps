@@ -1,8 +1,6 @@
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useRestoreToolConversation } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreToolConversation/useRestoreToolConversation';
-import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
-import { useGetAllToolAssets } from '@shinkai_network/shinkai-node-state/v2/queries/getAllToolAssets/useGetAllToolAssets';
 import {
   Button,
   Popover,
@@ -15,21 +13,14 @@ import {
 import { Badge, Separator, Tooltip } from '@shinkai_network/shinkai-ui';
 import { StoreIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Loader2, Redo2Icon, Save, Undo2Icon } from 'lucide-react';
-import { PrismEditor } from 'prism-react-editor';
+import { Loader2, Redo2Icon, Undo2Icon } from 'lucide-react';
 import { memo } from 'react';
-import { useFormContext } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { merge } from 'ts-deepmerge';
-import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
 import { usePlaygroundStore } from '../context/playground-context';
-import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
-import { ToolMetadataSchemaType } from '../schemas';
-import { ToolMetadataSchema } from '../schemas';
 import { ManageSourcesButton } from './manage-sources-button';
 
 function PlaygroundHeaderBase({
@@ -37,10 +28,6 @@ function PlaygroundHeaderBase({
   mode,
   toolName,
   baseToolCodeRef,
-  metadataEditorRef,
-  codeEditorRef,
-  initialToolName,
-  initialChatInboxId,
 }: {
   toolHistory: {
     messageId: string;
@@ -49,31 +36,16 @@ function PlaygroundHeaderBase({
   mode: 'create' | 'edit';
   toolName: string;
   baseToolCodeRef: React.MutableRefObject<string>;
-  metadataEditorRef: React.MutableRefObject<PrismEditor | null>;
-  codeEditorRef: React.MutableRefObject<PrismEditor | null>;
-  initialToolName?: string;
-  initialChatInboxId?: string;
 }) {
-  const navigate = useNavigate();
   const auth = useAuth((state) => state.auth);
   const toolCode = usePlaygroundStore((state) => state.toolCode);
   const setToolCode = usePlaygroundStore((state) => state.setToolCode);
   const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
   const setResetCounter = usePlaygroundStore((state) => state.setResetCounter);
-  const xShinkaiAppId = usePlaygroundStore((state) => state.xShinkaiAppId);
-  const xShinkaiToolId = usePlaygroundStore((state) => state.xShinkaiToolId);
 
   const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
 
-  const createToolCodeForm = useFormContext<CreateToolCodeFormSchema>();
   const { toolRouterKey } = useParams();
-
-  const { data: assets } = useGetAllToolAssets({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    xShinkaiAppId,
-    xShinkaiToolId,
-  });
 
   const {
     mutateAsync: restoreToolConversation,
@@ -89,20 +61,6 @@ function PlaygroundHeaderBase({
       });
     },
   });
-
-  const { mutateAsync: saveToolCode, isPending: isSavingTool } =
-    useSaveToolCode({
-      onSuccess: (data) => {
-        toast.success('Tool code saved successfully');
-        navigate(`/tools/${data.metadata.tool_router_key}`);
-      },
-      onError: (error) => {
-        toast.error('Failed to save tool code', {
-          position: 'top-right',
-          description: error.response?.data?.message ?? error.message,
-        });
-      },
-    });
 
   const { mutateAsync: publishTool, isPending: isPublishingTool } =
     usePublishTool({
@@ -170,59 +128,6 @@ function PlaygroundHeaderBase({
         });
       }, 100);
     }
-  };
-
-  const handleSaveTool = async () => {
-    if (!chatInboxId) return;
-
-    const metadataCode = metadataEditorRef.current?.value;
-    const toolCode = codeEditorRef.current?.value;
-
-    let parsedMetadata: ToolMetadataSchemaType;
-
-    try {
-      const parseResult = JSON.parse(
-        metadataCode as string,
-      ) as ToolMetadataSchemaType;
-
-      const mergedMetadata = merge(parseResult, {
-        // override values
-        name: initialChatInboxId ? initialToolName ?? '' : parseResult.name,
-        tools: createToolCodeForm.getValues('tools') ?? [],
-        author: auth?.shinkai_identity ?? '',
-      });
-
-      parsedMetadata = ToolMetadataSchema.parse(mergedMetadata);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        toast.error('Invalid Metadata JSON Value', {
-          description: error.issues.map((issue) => issue.message).join(', '),
-        });
-        return;
-      }
-
-      toast.error('Invalid Metadata JSON', {
-        position: 'top-right',
-        description: (error as Error)?.message,
-      });
-      return;
-    }
-
-    await saveToolCode({
-      name: parsedMetadata.name,
-      description: parsedMetadata.description,
-      version: parsedMetadata.version,
-      tools: parsedMetadata.tools,
-      code: toolCode,
-      metadata: parsedMetadata,
-      jobId: extractJobIdFromInbox(chatInboxId),
-      token: auth?.api_v2_key ?? '',
-      nodeAddress: auth?.node_address ?? '',
-      language: createToolCodeForm.getValues('language'),
-      assets: assets ?? [],
-      xShinkaiAppId,
-      xShinkaiToolId,
-    });
   };
 
   return (
@@ -338,7 +243,7 @@ function PlaygroundHeaderBase({
             <Button
               className="min-w-[100px]"
               disabled={
-                !toolCode || !toolMetadata || !chatInboxId || isSavingTool
+                !toolCode || !toolMetadata || !chatInboxId || isPublishingTool
               }
               isLoading={isPublishingTool}
               rounded="lg"
@@ -404,8 +309,6 @@ function PlaygroundHeaderBase({
 }
 
 export const PlaygroundHeader = memo(PlaygroundHeaderBase, (prev, next) => {
-  if (prev.initialChatInboxId !== next.initialChatInboxId) return false;
-  if (prev.initialToolName !== next.initialToolName) return false;
   if (prev.toolHistory.length !== next.toolHistory.length) return false;
   return true;
 });

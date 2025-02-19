@@ -7,34 +7,25 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { debounce } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { AlertTriangleIcon, SaveIcon } from 'lucide-react';
-import { PrismEditor } from 'prism-react-editor';
-import { memo, MutableRefObject, useRef, useState } from 'react';
+import { AlertTriangleIcon } from 'lucide-react';
+import { memo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
-import { toast } from 'sonner';
-import { merge } from 'ts-deepmerge';
-import { z } from 'zod';
 
 import { usePlaygroundStore } from '../context/playground-context';
 import { ToolErrorFallback } from '../error-boundary';
 import { useAutoSaveTool } from '../hooks/use-create-tool-and-save';
 import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
-import { ToolMetadataSchema } from '../schemas';
 import ToolCodeEditor from '../tool-code-editor';
 
 function MetadataPanelBase({
-  mode,
   regenerateToolMetadata,
   initialToolRouterKeyWithVersion,
 }: {
-  mode: 'create' | 'edit';
   regenerateToolMetadata: () => void;
   initialToolRouterKeyWithVersion: string;
 }) {
-  const { toolRouterKey } = useParams();
-
   const [validateMetadataEditorValue, setValidateMetadataEditorValue] =
     useState<string | null>(null);
 
@@ -65,68 +56,40 @@ function MetadataPanelBase({
   const form = useFormContext<CreateToolCodeFormSchema>();
 
   const { handleAutoSave } = useAutoSaveTool();
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleApplyMetadataChanges = () => {
-    const currentMetadata = metadataEditorRef.current?.value;
-    const currentCode = codeEditorRef.current?.value;
-    if (!currentMetadata) return;
+  const handleMetadataUpdate = debounce((value: string) => {
+    if (value === JSON.stringify(toolMetadata, null, 2)) {
+      return;
+    }
 
     try {
-      const parsedMetadata = JSON.parse(currentMetadata);
-      const mergedMetadata = merge(parsedMetadata, {
-        author: toolMetadata?.author ?? '',
+      const parseValue = JSON.parse(value);
+      updateToolMetadata(parseValue);
+      setValidateMetadataEditorValue(null);
+      handleAutoSave({
+        toolMetadata: parseValue,
+        toolCode: codeEditorRef.current?.value ?? '',
+        tools: form.getValues('tools'),
+        language: form.getValues('language'),
+        toolName: parseValue.name,
+        previousToolRouterKeyWithVersion: initialToolRouterKeyWithVersion ?? '',
       });
-
-      const parsedAll = ToolMetadataSchema.parse(mergedMetadata);
-      updateToolMetadata(parsedAll);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        toast.error('Invalid metadata format', {
-          description: error.issues.map((issue) => issue.message).join(', '),
-        });
-      } else {
-        toast.error('Invalid JSON format', {
-          description: (error as Error).message,
-        });
-      }
+    } catch (err) {
+      setValidateMetadataEditorValue((err as Error).message);
+      return;
     }
-  };
-
-  const handleMetadataUpdate = (value: string) => {
-    if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current);
-    }
-    debounceTimeoutRef.current = setTimeout(() => {
-      try {
-        const parseValue = JSON.parse(value);
-        setValidateMetadataEditorValue(null);
-        handleAutoSave({
-          toolMetadata: parseValue,
-          toolCode: codeEditorRef.current?.value ?? '',
-          tools: form.getValues('tools'),
-          language: form.getValues('language'),
-          toolName: parseValue.name,
-          previousToolRouterKeyWithVersion:
-            initialToolRouterKeyWithVersion ?? '',
-        });
-      } catch (err) {
-        setValidateMetadataEditorValue((err as Error).message);
-        return;
-      }
-    }, 1000);
-  };
+  }, 350);
 
   return (
     <div
       className={cn(
         'flex h-full flex-col pb-4 pl-4 pr-3',
         validateMetadataEditorValue !== null &&
-          'shadow-[0_0_0_1px_currentColor] shadow-red-500 transition-shadow',
+          'ring-1 ring-inset ring-red-600 transition-shadow',
       )}
     >
       {isMetadataGenerationSuccess && (
-        <div className="flex items-center justify-end gap-2 py-1.5">
+        <div className={cn('flex items-center justify-end gap-3 px-2 py-1.5')}>
           {validateMetadataEditorValue !== null && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -136,7 +99,7 @@ function MetadataPanelBase({
               </TooltipTrigger>
               <TooltipPortal>
                 <TooltipContent
-                  className="flex max-w-[300px] flex-col gap-3 text-xs text-white"
+                  className="bg-official-gray-1000 flex max-w-[300px] flex-col gap-2.5 text-xs text-white"
                   side="bottom"
                 >
                   <p className="font-medium">Invalid metadata format</p>
@@ -163,20 +126,14 @@ function MetadataPanelBase({
               </Button>
             </TooltipTrigger>
             <TooltipPortal>
-              <TooltipContent side="bottom">
+              <TooltipContent
+                className="bg-official-gray-1000 flex max-w-[300px] flex-col gap-2.5 text-xs text-white"
+                side="bottom"
+              >
                 <p>Regenerate metadata</p>
               </TooltipContent>
             </TooltipPortal>
           </Tooltip>
-          <Button
-            className="!h-[28px] rounded-lg border-0 bg-transparent"
-            onClick={handleApplyMetadataChanges}
-            size="xs"
-            type="button"
-            variant="ghost"
-          >
-            Apply Changes
-          </Button>
         </div>
       )}
       {isMetadataGenerationPending && (
@@ -241,21 +198,12 @@ function MetadataPanelBase({
 
       {isMetadataGenerationSuccess && !isMetadataGenerationError && (
         <ToolCodeEditor
-          isError={validateMetadataEditorValue !== null}
           language="json"
           onUpdate={handleMetadataUpdate}
           ref={metadataEditorRef}
           value={
             toolMetadata != null
-              ? JSON.stringify(
-                  {
-                    ...toolMetadata,
-                    tools: undefined,
-                    author: undefined,
-                  },
-                  null,
-                  2,
-                )
+              ? JSON.stringify(toolMetadata, null, 2)
               : 'Invalid metadata'
           }
         />
@@ -276,9 +224,6 @@ export const MetadataPanel = memo(MetadataPanelBase, (prevProps, nextProps) => {
     prevProps.initialToolRouterKeyWithVersion !==
     nextProps.initialToolRouterKeyWithVersion
   ) {
-    return false;
-  }
-  if (prevProps.mode !== nextProps.mode) {
     return false;
   }
   return true;

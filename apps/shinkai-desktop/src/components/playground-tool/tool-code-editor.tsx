@@ -12,7 +12,6 @@ import 'prism-react-editor/cursor';
 import 'prism-react-editor/themes/github-dark.css';
 import 'prism-react-editor/search.css';
 
-import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Editor, EditorProps, PrismEditor } from 'prism-react-editor';
 // import { addTextareaListener } from 'prism-react-editor';
 import {
@@ -115,9 +114,8 @@ const ToolCodeEditor = forwardRef<
     name?: string;
     readOnly?: boolean;
     style?: React.CSSProperties;
-    isError?: boolean;
   }
->(({ value, onUpdate, language, name, readOnly, style, isError }, ref) => (
+>(({ value, onUpdate, language, name, readOnly, style }, ref) => (
   <Editor
     insertSpaces={true}
     language={language}

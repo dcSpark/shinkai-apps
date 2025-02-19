@@ -93,7 +93,8 @@ export const useAutoSaveTool = () => {
       await saveToolCode({
         name: parsedMetadata.name,
         description: parsedMetadata.description,
-        version: parsedMetadata.version,
+        // version: parsedMetadata.version ?? '0.0.1',
+        version: '1', // to remove after fix node backend
         tools: parsedMetadata.tools,
         code: toolCode,
         metadata: parsedMetadata,
