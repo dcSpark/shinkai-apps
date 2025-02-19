@@ -14,6 +14,7 @@ export type SaveToolCodeInput = Token & {
   xShinkaiAppId: string;
   xShinkaiToolId: string;
   xShinkaiOriginalToolRouterKey?: string;
+  shouldPrefetchPlaygroundTool?: boolean;
 } & {
   name: string;
   description: string;

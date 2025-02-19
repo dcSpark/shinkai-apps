@@ -100,7 +100,7 @@ export const ToolsHomepage = () => {
           leftElement={
             chatInboxId ? (
               <MessageList
-                containerClassName="px-3"
+                containerClassName="px-3 py-2"
                 disabledRetryAndEdit={true}
                 fetchPreviousPage={fetchPreviousPage}
                 hasPreviousPage={hasPreviousPage}
@@ -126,90 +126,12 @@ export const ToolsHomepage = () => {
             )
           }
           rightElement={
-            <div className="flex size-full flex-col items-start justify-center gap-1 p-1 text-xs">
-              <AnimatePresence>
-                <motion.div
-                  animate={{ opacity: 1, y: 0 }}
-                  className="border-official-gray-800 bg-official-gray-1000 mb-1 flex w-full flex-1 flex-col overflow-auto p-2.5"
-                  exit={{ opacity: 0, y: -100 }}
-                  initial={{ opacity: 0, y: 50 }}
-                  layout
-                  transition={{
-                    opacity: { duration: 0.2 },
-                    y: { duration: 0.4 },
-                  }}
-                >
-                  <div className="mb-4 flex items-center gap-3">
-                    {toolCodeStatus === 'pending' ? (
-                      <Loader2 className="h-5 w-5 animate-spin text-cyan-500" />
-                    ) : toolCodeStatus === 'success' ? (
-                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-500">
-                        ✓
-                      </div>
-                    ) : toolCodeStatus === 'error' ? (
-                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500/20 text-red-500">
-                        ✗
-                      </div>
-                    ) : null}
-                    <h3 className="font-medium text-zinc-100">
-                      {toolCodeStatus === 'pending'
-                        ? 'Generating Code...'
-                        : toolCodeStatus === 'error'
-                          ? 'Generating Code Failed'
-                          : toolCodeStatus === 'success'
-                            ? 'Code Generated'
-                            : null}
-                    </h3>
-                  </div>
-                  <div
-                    className={cn(
-                      'bg-official-gray-1000 flex-1 overflow-auto rounded-md',
-                      toolCodeStatus === 'pending' && 'overflow-hidden',
-                    )}
-                  >
-                    {toolCodeStatus === 'pending' && (
-                      <div className="size-w flex flex-col items-start gap-1 px-4 py-4 text-xs">
-                        {[...Array(20)].map((_, lineIndex) => (
-                          <div className="mb-2 flex gap-3" key={lineIndex}>
-                            <Skeleton className="bg-official-gray-900 h-4 w-12 rounded" />
-                            <div className="flex-1">
-                              <div className="flex flex-wrap gap-2">
-                                {[
-                                  ...Array(Math.floor(Math.random() * 4) + 1),
-                                ].map((_, blockIndex) => (
-                                  <Skeleton
-                                    className={cn(
-                                      getRandomWidth(),
-                                      'bg-official-gray-900 h-4 rounded',
-                                    )}
-                                    key={blockIndex}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {toolCodeStatus === 'success' && (
-                      <ToolCodeEditor
-                        language={form.watch('language').toLowerCase()}
-                        value={toolCode}
-                      />
-                    )}
-                    {toolCodeStatus === 'error' && (
-                      <div className="flex size-full flex-col items-start gap-1 px-4 py-4 text-xs">
-                        <p className="text-red-500">Failed to generate code</p>
-                        <p className="text-red-500">{error}</p>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-
-                {toolCode && (
+            <div className="flex size-full flex-col items-center justify-center gap-1 p-1 text-xs">
+              <div className="">
+                <AnimatePresence>
                   <motion.div
                     animate={{ opacity: 1, y: 0 }}
-                    className="border-official-gray-800 bg-official-gray-1000 flex w-full flex-1 flex-col overflow-auto p-2.5"
+                    className="border-official-gray-800 mb-1 flex w-full flex-1 flex-col overflow-auto p-2.5"
                     exit={{ opacity: 0, y: -100 }}
                     initial={{ opacity: 0, y: 50 }}
                     transition={{
@@ -218,40 +140,35 @@ export const ToolsHomepage = () => {
                     }}
                   >
                     <div className="mb-4 flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        {toolMetadataStatus === 'pending' && (
-                          <>
-                            <Loader2 className="h-5 w-5 animate-spin text-cyan-500" />
-                            <h3 className="font-medium text-zinc-100">
-                              Generating Preview + Metadata...
-                            </h3>
-                          </>
-                        )}
-                        {toolMetadataStatus === 'success' && (
-                          <>
-                            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-500">
-                              <span className="font-bold">✓</span>
-                            </div>
-                            <h3 className="font-medium text-zinc-100">
-                              Metadata Successfully Generated
-                            </h3>
-                          </>
-                        )}
-                        {toolMetadataStatus === 'error' && (
-                          <h3 className="font-medium text-red-500">
-                            Failed to Generate Metadata
-                          </h3>
-                        )}
-                      </div>
+                      {toolCodeStatus === 'pending' ? (
+                        <Loader2 className="h-5 w-5 animate-spin text-cyan-500" />
+                      ) : toolCodeStatus === 'success' ? (
+                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-500">
+                          ✓
+                        </div>
+                      ) : toolCodeStatus === 'error' ? (
+                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500/20 text-red-500">
+                          ✗
+                        </div>
+                      ) : null}
+                      <h3 className="font-medium text-zinc-100">
+                        {toolCodeStatus === 'pending'
+                          ? 'Generating Code...'
+                          : toolCodeStatus === 'error'
+                            ? 'Generating Code Failed'
+                            : toolCodeStatus === 'success'
+                              ? 'Code Generated'
+                              : null}
+                      </h3>
                     </div>
                     <div
                       className={cn(
-                        'bg-official-gray-1000 flex-1 overflow-auto rounded-md',
-                        toolMetadataStatus === 'pending' && 'overflow-hidden',
+                        'flex-1 overflow-auto rounded-md',
+                        toolCodeStatus === 'pending' && 'overflow-hidden',
                       )}
                     >
-                      {toolMetadataStatus === 'pending' && (
-                        <div className="flex size-full flex-col items-start gap-1 px-4 py-4 text-xs">
+                      {toolCodeStatus === 'pending' && (
+                        <div className="size-w flex flex-col items-start gap-1 px-4 py-4 text-xs">
                           {[...Array(20)].map((_, lineIndex) => (
                             <div className="mb-2 flex gap-3" key={lineIndex}>
                               <Skeleton className="bg-official-gray-900 h-4 w-12 rounded" />
@@ -274,25 +191,113 @@ export const ToolsHomepage = () => {
                           ))}
                         </div>
                       )}
-                      {toolMetadataStatus === 'success' && (
+                      {toolCodeStatus === 'success' && (
                         <ToolCodeEditor
-                          language="json"
-                          readOnly
-                          value={JSON.stringify(toolMetadata, null, 2)}
+                          language={form.watch('language').toLowerCase()}
+                          value={toolCode}
                         />
                       )}
-                      {toolMetadataStatus === 'error' && (
+                      {toolCodeStatus === 'error' && (
                         <div className="flex size-full flex-col items-start gap-1 px-4 py-4 text-xs">
                           <p className="text-red-500">
-                            Failed to generate metadata
+                            Failed to generate code
                           </p>
                           <p className="text-red-500">{error}</p>
                         </div>
                       )}
                     </div>
                   </motion.div>
-                )}
-              </AnimatePresence>
+
+                  {toolCode && (
+                    <motion.div
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex w-full flex-1 flex-col overflow-auto p-2.5"
+                      exit={{ opacity: 0, y: -100 }}
+                      initial={{ opacity: 0, y: 50 }}
+                      transition={{
+                        opacity: { duration: 0.2 },
+                        y: { duration: 0.4 },
+                      }}
+                    >
+                      <div className="mb-4 flex items-center gap-3">
+                        <div className="flex items-center gap-2">
+                          {toolMetadataStatus === 'pending' && (
+                            <>
+                              <Loader2 className="h-5 w-5 animate-spin text-cyan-500" />
+                              <h3 className="font-medium text-zinc-100">
+                                Generating Preview + Metadata...
+                              </h3>
+                            </>
+                          )}
+                          {toolMetadataStatus === 'success' && (
+                            <>
+                              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-500">
+                                <span className="font-bold">✓</span>
+                              </div>
+                              <h3 className="font-medium text-zinc-100">
+                                Metadata Successfully Generated
+                              </h3>
+                            </>
+                          )}
+                          {toolMetadataStatus === 'error' && (
+                            <h3 className="font-medium text-red-500">
+                              Failed to Generate Metadata
+                            </h3>
+                          )}
+                        </div>
+                      </div>
+                      <div
+                        className={cn(
+                          'bg-official-gray-1000 flex-1 overflow-auto rounded-md',
+                          toolMetadataStatus === 'pending' && 'overflow-hidden',
+                        )}
+                      >
+                        {toolMetadataStatus === 'pending' && (
+                          <div className="flex size-full flex-col items-start gap-1 px-4 py-4 text-xs">
+                            {[...Array(20)].map((_, lineIndex) => (
+                              <div className="mb-2 flex gap-3" key={lineIndex}>
+                                <Skeleton className="bg-official-gray-900 h-4 w-12 rounded" />
+                                <div className="flex-1">
+                                  <div className="flex flex-wrap gap-2">
+                                    {[
+                                      ...Array(
+                                        Math.floor(Math.random() * 4) + 1,
+                                      ),
+                                    ].map((_, blockIndex) => (
+                                      <Skeleton
+                                        className={cn(
+                                          getRandomWidth(),
+                                          'bg-official-gray-900 h-4 rounded',
+                                        )}
+                                        key={blockIndex}
+                                      />
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {toolMetadataStatus === 'success' && (
+                          <ToolCodeEditor
+                            language="json"
+                            readOnly
+                            value={JSON.stringify(toolMetadata, null, 2)}
+                          />
+                        )}
+                        {toolMetadataStatus === 'error' && (
+                          <div className="flex size-full flex-col items-start gap-1 px-4 py-4 text-xs">
+                            <p className="text-red-500">
+                              Failed to generate metadata
+                            </p>
+                            <p className="text-red-500">{error}</p>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           }
           topElement={

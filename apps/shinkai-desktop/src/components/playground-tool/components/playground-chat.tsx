@@ -112,7 +112,7 @@ const PlaygroundChatBase = ({
 
         {chatInboxId && (
           <MessageList
-            containerClassName="px-3"
+            containerClassName="px-3 py-2"
             disabledRetryAndEdit={true}
             fetchPreviousPage={fetchPreviousPage}
             hasPreviousPage={hasPreviousPage}
