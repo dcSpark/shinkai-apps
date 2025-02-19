@@ -109,7 +109,7 @@ export const useAutoSaveTool = () => {
               shouldAutoSaveRef.current = false;
               navigate(`/tools/edit/${data.metadata.tool_router_key}`);
               onSuccess?.();
-            }, 1000);
+            }, 800);
           },
           onError: (error) => {
             toast.error('Failed to save tool code', {

@@ -144,13 +144,14 @@ export const ToolsHomepage = () => {
                 <AnimatePresence mode="wait">
                   {step === 'code' && (
                     <motion.div
-                      animate={{ y: 0, opacity: 1, rotateX: 0 }}
-                      className="border-official-gray-950 bg-official-gray-1000 absolute inset-0 flex w-full flex-1 flex-col overflow-hidden rounded-lg p-3"
-                      exit={{ y: -100, opacity: 0, rotateX: 20 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      className="border-official-gray-950 bg-official-gray-1000 flex h-full w-full flex-1 flex-col gap-3 overflow-hidden rounded-lg p-3"
+                      exit={{ y: -100, opacity: 0 }}
                       initial={{ y: 100, opacity: 0, rotateX: -20 }}
+                      key={toolCodeStatus}
                       transition={{ duration: 0.5, ease: 'easeInOut' }}
                     >
-                      <div className="mb-4 flex items-center gap-3">
+                      <div className="flex items-center gap-3">
                         {toolCodeStatus === 'pending' ? (
                           <Loader2 className="h-5 w-5 animate-spin text-cyan-500" />
                         ) : toolCodeStatus === 'success' ? (
@@ -172,14 +173,16 @@ export const ToolsHomepage = () => {
                                 : null}
                         </h3>
                       </div>
-                      <div
-                        className={cn(
-                          'flex-1 overflow-auto rounded-md',
-                          toolCodeStatus === 'pending' && 'overflow-hidden',
-                        )}
-                      >
+
+                      <AnimatePresence mode="wait">
                         {toolCodeStatus === 'pending' && (
-                          <div className="size-w flex flex-col items-start gap-1 px-4 py-4 text-xs">
+                          <motion.div
+                            animate={{ opacity: 1 }}
+                            className="size-w flex flex-1 flex-col items-start gap-1 overflow-hidden rounded-md px-4 py-4 text-xs"
+                            exit={{ opacity: 0 }}
+                            initial={{ opacity: 0 }}
+                            transition={{ duration: 0.5, ease: 'easeInOut' }}
+                          >
                             {[...Array(20)].map((_, lineIndex) => (
                               <div className="mb-2 flex gap-3" key={lineIndex}>
                                 <Skeleton className="bg-official-gray-900 h-4 w-12 rounded" />
@@ -202,35 +205,50 @@ export const ToolsHomepage = () => {
                                 </div>
                               </div>
                             ))}
-                          </div>
+                          </motion.div>
                         )}
                         {toolCodeStatus === 'success' && (
-                          <ToolCodeEditor
-                            language={form.watch('language').toLowerCase()}
-                            value={toolCode}
-                          />
+                          <motion.div
+                            animate={{ opacity: 1 }}
+                            className={cn('flex-1 overflow-auto rounded-md')}
+                            exit={{ opacity: 0 }}
+                            initial={{ opacity: 0 }}
+                            transition={{ duration: 0.5, ease: 'easeInOut' }}
+                          >
+                            <ToolCodeEditor
+                              language={form.watch('language').toLowerCase()}
+                              value={toolCode}
+                            />
+                          </motion.div>
                         )}
                         {toolCodeStatus === 'error' && (
-                          <div className="flex size-full flex-col items-start gap-1 px-4 py-4 text-xs">
+                          <motion.div
+                            animate={{ opacity: 1 }}
+                            className="flex size-full flex-1 flex-col items-start gap-1 overflow-auto rounded-md px-4 py-4 text-xs"
+                            exit={{ opacity: 0 }}
+                            initial={{ opacity: 0 }}
+                            transition={{ duration: 0.5, ease: 'easeInOut' }}
+                          >
                             <p className="text-red-500">
                               Failed to generate code
                             </p>
                             <p className="text-red-500">{error}</p>
-                          </div>
+                          </motion.div>
                         )}
-                      </div>
+                      </AnimatePresence>
                     </motion.div>
                   )}
 
                   {step === 'metadata' && (
                     <motion.div
                       animate={{ y: 0, opacity: 1, rotateX: 0 }}
-                      className="border-official-gray-950 bg-official-gray-1000 absolute inset-0 mb-1 flex w-full flex-1 flex-col overflow-hidden rounded-lg p-3"
+                      className="border-official-gray-950 bg-official-gray-1000 flex h-full w-full flex-1 flex-col gap-3 overflow-hidden rounded-lg p-3"
                       exit={{ y: -100, opacity: 0, rotateX: 20 }}
                       initial={{ y: 100, opacity: 0, rotateX: -20 }}
+                      key={toolMetadataStatus}
                       transition={{ duration: 0.5, ease: 'easeInOut' }}
                     >
-                      <div className="mb-4 flex items-center gap-3">
+                      <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
                           {toolMetadataStatus === 'pending' && (
                             <>
@@ -257,14 +275,16 @@ export const ToolsHomepage = () => {
                           )}
                         </div>
                       </div>
-                      <div
-                        className={cn(
-                          'bg-official-gray-1000 flex-1 overflow-auto rounded-md',
-                          toolMetadataStatus === 'pending' && 'overflow-hidden',
-                        )}
-                      >
+
+                      <AnimatePresence mode="wait">
                         {toolMetadataStatus === 'pending' && (
-                          <div className="flex size-full flex-col items-start gap-1 px-4 py-4 text-xs">
+                          <motion.div
+                            animate={{ opacity: 1 }}
+                            className="flex w-full flex-1 flex-col items-start gap-1 overflow-hidden rounded-md px-4 py-4 text-xs"
+                            exit={{ opacity: 0 }}
+                            initial={{ opacity: 0 }}
+                            transition={{ duration: 0.5, ease: 'easeInOut' }}
+                          >
                             {[...Array(20)].map((_, lineIndex) => (
                               <div className="mb-2 flex gap-3" key={lineIndex}>
                                 <Skeleton className="bg-official-gray-900 h-4 w-12 rounded" />
@@ -287,24 +307,38 @@ export const ToolsHomepage = () => {
                                 </div>
                               </div>
                             ))}
-                          </div>
+                          </motion.div>
                         )}
                         {toolMetadataStatus === 'success' && (
-                          <ToolCodeEditor
-                            language="json"
-                            readOnly
-                            value={JSON.stringify(toolMetadata, null, 2)}
-                          />
+                          <motion.div
+                            animate={{ opacity: 1 }}
+                            className="flex w-full flex-1 flex-col items-start gap-1 overflow-auto rounded-md text-xs"
+                            exit={{ opacity: 0 }}
+                            initial={{ opacity: 0 }}
+                            transition={{ duration: 0.5, ease: 'easeInOut' }}
+                          >
+                            <ToolCodeEditor
+                              language="json"
+                              readOnly
+                              value={JSON.stringify(toolMetadata, null, 2)}
+                            />
+                          </motion.div>
                         )}
                         {toolMetadataStatus === 'error' && (
-                          <div className="flex size-full flex-col items-start gap-1 px-4 py-4 text-xs">
+                          <motion.div
+                            animate={{ opacity: 1 }}
+                            className="flex size-full flex-col items-start gap-1 px-4 py-4 text-xs"
+                            exit={{ opacity: 0 }}
+                            initial={{ opacity: 0 }}
+                            transition={{ duration: 0.5, ease: 'easeInOut' }}
+                          >
                             <p className="text-red-500">
                               Failed to generate metadata
                             </p>
                             <p className="text-red-500">{error}</p>
-                          </div>
+                          </motion.div>
                         )}
-                      </div>
+                      </AnimatePresence>
                     </motion.div>
                   )}
                 </AnimatePresence>
