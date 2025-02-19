@@ -95,15 +95,14 @@ function ManageSourcesButtonBase() {
           )}
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex h-[60vh] max-w-[500px] flex-col gap-4">
+      <DialogContent className="bg-official-gray-850 flex h-[60vh] max-w-[500px] flex-col gap-4">
         <DialogClose className="absolute right-4 top-4">
           <XIcon className="text-gray-80 h-5 w-5" />
         </DialogClose>
         <div className="space-y-2">
-          <DialogTitle className="pb-0">Manage Knowledge</DialogTitle>
+          <DialogTitle className="pb-0">Attach files to your tool</DialogTitle>
           <DialogDescription className="text-xs">
-            Add knowledge directly to your tool. It is used to provide context
-            to the large language model.
+            It is used to provide context to the large language model.
           </DialogDescription>
         </div>
 
@@ -135,7 +134,7 @@ function ManageSourcesButtonBase() {
         >
           {isGetAllToolAssetsSuccess && assets.length === 0 && (
             <span className="text-gray-80 text-center text-xs">
-              No source files uploaded yet.
+              No files uploaded yet.
             </span>
           )}
           {isUploadingAssets && (
@@ -149,7 +148,7 @@ function ManageSourcesButtonBase() {
           {isGetAllToolAssetsSuccess &&
             assets.map((asset) => (
               <div
-                className="flex items-center justify-between gap-2 overflow-hidden rounded-lg border border-gray-200 px-1.5 py-4"
+                className="border-official-gray-780 flex items-center justify-between gap-2 overflow-hidden rounded-lg border px-1.5 py-2"
                 key={asset}
               >
                 <div className="flex items-center gap-2 overflow-hidden text-gray-50">
@@ -197,7 +196,12 @@ function ManageSourcesButtonBase() {
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="default">
+            <Button
+              className="min-w-[100px]"
+              size="xs"
+              type="button"
+              variant="default"
+            >
               Close
             </Button>
           </DialogClose>
