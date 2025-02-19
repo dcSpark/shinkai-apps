@@ -7,10 +7,12 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { SaveIcon } from 'lucide-react';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { AlertTriangleIcon, SaveIcon } from 'lucide-react';
 import { PrismEditor } from 'prism-react-editor';
-import { memo, MutableRefObject } from 'react';
+import { memo, MutableRefObject, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
@@ -25,12 +27,21 @@ import ToolCodeEditor from '../tool-code-editor';
 function MetadataPanelBase({
   mode,
   regenerateToolMetadata,
-  metadataEditorRef,
+  initialToolRouterKeyWithVersion,
 }: {
   mode: 'create' | 'edit';
   regenerateToolMetadata: () => void;
-  metadataEditorRef: MutableRefObject<PrismEditor | null>;
+  initialToolRouterKeyWithVersion: string;
 }) {
+  const { toolRouterKey } = useParams();
+
+  const [validateMetadataEditorValue, setValidateMetadataEditorValue] =
+    useState<string | null>(null);
+
+  const metadataEditorRef = usePlaygroundStore(
+    (state) => state.metadataEditorRef,
+  );
+  const codeEditorRef = usePlaygroundStore((state) => state.codeEditorRef);
   const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
   const updateToolMetadata = usePlaygroundStore(
     (state) => state.updateToolMetadata,
@@ -53,27 +64,22 @@ function MetadataPanelBase({
 
   const form = useFormContext<CreateToolCodeFormSchema>();
 
-  const { handleAutoSave, isSavingTool, isSaveToolSuccess } = useAutoSaveTool({
-    form,
-    metadataEditorRef,
-  });
+  const { handleAutoSave } = useAutoSaveTool();
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleApplyMetadataChanges = () => {
     const currentMetadata = metadataEditorRef.current?.value;
+    const currentCode = codeEditorRef.current?.value;
     if (!currentMetadata) return;
 
     try {
       const parsedMetadata = JSON.parse(currentMetadata);
       const mergedMetadata = merge(parsedMetadata, {
-        // override values
-        name: toolMetadata?.name ?? '',
         author: toolMetadata?.author ?? '',
       });
 
       const parsedAll = ToolMetadataSchema.parse(mergedMetadata);
-
       updateToolMetadata(parsedAll);
-      handleAutoSave();
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast.error('Invalid metadata format', {
@@ -87,10 +93,63 @@ function MetadataPanelBase({
     }
   };
 
+  const handleMetadataUpdate = (value: string) => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    debounceTimeoutRef.current = setTimeout(() => {
+      try {
+        const parseValue = JSON.parse(value);
+        setValidateMetadataEditorValue(null);
+        handleAutoSave({
+          toolMetadata: parseValue,
+          toolCode: codeEditorRef.current?.value ?? '',
+          tools: form.getValues('tools'),
+          language: form.getValues('language'),
+          toolName: parseValue.name,
+          previousToolRouterKeyWithVersion:
+            initialToolRouterKeyWithVersion ?? '',
+        });
+      } catch (err) {
+        setValidateMetadataEditorValue((err as Error).message);
+        return;
+      }
+    }, 1000);
+  };
+
   return (
-    <div className="flex h-full flex-col pb-4 pl-4 pr-3">
+    <div
+      className={cn(
+        'flex h-full flex-col pb-4 pl-4 pr-3',
+        validateMetadataEditorValue !== null &&
+          'shadow-[0_0_0_1px_currentColor] shadow-red-500 transition-shadow',
+      )}
+    >
       {isMetadataGenerationSuccess && (
         <div className="flex items-center justify-end gap-2 py-1.5">
+          {validateMetadataEditorValue !== null && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="text-red flex items-center">
+                  <AlertTriangleIcon className="size-4" />
+                </div>
+              </TooltipTrigger>
+              <TooltipPortal>
+                <TooltipContent
+                  className="flex max-w-[300px] flex-col gap-3 text-xs text-white"
+                  side="bottom"
+                >
+                  <p className="font-medium">Invalid metadata format</p>
+                  <span className="text-official-gray-500">
+                    {validateMetadataEditorValue}
+                  </span>
+                  <p className="text-official-gray-500 text-xs">
+                    This value will not be saved.
+                  </p>
+                </TooltipContent>
+              </TooltipPortal>
+            </Tooltip>
+          )}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -104,7 +163,7 @@ function MetadataPanelBase({
               </Button>
             </TooltipTrigger>
             <TooltipPortal>
-              <TooltipContent side="left">
+              <TooltipContent side="bottom">
                 <p>Regenerate metadata</p>
               </TooltipContent>
             </TooltipPortal>
@@ -182,14 +241,15 @@ function MetadataPanelBase({
 
       {isMetadataGenerationSuccess && !isMetadataGenerationError && (
         <ToolCodeEditor
+          isError={validateMetadataEditorValue !== null}
           language="json"
+          onUpdate={handleMetadataUpdate}
           ref={metadataEditorRef}
           value={
             toolMetadata != null
               ? JSON.stringify(
                   {
                     ...toolMetadata,
-                    name: mode === 'edit' ? undefined : toolMetadata.name,
                     tools: undefined,
                     author: undefined,
                   },
@@ -212,7 +272,10 @@ function MetadataPanelBase({
 }
 
 export const MetadataPanel = memo(MetadataPanelBase, (prevProps, nextProps) => {
-  if (prevProps.regenerateToolMetadata !== nextProps.regenerateToolMetadata) {
+  if (
+    prevProps.initialToolRouterKeyWithVersion !==
+    nextProps.initialToolRouterKeyWithVersion
+  ) {
     return false;
   }
   if (prevProps.mode !== nextProps.mode) {

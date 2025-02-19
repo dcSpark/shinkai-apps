@@ -291,6 +291,7 @@ export const saveToolCode = async (
   payload: SaveToolCodeRequest,
   xShinkaiAppId: string,
   xShinkaiToolId: string,
+  xShinkaiOriginalToolRouterKey?: string,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/set_playground_tool'),
@@ -300,6 +301,9 @@ export const saveToolCode = async (
         Authorization: `Bearer ${bearerToken}`,
         'x-shinkai-app-id': xShinkaiAppId,
         'x-shinkai-tool-id': xShinkaiToolId,
+        ...(xShinkaiOriginalToolRouterKey && {
+          'x-shinkai-original-tool-router-key': xShinkaiOriginalToolRouterKey,
+        }),
       },
       responseType: 'json',
     },

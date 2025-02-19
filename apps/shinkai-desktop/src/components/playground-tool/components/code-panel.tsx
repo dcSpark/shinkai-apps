@@ -25,22 +25,20 @@ export const getRandomWidth = () => {
 };
 
 function CodePanelBase({
-  codeEditorRef,
-  resetCounter,
   handleApplyChangesCodeSubmit,
   resetToolCode,
   isDirtyCodeEditor,
   setIsDirtyCodeEditor,
   baseToolCodeRef,
 }: {
-  codeEditorRef: MutableRefObject<PrismEditor | null>;
-  resetCounter: number;
   handleApplyChangesCodeSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   resetToolCode: () => void;
   isDirtyCodeEditor: boolean;
   setIsDirtyCodeEditor: (isDirty: boolean) => void;
   baseToolCodeRef: MutableRefObject<string>;
 }) {
+  const resetCounter = usePlaygroundStore((state) => state.resetCounter);
+  const codeEditorRef = usePlaygroundStore((state) => state.codeEditorRef);
   const toolCode = usePlaygroundStore((state) => state.toolCode);
   const toolCodeStatus = usePlaygroundStore((state) => state.toolCodeStatus);
 
@@ -163,7 +161,6 @@ function CodePanelBase({
 }
 
 export const CodePanel = memo(CodePanelBase, (prevProps, nextProps) => {
-  if (prevProps.resetCounter !== nextProps.resetCounter) return false;
   if (prevProps.isDirtyCodeEditor !== nextProps.isDirtyCodeEditor) return false;
   return true;
 });

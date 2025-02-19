@@ -13,6 +13,7 @@ export type SaveToolCodeInput = Token & {
   language: CodeLanguage;
   xShinkaiAppId: string;
   xShinkaiToolId: string;
+  xShinkaiOriginalToolRouterKey?: string;
 } & {
   name: string;
   description: string;

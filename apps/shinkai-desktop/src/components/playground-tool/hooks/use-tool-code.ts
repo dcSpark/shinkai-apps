@@ -252,11 +252,7 @@ export const useToolCode = ({
   const { mutateAsync: updateToolCodeImplementation } =
     useUpdateToolCodeImplementation();
 
-  const { handleAutoSave, isSavingTool, isSaveToolSuccess } = useAutoSaveTool({
-    form: createToolCodeForm,
-    codeEditorRef,
-    metadataEditorRef,
-  });
+  const { handleAutoSave, isSavingTool, isSaveToolSuccess } = useAutoSaveTool();
 
   const handleCreateToolCode = async (data: CreateToolCodeFormSchema) => {
     if (!auth) return;
@@ -294,7 +290,6 @@ export const useToolCode = ({
 
     setTimeout(() => {
       setToolCode(currentEditorValue as string);
-      handleAutoSave();
     }, 100);
   };
 

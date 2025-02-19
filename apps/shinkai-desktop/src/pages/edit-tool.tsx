@@ -28,6 +28,8 @@ function EditToolPage() {
     ? buildInboxIdFromJobId(playgroundTool.job_id)
     : '';
 
+  console.log(toolRouterKey, 'toolRouterKey');
+
   const toolCodeInitialValues = useMemo(
     () => ({
       code: playgroundTool?.code ?? '',
@@ -66,12 +68,21 @@ function EditToolPage() {
     ],
   );
 
+  console.log(
+    toolRouterKey,
+    'toolRouterKey',
+    toolRouterKey + ':::' + playgroundTool?.metadata?.version,
+  );
+
   return (
     <PlaygroundToolEditor
       createToolCodeFormInitialValues={{
         language: getLanguage(playgroundTool?.language ?? ''),
       }}
       initialChatInboxId={chatInboxId}
+      initialToolRouterKeyWithVersion={
+        toolRouterKey + ':::' + playgroundTool?.metadata?.version
+      }
       mode="edit"
       toolCodeInitialValues={toolCodeInitialValues}
       toolMetadataInitialValues={toolMetadataInitialValues}

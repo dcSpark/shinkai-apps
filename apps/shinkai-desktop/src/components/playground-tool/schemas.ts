@@ -48,30 +48,40 @@ export const ToolMetadataSchema = z.object({
     )
     .passthrough(),
 
-  sqlTables: z.array(z.object({
-    name: z.string(),
-    definition: z.string(),
-  })).default([]),
-  sqlQueries: z.array(z.object({
-    name: z.string(),
-    query: z.string(),
-  })).default([]),
+  sqlTables: z
+    .array(
+      z.object({
+        name: z.string(),
+        definition: z.string(),
+      }),
+    )
+    .default([]),
+  sqlQueries: z
+    .array(
+      z.object({
+        name: z.string(),
+        query: z.string(),
+      }),
+    )
+    .default([]),
   tools: z.array(z.string()).default([]),
-  oauth: z.array(
-    z.object({
-      name: z.string().default(''),
-      version: z.string().default('2.0'),
-      authorizationUrl: z.string().default(''),
-      redirectUrl: z.string().default('https://secrets.shinkai.com/redirect'),
-      tokenUrl: z.string().default(''),
-      clientId: z.string().default('YOUR_PROVIDER_CLIENT_ID'),
-      clientSecret: z.string().default('YOUR_PROVIDER_CLIENT_SECRET'),
-      scopes: z.array(z.string()).default([]),
-      responseType: z.string().default('code'),
-      pkceType: z.string().default(''),
-      refreshToken: z.string().default(''),
-    }),
-  ).default([]),
+  oauth: z
+    .array(
+      z.object({
+        name: z.string().default(''),
+        version: z.string().default('2.0'),
+        authorizationUrl: z.string().default(''),
+        redirectUrl: z.string().default('https://secrets.shinkai.com/redirect'),
+        tokenUrl: z.string().default(''),
+        clientId: z.string().default('YOUR_PROVIDER_CLIENT_ID'),
+        clientSecret: z.string().default('YOUR_PROVIDER_CLIENT_SECRET'),
+        scopes: z.array(z.string()).default([]),
+        responseType: z.string().default('code'),
+        pkceType: z.string().default(''),
+        refreshToken: z.string().default(''),
+      }),
+    )
+    .default([]),
   runner: z.string().default('any'),
   operating_system: z.array(z.string()).default(['linux', 'macos', 'windows']),
   tool_set: z.string().default(''),

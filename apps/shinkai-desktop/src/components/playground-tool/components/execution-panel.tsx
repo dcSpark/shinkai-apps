@@ -135,7 +135,7 @@ function ExecutionPanelBase({
         value="view"
       >
         <div className="flex size-full flex-col pb-4 pl-4 pr-3">
-          <div className="flex items-start justify-between py-3">
+          <div className="flex items-start justify-between gap-8 py-3">
             <div className="text-gray-80 flex flex-col gap-1 text-xs">
               {toolMetadata && (
                 <div className="flex flex-col gap-1">

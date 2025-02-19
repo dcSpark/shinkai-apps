@@ -1,4 +1,5 @@
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { PrismEditor } from 'prism-react-editor';
 import {
   createContext,
   createRef,
@@ -50,6 +51,8 @@ type PlaygroundStore = {
 
   resetPlaygroundStore: () => void;
   shouldAutoSaveRef: React.MutableRefObject<boolean>;
+  metadataEditorRef: React.MutableRefObject<PrismEditor | null>;
+  codeEditorRef: React.MutableRefObject<PrismEditor | null>;
 
   toolHomepageScrollPositionRef: React.MutableRefObject<{
     [key: string]: number;
@@ -119,6 +122,9 @@ const createPlaygroundStore = () => {
     toolHomepageScrollPositionRef,
     selectedToolGroup: 'all-tools',
     setSelectedToolGroup: (selectedToolGroup) => set({ selectedToolGroup }),
+
+    metadataEditorRef: createRef<PrismEditor>(),
+    codeEditorRef: createRef<PrismEditor>(),
 
     resetPlaygroundStore: () =>
       set({

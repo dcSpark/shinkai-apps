@@ -1,3 +1,7 @@
+import {
+  CodeLanguage,
+  ToolMetadata,
+} from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
 import { PrismEditor } from 'prism-react-editor';
@@ -15,17 +19,7 @@ import { ToolMetadataSchemaType } from '../schemas';
 import { CreateToolCodeFormSchema, useToolCode } from './use-tool-code';
 import { useToolMetadata } from './use-tool-metadata';
 
-export const useAutoSaveTool = ({
-  form,
-  codeEditorRef,
-  metadataEditorRef,
-}: {
-  form: UseFormReturn<CreateToolCodeFormSchema>;
-  codeEditorRef?: React.RefObject<PrismEditor>;
-  metadataEditorRef?: React.RefObject<PrismEditor>;
-}) => {
-  const toolCode = usePlaygroundStore((state) => state.toolCode);
-  const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
+export const useAutoSaveTool = () => {
   const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
   const xShinkaiAppId = usePlaygroundStore((state) => state.xShinkaiAppId);
   const xShinkaiToolId = usePlaygroundStore((state) => state.xShinkaiToolId);
@@ -54,69 +48,77 @@ export const useAutoSaveTool = ({
     },
   });
 
-  const handleAutoSave = useCallback(async () => {
-    if (!chatInboxId || !toolMetadata) return;
+  const handleAutoSave = useCallback(
+    async ({
+      previousToolRouterKeyWithVersion,
+      toolMetadata,
+      toolCode,
+      toolName,
+      tools,
+      language,
+    }: {
+      previousToolRouterKeyWithVersion?: string;
+      toolMetadata: ToolMetadata;
+      toolCode: string;
+      toolName?: string;
+      tools: string[];
+      language: CodeLanguage;
+    }) => {
+      if (!chatInboxId || !toolMetadata) return;
+      let parsedMetadata: ToolMetadataSchemaType;
+      try {
+        const mergedMetadata = merge(toolMetadata, {
+          // default values
+          name: toolName ?? toolMetadata.name,
+          tools: tools ?? [],
+          author: auth?.shinkai_identity ?? '',
+        });
 
-    const metadataCodeEditorValue = metadataEditorRef?.current?.value;
-    const toolCodeEditorValue = codeEditorRef?.current?.value;
+        parsedMetadata = ToolMetadataSchema.parse(mergedMetadata);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          toast.error('Invalid Metadata JSON Value', {
+            description: error.issues.map((issue) => issue.message).join(', '),
+          });
+          return;
+        }
 
-    let parsedMetadata: ToolMetadataSchemaType;
-    try {
-      const metadata = metadataCodeEditorValue
-        ? JSON.parse(metadataCodeEditorValue as string)
-        : toolMetadata;
-
-      const mergedMetadata = merge(metadata, {
-        name: metadata.name,
-        tools: form.getValues('tools') ?? [],
-        author: auth?.shinkai_identity ?? '',
-      });
-
-      parsedMetadata = ToolMetadataSchema.parse(mergedMetadata);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        toast.error('Invalid Metadata JSON Value', {
-          description: error.issues.map((issue) => issue.message).join(', '),
+        toast.error('Invalid Metadata JSON', {
+          position: 'top-right',
+          description: (error as Error)?.message,
         });
         return;
       }
 
-      toast.error('Invalid Metadata JSON', {
-        position: 'top-right',
-        description: (error as Error)?.message,
+      await saveToolCode({
+        name: parsedMetadata.name,
+        description: parsedMetadata.description,
+        version: parsedMetadata.version,
+        tools: parsedMetadata.tools,
+        code: toolCode,
+        metadata: parsedMetadata,
+        jobId: extractJobIdFromInbox(chatInboxId),
+        token: auth?.api_v2_key ?? '',
+        nodeAddress: auth?.node_address ?? '',
+        language,
+        assets: [],
+        xShinkaiAppId,
+        xShinkaiToolId,
+        ...(previousToolRouterKeyWithVersion && {
+          xShinkaiOriginalToolRouterKey: previousToolRouterKeyWithVersion,
+        }),
       });
-      return;
-    }
-
-    await saveToolCode({
-      name: parsedMetadata.name,
-      description: parsedMetadata.description,
-      version: parsedMetadata.version,
-      tools: parsedMetadata.tools,
-      code: toolCodeEditorValue ?? toolCode,
-      metadata: parsedMetadata,
-      jobId: extractJobIdFromInbox(chatInboxId),
-      token: auth?.api_v2_key ?? '',
-      nodeAddress: auth?.node_address ?? '',
-      language: form.getValues('language'),
-      assets: [],
+    },
+    [
+      chatInboxId,
+      saveToolCode,
+      auth?.api_v2_key,
+      auth?.node_address,
+      auth?.shinkai_identity,
       xShinkaiAppId,
       xShinkaiToolId,
-    });
-  }, [
-    chatInboxId,
-    toolMetadata,
-    metadataEditorRef,
-    codeEditorRef,
-    saveToolCode,
-    toolCode,
-    auth?.api_v2_key,
-    auth?.node_address,
-    auth?.shinkai_identity,
-    form,
-    xShinkaiAppId,
-    xShinkaiToolId,
-  ]);
+    ],
+  );
 
   return {
     handleAutoSave,
@@ -172,9 +174,7 @@ export const useCreateToolAndSave = ({
     isSaveToolSuccess,
     isSaveToolError,
     saveToolCodeError,
-  } = useAutoSaveTool({
-    form,
-  });
+  } = useAutoSaveTool();
 
   const createToolAndSaveTool = async (data: CreateToolCodeFormSchema) => {
     setIsProcessing(true);
@@ -189,7 +189,12 @@ export const useCreateToolAndSave = ({
       isToolCodeGenerationSuccess &&
       shouldAutoSaveRef.current
     ) {
-      handleAutoSave();
+      handleAutoSave({
+        toolMetadata: toolMetadata,
+        toolCode: toolCode,
+        tools: form.getValues('tools'),
+        language: form.getValues('language'),
+      });
     }
   }, [
     toolCode,
@@ -197,6 +202,7 @@ export const useCreateToolAndSave = ({
     isToolCodeGenerationSuccess,
     handleAutoSave,
     shouldAutoSaveRef,
+    form,
   ]);
 
   useEffect(() => {

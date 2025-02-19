@@ -22,6 +22,7 @@ export const saveToolCode = async ({
   tools,
   xShinkaiAppId,
   xShinkaiToolId,
+  xShinkaiOriginalToolRouterKey,
 }: SaveToolCodeInput) => {
   const mergedToolMetadata = merge(metadata, {
     name,
@@ -42,6 +43,7 @@ export const saveToolCode = async ({
     },
     xShinkaiAppId,
     xShinkaiToolId,
+    xShinkaiOriginalToolRouterKey,
   );
 
   if (

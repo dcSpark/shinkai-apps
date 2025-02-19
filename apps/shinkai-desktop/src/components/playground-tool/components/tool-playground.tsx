@@ -22,6 +22,7 @@ import { useEffect, useRef } from 'react';
 
 import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
+import { useAutoSaveTool } from '../hooks/use-create-tool-and-save';
 import {
   CreateToolCodeFormSchema,
   useToolCode,
@@ -62,6 +63,7 @@ function PlaygroundToolEditor({
   toolMetadataInitialValues,
   initialChatInboxId,
   toolName,
+  initialToolRouterKeyWithVersion,
 }: {
   mode: 'create' | 'edit';
   createToolCodeFormInitialValues?: Partial<CreateToolCodeFormSchema>;
@@ -77,6 +79,7 @@ function PlaygroundToolEditor({
   };
   toolName?: string;
   initialChatInboxId?: string;
+  initialToolRouterKeyWithVersion?: string;
 }) {
   const auth = useAuth((state) => state.auth);
 
@@ -105,7 +108,6 @@ function PlaygroundToolEditor({
     isDirtyCodeEditor,
     setIsDirtyCodeEditor,
     forceGenerateMetadata,
-    resetCounter,
     handleApplyChangesCodeSubmit,
     resetToolCode,
     handleCreateToolCode,
@@ -153,6 +155,8 @@ function PlaygroundToolEditor({
       xShinkaiToolId,
     });
   };
+
+  const { handleAutoSave, isSavingTool, isSaveToolSuccess } = useAutoSaveTool();
 
   return (
     <Form {...form}>
@@ -232,12 +236,10 @@ function PlaygroundToolEditor({
                     >
                       <CodePanel
                         baseToolCodeRef={baseToolCodeRef}
-                        codeEditorRef={codeEditorRef}
                         handleApplyChangesCodeSubmit={
                           handleApplyChangesCodeSubmit
                         }
                         isDirtyCodeEditor={isDirtyCodeEditor}
-                        resetCounter={resetCounter}
                         resetToolCode={resetToolCode}
                         setIsDirtyCodeEditor={setIsDirtyCodeEditor}
                       />
@@ -250,8 +252,10 @@ function PlaygroundToolEditor({
                       onBlur={() => setFocusedPanel(null)}
                     >
                       <MetadataPanel
-                        metadataEditorRef={metadataEditorRef}
                         mode={mode}
+                        initialToolRouterKeyWithVersion={
+                          initialToolRouterKeyWithVersion ?? ''
+                        }
                         regenerateToolMetadata={regenerateToolMetadata}
                       />
                     </TabsContent>
