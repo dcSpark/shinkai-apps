@@ -44,7 +44,7 @@ export default function TextareaWidget<
       <textarea
         aria-describedby={ariaDescribedByIds<T>(id)}
         autoFocus={autofocus}
-        className="w-full border bg-gray-400 px-3 py-2 text-white"
+        className="bg-official-gray-900 w-full border px-3 py-2 text-white"
         disabled={disabled}
         id={id}
         name={id}

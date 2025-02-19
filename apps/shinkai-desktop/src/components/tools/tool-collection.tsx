@@ -143,7 +143,7 @@ export const ToolCollection = () => {
     //   items: toolsList ?? [], // TODO: add downloaded tools
     // },
   ];
-  console.log(selectedToolGroup, 'selectedToolGroup');
+
   return (
     <Tabs
       className="flex w-full flex-col gap-6"

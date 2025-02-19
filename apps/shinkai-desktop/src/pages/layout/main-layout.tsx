@@ -149,8 +149,8 @@ const NavLink = ({
       className={cn(
         'flex w-full items-center gap-2 rounded-lg px-4 py-3 text-white transition-colors',
         isMatch
-          ? 'bg-official-gray-1000 text-white shadow-xl'
-          : 'hover:bg-official-gray-1000 opacity-60 hover:opacity-100',
+          ? 'bg-white/10 text-white shadow-xl'
+          : 'opacity-60 hover:bg-white/10 hover:opacity-100',
       )}
       onClick={onClick}
       rel={external ? 'noreferrer' : ''}

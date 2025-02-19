@@ -140,6 +140,7 @@ const createPlaygroundStore = () => {
         focusedPanel: null,
         xShinkaiAppId: `app-id-${Date.now()}`,
         xShinkaiToolId: `task-id-${Date.now()}`,
+        selectedToolGroup: 'all-tools',
       }),
   }));
 };
@@ -159,6 +160,7 @@ export const PlaygroundProvider = ({
   );
 
   useEffect(() => {
+    console.log(store.getState());
     if (location.pathname === '/tools' && store.getState().shouldAutoSaveRef) {
       store.getState().resetPlaygroundStore();
       store.getState().shouldAutoSaveRef.current = false;

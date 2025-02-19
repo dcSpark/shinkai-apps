@@ -361,11 +361,12 @@ export const ToolsHomepage = () => {
             </div>
           }
           topElement={
-            <div className="flex items-center justify-between gap-2 border-b border-gray-400 px-4 pb-2.5">
+            <div className="flex h-[45px] items-center justify-between gap-2 border-b border-gray-400 px-4 pb-2.5">
               <Skeleton className="bg-official-gray-900 h-[30px] w-48" />
               <div className="flex items-center gap-2">
                 <Skeleton className="bg-official-gray-900 h-[30px] w-[100px]" />
-                <Skeleton className="bg-official-gray-900 h-[30px] w-20" />
+                <Skeleton className="bg-official-gray-900 h-[30px] w-[100px]" />
+                <Skeleton className="bg-official-gray-900 h-[30px] w-[100px]" />
               </div>
             </div>
           }
@@ -465,7 +466,7 @@ export const ToolsHomepage = () => {
                         form.setValue('message', value);
                       }}
                       onSubmit={form.handleSubmit(createToolAndSaveTool)}
-                      placeholder={'Ask AI to create a tool for you...'}
+                      placeholder={'Describe the tool you want to create...'}
                       textareaClassName="min-h-[90px]"
                       value={form.watch('message')}
                     />
