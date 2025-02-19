@@ -13,7 +13,7 @@ import { useScrollRestoration } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, ArrowUpRight, Loader2, StoreIcon } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -46,6 +46,8 @@ export const ToolsHomepage = () => {
   const toolHomepageScrollPositionRef = usePlaygroundStore(
     (state) => state.toolHomepageScrollPositionRef,
   );
+
+  const [step, setStep] = useState<'code' | 'metadata'>('code');
 
   const scrollElementRef = useRef<HTMLDivElement>(null);
   useScrollRestoration({
@@ -91,7 +93,18 @@ export const ToolsHomepage = () => {
       resetPlaygroundStore();
       shouldAutoSaveRef.current = false;
     }
-  }, [isError, error]);
+  }, [isError, error, shouldAutoSaveRef]);
+
+  useEffect(() => {
+    if (toolCode && !toolMetadata) {
+      setTimeout(() => {
+        setStep('metadata');
+      }, 1000);
+    }
+    if (!toolCode) {
+      setStep('code');
+    }
+  }, [toolCode, toolMetadata]);
 
   if (isProcessing) {
     return (
@@ -127,97 +140,95 @@ export const ToolsHomepage = () => {
           }
           rightElement={
             <div className="flex size-full flex-col items-center justify-center gap-1 p-1 text-xs">
-              <div className="">
-                <AnimatePresence>
-                  <motion.div
-                    animate={{ opacity: 1, y: 0 }}
-                    className="border-official-gray-800 mb-1 flex w-full flex-1 flex-col overflow-auto p-2.5"
-                    exit={{ opacity: 0, y: -100 }}
-                    initial={{ opacity: 0, y: 50 }}
-                    transition={{
-                      opacity: { duration: 0.2 },
-                      y: { duration: 0.4 },
-                    }}
-                  >
-                    <div className="mb-4 flex items-center gap-3">
-                      {toolCodeStatus === 'pending' ? (
-                        <Loader2 className="h-5 w-5 animate-spin text-cyan-500" />
-                      ) : toolCodeStatus === 'success' ? (
-                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-500">
-                          ✓
-                        </div>
-                      ) : toolCodeStatus === 'error' ? (
-                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500/20 text-red-500">
-                          ✗
-                        </div>
-                      ) : null}
-                      <h3 className="font-medium text-zinc-100">
-                        {toolCodeStatus === 'pending'
-                          ? 'Generating Code...'
-                          : toolCodeStatus === 'error'
-                            ? 'Generating Code Failed'
-                            : toolCodeStatus === 'success'
-                              ? 'Code Generated'
-                              : null}
-                      </h3>
-                    </div>
-                    <div
-                      className={cn(
-                        'flex-1 overflow-auto rounded-md',
-                        toolCodeStatus === 'pending' && 'overflow-hidden',
-                      )}
+              <div className="relative mx-auto h-[400px] w-full max-w-2xl overflow-hidden rounded-lg md:order-2 md:h-[450px] lg:h-[600px]">
+                <AnimatePresence mode="wait">
+                  {step === 'code' && (
+                    <motion.div
+                      animate={{ y: 0, opacity: 1, rotateX: 0 }}
+                      className="border-official-gray-950 bg-official-gray-1000 absolute inset-0 flex w-full flex-1 flex-col overflow-hidden rounded-lg p-3"
+                      exit={{ y: -100, opacity: 0, rotateX: 20 }}
+                      initial={{ y: 100, opacity: 0, rotateX: -20 }}
+                      transition={{ duration: 0.5, ease: 'easeInOut' }}
                     >
-                      {toolCodeStatus === 'pending' && (
-                        <div className="size-w flex flex-col items-start gap-1 px-4 py-4 text-xs">
-                          {[...Array(20)].map((_, lineIndex) => (
-                            <div className="mb-2 flex gap-3" key={lineIndex}>
-                              <Skeleton className="bg-official-gray-900 h-4 w-12 rounded" />
-                              <div className="flex-1">
-                                <div className="flex flex-wrap gap-2">
-                                  {[
-                                    ...Array(Math.floor(Math.random() * 4) + 1),
-                                  ].map((_, blockIndex) => (
-                                    <Skeleton
-                                      className={cn(
-                                        getRandomWidth(),
-                                        'bg-official-gray-900 h-4 rounded',
-                                      )}
-                                      key={blockIndex}
-                                    />
-                                  ))}
+                      <div className="mb-4 flex items-center gap-3">
+                        {toolCodeStatus === 'pending' ? (
+                          <Loader2 className="h-5 w-5 animate-spin text-cyan-500" />
+                        ) : toolCodeStatus === 'success' ? (
+                          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-500">
+                            ✓
+                          </div>
+                        ) : toolCodeStatus === 'error' ? (
+                          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500/20 text-red-500">
+                            ✗
+                          </div>
+                        ) : null}
+                        <h3 className="font-medium text-zinc-100">
+                          {toolCodeStatus === 'pending'
+                            ? 'Generating Code...'
+                            : toolCodeStatus === 'error'
+                              ? 'Generating Code Failed'
+                              : toolCodeStatus === 'success'
+                                ? 'Code Generated'
+                                : null}
+                        </h3>
+                      </div>
+                      <div
+                        className={cn(
+                          'flex-1 overflow-auto rounded-md',
+                          toolCodeStatus === 'pending' && 'overflow-hidden',
+                        )}
+                      >
+                        {toolCodeStatus === 'pending' && (
+                          <div className="size-w flex flex-col items-start gap-1 px-4 py-4 text-xs">
+                            {[...Array(20)].map((_, lineIndex) => (
+                              <div className="mb-2 flex gap-3" key={lineIndex}>
+                                <Skeleton className="bg-official-gray-900 h-4 w-12 rounded" />
+                                <div className="flex-1">
+                                  <div className="flex flex-wrap gap-2">
+                                    {[
+                                      ...Array(
+                                        Math.floor(Math.random() * 4) + 1,
+                                      ),
+                                    ].map((_, blockIndex) => (
+                                      <Skeleton
+                                        className={cn(
+                                          getRandomWidth(),
+                                          'bg-official-gray-900 h-4 rounded',
+                                        )}
+                                        key={blockIndex}
+                                      />
+                                    ))}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      {toolCodeStatus === 'success' && (
-                        <ToolCodeEditor
-                          language={form.watch('language').toLowerCase()}
-                          value={toolCode}
-                        />
-                      )}
-                      {toolCodeStatus === 'error' && (
-                        <div className="flex size-full flex-col items-start gap-1 px-4 py-4 text-xs">
-                          <p className="text-red-500">
-                            Failed to generate code
-                          </p>
-                          <p className="text-red-500">{error}</p>
-                        </div>
-                      )}
-                    </div>
-                  </motion.div>
+                            ))}
+                          </div>
+                        )}
+                        {toolCodeStatus === 'success' && (
+                          <ToolCodeEditor
+                            language={form.watch('language').toLowerCase()}
+                            value={toolCode}
+                          />
+                        )}
+                        {toolCodeStatus === 'error' && (
+                          <div className="flex size-full flex-col items-start gap-1 px-4 py-4 text-xs">
+                            <p className="text-red-500">
+                              Failed to generate code
+                            </p>
+                            <p className="text-red-500">{error}</p>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
 
-                  {toolCode && (
+                  {step === 'metadata' && (
                     <motion.div
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex w-full flex-1 flex-col overflow-auto p-2.5"
-                      exit={{ opacity: 0, y: -100 }}
-                      initial={{ opacity: 0, y: 50 }}
-                      transition={{
-                        opacity: { duration: 0.2 },
-                        y: { duration: 0.4 },
-                      }}
+                      animate={{ y: 0, opacity: 1, rotateX: 0 }}
+                      className="border-official-gray-950 bg-official-gray-1000 absolute inset-0 mb-1 flex w-full flex-1 flex-col overflow-hidden rounded-lg p-3"
+                      exit={{ y: -100, opacity: 0, rotateX: 20 }}
+                      initial={{ y: 100, opacity: 0, rotateX: -20 }}
+                      transition={{ duration: 0.5, ease: 'easeInOut' }}
                     >
                       <div className="mb-4 flex items-center gap-3">
                         <div className="flex items-center gap-2">
