@@ -12,7 +12,13 @@ import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { useScrollRestoration } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, ArrowUpRight, Loader2, StoreIcon } from 'lucide-react';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Loader2,
+  LoaderIcon,
+  StoreIcon,
+} from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -99,7 +105,7 @@ export const ToolsHomepage = () => {
     if (toolCode && !toolMetadata) {
       setTimeout(() => {
         setStep('metadata');
-      }, 1000);
+      }, 1500);
     }
     if (!toolCode) {
       setStep('code');
@@ -111,32 +117,41 @@ export const ToolsHomepage = () => {
       <div className={cn('min-h-full flex-1 overflow-auto')}>
         <PlaygroundToolLayout
           leftElement={
-            chatInboxId ? (
-              <MessageList
-                containerClassName="px-3 py-2"
-                disabledRetryAndEdit={true}
-                fetchPreviousPage={fetchPreviousPage}
-                hasPreviousPage={hasPreviousPage}
-                hidePythonExecution={true}
-                isFetchingPreviousPage={isFetchingPreviousPage}
-                isLoading={isChatConversationLoading}
-                isSuccess={isChatConversationSuccess}
-                minimalistMode
-                noMoreMessageLabel={t('chat.allMessagesLoaded')}
-                paginatedMessages={conversationData}
-              />
-            ) : (
-              <div className="bg-official-gray-950 flex w-full flex-col gap-4 p-4">
-                <Skeleton className="bg-official-gray-900 h-6 w-32" />
-                <Skeleton className="bg-official-gray-900 h-24 w-full" />
-                <Skeleton className="bg-official-gray-900 h-24 w-full" />
-                <Skeleton className="bg-official-gray-900 h-6 w-32" />
-                <Skeleton className="bg-official-gray-900 h-24 w-full" />
-                <Skeleton className="bg-official-gray-900 h-24 w-full" />
-                <Skeleton className="bg-official-gray-900 h-6 w-32" />
-                <Skeleton className="bg-official-gray-900 h-24 w-full" />
+            <div className={cn('flex flex-1 flex-col overflow-y-auto px-2')}>
+              {chatInboxId ? (
+                <MessageList
+                  containerClassName="px-3 pt-2"
+                  disabledRetryAndEdit={true}
+                  fetchPreviousPage={fetchPreviousPage}
+                  hasPreviousPage={hasPreviousPage}
+                  hidePythonExecution={true}
+                  isFetchingPreviousPage={isFetchingPreviousPage}
+                  isLoading={isChatConversationLoading}
+                  isSuccess={isChatConversationSuccess}
+                  minimalistMode
+                  noMoreMessageLabel={t('chat.allMessagesLoaded')}
+                  paginatedMessages={conversationData}
+                />
+              ) : (
+                <div className="bg-official-gray-950 flex w-full flex-col gap-4 p-4">
+                  <Skeleton className="bg-official-gray-900 h-6 w-32" />
+                  <Skeleton className="bg-official-gray-900 h-24 w-full" />
+                  <Skeleton className="bg-official-gray-900 h-24 w-full" />
+                  <Skeleton className="bg-official-gray-900 h-6 w-32" />
+                  <Skeleton className="bg-official-gray-900 h-24 w-full" />
+                  <Skeleton className="bg-official-gray-900 h-24 w-full" />
+                  <Skeleton className="bg-official-gray-900 h-6 w-32" />
+                  <Skeleton className="bg-official-gray-900 h-24 w-full" />
+                </div>
+              )}
+              <div className="flex h-[154px] w-full flex-col items-center justify-between gap-1 rounded-lg p-4">
+                <div className="flex w-full items-center gap-2">
+                  <Skeleton className="bg-official-gray-900 h-8 w-24 rounded" />
+                  <Skeleton className="bg-official-gray-900 h-8 w-16 rounded" />
+                </div>
+                <Skeleton className="bg-official-gray-900 w-full flex-1 rounded" />
               </div>
-            )
+            </div>
           }
           rightElement={
             <div className="flex size-full flex-col items-center justify-center gap-1 p-1 text-xs">
@@ -153,7 +168,7 @@ export const ToolsHomepage = () => {
                     >
                       <div className="flex items-center gap-3">
                         {toolCodeStatus === 'pending' ? (
-                          <Loader2 className="h-5 w-5 animate-spin text-cyan-500" />
+                          <LoaderIcon className="size-4 animate-spin text-cyan-500" />
                         ) : toolCodeStatus === 'success' ? (
                           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-500">
                             ✓
@@ -252,7 +267,7 @@ export const ToolsHomepage = () => {
                         <div className="flex items-center gap-2">
                           {toolMetadataStatus === 'pending' && (
                             <>
-                              <Loader2 className="h-5 w-5 animate-spin text-cyan-500" />
+                              <LoaderIcon className="size-4 animate-spin text-cyan-500" />
                               <h3 className="font-medium text-zinc-100">
                                 Generating Preview + Metadata...
                               </h3>
@@ -346,11 +361,11 @@ export const ToolsHomepage = () => {
             </div>
           }
           topElement={
-            <div className="bg-official-gray-950 border-official-gray-780 flex items-center justify-between border-b p-4">
-              <Skeleton className="bg-official-gray-900 h-8 w-48" />
+            <div className="flex items-center justify-between gap-2 border-b border-gray-400 px-4 pb-2.5">
+              <Skeleton className="bg-official-gray-900 h-[30px] w-48" />
               <div className="flex items-center gap-2">
-                <Skeleton className="bg-official-gray-900 h-8 w-[100px]" />
-                <Skeleton className="bg-official-gray-900 h-8 w-20" />
+                <Skeleton className="bg-official-gray-900 h-[30px] w-[100px]" />
+                <Skeleton className="bg-official-gray-900 h-[30px] w-20" />
               </div>
             </div>
           }

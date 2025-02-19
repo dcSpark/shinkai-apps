@@ -13,7 +13,6 @@ import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { InfiniteQueryObserverResult } from '@tanstack/react-query';
 import { FetchPreviousPageOptions } from '@tanstack/react-query';
-import { ArrowUpRight } from 'lucide-react';
 import { memo } from 'react';
 import { useFormContext } from 'react-hook-form';
 
@@ -65,66 +64,20 @@ const PlaygroundChatBase = ({
 
   return (
     <>
-      <div
-        className={cn(
-          'flex flex-1 flex-col overflow-y-auto px-2',
-          !chatInboxId && 'items-center justify-center gap-2 text-center',
-        )}
-      >
-        {!chatInboxId && (
-          <>
-            <span aria-hidden className="text-3xl">
-              🤖
-            </span>
-            <h2 className="text-base font-medium">
-              Generate your tool using AI
-            </h2>
-            <p className="text-gray-80 mb-8 text-xs">
-              Ask Shinkai AI to generate a tool for you. Provide a prompt and
-              Shinkai AI will generate a tool code for you.
-            </p>
-            <div className="grid grid-cols-1 items-center gap-3">
-              {[
-                {
-                  text: 'Download a website content in markdown',
-                  prompt:
-                    'Generate a tool for downloading a website into markdown',
-                },
-                {
-                  text: 'Get tech-related stories from Hacker News',
-                  prompt:
-                    'Generate a tool for getting top tech-related stories from Hacker News, include the title, author, and URL of the story',
-                },
-              ].map((suggestion) => (
-                <Button
-                  key={suggestion.text}
-                  onClick={() => form.setValue('message', suggestion.prompt)}
-                  size="xs"
-                  variant="outline"
-                >
-                  {suggestion.text}
-                  <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
-                </Button>
-              ))}
-            </div>
-          </>
-        )}
-
-        {chatInboxId && (
-          <MessageList
-            containerClassName="px-3 py-2"
-            disabledRetryAndEdit={true}
-            fetchPreviousPage={fetchPreviousPage}
-            hasPreviousPage={hasPreviousPage}
-            hidePythonExecution={true}
-            isFetchingPreviousPage={isFetchingPreviousPage}
-            isLoading={isChatConversationLoading}
-            isSuccess={isChatConversationSuccess}
-            minimalistMode
-            noMoreMessageLabel={t('chat.allMessagesLoaded')}
-            paginatedMessages={chatConversationData}
-          />
-        )}
+      <div className={cn('flex flex-1 flex-col overflow-y-auto px-2')}>
+        <MessageList
+          containerClassName="px-3 pt-2"
+          disabledRetryAndEdit={true}
+          fetchPreviousPage={fetchPreviousPage}
+          hasPreviousPage={hasPreviousPage}
+          hidePythonExecution={true}
+          isFetchingPreviousPage={isFetchingPreviousPage}
+          isLoading={isChatConversationLoading}
+          isSuccess={isChatConversationSuccess}
+          minimalistMode
+          noMoreMessageLabel={t('chat.allMessagesLoaded')}
+          paginatedMessages={chatConversationData}
+        />
       </div>
 
       <form

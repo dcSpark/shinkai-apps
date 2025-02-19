@@ -22,10 +22,6 @@ html {
   @apply overscroll-none;
 }
 
-::-webkit-scrollbar-track {
-  @apply bg-gray-400;
-}
-
 .no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -44,7 +40,7 @@ html {
 ::-webkit-scrollbar-thumb,
 .prism-code-editor::-webkit-scrollbar-thumb,
 .playground-scroll::-webkit-scrollbar-thumb {
-  @apply !bg-official-gray-780;
+  @apply !bg-official-gray-850;
 }
 
 ::-webkit-scrollbar-track,
