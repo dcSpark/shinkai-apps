@@ -23,9 +23,7 @@ export const useAutoSaveTool = () => {
   const xShinkaiAppId = usePlaygroundStore((state) => state.xShinkaiAppId);
   const xShinkaiToolId = usePlaygroundStore((state) => state.xShinkaiToolId);
   const auth = useAuth((state) => state.auth);
-  const shouldAutoSaveRef = usePlaygroundStore(
-    (state) => state.shouldAutoSaveRef,
-  );
+
   const navigate = useNavigate();
 
   const {
@@ -146,9 +144,6 @@ export const useCreateToolAndSave = ({
   form: UseFormReturn<CreateToolCodeFormSchema>;
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
-  const shouldAutoSaveRef = usePlaygroundStore(
-    (state) => state.shouldAutoSaveRef,
-  );
 
   const { forceGenerateMetadata, handleCreateToolCode } = useToolCode({
     initialState: undefined,
