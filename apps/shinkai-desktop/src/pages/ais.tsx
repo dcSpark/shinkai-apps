@@ -6,6 +6,7 @@ import {
   EditAgentFormSchema,
   editAgentSchema,
 } from '@shinkai_network/shinkai-node-state/forms/agents/edit-agent';
+import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useRemoveLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/removeLLMProvider/useRemoveLLMProvider';
 import { useUpdateLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/updateLLMProvider/useUpdateLLMProvider';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
@@ -52,14 +53,13 @@ import { toast } from 'sonner';
 import Agents from '../components/agent/agents';
 import { VideoBanner } from '../components/video-banner';
 import { useURLQueryParams } from '../hooks/use-url-query-params';
+import { useOllamaRemoveMutation } from '../lib/shinkai-node-manager/ollama-client';
 import { useAuth } from '../store/auth';
 import { TutorialBanner } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { SHINKAI_TUTORIALS } from '../utils/constants';
 import { getModelObject } from './add-ai';
 import { SimpleLayout } from './layout/simple-layout';
-import { useOllamaRemoveMutation } from '../lib/shinkai-node-manager/ollama-client';
-import { getLLMProviders } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
 const AIsPage = () => {
   const { t } = useTranslation();
@@ -501,6 +501,14 @@ const RemoveLLMProviderModal = ({
       });
     },
   });
+  const {
+    llmProviders,
+    isSuccess: isSuccessLLMProviders,
+    isLoading: isLoadingLLMProviders,
+  } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-[425px]">
@@ -526,25 +534,26 @@ const RemoveLLMProviderModal = ({
             </DialogClose>
             <Button
               className="min-w-[100px] flex-1"
-              isLoading={isPending}
+              isLoading={isPending || isLoadingLLMProviders}
               onClick={async () => {
                 if (!auth) return;
-                const providers = await getLLMProviders(
-                  auth?.node_address ?? '',
-                  auth?.api_v2_key ?? '',
-                );
+                if (!isSuccessLLMProviders) {
+                  toast.error(t('llmProviders.errors.deleteAgent'), {
+                    description: t('llmProviders.errors.deleteAgent'),
+                  });
+                  return;
+                }
                 await removeLLMProvider({
                   nodeAddress: auth?.node_address ?? '',
                   llmProviderId: agentId,
                   token: auth?.api_v2_key ?? '',
                 });
-                let llmProviderModel = providers.find(
+                let llmProviderModel = llmProviders.find(
                   (provider) => provider.id === agentId,
                 )?.model;
-                const isOllama = llmProviderModel?.split(':')[0] === 'ollama'
+                const isOllama = llmProviderModel?.split(':')[0] === Models.Ollama
                 if (isOllama && llmProviderModel) {
                   llmProviderModel = llmProviderModel.slice(llmProviderModel.indexOf(':') + 1);
-                  console.log('llmProviderModel', llmProviderModel);
                   await removeOllamaModel({ model: llmProviderModel });
                 } else console.warn('llmProviderModel not found for agentId:', agentId);
               }}

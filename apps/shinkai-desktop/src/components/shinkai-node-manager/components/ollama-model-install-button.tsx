@@ -1,5 +1,7 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { getLLMProviders } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
+import { removeLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/removeLLMProvider/index';
 import { Button, Progress } from '@shinkai_network/shinkai-ui';
 import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -18,8 +20,6 @@ import {
 import { ALLOWED_OLLAMA_MODELS } from '../../../lib/shinkai-node-manager/ollama-models';
 import { useShinkaiNodeGetOllamaApiUrlQuery } from '../../../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useAuth } from '../../../store/auth';
-import { removeLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/removeLLMProvider/index';
-import { getLLMProviders } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 export const OllamaModelInstallButton = ({ model }: { model: string }) => {
   const { data: ollamaApiUrl } = useShinkaiNodeGetOllamaApiUrlQuery();
 
