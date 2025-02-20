@@ -6,6 +6,7 @@ use std::sync::Arc;
 use crate::commands::fetch::{get_request, post_request};
 use crate::commands::galxe::galxe_generate_proof;
 use crate::commands::hardware::hardware_get_summary;
+use crate::commands::open::open_location;
 use crate::commands::shinkai_node_manager_commands::{
     shinkai_node_get_default_model, shinkai_node_get_last_n_logs, shinkai_node_get_ollama_api_url,
     shinkai_node_get_ollama_version, shinkai_node_get_options, shinkai_node_is_running,
@@ -97,6 +98,7 @@ fn main() {
             shinkai_node_get_ollama_version,
             retrieve_logs,
             shinkai_node_open_storage_location_with_path,
+            open_location,
         ])
         .setup(|app| {
             log::info!("startin app version: {}", env!("CARGO_PKG_VERSION"));

@@ -29,9 +29,9 @@ function OpenChatFolderActionBarBase({
             className={cn(actionButtonClassnames, {
               'opacity-50': disabled,
             })}
+            disabled={disabled}
             onClick={onClick}
             type="button"
-            disabled={disabled}
           >
             <Folder className="h-full w-full" />
           </button>

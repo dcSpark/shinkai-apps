@@ -3,6 +3,7 @@ import { urlJoin } from '../../utils/url-join';
 import { ShinkaiMessageBuilderWrapper } from '../../wasm/ShinkaiMessageBuilderWrapper';
 import {
   CheckHealthResponse,
+  GetNodeStorageLocationResponse,
   SubmitRegistrationCodeRequest,
   SubmitRegistrationCodeResponse,
   SubmitRegistrationNoCodeRequest,
@@ -90,4 +91,15 @@ export const submitRegistrationNoCode = async (
     console.error('Error in initial registration:', error);
     return { status: 'error' };
   }
+};
+
+export const getNodeStorageLocation = async (
+  nodeAddress: string,
+  token: string,
+): Promise<GetNodeStorageLocationResponse> => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/storage_location'),
+    { responseType: 'json', headers: { 'Authorization': `Bearer ${token}` } },
+  );
+  return response.data;
 };

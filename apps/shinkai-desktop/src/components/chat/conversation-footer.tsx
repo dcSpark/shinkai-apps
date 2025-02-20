@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusCircledIcon, StopIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { getJobFolderName } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 import {
   buildInboxIdFromJobId,
   extractJobIdFromInbox,
@@ -20,6 +21,7 @@ import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mut
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
+import { useGetStorageLocation } from '@shinkai_network/shinkai-node-state/v2/queries/getStorageLocation/useGetStorageLocation';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
 import {
@@ -54,9 +56,9 @@ import {
 import { formatText, getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { invoke } from '@tauri-apps/api/core';
 import equal from 'fast-deep-equal';
 import { partial } from 'filesize';
-import { invoke } from '@tauri-apps/api/core';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Loader2, Paperclip, X, XIcon } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -82,6 +84,7 @@ import {
   UpdateChatConfigActionBar,
 } from './chat-action-bar/chat-config-action-bar';
 import { FileSelectionActionBar } from './chat-action-bar/file-selection-action-bar';
+import { OpenChatFolderActionBar } from './chat-action-bar/open-chat-folder-action-bar';
 import PromptSelectionActionBar from './chat-action-bar/prompt-selection-action-bar';
 import {
   ToolsSwitchActionBar,
@@ -89,8 +92,6 @@ import {
 } from './chat-action-bar/tools-switch-action-bar';
 import { streamingSupportedModels } from './constants';
 import { useSetJobScope } from './context/set-job-scope-context';
-import { OpenChatFolderActionBar } from './chat-action-bar/open-chat-folder-action-bar';
-import { getJobFolderName } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
 export const actionButtonClassnames =
   'shrink-0 bg-gray-350 inline-flex h-[30px] w-[30px] cursor-pointer items-center justify-center gap-1.5 truncate border border-gray-200 px-[7px] py-1.5 text-left text-xs rounded-lg font-normal text-gray-50 hover:bg-gray-300 hover:text-white';
@@ -283,6 +284,12 @@ function ConversationChatFooter({
   }, [chatForm, locationState]);
 
   const currentInbox = useGetCurrentInbox(inboxId);
+  const { data: storagePath, isSuccess: isGetStoragePathSuccess } = useGetStorageLocation(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    },
+  );
 
   const isAgentInbox =
     currentInbox?.agent?.type === 'Agent' || locationState?.agentName;
@@ -411,6 +418,7 @@ function ConversationChatFooter({
         });
       }
       if (files?.length > 0) {
+        setIsChatFolderDisabled(false);
         captureAnalyticEvent('AI Chat with Files', {
           filesCount: files.length,
         });
@@ -504,6 +512,9 @@ function ConversationChatFooter({
         profile_identity_sk: auth.profile_identity_sk,
       });
     }
+    if (inboxId && currentFiles && currentFiles.length > 0) {
+      setIsChatFolderDisabled(false);
+    }
     chatForm.reset();
   };
 
@@ -528,14 +539,15 @@ function ConversationChatFooter({
   }, [currentMessage]);
 
   const [isChatFolderDisabled, setIsChatFolderDisabled] = useState(() => {
-    return !inboxId;
+    const isChatFolderEnabled = inboxId //&& hasCurrentFiles;
+    return !isChatFolderEnabled;
   });
 
   // Update state whenever inboxId changes
   useEffect(() => {
-    const isDisabled = !inboxId;
-    if (isChatFolderDisabled !== isDisabled) {
-      setIsChatFolderDisabled(isDisabled);
+    const isChatFolderEnabled = inboxId
+    if (isChatFolderDisabled !== !isChatFolderEnabled) {
+      setIsChatFolderDisabled(!isChatFolderEnabled);
     }
   }, [inboxId, isChatFolderDisabled]);
 
@@ -589,10 +601,17 @@ function ConversationChatFooter({
                             auth?.api_v2_key ?? '',
                             { job_id: jobId },
                           );
-                          console.log('folderName:', folder_name);
-                          invoke('shinkai_node_open_storage_location_with_path', {
-                            relativePath: 'filesystem/'+folder_name,
-                          });
+                          if (isGetStoragePathSuccess) {
+                            let path = storagePath
+                            path = path + '/filesystem/' + folder_name;
+                            try {
+                              await invoke('open_location', { path });
+                            } catch (error) {
+                              toast.warning('Folder not created yet', {
+                                description: 'Please upload a file first',
+                              });
+                            }
+                          }
                         }}
                       />
                       <PromptSelectionActionBar />

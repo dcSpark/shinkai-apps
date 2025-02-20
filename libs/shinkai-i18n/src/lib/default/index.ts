@@ -486,6 +486,7 @@ export default {
     signUpShinkaiHosting: 'Sign up For Shinkai Hosting',
     quickConnect: 'Quick Connect',
     alreadyHaveNode: 'Already have a Node?',
+    openChatFolder: 'Open Chat Folder',
     shinkaiPrivate: 'Setup Your Local AI',
     seeOptions: 'See Options',
     termsAndConditionsText:
