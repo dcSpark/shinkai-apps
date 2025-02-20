@@ -56,7 +56,6 @@ export const tabTriggerClassnames = cn(
 );
 
 function PlaygroundToolEditor({
-  mode,
   createToolCodeFormInitialValues,
   toolCodeInitialValues,
   toolMetadataInitialValues,
@@ -65,7 +64,6 @@ function PlaygroundToolEditor({
   toolDescription,
   initialToolRouterKeyWithVersion,
 }: {
-  mode: 'create' | 'edit';
   createToolCodeFormInitialValues?: Partial<CreateToolCodeFormSchema>;
   toolMetadataInitialValues?: {
     metadata: ToolMetadata | null;
@@ -90,7 +88,14 @@ function PlaygroundToolEditor({
     if (createToolCodeFormInitialValues?.language) {
       form.setValue('language', createToolCodeFormInitialValues.language);
     }
-  }, [createToolCodeFormInitialValues?.language, form]);
+    if (createToolCodeFormInitialValues?.tools) {
+      form.setValue('tools', createToolCodeFormInitialValues.tools);
+    }
+  }, [
+    createToolCodeFormInitialValues?.language,
+    createToolCodeFormInitialValues?.tools,
+    form,
+  ]);
 
   const {
     baseToolCodeRef,
@@ -189,7 +194,6 @@ function PlaygroundToolEditor({
             isChatConversationLoading={isChatConversationLoading}
             isChatConversationSuccess={isChatConversationSuccess}
             isFetchingPreviousPage={isFetchingPreviousPage}
-            mode={mode}
             toolName={toolName ?? ''}
           />
         }

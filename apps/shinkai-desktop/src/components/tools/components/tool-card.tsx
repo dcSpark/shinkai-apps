@@ -65,19 +65,21 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
       </Link>
 
       <Tooltip>
-        <TooltipTrigger className="flex items-center gap-1">
-          <Switch
-            checked={tool.enabled}
-            disabled={isPending}
-            onCheckedChange={async () => {
-              await toggleEnableTool({
-                toolKey: tool.tool_router_key,
-                isToolEnabled: !tool.enabled,
-                nodeAddress: auth?.node_address ?? '',
-                token: auth?.api_v2_key ?? '',
-              });
-            }}
-          />
+        <TooltipTrigger asChild className="flex items-center gap-1">
+          <div>
+            <Switch
+              checked={tool.enabled}
+              disabled={isPending}
+              onCheckedChange={async () => {
+                await toggleEnableTool({
+                  toolKey: tool.tool_router_key,
+                  isToolEnabled: !tool.enabled,
+                  nodeAddress: auth?.node_address ?? '',
+                  token: auth?.api_v2_key ?? '',
+                });
+              }}
+            />
+          </div>
         </TooltipTrigger>
         <TooltipPortal>
           <TooltipContent align="center" side="top">

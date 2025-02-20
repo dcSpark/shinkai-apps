@@ -70,12 +70,12 @@ function EditToolPage() {
     <PlaygroundToolEditor
       createToolCodeFormInitialValues={{
         language: getLanguage(playgroundTool?.language ?? ''),
+        tools: playgroundTool?.metadata?.tools ?? [],
       }}
       initialChatInboxId={chatInboxId}
       initialToolRouterKeyWithVersion={
         toolRouterKey + ':::' + playgroundTool?.metadata?.version
       }
-      mode="edit"
       toolCodeInitialValues={toolCodeInitialValues}
       toolDescription={playgroundTool?.metadata?.description ?? ''}
       toolMetadataInitialValues={toolMetadataInitialValues}
