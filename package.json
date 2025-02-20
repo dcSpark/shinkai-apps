@@ -219,5 +219,8 @@
   "engines": {
     "node": ">=20.x.x",
     "npm": "10.x.x"
+  },
+  "overrides": {
+    "esbuild": ">=0.24.3"
   }
 }
