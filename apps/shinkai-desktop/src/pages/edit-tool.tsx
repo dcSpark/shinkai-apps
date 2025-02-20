@@ -79,7 +79,7 @@ function EditToolPage() {
       toolCodeInitialValues={toolCodeInitialValues}
       toolDescription={playgroundTool?.metadata?.description ?? ''}
       toolMetadataInitialValues={toolMetadataInitialValues}
-      toolName={playgroundTool?.metadata?.name ?? 'Untitled Tool'}
+      toolName={playgroundTool?.metadata?.name ?? ''}
     />
   );
 }

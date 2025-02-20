@@ -22,24 +22,34 @@ export const useSaveToolCode = (options?: Options) => {
     mutationFn: saveToolCode,
     ...options,
     onSuccess: async (response, variables, context) => {
-      if (variables.shouldPrefetchPlaygroundTool) {
-        await queryClient.prefetchQuery({
+      if (!variables.shouldPrefetchPlaygroundTool) {
+        queryClient.invalidateQueries({
           queryKey: [
-            FunctionKeyV2.GET_PLAYGROUND_TOOLS,
+            FunctionKeyV2.GET_PLAYGROUND_TOOL,
             {
               toolRouterKey: response.metadata.tool_router_key,
               token: variables.token,
               nodeAddress: variables.nodeAddress,
             },
           ],
-          queryFn: () =>
-            getPlaygroundTool({
-              toolRouterKey: response.metadata.tool_router_key,
-              token: variables.token,
-              nodeAddress: variables.nodeAddress,
-            }),
         });
       }
+      await queryClient.prefetchQuery({
+        queryKey: [
+          FunctionKeyV2.GET_PLAYGROUND_TOOL,
+          {
+            toolRouterKey: response.metadata.tool_router_key,
+            token: variables.token,
+            nodeAddress: variables.nodeAddress,
+          },
+        ],
+        queryFn: () =>
+          getPlaygroundTool({
+            toolRouterKey: response.metadata.tool_router_key,
+            token: variables.token,
+            nodeAddress: variables.nodeAddress,
+          }),
+      });
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);
       }

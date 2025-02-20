@@ -12,13 +12,7 @@ import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { useScrollRestoration } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  ArrowRight,
-  ArrowUpRight,
-  Loader2,
-  LoaderIcon,
-  StoreIcon,
-} from 'lucide-react';
+import { ArrowRight, ArrowUpRight, LoaderIcon, StoreIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -140,10 +134,10 @@ export const ToolsHomepage = () => {
                   <Skeleton className="bg-official-gray-900 h-24 w-full" />
                 </div>
               )}
-              <div className="flex h-[154px] w-full flex-col items-center justify-between gap-1 rounded-lg p-4">
+              <div className="flex h-[154px] w-full flex-col items-center justify-between gap-2 rounded-lg p-4">
                 <div className="flex w-full items-center gap-2">
-                  <Skeleton className="bg-official-gray-900 h-8 w-24 rounded" />
-                  <Skeleton className="bg-official-gray-900 h-8 w-16 rounded" />
+                  <Skeleton className="bg-official-gray-900 h-8 w-24 rounded-lg" />
+                  <Skeleton className="bg-official-gray-900 h-8 w-16 rounded-lg" />
                 </div>
                 <Skeleton className="bg-official-gray-900 w-full flex-1 rounded" />
               </div>
@@ -228,6 +222,7 @@ export const ToolsHomepage = () => {
                           >
                             <ToolCodeEditor
                               language={form.watch('language').toLowerCase()}
+                              readOnly
                               value={toolCode}
                             />
                           </motion.div>
@@ -265,7 +260,7 @@ export const ToolsHomepage = () => {
                             <>
                               <LoaderIcon className="size-4 animate-spin text-cyan-500" />
                               <h3 className="font-medium text-zinc-100">
-                                Generating Preview + Metadata...
+                                Generating Preview...
                               </h3>
                             </>
                           )}
@@ -358,10 +353,10 @@ export const ToolsHomepage = () => {
           }
           topElement={
             <div className="flex h-[45px] items-center justify-between gap-2 border-b border-gray-400 px-4 pb-2.5">
-              <Skeleton className="bg-official-gray-900 h-[30px] w-48" />
+              <Skeleton className="bg-official-gray-900 h-[30px] w-[200px]" />
               <div className="flex items-center gap-2">
                 <Skeleton className="bg-official-gray-900 h-[30px] w-[100px]" />
-                <Skeleton className="bg-official-gray-900 h-[30px] w-[100px]" />
+                <Skeleton className="bg-official-gray-900 h-[30px] w-[40px]" />
                 <Skeleton className="bg-official-gray-900 h-[30px] w-[100px]" />
               </div>
             </div>

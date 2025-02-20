@@ -97,6 +97,7 @@ export const ToolMetadataSchema = z.object({
 export type ToolMetadataSchemaType = z.infer<typeof ToolMetadataSchema>;
 
 export const ToolMetadataRawSchema = ToolMetadataSchema.pick({
+  homePage: true,
   configurations: true,
   parameters: true,
   result: true,
@@ -106,6 +107,8 @@ export const ToolMetadataRawSchema = ToolMetadataSchema.pick({
   runner: true,
   operating_system: true,
   tool_set: true,
+  keywords: true,
+  version: true,
 });
 
 export type ToolMetadataRawSchemaType = z.infer<typeof ToolMetadataRawSchema>;

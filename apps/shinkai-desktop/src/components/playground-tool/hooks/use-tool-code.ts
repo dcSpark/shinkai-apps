@@ -180,7 +180,6 @@ export const useToolCode = ({
     if (initialState?.code) {
       baseToolCodeRef.current = initialState.code;
       forceGenerateCode.current = false;
-      console.log(initialState.code, 'initialState.code');
       setToolCode(initialState.code);
     }
     if (initialState?.state) {

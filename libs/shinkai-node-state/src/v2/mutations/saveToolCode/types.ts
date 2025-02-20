@@ -20,6 +20,7 @@ export type SaveToolCodeInput = Token & {
   description: string;
   version: string;
   tools: string[];
+  author: string;
 };
 
 export type SaveToolCodeOutput = SaveToolCodeResponse;

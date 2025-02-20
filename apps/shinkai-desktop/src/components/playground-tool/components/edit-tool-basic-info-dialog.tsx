@@ -1,18 +1,18 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DialogClose } from '@radix-ui/react-dialog';
+import { PopoverClose } from '@radix-ui/react-popover';
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  FormField,
+  FormItem,
+  FormMessage,
+  Input,
+  Label,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { TextField } from '@shinkai_network/shinkai-ui';
-import { FormField } from '@shinkai_network/shinkai-ui';
 import { Form } from '@shinkai_network/shinkai-ui';
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -60,7 +60,6 @@ export default function EditToolBasicInfoDialog({
     toolBasicInfoForm.setValue('description', toolDescription);
   }, [toolDescription, toolName, toolBasicInfoForm]);
 
-  // TODO: move description out of metadata
   const onSubmit = (data: ToolBasicInfoFormSchema) => {
     handleAutoSave({
       toolMetadata: toolMetadata as ToolMetadata,
@@ -83,66 +82,100 @@ export default function EditToolBasicInfoDialog({
   };
 
   return (
-    <Dialog onOpenChange={setIsOpen} open={isOpen}>
-      <DialogTrigger>
-        <button className="hover:bg-official-gray-900 transtion-colors flex items-center gap-2 truncate rounded-lg p-1 text-base font-medium">
-          {toolName}
-          <ChevronDown className="size-3" />
-        </button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Tool Details</DialogTitle>
-          <DialogDescription>Edit the basic info of the tool</DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col gap-4">
-          <Form {...toolBasicInfoForm}>
-            <form
-              className="space-y-10"
-              onSubmit={toolBasicInfoForm.handleSubmit(onSubmit)}
-            >
-              <div className="space-y-6">
-                <FormField
-                  control={toolBasicInfoForm.control}
-                  name="name"
-                  render={({ field }) => (
-                    <TextField field={field} label={'Name'} />
-                  )}
-                />
-                <FormField
-                  control={toolBasicInfoForm.control}
-                  name="description"
-                  render={({ field }) => (
-                    <TextField field={field} label={'Description'} />
-                  )}
-                />
-              </div>
+    <Popover
+      onOpenChange={(open) => {
+        if (open) {
+          toolBasicInfoForm.reset({
+            name: toolName,
+            description: toolDescription,
+          });
+        }
+        setIsOpen(open);
+      }}
+      open={isOpen}
+    >
+      <PopoverTrigger className="hover:bg-official-gray-900 transtion-colors flex max-w-[400px] items-center gap-2 truncate rounded-lg p-1 text-base font-medium">
+        {toolName}
+        <ChevronDown className="size-3" />
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="bg-official-gray-1000 flex w-[450px] flex-col gap-4 p-4"
+        side="bottom"
+        sideOffset={10}
+      >
+        <h1 className="text-sm font-semibold leading-none tracking-tight">
+          Update Tool
+        </h1>
+        <Form {...toolBasicInfoForm}>
+          <form
+            className="space-y-4"
+            onSubmit={toolBasicInfoForm.handleSubmit(onSubmit)}
+          >
+            <FormField
+              control={toolBasicInfoForm.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="space-y-1">
+                  <Label className="text-xs font-medium" htmlFor="name">
+                    Name
+                  </Label>
+                  <Input
+                    autoFocus
+                    className="placeholder-gray-80 bg-official-gray-900 !h-[40px] resize-none border-none py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                    id="name"
+                    onChange={field.onChange}
+                    placeholder="Tool Name"
+                    value={field.value}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={toolBasicInfoForm.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="space-y-1">
+                  <Label className="text-xs font-medium" htmlFor="description">
+                    Description
+                  </Label>
+                  <Input
+                    className="placeholder-gray-80 bg-official-gray-900 !h-[40px] resize-none border-none py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                    id="description"
+                    onChange={field.onChange}
+                    placeholder="Tool Description"
+                    value={field.value}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <div className="ml-auto flex max-w-xs items-center justify-end gap-4">
-                <DialogClose asChild>
-                  <Button
-                    className="flex-1"
-                    disabled={isSavingTool}
-                    size="sm"
-                    variant="outline"
-                  >
-                    Cancel
-                  </Button>
-                </DialogClose>
+            <div className="ml-auto flex max-w-[200px] items-center justify-end gap-2">
+              <PopoverClose asChild>
                 <Button
                   className="flex-1"
                   disabled={isSavingTool}
-                  isLoading={isSavingTool}
-                  size="sm"
-                  type="submit"
+                  size="xs"
+                  variant="outline"
                 >
-                  Save
+                  Cancel
                 </Button>
-              </div>
-            </form>
-          </Form>
-        </div>
-      </DialogContent>
-    </Dialog>
+              </PopoverClose>
+              <Button
+                className="flex-1"
+                disabled={isSavingTool}
+                isLoading={isSavingTool}
+                size="xs"
+                type="submit"
+              >
+                Update
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </PopoverContent>
+    </Popover>
   );
 }

@@ -1,4 +1,3 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
@@ -23,7 +22,7 @@ import {
   Undo2Icon,
 } from 'lucide-react';
 import { memo } from 'react';
-import { useForm, useFormContext } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -41,6 +40,7 @@ function PlaygroundHeaderBase({
   toolName,
   toolDescription,
   baseToolCodeRef,
+  initialToolRouterKeyWithVersion,
 }: {
   toolHistory: {
     messageId: string;
@@ -49,6 +49,7 @@ function PlaygroundHeaderBase({
   toolName: string;
   toolDescription: string;
   baseToolCodeRef: React.MutableRefObject<string>;
+  initialToolRouterKeyWithVersion: string;
 }) {
   const auth = useAuth((state) => state.auth);
   const toolCode = usePlaygroundStore((state) => state.toolCode);
@@ -67,6 +68,8 @@ function PlaygroundHeaderBase({
 
   const handleSaveChanges = () => {
     handleAutoSave({
+      toolName: toolName,
+      toolDescription: toolDescription,
       toolMetadata: toolMetadata as ToolMetadata,
       toolCode: codeEditorRef?.current?.value ?? '',
       tools: form.getValues('tools'),
@@ -175,6 +178,7 @@ function PlaygroundHeaderBase({
         </Button>
 
         <EditToolBasicInfoDialog
+          initialToolRouterKeyWithVersion={initialToolRouterKeyWithVersion}
           toolDescription={toolDescription}
           toolName={toolName}
         />
@@ -364,5 +368,10 @@ export const PlaygroundHeader = memo(PlaygroundHeaderBase, (prev, next) => {
   if (prev.toolHistory.length !== next.toolHistory.length) return false;
   if (prev.toolName !== next.toolName) return false;
   if (prev.toolDescription !== next.toolDescription) return false;
+  if (
+    prev.initialToolRouterKeyWithVersion !==
+    next.initialToolRouterKeyWithVersion
+  )
+    return false;
   return true;
 });

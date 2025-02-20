@@ -13,8 +13,7 @@ import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
-import { ToolMetadataSchema } from '../schemas';
-import { ToolMetadataSchemaType } from '../schemas';
+import { ToolMetadataRawSchema, ToolMetadataRawSchemaType } from '../schemas';
 import { CreateToolCodeFormSchema, useToolCode } from './use-tool-code';
 import { useToolMetadata } from './use-tool-metadata';
 
@@ -45,6 +44,7 @@ export const useAutoSaveTool = () => {
       language,
       onSuccess,
       shouldPrefetchPlaygroundTool,
+      version,
     }: {
       previousToolRouterKeyWithVersion?: string;
       toolMetadata: ToolMetadata;
@@ -55,18 +55,12 @@ export const useAutoSaveTool = () => {
       language: CodeLanguage;
       shouldPrefetchPlaygroundTool?: boolean;
       onSuccess?: () => void;
+      version?: string;
     }) => {
       if (!chatInboxId || !toolMetadata) return;
-      let parsedMetadata: ToolMetadataSchemaType;
+      let parsedMetadata: ToolMetadataRawSchemaType;
       try {
-        const mergedMetadata = merge(toolMetadata, {
-          // default values
-          name: toolName ?? toolMetadata.name,
-          tools: tools ?? [],
-          author: auth?.shinkai_identity ?? '',
-        });
-
-        parsedMetadata = ToolMetadataSchema.parse(mergedMetadata);
+        parsedMetadata = ToolMetadataRawSchema.parse(toolMetadata);
       } catch (error) {
         if (error instanceof z.ZodError) {
           toast.error('Invalid Metadata JSON Value', {
@@ -84,11 +78,12 @@ export const useAutoSaveTool = () => {
 
       await saveToolCode(
         {
-          name: parsedMetadata.name,
-          description: toolDescription ?? parsedMetadata.description,
-          version: parsedMetadata.version ?? '0.0.1',
-          tools: parsedMetadata.tools,
+          name: toolName ?? toolMetadata.name,
+          description: toolDescription ?? toolMetadata.description,
+          version: version ?? toolMetadata.version ?? '0.0.1',
+          tools: tools ?? [],
           code: toolCode,
+          author: auth?.shinkai_identity ?? '',
           metadata: parsedMetadata,
           jobId: extractJobIdFromInbox(chatInboxId),
           token: auth?.api_v2_key ?? '',
@@ -104,10 +99,15 @@ export const useAutoSaveTool = () => {
         },
         {
           onSuccess: async (data) => {
-            setTimeout(() => {
+            if (shouldPrefetchPlaygroundTool) {
+              setTimeout(() => {
+                navigate(`/tools/edit/${data.metadata.tool_router_key}`);
+                onSuccess?.();
+              }, 1000);
+            } else {
               navigate(`/tools/edit/${data.metadata.tool_router_key}`);
               onSuccess?.();
-            }, 800);
+            }
           },
           onError: (error) => {
             toast.error('Failed to save tool code', {
@@ -121,9 +121,9 @@ export const useAutoSaveTool = () => {
     [
       chatInboxId,
       saveToolCode,
+      auth?.shinkai_identity,
       auth?.api_v2_key,
       auth?.node_address,
-      auth?.shinkai_identity,
       xShinkaiAppId,
       xShinkaiToolId,
       navigate,
@@ -177,7 +177,6 @@ export const useCreateToolAndSave = ({
 
   const {
     handleAutoSave,
-
     isSaveToolSuccess,
     isSaveToolError,
     saveToolCodeError,

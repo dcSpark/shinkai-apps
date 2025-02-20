@@ -117,8 +117,6 @@ function PlaygroundToolEditor({
 
   const toolCode = usePlaygroundStore((state) => state.toolCode);
 
-  console.log(toolCode, 'toolCodetoolCode');
-
   const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
   const xShinkaiAppId = usePlaygroundStore((state) => state.xShinkaiAppId);
   const xShinkaiToolId = usePlaygroundStore((state) => state.xShinkaiToolId);
@@ -176,6 +174,9 @@ function PlaygroundToolEditor({
             toolName={toolName ?? ''}
             toolDescription={toolDescription ?? ''}
             baseToolCodeRef={baseToolCodeRef}
+            initialToolRouterKeyWithVersion={
+              initialToolRouterKeyWithVersion ?? ''
+            }
           />
         }
         leftElement={
@@ -260,6 +261,8 @@ function PlaygroundToolEditor({
                         initialToolRouterKeyWithVersion={
                           initialToolRouterKeyWithVersion ?? ''
                         }
+                        initialToolName={toolName ?? ''}
+                        initialToolDescription={toolDescription ?? ''}
                         regenerateToolMetadata={regenerateToolMetadata}
                       />
                     </TabsContent>

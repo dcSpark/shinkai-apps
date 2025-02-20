@@ -1,4 +1,5 @@
 import { ReloadIcon } from '@radix-ui/react-icons';
+import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   Button,
   Skeleton,
@@ -10,21 +11,29 @@ import {
 import { debounce } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AlertTriangleIcon } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
+import { merge } from 'ts-deepmerge';
+import { z } from 'zod';
 
+import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
 import { ToolErrorFallback } from '../error-boundary';
 import { useAutoSaveTool } from '../hooks/use-create-tool-and-save';
 import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
+import { ToolMetadataRawSchema } from '../schemas';
 import ToolCodeEditor from '../tool-code-editor';
 
 function MetadataPanelBase({
   regenerateToolMetadata,
   initialToolRouterKeyWithVersion,
+  initialToolName,
+  initialToolDescription,
 }: {
   regenerateToolMetadata: () => void;
   initialToolRouterKeyWithVersion: string;
+  initialToolName: string;
+  initialToolDescription: string;
 }) {
   const [validateMetadataEditorValue, setValidateMetadataEditorValue] =
     useState<string | null>(null);
@@ -52,33 +61,75 @@ function MetadataPanelBase({
   const isMetadataGenerationSuccess = toolMetadataStatus === 'success';
   const isMetadataGenerationPending = toolMetadataStatus === 'pending';
   const isMetadataGenerationError = toolMetadataStatus === 'error';
-
+  const auth = useAuth((state) => state.auth);
   const form = useFormContext<CreateToolCodeFormSchema>();
 
   const { handleAutoSave } = useAutoSaveTool();
 
   const handleMetadataUpdate = debounce((value: string) => {
-    if (value === JSON.stringify(toolMetadata, null, 2)) {
-      return;
-    }
-
     try {
-      const parseValue = JSON.parse(value);
-      updateToolMetadata(parseValue);
-      setValidateMetadataEditorValue(null);
+      const parsedValue = JSON.parse(value);
+
+      const { author, name, description, ...metadataWithoutBasicInfo } =
+        toolMetadata ?? {};
+      const formattedMetadataWithoutBasicInfo = ToolMetadataRawSchema.parse(
+        metadataWithoutBasicInfo,
+      );
+
+      console.log(
+        formattedMetadataWithoutBasicInfo,
+        'formattedMetadataWithoutBasicInfo',
+      );
+
+      if (
+        value === JSON.stringify(formattedMetadataWithoutBasicInfo, null, 2)
+      ) {
+        setValidateMetadataEditorValue(null);
+        return;
+      }
+      const parseValue = ToolMetadataRawSchema.parse(parsedValue);
+
+      const mergedMetadata = merge(parseValue, {
+        name: initialToolName,
+        description: initialToolDescription,
+        author: auth?.shinkai_identity ?? '',
+      });
+
       handleAutoSave({
-        toolMetadata: parseValue,
+        toolName: initialToolName,
+        toolDescription: initialToolDescription,
+        toolMetadata: parseValue as unknown as ToolMetadata,
         toolCode: codeEditorRef.current?.value ?? '',
         tools: form.getValues('tools'),
         language: form.getValues('language'),
-        toolName: parseValue.name,
         previousToolRouterKeyWithVersion: initialToolRouterKeyWithVersion ?? '',
       });
-    } catch (err) {
-      setValidateMetadataEditorValue((err as Error).message);
+      updateToolMetadata(mergedMetadata as unknown as ToolMetadata);
+      setValidateMetadataEditorValue(null);
+    } catch (error) {
+      console.log(error, 'error');
+      if (error instanceof z.ZodError) {
+        setValidateMetadataEditorValue(
+          'Invalid Metadata schema:' +
+            error.issues.map((issue) => issue.message).join(', '),
+        );
+        return;
+      }
+      setValidateMetadataEditorValue((error as Error).message);
       return;
     }
   }, 750);
+
+  const formattedToolMetadata = useMemo(() => {
+    if (!toolMetadata) return '';
+    try {
+      const parsedToolMetadata = ToolMetadataRawSchema.parse(toolMetadata);
+      return JSON.stringify(parsedToolMetadata, null, 2);
+    } catch (err) {
+      setValidateMetadataEditorValue((err as Error).message);
+      return '';
+    }
+  }, [toolMetadata]);
 
   return (
     <div
@@ -199,7 +250,7 @@ function MetadataPanelBase({
             language="json"
             onUpdate={handleMetadataUpdate}
             ref={metadataEditorRef}
-            value={JSON.stringify(toolMetadata, null, 2)}
+            value={formattedToolMetadata}
           />
         )}
       {isMetadataGenerationIdle && (
@@ -218,6 +269,12 @@ export const MetadataPanel = memo(MetadataPanelBase, (prevProps, nextProps) => {
     prevProps.initialToolRouterKeyWithVersion !==
     nextProps.initialToolRouterKeyWithVersion
   ) {
+    return false;
+  }
+  if (prevProps.initialToolName !== nextProps.initialToolName) {
+    return false;
+  }
+  if (prevProps.initialToolDescription !== nextProps.initialToolDescription) {
     return false;
   }
   return true;

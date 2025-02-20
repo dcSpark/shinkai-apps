@@ -48,6 +48,7 @@ function ExecutionPanelBase({
   regenerateToolMetadata: () => void;
 }) {
   const viewTabRef = useRef<HTMLDivElement>(null);
+  const consoleTabRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState(null);
 
   const toolCodeStatus = usePlaygroundStore((state) => state.toolCodeStatus);
@@ -111,7 +112,16 @@ function ExecutionPanelBase({
           <TabsTrigger
             className={cn(tabTriggerClassnames)}
             data-focused={focusedPanel === 'console'}
-            onClick={() => setFocusedPanel('console')}
+            onClick={() => {
+              setFocusedPanel('console');
+
+              if (consoleTabRef.current) {
+                consoleTabRef.current.scrollTo({
+                  top: consoleTabRef.current.scrollHeight,
+                  behavior: 'smooth',
+                });
+              }
+            }}
             value="console"
           >
             <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
@@ -131,11 +141,19 @@ function ExecutionPanelBase({
         <div className="flex size-full flex-col pb-4 pl-4 pr-3">
           <div className="flex items-start justify-between gap-8 py-3">
             <div className="text-gray-80 flex items-center gap-1 text-xs">
-              {toolMetadata && (
-                <h1 className="text-base font-medium text-white">
-                  {toolMetadata.name}
-                </h1>
-              )}
+              {isMetadataGenerationSuccess &&
+                !isToolCodeGenerationPending &&
+                !isMetadataGenerationError &&
+                toolMetadata && (
+                  <div className="flex flex-col gap-1">
+                    <h1 className="text-base font-medium text-white">
+                      {toolMetadata.name}
+                    </h1>
+                    <p className="text-official-gray-400 text-xs">
+                      {toolMetadata.description}
+                    </p>
+                  </div>
+                )}
             </div>
             {isMetadataGenerationSuccess &&
               !isToolCodeGenerationPending &&
@@ -287,7 +305,10 @@ function ExecutionPanelBase({
       <TabsContent
         className="mt-0 h-full overflow-y-auto whitespace-pre-line break-words"
         onBlur={() => setFocusedPanel(null)}
-        onFocus={() => setFocusedPanel('console')}
+        onFocus={() => {
+          setFocusedPanel('console');
+        }}
+        ref={consoleTabRef}
         value="console"
       >
         <ToolLogs
@@ -453,11 +474,11 @@ const ToolLogsBase = ({
   }
 
   return (
-    <div className="rounded-md bg-gray-600 px-2 py-1 text-gray-50">
+    <div className="bg-official-gray-950 rounded-md px-2 py-1 text-gray-50">
       {logsFile ? (
         <div className="space-y-1">{formatLogs(logsFile)}</div>
       ) : (
-        <div className="text-gray-80 px-2 py-2 text-center text-xs">
+        <div className="text-gray-80 px-2 py-2 text-left text-xs">
           Results of your code will appear here when you run
         </div>
       )}
