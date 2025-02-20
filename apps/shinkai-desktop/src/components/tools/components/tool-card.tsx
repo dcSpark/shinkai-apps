@@ -42,7 +42,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
             {getVersionFromTool(tool)}
           </Badge>
           {tool.author !== '@@official.shinkai' && (
-            <Badge className="text-gray-80 bg-gray-200 text-xs font-normal">
+            <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
               {tool.author}
             </Badge>
           )}
