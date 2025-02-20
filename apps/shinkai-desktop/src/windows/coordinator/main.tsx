@@ -4,12 +4,15 @@ import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import { useOAuthDeepLinkSet } from '../../hooks/oauth';
+import { initSentry } from '../../lib/sentry';
 import { shinkaiNodeQueryClient } from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
 import {
   useSyncStorageMain,
   useSyncStorageSecondary,
   useSyncStorageSideEffects,
 } from '../../store/sync-utils';
+
+initSentry();
 
 const App = () => {
   useEffect(() => {

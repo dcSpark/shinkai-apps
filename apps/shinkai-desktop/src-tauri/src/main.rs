@@ -15,17 +15,19 @@ use crate::commands::shinkai_node_manager_commands::{
 
 use commands::logs::retrieve_logs;
 use commands::spotlight_commands::{hide_spotlight_window_app, show_spotlight_window_app};
+use deep_links::setup_deep_links;
 use global_shortcuts::global_shortcut_handler;
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
 use tauri::{Emitter, WindowEvent};
 use tauri::{Manager, RunEvent};
+use tauri_plugin_sentry::{minidump, sentry};
 use tokio::sync::Mutex;
 use tray::create_tray;
 use windows::{recreate_window, Window};
-use deep_links::setup_deep_links;
 mod audio;
 mod commands;
+mod deep_links;
 mod galxe;
 mod global_shortcuts;
 mod globals;
@@ -33,7 +35,6 @@ mod hardware;
 mod local_shinkai_node;
 mod tray;
 mod windows;
-mod deep_links;
 
 #[derive(Clone, serde::Serialize)]
 struct Payload {
@@ -42,12 +43,35 @@ struct Payload {
 }
 
 fn main() {
-    tauri::Builder::default()
+    let sentry_dsn = option_env!("SENTRY_DSN").or(Some(""));
+    let sentry_client = sentry::init((
+        sentry_dsn,
+        sentry::ClientOptions {
+            release: sentry::release_name!(),
+            auto_session_tracking: true,
+            ..Default::default()
+        },
+    ));
+    let _guard = minidump::init(&sentry_client);
+    let mut builder = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
             app.emit("single-instance", Payload { args: argv, cwd })
                 .unwrap();
         }))
-        .plugin(tauri_plugin_log::Builder::new().build())
+        .plugin(tauri_plugin_sentry::init_with_no_injection(&sentry_client));
+
+    builder = builder
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .targets([
+                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout),
+                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Webview),
+                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::LogDir {
+                        file_name: Some("shinkai-desktop".to_string()),
+                    }),
+                ])
+                .build(),
+        )
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_shell::init())
@@ -94,7 +118,8 @@ fn main() {
             post_request,
             shinkai_node_get_ollama_version,
             retrieve_logs,
-        ])
+        ]);
+    builder
         .setup(|app| {
             log::info!("startin app version: {}", env!("CARGO_PKG_VERSION"));
             let app_resource_dir = app.path().resource_dir()?;
