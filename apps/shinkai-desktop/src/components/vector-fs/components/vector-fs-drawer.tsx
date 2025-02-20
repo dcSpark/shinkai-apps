@@ -53,7 +53,7 @@ const VectorFSDrawer = () => {
     >
       <DialogContent
         className={cn(
-          'flex max-w-lg flex-col bg-gray-300',
+          'flex max-w-lg flex-col',
           activeDrawerMenuOption === VectorFsGlobalAction.NewFolder &&
             'max-w-md',
           (activeDrawerMenuOption === VectorFsGlobalAction.CreateTextFile ||

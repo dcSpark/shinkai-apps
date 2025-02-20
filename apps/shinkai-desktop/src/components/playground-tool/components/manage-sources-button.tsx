@@ -95,7 +95,7 @@ function ManageSourcesButtonBase() {
           )}
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-official-gray-850 flex h-[60vh] max-w-[500px] flex-col gap-4">
+      <DialogContent className="flex h-[60vh] max-w-[500px] flex-col gap-4">
         <DialogClose className="absolute right-4 top-4">
           <XIcon className="text-gray-80 h-5 w-5" />
         </DialogClose>
@@ -198,7 +198,7 @@ function ManageSourcesButtonBase() {
           <DialogClose asChild>
             <Button
               className="min-w-[100px]"
-              size="xs"
+              size="sm"
               type="button"
               variant="default"
             >

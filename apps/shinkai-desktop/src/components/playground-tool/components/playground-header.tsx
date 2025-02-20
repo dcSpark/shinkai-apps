@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
@@ -15,16 +16,20 @@ import { Badge, Separator, Tooltip } from '@shinkai_network/shinkai-ui';
 import { StoreIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
+  ArrowLeft,
+  ChevronDown,
   ChevronLeft,
+  HomeIcon,
   Loader2,
   Redo2Icon,
   SaveIcon,
   Undo2Icon,
 } from 'lucide-react';
 import { memo, useEffect } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
@@ -32,11 +37,11 @@ import { DockerStatus } from '../../tools/tool-collection';
 import { usePlaygroundStore } from '../context/playground-context';
 import { useAutoSaveTool } from '../hooks/use-create-tool-and-save';
 import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
+import EditToolBasicInfoDialog from './edit-tool-basic-info-dialog';
 import { ManageSourcesButton } from './manage-sources-button';
 
 function PlaygroundHeaderBase({
   toolHistory,
-  mode,
   toolName,
   baseToolCodeRef,
 }: {
@@ -44,7 +49,6 @@ function PlaygroundHeaderBase({
     messageId: string;
     code: string;
   }[];
-  mode: 'create' | 'edit';
   toolName: string;
   baseToolCodeRef: React.MutableRefObject<string>;
 }) {
@@ -162,28 +166,17 @@ function PlaygroundHeaderBase({
     <div className="flex items-center justify-between gap-2 border-b border-gray-400 px-4 pb-2.5">
       <div className="flex items-center gap-2">
         <Button
-          className="size-7 border-none p-1"
-          onClick={() => navigate(-1)}
-          size="auto"
+          className="text-gray-80 border-none"
+          onClick={() => navigate('/tools')}
+          rounded="lg"
+          size="xs"
           type="button"
           variant="outline"
         >
-          <ChevronLeft className="size-full" />
+          <ArrowLeft className="size-4" />
         </Button>
-        <Popover>
-          <PopoverTrigger
-            className="flex items-center gap-1 truncate rounded-lg p-1 text-base font-medium"
-            disabled
-          >
-            {mode === 'create' ? 'New Tool' : toolName}
-            {/* <ChevronDown className="ml-1 h-4 w-4" /> */}
-          </PopoverTrigger>
-          <PopoverContent
-            align="start"
-            className="w-64 bg-gray-600"
-            sideOffset={10}
-          />
-        </Popover>
+
+        <EditToolBasicInfoDialog toolName={toolName} />
       </div>
 
       <div className="flex items-center justify-end gap-2.5">

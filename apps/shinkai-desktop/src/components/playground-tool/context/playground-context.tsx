@@ -110,7 +110,7 @@ const createPlaygroundStore = () => {
     xShinkaiAppId: `app-id-${Date.now()}`,
     xShinkaiToolId: `task-id-${Date.now()}`,
 
-    focusedPanel: null,
+    focusedPanel: 'code',
     setFocusedPanel: (focusedPanel) => set({ focusedPanel }),
 
     toolHomepageScrollPositionRef,
@@ -131,7 +131,7 @@ const createPlaygroundStore = () => {
         toolMetadataError: null,
         toolResult: null,
         resetCounter: 0,
-        focusedPanel: null,
+        focusedPanel: 'code',
         xShinkaiAppId: `app-id-${Date.now()}`,
         xShinkaiToolId: `task-id-${Date.now()}`,
         selectedToolGroup: 'all-tools',

@@ -84,8 +84,7 @@ export const useAutoSaveTool = () => {
         {
           name: parsedMetadata.name,
           description: parsedMetadata.description,
-          // version: parsedMetadata.version ?? '0.0.1',
-          version: '1', // to remove after fix node backend
+          version: parsedMetadata.version ?? '0.0.1',
           tools: parsedMetadata.tools,
           code: toolCode,
           metadata: parsedMetadata,

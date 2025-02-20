@@ -365,7 +365,7 @@ export function ImportToolModal() {
         <CloudDownloadIcon className="size-4" />
         Import
       </DialogTrigger>
-      <DialogContent className="bg-official-gray-950 max-w-[500px]">
+      <DialogContent className="max-w-[500px]">
         <DialogTitle className="pb-0">Import Tool</DialogTitle>
         <Form {...importToolForm}>
           <form

@@ -32,6 +32,7 @@ import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
 import { ToolErrorFallback } from '../error-boundary';
 import ToolCodeEditor from '../tool-code-editor';
+import EditToolBasicInfoDialog from './edit-tool-basic-info-dialog';
 import { tabTriggerClassnames } from './tool-playground';
 
 function ExecutionPanelBase({
@@ -139,10 +140,11 @@ function ExecutionPanelBase({
             <div className="text-gray-80 flex flex-col gap-1 text-xs">
               {toolMetadata && (
                 <div className="flex flex-col gap-1">
-                  <h1 className="text-sm font-medium text-white">
+                  <h1 className="text-base font-medium text-white">
                     {toolMetadata.name}
+                    <EditToolBasicInfoDialog />
                   </h1>
-                  <p className="text-gray-80 text-xs">
+                  <p className="text-gray-80 text-sm">
                     {toolMetadata.description}
                   </p>
                 </div>
