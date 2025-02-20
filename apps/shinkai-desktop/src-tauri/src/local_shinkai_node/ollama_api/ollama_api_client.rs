@@ -1,7 +1,9 @@
 use futures_util::{Stream, StreamExt};
 use reqwest;
+use sha2::{Sha256, Digest};
+use std::collections::HashMap;
 
-use super::ollama_api_types::{OllamaApiPullRequest, OllamaApiPullResponse, OllamaApiTagsResponse};
+use super::ollama_api_types::{OllamaApiPullRequest, OllamaApiPullResponse, OllamaApiTagsResponse, OllamaApiCreateRequest, OllamaApiCreateResponse, OllamaApiBlobResponse};
 
 pub struct OllamaApiClient {
     base_url: String,
@@ -119,5 +121,77 @@ impl OllamaApiClient {
         let result = Box::new(mapped_stream)
             as Box<dyn Stream<Item = Result<OllamaApiPullResponse, String>> + Send + Unpin>;
         Ok(result)
+    }
+
+    pub async fn upload_blob(&self, data: &[u8]) -> Result<String, String> {
+        // Calculate SHA256 of the data
+        let mut hasher = Sha256::new();
+        hasher.update(data);
+        let digest = format!("sha256:{:x}", hasher.finalize());
+        
+        let url = format!("{}/api/blobs/{}", self.base_url, digest);
+        let client = reqwest::Client::new();
+        
+        let response = client
+            .post(&url)
+            .body(data.to_vec())
+            .send()
+            .await
+            .map_err(|e| e.to_string())?;
+            
+        if response.status() != 200 {
+            return Err(format!("Failed to upload blob: {}", response.status()));
+        }
+        
+        let blob_response = response
+            .json::<OllamaApiBlobResponse>()
+            .await
+            .map_err(|e| e.to_string())?;
+            
+        if blob_response.status != "success" {
+            return Err(format!("Failed to upload blob: {}", blob_response.status));
+        }
+        
+        Ok(digest)
+    }
+
+    pub async fn create_model_from_gguf(&self, model_name: &str, gguf_data: &[u8]) -> Result<(), String> {
+        // First upload the GGUF file as a blob
+        let digest = self.upload_blob(gguf_data).await?;
+        
+        // Create a map for the files parameter
+        let mut files = HashMap::new();
+        files.insert("model.gguf".to_string(), digest);
+        
+        // Create the model using the uploaded blob
+        let url = format!("{}/api/create", self.base_url);
+        let client = reqwest::Client::new();
+        
+        let create_request = OllamaApiCreateRequest {
+            name: model_name.to_string(),
+            files,
+        };
+        
+        let response = client
+            .post(&url)
+            .json(&create_request)
+            .send()
+            .await
+            .map_err(|e| e.to_string())?;
+            
+        if response.status() != 200 {
+            return Err(format!("Failed to create model: {}", response.status()));
+        }
+        
+        let create_response = response
+            .json::<OllamaApiCreateResponse>()
+            .await
+            .map_err(|e| e.to_string())?;
+            
+        if create_response.status != "success" {
+            return Err(format!("Failed to create model: {}", create_response.status));
+        }
+        
+        Ok(())
     }
 }
