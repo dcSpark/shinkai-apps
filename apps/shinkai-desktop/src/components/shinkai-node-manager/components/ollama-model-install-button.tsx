@@ -1,7 +1,7 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { getLLMProviders } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
 import { removeLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/removeLLMProvider/index';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { Button, Progress } from '@shinkai_network/shinkai-ui';
 import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -37,6 +37,10 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
   const { mutateAsync: syncOllamaModels } = useSyncOllamaModels(
     ALLOWED_OLLAMA_MODELS,
   );
+  const { data: llmProviders, isSuccess: isSuccessLLMProviders } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
   const { mutateAsync: ollamaRemove } = useOllamaRemoveMutation(ollamaConfig, {
     onSuccess: (_, input) => {
       toast.success(
@@ -122,12 +126,10 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
       ) : installedOllamaModelsMap.has(model) ? (
         <RemoveAIModelButton
           onClick={async () => {
+            // Now we depend on the llmProviders query to be successful to remove the model from ollama
+            if (!isSuccessLLMProviders) return;
             await ollamaRemove({ model: model });
-            const providers = await getLLMProviders(
-              auth?.node_address ?? '',
-              auth?.api_v2_key ?? '',
-            );
-            const llmProviderId = providers.find(
+            const llmProviderId = llmProviders.find(
               (provider) => provider.model.endsWith(model),
             )?.id;
             if (llmProviderId) {

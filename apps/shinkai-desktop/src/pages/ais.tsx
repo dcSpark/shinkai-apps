@@ -537,12 +537,6 @@ const RemoveLLMProviderModal = ({
               isLoading={isPending || isLoadingLLMProviders}
               onClick={async () => {
                 if (!auth) return;
-                if (!isSuccessLLMProviders) {
-                  toast.error(t('llmProviders.errors.deleteAgent'), {
-                    description: t('llmProviders.errors.deleteAgent'),
-                  });
-                  return;
-                }
                 await removeLLMProvider({
                   nodeAddress: auth?.node_address ?? '',
                   llmProviderId: agentId,
