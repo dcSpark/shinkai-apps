@@ -177,7 +177,9 @@ export function AiUpdateSelectionActionBarBase({
         description: error.message,
       });
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (_, variables, context) => {
+      console.log('##variables##:', variables);
+      console.log('##context##:', context);
       if (currentInbox?.agent) {
         currentInbox.agent.id = variables.newAgentId;
       }
