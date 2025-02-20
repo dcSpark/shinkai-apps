@@ -18,7 +18,7 @@ import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BoltIcon } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
-import { UseFormReturn } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -27,9 +27,11 @@ import { actionButtonClassnames } from '../../chat/conversation-footer';
 import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 
 export function ToolsSelection({
-  form,
+  value,
+  onChange,
 }: {
-  form: UseFormReturn<CreateToolCodeFormSchema>;
+  value: string[];
+  onChange: (value: string[]) => void;
 }) {
   const auth = useAuth((state) => state.auth);
 
@@ -37,6 +39,8 @@ export function ToolsSelection({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
+
+  const form = useFormContext<CreateToolCodeFormSchema>();
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -49,19 +53,19 @@ export function ToolsSelection({
           >
             Tools{' '}
             <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 p-0 text-center text-gray-50">
-              {form.watch('tools').length}
+              {value.length}
             </Badge>
           </div>
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="flex w-full max-w-xl flex-col gap-3 bg-gray-300 p-4 pr-1 text-xs"
+          className="flex w-full max-w-xl flex-col gap-3 p-4 pr-1 text-xs"
         >
           <div className="flex items-center justify-between pr-3">
             <p className="font-semibold text-white">Available tools</p>
             <div className="flex items-center gap-3">
               <Switch
-                checked={form.watch('tools').length === toolsList?.length}
+                checked={value.length === toolsList?.length}
                 id="all"
                 onCheckedChange={(checked) => {
                   const isAllConfigFilled = toolsList
@@ -87,12 +91,9 @@ export function ToolsSelection({
                   }
 
                   if (checked && toolsList) {
-                    form.setValue(
-                      'tools',
-                      toolsList.map((tool) => tool.tool_router_key),
-                    );
+                    onChange(toolsList.map((tool) => tool.tool_router_key));
                   } else {
-                    form.setValue('tools', []);
+                    onChange([]);
                   }
                 }}
               />
@@ -133,7 +134,7 @@ export function ToolsSelection({
                               field.onChange(
                                 field.value.includes(tool.tool_router_key)
                                   ? field.value.filter(
-                                      (value) => value !== tool.tool_router_key,
+                                      (item) => item !== tool.tool_router_key,
                                     )
                                   : [...field.value, tool.tool_router_key],
                               );

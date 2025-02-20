@@ -61,7 +61,7 @@ export default function FieldTemplate<
       style={style}
       uiSchema={uiSchema}
     >
-      <div className="mb-3 block">
+      <div className="mb-0 block">
         {displayLabel && (
           <label
             className={cn(

@@ -11,6 +11,7 @@ import { ChatProvider } from '../components/chat/context/chat-context';
 import { SetJobScopeProvider } from '../components/chat/context/set-job-scope-context';
 import { ToolsProvider } from '../components/chat/context/tools-context';
 import { WalletsProvider } from '../components/crypto-wallet/context/wallets-context';
+import { PlaygroundProvider } from '../components/playground-tool/context/playground-context';
 import { PromptSelectionProvider } from '../components/prompt/context/prompt-selection-context';
 import { TableSheetProvider } from '../components/sheet/context/table-context';
 import PublicSharedFolderSubscription from '../components/subscriptions/public-shared-folders';
@@ -59,7 +60,7 @@ import ShinkaiPrivatePage from '../pages/shinkai-private';
 import { TaskLogs } from '../pages/task-logs';
 import { Tasks } from '../pages/tasks';
 import TermsAndConditionsPage from '../pages/terms-conditions';
-import { Tools } from '../pages/tools';
+import { ToolsHomepage } from '../pages/tools-homepage';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
@@ -318,18 +319,20 @@ const AppRoutes = () => {
         <Route
           element={
             <ProtectedRoute>
-              <TooltipProvider delayDuration={0}>
-                <ChatProvider>
-                  <Outlet />
-                </ChatProvider>
-              </TooltipProvider>
+              <PlaygroundProvider>
+                <TooltipProvider delayDuration={0}>
+                  <ChatProvider>
+                    <Outlet />
+                  </ChatProvider>
+                </TooltipProvider>
+              </PlaygroundProvider>
             </ProtectedRoute>
           }
           path={'tools'}
         >
-          <Route element={<Tools />} index />
+          <Route element={<ToolsHomepage />} index />
           <Route element={<ToolDetails />} path={':toolKey'} />
-          <Route element={<CreateToolPage />} path={'create'} />
+          {/* <Route element={<CreateToolPage />} path={'create'} /> */}
           <Route element={<EditToolPage />} path={'edit/:toolRouterKey'} />
         </Route>
         <Route

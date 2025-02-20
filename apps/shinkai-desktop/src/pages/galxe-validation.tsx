@@ -36,7 +36,7 @@ const questStatusInfoMap: Record<
   },
   [QuestNames.DownloadFromStore]: {
     name: 'Download Your First Tool',
-    description: 'Download your first tool from the Shinkai Store.',
+    description: 'Download your first tool from the Shinkai AI store.',
   },
   [QuestNames.ComeBack2Days]: {
     name: 'Return to Shinkai in 2 different days',
@@ -75,7 +75,7 @@ const questStatusInfoMap: Record<
   },
   [QuestNames.FeaturedInRanking]: {
     name: 'Featured in Ranking',
-    description: 'Get featured in the Shinkai App Store',
+    description: 'Get featured in the Shinkai AI Store',
   },
   [QuestNames.WriteHonestReview]: {
     name: 'Write a Review',

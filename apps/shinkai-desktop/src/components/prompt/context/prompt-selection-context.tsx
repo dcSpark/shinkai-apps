@@ -359,7 +359,7 @@ export function CreatePromptDrawer({
           </button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-2xl bg-gray-600">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Create custom prompt</DialogTitle>
           <div>
@@ -494,7 +494,7 @@ function UpdatePromptDrawer({
   };
   return (
     <Dialog onOpenChange={setOpen} open={open}>
-      <DialogContent className="max-w-2xl bg-gray-600">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Update Prompt</DialogTitle>
           <div>

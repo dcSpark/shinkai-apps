@@ -13,11 +13,14 @@ export type SaveToolCodeInput = Token & {
   language: CodeLanguage;
   xShinkaiAppId: string;
   xShinkaiToolId: string;
+  xShinkaiOriginalToolRouterKey?: string;
+  shouldPrefetchPlaygroundTool?: boolean;
 } & {
   name: string;
   description: string;
   version: string;
   tools: string[];
+  author: string;
 };
 
 export type SaveToolCodeOutput = SaveToolCodeResponse;

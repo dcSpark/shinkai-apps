@@ -238,7 +238,7 @@ export function AddColumnAction() {
           </PopoverTrigger>
           <PopoverContent
             align="start"
-            className="flex flex-col bg-gray-300 px-0 py-2 text-xs"
+            className="flex flex-col px-0 py-2 text-xs"
           >
             <Form {...setColumnForm}>
               <form

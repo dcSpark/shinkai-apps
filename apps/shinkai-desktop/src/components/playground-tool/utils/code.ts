@@ -16,10 +16,16 @@ export function extractCodeLanguage(input: string): CodeLanguage | null {
 }
 
 export function extractCodeByLanguage(message: string, language: CodeLanguage) {
-  const tsCodeMatch = message.match(
-    new RegExp(`\`\`\`${language.toLowerCase()}\n([\\s\\S]*?)\n\`\`\``),
+  const codeBlockRegex = new RegExp(
+    `\`\`\`${language.toLowerCase()}\\n([\\s\\S]*?)\\n\`\`\``,
   );
-  return tsCodeMatch ? tsCodeMatch[1].trim() : null;
+  const tsCodeMatch = message.match(codeBlockRegex);
+
+  if (tsCodeMatch) {
+    return tsCodeMatch[1].trim();
+  }
+
+  return message.trim();
 }
 
 export function detectLanguage(code: string): string {
@@ -52,11 +58,20 @@ export function parseJsonFromCodeBlock(
 ): Record<string, unknown> | null {
   const regex = /```json([\s\S]*?)```/i;
   const match = text.match(regex);
-  if (!match) return null;
-  const jsonString = match[1];
-  const sanitized = jsonString.replace(/,\s*([\]}])/g, '$1');
+
+  if (match) {
+    const jsonString = match[1];
+    const sanitized = jsonString.replace(/,\s*([\]}])/g, '$1');
+    try {
+      return JSON.parse(sanitized);
+    } catch (error) {
+      console.error('Error parseJsonFromCodeBlock:', error);
+      return null;
+    }
+  }
+
   try {
-    return JSON.parse(sanitized);
+    return JSON.parse(text);
   } catch (error) {
     console.error('Error parseJsonFromCodeBlock:', error);
     return null;

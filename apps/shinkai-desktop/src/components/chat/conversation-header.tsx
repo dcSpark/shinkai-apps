@@ -220,7 +220,7 @@ const ConversationHeaderWithInboxId = () => {
   ]);
 
   return (
-    <div className="flex h-[58px] items-center justify-between border-b border-gray-400 px-4 py-2">
+    <div className="border-official-gray-780 flex h-[58px] items-center justify-between border-b px-4 py-2">
       <div className="inline-flex items-center gap-2">
         <Tooltip>
           <TooltipTrigger asChild>

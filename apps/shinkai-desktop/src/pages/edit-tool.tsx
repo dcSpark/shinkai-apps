@@ -1,11 +1,11 @@
 import validator from '@rjsf/validator-ajv8';
+import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useGetPlaygroundTool } from '@shinkai_network/shinkai-node-state/v2/queries/getPlaygroundTool/useGetPlaygroundTool';
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 
 import PlaygroundToolEditor from '../components/playground-tool/components/tool-playground';
-import { ToolMetadataSchemaType } from '../components/playground-tool/schemas';
 import { getLanguage } from '../components/playground-tool/utils/code';
 import { useAuth } from '../store/auth';
 
@@ -47,7 +47,7 @@ function EditToolPage() {
 
   const toolMetadataInitialValues = useMemo(
     () => ({
-      metadata: playgroundTool?.metadata as ToolMetadataSchemaType | null,
+      metadata: playgroundTool?.metadata as ToolMetadata | null,
       state: isPlaygroundToolPending
         ? 'pending'
         : isPlaygroundToolError || !isValidSchema
@@ -72,10 +72,14 @@ function EditToolPage() {
         language: getLanguage(playgroundTool?.language ?? ''),
       }}
       initialChatInboxId={chatInboxId}
+      initialToolRouterKeyWithVersion={
+        toolRouterKey + ':::' + playgroundTool?.metadata?.version
+      }
       mode="edit"
       toolCodeInitialValues={toolCodeInitialValues}
+      toolDescription={playgroundTool?.metadata?.description ?? ''}
       toolMetadataInitialValues={toolMetadataInitialValues}
-      toolName={playgroundTool?.metadata?.name ?? 'Untitled Tool'}
+      toolName={playgroundTool?.metadata?.name ?? ''}
     />
   );
 }

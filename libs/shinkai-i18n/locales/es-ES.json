@@ -527,6 +527,7 @@
   },
   "tools": {
     "create": "Crear herramienta",
+    "description": "Gestiona, personaliza y amplía tus herramientas de IA.",
     "emptyState": {
       "search": {
         "text": "No se encontraron herramientas para la consulta de búsqueda"
@@ -536,7 +537,7 @@
     "label": "Herramientas Shinkai",
     "lookingForMoreTools": "¿Buscas más herramientas?",
     "store": {
-      "label": "Tienda"
+      "label": "Explorar la Tienda de IA"
     },
     "visitStore": "Visita la tienda Shinkai para descubrir e instalar herramientas adicionales que mejoren tu flujo de trabajo"
   },

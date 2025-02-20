@@ -102,7 +102,7 @@ const EmptyMessage = () => {
         </div>
         <div className="grid max-w-4xl grid-cols-2 items-center gap-3">
           <Badge
-            className="cursor-pointer justify-between text-balance bg-gray-300 py-2 text-left font-normal normal-case text-gray-50 transition-colors hover:bg-gray-200"
+            className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-2 text-left font-normal normal-case text-gray-50 transition-colors"
             onClick={() => showSpotlightWindow()}
             variant="outline"
           >
@@ -120,7 +120,7 @@ const EmptyMessage = () => {
             },
           ].map((suggestion) => (
             <Badge
-              className="cursor-pointer justify-between bg-gray-300 py-2 text-left font-normal normal-case text-gray-50 transition-colors hover:bg-gray-200"
+              className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-2 text-left font-normal normal-case text-gray-50 transition-colors"
               key={suggestion.text}
               onClick={() => {
                 setPromptSelected({
@@ -147,7 +147,7 @@ const EmptyMessage = () => {
             </Badge>
           ))}
           <Badge
-            className="cursor-pointer justify-between text-balance bg-gray-300 py-2 text-left font-normal normal-case text-gray-50 transition-colors hover:bg-gray-200"
+            className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-2 text-left font-normal normal-case text-gray-50 transition-colors"
             onClick={() => onCreateJob('Tell me about the Roman Empire')}
             variant="outline"
           >

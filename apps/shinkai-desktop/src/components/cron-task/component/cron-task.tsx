@@ -348,7 +348,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
           </div>
           <div className="space-y-4">
             <div className="space-y-4">
-              <div className="space-y-6 rounded-lg bg-gray-400 px-4 py-4 pb-7">
+              <div className="bg-official-gray-900 space-y-6 rounded-lg px-4 py-4 pb-7">
                 <span className="flex-1 items-center gap-1 truncate py-2 text-left text-xs font-semibold text-gray-50">
                   AI Model Configuration
                 </span>

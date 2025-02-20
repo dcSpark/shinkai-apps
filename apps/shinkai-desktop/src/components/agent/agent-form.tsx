@@ -413,7 +413,7 @@ function AgentForm({ mode }: AgentFormProps) {
                   )}
                 />
 
-                <div className="space-y-6 rounded-lg bg-gray-400 px-4 py-4">
+                <div className="bg-official-gray-900 space-y-6 rounded-lg px-4 py-4">
                   <div className="flex items-center justify-between gap-2">
                     <span className="flex-1 items-center gap-1 truncate text-left text-xs font-semibold text-gray-50">
                       Tools
@@ -592,9 +592,9 @@ function AgentForm({ mode }: AgentFormProps) {
               </div>
 
               <div className="space-y-4">
-                <div className="space-y-6 rounded-lg bg-gray-400 px-4 py-4 pb-7">
+                <div className="bg-official-gray-900 space-y-6 rounded-lg px-4 py-4 pb-7">
                   <span className="flex-1 items-center gap-1 truncate py-2 text-left text-xs font-semibold text-gray-50">
-                    AI Model Configuration
+                    AI Model Configurationss
                   </span>
 
                   <div className="space-y-4">
@@ -796,7 +796,7 @@ function AgentForm({ mode }: AgentFormProps) {
                   </div>
                 </div>
 
-                <div className="space-y-6 rounded-lg bg-gray-400 px-4 py-4 pb-7">
+                <div className="bg-official-gray-900 space-y-6 rounded-lg px-4 py-4 pb-7">
                   <span className="flex-1 items-center gap-1 truncate py-2 text-left text-xs font-semibold text-gray-50">
                     Agent Context
                   </span>
@@ -804,14 +804,14 @@ function AgentForm({ mode }: AgentFormProps) {
                   <div className="space-y-4">
                     <Button
                       className={cn(
-                        'flex h-auto w-auto items-center gap-2 rounded-lg bg-gray-500 px-2.5 py-1.5',
+                        'flex h-auto w-auto items-center gap-2 rounded-lg px-2.5 py-1.5',
                       )}
                       onClick={() => {
                         setSetJobScopeOpen(true);
                       }}
                       size="auto"
                       type="button"
-                      variant="ghost"
+                      variant="outline"
                     >
                       <div className="flex items-center gap-2">
                         <FilesIcon className="h-4 w-4" />

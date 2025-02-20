@@ -16,6 +16,7 @@ type ChatInputAreaProps = {
   placeholder?: string;
   topAddons?: React.ReactNode;
   bottomAddons?: React.ReactNode;
+  textareaClassName?: string;
 };
 
 export const ChatInputArea = React.forwardRef<
@@ -35,6 +36,7 @@ export const ChatInputArea = React.forwardRef<
       placeholder,
       topAddons,
       bottomAddons,
+      textareaClassName,
     },
     ref,
   ) => {
@@ -43,8 +45,8 @@ export const ChatInputArea = React.forwardRef<
     return (
       <div
         className={cn(
-          'flex w-full max-w-full flex-col rounded-lg bg-gray-400 px-1 py-1 text-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
-          'shadow-[0_0_0_1px_currentColor] shadow-gray-300 transition-shadow focus-within:shadow-gray-200',
+          'bg-official-gray-900 flex w-full max-w-full flex-col rounded-lg px-1 py-1 text-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
+          'shadow-official-gray-750 focus-within:shadow-official-gray-700 shadow-[0_0_0_1px_currentColor] transition-shadow',
         )}
       >
         {topAddons}
@@ -55,6 +57,7 @@ export const ChatInputArea = React.forwardRef<
         >
           <ChatInput
             autoFocus={autoFocus}
+            className={textareaClassName}
             disabled={disabled || isLoading}
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={onKeyDown}

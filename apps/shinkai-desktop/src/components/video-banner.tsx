@@ -158,7 +158,7 @@ export function VideoBanner({
           </div>
 
           <Dialog onOpenChange={setIsVideoDialogOpen} open={isVideoDialogOpen}>
-            <DialogContent className="bg-gray-600 sm:max-w-[85vw]">
+            <DialogContent className="sm:max-w-[85vw]">
               <DialogHeader>
                 <DialogTitle>{title}</DialogTitle>
               </DialogHeader>

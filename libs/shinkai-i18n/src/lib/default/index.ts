@@ -613,13 +613,14 @@ export default {
   },
   tools: {
     label: 'Shinkai Tools',
+    description: 'Manage, customize, and expand your AI tools.',
     emptyState: {
       search: {
         text: 'No tools found for the search query',
       },
     },
     store: {
-      label: 'Store',
+      label: 'Explore AI Store',
     },
     create: 'Create Tool',
     installFromStore: 'Install from Store',

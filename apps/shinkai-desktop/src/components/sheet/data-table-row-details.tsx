@@ -36,7 +36,7 @@ export function DataTableRowDetails({
             <Maximize2 className="text-gray-80 h-3.5 w-3.5" />
           </div>
         </DialogTrigger>
-        <DialogContent className="flex flex-col bg-gray-300 p-5 text-xs">
+        <DialogContent className="flex flex-col p-5 text-xs">
           <DialogClose className="absolute right-4 top-4">
             <XIcon className="text-gray-80 h-5 w-5" />
           </DialogClose>

@@ -1,11 +1,14 @@
 import { ToolUsageType } from '../tools/types';
 
+export type DockerStatus = 'not-installed' | 'not-running' | 'running';
+
 export type CheckHealthResponse = {
   status: 'ok';
   node_name: string;
   is_pristine: boolean;
   version: string;
   update_requires_reset: boolean;
+  docker_status: DockerStatus;
 };
 
 export type Token = { token: string };

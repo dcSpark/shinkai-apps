@@ -1,27 +1,18 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  CodeLanguage,
-  ToolMetadata,
-} from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useCreateToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/createToolCode/useCreateToolCode';
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
-import { useRestoreToolConversation } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreToolConversation/useRestoreToolConversation';
-import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
 import { useUpdateToolCodeImplementation } from '@shinkai_network/shinkai-node-state/v2/mutations/updateToolCodeImplementation/useUpdateToolCodeImplementation';
-import { useGetAllToolAssets } from '@shinkai_network/shinkai-node-state/v2/queries/getAllToolAssets/useGetAllToolAssets';
 import { PrismEditor } from 'prism-react-editor';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, UseFormReturn } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
 
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
-import { ToolMetadataSchema, ToolMetadataSchemaType } from '../schemas';
+import { usePlaygroundStore } from '../context/playground-context';
 import { extractCodeByLanguage, extractCodeLanguage } from '../utils/code';
 
 export const createToolCodeFormSchema = z.object({
@@ -59,10 +50,9 @@ export const useToolForm = (
   return form;
 };
 
-const useChatConversation = (initialInboxId?: string) => {
-  const [chatInboxId, setChatInboxId] = useState<string | undefined>(
-    initialInboxId,
-  );
+export const useChatConversation = (initialInboxId?: string) => {
+  const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
+  const setChatInboxId = usePlaygroundStore((state) => state.setChatInboxId);
 
   useEffect(() => {
     if (initialInboxId) {
@@ -101,8 +91,6 @@ const useChatConversation = (initialInboxId?: string) => {
   }, [data]);
 
   return {
-    chatInboxId,
-    setChatInboxId,
     conversationData: formattedConversationData,
     fetchPreviousPage,
     hasPreviousPage,
@@ -116,7 +104,6 @@ export const useToolCode = ({
   initialChatInboxId,
   initialState,
   createToolCodeForm,
-  initialToolName,
 }: {
   initialChatInboxId?: string;
   initialState?: {
@@ -125,11 +112,11 @@ export const useToolCode = ({
     error?: string | null;
   };
   createToolCodeForm: UseFormReturn<CreateToolCodeFormSchema>;
-  initialToolName?: string;
 }) => {
+  const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
+  const setChatInboxId = usePlaygroundStore((state) => state.setChatInboxId);
+
   const {
-    chatInboxId,
-    setChatInboxId,
     conversationData,
     fetchPreviousPage,
     hasPreviousPage,
@@ -139,7 +126,6 @@ export const useToolCode = ({
   } = useChatConversation(initialChatInboxId);
 
   const auth = useAuth((state) => state.auth);
-  const navigate = useNavigate();
 
   const baseToolCodeRef = useRef<string>('');
   const codeEditorRef = useRef<PrismEditor | null>(null);
@@ -148,8 +134,21 @@ export const useToolCode = ({
   const forceGenerateMetadata = useRef(false);
 
   const [isDirtyCodeEditor, setIsDirtyCodeEditor] = useState(false);
-  const [resetCounter, setResetCounter] = useState(0);
-  const [toolResult, setToolResult] = useState<object | null>(null);
+  const resetCounter = usePlaygroundStore((state) => state.resetCounter);
+  const setResetCounter = usePlaygroundStore((state) => state.setResetCounter);
+
+  const toolCode = usePlaygroundStore((state) => state.toolCode);
+  const setToolCode = usePlaygroundStore((state) => state.setToolCode);
+  const toolCodeStatus = usePlaygroundStore((state) => state.toolCodeStatus);
+  const setToolCodeStatus = usePlaygroundStore(
+    (state) => state.setToolCodeStatus,
+  );
+  const toolCodeError = usePlaygroundStore((state) => state.toolCodeError);
+  const setToolCodeError = usePlaygroundStore(
+    (state) => state.setToolCodeError,
+  );
+  const toolResult = usePlaygroundStore((state) => state.toolResult);
+  const setToolResult = usePlaygroundStore((state) => state.setToolResult);
 
   const currentLanguage = createToolCodeForm.watch('language');
 
@@ -177,24 +176,6 @@ export const useToolCode = ({
     return toolCodesFound;
   }, [conversationData?.pages, currentLanguage]);
 
-  const [toolCode, setToolCode] = useState<string>(initialState?.code ?? '');
-  const [error, setError] = useState<string | null>(
-    initialState?.error ?? null,
-  );
-  const [toolCodeState, setToolCodeState] = useState<
-    'idle' | 'pending' | 'success' | 'error'
-  >(initialState?.state ?? 'idle');
-
-  const [xShinkaiAppId] = useState(() => `app-id-${Date.now()}`);
-  const [xShinkaiToolId] = useState(() => `task-id-${Date.now()}`);
-
-  const { data: assets } = useGetAllToolAssets({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    xShinkaiAppId,
-    xShinkaiToolId,
-  });
-
   useEffect(() => {
     if (initialState?.code) {
       baseToolCodeRef.current = initialState.code;
@@ -202,9 +183,19 @@ export const useToolCode = ({
       setToolCode(initialState.code);
     }
     if (initialState?.state) {
-      setToolCodeState(initialState.state);
+      setToolCodeStatus(initialState.state);
     }
-  }, [initialState?.code, initialState?.state]);
+    if (initialState?.error) {
+      setToolCodeError(initialState.error);
+    }
+  }, [
+    initialState?.code,
+    initialState?.state,
+    initialState?.error,
+    setToolCode,
+    setToolCodeStatus,
+    setToolCodeError,
+  ]);
 
   useEffect(() => {
     const lastMessage = conversationData?.pages?.at(-1)?.at(-1);
@@ -214,7 +205,7 @@ export const useToolCode = ({
       lastMessage?.role === 'assistant' &&
       lastMessage?.status.type === 'running'
     ) {
-      setToolCodeState('pending');
+      setToolCodeStatus('pending');
       return;
     }
     if (
@@ -231,20 +222,20 @@ export const useToolCode = ({
       if (generatedCode) {
         baseToolCodeRef.current = generatedCode;
         setToolCode(generatedCode);
-        setToolCodeState('success');
+        setToolCodeStatus('success');
       } else {
-        setError('Failed to generate tool code');
-        setToolCodeState('error');
+        setToolCodeError('Failed to generate tool code');
+        setToolCodeStatus('error');
       }
     }
   }, [conversationData?.pages, currentLanguage]);
 
-  const isToolCodeGenerationPending = toolCodeState === 'pending';
-  const isToolCodeGenerationSuccess = toolCodeState === 'success';
-  const isToolCodeGenerationIdle = toolCodeState === 'idle';
-  const isToolCodeGenerationError = toolCodeState === 'error';
+  const isToolCodeGenerationPending = toolCodeStatus === 'pending';
+  const isToolCodeGenerationSuccess = toolCodeStatus === 'success';
+  const isToolCodeGenerationIdle = toolCodeStatus === 'idle';
+  const isToolCodeGenerationError = toolCodeStatus === 'error';
   const toolCodeGenerationData = toolCode;
-  const toolCodeGenerationError = error;
+  const toolCodeGenerationError = toolCodeError;
 
   const executeToolCodeQuery = useExecuteToolCode({
     onSuccess: (data) => {
@@ -267,35 +258,6 @@ export const useToolCode = ({
   const { mutateAsync: updateToolCodeImplementation } =
     useUpdateToolCodeImplementation();
 
-  const { mutateAsync: saveToolCode, isPending: isSavingTool } =
-    useSaveToolCode({
-      onSuccess: (data) => {
-        toast.success('Tool code saved successfully');
-        navigate(`/tools/${data.metadata.tool_router_key}`);
-      },
-      onError: (error) => {
-        toast.error('Failed to save tool code', {
-          position: 'top-right',
-          description: error.response?.data?.message ?? error.message,
-        });
-      },
-    });
-
-  const {
-    mutateAsync: restoreToolConversation,
-    isPending: isRestoringToolConversation,
-  } = useRestoreToolConversation({
-    onSuccess: () => {
-      toast.success('Successfully restore changes');
-    },
-    onError: (error) => {
-      toast.error('Failed to restore tool conversation', {
-        position: 'top-right',
-        description: error.response?.data?.message ?? error.message,
-      });
-    },
-  });
-
   const handleCreateToolCode = async (data: CreateToolCodeFormSchema) => {
     if (!auth) return;
 
@@ -310,113 +272,6 @@ export const useToolCode = ({
     });
 
     createToolCodeForm.setValue('message', '');
-  };
-
-  const handleSaveTool = async () => {
-    if (!chatInboxId) return;
-
-    const metadataCode = metadataEditorRef.current?.value;
-    const toolCode = codeEditorRef.current?.value;
-
-    let parsedMetadata: ToolMetadataSchemaType;
-
-    try {
-      const parseResult = JSON.parse(
-        metadataCode as string,
-      ) as ToolMetadataSchemaType;
-
-      const mergedMetadata = merge(parseResult, {
-        // override values
-        name: initialChatInboxId ? initialToolName ?? '' : parseResult.name,
-        tools: createToolCodeForm.getValues('tools') ?? [],
-        author: auth?.shinkai_identity ?? '',
-      });
-
-      parsedMetadata = ToolMetadataSchema.parse(mergedMetadata);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        toast.error('Invalid Metadata JSON Value', {
-          description: error.issues.map((issue) => issue.message).join(', '),
-        });
-        return;
-      }
-
-      toast.error('Invalid Metadata JSON', {
-        position: 'top-right',
-        description: (error as Error)?.message,
-      });
-      return;
-    }
-
-    await saveToolCode({
-      name: parsedMetadata.name,
-      description: parsedMetadata.description,
-      version: parsedMetadata.version,
-      tools: parsedMetadata.tools,
-      code: toolCode,
-      metadata: parsedMetadata,
-      jobId: extractJobIdFromInbox(chatInboxId),
-      token: auth?.api_v2_key ?? '',
-      nodeAddress: auth?.node_address ?? '',
-      language: currentLanguage,
-      assets: assets ?? [],
-      xShinkaiAppId,
-      xShinkaiToolId,
-    });
-  };
-
-  const restoreCode = async () => {
-    const currentIdx = toolHistory.findIndex(
-      (history) => history.code === toolCode,
-    );
-
-    await restoreToolConversation({
-      token: auth?.api_v2_key ?? '',
-      nodeAddress: auth?.node_address ?? '',
-      jobId: extractJobIdFromInbox(chatInboxId ?? ''),
-      messageId: toolHistory[currentIdx].messageId,
-    });
-  };
-
-  const goPreviousToolCode = () => {
-    const currentIdx = toolHistory.findIndex(
-      (history) => history.code === toolCode,
-    );
-    const prevTool = toolHistory[currentIdx - 1];
-
-    const messageEl = document.getElementById(prevTool.messageId);
-    baseToolCodeRef.current = prevTool.code;
-    setToolCode(prevTool.code);
-    setResetCounter((prev) => prev + 1);
-    if (messageEl) {
-      // wait til requestAnimationFrame for scrolling
-      setTimeout(() => {
-        messageEl.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
-      }, 100);
-    }
-  };
-
-  const goNextToolCode = () => {
-    const currentIdx = toolHistory.findIndex(
-      (history) => history.code === toolCode,
-    );
-    const nextTool = toolHistory[currentIdx + 1];
-    baseToolCodeRef.current = nextTool.code;
-    setToolCode(nextTool.code);
-    setResetCounter((prev) => prev + 1);
-
-    const messageEl = document.getElementById(nextTool.messageId);
-    if (messageEl) {
-      setTimeout(() => {
-        messageEl.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
-      }, 100);
-    }
   };
 
   const handleApplyChangesCodeSubmit = async (
@@ -460,7 +315,6 @@ export const useToolCode = ({
     };
 
   return {
-    chatInboxId,
     toolCode,
     setToolCode,
     baseToolCodeRef,
@@ -487,16 +341,8 @@ export const useToolCode = ({
     isDirtyCodeEditor,
     setIsDirtyCodeEditor,
     resetCounter,
-    restoreCode,
     handleCreateToolCode,
     handleApplyChangesCodeSubmit,
-    isRestoringToolConversation,
-    isSavingTool,
-    goPreviousToolCode,
-    goNextToolCode,
-    handleSaveTool,
     resetToolCode,
-    xShinkaiAppId,
-    xShinkaiToolId,
   };
 };

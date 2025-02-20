@@ -210,8 +210,8 @@ const InboxMessageButtonBase = ({
           ) : (
             <Link
               className={cn(
-                'text-gray-80 group relative flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-gray-300',
-                match && 'bg-gray-300 text-white',
+                'text-gray-80 group relative flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-white/10',
+                match && 'bg-white/10 text-white',
               )}
               key={inboxId}
               onClick={() => {
@@ -377,7 +377,7 @@ const ChatLayout = () => {
         {!isChatSidebarCollapsed && (
           <motion.div
             animate={{ width: 240, opacity: 1 }}
-            className="flex h-full shrink-0 flex-col overflow-hidden border-r border-gray-300"
+            className="border-official-gray-780 flex h-full shrink-0 flex-col overflow-hidden border-r"
             exit={{ width: 0, opacity: 0 }}
             initial={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}

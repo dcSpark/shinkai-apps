@@ -86,7 +86,7 @@ export function AIModelSelectorBase({
           </TooltipPortal>
           <DropdownMenuContent
             align="start"
-            className="max-h-[400px] min-w-[330px] overflow-y-auto bg-gray-300 p-1 py-2"
+            className="bg-official-gray-950 border-official-gray-780 max-h-[420px] min-w-[330px] overflow-y-auto border p-1 py-2"
             side="top"
           >
             <DropdownMenuRadioGroup onValueChange={onValueChange} value={value}>

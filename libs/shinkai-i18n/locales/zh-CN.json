@@ -527,6 +527,7 @@
   },
   "tools": {
     "create": "创建工具",
+    "description": "管理、定制和扩展您的人工智能工具。",
     "emptyState": {
       "search": {
         "text": "未找到与搜索查询匹配的工具"
@@ -536,7 +537,7 @@
     "label": "深海工具",
     "lookingForMoreTools": "寻找更多工具？",
     "store": {
-      "label": "商店"
+      "label": "探索人工智能商店"
     },
     "visitStore": "访问深海商店，发现并安装更多工具以增强您的工作流程"
   },

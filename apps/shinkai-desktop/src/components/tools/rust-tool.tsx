@@ -1,6 +1,6 @@
 import { RustShinkaiTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
-import ToolCard from './components/tool-card';
+import ToolDetailsCard from './components/tool-details-card';
 
 export default function RustTool({
   tool,
@@ -9,5 +9,5 @@ export default function RustTool({
   tool: RustShinkaiTool;
   isEnabled: boolean;
 }) {
-  return <ToolCard isEnabled={isEnabled} tool={tool} toolType="Rust" />;
+  return <ToolDetailsCard isEnabled={isEnabled} tool={tool} toolType="Rust" />;
 }

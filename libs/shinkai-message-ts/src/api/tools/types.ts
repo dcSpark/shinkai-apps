@@ -144,6 +144,16 @@ export type UpdateToolResponse = {
   content: [ShinkaiTool, boolean];
 };
 
+export type ToggleEnableToolRequest = {
+  tool_router_key: string;
+  enabled: boolean;
+};
+
+export type ToggleEnableToolResponse = {
+  message: string;
+  status: string;
+};
+
 // TODO: fix types after backend is ready
 
 export type ToolPrice =
@@ -274,6 +284,7 @@ export type ToolMetadata = {
     properties: Record<string, any>;
     required: string[];
   };
+  version: string;
 };
 
 export type SaveToolCodeResponse = {

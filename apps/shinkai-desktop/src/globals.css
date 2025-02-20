@@ -8,22 +8,19 @@
   font-weight: 400 700;
   font-display: optional;
   src: url(./assets/fonts/clash-display-var.woff2) format('woff2');
-  unicode-range: u+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
-    U+FEFF, U+FFFD;
+  unicode-range:
+    u+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF,
+    U+FFFD;
 }
 
 html,
 body,
 #root {
-  @apply font-inter h-full rounded-lg border-0 bg-gray-500 text-white;
+  @apply font-inter bg-official-gray-950 h-full rounded-lg border-0 text-white;
 }
 html {
   @apply overscroll-none;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-gray-400;
 }
 
 .no-scrollbar {
@@ -37,6 +34,18 @@ html {
     @apply !bg-gray-100;
   }
   & .p-icon.p-checkbox-icon {
-    @apply !pointer-events-none ;
+    @apply !pointer-events-none;
   }
+}
+
+::-webkit-scrollbar-thumb,
+.prism-code-editor::-webkit-scrollbar-thumb,
+.playground-scroll::-webkit-scrollbar-thumb {
+  @apply !bg-official-gray-850;
+}
+
+::-webkit-scrollbar-track,
+.prism-code-editor::-webkit-scrollbar-track,
+.playground-scroll::-webkit-scrollbar-track {
+  @apply !bg-official-gray-950;
 }

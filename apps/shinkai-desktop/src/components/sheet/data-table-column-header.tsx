@@ -185,7 +185,7 @@ export function DataTableColumnHeader<TData, TValue>({
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="flex flex-col bg-gray-300 px-0 py-2 text-xs"
+          className="flex flex-col px-0 py-2 text-xs"
         >
           <Form {...setColumnForm}>
             <form
@@ -380,7 +380,7 @@ export function DataTableColumnHeader<TData, TValue>({
         <PopoverContent
           align="end"
           alignOffset={-4}
-          className="flex w-[200px] flex-col bg-gray-300 px-1 py-2 text-xs"
+          className="flex w-[200px] flex-col px-1 py-2 text-xs"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <button

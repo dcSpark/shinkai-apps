@@ -8,18 +8,16 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
+import { usePlaygroundStore } from '../context/playground-context';
 import { ToolMetadataSchema, ToolMetadataSchemaType } from '../schemas';
 import { parseJsonFromCodeBlock } from '../utils/code';
 
 export const useToolMetadata = ({
-  chatInboxId,
   forceGenerateMetadata,
   initialState,
   tools,
-  toolCode,
 }: {
   chatInboxId?: string;
-  toolCode?: string;
   initialState?: {
     metadata: ToolMetadata | null;
     state?: 'idle' | 'pending' | 'success' | 'error';
@@ -28,16 +26,25 @@ export const useToolMetadata = ({
   tools: string[];
   forceGenerateMetadata: React.MutableRefObject<boolean>;
 }) => {
-  const [metadataData, setMetadataData] = useState<ToolMetadata | null>(
-    initialState?.metadata ?? null,
-  );
   const auth = useAuth((state) => state.auth);
-  const [error, setError] = useState<string | null>(
-    initialState?.error ?? null,
+  const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
+  const toolCode = usePlaygroundStore((state) => state.toolCode);
+  const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
+  const setToolMetadata = usePlaygroundStore((state) => state.setToolMetadata);
+  const toolMetadataStatus = usePlaygroundStore(
+    (state) => state.toolMetadataStatus,
   );
-  const [metadataState, setMetadataState] = useState<
-    'idle' | 'pending' | 'success' | 'error'
-  >(initialState?.state ?? 'idle');
+
+  const setToolMetadataStatus = usePlaygroundStore(
+    (state) => state.setToolMetadataStatus,
+  );
+
+  const toolMetadataError = usePlaygroundStore(
+    (state) => state.toolMetadataError,
+  );
+  const setToolMetadataError = usePlaygroundStore(
+    (state) => state.setToolMetadataError,
+  );
 
   const [chatInboxIdMetadata, setChatInboxIdMetadata] = useState<
     string | undefined
@@ -52,17 +59,18 @@ export const useToolMetadata = ({
   const { mutateAsync: createToolMetadata } = useCreateToolMetadata();
 
   useEffect(() => {
-    setMetadataData(initialState?.metadata ?? null);
-    setError(initialState?.error ?? null);
-    setMetadataState(initialState?.state ?? 'idle');
+    setToolMetadata(initialState?.metadata ?? null);
+    setToolMetadataError(initialState?.error ?? null);
+    setToolMetadataStatus(initialState?.state ?? 'idle');
   }, [initialState?.error, initialState?.metadata, initialState?.state]);
 
-  const regenerateToolMetadata = useCallback(async () => {
-    return await createToolMetadata(
+  const regenerateToolMetadata = async () => {
+    if (!chatInboxId) return;
+    await createToolMetadata(
       {
         nodeAddress: auth?.node_address ?? '',
         token: auth?.api_v2_key ?? '',
-        jobId: extractJobIdFromInbox(chatInboxId ?? '') ?? '',
+        jobId: chatInboxId ? extractJobIdFromInbox(chatInboxId) : '',
         tools: tools,
       },
       {
@@ -71,13 +79,7 @@ export const useToolMetadata = ({
         },
       },
     );
-  }, [
-    auth?.api_v2_key,
-    auth?.node_address,
-    chatInboxId,
-    createToolMetadata,
-    tools,
-  ]);
+  };
 
   useEffect(() => {
     const metadata = metadataChatConversation?.pages?.at(-1)?.at(-1);
@@ -87,7 +89,7 @@ export const useToolMetadata = ({
     }
 
     if (metadata?.role === 'assistant' && metadata?.status.type === 'running') {
-      setMetadataState('pending');
+      setToolMetadataStatus('pending');
       return;
     }
 
@@ -101,33 +103,33 @@ export const useToolMetadata = ({
           const parsedMetadata = ToolMetadataSchema.parse(
             extractedMetadata,
           ) as ToolMetadataSchemaType;
-          setMetadataData(parsedMetadata);
-          setMetadataState('success');
-          setError(null);
+          setToolMetadata(parsedMetadata as ToolMetadata);
+          setToolMetadataStatus('success');
+          setToolMetadataError(null);
         } catch (error) {
-          setMetadataState('error');
-          setError(
+          setToolMetadataStatus('error');
+          setToolMetadataError(
             error instanceof Error
               ? 'Invalid Metadata: ' + error.message
               : 'Invalid Metadata: Unknown Error',
           );
         }
       } else {
-        setMetadataState('error');
-        setError('No JSON code found');
+        setToolMetadataStatus('error');
+        setToolMetadataError('No JSON code found');
       }
       return;
     }
   }, [auth?.shinkai_identity, metadataChatConversation?.pages]);
 
   useEffect(() => {
-    if (!toolCode || !forceGenerateMetadata.current) return;
+    if (!toolCode || !forceGenerateMetadata.current || !chatInboxId) return;
     const run = async () => {
       await createToolMetadata(
         {
           nodeAddress: auth?.node_address ?? '',
           token: auth?.api_v2_key ?? '',
-          jobId: extractJobIdFromInbox(chatInboxId ?? ''),
+          jobId: chatInboxId ? extractJobIdFromInbox(chatInboxId) : '',
           tools: tools,
         },
         {
@@ -150,12 +152,12 @@ export const useToolMetadata = ({
   ]);
 
   return {
-    isMetadataGenerationIdle: metadataState === 'idle',
-    isMetadataGenerationPending: metadataState === 'pending',
-    isMetadataGenerationSuccess: metadataState === 'success',
-    isMetadataGenerationError: metadataState === 'error',
-    metadataGenerationError: error,
-    metadataGenerationData: metadataData,
+    isMetadataGenerationIdle: toolMetadataStatus === 'idle',
+    isMetadataGenerationPending: toolMetadataStatus === 'pending',
+    isMetadataGenerationSuccess: toolMetadataStatus === 'success',
+    isMetadataGenerationError: toolMetadataStatus === 'error',
+    metadataGenerationError: toolMetadataError,
+    metadataGenerationData: toolMetadata,
     regenerateToolMetadata,
   };
 };

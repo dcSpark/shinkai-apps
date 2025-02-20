@@ -1,6 +1,6 @@
 import { NetworkShinkaiTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
-import ToolCard from './components/tool-card';
+import ToolDetailsCard from './components/tool-details-card';
 
 export default function NetworkTool({
   tool,
@@ -9,5 +9,7 @@ export default function NetworkTool({
   tool: NetworkShinkaiTool;
   isEnabled: boolean;
 }) {
-  return <ToolCard isEnabled={isEnabled} tool={tool} toolType="Network" />;
+  return (
+    <ToolDetailsCard isEnabled={isEnabled} tool={tool} toolType="Network" />
+  );
 }

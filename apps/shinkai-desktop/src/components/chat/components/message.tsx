@@ -89,6 +89,7 @@ type MessageProps = {
   handleEditMessage?: (message: string) => void;
   messageExtra?: React.ReactNode;
   hidePythonExecution?: boolean;
+  minimalistMode?: boolean;
 };
 
 const actionBar = {
@@ -174,6 +175,7 @@ export const MessageBase = ({
   disabledRetry,
   disabledEdit,
   handleEditMessage,
+  minimalistMode = false,
 }: MessageProps) => {
   const { t } = useTranslation();
 
@@ -223,7 +225,7 @@ export const MessageBase = ({
   return (
     <motion.div
       animate="rest"
-      className="pb-10"
+      className={cn('pb-10', minimalistMode && 'pb-3')}
       data-testid={`message-${
         message.role === 'user' ? 'local' : 'remote'
       }-${message.messageId}`}
@@ -239,11 +241,18 @@ export const MessageBase = ({
           message.role === 'assistant' && 'ml-0 mr-auto flex-row items-end',
         )}
       >
-        <Avatar className={cn('mt-1 h-8 w-8')}>
+        <Avatar
+          className={cn('mt-1 h-8 w-8', minimalistMode && 'mt-1.5 h-5 w-5')}
+        >
           {message.role === 'assistant' ? (
             <img alt="Shinkai AI" src={appIcon} />
           ) : (
-            <AvatarFallback className="h-8 w-8 bg-[#313336] text-xs text-[#b0b0b0]">
+            <AvatarFallback
+              className={cn(
+                'h-8 w-8 border bg-[#313336] text-xs text-gray-100',
+                minimalistMode && 'h-5 w-5 text-xs',
+              )}
+            >
               U
             </AvatarFallback>
           )}
@@ -307,15 +316,16 @@ export const MessageBase = ({
             <Fragment>
               <div
                 className={cn(
-                  'relative mt-1 flex flex-col rounded-lg bg-black/40 px-3.5 pt-3 text-sm text-white',
+                  'relative mt-1 flex flex-col rounded-lg px-3.5 pt-3 text-sm text-white',
                   message.role === 'user'
-                    ? 'rounded-tr-none bg-gray-300'
-                    : 'rounded-bl-none border-none bg-gray-200',
+                    ? 'bg-official-gray-850 rounded-tr-none'
+                    : 'bg-official-gray-780 rounded-bl-none border-none',
                   !message.content ? 'pb-3' : 'pb-4',
                   editing && 'w-full py-1',
                   message.role === 'assistant' &&
                     isPending &&
                     'relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l before:from-gray-200 before:to-gray-200/10',
+                  minimalistMode && 'rounded-sm px-2 pb-1.5 pt-1.5',
                 )}
               >
                 {message.role === 'assistant' &&
@@ -474,7 +484,7 @@ export const MessageBase = ({
                     <GeneratedFiles toolCalls={message.toolCalls} />
                   )}
               </div>
-              {!isPending && (
+              {!isPending && !minimalistMode && (
                 <motion.div
                   className={cn(
                     'absolute -bottom-[34px] flex items-center justify-end gap-3',
@@ -579,7 +589,8 @@ export const MessageBase = ({
 export const Message = memo(MessageBase, (prev, next) => {
   return (
     prev.messageId === next.messageId &&
-    prev.message.content === next.message.content
+    prev.message.content === next.message.content &&
+    prev.minimalistMode === next.minimalistMode
   );
 });
 

@@ -39,6 +39,8 @@ import {
   SearchPromptsResponse,
   SetOAuthTokenRequest,
   SetOAuthTokenResponse,
+  ToggleEnableToolRequest,
+  ToggleEnableToolResponse,
   UndoToolImplementationRequest,
   UndoToolImplementationResponse,
   UpdatePromptRequest,
@@ -123,6 +125,19 @@ export const updateTool = async (
     },
   );
   return response.data as UpdateToolResponse;
+};
+
+export const toggleEnableTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: ToggleEnableToolRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/set_tool_enabled'),
+    { tool_router_key: payload.tool_router_key, enabled: payload.enabled },
+    { headers: { Authorization: `Bearer ${bearerToken}` } },
+  );
+  return response.data as ToggleEnableToolResponse;
 };
 
 export const payInvoice = async (
@@ -276,6 +291,7 @@ export const saveToolCode = async (
   payload: SaveToolCodeRequest,
   xShinkaiAppId: string,
   xShinkaiToolId: string,
+  xShinkaiOriginalToolRouterKey?: string,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/set_playground_tool'),
@@ -285,6 +301,9 @@ export const saveToolCode = async (
         Authorization: `Bearer ${bearerToken}`,
         'x-shinkai-app-id': xShinkaiAppId,
         'x-shinkai-tool-id': xShinkaiToolId,
+        ...(xShinkaiOriginalToolRouterKey && {
+          'x-shinkai-original-tool-router-key': xShinkaiOriginalToolRouterKey,
+        }),
       },
       responseType: 'json',
     },
