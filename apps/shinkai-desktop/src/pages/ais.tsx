@@ -6,6 +6,7 @@ import {
   EditAgentFormSchema,
   editAgentSchema,
 } from '@shinkai_network/shinkai-node-state/forms/agents/edit-agent';
+import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useRemoveLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/removeLLMProvider/useRemoveLLMProvider';
 import { useUpdateLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/updateLLMProvider/useUpdateLLMProvider';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
@@ -52,6 +53,7 @@ import { toast } from 'sonner';
 import Agents from '../components/agent/agents';
 import { VideoBanner } from '../components/video-banner';
 import { useURLQueryParams } from '../hooks/use-url-query-params';
+import { useOllamaRemoveMutation } from '../lib/shinkai-node-manager/ollama-client';
 import { useAuth } from '../store/auth';
 import { TutorialBanner } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
@@ -488,7 +490,25 @@ const RemoveLLMProviderModal = ({
       });
     },
   });
-
+  const ollamaConfig = { host: 'http://127.0.0.1:11435' };
+  const { mutateAsync: removeOllamaModel } = useOllamaRemoveMutation(ollamaConfig, {
+    onSuccess: () => {
+      console.log('ollama model removed:', agentId);
+    },
+    onError: (error) => {
+      toast.error(t('llmProviders.errors.deleteAgent'), {
+        description: typeof error === 'string' ? error : error.message,
+      });
+    },
+  });
+  const {
+    llmProviders,
+    isSuccess: isSuccessLLMProviders,
+    isLoading: isLoadingLLMProviders,
+  } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-[425px]">
@@ -514,7 +534,7 @@ const RemoveLLMProviderModal = ({
             </DialogClose>
             <Button
               className="min-w-[100px] flex-1"
-              isLoading={isPending}
+              isLoading={isPending || isLoadingLLMProviders}
               onClick={async () => {
                 if (!auth) return;
                 await removeLLMProvider({
@@ -522,6 +542,14 @@ const RemoveLLMProviderModal = ({
                   llmProviderId: agentId,
                   token: auth?.api_v2_key ?? '',
                 });
+                let llmProviderModel = llmProviders.find(
+                  (provider) => provider.id === agentId,
+                )?.model;
+                const isOllama = llmProviderModel?.split(':')[0] === Models.Ollama
+                if (isOllama && llmProviderModel) {
+                  llmProviderModel = llmProviderModel.slice(llmProviderModel.indexOf(':') + 1);
+                  await removeOllamaModel({ model: llmProviderModel });
+                } else console.warn('llmProviderModel not found for agentId:', agentId);
               }}
               size="sm"
               variant="destructive"

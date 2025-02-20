@@ -1,5 +1,7 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
+import { removeLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/removeLLMProvider/index';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { Button, Progress } from '@shinkai_network/shinkai-ui';
 import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -35,6 +37,10 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
   const { mutateAsync: syncOllamaModels } = useSyncOllamaModels(
     ALLOWED_OLLAMA_MODELS,
   );
+  const { data: llmProviders, isSuccess: isSuccessLLMProviders } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
   const { mutateAsync: ollamaRemove } = useOllamaRemoveMutation(ollamaConfig, {
     onSuccess: (_, input) => {
       toast.success(
@@ -119,8 +125,21 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
         <Loader2 className="animate-spin" />
       ) : installedOllamaModelsMap.has(model) ? (
         <RemoveAIModelButton
-          onClick={() => {
-            ollamaRemove({ model: model });
+          onClick={async () => {
+            // Now we depend on the llmProviders query to be successful to remove the model from ollama
+            if (!isSuccessLLMProviders) return;
+            await ollamaRemove({ model: model });
+            const llmProviderId = llmProviders.find(
+              (provider) => provider.model.endsWith(model),
+            )?.id;
+            if (llmProviderId) {
+              await removeLLMProvider({
+                nodeAddress: auth?.node_address ?? '',
+                token: auth?.api_v2_key ?? '',
+                llmProviderId: llmProviderId,
+              });
+              console.log('llmProviderId removed for model:', model);
+            } else console.warn('llmProviderId not found for model:', model);
           }}
         />
       ) : pullingModelsMap?.get(model) ? (
