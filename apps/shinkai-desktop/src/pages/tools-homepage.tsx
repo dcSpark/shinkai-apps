@@ -462,22 +462,37 @@ export const ToolsHomepage = () => {
                       value={form.watch('message')}
                     />
 
-                    <div className="flex w-full items-center justify-center gap-3 py-6">
+                    <div className="flex w-full flex-wrap items-center justify-center gap-3 py-6">
                       {[
                         {
-                          text: 'Download website as markdown',
+                          text: 'Retrieve Cryptocurrency Market Data',
                           prompt:
-                            'Generate a tool for downloading a website into markdown',
+                            'Create a coinmarketcap tool to retrieve the current data for a selection of cryptocurrencies. Cryptocurrencies will be given as input using their symbols.',
+                        },
+                        {
+                          text: 'NASA astronomy picture of the day',
+                          prompt:
+                            'Create a tool to retrieve and show the NASA astronomy picture of the day. Use the system date to know the date.',
+                        },
+                        {
+                          text: 'Export text to .odt file',
+                          prompt:
+                            'Create a tool that allows to export text to an .odt file (OpenDocument). The text is given as input.',
+                        },
+                        {
+                          text: 'Download pdf from url',
+                          prompt:
+                            'Create a tool that downloads and saves a pdf from a URL.',
+                        },
+                        {
+                          text: 'Webcam control',
+                          prompt:
+                            'Create a tool that starts the webcam, takes a picture, adds some light balancing to improve the image, and saves it at home path.',
                         },
                         {
                           text: 'Get Hacker News stories',
                           prompt:
                             'Generate a tool for getting top tech-related stories from Hacker News, include the title, author, and URL of the story',
-                        },
-                        {
-                          text: 'Podcast summary',
-                          prompt:
-                            'Generate a tool for summarizing a podcast, include the title, author, and URL of the story',
                         },
                       ].map((suggestion) => (
                         <Button
