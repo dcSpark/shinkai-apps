@@ -34,6 +34,7 @@ export const useToolMetadata = ({
   const toolMetadataStatus = usePlaygroundStore(
     (state) => state.toolMetadataStatus,
   );
+
   const setToolMetadataStatus = usePlaygroundStore(
     (state) => state.setToolMetadataStatus,
   );
@@ -102,7 +103,7 @@ export const useToolMetadata = ({
           const parsedMetadata = ToolMetadataSchema.parse(
             extractedMetadata,
           ) as ToolMetadataSchemaType;
-          setToolMetadata(parsedMetadata);
+          setToolMetadata(parsedMetadata as ToolMetadata);
           setToolMetadataStatus('success');
           setToolMetadataError(null);
         } catch (error) {

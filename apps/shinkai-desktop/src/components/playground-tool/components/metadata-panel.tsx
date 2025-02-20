@@ -11,7 +11,7 @@ import {
 import { debounce } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AlertTriangleIcon } from 'lucide-react';
-import { memo, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
@@ -131,6 +131,10 @@ function MetadataPanelBase({
     }
   }, [toolMetadata]);
 
+  const handleRegenerateMetadata = useCallback(() => {
+    regenerateToolMetadata();
+  }, [regenerateToolMetadata]);
+
   return (
     <div
       className={cn(
@@ -168,7 +172,7 @@ function MetadataPanelBase({
             <TooltipTrigger asChild>
               <Button
                 className="!size-[28px] rounded-lg border-0 bg-transparent p-2"
-                onClick={regenerateToolMetadata}
+                onClick={handleRegenerateMetadata}
                 size="xs"
                 type="button"
                 variant="ghost"
@@ -239,7 +243,7 @@ function MetadataPanelBase({
         isMetadataGenerationError && (
           <ToolErrorFallback
             error={new Error(toolMetadataError ?? '')}
-            resetErrorBoundary={regenerateToolMetadata}
+            resetErrorBoundary={handleRegenerateMetadata}
           />
         )}
 
@@ -264,18 +268,4 @@ function MetadataPanelBase({
   );
 }
 
-export const MetadataPanel = memo(MetadataPanelBase, (prevProps, nextProps) => {
-  if (
-    prevProps.initialToolRouterKeyWithVersion !==
-    nextProps.initialToolRouterKeyWithVersion
-  ) {
-    return false;
-  }
-  if (prevProps.initialToolName !== nextProps.initialToolName) {
-    return false;
-  }
-  if (prevProps.initialToolDescription !== nextProps.initialToolDescription) {
-    return false;
-  }
-  return true;
-});
+export const MetadataPanel = MetadataPanelBase;
