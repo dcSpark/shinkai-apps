@@ -65,7 +65,6 @@ export const MessageList = memo(
     lastMessageContent,
     editAndRegenerateMessage,
     regenerateMessage,
-    regenerateFirstMessage,
     disabledRetryAndEdit,
     messageExtra,
     hidePythonExecution,
@@ -83,7 +82,6 @@ export const MessageList = memo(
       InfiniteQueryObserverResult<ChatConversationInfiniteData, Error>
     >;
     regenerateMessage?: (messageId: string) => void;
-    regenerateFirstMessage?: (message: string) => void;
     editAndRegenerateMessage?: (content: string, messageHash: string) => void;
     containerClassName?: string;
     lastMessageContent?: React.ReactNode;
@@ -276,18 +274,8 @@ export const MessageList = memo(
                         {messages.map((message, messageIndex) => {
                           const previousMessage = messages[messageIndex - 1];
 
-                          const grandparentHash = previousMessage
-                            ? previousMessage.metadata.parentMessageId
-                            : null;
-
-                          const firstMessageRetry =
-                            disabledRetryAndEdit ??
-                            (grandparentHash === null ||
-                              grandparentHash === '');
                           const disabledRetryAndEditValue =
-                            disabledRetryAndEdit ??
-                            (grandparentHash === null ||
-                              grandparentHash === '');
+                          disabledRetryAndEdit ?? messageIndex === 0;
 
                           const handleRetryMessage = () => {
                             regenerateMessage?.(message?.messageId ?? '');
@@ -300,19 +288,11 @@ export const MessageList = memo(
                             );
                           };
 
-                          const handleFirstMessageRetry = () => {
-                            regenerateFirstMessage?.(previousMessage.content);
-                          };
-
                           return (
                             <Message
                               disabledEdit={disabledRetryAndEditValue}
                               handleEditMessage={handleEditMessage}
-                              handleRetryMessage={
-                                firstMessageRetry
-                                  ? handleFirstMessageRetry
-                                  : handleRetryMessage
-                              }
+                              handleRetryMessage={handleRetryMessage}
                               hidePythonExecution={hidePythonExecution}
                               key={`${message.messageId}::${messageIndex}`}
                               message={message}

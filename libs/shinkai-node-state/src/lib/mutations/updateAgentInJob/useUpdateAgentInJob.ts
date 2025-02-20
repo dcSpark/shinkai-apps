@@ -1,7 +1,7 @@
 import { UseMutationOptions, useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
+import { FunctionKeyV2 } from '../../../v2/constants';
 import { updateAgentInJob } from '.';
 import { UpdateAgentInJobInput, UpdateAgentInJobOutput } from './types';
 
@@ -18,7 +18,7 @@ export const useUpdateAgentInJob = (options?: Options) => {
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [FunctionKey.GET_INBOXES],
+        queryKey: [FunctionKeyV2.GET_INBOXES_WITH_PAGINATION],
       });
 
       if (options?.onSuccess) {

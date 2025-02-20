@@ -428,7 +428,9 @@
       "goToShinkaiIdentity": "Pergi ke Identitas Shinkai Saya",
       "label": "Identitas Shinkai",
       "registerIdentity": "Daftarkan Identitas Shinkai Anda",
+      "saveWillRestartApp": "Menyimpan akan memulai ulang Aplikasi untuk menerapkan perubahan",
       "success": "Identitas Shinkai berhasil diperbarui",
+      "troubleRegisterIdentity": "Masalah mendaftar Identitas Anda?",
       "updatedIdentity": "Identitas Shinkai berhasil diperbarui."
     },
     "shinkaiVersion": "Versi Desktop Shinkai:",
