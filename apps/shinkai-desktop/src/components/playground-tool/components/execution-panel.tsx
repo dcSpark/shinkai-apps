@@ -18,13 +18,7 @@ import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  AppWindow,
-  LoaderIcon,
-  Paperclip,
-  Play,
-  TerminalIcon,
-} from 'lucide-react';
+import { AppWindow, LoaderIcon, Paperclip, TerminalIcon } from 'lucide-react';
 import { memo, MutableRefObject, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -32,7 +26,6 @@ import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
 import { ToolErrorFallback } from '../error-boundary';
 import ToolCodeEditor from '../tool-code-editor';
-import EditToolBasicInfoDialog from './edit-tool-basic-info-dialog';
 import { tabTriggerClassnames } from './tool-playground';
 
 function ExecutionPanelBase({
@@ -137,17 +130,11 @@ function ExecutionPanelBase({
       >
         <div className="flex size-full flex-col pb-4 pl-4 pr-3">
           <div className="flex items-start justify-between gap-8 py-3">
-            <div className="text-gray-80 flex flex-col gap-1 text-xs">
+            <div className="text-gray-80 flex items-center gap-1 text-xs">
               {toolMetadata && (
-                <div className="flex flex-col gap-1">
-                  <h1 className="text-base font-medium text-white">
-                    {toolMetadata.name}
-                    <EditToolBasicInfoDialog />
-                  </h1>
-                  <p className="text-gray-80 text-sm">
-                    {toolMetadata.description}
-                  </p>
-                </div>
+                <h1 className="text-base font-medium text-white">
+                  {toolMetadata.name}
+                </h1>
               )}
             </div>
             {isMetadataGenerationSuccess &&
@@ -332,6 +319,8 @@ export const ExecutionPanel = memo(
 
     if (!equal(prevProps.toolResultFiles, nextProps.toolResultFiles))
       return false;
+
+    if (prevProps.handleRunCode !== nextProps.handleRunCode) return false;
 
     return true;
   },

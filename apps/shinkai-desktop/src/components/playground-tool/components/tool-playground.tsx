@@ -18,7 +18,7 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { LoaderIcon } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
@@ -91,7 +91,6 @@ function PlaygroundToolEditor({
   }, [createToolCodeFormInitialValues?.language, form]);
 
   const {
-    toolCode,
     baseToolCodeRef,
     fetchPreviousPage,
     hasPreviousPage,
@@ -100,8 +99,6 @@ function PlaygroundToolEditor({
     isChatConversationSuccess,
     chatConversationData,
     toolHistory,
-    codeEditorRef,
-    metadataEditorRef,
     executeToolCodeQuery,
     toolResultFiles,
     isDirtyCodeEditor,
@@ -115,6 +112,10 @@ function PlaygroundToolEditor({
     initialState: toolCodeInitialValues,
     initialChatInboxId,
   });
+
+  const toolCode = usePlaygroundStore((state) => state.toolCode);
+
+  console.log(toolCode, 'toolCodetoolCode');
 
   const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
   const xShinkaiAppId = usePlaygroundStore((state) => state.xShinkaiAppId);
@@ -135,25 +136,34 @@ function PlaygroundToolEditor({
   });
 
   const mountTimestamp = useRef(new Date());
+  const handleRunCode: FormProps['onSubmit'] = useCallback(
+    async (data: any) => {
+      mountTimestamp.current = new Date();
+      const { configs, params } = data.formData;
 
-  const handleRunCode: FormProps['onSubmit'] = async (data) => {
-    mountTimestamp.current = new Date();
-    const { configs, params } = data.formData;
-    const updatedCodeWithoutSave = codeEditorRef.current?.value ?? '';
-
-    await executeToolCodeQuery.mutateAsync({
-      code: isDirtyCodeEditor ? updatedCodeWithoutSave : toolCode,
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      params,
-      llmProviderId: form.getValues('llmProviderId'),
-      tools: form.getValues('tools'),
-      language: form.getValues('language'),
-      configs,
+      await executeToolCodeQuery.mutateAsync({
+        code: toolCode,
+        nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
+        params,
+        llmProviderId: form.getValues('llmProviderId'),
+        tools: form.getValues('tools'),
+        language: form.getValues('language'),
+        configs,
+        xShinkaiAppId,
+        xShinkaiToolId,
+      });
+    },
+    [
+      auth?.api_v2_key,
+      auth?.node_address,
+      executeToolCodeQuery,
+      form,
+      toolCode,
       xShinkaiAppId,
       xShinkaiToolId,
-    });
-  };
+    ],
+  );
 
   return (
     <Form {...form}>
@@ -161,7 +171,6 @@ function PlaygroundToolEditor({
         topElement={
           <PlaygroundHeader
             toolHistory={toolHistory}
-            mode={mode}
             toolName={toolName ?? ''}
             baseToolCodeRef={baseToolCodeRef}
             // initialToolName={toolMetadataInitialValues?.metadata?.name}

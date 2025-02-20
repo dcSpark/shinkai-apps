@@ -14,7 +14,6 @@ import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import { usePlaygroundStore } from '../context/playground-context';
 import { extractCodeByLanguage, extractCodeLanguage } from '../utils/code';
-import { useAutoSaveTool } from './use-create-tool-and-save';
 
 export const createToolCodeFormSchema = z.object({
   message: z.string().min(1),
@@ -181,6 +180,7 @@ export const useToolCode = ({
     if (initialState?.code) {
       baseToolCodeRef.current = initialState.code;
       forceGenerateCode.current = false;
+      console.log(initialState.code, 'initialState.code');
       setToolCode(initialState.code);
     }
     if (initialState?.state) {
@@ -189,7 +189,14 @@ export const useToolCode = ({
     if (initialState?.error) {
       setToolCodeError(initialState.error);
     }
-  }, [initialState?.code, initialState?.state, initialState?.error]);
+  }, [
+    initialState?.code,
+    initialState?.state,
+    initialState?.error,
+    setToolCode,
+    setToolCodeStatus,
+    setToolCodeError,
+  ]);
 
   useEffect(() => {
     const lastMessage = conversationData?.pages?.at(-1)?.at(-1);
@@ -251,8 +258,6 @@ export const useToolCode = ({
 
   const { mutateAsync: updateToolCodeImplementation } =
     useUpdateToolCodeImplementation();
-
-  const { handleAutoSave, isSavingTool, isSaveToolSuccess } = useAutoSaveTool();
 
   const handleCreateToolCode = async (data: CreateToolCodeFormSchema) => {
     if (!auth) return;
@@ -340,8 +345,5 @@ export const useToolCode = ({
     handleCreateToolCode,
     handleApplyChangesCodeSubmit,
     resetToolCode,
-
-    isSavingTool,
-    isSaveToolSuccess,
   };
 };
