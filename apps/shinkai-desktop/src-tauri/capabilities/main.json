@@ -23,7 +23,8 @@
           "path": "$HOME/Downloads/*"
         }
       ]
-    }
+    },
+    "sentry:default"
   ],
   "commands.allow": [
     "shinkai_node_is_running",

@@ -233,6 +233,7 @@ jobs:
           VITE_POSTHOG_API_KEY: ${{ secrets.VITE_POSTHOG_API_KEY }}
           SECRET_DESKTOP_INSTALLATION_PROOF_KEY: ${{ secrets.SECRET_DESKTOP_INSTALLATION_PROOF_KEY }}
           NODE_OPTIONS: "--max_old_space_size=8192"
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       - name: (Macos) Run NX build on shinkai-desktop
         if: ${{ matrix.arch == 'aarch64-apple-darwin' }}
         run: npx nx build shinkai-desktop --skip-nx-cache
@@ -248,6 +249,7 @@ jobs:
           VITE_POSTHOG_API_KEY: ${{ secrets.VITE_POSTHOG_API_KEY }}
           SECRET_DESKTOP_INSTALLATION_PROOF_KEY: ${{ secrets.SECRET_DESKTOP_INSTALLATION_PROOF_KEY }}
           NODE_OPTIONS: "--max_old_space_size=8192"
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       - name: (Windows) Run NX build on shinkai-desktop
         if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         run: npx nx build shinkai-desktop --skip-nx-cache
@@ -260,7 +262,7 @@ jobs:
           CPAL_ASIO_DIR: ${{ github.workspace }}/asiosdk_2.3.3_2019-06-14
           LIBCLANG_PATH: C:\Program Files\LLVM\bin
           NODE_OPTIONS: "--max_old_space_size=8192"
-
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 # --- Signing process ---
       - name: 'Google auth'
         id: 'auth'

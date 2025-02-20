@@ -9,18 +9,23 @@ import ReactDOM from 'react-dom/client';
 import { ErrorBoundary } from 'react-error-boundary';
 import {
   BrowserRouter as Router,
+  Route,
+  Routes,
   // Route,
   // Routes
 } from 'react-router-dom';
 
 import { ToolsProvider } from '../../components/chat/context/tools-context';
 import FullPageErrorFallback from '../../components/error-boundary';
+import { initSentry, SentryRoutes } from '../../lib/sentry';
 import { shinkaiNodeQueryClient } from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeEventsToast } from '../../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { ShinkaiNodeRunningOverlay } from '../../lib/shinkai-node-overlay';
 import { useSyncStorageSecondary } from '../../store/sync-utils';
 import QuickAsk from './components/quick-ask';
 import { QuickAskProvider } from './context/quick-ask';
+
+initSentry();
 
 const App = () => {
   useSyncStorageSecondary();
@@ -34,9 +39,9 @@ const App = () => {
             <ShinkaiNodeRunningOverlay>
               <TooltipProvider delayDuration={0}>
                 <Router>
-                  {/*<Routes>*/}
-                  <QuickAsk />
-                  {/*</Routes>*/}
+                  <SentryRoutes>
+                    <Route element={<QuickAsk />} path="*" />
+                  </SentryRoutes>
                 </Router>
                 <Toaster />
               </TooltipProvider>

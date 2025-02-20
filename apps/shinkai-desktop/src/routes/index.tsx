@@ -21,6 +21,7 @@ import { VectorFolderSelectionProvider } from '../components/vector-fs/component
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
 import VectorFs from '../components/vector-fs/vector-fs';
 import SearchNodeFiles from '../components/vector-search/search-node-files';
+import { SentryRoutes } from '../lib/sentry';
 import {
   useShinkaiNodeIsRunningQuery,
   useShinkaiNodeSetOptionsMutation,
@@ -176,7 +177,7 @@ const AppRoutes = () => {
   useDefaultAgentByDefault();
 
   return (
-    <Routes>
+    <SentryRoutes>
       <Route element={<MainLayout />}>
         <Route
           element={
@@ -376,7 +377,7 @@ const AppRoutes = () => {
         </Route>
       </Route>
       <Route element={<Navigate replace to={'inboxes/'} />} path="/" />
-    </Routes>
+    </SentryRoutes>
   );
 };
 export default AppRoutes;

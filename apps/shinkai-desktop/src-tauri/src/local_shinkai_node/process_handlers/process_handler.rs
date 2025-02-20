@@ -95,11 +95,6 @@ impl ProcessHandler {
     pub async fn is_running(&self) -> bool {
         let process = self.process.lock().await;
         let running = process.is_some();
-        log::debug!(
-            "[{}] checking if process is running: {}",
-            self.process_name,
-            running
-        );
         running
     }
 
@@ -290,7 +285,10 @@ impl ProcessHandler {
                         self.process_name,
                         pid
                     );
-                    tokio::time::sleep(std::time::Duration::from_millis(Self::PORT_RELEASE_DELAY_MS)).await;
+                    tokio::time::sleep(std::time::Duration::from_millis(
+                        Self::PORT_RELEASE_DELAY_MS,
+                    ))
+                    .await;
                 }
                 Err(e) => log::warn!(
                     "[{}] failed to kill process with pid={:?}: {}",
@@ -304,7 +302,7 @@ impl ProcessHandler {
             let event_sender = self.event_sender.lock().await;
             let _ = event_sender.send(ProcessHandlerEvent::Stopped).await;
         } else {
-            log::error!("[{}] no process is running to kill", self.process_name);
+            log::warn!("[{}] no process is running to kill", self.process_name);
         }
     }
 }
