@@ -102,7 +102,7 @@ export const Tasks = () => {
                 <PopoverContent
                   align="end"
                   alignOffset={-4}
-                  className="flex w-[400px] flex-col gap-2 bg-gray-300 px-3.5 py-4 text-xs"
+                  className="flex w-[400px] flex-col gap-2 px-3.5 py-4 text-xs"
                   onOpenAutoFocus={(e) => e.preventDefault()}
                 >
                   <div className="flex items-center justify-between gap-2">

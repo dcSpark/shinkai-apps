@@ -76,11 +76,6 @@ function MetadataPanelBase({
         metadataWithoutBasicInfo,
       );
 
-      console.log(
-        formattedMetadataWithoutBasicInfo,
-        'formattedMetadataWithoutBasicInfo',
-      );
-
       if (
         value === JSON.stringify(formattedMetadataWithoutBasicInfo, null, 2)
       ) {

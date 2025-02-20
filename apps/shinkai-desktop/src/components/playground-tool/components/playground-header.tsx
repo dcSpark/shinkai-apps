@@ -308,11 +308,7 @@ function PlaygroundHeaderBase({
               Publish
             </Button>
           </PopoverTrigger>
-          <PopoverContent
-            align="end"
-            className="bg-official-gray-1000 w-[450px]"
-            sideOffset={10}
-          >
+          <PopoverContent align="end" className="w-[450px]" sideOffset={10}>
             <div className="space-y-4">
               <div className="space-y-3">
                 <h4 className="flex items-center gap-2 font-medium leading-none">

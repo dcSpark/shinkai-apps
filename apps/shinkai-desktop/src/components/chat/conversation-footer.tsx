@@ -685,7 +685,9 @@ function ConversationChatFooter({
                     </PopoverTrigger>
                     <PopoverContent
                       align="start"
-                      className="w-[500px] bg-gray-300 p-0"
+                      className="w-[500px] p-0"
+                      side="top"
+                      sideOffset={10}
                     >
                       <Command>
                         <CommandInput placeholder="Search tools..." />

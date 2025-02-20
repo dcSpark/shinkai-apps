@@ -352,7 +352,7 @@ export function UpdateChatConfigActionBarBase() {
             </PopoverTrigger>
             <PopoverContent
               align="end"
-              className="min-w-[380px] bg-gray-300 px-6 py-7 text-xs"
+              className="min-w-[380px] px-6 py-7 text-xs"
               side="top"
             >
               <h2 className="leading-1 text-gray-80 mb-5 text-xs uppercase">
@@ -422,7 +422,7 @@ export function CreateChatConfigActionBar({
             </PopoverTrigger>
             <PopoverContent
               align="end"
-              className="min-w-[380px] bg-gray-300 px-6 py-7 text-xs"
+              className="min-w-[380px] px-6 py-7 text-xs"
               side="top"
             >
               <h2 className="leading-1 text-gray-80 mb-5 text-xs uppercase">

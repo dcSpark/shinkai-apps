@@ -223,7 +223,7 @@ const stepIconColorMap: {
   [key in GetStartedStatus]?: { icon?: ReactNode; iconClassName?: string };
 } = {
   [GetStartedStatus.NotStarted]: {
-    iconClassName: 'bg-cyan-100/20',
+    iconClassName: 'bg-cyan-100/30',
     icon: <CheckIcon className="w-full text-gray-400" />,
   },
   // [StepStatus.Loading]: {
@@ -333,7 +333,7 @@ export const Stepper = ({ steps }: StepperProps) => {
       <PopoverContent
         align="start"
         alignOffset={sidebarExpanded ? -13 : -4}
-        className="bg-gray-300 p-0 text-xs"
+        className="p-0 text-xs"
         side="right"
         sideOffset={sidebarExpanded ? 20 : 12}
       >
@@ -354,7 +354,7 @@ export const Stepper = ({ steps }: StepperProps) => {
         </div>
         {hasCompletedAllSteps && (
           <div>
-            <div className="flex justify-center gap-2 bg-gray-300 p-3">
+            <div className="bg-official-gray-950 flex justify-center gap-2 p-3">
               <span className="text-gray-80">
                 {t('onboardingChecklist.completedSteps')}
               </span>
@@ -378,7 +378,7 @@ export const Stepper = ({ steps }: StepperProps) => {
         {!hasCompletedAllSteps && (
           <div className="">
             <Accordion
-              className="divide-y divide-gray-200 [&>div:first-of-type]:rounded-t-lg [&>div:last-of-type]:rounded-b-lg"
+              className="divide-official-gray-850 divide-y [&>div:first-of-type]:rounded-t-lg [&>div:last-of-type]:rounded-b-lg"
               collapsible
               type="single"
             >
@@ -386,7 +386,7 @@ export const Stepper = ({ steps }: StepperProps) => {
                 const stepStatus = step.status ?? GetStartedStatus.NotStarted;
                 return (
                   <AccordionItem
-                    className="gap-4 bg-gray-300"
+                    className="bg-official-gray-950 gap-4"
                     key={index}
                     value={step.label}
                   >
@@ -408,7 +408,7 @@ export const Stepper = ({ steps }: StepperProps) => {
                         {step.title}
                       </div>
                     </AccordionTrigger>
-                    <AccordionContent className="bg-gray-300 px-0 py-1 pb-3 pl-[43px] pr-8 text-xs text-neutral-200">
+                    <AccordionContent className="bg-official-gray-950 px-0 py-1 pb-3 pl-[43px] pr-8 text-xs text-neutral-200">
                       <div className="flex-1 font-light">{step.body}</div>
                     </AccordionContent>
                   </AccordionItem>

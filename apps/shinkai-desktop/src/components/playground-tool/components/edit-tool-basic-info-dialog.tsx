@@ -100,7 +100,7 @@ export default function EditToolBasicInfoDialog({
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="bg-official-gray-1000 flex w-[450px] flex-col gap-4 p-4"
+        className="flex w-[450px] flex-col gap-4 p-4"
         side="bottom"
         sideOffset={10}
       >

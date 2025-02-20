@@ -59,7 +59,7 @@ export function ToolsSelection({
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="flex w-full max-w-xl flex-col gap-3 bg-gray-300 p-4 pr-1 text-xs"
+          className="flex w-full max-w-xl flex-col gap-3 p-4 pr-1 text-xs"
         >
           <div className="flex items-center justify-between pr-3">
             <p className="font-semibold text-white">Available tools</p>
