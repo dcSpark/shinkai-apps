@@ -17,19 +17,15 @@ import { StoreIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   ArrowLeft,
-  ChevronDown,
-  ChevronLeft,
-  HomeIcon,
   Loader2,
   Redo2Icon,
   SaveIcon,
   Undo2Icon,
 } from 'lucide-react';
-import { memo, useEffect } from 'react';
+import { memo } from 'react';
 import { useForm, useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
@@ -43,6 +39,7 @@ import { ManageSourcesButton } from './manage-sources-button';
 function PlaygroundHeaderBase({
   toolHistory,
   toolName,
+  toolDescription,
   baseToolCodeRef,
 }: {
   toolHistory: {
@@ -50,6 +47,7 @@ function PlaygroundHeaderBase({
     code: string;
   }[];
   toolName: string;
+  toolDescription: string;
   baseToolCodeRef: React.MutableRefObject<string>;
 }) {
   const auth = useAuth((state) => state.auth);
@@ -176,7 +174,10 @@ function PlaygroundHeaderBase({
           <ArrowLeft className="size-4" />
         </Button>
 
-        <EditToolBasicInfoDialog toolName={toolName} />
+        <EditToolBasicInfoDialog
+          toolDescription={toolDescription}
+          toolName={toolName}
+        />
       </div>
 
       <div className="flex items-center justify-end gap-2.5">
@@ -361,5 +362,7 @@ function PlaygroundHeaderBase({
 
 export const PlaygroundHeader = memo(PlaygroundHeaderBase, (prev, next) => {
   if (prev.toolHistory.length !== next.toolHistory.length) return false;
+  if (prev.toolName !== next.toolName) return false;
+  if (prev.toolDescription !== next.toolDescription) return false;
   return true;
 });

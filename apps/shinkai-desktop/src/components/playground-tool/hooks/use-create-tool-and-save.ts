@@ -40,6 +40,7 @@ export const useAutoSaveTool = () => {
       toolMetadata,
       toolCode,
       toolName,
+      toolDescription,
       tools,
       language,
       onSuccess,
@@ -49,6 +50,7 @@ export const useAutoSaveTool = () => {
       toolMetadata: ToolMetadata;
       toolCode: string;
       toolName?: string;
+      toolDescription?: string;
       tools: string[];
       language: CodeLanguage;
       shouldPrefetchPlaygroundTool?: boolean;
@@ -83,7 +85,7 @@ export const useAutoSaveTool = () => {
       await saveToolCode(
         {
           name: parsedMetadata.name,
-          description: parsedMetadata.description,
+          description: toolDescription ?? parsedMetadata.description,
           version: parsedMetadata.version ?? '0.0.1',
           tools: parsedMetadata.tools,
           code: toolCode,

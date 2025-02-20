@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-sort-props */
 import { FormProps } from '@rjsf/core';
+import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   Form,
   ResizableHandle,
@@ -29,7 +30,6 @@ import {
 } from '../hooks/use-tool-code';
 import { useToolMetadata } from '../hooks/use-tool-metadata';
 import PlaygroundToolLayout from '../layout';
-import { ToolMetadataSchemaType } from '../schemas';
 import { detectLanguage } from '../utils/code';
 import { CodePanel } from './code-panel';
 import { ExecutionPanel } from './execution-panel';
@@ -62,12 +62,13 @@ function PlaygroundToolEditor({
   toolMetadataInitialValues,
   initialChatInboxId,
   toolName,
+  toolDescription,
   initialToolRouterKeyWithVersion,
 }: {
   mode: 'create' | 'edit';
   createToolCodeFormInitialValues?: Partial<CreateToolCodeFormSchema>;
   toolMetadataInitialValues?: {
-    metadata: ToolMetadataSchemaType | null;
+    metadata: ToolMetadata | null;
     state?: 'idle' | 'pending' | 'success' | 'error';
     error?: string | null;
   };
@@ -77,6 +78,7 @@ function PlaygroundToolEditor({
     error?: string | null;
   };
   toolName?: string;
+  toolDescription?: string;
   initialChatInboxId?: string;
   initialToolRouterKeyWithVersion?: string;
 }) {
@@ -172,9 +174,8 @@ function PlaygroundToolEditor({
           <PlaygroundHeader
             toolHistory={toolHistory}
             toolName={toolName ?? ''}
+            toolDescription={toolDescription ?? ''}
             baseToolCodeRef={baseToolCodeRef}
-            // initialToolName={toolMetadataInitialValues?.metadata?.name}
-            // initialChatInboxId={initialChatInboxId}
           />
         }
         leftElement={
