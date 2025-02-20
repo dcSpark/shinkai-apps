@@ -177,6 +177,11 @@ export function AiUpdateSelectionActionBarBase({
         description: error.message,
       });
     },
+    onSuccess: (_, variables) => {
+      if (currentInbox?.agent) {
+        currentInbox.agent.id = variables.newAgentId;
+      }
+    },
   });
 
   return (
