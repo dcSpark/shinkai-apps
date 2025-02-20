@@ -11,7 +11,7 @@ import {
 import { debounce } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AlertTriangleIcon } from 'lucide-react';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
@@ -131,10 +131,6 @@ function MetadataPanelBase({
     }
   }, [toolMetadata]);
 
-  const handleRegenerateMetadata = useCallback(() => {
-    regenerateToolMetadata();
-  }, [regenerateToolMetadata]);
-
   return (
     <div
       className={cn(
@@ -172,7 +168,7 @@ function MetadataPanelBase({
             <TooltipTrigger asChild>
               <Button
                 className="!size-[28px] rounded-lg border-0 bg-transparent p-2"
-                onClick={handleRegenerateMetadata}
+                onClick={regenerateToolMetadata}
                 size="xs"
                 type="button"
                 variant="ghost"
@@ -243,7 +239,7 @@ function MetadataPanelBase({
         isMetadataGenerationError && (
           <ToolErrorFallback
             error={new Error(toolMetadataError ?? '')}
-            resetErrorBoundary={handleRegenerateMetadata}
+            resetErrorBoundary={regenerateToolMetadata}
           />
         )}
 
