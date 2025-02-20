@@ -31,6 +31,7 @@ mod global_shortcuts;
 mod globals;
 mod hardware;
 mod local_shinkai_node;
+mod models;
 mod tray;
 mod windows;
 mod deep_links;

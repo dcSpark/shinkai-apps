@@ -55,3 +55,19 @@ pub enum OllamaApiPullResponse {
         status: String,
     },
 }
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct OllamaApiCreateRequest {
+    pub name: String,
+    pub files: std::collections::HashMap<String, String>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct OllamaApiCreateResponse {
+    pub status: String,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct OllamaApiBlobResponse {
+    pub status: String,
+}
