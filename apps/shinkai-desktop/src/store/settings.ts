@@ -38,6 +38,11 @@ type SettingsStore = {
   resetSettings: () => void;
   dismissedTutorialBanners: TutorialBanner[];
   dismissTutorialBanner: (bannerId: TutorialBanner) => void;
+  // Playground Tool
+  playgroundChatPanelSize: number;
+  setPlaygroundChatPanelSize: (size: number) => void;
+  playgroundCodePanelSize: number;
+  setPlaygroundCodePanelSize: (size: number) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -114,6 +119,15 @@ export const useSettings = create<SettingsStore>()(
               new Set([...state.dismissedTutorialBanners, bannerId]),
             ),
           }));
+        },
+
+        playgroundChatPanelSize: 40,
+        setPlaygroundChatPanelSize: (size) => {
+          set({ playgroundChatPanelSize: size });
+        },
+        playgroundCodePanelSize: 50,
+        setPlaygroundCodePanelSize: (size) => {
+          set({ playgroundCodePanelSize: size });
         },
 
         resetSettings: () => {
