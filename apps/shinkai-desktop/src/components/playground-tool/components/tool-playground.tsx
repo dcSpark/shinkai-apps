@@ -235,7 +235,7 @@ function PlaygroundToolEditor({
               </TabsList>
             </div>
             <TabsContent
-              className="mt-0 h-full space-y-4 overflow-y-auto whitespace-pre-line break-words data-[state=inactive]:hidden"
+              className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words data-[state=inactive]:hidden"
               forceMount
               value="code"
               onFocus={() => setFocusedPanel('code')}
