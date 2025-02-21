@@ -8,7 +8,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
@@ -110,6 +109,7 @@ export const useAutoSaveTool = () => {
             }
           },
           onError: (error) => {
+            if (shouldPrefetchPlaygroundTool) return;
             toast.error('Failed to save tool code', {
               position: 'top-right',
               description: error.response?.data?.message ?? error.message,
@@ -227,10 +227,13 @@ export const useCreateToolAndSave = ({
       isSaveToolSuccess,
     isError:
       isToolCodeGenerationError || isMetadataGenerationError || isSaveToolError,
-    error:
-      toolCodeError ||
-      toolMetadataError ||
-      (saveToolCodeError?.response?.data?.message ??
-        saveToolCodeError?.message),
+    error: toolCodeError
+      ? `Failed creating tool code: ${toolCodeError}`
+      : toolMetadataError
+        ? `Failed creating tool metadata: ${toolMetadataError}`
+        : saveToolCodeError?.response?.data?.message ??
+            saveToolCodeError?.message
+          ? `Failed saving tool code: ${saveToolCodeError?.response?.data?.message ?? saveToolCodeError?.message}`
+          : undefined,
   };
 };

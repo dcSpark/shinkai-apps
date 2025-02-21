@@ -3,9 +3,6 @@ import { FormProps } from '@rjsf/core';
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   Form,
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
   Tabs,
   TabsContent,
   TabsList,
@@ -22,6 +19,7 @@ import { LoaderIcon } from 'lucide-react';
 import { useCallback, useEffect, useRef } from 'react';
 
 import { useAuth } from '../../../store/auth';
+import { useSettings } from '../../../store/settings';
 import { usePlaygroundStore } from '../context/playground-context';
 import {
   CreateToolCodeFormSchema,
@@ -81,6 +79,9 @@ function PlaygroundToolEditor({
   initialToolRouterKeyWithVersion?: string;
 }) {
   const auth = useAuth((state) => state.auth);
+  const playgroundPanelSizes = useSettings(
+    (state) => state.playgroundPanelSizes,
+  );
 
   const form = useToolForm(createToolCodeFormInitialValues);
 
@@ -197,100 +198,89 @@ function PlaygroundToolEditor({
             toolName={toolName ?? ''}
           />
         }
-        rightElement={
-          <div className={'flex flex-grow justify-stretch'}>
-            <div className="flex size-full flex-col">
-              <ResizablePanelGroup direction="vertical">
-                <ResizablePanel defaultSize={60} minSize={3}>
-                  <Tabs className="flex size-full flex-col" defaultValue="code">
-                    <div className="bg-official-gray-1000 flex h-8 w-full shrink-0 items-center justify-between gap-2 border-b border-gray-400">
-                      <TabsList className="grid h-full grid-cols-2 rounded-none bg-transparent p-0">
-                        <TabsTrigger
-                          className={tabTriggerClassnames}
-                          value="code"
-                          data-focused={focusedPanel === 'code'}
-                          onClick={() => setFocusedPanel('code')}
-                        >
-                          <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
-                            {isToolCodeGenerationPending ? (
-                              <LoaderIcon className="size-4 animate-spin" />
-                            ) : (
-                              getLanguageIcon(detectLanguage(toolCode))
-                            )}
-                            Code
-                          </div>
-                        </TabsTrigger>
-                        <TabsTrigger
-                          className={tabTriggerClassnames}
-                          value="metadata"
-                          data-focused={focusedPanel === 'metadata'}
-                          onClick={() => setFocusedPanel('metadata')}
-                        >
-                          <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
-                            {isToolMetadataPending ? (
-                              <LoaderIcon className="size-4 animate-spin" />
-                            ) : (
-                              <MetadataIcon className="size-4 text-inherit" />
-                            )}
-                            Metadata
-                          </div>
-                        </TabsTrigger>
-                      </TabsList>
-                    </div>
-                    <TabsContent
-                      className="mt-0 h-full space-y-4 overflow-y-auto whitespace-pre-line break-words data-[state=inactive]:hidden"
-                      forceMount
-                      value="code"
-                      onFocus={() => setFocusedPanel('code')}
-                      onBlur={() => setFocusedPanel(null)}
-                    >
-                      <CodePanel
-                        baseToolCodeRef={baseToolCodeRef}
-                        handleApplyChangesCodeSubmit={
-                          handleApplyChangesCodeSubmit
-                        }
-                        isDirtyCodeEditor={isDirtyCodeEditor}
-                        resetToolCode={resetToolCode}
-                        setIsDirtyCodeEditor={setIsDirtyCodeEditor}
-                      />
-                    </TabsContent>
-                    <TabsContent
-                      className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words data-[state=inactive]:hidden"
-                      forceMount
-                      value="metadata"
-                      onFocus={() => setFocusedPanel('metadata')}
-                      onBlur={() => setFocusedPanel(null)}
-                    >
-                      <MetadataPanel
-                        initialToolRouterKeyWithVersion={
-                          initialToolRouterKeyWithVersion ?? ''
-                        }
-                        initialToolName={toolName ?? ''}
-                        initialToolDescription={toolDescription ?? ''}
-                        regenerateToolMetadata={regenerateToolMetadata}
-                      />
-                    </TabsContent>
-                  </Tabs>
-                </ResizablePanel>
-                <ResizableHandle className="bg-official-gray-1000/80 !h-2" />
-                <ResizablePanel minSize={3}>
-                  <ExecutionPanel
-                    executionToolCodeError={
-                      executeToolCodeQuery.error?.response?.data?.message ??
-                      executeToolCodeQuery.error?.message
-                    }
-                    handleRunCode={handleRunCode}
-                    isExecutionToolCodeError={executeToolCodeQuery.isError}
-                    isExecutionToolCodePending={executeToolCodeQuery.isPending}
-                    isExecutionToolCodeSuccess={executeToolCodeQuery.isSuccess}
-                    mountTimestampRef={mountTimestamp}
-                    regenerateToolMetadata={regenerateToolMetadata}
-                    toolResultFiles={toolResultFiles}
-                  />
-                </ResizablePanel>
-              </ResizablePanelGroup>
+        rightTopElement={
+          <Tabs className="flex size-full flex-col" defaultValue="code">
+            <div className="bg-official-gray-1000 flex h-8 w-full shrink-0 items-center justify-between gap-2 border-b border-gray-400">
+              <TabsList className="grid h-full grid-cols-2 rounded-none bg-transparent p-0">
+                <TabsTrigger
+                  className={tabTriggerClassnames}
+                  value="code"
+                  data-focused={focusedPanel === 'code'}
+                  onClick={() => setFocusedPanel('code')}
+                >
+                  <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
+                    {isToolCodeGenerationPending ? (
+                      <LoaderIcon className="size-4 animate-spin" />
+                    ) : (
+                      getLanguageIcon(detectLanguage(toolCode))
+                    )}
+                    Code
+                  </div>
+                </TabsTrigger>
+                <TabsTrigger
+                  className={tabTriggerClassnames}
+                  value="metadata"
+                  data-focused={focusedPanel === 'metadata'}
+                  onClick={() => setFocusedPanel('metadata')}
+                >
+                  <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
+                    {isToolMetadataPending ? (
+                      <LoaderIcon className="size-4 animate-spin" />
+                    ) : (
+                      <MetadataIcon className="size-4 text-inherit" />
+                    )}
+                    Metadata
+                  </div>
+                </TabsTrigger>
+              </TabsList>
             </div>
-          </div>
+            <TabsContent
+              className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words data-[state=inactive]:hidden"
+              forceMount
+              value="code"
+              onFocus={() => setFocusedPanel('code')}
+              onBlur={() => setFocusedPanel(null)}
+            >
+              <CodePanel
+                baseToolCodeRef={baseToolCodeRef}
+                handleApplyChangesCodeSubmit={handleApplyChangesCodeSubmit}
+                isDirtyCodeEditor={isDirtyCodeEditor}
+                resetToolCode={resetToolCode}
+                setIsDirtyCodeEditor={setIsDirtyCodeEditor}
+              />
+            </TabsContent>
+            <TabsContent
+              className="mt-0 flex-1 space-y-4 overflow-y-auto whitespace-pre-line break-words data-[state=inactive]:hidden"
+              forceMount
+              value="metadata"
+              onFocus={() => setFocusedPanel('metadata')}
+              onBlur={() => setFocusedPanel(null)}
+            >
+              <MetadataPanel
+                initialToolRouterKeyWithVersion={
+                  initialToolRouterKeyWithVersion ?? ''
+                }
+                initialToolName={toolName ?? ''}
+                initialToolDescription={toolDescription ?? ''}
+                regenerateToolMetadata={regenerateToolMetadata}
+              />
+            </TabsContent>
+          </Tabs>
+        }
+        rightBottomElement={
+          <ExecutionPanel
+            executionToolCodeError={
+              executeToolCodeQuery.error?.response?.data?.message ??
+              executeToolCodeQuery.error?.message
+            }
+            handleRunCode={handleRunCode}
+            isExecutionToolCodeError={executeToolCodeQuery.isError}
+            isExecutionToolCodePending={executeToolCodeQuery.isPending}
+            isExecutionToolCodeSuccess={executeToolCodeQuery.isSuccess}
+            mountTimestampRef={mountTimestamp}
+            regenerateToolMetadata={regenerateToolMetadata}
+            toolResultFiles={toolResultFiles}
+          />
         }
       />
     </Form>

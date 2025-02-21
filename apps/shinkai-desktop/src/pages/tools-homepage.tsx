@@ -12,7 +12,13 @@ import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { useScrollRestoration } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, ArrowUpRight, LoaderIcon, StoreIcon } from 'lucide-react';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  CircleAlert,
+  LoaderIcon,
+  StoreIcon,
+} from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -84,9 +90,6 @@ export const ToolsHomepage = () => {
 
   useEffect(() => {
     if (isError) {
-      toast.error('Failed to create a tool', {
-        description: error,
-      });
       resetPlaygroundStore();
     }
   }, [isError, error, resetPlaygroundStore]);
@@ -461,6 +464,20 @@ export const ToolsHomepage = () => {
                       textareaClassName="min-h-[90px]"
                       value={form.watch('message')}
                     />
+                    {error && (
+                      <div className="mt-3 flex max-w-full items-start gap-2 rounded-md bg-[#2d0607]/40 px-3 py-2.5 text-xs font-medium text-[#ff9ea1]">
+                        <CircleAlert className="mt-1 size-4" />
+                        <div>
+                          <div className="-ml-2.5 shrink-0 truncate rounded-full px-2.5 py-1 text-xs">
+                            Failed to generate tool. You might want to try using
+                            a more powerful AI model for better results.
+                          </div>
+                          <div className="text-gray-80 flex items-center gap-1 truncate py-1">
+                            {error}
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="flex w-full flex-wrap items-center justify-center gap-3 py-6">
                       {[
