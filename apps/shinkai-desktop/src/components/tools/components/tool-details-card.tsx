@@ -156,6 +156,7 @@ export default function ToolDetailsCard({
         metadata: {
           name: tool.name,
           description: tool.description,
+          tools: 'tools' in tool ? tool.tools as string[]: [],
           author: 'author' in tool ? tool.author : '',
           keywords: 'keywords' in tool ? tool.keywords : [],
           version: 'version' in tool ? tool.version : '',
