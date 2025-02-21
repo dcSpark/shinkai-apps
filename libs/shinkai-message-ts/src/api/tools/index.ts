@@ -415,6 +415,7 @@ export const openToolInCodeEditor = async (
   payload: OpenToolInCodeEditorRequest,
   xShinkaiAppId: string,
   xShinkaiToolId: string,
+  defaultLLMProvider: string,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/tools_standalone_playground'),
@@ -424,7 +425,7 @@ export const openToolInCodeEditor = async (
         Authorization: `Bearer ${bearerToken}`,
         'x-shinkai-app-id': xShinkaiAppId,
         'x-shinkai-tool-id': xShinkaiToolId,
-        'x-shinkai-llm-provider': 'llama3_1_8b',
+        'x-shinkai-llm-provider': defaultLLMProvider ?? 'llama3_1_8b',
       },
       responseType: 'json',
     },

@@ -5,6 +5,7 @@ export type OpenToolInCodeEditorInput = {
   bearerToken: string;
   xShinkaiAppId: string;
   xShinkaiToolId: string;
+  defaultLLMProvider: string;
   payload: OpenToolInCodeEditorRequest;
 };
 

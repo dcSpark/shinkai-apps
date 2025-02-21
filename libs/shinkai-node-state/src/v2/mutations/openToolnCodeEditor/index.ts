@@ -3,6 +3,13 @@ import { openToolInCodeEditor as openToolInCodeEditorApi } from "@shinkai_networ
 import { OpenToolInCodeEditorInput, OpenToolInCodeEditorOutput } from "./types";
 
 export const openToolInCodeEditor = async (input: OpenToolInCodeEditorInput): Promise<OpenToolInCodeEditorOutput> => {
-  const response = await openToolInCodeEditorApi(input.nodeAddress, input.bearerToken, input.payload, input.xShinkaiAppId, input.xShinkaiToolId);
+  const response = await openToolInCodeEditorApi(
+    input.nodeAddress,
+    input.bearerToken,
+    input.payload,
+    input.xShinkaiAppId,
+    input.xShinkaiToolId,
+    input.defaultLLMProvider,
+  );
   return response;
 };

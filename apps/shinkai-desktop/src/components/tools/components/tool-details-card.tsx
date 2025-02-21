@@ -55,6 +55,7 @@ import { toast } from 'sonner';
 
 import { SubpageLayout } from '../../../pages/layout/simple-layout';
 import { useAuth } from '../../../store/auth';
+import { useSettings } from '../../../store/settings';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
@@ -87,7 +88,7 @@ export default function ToolDetailsCard({
     null,
   );
   const { t } = useTranslation();
-
+  const defaultLLMProvider = useSettings((state) => state.defaultAgentId);
   const toolConfigSchema =
   'config' in tool && tool.config?.length > 0
     ? parseConfigToJsonSchema(tool?.config ?? [])
@@ -144,6 +145,7 @@ export default function ToolDetailsCard({
       bearerToken: auth?.api_v2_key ?? '',
       xShinkaiAppId: `app-id-${new Date().getTime()}`,
       xShinkaiToolId: `tool-id-${new Date().getTime()}`,
+      defaultLLMProvider: defaultLLMProvider ?? 'llama3_1_8b',
       payload: {
         code: 'py_code' in tool ? tool.py_code : 'js_code' in tool ? tool.js_code : '',
         language: toolType === 'Python' ? CodeLanguage.Python : CodeLanguage.Typescript,
