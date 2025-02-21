@@ -9,16 +9,10 @@ use tauri_plugin_shell::{
 use tokio::sync::Mutex;
 use tokio::sync::{mpsc::Sender, RwLock};
 
-use super::{
-    logger::{LogEntry, Logger},
-    process_utils::kill_process_by_name,
-};
-
 #[derive(Debug, Serialize, Deserialize)]
 pub enum ProcessHandlerEvent {
     Started,
     Stopped,
-    Log(LogEntry),
     Error(String),
 }
 
@@ -26,13 +20,11 @@ pub struct ProcessHandler {
     app: AppHandle,
     process_name: String,
     ready_matcher: Regex,
-    process: Arc<Mutex<Option<CommandChild>>>,
-    logger: Arc<RwLock<Logger>>,
+    process: Arc<RwLock<Option<CommandChild>>>,
     event_sender: Arc<Mutex<Sender<ProcessHandlerEvent>>>,
 }
 
 impl ProcessHandler {
-    const MAX_LOGS_LENGTH: usize = 500;
     const MIN_MS_ALIVE: u64 = 5000;
     const PORT_RELEASE_DELAY_MS: u64 = 1000;
 
@@ -49,11 +41,7 @@ impl ProcessHandler {
             process_name: process_name.clone(),
             ready_matcher,
             event_sender: Arc::new(Mutex::new(event_sender)),
-            process: Arc::new(Mutex::new(None)),
-            logger: Arc::new(RwLock::new(Logger::new(
-                Self::MAX_LOGS_LENGTH,
-                process_name.clone(),
-            ))),
+            process: Arc::new(RwLock::new(None)),
         }
     }
 
@@ -63,43 +51,32 @@ impl ProcessHandler {
         let _ = event_sender.send(event).await;
     }
 
-    fn command_event_to_message(event: CommandEvent) -> String {
-        let mut line: String = "".to_string();
+    fn command_event_to_message_log(process_name: &str, event: CommandEvent) {
         match event {
             CommandEvent::Stdout(message) => {
-                line = String::from_utf8_lossy(&message).to_string();
+                log::info!(target: process_name, "{}", String::from_utf8_lossy(&message));
             }
             CommandEvent::Stderr(message) => {
-                line = String::from_utf8_lossy(&message).to_string();
+                log::error!(target: process_name, "{}", String::from_utf8_lossy(&message));
             }
             CommandEvent::Error(message) => {
-                line = message;
+                log::error!("[{}] error: {}", process_name, message);
             }
             CommandEvent::Terminated(payload) => {
-                line = format!(
-                    "process terminated with code:{:?} and signal:{:?}",
-                    payload.code, payload.signal
+                log::info!(
+                    "[{}] process terminated with code:{:?} and signal:{:?}",
+                    process_name,
+                    payload.code,
+                    payload.signal
                 );
             }
             _ => {}
         }
-        line
-    }
-
-    pub async fn get_last_n_logs(&self, n: usize) -> Vec<LogEntry> {
-        log::debug!("[{}] getting last {} logs", self.process_name, n);
-        let logger = self.logger.read().await;
-        logger.get_last_n_logs(n)
     }
 
     pub async fn is_running(&self) -> bool {
-        let process = self.process.lock().await;
+        let process = self.process.read().await;
         let running = process.is_some();
-        log::debug!(
-            "[{}] checking if process is running: {}",
-            self.process_name,
-            running
-        );
         running
     }
 
@@ -116,21 +93,19 @@ impl ProcessHandler {
             env
         );
         {
-            let process = self.process.lock().await;
+            let process = self.process.read().await;
             if process.is_some() {
                 log::warn!("[{}] process is already running", self.process_name);
                 return Ok(());
             }
         }
 
-        let mut logger = self.logger.write().await;
         let shell = self.app.shell();
         let (mut rx, child) = shell
             .sidecar(self.process_name.clone())
             .map_err(|error| {
                 let message = format!("failed to spawn, error: {}", error);
                 log::error!("[{}] {}", self.process_name, message);
-                logger.add_log(message.clone());
                 message
             })?
             .envs(env.clone())
@@ -140,7 +115,6 @@ impl ProcessHandler {
             .map_err(|error| {
                 let message = format!("failed to spawn error: {}", error);
                 log::error!("[{}] {}", self.process_name, message);
-                logger.add_log(message.clone());
                 message
             })?;
 
@@ -149,16 +123,14 @@ impl ProcessHandler {
             self.process_name,
             child.pid()
         );
-        drop(logger);
 
         {
-            let mut process = self.process.lock().await;
+            let mut process = self.process.write().await;
             *process = Some(child);
             log::info!("[{}] process stored in state", self.process_name);
         }
 
         let process_mutex = Arc::clone(&self.process);
-        let logger_mutex = Arc::clone(&self.logger);
         let event_sender_mutex = Arc::clone(&self.event_sender);
         let is_ready_mutex = Arc::new(Mutex::new(false));
         let is_ready_mutex_clone = is_ready_mutex.clone();
@@ -167,61 +139,44 @@ impl ProcessHandler {
         let ready_matcher = self.ready_matcher.clone();
         tauri::async_runtime::spawn(async move {
             while let Some(event) = rx.recv().await {
-                let message = Self::command_event_to_message(event.clone());
-                log::debug!(
-                    "[{}] received process event with message: {}",
-                    process_name,
-                    message
-                );
-                let log_entry;
-                {
-                    let mut logger = logger_mutex.write().await;
-                    log_entry = logger.add_log(message.clone());
-                }
-                {
-                    let event_sender = event_sender_mutex.lock().await;
-                    let _ = event_sender.send(ProcessHandlerEvent::Log(log_entry)).await;
-                }
-                if let CommandEvent::Terminated(payload) = event {
-                    log::info!(
-                        "[{}] process terminated with code: {:?} and signal: {:?}",
-                        process_name,
-                        payload.code,
-                        payload.signal
-                    );
-                    {
-                        let mut process = process_mutex.lock().await;
-                        *process = None;
+                Self::command_event_to_message_log(&process_name, event.clone());
+                match event {
+                    CommandEvent::Terminated(_) => {
+                        {
+                            let mut process = process_mutex.write().await;
+                            *process = None;
+                        }
+                        {
+                            let event_sender = event_sender_mutex.lock().await;
+                            let _ = event_sender.send(ProcessHandlerEvent::Stopped).await;
+                        }
+                        break;
                     }
-                    {
-                        let event_sender = event_sender_mutex.lock().await;
-                        let _ = event_sender.send(ProcessHandlerEvent::Stopped).await;
+                    CommandEvent::Stdout(message) | CommandEvent::Stderr(message) => {
+                        let message_str = String::from_utf8_lossy(&message);
+                        if ready_matcher.is_match(&message_str) {
+                            log::info!(
+                                "[{}] process ready signal detected in message: {}",
+                                process_name,
+                                message_str
+                            );
+                            let mut is_ready = is_ready_mutex.lock().await;
+                            *is_ready = true;
+                        }
                     }
-                    break;
-                }
-
-                if ready_matcher.is_match(&message) {
-                    log::info!(
-                        "[{}] process ready signal detected in message: {}",
-                        process_name,
-                        message
-                    );
-                    let mut is_ready = is_ready_mutex.lock().await;
-                    *is_ready = true;
+                    _ => {}
                 }
             }
         });
 
         let start_time = std::time::Instant::now();
-        let logger_mutex = self.logger.clone();
         let process_mutex = self.process.clone();
-        let event_sender_mutex = Arc::clone(&self.event_sender);
         let process_name = self.process_name.clone();
         tauri::async_runtime::spawn(async move {
             while std::time::Instant::now().duration_since(start_time)
                 < std::time::Duration::from_millis(Self::MIN_MS_ALIVE)
             {
-                let process = process_mutex.lock().await;
+                let process = process_mutex.read().await;
                 let is_ready = is_ready_mutex_clone.lock().await;
                 log::debug!(
                     "[{}] alive-check: process.is_none={}, is_ready={}, elapsed={:?}",
@@ -236,15 +191,6 @@ impl ProcessHandler {
                         "Process ended before min time alive (this may be normal if it completed its task)"
                     );
                     log::warn!("[{}] {}", process_name, message);
-                    let log_entry: LogEntry;
-                    {
-                        let mut logger = logger_mutex.write().await;
-                        log_entry = logger.add_log(message.clone());
-                    }
-                    {
-                        let event_sender = event_sender_mutex.lock().await;
-                        let _ = event_sender.send(ProcessHandlerEvent::Log(log_entry)).await;
-                    }
                     return Err(message.to_string());
                 } else if *is_ready {
                     log::info!(
@@ -256,7 +202,7 @@ impl ProcessHandler {
                 }
                 drop(process);
                 drop(is_ready);
-                tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+                tokio::time::sleep(std::time::Duration::from_millis(50)).await;
             }
             Ok::<(), String>(())
         })
@@ -274,7 +220,7 @@ impl ProcessHandler {
 
     pub async fn kill(&self) {
         log::info!("[{}] attempting to kill process", self.process_name);
-        let mut process = self.process.lock().await;
+        let mut process = self.process.write().await;
         if let Some(child) = process.take() {
             let pid = child.pid();
             log::warn!(
@@ -290,7 +236,10 @@ impl ProcessHandler {
                         self.process_name,
                         pid
                     );
-                    tokio::time::sleep(std::time::Duration::from_millis(Self::PORT_RELEASE_DELAY_MS)).await;
+                    tokio::time::sleep(std::time::Duration::from_millis(
+                        Self::PORT_RELEASE_DELAY_MS,
+                    ))
+                    .await;
                 }
                 Err(e) => log::warn!(
                     "[{}] failed to kill process with pid={:?}: {}",

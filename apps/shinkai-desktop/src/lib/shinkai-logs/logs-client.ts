@@ -12,15 +12,17 @@ import { save } from '@tauri-apps/plugin-dialog';
 import { writeFile } from '@tauri-apps/plugin-fs';
 import { info } from '@tauri-apps/plugin-log';
 
+import { LogEntry } from './log-entry';
+
 export const useRetrieveLogsQuery = (
   options?: Omit<QueryObserverOptions, 'queryKey'>,
-): UseQueryResult<string, Error> => {
+): UseQueryResult<LogEntry[], Error> => {
   const query = useQuery({
     queryKey: ['retrieve_logs'],
-    queryFn: (): Promise<string> => invoke('retrieve_logs'),
+    queryFn: (): Promise<LogEntry[]> => invoke('retrieve_logs'),
     ...options,
   });
-  return { ...query } as UseQueryResult<string, Error>;
+  return { ...query } as UseQueryResult<LogEntry[], Error>;
 };
 
 export const useDownloadTauriLogsMutation = (

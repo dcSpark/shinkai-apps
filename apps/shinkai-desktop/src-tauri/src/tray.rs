@@ -57,7 +57,7 @@ pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
                 tauri::async_runtime::spawn(async move {
                     // For some reason process::exit doesn't fire RunEvent::ExitRequested event in tauri
                     let mut shinkai_node_manager_guard =
-                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().lock().await;
+                        SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
                     if shinkai_node_manager_guard.is_running().await {
                         shinkai_node_manager_guard.kill().await;
                     }

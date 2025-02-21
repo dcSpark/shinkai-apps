@@ -10,10 +10,7 @@ import {
 import { invoke } from '@tauri-apps/api/core';
 import { relaunch } from '@tauri-apps/plugin-process';
 
-import {
-  LogEntry,
-  ShinkaiNodeOptions,
-} from './shinkai-node-manager-client-types';
+import { ShinkaiNodeOptions } from './shinkai-node-manager-client-types';
 
 // Client
 
@@ -29,18 +26,6 @@ export const useShinkaiNodeIsRunningQuery = (
     ...options,
   });
   return { ...query } as UseQueryResult<boolean, Error>;
-};
-export const useShinkaiNodeGetLastNLogsQuery = (
-  input: { length: number },
-  options?: Omit<QueryObserverOptions, 'queryKey'>,
-): UseQueryResult<LogEntry[], Error> => {
-  const query = useQuery({
-    queryKey: ['shinkai_node_get_last_n_logs'],
-    queryFn: (): Promise<LogEntry[]> =>
-      invoke('shinkai_node_get_last_n_logs', { length: input.length }),
-    ...options,
-  });
-  return { ...query } as UseQueryResult<LogEntry[], Error>;
 };
 export const useShinkaiNodeGetOptionsQuery = (
   options?: Omit<QueryObserverOptions, 'queryKey'>,
