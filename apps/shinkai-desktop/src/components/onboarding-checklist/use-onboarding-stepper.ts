@@ -40,7 +40,7 @@ export const useOnboardingSteps = () => {
     depth: 3,
   });
 
-  const { data: myToolList, isPending } = useGetTools(
+  const { data: myToolList } = useGetTools(
     {
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
@@ -52,8 +52,6 @@ export const useOnboardingSteps = () => {
         ) ?? [],
     },
   );
-
-  console.log(myToolList, 'myToolList');
 
   useEffect(() => {
     if (isSuccess && nodeInfo?.status === 'ok') {
