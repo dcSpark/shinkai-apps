@@ -285,7 +285,6 @@ export type ToolMetadata = {
     properties: Record<string, any>;
     required: string[];
   };
-  version: string;
   tools: string[];
 };
 
