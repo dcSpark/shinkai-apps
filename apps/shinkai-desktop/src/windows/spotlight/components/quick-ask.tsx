@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
   CreateJobFormSchema,
@@ -8,18 +9,42 @@ import {
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
+import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import {
+  Button,
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
   CopyToClipboardIcon,
   DotsLoader,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
   MarkdownText,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   ScrollArea,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Separator,
+  Switch,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
-import { ShinkaiCombinationMarkIcon } from '@shinkai_network/shinkai-ui/assets';
-import { copyToClipboard } from '@shinkai_network/shinkai-ui/helpers';
+import { ShinkaiCombinationMarkIcon, ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
+import { copyToClipboard, formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
@@ -85,6 +110,16 @@ function QuickAsk() {
 
   const [clipboard, setClipboard] = useState(false);
   let timeout: ReturnType<typeof setTimeout>;
+  const [isCommandOpen, setIsCommandOpen] = useState(false);
+  const { data: toolsList, isSuccess: isToolsListSuccess } = useGetTools(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    },
+    {
+      select: (data: ShinkaiToolHeader[]) => data.filter((tool) => tool.enabled),
+    },
+  );
 
   useHotkeys(
     ['esc'],
@@ -168,12 +203,15 @@ function QuickAsk() {
     setMessageResponse('');
 
     if (!auth) return;
+    console.log('spotlight tool key: ', data.tool?.key);
+
     await createJob({
       nodeAddress: auth.node_address,
       token: auth.api_v2_key,
       llmProvider: data.agent,
       content: data.message,
       isHidden: false,
+      toolKey: data.tool?.key,
     });
   };
 
@@ -196,23 +234,98 @@ function QuickAsk() {
             <ChevronLeft className="size-full" />
           </button>
         )}
-        <input
-          autoFocus
-          className="placeholder:text-gray-80/70 flex-grow bg-transparent text-lg text-white focus:outline-none"
-          {...chatForm.register('message')}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              chatForm.handleSubmit(onSubmit)();
+        <div className="relative flex-grow">
+          <Popover onOpenChange={(open) => {
+            setIsCommandOpen(open);
+            if (!open) {
+              if (chatForm.watch('message') === '/') {
+                chatForm.setValue('message', '');
+              }
             }
+          }} open={isCommandOpen}>
+            <PopoverTrigger asChild>
+              <div className="w-full">
+                <input
+                  autoFocus
+                  className="placeholder:text-gray-80/70 w-full bg-transparent text-lg text-white focus:outline-none"
+                  {...chatForm.register('message')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      chatForm.handleSubmit(onSubmit)();
+                    }
 
-            if (e.key === 'Backspace' && !chatForm.watch('message')) {
-              setInboxId(null);
-              setMessageResponse('');
-            }
-          }}
-          placeholder="Ask a question..."
-          spellCheck={false}
-        />
+                    if (e.key === 'Backspace' && !chatForm.watch('message')) {
+                      setInboxId(null);
+                      setMessageResponse('');
+                    }
+
+                    if (
+                      e.key === '/' &&
+                      !e.shiftKey &&
+                      !e.ctrlKey &&
+                      !e.metaKey &&
+                      !chatForm.watch('message').trim()
+                    ) {
+                      e.preventDefault();
+                      setIsCommandOpen(true);
+                      chatForm.setValue('message', '/');
+                    }
+                  }}
+                  placeholder="Ask a question..."
+                  spellCheck={false}
+                />
+              </div>
+            </PopoverTrigger>
+            <PopoverContent
+              align="start"
+              className="w-[500px] bg-gray-300 p-0"
+              side="bottom"
+              sideOffset={5}
+            >
+              <Command>
+                <CommandInput autoFocus={false} placeholder="Search tools..." />
+                <CommandList>
+                  <CommandEmpty>No tools found.</CommandEmpty>
+                  <CommandGroup heading="Your Active Tools">
+                    {isToolsListSuccess &&
+                      toolsList?.map((tool) => (
+                        <CommandItem
+                          className="data-[selected='true']:bg-gray-200"
+                          key={tool.tool_router_key}
+                          onSelect={() => {
+                            chatForm.setValue('tool', {
+                              key: tool.tool_router_key,
+                              name: tool.name,
+                              description: tool.description,
+                              args: Object.keys(
+                                tool.input_args.properties ?? {},
+                              ),
+                            });
+                            chatForm.setValue('message', `/${tool.name} `);
+                            setIsCommandOpen(false);
+                            const input = document.querySelector('input');
+                            if (input) {
+                              input.focus();
+                            }
+                          }}
+                        >
+                          <ToolsIcon className="mr-2 h-4 w-4" />
+                          <div className="flex flex-col">
+                            <span className="line-clamp-1 text-white">
+                              {formatText(tool.name)}
+                            </span>
+                            <span className="text-gray-80 line-clamp-3 text-xs">
+                              {tool.description}
+                            </span>
+                          </div>
+                        </CommandItem>
+                      ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
         <AIModelSelector
           onValueChange={(value) => {
             chatForm.setValue('agent', value);
