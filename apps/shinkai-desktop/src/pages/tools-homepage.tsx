@@ -493,12 +493,12 @@ export const ToolsHomepage = () => {
                             'Create a tool that downloads and saves a pdf from a URL.',
                           language: CodeLanguage.Python,
                         },
-                        {
-                          text: 'Retrieve Cryptocurrency Market Data',
-                          prompt:
-                            'Create a coinmarketcap tool to retrieve the current data for a selection of cryptocurrencies. Cryptocurrencies will be given as input using their symbols.',
-                          language: CodeLanguage.Python,
-                        },
+                        // {
+                        //   text: 'Retrieve Cryptocurrency Market Data',
+                        //   prompt:
+                        //     'Create a coinmarketcap tool to retrieve the current data for a selection of cryptocurrencies. Cryptocurrencies will be given as input using their symbols.',
+                        //   language: CodeLanguage.Python,
+                        // },
                         // {
                         //   text: 'NASA astronomy picture of the day',
                         //   prompt:
