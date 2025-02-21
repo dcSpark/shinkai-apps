@@ -8,7 +8,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';

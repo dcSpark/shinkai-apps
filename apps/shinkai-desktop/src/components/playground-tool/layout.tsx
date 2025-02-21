@@ -9,11 +9,12 @@ import { useSettings } from '../../store/settings';
 
 type PlaygroundToolLayoutProps = {
   leftElement: ReactNode;
-  rightTopElement: ReactNode;
-  rightBottomElement: ReactNode;
-  topElement: ReactNode;
   rightElement?: ReactNode;
+  rightTopElement?: ReactNode;
+  rightBottomElement?: ReactNode;
+  topElement: ReactNode;
 };
+
 export default function PlaygroundToolLayout({
   topElement,
   leftElement,
