@@ -286,6 +286,7 @@ export type ToolMetadata = {
     required: string[];
   };
   version: string;
+  tools: string[];
 };
 
 export type SaveToolCodeResponse = {

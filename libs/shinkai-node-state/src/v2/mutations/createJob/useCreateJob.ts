@@ -15,7 +15,7 @@ export const useCreateJob = (options?: Options) => {
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [FunctionKeyV2.GET_INBOXES],
+        queryKey: [FunctionKeyV2.GET_INBOXES_WITH_PAGINATION],
       });
 
       queryClient.invalidateQueries({

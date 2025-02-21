@@ -3,6 +3,7 @@ import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetInboxesWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxesWithPagination';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
+import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { useEffect } from 'react';
 
@@ -39,11 +40,18 @@ export const useOnboardingSteps = () => {
     depth: 3,
   });
 
-  // const { data: subscriptionFolder } = useGetListDirectoryContents({
-  //   nodeAddress: auth?.node_address ?? '',
-  //   token: auth?.api_v2_key ?? '',
-  //   path: '/My Subscriptions',
-  // });
+  const { data: myToolList } = useGetTools(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    },
+    {
+      select: (data) =>
+        data.filter(
+          (tool) => 'author' in tool && tool.author === auth?.shinkai_identity,
+        ) ?? [],
+    },
+  );
 
   useEffect(() => {
     if (isSuccess && nodeInfo?.status === 'ok') {
@@ -55,7 +63,6 @@ export const useOnboardingSteps = () => {
   }, [isSuccess]);
 
   useEffect(() => {
-    // const defaultAgentsCount = isLocalShinkaiNodeInUse ? 0 : 3;
     if (llmProviders.length > 0) {
       currentStepsMap.set(GetStartedSteps.CreateAI, GetStartedStatus.Done);
     }
@@ -92,14 +99,11 @@ export const useOnboardingSteps = () => {
     }
   }, [inboxesPagination]);
 
-  // useEffect(() => {
-  //   if ((subscriptionFolder ?? [])?.length > 0) {
-  //     currentStepsMap.set(
-  //       GetStartedSteps.SubscribeToKnowledge,
-  //       GetStartedStatus.Done,
-  //     );
-  //   }
-  // }, [subscriptionFolder]);
+  useEffect(() => {
+    if (myToolList?.length && myToolList.length > 0) {
+      currentStepsMap.set(GetStartedSteps.CreateTool, GetStartedStatus.Done);
+    }
+  }, [myToolList]);
 
   return currentStepsMap;
 };

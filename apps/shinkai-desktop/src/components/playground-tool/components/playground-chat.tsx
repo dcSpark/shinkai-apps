@@ -24,7 +24,6 @@ import { LanguageToolSelector } from './language-tool-selector';
 import { ToolsSelection } from './tools-selection';
 
 const PlaygroundChatBase = ({
-  mode,
   toolName,
   chatInboxId,
   handleCreateToolCode,
@@ -35,7 +34,6 @@ const PlaygroundChatBase = ({
   isChatConversationSuccess,
   chatConversationData,
 }: {
-  mode: 'create' | 'edit';
   toolName: string;
   chatInboxId: string;
   handleCreateToolCode: (data: CreateToolCodeFormSchema) => void;
