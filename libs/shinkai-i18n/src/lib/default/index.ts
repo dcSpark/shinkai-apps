@@ -101,6 +101,8 @@ export default {
       "You've used all of your queries for the month on this model/agent. Please start a new chat with another agent.",
     enterMessage: 'Enter Message',
     sendMessage: 'Send Message',
+    openChatFolder: 'Open Chat Folder',
+    failedToOpenChatFolder: 'Please upload a file to the chat first',
     form: {
       message: 'Tell us the job you want to do',
       messagePlaceholder: 'Eg: Explain me how internet works...',
