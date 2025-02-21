@@ -109,6 +109,7 @@ export const useAutoSaveTool = () => {
             }
           },
           onError: (error) => {
+            if (shouldPrefetchPlaygroundTool) return;
             toast.error('Failed to save tool code', {
               position: 'top-right',
               description: error.response?.data?.message ?? error.message,
@@ -226,10 +227,13 @@ export const useCreateToolAndSave = ({
       isSaveToolSuccess,
     isError:
       isToolCodeGenerationError || isMetadataGenerationError || isSaveToolError,
-    error:
-      toolCodeError ||
-      toolMetadataError ||
-      (saveToolCodeError?.response?.data?.message ??
-        saveToolCodeError?.message),
+    error: toolCodeError
+      ? `Failed creating tool code: ${toolCodeError}`
+      : toolMetadataError
+        ? `Failed creating tool metadata: ${toolMetadataError}`
+        : saveToolCodeError?.response?.data?.message ??
+            saveToolCodeError?.message
+          ? `Failed saving tool code: ${saveToolCodeError?.response?.data?.message ?? saveToolCodeError?.message}`
+          : undefined,
   };
 };
