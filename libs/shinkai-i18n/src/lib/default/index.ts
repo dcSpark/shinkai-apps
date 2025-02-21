@@ -308,6 +308,10 @@ export default {
     askFilesButton: 'Create Chat with Files',
     dismiss: 'Dismiss Checklist',
     completedSteps: 'You have completed all steps',
+    createTool: 'Create Tool',
+    createToolDescription:
+      'Create, automate, and optimize your workflow with powerful AI tools.',
+    createToolButton: 'Create Tool',
   },
   settings: {
     label: 'Settings',

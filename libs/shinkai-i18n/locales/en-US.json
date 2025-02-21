@@ -269,7 +269,10 @@
     "askFilesDescription": "Chat with your files. Ask any questions, find information, get summaries and more.",
     "askFilesButton": "Create Chat with Files",
     "dismiss": "Dismiss Checklist",
-    "completedSteps": "You have completed all steps"
+    "completedSteps": "You have completed all steps",
+    "createTool": "Create Tool",
+    "createToolDescription": "Create, automate, and optimize your workflow with powerful AI tools.",
+    "createToolButton": "Create Tool"
   },
   "settings": {
     "label": "Settings",
