@@ -392,7 +392,7 @@ function ConversationChatFooter({
   const { data: jobChatFolderName } = useGetJobFolderName({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
-    jobId: inboxId.split('::')[1],
+    jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
   });
   const { data: nodeStorageLocation } = useGetNodeStorageLocation({
     nodeAddress: auth?.node_address ?? '',
@@ -516,16 +516,7 @@ function ConversationChatFooter({
     }
     chatForm.reset();
   };
-  const [isChatFolderDisabled, setIsChatFolderDisabled] = useState(() => {
-    return !inboxId;
-  });
-
-  useEffect(() => {
-    const isDisabled = !inboxId;
-    if (isChatFolderDisabled !== isDisabled) {
-      setIsChatFolderDisabled(isDisabled);
-    }
-  }, [inboxId, isChatFolderDisabled]);
+  const isChatFolderDisabled = !inboxId;
 
   useEffect(() => {
     if (inboxId) return;

@@ -399,7 +399,7 @@ export const updateToolCodeImplementation = async (
   payload: UpdateToolCodeImplementationRequest,
 ) => {
   const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v2/tools_standalone_playground"'),
+    urlJoin(nodeAddress, '/v2/tool_implementation_code_update"'),
     payload,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },

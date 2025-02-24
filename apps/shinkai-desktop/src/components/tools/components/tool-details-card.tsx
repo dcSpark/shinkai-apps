@@ -152,7 +152,7 @@ export default function ToolDetailsCard({
       bearerToken: auth?.api_v2_key ?? '',
       xShinkaiAppId: `app-id-${new Date().getTime()}`,
       xShinkaiToolId: `tool-id-${new Date().getTime()}`,
-      defaultLLMProvider: defaultLLMProvider ?? 'llama3_1_8b',
+      defaultLLMProvider: defaultLLMProvider ?? '',
       payload: {
         code: 'py_code' in tool ? tool.py_code : 'js_code' in tool ? tool.js_code : '',
         language: toolType === 'Python' ? CodeLanguage.Python : CodeLanguage.Typescript,
