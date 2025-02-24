@@ -1,5 +1,7 @@
 // This is a placeholder GGUF model for testing purposes
 // In a real application, this should be replaced with a proper GGUF model file
+// Here goes the arctic model
+
 const PLACEHOLDER_GGUF: &[u8] = &[
     0x47, 0x47, 0x55, 0x46, // GGUF magic
     0x00, 0x00, 0x00, 0x01, // Version 1

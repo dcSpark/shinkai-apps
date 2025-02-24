@@ -119,7 +119,7 @@ impl ShinkaiNodeManager {
             .get_options()
             .default_embedding_model
             .unwrap();
-        if !installed_models.contains(&default_embedding_model.to_string()) {
+        if !installed_models.contains(&default_embedding_model.to_string()) { // ***
             self.emit_event(ShinkaiNodeManagerEvent::CreatingModelStart {
                 model: default_embedding_model.to_string(),
             });
