@@ -538,6 +538,7 @@
         "text": "検索クエリに一致するツールは見つかりませんでした"
       }
     },
+    "errorDuplicateTool": "ツールの複製に失敗しました",
     "installFromStore": "ストアからインストール",
     "label": "深海ツール",
     "lookingForMoreTools": "さらにツールを探していますか？",

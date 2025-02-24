@@ -592,9 +592,6 @@ function ConversationChatFooter({
                       <OpenChatFolderActionBar
                         disabled={isChatFolderDisabled}
                         onClick={async () => {
-                          console.log('inboxId', inboxId);
-                          console.log('jobChatFolderName', jobChatFolderName);
-                          console.log('nodeStorageLocation', nodeStorageLocation);
                           if (!jobChatFolderName || !nodeStorageLocation) return;
                           try {
                             await invoke('shinkai_node_open_chat_folder', {

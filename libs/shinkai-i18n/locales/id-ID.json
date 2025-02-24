@@ -538,6 +538,7 @@
         "text": "Tidak ada alat ditemukan untuk kueri pencarian"
       }
     },
+    "errorDuplicateTool": "Gagal menggandakan alat",
     "installFromStore": "Instal dari Toko",
     "label": "Alat-alat Shinkai",
     "lookingForMoreTools": "Mencari lebih banyak alat?",

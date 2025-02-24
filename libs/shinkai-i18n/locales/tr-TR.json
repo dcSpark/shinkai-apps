@@ -538,6 +538,7 @@
         "text": "Arama sorgusu için hiçbir araç bulunamadı"
       }
     },
+    "errorDuplicateTool": "Aracı çoğaltma işlemi başarısız oldu",
     "installFromStore": "Mağazadan Yükle",
     "label": "Shinkai Araçları",
     "lookingForMoreTools": "Daha fazla araç mı arıyorsunuz?",

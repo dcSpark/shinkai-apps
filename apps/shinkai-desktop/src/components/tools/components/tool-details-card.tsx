@@ -135,9 +135,16 @@ export default function ToolDetailsCard({
     useToggleEnableTool();
 
   const { mutateAsync: duplicateTool, isPending: isDuplicatingTool } = useDuplicateTool({
-    toolKey: toolKey ?? '',
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
+    onSuccess: (response) => {
+      toast.success(t('tools.successDuplicateTool'), {
+        description: `${response.tool_router_key}`
+      })
+    },
+    onError: (error) => {
+      toast.error(t('tools.errorDuplicateTool'), {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
   });
   const { mutateAsync: openToolInCodeEditor, isPending: isOpeningToolInCodeEditor } = useOpenToolInCodeEditor(
     {
@@ -354,11 +361,11 @@ export default function ToolDetailsCard({
                   disabled={toolType !== 'Python' && toolType !== 'Deno'}
                   onClick={async () => {
                     if (isDuplicatingTool) return
-                    const duplicateToolResponse = await duplicateTool()
-                    toast.success(t('tools.successDuplicateTool'), {
-                      description: `${duplicateToolResponse.tool_router_key}`
+                    await duplicateTool({
+                      toolKey: toolKey ?? '',
+                      nodeAddress: auth?.node_address ?? '',
+                      token: auth?.api_v2_key ?? '',
                     })
-                    console.log(duplicateToolResponse); // TODO: message popup to open the new tool details
                   }}
                 >
                   <CopyIcon className="mr-2 h-4 w-4" />

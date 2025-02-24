@@ -1,17 +1,34 @@
-import { useMutation } from "@tanstack/react-query";
+import {
+  useMutation,
+  type UseMutationOptions,
+  useQueryClient,
+} from '@tanstack/react-query';
 
-import { duplicateTool } from ".";
+import { FunctionKey } from '../../../lib/constants';
+import { APIError } from '../../types';
+import { duplicateTool } from '.';
+import { DuplicateToolOutput } from './types';
+import { DuplicateToolInput } from './types';
 
-export const useDuplicateTool = ({
-  toolKey,
-  nodeAddress,
-  token,
-}: {
-  toolKey: string;
-  nodeAddress: string;
-  token: string;
-}) => {
+type Options = UseMutationOptions<
+  DuplicateToolOutput,
+  APIError,
+  DuplicateToolInput
+>;
+
+export const useDuplicateTool = (options?: Options) => {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: () => duplicateTool({ toolKey, nodeAddress, token }),
+    mutationFn: duplicateTool,
+    ...options,
+    onSuccess: (response, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: [FunctionKey.GET_LIST_TOOLS],
+      });
+      if (options?.onSuccess) {
+        options.onSuccess(response, variables, context);
+      }
+    },
   });
 };

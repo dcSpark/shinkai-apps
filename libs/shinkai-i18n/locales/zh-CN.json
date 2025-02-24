@@ -538,6 +538,7 @@
         "text": "未找到与搜索查询匹配的工具"
       }
     },
+    "errorDuplicateTool": "工具复制失败",
     "installFromStore": "从商店安装",
     "label": "深海工具",
     "lookingForMoreTools": "寻找更多工具？",
