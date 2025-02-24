@@ -10,5 +10,5 @@ export const getJobFolderName = async ({
   const result = await getJobFolderNameApi(nodeAddress, token, {
     job_id: jobId,
   });
-  return result.folder_name;
+  return result;
 };

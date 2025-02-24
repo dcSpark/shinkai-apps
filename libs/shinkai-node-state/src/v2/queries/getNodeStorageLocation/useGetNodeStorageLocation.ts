@@ -1,14 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { FunctionKey } from "../../../lib/constants";
 import { getNodeStorageLocation } from ".";
 import { GetNodeStorageLocationInput } from "./types";
 
-export const useGetNodeStorageLocation = ({
-  nodeAddress,
-  token,
-}: GetNodeStorageLocationInput) => {
+export const useGetNodeStorageLocation = (input: GetNodeStorageLocationInput) => {
   return useQuery({
-    queryKey: ["nodeStorageLocation", nodeAddress, token],
-    queryFn: () => getNodeStorageLocation({ nodeAddress, token }),
+    queryKey: [FunctionKey.GET_NODE_STORAGE_LOCATION, input],
+    queryFn: () => getNodeStorageLocation(input),
   });
 };

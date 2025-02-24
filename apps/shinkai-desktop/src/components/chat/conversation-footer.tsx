@@ -596,7 +596,7 @@ function ConversationChatFooter({
                           try {
                             await invoke('shinkai_node_open_chat_folder', {
                               storageLocation: nodeStorageLocation,
-                              chatFolderName: jobChatFolderName,
+                              chatFolderName: jobChatFolderName.folder_name,
                             })
                           } catch (error) {
                             console.log('**error**');
