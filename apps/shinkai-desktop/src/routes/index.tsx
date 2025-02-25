@@ -30,6 +30,7 @@ import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-n
 import { ShinkaiNodeRunningOverlay } from '../lib/shinkai-node-overlay';
 import AddAIPage from '../pages/add-ai';
 import AIModelInstallation from '../pages/ai-model-installation';
+import AIProviderSelection from '../pages/ai-provider-selection';
 import AIsPage from '../pages/ais';
 import AnalyticsPage from '../pages/analytics';
 import AnalyticsSettingsPage from '../pages/analytics-settings';
@@ -38,7 +39,6 @@ import ChatLayout from '../pages/chat/layout';
 import { ConnectMethodQrCodePage } from '../pages/connect-method-qr-code';
 import CreateChatPage from '../pages/create-chat';
 import CreateTaskPage from '../pages/create-task';
-import CreateToolPage from '../pages/create-tool';
 import CryptoWalletPage from '../pages/crypto-wallet';
 import EditTaskPage from '../pages/edit-task';
 import EditToolPage from '../pages/edit-tool';
@@ -189,8 +189,12 @@ const AppRoutes = () => {
             element={<TermsAndConditionsPage />}
             path={'/terms-conditions'}
           />
-          <Route element={<GetStartedPage />} path={'/get-started'} />
           <Route element={<AnalyticsPage />} path={'/analytics'} />
+          <Route
+            element={<AIProviderSelection />}
+            path={'/ai-provider-selection'}
+          />
+          <Route element={<GetStartedPage />} path={'/get-started'} />
           <Route element={<QuickConnectionPage />} path={'/quick-connection'} />
           <Route element={<RestoreConnectionPage />} path={'/restore'} />
           <Route element={<ConnectMethodQrCodePage />} path={'/connect-qr'} />

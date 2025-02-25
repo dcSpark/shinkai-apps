@@ -206,7 +206,7 @@ export function MainNav() {
 
   const handleDisconnect = () => {
     logout();
-    navigate('/get-started');
+    navigate('/');
   };
 
   const navigationLinks = [
@@ -301,6 +301,7 @@ export function MainNav() {
     <motion.aside
       animate={{
         width: sidebarExpanded ? '230px' : '70px',
+        opacity: 1,
       }}
       className="bg-official-gray-900 border-official-gray-780 relative z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r px-2 py-6 pt-9 shadow-xl"
       exit={{ width: 0, opacity: 0 }}
@@ -605,8 +606,10 @@ const MainLayout = () => {
   const disabledSidebarRoutes = [
     '/connect-ai',
     '/free-subscriptions',
+    '/terms-and-conditions',
+    '/analytics',
+    '/ai-provider-selection',
     '/ai-model-installation',
-    '/get-started',
   ];
 
   const displaySidebar =
