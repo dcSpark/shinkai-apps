@@ -162,8 +162,6 @@ impl OllamaApiClient {
         let digest = self.upload_blob(gguf_data).await?;
         // Check if blob exists on server before creating model
         let check_url = format!("{}/api/blobs/{}", self.base_url, digest);
-        println!("Checking blob {} on server", digest);
-        println!("Check URL: {}", check_url);
         let client = reqwest::Client::new();
         
         let head_response = client
@@ -175,7 +173,7 @@ impl OllamaApiClient {
         if !head_response.status().is_success() {
             return Err(format!("Blob {} not found on server", digest));
         }
-        println!("Blob {} found on server", digest);
+
         // Create a map for the files parameter
         let mut files = HashMap::new();
         files.insert("arctic.gguf".to_string(), digest);
@@ -189,41 +187,20 @@ impl OllamaApiClient {
             files,
         };
 
-        // Build the request without sending it
-        let request = client
+        let response = client
             .post(&url)
             .json(&create_request)
-            .build()
-            .map_err(|e| e.to_string())?;
-
-        // Print request details
-        println!("Request URL: {}", request.url());
-        println!("Request method: {}", request.method());
-        println!("Request headers:");
-        for (name, value) in request.headers() {
-            println!("  {}: {}", name, value.to_str().unwrap_or("<binary>"));
-        }
-        println!("Request body: {}", String::from_utf8_lossy(request.body().unwrap().as_bytes().unwrap_or(&[])));
-
-        // Send the request
-        let response = client
-            .execute(request)
+            .send()
             .await
             .map_err(|e| e.to_string())?;
         
         if !response.status().is_success() {
             let status = response.status();
             let text = response.text().await.unwrap_or_default();
-            println!("Response: {}", text);
-            return Err(format!("Failed to create model: {}", status));
+            return Err(format!("Failed to create model: {} - {}", status, text));
         }
 
-        // Clone the response before consuming it
         let response_text = response.text().await.map_err(|e| e.to_string())?;
-        println!("Response text: {}", response_text);
-        
-        // The response contains multiple JSON objects separated by newlines
-        // We need to check if the final status is "success"
         let mut final_status = String::new();
         
         // Split the response text by newlines and parse each line as a JSON object
@@ -232,21 +209,12 @@ impl OllamaApiClient {
                 continue;
             }
             
-            match serde_json::from_str::<serde_json::Value>(line) {
-                Ok(json_value) => {
-                    if let Some(status) = json_value.get("status").and_then(|s| s.as_str()) {
-                        println!("Parsed status: {}", status);
-                        final_status = status.to_string();
-                    }
-                },
-                Err(e) => {
-                    println!("Failed to parse JSON line: {}", e);
-                    println!("Problematic line: {}", line);
+            if let Ok(json_value) = serde_json::from_str::<serde_json::Value>(line) {
+                if let Some(status) = json_value.get("status").and_then(|s| s.as_str()) {
+                    final_status = status.to_string();
                 }
             }
         }
-        
-        println!("Final status: {}", final_status);
         
         if final_status != "success" {
             return Err(format!("Failed to create model: {}", final_status));
