@@ -17,11 +17,12 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ArrowRight, Plus, Sparkles } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { ResourcesBanner } from '../components/hardware-capabilities/resources-banner';
 import { OllamaModels } from '../components/shinkai-node-manager/ollama-models';
+import { useURLQueryParams } from '../hooks/use-url-query-params';
 import { shinkaiNodeQueryClient } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useAuth } from '../store/auth';
 import { FixedHeaderLayout } from './layout/simple-layout';
@@ -356,9 +357,22 @@ const AIModelInstallation = ({
 }: {
   isOnboardingStep?: boolean;
 }) => {
+  const [selectedProvider, setSelectedProvider] = useState<'local' | 'cloud'>(
+    'local',
+  );
+
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const [showAllOllamaModels, setShowAllOllamaModels] = useState(false);
+
+  const query = useURLQueryParams();
+
+  useEffect(() => {
+    const provider = query.get('provider');
+    if (provider) {
+      setSelectedProvider(provider as 'local' | 'cloud');
+    }
+  }, [query]);
 
   const { data: llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
@@ -395,7 +409,8 @@ const AIModelInstallation = ({
   return (
     <Tabs
       className="flex h-screen w-full flex-col overflow-hidden"
-      defaultValue={'local'}
+      onValueChange={(value) => setSelectedProvider(value as 'local' | 'cloud')}
+      value={selectedProvider}
     >
       <QueryClientProvider client={shinkaiNodeQueryClient}>
         <FixedHeaderLayout

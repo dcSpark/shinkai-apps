@@ -75,9 +75,8 @@ const GetStartedPage = () => {
           api_v2_key: response.data?.api_v2_key ?? '',
         };
         setAuth(updatedSetupData);
-        // Hide http subscription for now
-        // navigate('/connect-ai');
-        navigate('/ai-model-installation');
+
+        navigate('/');
       } else if (response.status === 'non-pristine') {
         setResetStorageBeforeConnectConfirmationPrompt(true);
       } else {
