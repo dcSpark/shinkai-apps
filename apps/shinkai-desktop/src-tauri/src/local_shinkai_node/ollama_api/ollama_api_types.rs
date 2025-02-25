@@ -71,3 +71,8 @@ pub struct OllamaApiCreateResponse {
 pub struct OllamaApiBlobResponse {
     pub status: String,
 }
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct OllamaApiVersionResponse {
+    pub version: String,
+}

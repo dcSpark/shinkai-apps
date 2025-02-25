@@ -4,7 +4,7 @@ use sha2::{Sha256, Digest};
 use std::collections::HashMap;
 use reqwest::header::HeaderValue;
 
-use super::ollama_api_types::{OllamaApiPullRequest, OllamaApiPullResponse, OllamaApiTagsResponse, OllamaApiCreateRequest, OllamaApiCreateResponse, OllamaApiBlobResponse};
+use super::ollama_api_types::{OllamaApiPullRequest, OllamaApiPullResponse, OllamaApiTagsResponse, OllamaApiCreateRequest, OllamaApiCreateResponse, OllamaApiBlobResponse, OllamaApiVersionResponse};
 
 pub struct OllamaApiClient {
     base_url: String,
@@ -124,6 +124,17 @@ impl OllamaApiClient {
         Ok(result)
     }
 
+    pub async fn get_ollama_version(&self) -> Result<String, String> {
+        let url = format!("{}/api/version", self.base_url);
+        let client = reqwest::Client::new();
+        let response = client.get(&url).send().await.map_err(|e| e.to_string())?;
+        let version_response = response
+            .json::<OllamaApiVersionResponse>()
+            .await
+            .map_err(|e| e.to_string())?;
+        Ok(version_response.version)
+    }
+
     pub async fn upload_blob(&self, data: &[u8]) -> Result<String, String> {
         if data.len() == 0 {
             return Err("Data is empty".to_string());
@@ -149,6 +160,11 @@ impl OllamaApiClient {
     }
 
     pub async fn create_model_from_gguf(&self, model_name: &str, gguf_data: &[u8]) -> Result<(), String> {
+        // Check if ollama version is 0.5.7 or higher
+        let version = self.get_ollama_version().await?;
+        if version < "0.5.7".to_string() {
+            return Err("Ollama version must be 0.5.7 or higher".to_string());
+        }
         // Check GGUF magic number (first 4 bytes should spell "GGUF" in ASCII)
         if gguf_data.len() < 4 {
             return Err("GGUF data too short".to_string());
