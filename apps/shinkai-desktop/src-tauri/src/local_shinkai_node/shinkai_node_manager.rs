@@ -244,6 +244,18 @@ impl ShinkaiNodeManager {
             .await
     }
 
+    pub fn open_storage_location(&self) -> Result<(), String> {
+        self.shinkai_node_process.open_storage_location()
+    }
+
+    pub fn open_storage_location_with_path(&self, relative_path: &str) -> Result<(), String> {
+        self.shinkai_node_process.open_storage_location_with_path(relative_path)
+    }
+
+    pub fn open_chat_folder(&self, storage_location: &str, chat_folder_name: &str) -> Result<(), String> {
+        self.shinkai_node_process.open_chat_folder(storage_location, chat_folder_name)
+    }
+
     pub async fn set_default_shinkai_node_options(&mut self) -> ShinkaiNodeOptions {
         self.shinkai_node_process.set_default_options()
     }

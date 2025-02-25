@@ -6,7 +6,7 @@ import { GetJobFolderNameInput } from './types';
 
 export const useGetJobFolderName = (input: GetJobFolderNameInput) => {
   const response = useQuery({
-    queryKey: [FunctionKeyV2.GET_JOB_FOLDER_NAME, input],
+    queryKey: [FunctionKeyV2.GET_JOB_FOLDER_NAME, input.jobId],
     queryFn: () => getJobFolderName(input),
   });
   return response;

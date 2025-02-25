@@ -32,6 +32,7 @@ wgpu = "0.20.0"
 sysinfo = "0.30.12"
 ed25519-dalek = { version = "2.1.1", features = ["rand_core"] }
 blake3 = "1.5.1"
+opener = "0.7.2"
 hex = "0.4.3"
 base64 = "0.22.1"
 time = "^0.3.36"

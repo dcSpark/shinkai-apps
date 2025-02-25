@@ -2,11 +2,14 @@ import { FormProps } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
+  CodeLanguage,
   OAuth,
   ShinkaiTool,
   ShinkaiToolType,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { useDuplicateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/duplicateTool/useDuplicateTool';
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
+import { useOpenToolInCodeEditor } from '@shinkai_network/shinkai-node-state/v2/mutations/openToolnCodeEditor/useOpenToolInCodeEditor';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
@@ -38,11 +41,13 @@ import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import { open } from '@tauri-apps/plugin-shell';
 import {
+  CopyIcon,
   DownloadIcon,
   ExternalLinkIcon,
   MoreVertical,
   PlayCircle,
   Rocket,
+  SquareChevronRightIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -50,6 +55,7 @@ import { toast } from 'sonner';
 
 import { SubpageLayout } from '../../../pages/layout/simple-layout';
 import { useAuth } from '../../../store/auth';
+import { useSettings } from '../../../store/settings';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
@@ -82,6 +88,11 @@ export default function ToolDetailsCard({
     null,
   );
   const { t } = useTranslation();
+  const defaultLLMProvider = useSettings((state) => state.defaultAgentId);
+  const toolConfigSchema =
+  'config' in tool && tool.config?.length > 0
+    ? parseConfigToJsonSchema(tool?.config ?? [])
+    : {};
 
   const {
     mutateAsync: publishTool,
@@ -122,6 +133,51 @@ export default function ToolDetailsCard({
 
   const { mutateAsync: toggleEnableTool, isPending: isTogglingEnableTool } =
     useToggleEnableTool();
+
+  const { mutateAsync: duplicateTool, isPending: isDuplicatingTool } = useDuplicateTool({
+    onSuccess: (response) => {
+      toast.success(t('tools.successDuplicateTool'), {
+        description: `${response.tool_router_key}`
+      })
+    },
+    onError: (error) => {
+      toast.error(t('tools.errorDuplicateTool'), {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
+  const { mutateAsync: openToolInCodeEditor, isPending: isOpeningToolInCodeEditor } = useOpenToolInCodeEditor(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      bearerToken: auth?.api_v2_key ?? '',
+      xShinkaiAppId: `app-id-${new Date().getTime()}`,
+      xShinkaiToolId: `tool-id-${new Date().getTime()}`,
+      defaultLLMProvider: defaultLLMProvider ?? '',
+      payload: {
+        code: 'py_code' in tool ? tool.py_code : 'js_code' in tool ? tool.js_code : '',
+        language: toolType === 'Python' ? CodeLanguage.Python : CodeLanguage.Typescript,
+        config: 'config' in tool ? tool.config : [],
+        parameters: 'parameters' in tool ? (tool.parameters as any): {},
+        oauth: 'oauth' in tool ? tool.oauth : [],
+        tools: [toolKey ?? ''],
+        metadata: {
+          name: tool.name,
+          description: tool.description,
+          tools: 'tools' in tool ? tool.tools as string[]: [],
+          author: 'author' in tool ? tool.author : '',
+          keywords: 'keywords' in tool ? tool.keywords : [],
+          version: 'version' in tool ? tool.version : '',
+          configurations: toolConfigSchema as {
+            type: 'object';
+            properties: Record<string, any>;
+            required: string[];
+          },
+          parameters: 'parameters' in tool ? (tool.parameters as any): {},
+          result: 'result' in tool ? (tool.result as any): {},
+        },
+      },
+    },
+  );
 
   const { mutateAsync: exportTool, isPending: isExportingTool } = useExportTool(
     {
@@ -211,11 +267,6 @@ export default function ToolDetailsCard({
     });
   };
 
-  const toolConfigSchema =
-    'config' in tool && tool.config?.length > 0
-      ? parseConfigToJsonSchema(tool?.config ?? [])
-      : {};
-
   const boxContainerClass = cn(
     'flex flex-col gap-4 rounded-lg bg-gray-300/20 p-8',
   );
@@ -304,6 +355,34 @@ export default function ToolDetailsCard({
                 >
                   <DownloadIcon className="mr-2 h-4 w-4" />
                   Export
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-xs"
+                  disabled={toolType !== 'Python' && toolType !== 'Deno'}
+                  onClick={async () => {
+                    if (isDuplicatingTool) return
+                    await duplicateTool({
+                      toolKey: toolKey ?? '',
+                      nodeAddress: auth?.node_address ?? '',
+                      token: auth?.api_v2_key ?? '',
+                    })
+                  }}
+                >
+                  <CopyIcon className="mr-2 h-4 w-4" />
+                  Duplicate
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-xs"
+                  disabled={toolType !== 'Python' && toolType !== 'Deno'}
+                  hidden={!hasToolCode}
+                  onClick={async () => {
+                    if (isOpeningToolInCodeEditor) return
+                    await openToolInCodeEditor()
+                    toast.success(t('tools.successOpenToolInCodeEditor'))
+                  }}
+                >
+                  <SquareChevronRightIcon className="mr-2 h-4 w-4" />
+                  Open in Code Editor
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

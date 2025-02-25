@@ -92,3 +92,30 @@ pub async fn shinkai_node_get_ollama_version(
         Err(err) => Err(err.to_string()),
     }
 }
+
+#[tauri::command]
+pub async fn shinkai_node_open_storage_location() -> Result<(), String> {
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().read().await;
+    match shinkai_node_manager_guard.open_storage_location() {
+        Ok(_) => Ok(()),
+        Err(message) => Err(message),
+    }
+}
+
+#[tauri::command]
+pub async fn shinkai_node_open_storage_location_with_path(relative_path: String) -> Result<(), String> {
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().read().await;
+    match shinkai_node_manager_guard.open_storage_location_with_path(&relative_path) {
+        Ok(_) => Ok(()),
+        Err(message) => Err(message),
+    }
+}
+
+#[tauri::command]
+pub async fn shinkai_node_open_chat_folder(storage_location: &str, chat_folder_name: &str) -> Result<(), String> {
+    let shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().read().await;
+    match shinkai_node_manager_guard.open_chat_folder(storage_location, chat_folder_name) {
+        Ok(_) => Ok(()),
+        Err(message) => Err(message),
+    }
+}
