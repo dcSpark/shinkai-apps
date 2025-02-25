@@ -3,6 +3,7 @@ use reqwest;
 use sha2::{Sha256, Digest};
 use std::collections::HashMap;
 use reqwest::header::HeaderValue;
+use semver::Version;
 
 use super::ollama_api_types::{OllamaApiPullRequest, OllamaApiPullResponse, OllamaApiTagsResponse, OllamaApiCreateRequest, OllamaApiCreateResponse, OllamaApiBlobResponse, OllamaApiVersionResponse};
 
@@ -159,11 +160,16 @@ impl OllamaApiClient {
         Ok(digest)
     }
 
-    pub async fn create_model_from_gguf(&self, model_name: &str, gguf_data: &[u8]) -> Result<(), String> {
+    pub async fn create_model_from_gguf(&self, _model_name: &str, gguf_data: &[u8]) -> Result<(), String> {
         // Check if ollama version is 0.5.7 or higher
         let version = self.get_ollama_version().await?;
-        if version < "0.5.7".to_string() {
-            return Err("Ollama version must be 0.5.7 or higher".to_string());
+        let parsed_version = Version::parse_loose(&version)
+            .map_err(|e| format!("Failed to parse Ollama version: {}", e))?;
+        let min_version = Version::parse("0.5.7")
+            .map_err(|e| format!("Failed to parse minimum version: {}", e))?;
+
+        if parsed_version < min_version {
+            return Err(format!("Ollama version must be 0.5.7 or higher (found {})", version));
         }
         // Check GGUF magic number (first 4 bytes should spell "GGUF" in ASCII)
         if gguf_data.len() < 4 {
