@@ -178,7 +178,7 @@ impl OllamaApiClient {
         println!("Blob {} found on server", digest);
         // Create a map for the files parameter
         let mut files = HashMap::new();
-        files.insert("model.gguf".to_string(), digest);
+        files.insert("arctic.gguf".to_string(), digest);
         
         // Create the model using the uploaded blob
         let url = format!("{}/api/create", self.base_url);
@@ -218,13 +218,38 @@ impl OllamaApiClient {
             return Err(format!("Failed to create model: {}", status));
         }
 
-        let create_response = response
-            .json::<OllamaApiCreateResponse>()
-            .await
-            .map_err(|e| e.to_string())?;
+        // Clone the response before consuming it
+        let response_text = response.text().await.map_err(|e| e.to_string())?;
+        println!("Response text: {}", response_text);
+        
+        // The response contains multiple JSON objects separated by newlines
+        // We need to check if the final status is "success"
+        let mut final_status = String::new();
+        
+        // Split the response text by newlines and parse each line as a JSON object
+        for line in response_text.lines() {
+            if line.trim().is_empty() {
+                continue;
+            }
             
-        if create_response.status != "success" {
-            return Err(format!("Failed to create model: {}", create_response.status));
+            match serde_json::from_str::<serde_json::Value>(line) {
+                Ok(json_value) => {
+                    if let Some(status) = json_value.get("status").and_then(|s| s.as_str()) {
+                        println!("Parsed status: {}", status);
+                        final_status = status.to_string();
+                    }
+                },
+                Err(e) => {
+                    println!("Failed to parse JSON line: {}", e);
+                    println!("Problematic line: {}", line);
+                }
+            }
+        }
+        
+        println!("Final status: {}", final_status);
+        
+        if final_status != "success" {
+            return Err(format!("Failed to create model: {}", final_status));
         }
         
         Ok(())
