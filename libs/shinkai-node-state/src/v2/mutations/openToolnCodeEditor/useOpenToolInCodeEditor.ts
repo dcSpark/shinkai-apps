@@ -1,10 +1,11 @@
-import { useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 import { openToolInCodeEditor } from ".";
 import { OpenToolInCodeEditorInput } from "./types";
 
 export const useOpenToolInCodeEditor = (input: OpenToolInCodeEditorInput) => {
-  return useMutation({
-    mutationFn: () => openToolInCodeEditor(input),
+  return useQuery({
+    queryKey: ["openToolInCodeEditor", input],
+    queryFn: () => openToolInCodeEditor(input),
   });
 };
