@@ -58,7 +58,7 @@ pub enum OllamaApiPullResponse {
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct OllamaApiCreateRequest {
-    pub name: String,
+    pub model: String,
     pub files: std::collections::HashMap<String, String>,
 }
 

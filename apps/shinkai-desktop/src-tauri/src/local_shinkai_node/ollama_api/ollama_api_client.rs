@@ -2,6 +2,7 @@ use futures_util::{Stream, StreamExt};
 use reqwest;
 use sha2::{Sha256, Digest};
 use std::collections::HashMap;
+use reqwest::header::HeaderValue;
 
 use super::ollama_api_types::{OllamaApiPullRequest, OllamaApiPullResponse, OllamaApiTagsResponse, OllamaApiCreateRequest, OllamaApiCreateResponse, OllamaApiBlobResponse};
 
@@ -124,6 +125,9 @@ impl OllamaApiClient {
     }
 
     pub async fn upload_blob(&self, data: &[u8]) -> Result<String, String> {
+        if data.len() == 0 {
+            return Err("Data is empty".to_string());
+        }
         // Calculate SHA256 of the data
         let mut hasher = Sha256::new();
         hasher.update(data);
@@ -138,27 +142,40 @@ impl OllamaApiClient {
             .send()
             .await
             .map_err(|e| e.to_string())?;
-            
-        if response.status() != 200 {
+        if !response.status().is_success() {
             return Err(format!("Failed to upload blob: {}", response.status()));
         }
-        
-        let blob_response = response
-            .json::<OllamaApiBlobResponse>()
-            .await
-            .map_err(|e| e.to_string())?;
-            
-        if blob_response.status != "success" {
-            return Err(format!("Failed to upload blob: {}", blob_response.status));
-        }
-        
         Ok(digest)
     }
 
     pub async fn create_model_from_gguf(&self, model_name: &str, gguf_data: &[u8]) -> Result<(), String> {
+        // Check GGUF magic number (first 4 bytes should spell "GGUF" in ASCII)
+        if gguf_data.len() < 4 {
+            return Err("GGUF data too short".to_string());
+        }
+        
+        let magic = &gguf_data[0..4];
+        if magic != b"GGUF" {
+            return Err("Invalid GGUF magic number".to_string());
+        }
         // First upload the GGUF file as a blob
         let digest = self.upload_blob(gguf_data).await?;
+        // Check if blob exists on server before creating model
+        let check_url = format!("{}/api/blobs/{}", self.base_url, digest);
+        println!("Checking blob {} on server", digest);
+        println!("Check URL: {}", check_url);
+        let client = reqwest::Client::new();
         
+        let head_response = client
+            .head(&check_url)
+            .send()
+            .await
+            .map_err(|e| e.to_string())?;
+
+        if !head_response.status().is_success() {
+            return Err(format!("Blob {} not found on server", digest));
+        }
+        println!("Blob {} found on server", digest);
         // Create a map for the files parameter
         let mut files = HashMap::new();
         files.insert("model.gguf".to_string(), digest);
@@ -168,21 +185,39 @@ impl OllamaApiClient {
         let client = reqwest::Client::new();
         
         let create_request = OllamaApiCreateRequest {
-            name: model_name.to_string(),
+            model: "my-gguf-model".to_string(),
             files,
         };
-        
-        let response = client
+
+        // Build the request without sending it
+        let request = client
             .post(&url)
             .json(&create_request)
-            .send()
+            .build()
+            .map_err(|e| e.to_string())?;
+
+        // Print request details
+        println!("Request URL: {}", request.url());
+        println!("Request method: {}", request.method());
+        println!("Request headers:");
+        for (name, value) in request.headers() {
+            println!("  {}: {}", name, value.to_str().unwrap_or("<binary>"));
+        }
+        println!("Request body: {}", String::from_utf8_lossy(request.body().unwrap().as_bytes().unwrap_or(&[])));
+
+        // Send the request
+        let response = client
+            .execute(request)
             .await
             .map_err(|e| e.to_string())?;
-            
-        if response.status() != 200 {
-            return Err(format!("Failed to create model: {}", response.status()));
-        }
         
+        if !response.status().is_success() {
+            let status = response.status();
+            let text = response.text().await.unwrap_or_default();
+            println!("Response: {}", text);
+            return Err(format!("Failed to create model: {}", status));
+        }
+
         let create_response = response
             .json::<OllamaApiCreateResponse>()
             .await
