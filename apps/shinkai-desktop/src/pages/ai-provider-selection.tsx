@@ -24,17 +24,17 @@ const AIProviderSelection = () => {
     <div className="flex h-full flex-col gap-10">
       <div className="space-y-5">
         <h1 className="font-clash text-4xl font-semibold">
-          Configure Your AI Model (optional)
+          Configure Your AI Model
         </h1>
         <p className="text-gray-80 text-base">
-          Choose the AI model that best fits your app&apos;s needs. You can
-          update this later anytime.
+          Choose the AI model that best fits your needs. You can update this
+          later anytime.
         </p>
       </div>
       <div className="flex flex-col gap-5">
         <ProviderCard
           description="Connect to AI models hosted online, ideal for real-time processing and scalable AI tasks. "
-          icon={<CloudModelIcon className="size-6" />}
+          icon={<CloudModelIcon className="w-full" />}
           onClick={() => {
             completeStep(
               OnboardingStep.AI_PROVIDER_SELECTION,
@@ -47,7 +47,7 @@ const AIProviderSelection = () => {
 
         <ProviderCard
           description="Run AI models directly on your device, offering more control, enabling offline use and enhancing privacy. "
-          icon={<LocalModelIcon className="size-6" />}
+          icon={<LocalModelIcon className="w-full" />}
           onClick={() => {
             completeStep(
               OnboardingStep.AI_PROVIDER_SELECTION,
@@ -64,7 +64,7 @@ const AIProviderSelection = () => {
               size: 'auto',
               rounded: 'lg',
             }),
-            'flex flex-col',
+            'flex flex-col text-base font-normal',
           )}
           onClick={() => {
             completeStep(
@@ -103,14 +103,16 @@ const ProviderCard = ({
           size: 'auto',
           rounded: 'lg',
         }),
-        'flex flex-col',
+        'bg-official-gray-950/80 flex flex-col px-3 py-3.5',
       )}
       onClick={onClick}
     >
-      <div className="flex items-start gap-2 text-left">
-        <span className="pt-1">{icon}</span>
-        <div>
-          <h3 className="text-lg font-semibold text-white">{title}</h3>
+      <div className="flex items-start gap-3 text-left">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-md border bg-white/5 p-2">
+          {icon}
+        </span>
+        <div className="flex flex-col gap-0.5">
+          <h3 className="text-base font-semibold text-white">{title}</h3>
           <p className="text-official-gray-400 text-sm">{description}</p>
         </div>
         <ArrowRightIcon className="pt-1 text-white" />

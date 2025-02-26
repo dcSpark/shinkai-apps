@@ -30,6 +30,7 @@ type SettingsStore = {
   getStepChoice: <T extends OnboardingStep>(stepId: T) => StepChoiceMap[T];
   getStepById: (stepId: OnboardingStep) => OnboardingStepConfig | undefined;
   getStepByPath: (path: string) => OnboardingStepConfig | undefined;
+  getCurrentStep: () => number | null;
   updateStepChoice: <T extends OnboardingStep>(
     stepId: T,
     choice: StepChoiceMap[T],
@@ -140,6 +141,13 @@ export const useSettings = create<SettingsStore>()(
         },
         getStepChoice: (stepId) => {
           return get().onboarding.steps[stepId]?.choice || null;
+        },
+        getCurrentStep: () => {
+          const { steps } = get().onboarding;
+          const currentStep = ONBOARDING_STEPS.find(
+            (step) => step.required && !steps[step.id]?.completed,
+          );
+          return currentStep ? ONBOARDING_STEPS.indexOf(currentStep) + 1 : null;
         },
         isOnboardingComplete: () => {
           const { steps } = get().onboarding;

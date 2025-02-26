@@ -5,8 +5,8 @@ export default {
   },
   desktop: {
     welcome: 'Welcome to Shinkai!',
-    welcomeText:
-      "Shinkai is a free, open-source AI app that runs locally on your computer. It's as powerful as an OS, enabling robust local AI agents and extending capabilities through its decentralized network.",
+    welcomeDescription:
+      'Shinkai is a free, open-source AI application that enhances your productivity by automating tasks and streamlining workflows.',
     localAI: 'Shinkai Local AI',
     benefits: {
       local:

@@ -303,7 +303,7 @@ export function MainNav() {
         width: sidebarExpanded ? '230px' : '70px',
         opacity: 1,
       }}
-      className="bg-official-gray-900 border-official-gray-780 relative z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r px-2 py-6 pt-9 shadow-xl"
+      className="bg-official-gray-900 border-official-gray-850 relative z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r px-2 py-6 pt-9 shadow-xl"
       exit={{ width: 0, opacity: 0 }}
       initial={{ width: 0, opacity: 0 }}
       transition={{ duration: 0.3 }}
@@ -612,13 +612,11 @@ const MainLayout = () => {
   const displaySidebar =
     !!auth && !disabledSidebarRoutes.includes(location.pathname);
 
-  console.log(displaySidebar, 'displaySidebar', location.pathname);
-
   const disableScrollRoutes = ['/tools'];
   const hideScrollbar = disableScrollRoutes.includes(location.pathname);
 
   return (
-    <div className="bg-official-gray-950 rfelative flex h-screen min-h-full flex-col overflow-hidden text-white">
+    <div className="bg-official-gray-950 relative flex h-screen min-h-full flex-col overflow-hidden text-white">
       <div
         className="absolute top-0 z-50 h-6 w-full"
         data-tauri-drag-region={true}

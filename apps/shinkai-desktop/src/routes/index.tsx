@@ -18,6 +18,11 @@ import { ChatProvider } from '../components/chat/context/chat-context';
 import { SetJobScopeProvider } from '../components/chat/context/set-job-scope-context';
 import { ToolsProvider } from '../components/chat/context/tools-context';
 import { WalletsProvider } from '../components/crypto-wallet/context/wallets-context';
+import {
+  COMPLETION_DESTINATION,
+  ONBOARDING_STEPS,
+  OnboardingStep,
+} from '../components/onboarding/constants';
 import { PlaygroundProvider } from '../components/playground-tool/context/playground-context';
 import { PromptSelectionProvider } from '../components/prompt/context/prompt-selection-context';
 import { TableSheetProvider } from '../components/sheet/context/table-context';
@@ -68,12 +73,7 @@ import { Tasks } from '../pages/tasks';
 import TermsAndConditionsPage from '../pages/terms-conditions';
 import { ToolsHomepage } from '../pages/tools-homepage';
 import { useAuth } from '../store/auth';
-import {
-  COMPLETION_DESTINATION,
-  ONBOARDING_STEPS,
-  OnboardingStep,
-  useSettings,
-} from '../store/settings';
+import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import useAppHotkeys from '../utils/use-app-hotkeys';
 

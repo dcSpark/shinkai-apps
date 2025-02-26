@@ -75,10 +75,7 @@ const AnalyticsPage = () => {
         </p>
       </div>
 
-      <div className="flex flex-col items-center gap-4">
-        <Button className="w-full" onClick={handleOptIn} size="lg">
-          {t('common.iAgree')}
-        </Button>
+      <div className="flex items-center gap-4">
         <Button
           className="w-full"
           onClick={handleOptOut}
@@ -86,6 +83,9 @@ const AnalyticsPage = () => {
           variant="outline"
         >
           {t('common.noThanks')}
+        </Button>
+        <Button className="w-full" onClick={handleOptIn} size="lg">
+          {t('common.iAgree')}
         </Button>
       </div>
     </div>

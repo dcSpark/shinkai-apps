@@ -122,7 +122,9 @@ const TermsAndConditionsPage = () => {
         <h1 className="font-clash text-4xl font-semibold">
           {t('desktop.welcome')}
         </h1>
-        <p className="text-gray-80 text-base">{t('desktop.welcomeText')}</p>
+        <p className="text-gray-80 text-base">
+          {t('desktop.welcomeDescription')}
+        </p>
       </div>
       <div className="flex gap-3">
         <Checkbox
