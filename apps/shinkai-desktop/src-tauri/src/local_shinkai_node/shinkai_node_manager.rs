@@ -126,7 +126,7 @@ impl ShinkaiNodeManager {
 
             // Use the embedded GGUF model
             let gguf_data = embedding_model::get_model_data();
-            
+
             match ollama_api.create_model_from_gguf(&default_embedding_model, gguf_data).await {
                 Ok(_) => {
                     self.emit_event(ShinkaiNodeManagerEvent::CreatingModelDone {

@@ -83,7 +83,7 @@ function CodePanelBase({
         {/*  </Tooltip>*/}
         {/*)}*/}
         {/* </div> */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1">
           {isToolCodeGenerationPending && (
             <div className="flex w-full flex-col items-start gap-1 px-4 py-4 text-xs">
               {[...Array(20)].map((_, lineIndex) => (

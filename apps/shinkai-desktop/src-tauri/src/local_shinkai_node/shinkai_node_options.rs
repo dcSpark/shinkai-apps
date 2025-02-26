@@ -62,33 +62,7 @@ impl ShinkaiNodeOptions {
     }
 
     pub fn default_initial_model() -> String {
-        let hardware_summary = hardware_get_summary();
-        log::info!("hardware summary: {:?}", hardware_summary);
-
-        // This is a workaround to avoid critical issues when users update from this node version
-        // We changed the default model to a more performant one and that produces errors starting the node
-        let dev_req = semver::VersionReq::parse("0.0.0").unwrap();
-        let req = semver::VersionReq::parse(">=0.10.0").unwrap();
-        log::debug!("new default modelsversion requirement: {:?}", req);
-        let version = semver::Version::parse(env!("CARGO_PKG_VERSION")).unwrap();
-        log::debug!("current version: {:?}", version);
-        let meets_req = req.matches(&version) || dev_req.matches(&version);
-        log::debug!("meets version requirement: {:?}", meets_req);
-        let model =
-            if cfg!(target_os = "macos") && meets_req && hardware_summary.hardware.memory >= 16 {
-                "mistral-small:24b-instruct-2501-q4_K_M".to_string()
-            } else if cfg!(target_os = "macos") && meets_req {
-                "command-r7b:7b-12-2024-q4_K_M".to_string()
-            } else {
-                match hardware_summary.requirements_status {
-                    RequirementsStatus::Minimum
-                    | RequirementsStatus::StillUsable
-                    | RequirementsStatus::Unmeet => "gemma2:2b-instruct-q4_1".to_string(),
-                    _ => "llama3.1:8b-instruct-q4_1".to_string(),
-                }
-            };
-        log::info!("default initial model: {:?}", model);
-        model
+        "shinkai-backend:FREE_TEXT_INFERENCE".to_string()
     }
 
     pub fn from_merge(
@@ -234,13 +208,6 @@ impl ShinkaiNodeOptions {
 }
 impl Default for ShinkaiNodeOptions {
     fn default() -> ShinkaiNodeOptions {
-        let initial_model = Self::default_initial_model();
-        let initial_agent_names = format!(
-            "o_{}",
-            initial_model.replace(|c: char| !c.is_alphanumeric(), "_")
-        );
-        let initial_agent_models = format!("ollama:{}", initial_model);
-
         let shinkai_tools_runner_deno_binary_path = std::env::current_exe()
             .unwrap()
             .parent()
@@ -276,9 +243,9 @@ impl Default for ShinkaiNodeOptions {
             node_storage_path: Some("./".to_string()),
             embeddings_server_url: Some("http://127.0.0.1:11435".to_string()),
             first_device_needs_registration_code: Some("false".to_string()),
-            initial_agent_urls: Some("http://127.0.0.1:11435".to_string()),
-            initial_agent_names: Some(initial_agent_names),
-            initial_agent_models: Some(initial_agent_models),
+            initial_agent_urls: Some("https://api.shinkai.com/inference".to_string()),
+            initial_agent_names: Some("shinkai_free_trial".to_string()),
+            initial_agent_models: Some("shinkai-backend:FREE_TEXT_INFERENCE".to_string()),
             initial_agent_api_keys: Some("".to_string()),
             starting_num_qr_devices: Some("0".to_string()),
             log_all: Some("1".to_string()),

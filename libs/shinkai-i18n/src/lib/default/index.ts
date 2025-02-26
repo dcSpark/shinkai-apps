@@ -4,9 +4,9 @@ export default {
       'Transform your web browsing experience using AI with Shinkai Visor ✨',
   },
   desktop: {
-    welcome: 'Welcome to Shinkai ✨',
-    welcomeText:
-      'Transform your desktop experience using AI with Shinkai Desktop',
+    welcome: 'Welcome to Shinkai!',
+    welcomeDescription:
+      'Shinkai is a free, open-source AI application that enhances your productivity by automating tasks and streamlining workflows.',
     localAI: 'Shinkai Local AI',
     benefits: {
       local:

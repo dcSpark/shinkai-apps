@@ -139,7 +139,7 @@ const QuickConnectionPage = () => {
   }, [isNodeInfoSuccess, isShinkaiPrivate, nodeInfo, setupDataForm]);
 
   return (
-    <div className="flex h-full flex-col justify-between">
+    <div className="mx-auto flex size-full max-w-lg flex-col justify-between gap-8">
       <div className="flex flex-col">
         <div className="mb-4 flex items-center gap-2">
           <Link

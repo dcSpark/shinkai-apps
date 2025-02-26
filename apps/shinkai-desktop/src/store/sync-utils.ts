@@ -64,8 +64,7 @@ const handleAuthSideEffect = async (
     debug(
       `setting prevAuth:${JSON.stringify(prevAuth)} auth:${JSON.stringify(auth)}`,
     );
-    useSettings.getState().setDefaultAgentId('');
-    useSettings.getState().setDefaultSpotlightAiId('');
+    useSettings.getState().resetSettings();
     useShinkaiNodeManager.getState().setIsInUse(false);
     emit('rehydrate-storage', {
       triggeredBy: currentWindowLabel,
@@ -81,7 +80,7 @@ const handleAuthSideEffect = async (
     useShinkaiNodeManager.getState().setIsInUse(isLocal && isRunning);
     emit('rehydrate-storage', {
       triggeredBy: currentWindowLabel,
-      stores: ['shinkai-node-options'],
+      stores: ['settings', 'shinkai-node-options'],
     });
   }
 };
