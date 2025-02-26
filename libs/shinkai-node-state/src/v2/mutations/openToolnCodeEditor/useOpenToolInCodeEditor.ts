@@ -1,6 +1,7 @@
-import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
+import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { APIError } from '../../types';
 import { openToolInCodeEditor } from '.';
 import { OpenToolInCodeEditorInput, OpenToolInCodeEditorOutput } from './types';
 
@@ -9,21 +10,17 @@ export type UseOpenToolInCodeEditor = [
   OpenToolInCodeEditorInput,
 ];
 
-type Options = QueryObserverOptions<
+type Options = UseMutationOptions<
   OpenToolInCodeEditorOutput,
-  Error,
-  OpenToolInCodeEditorOutput,
-  OpenToolInCodeEditorOutput,
-  UseOpenToolInCodeEditor
+  APIError,
+  OpenToolInCodeEditorInput
 >;
 
 export const useOpenToolInCodeEditor = (
-  input: OpenToolInCodeEditorInput,
   options?: Omit<Options, 'queryKey' | 'queryFn'>,
 ) => {
-  return useQuery({
-    queryKey: [FunctionKeyV2.OPEN_TOOL_IN_CODE_EDITOR, input],
-    queryFn: () => openToolInCodeEditor(input),
+  return useMutation({
+    mutationFn: openToolInCodeEditor,
     ...options,
   });
 };

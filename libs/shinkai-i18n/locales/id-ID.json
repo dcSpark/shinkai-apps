@@ -539,6 +539,7 @@
       }
     },
     "errorDuplicateTool": "Gagal menggandakan alat",
+    "errorOpenToolInCodeEditor": "Gagal membuka alat di editor kode",
     "installFromStore": "Instal dari Toko",
     "label": "Alat-alat Shinkai",
     "lookingForMoreTools": "Mencari lebih banyak alat?",

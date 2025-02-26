@@ -445,6 +445,7 @@ export const duplicateTool = async (
       responseType: 'json',
     },
   );
+
   return response.data as DuplicateToolResponse;
 };
 

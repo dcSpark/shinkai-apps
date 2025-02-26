@@ -539,6 +539,7 @@
       }
     },
     "errorDuplicateTool": "Error al duplicar la herramienta",
+    "errorOpenToolInCodeEditor": "Error al abrir la herramienta en el editor de código",
     "installFromStore": "Instalar desde la tienda",
     "label": "Herramientas Shinkai",
     "lookingForMoreTools": "¿Buscas más herramientas?",

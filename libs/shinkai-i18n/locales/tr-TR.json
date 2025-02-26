@@ -539,6 +539,7 @@
       }
     },
     "errorDuplicateTool": "Aracı çoğaltma işlemi başarısız oldu",
+    "errorOpenToolInCodeEditor": "Kod editöründe aracı açma başarısız oldu",
     "installFromStore": "Mağazadan Yükle",
     "label": "Shinkai Araçları",
     "lookingForMoreTools": "Daha fazla araç mı arıyorsunuz?",

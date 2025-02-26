@@ -631,7 +631,8 @@ export default {
     create: 'Create Tool',
     successDuplicateTool: 'Tool duplicated successfully',
     errorDuplicateTool: 'Failed to duplicate tool',
-    successOpenToolInCodeEditor: 'Tool opened in code editor',
+    successOpenToolInCodeEditor: 'Tool opened in code editor successfully',
+    errorOpenToolInCodeEditor: 'Failed to open tool in code editor',
     installFromStore: 'Install from Store',
     lookingForMoreTools: 'Looking for more tools?',
     visitStore:

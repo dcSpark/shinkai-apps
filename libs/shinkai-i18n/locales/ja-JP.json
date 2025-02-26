@@ -539,6 +539,7 @@
       }
     },
     "errorDuplicateTool": "ツールの複製に失敗しました",
+    "errorOpenToolInCodeEditor": "コードエディタでツールを開くことに失敗しました",
     "installFromStore": "ストアからインストール",
     "label": "深海ツール",
     "lookingForMoreTools": "さらにツールを探していますか？",

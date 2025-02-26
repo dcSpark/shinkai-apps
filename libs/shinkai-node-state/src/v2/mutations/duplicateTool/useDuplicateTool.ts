@@ -7,8 +7,7 @@ import {
 import { FunctionKey } from '../../../lib/constants';
 import { APIError } from '../../types';
 import { duplicateTool } from '.';
-import { DuplicateToolOutput } from './types';
-import { DuplicateToolInput } from './types';
+import { DuplicateToolInput, DuplicateToolOutput } from './types';
 
 type Options = UseMutationOptions<
   DuplicateToolOutput,
