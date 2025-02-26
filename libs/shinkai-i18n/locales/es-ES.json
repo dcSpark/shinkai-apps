@@ -49,6 +49,7 @@
     "emptyStateDescription": "Para preguntas rápidas, presiona ⌘ + Shift + J para usar Shinkai Spotlight",
     "emptyStateTitle": "Pregunta a Shinkai IA",
     "enterMessage": "Introducir Mensaje",
+    "failedToOpenChatFolder": "Por favor, sube un archivo al chat primero",
     "fileProcessing": {
       "description": "Puede tardar unos minutos",
       "title": "Tu archivo se está procesando"
@@ -63,6 +64,7 @@
     },
     "limitReachedDescription": "Has utilizado todas tus consultas del mes en este modelo/agente. Por favor, inicia un nuevo chat con otro agente.",
     "limitReachedTitle": "Límite Alcanzado",
+    "openChatFolder": "Abrir carpeta de chat",
     "sendMessage": "Enviar Mensaje"
   },
   "chatDM": {
@@ -536,12 +538,16 @@
         "text": "No se encontraron herramientas para la consulta de búsqueda"
       }
     },
+    "errorDuplicateTool": "Error al duplicar la herramienta",
+    "errorOpenToolInCodeEditor": "Error al abrir la herramienta en el editor de código",
     "installFromStore": "Instalar desde la tienda",
     "label": "Herramientas Shinkai",
     "lookingForMoreTools": "¿Buscas más herramientas?",
     "store": {
       "label": "Explorar la Tienda de IA"
     },
+    "successDuplicateTool": "Herramienta duplicada con éxito",
+    "successOpenToolInCodeEditor": "Herramienta abierta en el editor de código",
     "visitStore": "Visita la tienda Shinkai para descubrir e instalar herramientas adicionales que mejoren tu flujo de trabajo"
   },
   "vectorFs": {

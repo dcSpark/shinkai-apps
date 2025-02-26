@@ -49,6 +49,7 @@
     "emptyStateDescription": "Hızlı sorular için, Shinkai Spotlight'ı kullanmak üzere ⌘ + Shift + J tuşlarına basın",
     "emptyStateTitle": "Shinkai AI'ye Sor",
     "enterMessage": "Mesaj Girin",
+    "failedToOpenChatFolder": "Lütfen önce sohbete bir dosya yükleyin",
     "fileProcessing": {
       "description": "Bu birkaç dakika sürebilir",
       "title": "Dosyanız işleniyor"
@@ -63,6 +64,7 @@
     },
     "limitReachedDescription": "Bu model/ajan için ay boyunca tüm sorgularınızı kullandınız. Lütfen başka bir ajan ile yeni bir sohbet başlatın.",
     "limitReachedTitle": "Limit Aşıldı",
+    "openChatFolder": "Sohbet Klasörünü Aç",
     "sendMessage": "Mesaj Gönder"
   },
   "chatDM": {
@@ -536,12 +538,16 @@
         "text": "Arama sorgusu için hiçbir araç bulunamadı"
       }
     },
+    "errorDuplicateTool": "Aracı çoğaltma işlemi başarısız oldu",
+    "errorOpenToolInCodeEditor": "Kod editöründe aracı açma başarısız oldu",
     "installFromStore": "Mağazadan Yükle",
     "label": "Shinkai Araçları",
     "lookingForMoreTools": "Daha fazla araç mı arıyorsunuz?",
     "store": {
       "label": "Yapay Zeka Mağazasını Keşfet"
     },
+    "successDuplicateTool": "Araç başarıyla kopyalandı",
+    "successOpenToolInCodeEditor": "Araç kod editöründe açıldı",
     "visitStore": "İş akışınızı geliştirmek için ek araçlar keşfetmek ve yüklemek üzere Shinkai Mağazası'nı ziyaret edin"
   },
   "vectorFs": {

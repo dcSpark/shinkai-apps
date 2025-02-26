@@ -49,6 +49,7 @@
     "emptyStateDescription": "对于快速问题，请按 ⌘ + Shift + J 使用 Shinkai Spotlight",
     "emptyStateTitle": "询问 Shinkai AI",
     "enterMessage": "输入消息",
+    "failedToOpenChatFolder": "请先上传文件到聊天中",
     "fileProcessing": {
       "description": "可能需要几分钟",
       "title": "您的文件正在处理中"
@@ -63,6 +64,7 @@
     },
     "limitReachedDescription": "您已用尽本月对此模型/代理的所有查询。请开始与其他代理的新聊天。",
     "limitReachedTitle": "已达到限制",
+    "openChatFolder": "打开聊天文件夹",
     "sendMessage": "发送消息"
   },
   "chatDM": {
@@ -536,12 +538,16 @@
         "text": "未找到与搜索查询匹配的工具"
       }
     },
+    "errorDuplicateTool": "工具复制失败",
+    "errorOpenToolInCodeEditor": "无法在代码编辑器中打开工具",
     "installFromStore": "从商店安装",
     "label": "深海工具",
     "lookingForMoreTools": "寻找更多工具？",
     "store": {
       "label": "探索人工智能商店"
     },
+    "successDuplicateTool": "工具复制成功",
+    "successOpenToolInCodeEditor": "工具已在代码编辑器中打开",
     "visitStore": "访问深海商店，发现并安装更多工具以增强您的工作流程"
   },
   "vectorFs": {

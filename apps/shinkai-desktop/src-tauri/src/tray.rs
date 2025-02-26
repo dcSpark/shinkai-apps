@@ -6,12 +6,15 @@ use tauri::{
 
 use crate::{
     globals::SHINKAI_NODE_MANAGER_INSTANCE,
-    windows::{recreate_window, Window},
+    windows::{recreate_window, Window, show_spotlight_window},
 };
 
 pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
     let quit_menu_item = MenuItemBuilder::with_id("quit", "Quit").build(app)?;
     let show_menu_item = MenuItemBuilder::with_id("show", "Show").build(app)?;
+    let shinkai_spotlight_menu_item = MenuItemBuilder::with_id("shinkai_spotlight", "Shinkai Spotlight")
+        .accelerator("CmdOrCtrl+Shift+J")
+        .build(app)?;
 
     let open_shinkai_node_manager_window_menu_item =
         MenuItemBuilder::with_id("open_shinkai_node_manager_window", "Open").build(app)?;
@@ -23,6 +26,7 @@ pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
         .items(&[
             &quit_menu_item,
             &show_menu_item,
+            &shinkai_spotlight_menu_item,
             &shinkai_node_manager_menu_item,
         ])
         .build()?;
@@ -52,6 +56,9 @@ pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
             }
             "open_shinkai_node_manager_window" => {
                 recreate_window(tray.app_handle().clone(), Window::ShinkaiNodeManager, true);
+            }
+            "shinkai_spotlight" => {
+                recreate_window(tray.app_handle().clone(), Window::Spotlight, true);
             }
             "quit" => {
                 tauri::async_runtime::spawn(async move {

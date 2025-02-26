@@ -101,6 +101,8 @@ export default {
       "You've used all of your queries for the month on this model/agent. Please start a new chat with another agent.",
     enterMessage: 'Enter Message',
     sendMessage: 'Send Message',
+    openChatFolder: 'Open Chat Folder',
+    failedToOpenChatFolder: 'Please upload a file to the chat first',
     form: {
       message: 'Tell us the job you want to do',
       messagePlaceholder: 'Eg: Explain me how internet works...',
@@ -627,6 +629,10 @@ export default {
       label: 'Explore AI Store',
     },
     create: 'Create Tool',
+    successDuplicateTool: 'Tool duplicated successfully',
+    errorDuplicateTool: 'Failed to duplicate tool',
+    successOpenToolInCodeEditor: 'Tool opened in code editor successfully',
+    errorOpenToolInCodeEditor: 'Failed to open tool in code editor',
     installFromStore: 'Install from Store',
     lookingForMoreTools: 'Looking for more tools?',
     visitStore:

@@ -49,6 +49,7 @@
     "emptyStateDescription": "Untuk pertanyaan cepat, tekan ⌘ + Shift + J untuk menggunakan Shinkai Spotlight",
     "emptyStateTitle": "Tanyakan kepada Shinkai AI",
     "enterMessage": "Masukkan Pesan",
+    "failedToOpenChatFolder": "Silakan unggah file ke obrolan terlebih dahulu",
     "fileProcessing": {
       "description": "Proses ini bisa memakan waktu beberapa menit",
       "title": "File Anda sedang diproses"
@@ -63,6 +64,7 @@
     },
     "limitReachedDescription": "Anda telah menggunakan semua kueri Anda untuk bulan ini pada model/agen ini. Silakan mulai obrolan baru dengan agen lain.",
     "limitReachedTitle": "Batas Telah Tercapai",
+    "openChatFolder": "Buka Folder Obrolan",
     "sendMessage": "Kirim Pesan"
   },
   "chatDM": {
@@ -536,12 +538,16 @@
         "text": "Tidak ada alat ditemukan untuk kueri pencarian"
       }
     },
+    "errorDuplicateTool": "Gagal menggandakan alat",
+    "errorOpenToolInCodeEditor": "Gagal membuka alat di editor kode",
     "installFromStore": "Instal dari Toko",
     "label": "Alat-alat Shinkai",
     "lookingForMoreTools": "Mencari lebih banyak alat?",
     "store": {
       "label": "Jelajahi Toko AI"
     },
+    "successDuplicateTool": "Alat berhasil diduplikasi",
+    "successOpenToolInCodeEditor": "Alat dibuka di editor kode",
     "visitStore": "Kunjungi Toko Shinkai untuk menemukan dan menginstal alat tambahan yang dapat meningkatkan alur kerja Anda"
   },
   "vectorFs": {
