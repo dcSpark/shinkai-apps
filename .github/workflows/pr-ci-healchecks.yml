@@ -10,7 +10,7 @@ defaults:
 
 jobs:
   health-checks:
-    runs-on: ubuntu-22.04
+    runs-on: shinkai-ubuntu-large
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -53,9 +53,7 @@ jobs:
         run: |
           npx nx run-many -t lint,test --parallel=3 --skip-nx-cache --verbose --exclude=shinkai-desktop,shinkai-visor
           npx nx run-many -t build --parallel=3 --skip-nx-cache --verbose --exclude=shinkai-desktop,shinkai-visor
-          cd apps/shinkai-desktop
-          npx eslint --ext .js,.jsx,.ts,.tsx . --ignore-path .gitignore
-          cd src-tauri && cargo check
+          npx nx lint shinkai-desktop
 
 #      - name: Run E2E for Visor
 #        id: visor-e2e-tests
