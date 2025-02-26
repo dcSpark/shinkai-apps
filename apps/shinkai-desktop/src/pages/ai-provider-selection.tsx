@@ -7,7 +7,10 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { OnboardingStep } from '../components/onboarding/constants';
+import {
+  OnboardingStep,
+  ProviderSelectionUser,
+} from '../components/onboarding/constants';
 import { useStepNavigation } from '../routes';
 import { useSettings } from '../store/settings';
 
@@ -21,7 +24,7 @@ const AIProviderSelection = () => {
     <div className="flex h-full flex-col gap-10">
       <div className="space-y-5">
         <h1 className="font-clash text-4xl font-semibold">
-          Configure Your AI Model
+          Configure Your AI Model (optional)
         </h1>
         <p className="text-gray-80 text-base">
           Choose the AI model that best fits your app&apos;s needs. You can
@@ -33,7 +36,10 @@ const AIProviderSelection = () => {
           description="Connect to AI models hosted online, ideal for real-time processing and scalable AI tasks. "
           icon={<CloudModelIcon className="size-6" />}
           onClick={() => {
-            completeStep(OnboardingStep.AI_PROVIDER_SELECTION, ModelType.CLOUD);
+            completeStep(
+              OnboardingStep.AI_PROVIDER_SELECTION,
+              ProviderSelectionUser.CLOUD,
+            );
             navigate('/install-ai-models?provider=cloud');
           }}
           title="Use a Cloud Provider"
@@ -43,7 +49,10 @@ const AIProviderSelection = () => {
           description="Run AI models directly on your device, offering more control, enabling offline use and enhancing privacy. "
           icon={<LocalModelIcon className="size-6" />}
           onClick={() => {
-            completeStep(OnboardingStep.AI_PROVIDER_SELECTION, ModelType.LOCAL);
+            completeStep(
+              OnboardingStep.AI_PROVIDER_SELECTION,
+              ProviderSelectionUser.LOCAL,
+            );
             navigate('/install-ai-models?provider=local');
           }}
           title="Install a Local Model"
@@ -58,7 +67,10 @@ const AIProviderSelection = () => {
             'flex flex-col',
           )}
           onClick={() => {
-            completeStep(OnboardingStep.AI_PROVIDER_SELECTION, ModelType.FREE);
+            completeStep(
+              OnboardingStep.AI_PROVIDER_SELECTION,
+              ProviderSelectionUser.FREE,
+            );
             navigate('/inboxes');
           }}
           to={'/'}
