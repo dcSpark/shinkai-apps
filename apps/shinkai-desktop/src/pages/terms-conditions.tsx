@@ -11,33 +11,34 @@ import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpe
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
+import { OnboardingStep } from '../components/onboarding/constants';
 import { ResetStorageBeforeConnectConfirmationPrompt } from '../components/reset-storage-before-connect-confirmation-prompt';
 import config from '../config';
 import { useShinkaiNodeRemoveStorageMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeSpawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeKillMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
-import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
+// import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
+import { useStepNavigation } from '../routes';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 
 const TermsAndConditionsPage = () => {
   const { t, Trans } = useTranslation();
-  const termsAndConditionsAccepted = useSettings(
-    (state) => state.termsAndConditionsAccepted,
-  );
-  const setTermsAndConditionsAccepted = useSettings(
-    (state) => state.setTermsAndConditionsAccepted,
-  );
+  const [termsAndConditionsAccepted, setTermsAndConditionsAccepted] =
+    useState(false);
+  // useShinkaiNodeEventsToast();
 
-  const navigate = useNavigate();
+  const completeStep = useSettings((state) => state.completeStep);
+
+  useStepNavigation(OnboardingStep.TERMS_CONDITIONS);
+
   const setAuth = useAuth((state) => state.setAuth);
   const [
     resetStorageBeforeConnectConfirmationPromptOpen,
     setResetStorageBeforeConnectConfirmationPrompt,
   ] = useState(false);
-  const shinkaiNodeEventState = useShinkaiNodeEventsToast();
 
   const { encryptionKeys } = useGetEncryptionKeys();
   const setupDataForm = useForm<QuickConnectFormSchema>({
@@ -66,7 +67,7 @@ const TermsAndConditionsPage = () => {
           api_v2_key: response.data?.api_v2_key ?? '',
         };
         setAuth(updatedSetupData);
-        navigate('/analytics');
+        completeStep(OnboardingStep.TERMS_CONDITIONS, true);
       } else if (response.status === 'non-pristine') {
         setResetStorageBeforeConnectConfirmationPrompt(true);
       } else {
@@ -127,7 +128,9 @@ const TermsAndConditionsPage = () => {
         <Checkbox
           checked={termsAndConditionsAccepted}
           id="terms"
-          onCheckedChange={setTermsAndConditionsAccepted}
+          onCheckedChange={(checked) =>
+            setTermsAndConditionsAccepted(checked as boolean)
+          }
         />
         <label
           className="inline-block cursor-pointer text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

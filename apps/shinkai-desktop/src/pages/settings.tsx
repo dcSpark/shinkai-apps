@@ -34,6 +34,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { OnboardingStep } from '../components/onboarding/constants';
 import {
   useShinkaiNodeGetOllamaVersionQuery,
   useShinkaiNodeRespawnMutation,
@@ -68,7 +69,9 @@ const SettingsPage = () => {
   );
   const userLanguage = useSettings((state) => state.userLanguage);
   const setUserLanguage = useSettings((state) => state.setUserLanguage);
-  const optInAnalytics = useSettings((state) => state.optInAnalytics);
+  const optInAnalytics = useSettings((state) =>
+    state.getStepChoice(OnboardingStep.ANALYTICS),
+  );
   const optInExperimental = useSettings((state) => state.optInExperimental);
   const setOptInExperimental = useSettings(
     (state) => state.setOptInExperimental,
@@ -95,7 +98,7 @@ const SettingsPage = () => {
       nodeAddress: auth?.node_address,
       shinkaiIdentity: auth?.shinkai_identity,
       ollamaVersion: '',
-      optInAnalytics,
+      optInAnalytics: !!optInAnalytics,
       optInExperimental,
       language: userLanguage,
     },

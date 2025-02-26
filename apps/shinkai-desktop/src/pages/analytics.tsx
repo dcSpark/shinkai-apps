@@ -3,14 +3,41 @@ import { Button } from '@shinkai_network/shinkai-ui';
 import { CheckIcon, XIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+import {
+  COMPLETION_DESTINATION,
+  OnboardingStep,
+} from '../components/onboarding/constants';
 import { analyticsBulletPoints } from '../constants/analytics';
+import { useStepNavigation } from '../routes';
 import { useSettings } from '../store/settings';
 
 const AnalyticsPage = () => {
   const navigate = useNavigate();
   const { t, Trans } = useTranslation();
-  const denyAnalytics = useSettings((state) => state.denyAnalytics);
-  const acceptAnalytics = useSettings((state) => state.acceptAnalytics);
+  const completeStep = useSettings((state) => state.completeStep);
+  const getNextStep = useSettings((state) => state.getNextStep);
+
+  useStepNavigation(OnboardingStep.ANALYTICS);
+
+  const handleOptIn = () => {
+    completeStep(OnboardingStep.ANALYTICS, true);
+    const nextStep = getNextStep();
+    if (nextStep) {
+      navigate(nextStep.path);
+    } else {
+      navigate(COMPLETION_DESTINATION);
+    }
+  };
+
+  const handleOptOut = () => {
+    completeStep(OnboardingStep.ANALYTICS, false);
+    const nextStep = getNextStep();
+    if (nextStep) {
+      navigate(nextStep.path);
+    } else {
+      navigate(COMPLETION_DESTINATION);
+    }
+  };
 
   return (
     <div className="mx-auto flex h-full max-w-lg flex-col gap-8">
@@ -49,22 +76,12 @@ const AnalyticsPage = () => {
       </div>
 
       <div className="flex flex-col items-center gap-4">
-        <Button
-          className="w-full"
-          onClick={() => {
-            acceptAnalytics();
-            navigate('/ai-provider-selection');
-          }}
-          size="lg"
-        >
+        <Button className="w-full" onClick={handleOptIn} size="lg">
           {t('common.iAgree')}
         </Button>
         <Button
           className="w-full"
-          onClick={() => {
-            denyAnalytics();
-            navigate('/ai-provider-selection');
-          }}
+          onClick={handleOptOut}
           size="lg"
           variant="outline"
         >

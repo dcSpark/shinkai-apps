@@ -604,16 +604,15 @@ const MainLayout = () => {
   }, [isSuccess, nodeInfo, isFetching, t]);
 
   const disabledSidebarRoutes = [
-    '/connect-ai',
-    '/free-subscriptions',
-    '/terms-and-conditions',
+    '/terms-conditions',
     '/analytics',
     '/ai-provider-selection',
-    '/ai-model-installation',
   ];
 
   const displaySidebar =
     !!auth && !disabledSidebarRoutes.includes(location.pathname);
+
+  console.log(displaySidebar, 'displaySidebar', location.pathname);
 
   const disableScrollRoutes = ['/tools'];
   const hideScrollbar = disableScrollRoutes.includes(location.pathname);
@@ -624,7 +623,7 @@ const MainLayout = () => {
         className="absolute top-0 z-50 h-6 w-full"
         data-tauri-drag-region={true}
       />
-      <div className={cn('flex h-full flex-1', !!auth && '')}>
+      <div className={cn('flex h-full flex-1')}>
         <AnimatePresence initial={false}>
           {displaySidebar && <MainNav />}
         </AnimatePresence>

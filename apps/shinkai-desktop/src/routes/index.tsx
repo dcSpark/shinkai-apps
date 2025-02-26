@@ -3,7 +3,14 @@ import { TooltipProvider } from '@shinkai_network/shinkai-ui';
 import { listen } from '@tauri-apps/api/event';
 import { debug } from '@tauri-apps/plugin-log';
 import React, { useEffect, useRef } from 'react';
-import { Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
+import {
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 
 import AddAgentPage from '../components/agent/add-agent';
 import EditAgentPage from '../components/agent/edit-agent';
@@ -22,6 +29,7 @@ import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-cont
 import VectorFs from '../components/vector-fs/vector-fs';
 import SearchNodeFiles from '../components/vector-search/search-node-files';
 import {
+  useShinkaiNodeGetDefaultModel,
   useShinkaiNodeIsRunningQuery,
   useShinkaiNodeSetOptionsMutation,
   useShinkaiNodeSpawnMutation,
@@ -43,9 +51,7 @@ import CryptoWalletPage from '../pages/crypto-wallet';
 import EditTaskPage from '../pages/edit-task';
 import EditToolPage from '../pages/edit-tool';
 import { ExportConnection } from '../pages/export-connection';
-import FreeSubscriptionsPage from '../pages/free-subscription';
 import { GalxeValidation } from '../pages/galxe-validation';
-import GetStartedPage from '../pages/get-started';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
@@ -62,7 +68,12 @@ import { Tasks } from '../pages/tasks';
 import TermsAndConditionsPage from '../pages/terms-conditions';
 import { ToolsHomepage } from '../pages/tools-homepage';
 import { useAuth } from '../store/auth';
-import { useSettings } from '../store/settings';
+import {
+  COMPLETION_DESTINATION,
+  ONBOARDING_STEPS,
+  OnboardingStep,
+  useSettings,
+} from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import useAppHotkeys from '../utils/use-app-hotkeys';
 
@@ -79,7 +90,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   });
   const { mutateAsync: shinkaiNodeSetOptions } =
     useShinkaiNodeSetOptionsMutation();
-  const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation({});
+  const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation();
 
   /*
     All this auto start code is a workaround while we implement a way to synchronize the app state between browser and tauri
@@ -119,26 +130,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <ShinkaiNodeRunningOverlay>{children}</ShinkaiNodeRunningOverlay>;
 };
 
-const useOnboardingRedirect = () => {
-  const termsAndConditionsAccepted = useSettings(
-    (state) => state.termsAndConditionsAccepted,
-  );
-  const optInAnalytics = useSettings((state) => state.optInAnalytics);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (termsAndConditionsAccepted === undefined) {
-      navigate('/terms-conditions');
-      return;
-    }
-
-    if (optInAnalytics === undefined) {
-      navigate('/analytics');
-      return;
-    }
-  }, []);
-};
-
 const useGlobalAppShortcuts = () => {
   const navigate = useNavigate();
   useEffect(() => {
@@ -156,6 +147,7 @@ export const useDefaultAgentByDefault = () => {
   const auth = useAuth((state) => state.auth);
   const defaultAgentId = useSettings((state) => state.defaultAgentId);
   const setDefaultAgentId = useSettings((state) => state.setDefaultAgentId);
+  const { data: defaultModel } = useShinkaiNodeGetDefaultModel();
 
   const { llmProviders, isSuccess } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
@@ -164,13 +156,112 @@ export const useDefaultAgentByDefault = () => {
 
   useEffect(() => {
     if (isSuccess && llmProviders?.length && !defaultAgentId) {
-      setDefaultAgentId(llmProviders[0].id);
+      const defaultAgent = llmProviders.find(
+        (provider) =>
+          provider.model.toLowerCase() === defaultModel?.toLowerCase(),
+      );
+      if (defaultAgent) {
+        setDefaultAgentId(defaultAgent.id);
+      } else {
+        setDefaultAgentId(llmProviders[0].id);
+      }
     }
-  }, [llmProviders, isSuccess, setDefaultAgentId, defaultAgentId]);
+  }, [
+    llmProviders,
+    isSuccess,
+    setDefaultAgentId,
+    defaultAgentId,
+    defaultModel,
+  ]);
+};
+
+const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
+  const auth = useAuth((state) => state.auth);
+  const isStepCompleted = useSettings((state) => state.isStepCompleted);
+  const getNextStep = useSettings((state) => state.getNextStep);
+  const isOnboardingComplete = useSettings(
+    (state) => state.isOnboardingComplete,
+  );
+  const getStepByPath = useSettings((state) => state.getStepByPath);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!auth && location.pathname !== '/terms-conditions') {
+      navigate('/terms-conditions');
+      return;
+    }
+
+    if (isOnboardingComplete()) {
+      const currentStep = getStepByPath(location.pathname);
+      if (currentStep) {
+        navigate(COMPLETION_DESTINATION);
+      }
+      return;
+    }
+
+    const currentStep = getStepByPath(location.pathname);
+
+    if (currentStep && isStepCompleted(currentStep.id)) {
+      const nextStep = getNextStep();
+      if (nextStep) {
+        navigate(nextStep.path);
+      } else {
+        navigate(COMPLETION_DESTINATION);
+      }
+      return;
+    }
+
+    const nextIncompleteStep = getNextStep();
+    if (
+      nextIncompleteStep &&
+      location.pathname !== nextIncompleteStep.path &&
+      ![COMPLETION_DESTINATION, '/'].includes(location.pathname)
+    ) {
+      navigate(nextIncompleteStep.path);
+      return;
+    }
+
+    if (
+      [COMPLETION_DESTINATION, '/'].includes(location.pathname) &&
+      !isOnboardingComplete()
+    ) {
+      const nextStep = getNextStep();
+      if (nextStep) {
+        navigate(nextStep.path);
+      }
+    }
+  }, [
+    auth,
+    isStepCompleted,
+    getNextStep,
+    getStepByPath,
+    isOnboardingComplete,
+    location.pathname,
+    navigate,
+  ]);
+
+  return <OnboardingLayout>{children}</OnboardingLayout>;
+};
+
+export const useStepNavigation = (stepId: OnboardingStep) => {
+  const navigate = useNavigate();
+  const isStepCompleted = useSettings((state) => state.isStepCompleted);
+  const getNextStep = useSettings((state) => state.getNextStep);
+
+  useEffect(() => {
+    if (isStepCompleted(stepId)) {
+      const nextStep = getNextStep();
+      if (nextStep) {
+        navigate(nextStep.path);
+      } else {
+        navigate(COMPLETION_DESTINATION);
+      }
+    }
+  }, [isStepCompleted, getNextStep, navigate, stepId]);
 };
 
 const AppRoutes = () => {
-  useOnboardingRedirect();
   useAppHotkeys();
   useGlobalAppShortcuts();
   useDefaultAgentByDefault();
@@ -180,34 +271,24 @@ const AppRoutes = () => {
       <Route element={<MainLayout />}>
         <Route
           element={
-            <OnboardingLayout>
+            <OnboardingGuard>
               <Outlet />
-            </OnboardingLayout>
+            </OnboardingGuard>
           }
         >
           <Route
             element={<TermsAndConditionsPage />}
-            path={'/terms-conditions'}
+            path={'terms-conditions'}
           />
-          <Route element={<AnalyticsPage />} path={'/analytics'} />
+          <Route element={<AnalyticsPage />} path={'analytics'} />
           <Route
             element={<AIProviderSelection />}
-            path={'/ai-provider-selection'}
+            path={'ai-provider-selection'}
           />
-          <Route element={<GetStartedPage />} path={'/get-started'} />
-          <Route element={<QuickConnectionPage />} path={'/quick-connection'} />
-          <Route element={<RestoreConnectionPage />} path={'/restore'} />
-          <Route element={<ConnectMethodQrCodePage />} path={'/connect-qr'} />
+          <Route element={<QuickConnectionPage />} path={'quick-connection'} />
+          <Route element={<RestoreConnectionPage />} path={'restore'} />
+          <Route element={<ConnectMethodQrCodePage />} path={'connect-qr'} />
         </Route>
-        <Route element={<ShinkaiPrivatePage />} path={'/connect-ai'} />
-        <Route
-          element={<FreeSubscriptionsPage />}
-          path={'/free-subscriptions'}
-        />
-        <Route
-          element={<AIModelInstallation isOnboardingStep={true} />}
-          path={'/ai-model-installation'}
-        />
         <Route
           element={
             <ProtectedRoute>
@@ -270,7 +351,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         >
-          <Route element={<AIModelInstallation />} path="local-ais" />
+          <Route element={<AIModelInstallation />} path="install-ai-models" />
           <Route element={<AIsPage />} path="ais" />
           <Route element={<AddAIPage />} path="add-ai" />
           <Route
@@ -379,7 +460,10 @@ const AppRoutes = () => {
           />
         </Route>
       </Route>
-      <Route element={<Navigate replace to={'inboxes/'} />} path="/" />
+      <Route
+        element={<Navigate replace to={ONBOARDING_STEPS[0].path} />}
+        path="*"
+      />
     </Routes>
   );
 };

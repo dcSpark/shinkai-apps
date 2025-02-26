@@ -1,20 +1,12 @@
-import {
-  shinkaiOctopusImg,
-  shinkaiOctopusVideo,
-} from '@shinkai_network/shinkai-ui/assets';
-import { useReverseVideoPlayback } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 
 export type OnboardingLayoutProps = React.PropsWithChildren<
   React.HTMLAttributes<HTMLDivElement>
 >;
 
-const OnboardingLayout = ({
-  children,
-  className,
-  ...props
-}: OnboardingLayoutProps) => {
+const OnboardingLayout = ({ className, ...props }: OnboardingLayoutProps) => {
   return (
     <div
       className={cn(
@@ -31,7 +23,9 @@ const OnboardingLayout = ({
             data-cy="shinkai-logo"
             src={'./visor.svg'}
           />
-          <div className="flex-1">{children}</div>
+          <div className="flex-1">
+            <Outlet />
+          </div>
         </div>
       </div>
       <div className="grid h-full place-items-center">

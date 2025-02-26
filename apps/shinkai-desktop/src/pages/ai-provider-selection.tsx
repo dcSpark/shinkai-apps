@@ -5,9 +5,18 @@ import {
   LocalModelIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { OnboardingStep } from '../components/onboarding/constants';
+import { useStepNavigation } from '../routes';
+import { useSettings } from '../store/settings';
 
 const AIProviderSelection = () => {
+  const navigate = useNavigate();
+  const completeStep = useSettings((state) => state.completeStep);
+
+  useStepNavigation(OnboardingStep.AI_PROVIDER_SELECTION);
+
   return (
     <div className="flex h-full flex-col gap-10">
       <div className="space-y-5">
@@ -19,18 +28,24 @@ const AIProviderSelection = () => {
           update this later anytime.
         </p>
       </div>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-5">
         <ProviderCard
           description="Connect to AI models hosted online, ideal for real-time processing and scalable AI tasks. "
-          href="/ai-model-installation?provider=cloud"
           icon={<CloudModelIcon className="size-6" />}
+          onClick={() => {
+            completeStep(OnboardingStep.AI_PROVIDER_SELECTION, ModelType.CLOUD);
+            navigate('/install-ai-models?provider=cloud');
+          }}
           title="Use a Cloud Provider"
         />
 
         <ProviderCard
           description="Run AI models directly on your device, offering more control, enabling offline use and enhancing privacy. "
-          href="/ai-model-installation?provider=local"
           icon={<LocalModelIcon className="size-6" />}
+          onClick={() => {
+            completeStep(OnboardingStep.AI_PROVIDER_SELECTION, ModelType.LOCAL);
+            navigate('/install-ai-models?provider=local');
+          }}
           title="Install a Local Model"
         />
         <Link
@@ -42,9 +57,13 @@ const AIProviderSelection = () => {
             }),
             'flex flex-col',
           )}
+          onClick={() => {
+            completeStep(OnboardingStep.AI_PROVIDER_SELECTION, ModelType.FREE);
+            navigate('/inboxes');
+          }}
           to={'/'}
         >
-          Skip for now, Use free trial model
+          Skip for now, I&apos;ll do it later
         </Link>
       </div>
     </div>
@@ -57,15 +76,15 @@ const ProviderCard = ({
   icon,
   title,
   description,
-  href,
+  onClick,
 }: {
   icon: React.ReactNode;
   title: string;
   description: string;
-  href: string;
+  onClick: () => void;
 }) => {
   return (
-    <Link
+    <button
       className={cn(
         buttonVariants({
           variant: 'outline',
@@ -74,9 +93,9 @@ const ProviderCard = ({
         }),
         'flex flex-col',
       )}
-      to={href}
+      onClick={onClick}
     >
-      <div className="flex items-start gap-2">
+      <div className="flex items-start gap-2 text-left">
         <span className="pt-1">{icon}</span>
         <div>
           <h3 className="text-lg font-semibold text-white">{title}</h3>
@@ -84,6 +103,6 @@ const ProviderCard = ({
         </div>
         <ArrowRightIcon className="pt-1 text-white" />
       </div>
-    </Link>
+    </button>
   );
 };

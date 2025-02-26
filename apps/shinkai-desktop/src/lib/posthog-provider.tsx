@@ -2,6 +2,7 @@ import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/get
 import { PostHogProvider, usePostHog } from 'posthog-js/react';
 import React, { useEffect } from 'react';
 
+import { OnboardingStep } from '../components/onboarding/constants';
 import config from '../config';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
@@ -16,7 +17,9 @@ export const AnalyticsProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const optInAnalytics = useSettings((state) => state.optInAnalytics);
+  const optInAnalytics = useSettings((state) =>
+    state.getStepChoice(OnboardingStep.ANALYTICS),
+  );
   const posthog = usePostHog();
 
   const posthogApiKey = config.posthogApiKey;
