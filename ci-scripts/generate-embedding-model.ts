@@ -20,7 +20,7 @@ function generatePartFile(partData: Buffer, partNumber: number): void {
   const formattedBytes = formatBytesAsHexLines(partData);
   const fileContent = `// This file was automatically generated from a part of the GGUF model.
 // Do not edit manually.
-#[allow(clippy::unreadable_literal)]
+#[allow(clippy::all)]
 pub const MODEL_DATA_PART${partNumber}: &[u8] = &[
 ${formattedBytes}
 ];
