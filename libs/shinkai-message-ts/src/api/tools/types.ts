@@ -127,6 +127,11 @@ export type GetToolResponse = {
   content: [ShinkaiTool, boolean];
   type: ShinkaiToolType;
 };
+
+export type GetToolsCategory = 'downloaded' | 'default' | 'system' | 'my_tools';
+export type GetToolsRequest = {
+  category?: GetToolsCategory;
+};
 export type GetToolsResponse = ShinkaiToolHeader[];
 export type GetToolsSearchResponse = [ShinkaiToolHeader, number][];
 

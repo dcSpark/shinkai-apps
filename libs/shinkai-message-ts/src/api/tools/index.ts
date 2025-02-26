@@ -25,6 +25,7 @@ import {
   GetShinkaiFileProtocolRequest,
   GetShinkaiFileProtocolResponse,
   GetToolResponse,
+  GetToolsRequest,
   GetToolsResponse,
   GetToolStoreDetailsRequest,
   GetToolStoreDetailsResponse,
@@ -86,11 +87,16 @@ export const getTool = async (
   return response.data as GetToolResponse;
 };
 
-export const getTools = async (nodeAddress: string, bearerToken: string) => {
+export const getTools = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetToolsRequest,
+) => {
   const response = await httpClient.get(
     urlJoin(nodeAddress, '/v2/list_all_shinkai_tools'),
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
+      params: { category: payload.category },
       responseType: 'json',
     },
   );
