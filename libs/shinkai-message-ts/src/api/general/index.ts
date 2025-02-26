@@ -24,7 +24,7 @@ export const getNodeStorageLocation = async (
 ): Promise<GetNodeStorageLocationResponse> => {
   const response = await httpClient.get(
     urlJoin(nodeAddress, '/v2/storage_location'),
-    { responseType: 'json', headers: { 'Authorization': `Bearer ${token}` } },
+    { responseType: 'json', headers: { Authorization: `Bearer ${token}` } },
   );
   return response.data;
 };

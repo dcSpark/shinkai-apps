@@ -580,22 +580,22 @@ function ConversationChatFooter({
                         onClick={openFilePicker}
                       />
                       <PromptSelectionActionBar />
-                      <OpenChatFolderActionBar
-                        disabled={isChatFolderDisabled}
-                        onClick={async () => {
-                          if (!jobChatFolderName || !nodeStorageLocation) return;
-                          try {
-                            await invoke('shinkai_node_open_chat_folder', {
-                              storageLocation: nodeStorageLocation,
-                              chatFolderName: jobChatFolderName.folder_name,
-                            })
-                          } catch (error) {
-                            console.log('**error**');
-                            console.error(error);
-                            toast.warning(t('chat.failedToOpenChatFolder'));
-                          }
-                        }}
-                      />
+                      {inboxId && (
+                        <OpenChatFolderActionBar
+                          onClick={async () => {
+                            if (!jobChatFolderName || !nodeStorageLocation)
+                              return;
+                            try {
+                              await invoke('shinkai_node_open_chat_folder', {
+                                storageLocation: nodeStorageLocation,
+                                chatFolderName: jobChatFolderName.folder_name,
+                              });
+                            } catch (error) {
+                              toast.warning(t('chat.failedToOpenChatFolder'));
+                            }
+                          }}
+                        />
+                      )}
                       {isAgentInbox ? null : inboxId ? (
                         <UpdateToolsSwitchActionBar />
                       ) : (

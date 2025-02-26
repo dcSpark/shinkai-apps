@@ -6,6 +6,7 @@ import {
   OAuth,
   ShinkaiTool,
   ShinkaiToolType,
+  ToolMetadata,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDuplicateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/duplicateTool/useDuplicateTool';
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
@@ -90,9 +91,9 @@ export default function ToolDetailsCard({
   const { t } = useTranslation();
   const defaultLLMProvider = useSettings((state) => state.defaultAgentId);
   const toolConfigSchema =
-  'config' in tool && tool.config?.length > 0
-    ? parseConfigToJsonSchema(tool?.config ?? [])
-    : {};
+    'config' in tool && tool.config?.length > 0
+      ? parseConfigToJsonSchema(tool?.config ?? [])
+      : {};
 
   const {
     mutateAsync: publishTool,
@@ -134,50 +135,64 @@ export default function ToolDetailsCard({
   const { mutateAsync: toggleEnableTool, isPending: isTogglingEnableTool } =
     useToggleEnableTool();
 
-  const { mutateAsync: duplicateTool, isPending: isDuplicatingTool } = useDuplicateTool({
-    onSuccess: (response) => {
-      toast.success(t('tools.successDuplicateTool'), {
-        description: `${response.tool_router_key}`
-      })
-    },
-    onError: (error) => {
-      toast.error(t('tools.errorDuplicateTool'), {
-        description: error.response?.data?.message ?? error.message,
-      });
-    },
-  });
-  const { mutateAsync: openToolInCodeEditor, isPending: isOpeningToolInCodeEditor } = useOpenToolInCodeEditor(
+  const { mutateAsync: duplicateTool, isPending: isDuplicatingTool } =
+    useDuplicateTool({
+      onSuccess: (response) => {
+        toast.success(t('tools.successDuplicateTool'), {
+          description: `${response.tool_router_key}`,
+        });
+      },
+      onError: (error) => {
+        toast.error(t('tools.errorDuplicateTool'), {
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
+  const {
+    refetch: openToolInCodeEditor,
+    isPending: isOpeningToolInCodeEditor,
+    isSuccess: isOpenToolInCodeEditorSuccess,
+  } = useOpenToolInCodeEditor(
     {
       nodeAddress: auth?.node_address ?? '',
       bearerToken: auth?.api_v2_key ?? '',
       xShinkaiAppId: `app-id-${new Date().getTime()}`,
       xShinkaiToolId: `tool-id-${new Date().getTime()}`,
-      defaultLLMProvider: defaultLLMProvider ?? '',
+      xShinkaiLLMProvider: defaultLLMProvider ?? '',
       payload: {
-        code: 'py_code' in tool ? tool.py_code : 'js_code' in tool ? tool.js_code : '',
-        language: toolType === 'Python' ? CodeLanguage.Python : CodeLanguage.Typescript,
+        code:
+          'py_code' in tool
+            ? tool.py_code
+            : 'js_code' in tool
+              ? tool.js_code
+              : '',
+        language:
+          toolType === 'Python' ? CodeLanguage.Python : CodeLanguage.Typescript,
         config: 'config' in tool ? tool.config : [],
-        parameters: 'parameters' in tool ? (tool.parameters as any): {},
+        parameters: 'parameters' in tool ? (tool.parameters as any) : {},
         oauth: 'oauth' in tool ? tool.oauth : [],
         tools: [toolKey ?? ''],
         metadata: {
           name: tool.name,
           description: tool.description,
-          tools: 'tools' in tool ? tool.tools as string[]: [],
+          tools: 'tools' in tool ? tool.tools : [],
           author: 'author' in tool ? tool.author : '',
           keywords: 'keywords' in tool ? tool.keywords : [],
           version: 'version' in tool ? tool.version : '',
-          configurations: toolConfigSchema as {
-            type: 'object';
-            properties: Record<string, any>;
-            required: string[];
-          },
-          parameters: 'parameters' in tool ? (tool.parameters as any): {},
-          result: 'result' in tool ? (tool.result as any): {},
-        },
+          configurations: toolConfigSchema,
+          parameters: 'parameters' in tool ? tool.parameters : {},
+          result: 'result' in tool ? tool.result : {},
+        } as ToolMetadata,
       },
     },
+    { enabled: false },
   );
+
+  useEffect(() => {
+    if (isOpenToolInCodeEditorSuccess) {
+      toast.success(t('tools.successOpenToolInCodeEditor'));
+    }
+  }, [isOpenToolInCodeEditorSuccess, t]);
 
   const { mutateAsync: exportTool, isPending: isExportingTool } = useExportTool(
     {
@@ -358,14 +373,16 @@ export default function ToolDetailsCard({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-xs"
-                  disabled={toolType !== 'Python' && toolType !== 'Deno'}
-                  onClick={async () => {
-                    if (isDuplicatingTool) return
-                    await duplicateTool({
+                  disabled={
+                    (toolType !== 'Python' && toolType !== 'Deno') ||
+                    isDuplicatingTool
+                  }
+                  onClick={() => {
+                    duplicateTool({
                       toolKey: toolKey ?? '',
                       nodeAddress: auth?.node_address ?? '',
                       token: auth?.api_v2_key ?? '',
-                    })
+                    });
                   }}
                 >
                   <CopyIcon className="mr-2 h-4 w-4" />
@@ -373,12 +390,13 @@ export default function ToolDetailsCard({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-xs"
-                  disabled={toolType !== 'Python' && toolType !== 'Deno'}
+                  disabled={
+                    (toolType !== 'Python' && toolType !== 'Deno') ||
+                    isOpeningToolInCodeEditor
+                  }
                   hidden={!hasToolCode}
-                  onClick={async () => {
-                    if (isOpeningToolInCodeEditor) return
-                    await openToolInCodeEditor()
-                    toast.success(t('tools.successOpenToolInCodeEditor'))
+                  onClick={() => {
+                    openToolInCodeEditor();
                   }}
                 >
                   <SquareChevronRightIcon className="mr-2 h-4 w-4" />

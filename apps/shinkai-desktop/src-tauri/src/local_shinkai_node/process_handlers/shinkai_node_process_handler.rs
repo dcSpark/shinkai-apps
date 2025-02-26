@@ -25,7 +25,7 @@ impl ShinkaiNodeProcessHandler {
     const HEALTH_TIMEOUT_MS: u64 = 5000;
     const PROCESS_NAME: &'static str = "shinkai-node";
     const READY_MATCHER: &'static str = "listening on ";
-    
+
     pub fn new(
         app: AppHandle,
         event_sender: Sender<ProcessHandlerEvent>,
@@ -33,7 +33,7 @@ impl ShinkaiNodeProcessHandler {
         app_data_dir: PathBuf,
     ) -> Self {
         let ready_matcher = Regex::new(Self::READY_MATCHER).unwrap();
-        
+
         let options =
         ShinkaiNodeOptions::with_app_options(app_resource_dir.clone(), app_data_dir.clone());
         let process_handler = ProcessHandler::new(
@@ -42,7 +42,7 @@ impl ShinkaiNodeProcessHandler {
             event_sender,
             ready_matcher,
         );
-        
+
         ShinkaiNodeProcessHandler {
             app,
             process_handler,
@@ -51,14 +51,14 @@ impl ShinkaiNodeProcessHandler {
             options,
         }
     }
-    
+
     fn get_base_url(&self) -> String {
         let ip = self.options.clone().node_api_ip.unwrap();
         let port = self.options.clone().node_api_port.unwrap();
         let base_url = format!("http://{}:{}", ip, port);
         base_url
     }
-    
+
     async fn health(base_url: &str, timeout_ms: u64) -> Result<bool, ()> {
         let url = format!("{}/v1/shinkai_health", base_url);
         let client = reqwest::Client::new();
@@ -73,7 +73,7 @@ impl ShinkaiNodeProcessHandler {
             Ok(false)
         }
     }
-    
+
     async fn wait_shinkai_node_server(&self) -> Result<(), String> {
         let timeout = Duration::from_millis(Self::HEALTH_TIMEOUT_MS);
         let start_time = std::time::Instant::now();
@@ -95,12 +95,12 @@ impl ShinkaiNodeProcessHandler {
             }
         }
     }
-    
+
     pub fn set_options(&mut self, options: ShinkaiNodeOptions) -> ShinkaiNodeOptions {
         self.options = ShinkaiNodeOptions::from_merge(self.options.clone(), options);
         self.options.clone()
     }
-    
+
     pub async fn remove_storage(&self, preserve_keys: bool) -> Result<(), String> {
         if self.process_handler.is_running().await {
             return Err("can't remove node storage while it's running".to_string());
@@ -136,10 +136,10 @@ impl ShinkaiNodeProcessHandler {
         }
         Ok(())
     }
-    
+
     pub async fn spawn(&self) -> Result<(), String> {
         let _ = self.kill().await;
-        
+
         let env = options_to_env(&self.options.clone());
         self.process_handler.spawn(env, [].to_vec(), None).await?;
         if let Err(e) = self.wait_shinkai_node_server().await {
@@ -156,15 +156,15 @@ impl ShinkaiNodeProcessHandler {
         );
         self.options.clone()
     }
-    
+
     pub fn get_options(&self) -> ShinkaiNodeOptions {
         self.options.clone()
     }
-    
+
     pub async fn is_running(&self) -> bool {
         self.process_handler.is_running().await
     }
-    
+
     pub async fn kill_existing_processes_using_ports(&self) -> Result<(), String> {
         // Extract ports from options
         let ports: Vec<&str> = vec![
@@ -175,71 +175,71 @@ impl ShinkaiNodeProcessHandler {
         .into_iter()
         .flatten()
         .collect();
-        
+
         let _ = kill_existing_processes_using_ports(self.app.clone(), ports).await;
         Ok(())
     }
-    
+
     pub async fn kill(&self) {
         self.process_handler.kill().await;
         let _ = self.kill_existing_processes_using_ports().await;
     }
-    
+
     pub fn open_storage_location(&self) -> Result<(), String> {
         let options = self.options.clone();
         let storage_path: PathBuf = options.node_storage_path
         .ok_or_else(|| "Storage path not set".to_string())?
         .into();
-        
+
         opener::open(&storage_path)
         .map_err(|e| format!("Failed to open storage location: {}", e))
     }
-    
+
     pub fn open_storage_location_with_path(&self, relative_path: &str) -> Result<(), String> {
         let options = self.options.clone();
         let storage_path: PathBuf = options.node_storage_path
         .ok_or_else(|| "Storage path not set".to_string())?
         .into();
-        
+
         // Sanitize the relative path to prevent directory traversal
         let safe_path = relative_path
         .split(['/', '\\']) // Handle both Unix and Windows path separators
         .filter(|component| {
-            !component.is_empty() && 
-            component != &"." && 
+            !component.is_empty() &&
+            component != &"." &&
             component != &".."
         });
-        
+
         // Build the target path by joining components
         let target_path = safe_path.fold(storage_path.clone(), |acc: PathBuf, component| {
             acc.join(component)
         });
-        
+
         // Verify the target path is within storage_path
         if !target_path.starts_with(&storage_path) {
             return Err("Invalid path: attempting to access outside storage directory".to_string());
         }
-        
+
         // Check if path exists
         if !target_path.exists() {
             return Err(format!("Path does not exist: {}", target_path.display()));
         }
-        
+
         opener::open(&target_path)
         .map_err(|e| format!("Failed to open location: {}", e))
     }
-    
+
     pub fn open_chat_folder(&self, storage_location: &str, chat_folder_name: &str) -> Result<(), String> {
         let storage_path = Path::new(storage_location);
         let filesystem_path = Path::new("filesystem");
         let chat_path = Path::new(chat_folder_name);
         let full_path = storage_path.join(filesystem_path).join(chat_path);
-        
+
         let full_path_str = match full_path.to_str() {
             Some(s) => s.to_string(), // Convert to owned String
             None => return Err("Invalid path".to_string()),
         };
-        
+
         match open(full_path_str) {
             Ok(_) => Ok(()),
             Err(e) => Err(format!("Failed to open folder: {}", e)),

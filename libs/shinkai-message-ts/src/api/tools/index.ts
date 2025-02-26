@@ -399,7 +399,7 @@ export const updateToolCodeImplementation = async (
   payload: UpdateToolCodeImplementationRequest,
 ) => {
   const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v2/tool_implementation_code_update"'),
+    urlJoin(nodeAddress, '/v2/tool_implementation_code_update'),
     payload,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
@@ -415,7 +415,7 @@ export const openToolInCodeEditor = async (
   payload: OpenToolInCodeEditorRequest,
   xShinkaiAppId: string,
   xShinkaiToolId: string,
-  defaultLLMProvider: string,
+  xShinkaiLLMProvider: string,
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/tools_standalone_playground'),
@@ -425,7 +425,7 @@ export const openToolInCodeEditor = async (
         Authorization: `Bearer ${bearerToken}`,
         'x-shinkai-app-id': xShinkaiAppId,
         'x-shinkai-tool-id': xShinkaiToolId,
-        'x-shinkai-llm-provider': defaultLLMProvider ?? 'llama3_1_8b',
+        'x-shinkai-llm-provider': xShinkaiLLMProvider,
       },
       responseType: 'json',
     },
