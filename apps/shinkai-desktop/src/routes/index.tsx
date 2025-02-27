@@ -67,7 +67,6 @@ import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
 import SheetDashboard from '../pages/sheet-dashboard';
 import SheetProject from '../pages/sheet-project';
-import ShinkaiPrivatePage from '../pages/shinkai-private';
 import { TaskLogs } from '../pages/task-logs';
 import { Tasks } from '../pages/tasks';
 import TermsAndConditionsPage from '../pages/terms-conditions';
@@ -76,6 +75,8 @@ import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import useAppHotkeys from '../utils/use-app-hotkeys';
+
+const skipOnboardingRoutes = ['/quick-connection', '/restore', '/connect-qr'];
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth((state) => state.auth);
@@ -91,6 +92,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { mutateAsync: shinkaiNodeSetOptions } =
     useShinkaiNodeSetOptionsMutation();
   const { mutateAsync: shinkaiNodeSpawn } = useShinkaiNodeSpawnMutation();
+  const location = useLocation();
+
+  const isConnectionRoute = skipOnboardingRoutes.some(
+    (route) =>
+      location.pathname === route || location.pathname.startsWith(route + '/'),
+  );
 
   /*
     All this auto start code is a workaround while we implement a way to synchronize the app state between browser and tauri
@@ -123,7 +130,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     isInUse,
   ]);
 
-  if (!auth) {
+  if (!auth && !isConnectionRoute) {
     return <Navigate replace to={'/terms-conditions'} />;
   }
 
@@ -187,6 +194,10 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (skipOnboardingRoutes.includes(location.pathname)) {
+      return;
+    }
+
     if (!auth && location.pathname !== '/terms-conditions') {
       navigate('/terms-conditions');
       return;
@@ -216,7 +227,9 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
     if (
       nextIncompleteStep &&
       location.pathname !== nextIncompleteStep.path &&
-      ![COMPLETION_DESTINATION, '/'].includes(location.pathname)
+      ![COMPLETION_DESTINATION, '/', ...skipOnboardingRoutes].includes(
+        location.pathname,
+      )
     ) {
       navigate(nextIncompleteStep.path);
       return;

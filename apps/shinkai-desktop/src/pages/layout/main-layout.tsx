@@ -63,8 +63,6 @@ import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { SHINKAI_STORE_URL } from '../../utils/store';
 
-const SUPPORT_EMAIL = 'app.support@shinkai.com';
-
 type NavigationLink = {
   title: string;
   href: string;
@@ -607,6 +605,9 @@ const MainLayout = () => {
     '/terms-conditions',
     '/analytics',
     '/ai-provider-selection',
+    '/quick-connection',
+    '/restore',
+    '/connect-qr',
   ];
 
   const displaySidebar =
