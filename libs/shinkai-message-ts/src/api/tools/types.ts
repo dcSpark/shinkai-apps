@@ -476,3 +476,11 @@ export type GetToolStoreDetailsResponse = {
     }[];
   };
 };
+export type ImportToolZipRequest = {
+  file: File;
+};
+export type ImportToolZipResponse = {
+  message: string;
+  status: string;
+  tool_key: string;
+};

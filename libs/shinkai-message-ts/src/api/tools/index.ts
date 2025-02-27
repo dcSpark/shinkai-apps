@@ -31,6 +31,8 @@ import {
   GetToolStoreDetailsResponse,
   ImportToolRequest,
   ImportToolResponse,
+  ImportToolZipRequest,
+  ImportToolZipResponse,
   OpenToolInCodeEditorRequest,
   OpenToolInCodeEditorResponse,
   PayInvoiceRequest,
@@ -666,4 +668,27 @@ export const getToolStoreDetails = async (
     },
   );
   return response.data as GetToolStoreDetailsResponse;
+};
+
+export const importToolZip = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: ImportToolZipRequest,
+) => {
+  const fileData = await payload.file.arrayBuffer();
+
+  const formData = new FormData();
+  formData.append('file', new Blob([fileData]));
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/import_tool_zip'),
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+      responseType: 'json',
+    },
+  );
+  return response.data as ImportToolZipResponse;
 };

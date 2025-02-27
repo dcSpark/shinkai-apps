@@ -36,9 +36,9 @@ import {
 } from '../components/playground-tool/hooks/use-tool-code';
 import PlaygroundToolLayout from '../components/playground-tool/layout';
 import ToolCodeEditor from '../components/playground-tool/tool-code-editor';
+import ImportToolModal from '../components/tools/import-tool';
 import {
   DockerStatus,
-  ImportToolModal,
   ToolCollection,
 } from '../components/tools/tool-collection';
 import { VideoBanner } from '../components/video-banner';
