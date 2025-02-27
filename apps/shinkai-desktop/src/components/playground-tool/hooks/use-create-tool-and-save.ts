@@ -145,6 +145,7 @@ export const useCreateToolAndSave = ({
   form: UseFormReturn<CreateToolCodeFormSchema>;
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   const { forceGenerateMetadata, handleCreateToolCode } = useToolCode({
     initialState: undefined,
@@ -183,6 +184,7 @@ export const useCreateToolAndSave = ({
   } = useAutoSaveTool();
 
   const createToolAndSaveTool = async (data: CreateToolCodeFormSchema) => {
+    setError(undefined);
     setIsProcessing(true);
     await handleCreateToolCode(data);
   };
@@ -214,8 +216,26 @@ export const useCreateToolAndSave = ({
   useEffect(() => {
     if (isError) {
       setIsProcessing(false);
+      setError(
+        toolCodeError
+          ? `Failed creating tool code: ${toolCodeError}`
+          : toolMetadataError
+            ? `Failed creating tool metadata: ${toolMetadataError}`
+            : saveToolCodeError?.response?.data?.message ??
+              saveToolCodeError?.message,
+      );
     }
-  }, [isError]);
+  }, [
+    isError,
+    saveToolCodeError?.message,
+    saveToolCodeError?.response?.data?.message,
+    toolCodeError,
+    toolMetadataError,
+  ]);
+
+  console.log('toolCodeError', toolCodeError);
+  console.log('toolMetadataError', toolMetadataError);
+  console.log('saveToolCodeError', saveToolCodeError);
 
   return {
     createToolCodeForm: form,
@@ -225,15 +245,7 @@ export const useCreateToolAndSave = ({
       isToolCodeGenerationSuccess &&
       isMetadataGenerationSuccess &&
       isSaveToolSuccess,
-    isError:
-      isToolCodeGenerationError || isMetadataGenerationError || isSaveToolError,
-    error: toolCodeError
-      ? `Failed creating tool code: ${toolCodeError}`
-      : toolMetadataError
-        ? `Failed creating tool metadata: ${toolMetadataError}`
-        : saveToolCodeError?.response?.data?.message ??
-            saveToolCodeError?.message
-          ? `Failed saving tool code: ${saveToolCodeError?.response?.data?.message ?? saveToolCodeError?.message}`
-          : undefined,
+    isError: !!error,
+    error,
   };
 };

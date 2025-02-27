@@ -4,7 +4,7 @@ import {
   extractJobIdFromInbox,
 } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useCreateToolMetadata } from '@shinkai_network/shinkai-node-state/v2/mutations/createToolMetadata/useCreateToolMetadata';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
@@ -116,7 +116,7 @@ export const useToolMetadata = ({
         }
       } else {
         setToolMetadataStatus('error');
-        setToolMetadataError('No JSON code found');
+        setToolMetadataError('No metadata JSON code found');
       }
       return;
     }
