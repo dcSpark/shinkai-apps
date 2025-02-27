@@ -144,58 +144,6 @@ impl ShinkaiNodeManager {
             }
         }
 
-        let mut default_model = ShinkaiNodeOptions::default().initial_agent_models.unwrap();
-        default_model = default_model.replace("ollama:", "");
-
-        if !installed_models.contains(&default_model.to_string()) {
-            self.emit_event(ShinkaiNodeManagerEvent::PullingModelStart {
-                model: default_model.to_string(),
-            });
-            match ollama_api.pull_stream(&default_model).await {
-                Ok(mut stream) => {
-                    while let Some(stream_value) = stream.next().await {
-                        match stream_value {
-                            Ok(value) => {
-                                if let OllamaApiPullResponse::Downloading {
-                                    status: _,
-                                    digest: _,
-                                    total,
-                                    completed,
-                                } = value
-                                {
-                                    self.emit_event(
-                                        ShinkaiNodeManagerEvent::PullingModelProgress {
-                                            model: default_model.to_string(),
-                                            progress: (completed as f32 / total as f32 * 100.0)
-                                                as u32,
-                                        },
-                                    );
-                                }
-                            }
-                            Err(e) => {
-                                self.kill().await;
-                                self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
-                                    model: default_model.to_string(),
-                                    error: e.to_string(),
-                                });
-                                return Err(e.to_string());
-                            }
-                        }
-                    }
-                }
-                Err(e) => {
-                    self.kill().await;
-                    self.emit_event(ShinkaiNodeManagerEvent::PullingModelError {
-                        model: default_model.to_string(),
-                        error: e.to_string(),
-                    });
-                    return Err(e.to_string());
-                }
-            }
-            self.emit_event(ShinkaiNodeManagerEvent::PullingModelDone {
-                model: default_model.to_string(),
-            });
-        }
 
         self.emit_event(ShinkaiNodeManagerEvent::StartingShinkaiNode);
         match self.shinkai_node_process.spawn().await {
