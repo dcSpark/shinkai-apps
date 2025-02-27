@@ -19,7 +19,9 @@ import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/muta
 import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mutations/stopGeneratingLLM/useStopGeneratingLLM';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
+import { useGetJobFolderName } from '@shinkai_network/shinkai-node-state/v2/queries/getJobFolderName/useGetJobFolderName';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
+import { useGetNodeStorageLocation } from '@shinkai_network/shinkai-node-state/v2/queries/getNodeStorageLocation/useGetNodeStorageLocation';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
 import {
@@ -54,6 +56,7 @@ import {
 import { formatText, getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { invoke } from '@tauri-apps/api/core';
 import equal from 'fast-deep-equal';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -81,6 +84,7 @@ import {
   UpdateChatConfigActionBar,
 } from './chat-action-bar/chat-config-action-bar';
 import { FileSelectionActionBar } from './chat-action-bar/file-selection-action-bar';
+import { OpenChatFolderActionBar } from './chat-action-bar/open-chat-folder-action-bar';
 import PromptSelectionActionBar from './chat-action-bar/prompt-selection-action-bar';
 import {
   ToolsSwitchActionBar,
@@ -385,6 +389,15 @@ function ConversationChatFooter({
     multiple: true,
     onDrop,
   });
+  const { data: jobChatFolderName } = useGetJobFolderName({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+  });
+  const { data: nodeStorageLocation } = useGetNodeStorageLocation({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
 
   const { mutateAsync: createJob, isPending } = useCreateJob({
     onError: (error) => {
@@ -503,6 +516,7 @@ function ConversationChatFooter({
     }
     chatForm.reset();
   };
+  const isChatFolderDisabled = !inboxId;
 
   useEffect(() => {
     if (inboxId) return;
@@ -566,6 +580,22 @@ function ConversationChatFooter({
                         onClick={openFilePicker}
                       />
                       <PromptSelectionActionBar />
+                      {inboxId && (
+                        <OpenChatFolderActionBar
+                          onClick={async () => {
+                            if (!jobChatFolderName || !nodeStorageLocation)
+                              return;
+                            try {
+                              await invoke('shinkai_node_open_chat_folder', {
+                                storageLocation: nodeStorageLocation,
+                                chatFolderName: jobChatFolderName.folder_name,
+                              });
+                            } catch (error) {
+                              toast.warning(t('chat.failedToOpenChatFolder'));
+                            }
+                          }}
+                        />
+                      )}
                       {isAgentInbox ? null : inboxId ? (
                         <UpdateToolsSwitchActionBar />
                       ) : (

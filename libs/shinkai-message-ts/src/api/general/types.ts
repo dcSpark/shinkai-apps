@@ -120,6 +120,10 @@ export type WsMessage = {
   widget?: Widget;
 };
 
+export type GetNodeStorageLocationResponse = {
+  storage_location: string;
+};
+
 export type SubmitRegistrationCodeRequest = {
   my_device_encryption_sk: string;
   my_device_identity_sk: string;

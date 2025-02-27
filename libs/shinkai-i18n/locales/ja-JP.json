@@ -49,6 +49,7 @@
     "emptyStateDescription": "簡単な質問の場合は、⌘ + Shift + Jを押して新海スポットライトを使用してください",
     "emptyStateTitle": "Shinkai AIに質問してみてください",
     "enterMessage": "メッセージを入力",
+    "failedToOpenChatFolder": "最初にチャットにファイルをアップロードしてください",
     "fileProcessing": {
       "description": "数分かかる場合があります",
       "title": "ファイルが処理中です"
@@ -63,6 +64,7 @@
     },
     "limitReachedDescription": "今月のこのモデル/エージェントでのクエリをすべて使用しました。別のエージェントと新しいチャットを開始してください。",
     "limitReachedTitle": "制限に達しました",
+    "openChatFolder": "チャットフォルダーを開く",
     "sendMessage": "メッセージを送信"
   },
   "chatDM": {
@@ -536,12 +538,16 @@
         "text": "検索クエリに一致するツールは見つかりませんでした"
       }
     },
+    "errorDuplicateTool": "ツールの複製に失敗しました",
+    "errorOpenToolInCodeEditor": "コードエディタでツールを開くことに失敗しました",
     "installFromStore": "ストアからインストール",
     "label": "深海ツール",
     "lookingForMoreTools": "さらにツールを探していますか？",
     "store": {
       "label": "AIストアを探る"
     },
+    "successDuplicateTool": "ツールが正常に複製されました",
+    "successOpenToolInCodeEditor": "ツールがコードエディタで開かれました",
     "visitStore": "作業を向上させるための追加ツールを発見し、インストールするには新海ストアを訪れてください"
   },
   "vectorFs": {

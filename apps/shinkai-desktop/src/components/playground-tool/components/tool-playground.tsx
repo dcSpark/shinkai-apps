@@ -122,6 +122,7 @@ function PlaygroundToolEditor({
   });
 
   const toolCode = usePlaygroundStore((state) => state.toolCode);
+  const codeEditorRef = usePlaygroundStore((state) => state.codeEditorRef);
 
   const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
   const xShinkaiAppId = usePlaygroundStore((state) => state.xShinkaiAppId);
@@ -146,9 +147,9 @@ function PlaygroundToolEditor({
     async (data: any) => {
       mountTimestamp.current = new Date();
       const { configs, params } = data.formData;
-
+      const currentCode = codeEditorRef?.current?.value ?? toolCode ?? '';
       await executeToolCodeQuery.mutateAsync({
-        code: toolCode,
+        code: currentCode,
         nodeAddress: auth?.node_address ?? '',
         token: auth?.api_v2_key ?? '',
         params,
@@ -163,6 +164,7 @@ function PlaygroundToolEditor({
     [
       auth?.api_v2_key,
       auth?.node_address,
+      codeEditorRef,
       executeToolCodeQuery,
       form,
       toolCode,

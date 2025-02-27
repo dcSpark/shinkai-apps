@@ -11,6 +11,8 @@ import {
   CreateToolMetadataRequest,
   CreateToolMetadataResponse,
   DeletePromptRequest,
+  DuplicateToolRequest,
+  DuplicateToolResponse,
   ExecuteToolCodeRequest,
   ExecuteToolCodeResponse,
   ExportToolRequest,
@@ -23,11 +25,14 @@ import {
   GetShinkaiFileProtocolRequest,
   GetShinkaiFileProtocolResponse,
   GetToolResponse,
+  GetToolsRequest,
   GetToolsResponse,
   GetToolStoreDetailsRequest,
   GetToolStoreDetailsResponse,
   ImportToolRequest,
   ImportToolResponse,
+  OpenToolInCodeEditorRequest,
+  OpenToolInCodeEditorResponse,
   PayInvoiceRequest,
   PublishToolRequest,
   PublishToolResponse,
@@ -82,11 +87,16 @@ export const getTool = async (
   return response.data as GetToolResponse;
 };
 
-export const getTools = async (nodeAddress: string, bearerToken: string) => {
+export const getTools = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetToolsRequest,
+) => {
   const response = await httpClient.get(
     urlJoin(nodeAddress, '/v2/list_all_shinkai_tools'),
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
+      params: { category: payload.category },
       responseType: 'json',
     },
   );
@@ -403,6 +413,46 @@ export const updateToolCodeImplementation = async (
     },
   );
   return response.data as UpdateToolCodeImplementationResponse;
+};
+
+export const openToolInCodeEditor = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: OpenToolInCodeEditorRequest,
+  xShinkaiAppId: string,
+  xShinkaiToolId: string,
+  xShinkaiLLMProvider: string,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/tools_standalone_playground'),
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+        'x-shinkai-app-id': xShinkaiAppId,
+        'x-shinkai-tool-id': xShinkaiToolId,
+        'x-shinkai-llm-provider': xShinkaiLLMProvider,
+      },
+      responseType: 'json',
+    },
+  );
+  return response.data as OpenToolInCodeEditorResponse;
+};
+export const duplicateTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: DuplicateToolRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/duplicate_tool'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+
+  return response.data as DuplicateToolResponse;
 };
 
 export const importTool = async (
