@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   GetToolResponse,
+  GetToolsCategory,
   ShinkaiToolHeader,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDisableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/disableAllTools/useDisableAllTools';
@@ -33,6 +34,8 @@ import {
   TabsList,
   TabsTrigger,
   TextField,
+  ToggleGroup,
+  ToggleGroupItem,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -55,11 +58,26 @@ import { z } from 'zod';
 
 import { useDebounce } from '../../hooks/use-debounce';
 import { useAuth } from '../../store/auth';
-import {
-  ToolGroup,
-  usePlaygroundStore,
-} from '../playground-tool/context/playground-context';
+import { usePlaygroundStore } from '../playground-tool/context/playground-context';
 import ToolCard from './components/tool-card';
+
+const toolsGroup: {
+  label: string;
+  value: GetToolsCategory;
+}[] = [
+  {
+    label: 'Default Tools',
+    value: 'default',
+  },
+  {
+    label: 'My Tools',
+    value: 'my_tools',
+  },
+  {
+    label: 'Downloaded',
+    value: 'downloaded',
+  },
+];
 
 export const ToolCollection = () => {
   const auth = useAuth((state) => state.auth);
@@ -68,9 +86,18 @@ export const ToolCollection = () => {
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
 
+  const selectedToolCategory = usePlaygroundStore(
+    (state) => state.selectedToolCategory,
+  );
+
+  const setSelectedToolCategory = usePlaygroundStore(
+    (state) => state.setSelectedToolCategory,
+  );
+
   const { data: toolsList, isPending } = useGetTools({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
+    category: selectedToolCategory === 'all' ? undefined : selectedToolCategory,
   });
 
   const {
@@ -103,209 +130,172 @@ export const ToolCollection = () => {
     },
   });
 
-  const selectedToolGroup = usePlaygroundStore(
-    (state) => state.selectedToolGroup,
-  );
-
-  const setSelectedToolGroup = usePlaygroundStore(
-    (state) => state.setSelectedToolGroup,
-  );
-
-  const toolsGroup: {
-    label: string;
-    value: ToolGroup;
-    items: ShinkaiToolHeader[];
-  }[] = [
-    {
-      label: 'All',
-      value: 'all-tools',
-      items: toolsList ?? [],
-    },
-    {
-      label: 'Default Tools',
-      value: 'tools',
-      items:
-        toolsList?.filter(
-          (tool) => 'author' in tool && tool.author === '@@official.shinkai',
-        ) ?? [],
-    },
-    {
-      label: 'My Tools',
-      value: 'my-tools',
-      items:
-        toolsList?.filter(
-          (tool) => 'author' in tool && tool.author === auth?.shinkai_identity,
-        ) ?? [],
-    },
-    // {
-    //   label: 'Downloaded',
-    //   value: 'downloaded',
-    //   items: toolsList ?? [], // TODO: add downloaded tools
-    // },
-  ];
-
   return (
-    <Tabs
-      className="flex w-full flex-col gap-6"
-      onValueChange={(value) => {
-        setSelectedToolGroup(value as ToolGroup);
-      }}
-      value={selectedToolGroup}
-    >
-      <div className="flex flex-col gap-8">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h2 className="text-lg font-semibold tracking-tight">
-              Shinkai Tools
-            </h2>
-            <p className="text-muted-foreground text-sm">
-              {t('tools.description')}
-            </p>
-          </div>
-          <div className="shadow-official-gray-950 focus-within:shadow-official-gray-700 relative flex h-10 items-center rounded-lg shadow-[0_0_0_1px_currentColor] transition-shadow">
-            <Input
-              className="placeholder-gray-80 bg-official-gray-900 !h-full border-none py-2 pl-10"
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
+    <div className="flex flex-col gap-8">
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold tracking-tight">
+            Shinkai Tools
+          </h2>
+          <p className="text-muted-foreground text-sm">
+            {t('tools.description')}
+          </p>
+        </div>
+        <div className="shadow-official-gray-950 focus-within:shadow-official-gray-700 relative flex h-10 items-center rounded-lg shadow-[0_0_0_1px_currentColor] transition-shadow">
+          <Input
+            className="placeholder-gray-80 bg-official-gray-900 !h-full border-none py-2 pl-10"
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
+            placeholder="Search..."
+            spellCheck={false}
+            value={searchQuery}
+          />
+          <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
+          {searchQuery && (
+            <Button
+              className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
+              onClick={() => {
+                setSearchQuery('');
               }}
-              placeholder="Search..."
-              spellCheck={false}
-              value={searchQuery}
-            />
-            <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
-            {searchQuery && (
-              <Button
-                className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
-                onClick={() => {
-                  setSearchQuery('');
-                }}
-                size="auto"
-                type="button"
-                variant="ghost"
+              size="auto"
+              type="button"
+              variant="ghost"
+            >
+              <XIcon />
+              <span className="sr-only">{t('common.clearSearch')}</span>
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {searchQuery && isSearchQuerySynced && searchToolList?.length === 0 && (
+        <div className="flex h-20 items-center justify-center">
+          <p className="text-gray-80 text-sm">
+            {t('tools.emptyState.search.text')}
+          </p>
+        </div>
+      )}
+      {searchQuery &&
+        isSearchQuerySynced &&
+        isSearchToolListSuccess &&
+        searchToolList?.length > 0 && (
+          <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
+            {searchToolList?.map((tool) => (
+              <ToolCard key={tool.tool_router_key} tool={tool} />
+            ))}
+          </div>
+        )}
+      {!searchQuery && isSearchQuerySynced && (
+        <div>
+          <div className="flex w-full items-center justify-between">
+            <ToggleGroup
+              className="border-official-gray-780 rounded-full border bg-transparent px-0.5 py-1"
+              onValueChange={(value) => {
+                setSelectedToolCategory(value as GetToolsCategory);
+              }}
+              type="single"
+              value={selectedToolCategory}
+            >
+              <ToggleGroupItem
+                className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
+                key="all"
+                size="sm"
+                value="all"
               >
-                <XIcon />
-                <span className="sr-only">{t('common.clearSearch')}</span>
-              </Button>
+                All
+              </ToggleGroupItem>
+              {toolsGroup.map((tool) => (
+                <ToggleGroupItem
+                  className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
+                  key={tool.value}
+                  size="sm"
+                  value={tool.value}
+                >
+                  {tool.label}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  className="text-gray-80"
+                  rounded="lg"
+                  size="icon"
+                  variant="outline"
+                >
+                  <MoreVerticalIcon className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
+                <DropdownMenuItem
+                  className="text-xs"
+                  onClick={() => {
+                    enableAllTools({
+                      nodeAddress: auth?.node_address ?? '',
+                      token: auth?.api_v2_key ?? '',
+                    });
+                  }}
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  Enable All Tools
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-xs"
+                  onClick={() => {
+                    disableAllTools({
+                      nodeAddress: auth?.node_address ?? '',
+                      token: auth?.api_v2_key ?? '',
+                    });
+                  }}
+                >
+                  <EyeOff className="mr-2 h-4 w-4" />
+                  Disable All Tools
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
+            {toolsList?.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-2 py-8">
+                <p className="text-official-gray-400 text-sm">
+                  No tools found in this category. Create a new tool or install
+                  from the App Store.
+                </p>
+              </div>
+            ) : (
+              toolsList?.map((tool) => (
+                <ToolCard key={tool.tool_router_key} tool={tool} />
+              ))
             )}
           </div>
         </div>
+      )}
 
-        {searchQuery && isSearchQuerySynced && searchToolList?.length === 0 && (
-          <div className="flex h-20 items-center justify-center">
-            <p className="text-gray-80 text-sm">
-              {t('tools.emptyState.search.text')}
-            </p>
-          </div>
-        )}
-        {searchQuery &&
-          isSearchQuerySynced &&
-          isSearchToolListSuccess &&
-          searchToolList?.length > 0 && (
-            <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
-              {searchToolList?.map((tool) => (
-                <ToolCard key={tool.tool_router_key} tool={tool} />
-              ))}
-            </div>
-          )}
-        {!searchQuery && isSearchQuerySynced && (
-          <div>
-            <div className="flex w-full items-center justify-between">
-              <TabsList className="border-official-gray-780 inline-flex h-[42px] items-center justify-center rounded-full border bg-transparent px-0.5 py-1">
-                {toolsGroup.map((tool) => (
-                  <TabsTrigger
-                    className="data-[state=active]:bg-official-gray-900 data-[state=inactive]:text-official-gray-400 rounded-full px-3 py-2.5 text-xs font-medium data-[state=active]:text-white"
-                    key={tool.value}
-                    value={tool.value}
-                  >
-                    {tool.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    className="text-gray-80"
-                    rounded="lg"
-                    size="icon"
-                    variant="outline"
-                  >
-                    <MoreVerticalIcon className="size-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
-                  <DropdownMenuItem
-                    className="text-xs"
-                    onClick={() => {
-                      enableAllTools({
-                        nodeAddress: auth?.node_address ?? '',
-                        token: auth?.api_v2_key ?? '',
-                      });
-                    }}
-                  >
-                    <Eye className="mr-2 h-4 w-4" />
-                    Enable All Tools
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="text-xs"
-                    onClick={() => {
-                      disableAllTools({
-                        nodeAddress: auth?.node_address ?? '',
-                        token: auth?.api_v2_key ?? '',
-                      });
-                    }}
-                  >
-                    <EyeOff className="mr-2 h-4 w-4" />
-                    Disable All Tools
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            {toolsGroup.map((tool) => (
-              <TabsContent className="mt-0" key={tool.value} value={tool.value}>
-                <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
-                  {tool.items?.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center gap-2 py-8">
-                      <p className="text-official-gray-400 text-sm">
-                        No tools found in this category. Create a new tool or
-                        install from the App Store.
-                      </p>
-                    </div>
-                  ) : (
-                    tool.items?.map((item) => (
-                      <ToolCard key={item.tool_router_key} tool={item} />
-                    ))
-                  )}
+      {(isPending || !isSearchQuerySynced || isSearchToolListPending) && (
+        <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
+          {Array.from({ length: 8 }).map((_, idx) => (
+            <div
+              className={cn(
+                'grid animate-pulse grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm px-2 py-3 pr-4 text-left text-sm',
+              )}
+              key={idx}
+            >
+              <div className="flex w-full flex-1 flex-col gap-3">
+                <span className="h-4 w-36 rounded-sm bg-gray-300" />
+                <div className="flex flex-col gap-1">
+                  <span className="h-3 w-full rounded-sm bg-gray-300" />
+                  <span className="h-3 w-2/4 rounded-sm bg-gray-300" />
                 </div>
-              </TabsContent>
-            ))}
-          </div>
-        )}
-
-        {(isPending || !isSearchQuerySynced || isSearchToolListPending) && (
-          <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
-            {Array.from({ length: 8 }).map((_, idx) => (
-              <div
-                className={cn(
-                  'grid animate-pulse grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm px-2 py-3 pr-4 text-left text-sm',
-                )}
-                key={idx}
-              >
-                <div className="flex w-full flex-1 flex-col gap-3">
-                  <span className="h-4 w-36 rounded-sm bg-gray-300" />
-                  <div className="flex flex-col gap-1">
-                    <span className="h-3 w-full rounded-sm bg-gray-300" />
-                    <span className="h-3 w-2/4 rounded-sm bg-gray-300" />
-                  </div>
-                </div>
-                <span className="h-7 w-full rounded-md bg-gray-300" />
-                <span className="h-5 w-[36px] rounded-full bg-gray-300" />
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </Tabs>
+              <span className="h-7 w-full rounded-md bg-gray-300" />
+              <span className="h-5 w-[36px] rounded-full bg-gray-300" />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 

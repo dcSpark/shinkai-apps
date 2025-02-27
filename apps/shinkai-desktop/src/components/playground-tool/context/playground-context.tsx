@@ -1,4 +1,7 @@
-import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import {
+  GetToolsCategory,
+  ToolMetadata,
+} from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { PrismEditor } from 'prism-react-editor';
 import {
   createContext,
@@ -12,7 +15,6 @@ import { createStore } from 'zustand';
 import { useStore } from 'zustand/index';
 
 type Status = 'idle' | 'pending' | 'success' | 'error';
-export type ToolGroup = 'all-tools' | 'tools' | 'my-tools' | 'downloaded';
 
 type PlaygroundStore = {
   // inboxId
@@ -58,8 +60,10 @@ type PlaygroundStore = {
     [key: string]: number;
   } | null>;
 
-  selectedToolGroup: ToolGroup;
-  setSelectedToolGroup: (selectedToolGroup: ToolGroup) => void;
+  selectedToolCategory: GetToolsCategory | 'all';
+  setSelectedToolCategory: (
+    selectedToolCategory: GetToolsCategory | 'all',
+  ) => void;
 };
 
 export const toolHomepageScrollPositionRef = createRef<{
@@ -114,8 +118,9 @@ const createPlaygroundStore = () => {
     setFocusedPanel: (focusedPanel) => set({ focusedPanel }),
 
     toolHomepageScrollPositionRef,
-    selectedToolGroup: 'all-tools',
-    setSelectedToolGroup: (selectedToolGroup) => set({ selectedToolGroup }),
+    selectedToolCategory: 'all',
+    setSelectedToolCategory: (selectedToolCategory) =>
+      set({ selectedToolCategory }),
 
     metadataEditorRef: createRef<PrismEditor>(),
     codeEditorRef: createRef<PrismEditor>(),
@@ -134,7 +139,7 @@ const createPlaygroundStore = () => {
         focusedPanel: 'code',
         xShinkaiAppId: `app-id-${Date.now()}`,
         xShinkaiToolId: `task-id-${Date.now()}`,
-        selectedToolGroup: 'all-tools',
+        selectedToolCategory: 'all',
       }),
   }));
 };

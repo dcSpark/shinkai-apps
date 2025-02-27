@@ -83,93 +83,91 @@ function CodePanelBase({
         {/*  </Tooltip>*/}
         {/*)}*/}
         {/* </div> */}
-        <div className="flex-1">
-          {isToolCodeGenerationPending && (
-            <div className="flex w-full flex-col items-start gap-1 px-4 py-4 text-xs">
-              {[...Array(20)].map((_, lineIndex) => (
-                <div className="mb-2 flex gap-3" key={lineIndex}>
-                  <Skeleton className="bg-official-gray-900 h-4 w-12 rounded" />
-                  <div className="flex-1">
-                    <div className="flex flex-wrap gap-2">
-                      {[...Array(Math.floor(Math.random() * 4) + 1)].map(
-                        (_, blockIndex) => (
-                          <Skeleton
-                            className={cn(
-                              getRandomWidth(),
-                              'bg-official-gray-900 h-4 rounded',
-                            )}
-                            key={blockIndex}
-                          />
-                        ),
-                      )}
-                    </div>
+        {isToolCodeGenerationPending && (
+          <div className="flex w-full flex-col items-start gap-1 px-4 py-4 text-xs">
+            {[...Array(20)].map((_, lineIndex) => (
+              <div className="mb-2 flex gap-3" key={lineIndex}>
+                <Skeleton className="bg-official-gray-900 h-4 w-12 rounded" />
+                <div className="flex-1">
+                  <div className="flex flex-wrap gap-2">
+                    {[...Array(Math.floor(Math.random() * 4) + 1)].map(
+                      (_, blockIndex) => (
+                        <Skeleton
+                          className={cn(
+                            getRandomWidth(),
+                            'bg-official-gray-900 h-4 rounded',
+                          )}
+                          key={blockIndex}
+                        />
+                      ),
+                    )}
                   </div>
                 </div>
-              ))}
-              <p className="sr-only">Generating Code...</p>
-            </div>
-          )}
-          {!isToolCodeGenerationPending &&
-            !toolCode &&
-            !isToolCodeGenerationSuccess && (
-              <p className="text-gray-80 pt-6 text-center text-xs">
-                No code generated yet. <br />
-                Ask Shinkai AI to generate your tool code.
-              </p>
-            )}
-          {isToolCodeGenerationSuccess && toolCode && (
-            <form
-              className="flex size-full flex-col"
-              key={resetCounter}
-              onSubmit={handleApplyChangesCodeSubmit}
-            >
-              <div className="flex h-[40px] shrink-0 items-center justify-between rounded-t-sm border-b border-gray-400 px-3 py-2">
-                <span className="text-gray-80 inline-flex items-center gap-2 pl-2 text-xs font-medium">
-                  {' '}
-                  {detectLanguage(toolCode)}{' '}
-                  {isDirtyCodeEditor && (
-                    <span className="size-2 shrink-0 rounded-full bg-orange-500" />
-                  )}
-                </span>
-                <AnimatePresence mode="popLayout">
-                  {isDirtyCodeEditor && (
-                    <motion.div
-                      animate={{ opacity: 1 }}
-                      className="flex items-center justify-end gap-2"
-                      exit={{ opacity: 0 }}
-                      initial={{ opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Button
-                        className="!h-[28px] rounded-lg border-0 bg-transparent"
-                        onClick={resetToolCode}
-                        size="xs"
-                        variant="ghost"
-                      >
-                        Reset
-                      </Button>
-                      <Button
-                        className="!h-[28px] rounded-lg border-0 bg-transparent"
-                        size="xs"
-                        type="submit"
-                        variant="ghost"
-                      >
-                        Apply Changes
-                      </Button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </div>
-              <ToolCodeEditor
-                language="ts"
-                name="editor"
-                onUpdate={handleCodeUpdate}
-                ref={codeEditorRef}
-                value={toolCode}
-              />
-            </form>
+            ))}
+            <p className="sr-only">Generating Code...</p>
+          </div>
+        )}
+        {!isToolCodeGenerationPending &&
+          !toolCode &&
+          !isToolCodeGenerationSuccess && (
+            <p className="text-gray-80 pt-6 text-center text-xs">
+              No code generated yet. <br />
+              Ask Shinkai AI to generate your tool code.
+            </p>
           )}
-        </div>
+        {isToolCodeGenerationSuccess && toolCode && (
+          <form
+            className="flex size-full flex-col"
+            key={resetCounter}
+            onSubmit={handleApplyChangesCodeSubmit}
+          >
+            <div className="flex h-[40px] shrink-0 items-center justify-between rounded-t-sm border-b border-gray-400 px-3 py-2">
+              <span className="text-gray-80 inline-flex items-center gap-2 pl-2 text-xs font-medium">
+                {' '}
+                {detectLanguage(toolCode)}{' '}
+                {isDirtyCodeEditor && (
+                  <span className="size-2 shrink-0 rounded-full bg-orange-500" />
+                )}
+              </span>
+              <AnimatePresence mode="popLayout">
+                {isDirtyCodeEditor && (
+                  <motion.div
+                    animate={{ opacity: 1 }}
+                    className="flex items-center justify-end gap-2"
+                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Button
+                      className="!h-[28px] rounded-lg border-0 bg-transparent"
+                      onClick={resetToolCode}
+                      size="xs"
+                      variant="ghost"
+                    >
+                      Reset
+                    </Button>
+                    <Button
+                      className="!h-[28px] rounded-lg border-0 bg-transparent"
+                      size="xs"
+                      type="submit"
+                      variant="ghost"
+                    >
+                      Apply Changes
+                    </Button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            <ToolCodeEditor
+              language="ts"
+              name="editor"
+              onUpdate={handleCodeUpdate}
+              ref={codeEditorRef}
+              value={toolCode}
+            />
+          </form>
+        )}
       </div>
     </div>
   );
