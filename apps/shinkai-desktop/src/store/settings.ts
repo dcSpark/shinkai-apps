@@ -2,6 +2,15 @@ import { LocaleMode, switchLanguage } from '@shinkai_network/shinkai-i18n';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
+import {
+  ONBOARDING_STEPS,
+  OnboardingStep,
+  OnboardingStepConfig,
+  StepChoiceMap,
+  validateChoice,
+} from '../components/onboarding/constants';
+import { OnboardingState } from '../components/onboarding/constants';
+
 export enum TutorialBanner {
   SHINKAI_TOOLS = 'shinkai-tools',
   FILES_EXPLORER = 'files-explorer',
@@ -10,6 +19,23 @@ export enum TutorialBanner {
 }
 
 type SettingsStore = {
+  onboarding: OnboardingState;
+  completeStep: <T extends OnboardingStep>(
+    stepId: T,
+    choice?: StepChoiceMap[T],
+  ) => void;
+  getNextStep: () => OnboardingStepConfig | null;
+  isOnboardingComplete: () => boolean;
+  isStepCompleted: (stepId: OnboardingStep) => boolean;
+  getStepChoice: <T extends OnboardingStep>(stepId: T) => StepChoiceMap[T];
+  getStepById: (stepId: OnboardingStep) => OnboardingStepConfig | undefined;
+  getStepByPath: (path: string) => OnboardingStepConfig | undefined;
+  getCurrentStep: () => number | null;
+  updateStepChoice: <T extends OnboardingStep>(
+    stepId: T,
+    choice: StepChoiceMap[T],
+  ) => void;
+
   defaultAgentId: string;
   setDefaultAgentId: (defaultAgentId: string) => void;
   defaultSpotlightAiId: string;
@@ -17,12 +43,9 @@ type SettingsStore = {
   sidebarExpanded: boolean;
   toggleSidebar: () => void;
   isGetStartedChecklistHidden: boolean;
-  setGetStartedChecklistHidden: (isGetStartedChecklistHidden: boolean) => void;
-  termsAndConditionsAccepted?: boolean;
-  setTermsAndConditionsAccepted: (termsAndConditionsAccepted: boolean) => void;
-  optInAnalytics?: boolean;
-  acceptAnalytics: () => void;
-  denyAnalytics: () => void;
+  setGetStartedChecklistHidden: (
+    isGetStartedChecklistHidden: boolean | undefined,
+  ) => void;
   optInExperimental?: boolean;
   setOptInExperimental: (optInExperimental: boolean) => void;
   userLanguage: LocaleMode;
@@ -49,6 +72,90 @@ export const useSettings = create<SettingsStore>()(
   devtools(
     persist(
       (set, get) => ({
+        onboarding: {
+          steps: ONBOARDING_STEPS.reduce(
+            (acc, step) => ({
+              ...acc,
+              [step.id]: {
+                completed: false,
+                choice: null,
+              },
+            }),
+            {} as OnboardingState['steps'],
+          ),
+        },
+
+        completeStep: <T extends OnboardingStep>(
+          stepId: T,
+          choice: StepChoiceMap[T] = null,
+        ) => {
+          set((state) => {
+            const validatedChoice = validateChoice(stepId, choice);
+
+            const updatedSteps = {
+              ...state.onboarding.steps,
+              [stepId]: {
+                completed: true,
+                choice: validatedChoice,
+              },
+            };
+
+            return {
+              onboarding: {
+                ...state.onboarding,
+                steps: updatedSteps,
+              },
+            };
+          });
+        },
+        getStepById: (stepId) => {
+          return ONBOARDING_STEPS.find((step) => step.id === stepId);
+        },
+        getStepByPath: (path) => {
+          return ONBOARDING_STEPS.find((step) => step.path === path);
+        },
+        updateStepChoice: (stepId, choice) => {
+          set((state) => ({
+            onboarding: {
+              ...state.onboarding,
+              steps: {
+                ...state.onboarding.steps,
+                [stepId]: {
+                  ...state.onboarding.steps[stepId],
+                  choice,
+                },
+              },
+            },
+          }));
+        },
+        getNextStep: () => {
+          const { steps } = get().onboarding;
+          return (
+            ONBOARDING_STEPS.find(
+              (step) => step.required && !steps[step.id]?.completed,
+            ) || null
+          );
+        },
+        isStepCompleted: (stepId) => {
+          return get().onboarding.steps[stepId]?.completed || false;
+        },
+        getStepChoice: (stepId) => {
+          return get().onboarding.steps[stepId]?.choice || null;
+        },
+        getCurrentStep: () => {
+          const { steps } = get().onboarding;
+          const currentStep = ONBOARDING_STEPS.find(
+            (step) => step.required && !steps[step.id]?.completed,
+          );
+          return currentStep ? ONBOARDING_STEPS.indexOf(currentStep) + 1 : null;
+        },
+        isOnboardingComplete: () => {
+          const { steps } = get().onboarding;
+          return ONBOARDING_STEPS.filter((step) => step.required).every(
+            (step) => steps[step.id]?.completed,
+          );
+        },
+
         defaultAgentId: '',
         setDefaultAgentId: (defaultAgentId) => {
           set({ defaultAgentId });
@@ -69,18 +176,13 @@ export const useSettings = create<SettingsStore>()(
           set({ isGetStartedChecklistHidden });
         },
 
-        termsAndConditionsAccepted: undefined,
-        setTermsAndConditionsAccepted: (termsAndConditionsAccepted) => {
-          set({ termsAndConditionsAccepted });
-        },
-
-        optInAnalytics: undefined,
-        acceptAnalytics: () => {
-          set({ optInAnalytics: true });
-        },
-        denyAnalytics: () => {
-          set({ optInAnalytics: false });
-        },
+        // optInAnalytics: undefined,
+        // acceptAnalytics: () => {
+        //   set({ optInAnalytics: true });
+        // },
+        // denyAnalytics: () => {
+        //   set({ optInAnalytics: false });
+        // },
 
         optInExperimental: false,
         setOptInExperimental: (optInExperimental) => {
@@ -132,18 +234,28 @@ export const useSettings = create<SettingsStore>()(
 
         resetSettings: () => {
           set({
+            onboarding: {
+              steps: ONBOARDING_STEPS.reduce(
+                (acc, step) => ({
+                  ...acc,
+                  [step.id]: {
+                    completed: false,
+                    choice: null,
+                  },
+                }),
+                {},
+              ),
+            },
             defaultAgentId: '',
             defaultSpotlightAiId: '',
-            // sidebarExpanded: false,
-            // isGetStartedChecklistHidden: false,
-            // termsAndConditionsAccepted: undefined,
-            // optInAnalytics: undefined,
-            // optInExperimental: false,
-            // userLanguage: 'auto',
-            // evmAddress: '',
-            // heightRow: 'large',
-            // compatibilityBannerDismissed: false,
-            // isChatSidebarCollapsed: false,
+            sidebarExpanded: false,
+            isGetStartedChecklistHidden: false,
+            optInExperimental: false,
+            userLanguage: 'auto',
+            evmAddress: '',
+            heightRow: 'large',
+            compatibilityBannerDismissed: false,
+            isChatSidebarCollapsed: false,
           });
         },
       }),

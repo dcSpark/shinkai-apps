@@ -3,8 +3,15 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import React from 'react';
 import { ExternalToast, toast } from 'sonner';
 
-import { modelNameMap } from '../../pages/get-started';
 import { openShinkaiNodeManagerWindow } from './shinkai-node-manager-windows-utils';
+
+export const modelNameMap: Record<string, string> = {
+  'snowflake-arctic-embed:xs': "Snowflake's Arctic-embed-xs",
+  'llama3.1:8b-instruct-q4_1': 'Llama 3.1 8B',
+  'gemma2:2b-instruct-q4_1': 'Gemma 2 2B',
+  'command-r7b:7b-12-2024-q4_K_M': 'Command R 7B',
+  'mistral-small:24b-instruct-2501-q4_K_M': 'Mistral Small 3',
+};
 
 const ShinkaiNodeLogsLabel = ({
   className,

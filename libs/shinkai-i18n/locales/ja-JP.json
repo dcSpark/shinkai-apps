@@ -182,7 +182,7 @@
       }
     },
     "welcome": "Shinkai Desktopを使用してAIでデスクトップ体験を変革しましょう",
-    "welcomeText": "Shinkai Desktopを使用してAIを活用してデスクトップ体験を変革しましょう"
+    "welcomeDescription": "Shinkaiは、タスクを自動化し、ワークフローを効率化することで生産性を向上させる無料のオープンソースAIアプリケーションです。"
   },
   "disconnect": {
     "exportConnection": "続行する前に、接続をいつでも復元するために<Link>接続をエクスポート</Link>してください",

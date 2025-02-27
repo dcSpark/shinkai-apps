@@ -79,8 +79,7 @@ pub async fn shinkai_node_get_ollama_api_url() -> Result<String, String> {
 
 #[tauri::command]
 pub async fn shinkai_node_get_default_model() -> Result<String, String> {
-    let model = ShinkaiNodeOptions::default_initial_model();
-    Ok(model)
+    Ok("shinkai-backend:FREE_TEXT_INFERENCE".to_string())
 }
 
 #[tauri::command]

@@ -4,6 +4,7 @@ import { ShinkaiMessageBuilderWrapper } from '../../wasm/ShinkaiMessageBuilderWr
 import {
   CheckHealthResponse,
   GetNodeStorageLocationResponse,
+  GetShinkaiFreeModelQuotaResponse,
   SubmitRegistrationCodeRequest,
   SubmitRegistrationCodeResponse,
   SubmitRegistrationNoCodeRequest,
@@ -102,4 +103,21 @@ export const submitRegistrationNoCode = async (
     console.error('Error in initial registration:', error);
     return { status: 'error' };
   }
+};
+
+export const getShinkaiFreeModelQuota = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/shinkai_backend_quota'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      params: {
+        model: 'FREE_TEXT_INFERENCE',
+      },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetShinkaiFreeModelQuotaResponse;
 };

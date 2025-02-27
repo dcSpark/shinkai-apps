@@ -182,7 +182,7 @@
       }
     },
     "welcome": "Transformasikan pengalaman desktop Anda menggunakan AI dengan Shinkai Desktop",
-    "welcomeText": "Transformasikan pengalaman desktop Anda menggunakan kecerdasan buatan dengan Shinkai Desktop"
+    "welcomeDescription": "Shinkai adalah aplikasi AI sumber terbuka dan gratis yang meningkatkan produktivitas Anda dengan mengotomatiskan tugas dan menyederhanakan alur kerja."
   },
   "disconnect": {
     "exportConnection": "Sebelum melanjutkan, harap<Link>ekspor koneksi Anda</Link>untuk memulihkan koneksi Anda kapan saja.",

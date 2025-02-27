@@ -5,6 +5,7 @@ import {
 } from './queries/getChatConversation/types';
 
 export enum FunctionKeyV2 {
+  GET_SHINKAI_FREE_MODEL_QUOTA = 'GET_SHINKAI_FREE_MODEL_QUOTA',
   GET_HEALTH = 'GET_HEALTH',
   GET_ENCRYPTION_KEYS = 'GET_ENCRYPTION_KEYS',
   GET_AGENT = 'GET_AGENT',

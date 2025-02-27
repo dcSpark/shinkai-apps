@@ -8,15 +8,21 @@ import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/
 import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
+import { useGetShinkaiFreeModelQuota } from '@shinkai_network/shinkai-node-state/v2/queries/getShinkaiFreeModelQuota/useGetShinkaiFreeModelQuota';
 import {
   Button,
   buttonVariants,
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  Progress,
   Select,
   SelectContent,
   SelectItem,
@@ -24,16 +30,21 @@ import {
   SelectValue,
   Switch,
   TextField,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { getVersion } from '@tauri-apps/api/app';
-import { motion } from 'framer-motion';
+import { formatDuration, intervalToDuration } from 'date-fns';
+import { motion, progress } from 'framer-motion';
 import { ExternalLinkIcon, InfoIcon, ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { OnboardingStep } from '../components/onboarding/constants';
 import {
   useShinkaiNodeGetOllamaVersionQuery,
   useShinkaiNodeRespawnMutation,
@@ -68,7 +79,9 @@ const SettingsPage = () => {
   );
   const userLanguage = useSettings((state) => state.userLanguage);
   const setUserLanguage = useSettings((state) => state.setUserLanguage);
-  const optInAnalytics = useSettings((state) => state.optInAnalytics);
+  const optInAnalytics = useSettings((state) =>
+    state.getStepChoice(OnboardingStep.ANALYTICS),
+  );
   const optInExperimental = useSettings((state) => state.optInExperimental);
   const setOptInExperimental = useSettings(
     (state) => state.setOptInExperimental,
@@ -95,7 +108,7 @@ const SettingsPage = () => {
       nodeAddress: auth?.node_address,
       shinkaiIdentity: auth?.shinkai_identity,
       ollamaVersion: '',
-      optInAnalytics,
+      optInAnalytics: !!optInAnalytics,
       optInExperimental,
       language: userLanguage,
     },
@@ -138,6 +151,11 @@ const SettingsPage = () => {
   useEffect(() => {
     form.setValue('ollamaVersion', ollamaVersion ?? '');
   }, [ollamaVersion, form]);
+
+  const { data: shinkaiFreeModelQuota } = useGetShinkaiFreeModelQuota(
+    { nodeAddress: auth?.node_address ?? '', token: auth?.api_v2_key ?? '' },
+    { enabled: !!auth },
+  );
 
   const { mutateAsync: respawnShinkaiNode } = useShinkaiNodeRespawnMutation();
   const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } =
@@ -201,9 +219,79 @@ const SettingsPage = () => {
   );
   return (
     <SimpleLayout classname="max-w-xl" title={t('settings.layout.general')}>
-      <p className="mb-3">{t('settings.description')}</p>
+      <p className="mb-6">{t('settings.description')}</p>
       <div className="flex flex-col space-y-8 pr-2.5">
         <div className="flex flex-col space-y-8">
+          {shinkaiFreeModelQuota && (
+            <Card className="bg-official-gray-950 w-full">
+              <CardHeader className="space-y-1">
+                <h3 className="text-base font-semibold">
+                  Free Shinkai AI Usage
+                </h3>
+              </CardHeader>
+
+              <CardContent className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Total tokens used</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs text-white">
+                      {shinkaiFreeModelQuota.usedTokens}{' '}
+                      <span className="text-official-gray-500 text-xs">
+                        / {shinkaiFreeModelQuota.tokensQuota}
+                      </span>
+                    </span>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <InfoIcon className="size-3 text-current" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          A token is a chunk of text — it can be a word, part of
+                          a word, or even punctuation. AI processes text in
+                          tokens, and usage is measured by how many tokens are
+                          used. <br /> <br /> Based on your current usage, you
+                          have approximately{' '}
+                          {Math.floor(
+                            (shinkaiFreeModelQuota.tokensQuota -
+                              shinkaiFreeModelQuota.usedTokens) /
+                              2,
+                          )}{' '}
+                          messages remaining.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </div>
+                <Progress
+                  className="h-2 rounded-full"
+                  max={100}
+                  value={
+                    shinkaiFreeModelQuota?.tokensQuota
+                      ? Math.min(
+                          100,
+                          (shinkaiFreeModelQuota.usedTokens /
+                            shinkaiFreeModelQuota.tokensQuota) *
+                            100,
+                        )
+                      : 0
+                  }
+                />
+              </CardContent>
+
+              <CardFooter>
+                <span className="text-official-gray-200 text-xs">
+                  Your free limit resets in{' '}
+                  {formatDuration(
+                    intervalToDuration({
+                      start: 0,
+                      end: shinkaiFreeModelQuota?.resetTime * 60 * 1000,
+                    }),
+                  )}
+                </span>
+              </CardFooter>
+            </Card>
+          )}
+
           <Form {...form}>
             <form className="flex grow flex-col justify-between space-y-6 overflow-hidden">
               <FormField

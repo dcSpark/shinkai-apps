@@ -63,8 +63,6 @@ import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { SHINKAI_STORE_URL } from '../../utils/store';
 
-const SUPPORT_EMAIL = 'app.support@shinkai.com';
-
 type NavigationLink = {
   title: string;
   href: string;
@@ -206,7 +204,7 @@ export function MainNav() {
 
   const handleDisconnect = () => {
     logout();
-    navigate('/get-started');
+    navigate('/');
   };
 
   const navigationLinks = [
@@ -301,8 +299,9 @@ export function MainNav() {
     <motion.aside
       animate={{
         width: sidebarExpanded ? '230px' : '70px',
+        opacity: 1,
       }}
-      className="bg-official-gray-900 border-official-gray-780 relative z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r px-2 py-6 pt-9 shadow-xl"
+      className="bg-official-gray-900 border-official-gray-850 relative z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r px-2 py-6 pt-9 shadow-xl"
       exit={{ width: 0, opacity: 0 }}
       initial={{ width: 0, opacity: 0 }}
       transition={{ duration: 0.3 }}
@@ -603,10 +602,12 @@ const MainLayout = () => {
   }, [isSuccess, nodeInfo, isFetching, t]);
 
   const disabledSidebarRoutes = [
-    '/connect-ai',
-    '/free-subscriptions',
-    '/ai-model-installation',
-    '/get-started',
+    '/terms-conditions',
+    '/analytics',
+    '/ai-provider-selection',
+    '/quick-connection',
+    '/restore',
+    '/connect-qr',
   ];
 
   const displaySidebar =
@@ -616,12 +617,12 @@ const MainLayout = () => {
   const hideScrollbar = disableScrollRoutes.includes(location.pathname);
 
   return (
-    <div className="bg-official-gray-950 rfelative flex h-screen min-h-full flex-col overflow-hidden text-white">
+    <div className="bg-official-gray-950 relative flex h-screen min-h-full flex-col overflow-hidden text-white">
       <div
         className="absolute top-0 z-50 h-6 w-full"
         data-tauri-drag-region={true}
       />
-      <div className={cn('flex h-full flex-1', !!auth && '')}>
+      <div className={cn('flex h-full flex-1')}>
         <AnimatePresence initial={false}>
           {displaySidebar && <MainNav />}
         </AnimatePresence>

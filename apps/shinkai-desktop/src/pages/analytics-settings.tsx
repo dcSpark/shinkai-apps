@@ -2,15 +2,23 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { Button } from '@shinkai_network/shinkai-ui';
 import { CheckIcon, XIcon } from 'lucide-react';
 
+import { OnboardingStep } from '../components/onboarding/constants';
 import { analyticsBulletPoints } from '../constants/analytics';
 import { useSettings } from '../store/settings';
 import { SimpleLayout } from './layout/simple-layout';
 
 const AnalyticsSettingsPage = () => {
   const { t, Trans } = useTranslation();
-  const optInAnalytics = useSettings((state) => state.optInAnalytics);
-  const denyAnalytics = useSettings((state) => state.denyAnalytics);
-  const acceptAnalytics = useSettings((state) => state.acceptAnalytics);
+  const optInAnalytics = useSettings((state) =>
+    state.getStepChoice(OnboardingStep.ANALYTICS),
+  );
+  const updateStepChoice = useSettings((state) => state.updateStepChoice);
+  const denyAnalytics = () => {
+    updateStepChoice(OnboardingStep.ANALYTICS, false);
+  };
+  const acceptAnalytics = () => {
+    updateStepChoice(OnboardingStep.ANALYTICS, true);
+  };
 
   return (
     <SimpleLayout classname="max-w-xl" title="Analytics">

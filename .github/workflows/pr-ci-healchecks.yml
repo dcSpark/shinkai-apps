@@ -10,7 +10,7 @@ defaults:
 
 jobs:
   health-checks:
-    runs-on: ubuntu-22.04
+    runs-on: shinkai-ubuntu-large
     steps:
       - name: Check out repository
         uses: actions/checkout@v4

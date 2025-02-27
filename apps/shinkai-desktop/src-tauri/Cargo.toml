@@ -42,6 +42,7 @@ anyhow = "1.0.89"
 uuid = "1.10.0"
 kill_tree = { version = "0.2", features = ["tokio"] }
 semver = "1.0"
+sha2 = "0.10"
 
 tauri-plugin-global-shortcut = "2.2"
 tauri-plugin-shell = "2.2"

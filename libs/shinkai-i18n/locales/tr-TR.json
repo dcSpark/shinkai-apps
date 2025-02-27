@@ -182,7 +182,7 @@
       }
     },
     "welcome": "Shinkai'ya Hoş Geldiniz ✨",
-    "welcomeText": "Shinkai Desktop ile AI kullanarak masaüstü deneyiminizi dönüştürün"
+    "welcomeDescription": "Shinkai, görevleri otomatikleştirerek ve iş akışlarını düzenleyerek verimliliğinizi artıran ücretsiz, açık kaynaklı bir AI uygulamasıdır."
   },
   "disconnect": {
     "exportConnection": "Devam etmeden önce, lütfen<Link>bağlantınızı dışa aktarın</Link> böylece istediğiniz zaman bağlantınızı geri yükleyebilirsiniz.",

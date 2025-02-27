@@ -27,9 +27,14 @@ import { useForm } from 'react-hook-form';
 import { Link, To, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import {
+  OnboardingStep,
+  ProviderSelectionUser,
+} from '../components/onboarding/constants';
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { HOME_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
+import { useSettings } from '../store/settings';
 
 export interface ConnectionOptionButtonProps extends ButtonProps {
   title: string;
@@ -75,6 +80,8 @@ const QuickConnectionPage = () => {
     { enabled: isShinkaiPrivate },
   );
 
+  const completeStep = useSettings((state) => state.completeStep);
+
   const setupDataForm = useForm<QuickConnectFormSchema>({
     resolver: zodResolver(quickConnectFormSchema),
     defaultValues: {
@@ -105,11 +112,12 @@ const QuickConnectionPage = () => {
           api_v2_key: response.data?.api_v2_key ?? '',
         };
         setAuth(updatedSetupData);
-        if (isShinkaiPrivate) {
-          navigate('/connect-ai');
-          toast.dismiss('auto-connect-shinkai-private');
-          return;
-        }
+        completeStep(OnboardingStep.TERMS_CONDITIONS, true);
+        completeStep(OnboardingStep.ANALYTICS, false);
+        completeStep(
+          OnboardingStep.AI_PROVIDER_SELECTION,
+          ProviderSelectionUser.LOCAL,
+        );
         navigate(HOME_PATH);
       } else if (response.status === 'non-pristine') {
         submitRegistrationNoCodeNonPristineError();
@@ -139,7 +147,7 @@ const QuickConnectionPage = () => {
   }, [isNodeInfoSuccess, isShinkaiPrivate, nodeInfo, setupDataForm]);
 
   return (
-    <div className="flex h-full flex-col justify-between">
+    <div className="mx-auto flex size-full max-w-lg flex-col justify-between gap-8">
       <div className="flex flex-col">
         <div className="mb-4 flex items-center gap-2">
           <Link

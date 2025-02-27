@@ -182,7 +182,7 @@
       }
     },
     "welcome": "Transforma tu experiencia de escritorio utilizando IA con Shinkai Desktop",
-    "welcomeText": "Transforma tu experiencia de escritorio utilizando IA con Shinkai Desktop"
+    "welcomeDescription": "Shinkai es una aplicación de IA gratuita y de código abierto que mejora tu productividad al automatizar tareas y optimizar flujos de trabajo."
   },
   "disconnect": {
     "exportConnection": "Antes de continuar, por favor <Link>exporta tu conexión</Link> para restaurarla en cualquier momento.",

@@ -182,7 +182,7 @@
       }
     },
     "welcome": "使用Shinkai Desktop利用人工智能改变您的桌面体验",
-    "welcomeText": "通过Shinkai Desktop使用人工智能改变您的桌面体验"
+    "welcomeDescription": "Shinkai 是一款免费的开源 AI 应用程序，通过自动化任务和简化工作流程来提升您的生产力。"
   },
   "disconnect": {
     "exportConnection": "在继续之前，请<Link>导出您的连接</Link>以随时恢复连接。",

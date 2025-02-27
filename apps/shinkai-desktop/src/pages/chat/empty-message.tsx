@@ -162,7 +162,7 @@ const EmptyMessage = () => {
               className={buttonVariants({
                 variant: 'default',
               })}
-              to={isLocalShinkaiNodeIsUse ? '/local-ais' : '/add-ai'}
+              to={isLocalShinkaiNodeIsUse ? '/install-ai-models' : '/add-ai'}
             >
               <span>{t('llmProviders.add')}</span>
             </Link>

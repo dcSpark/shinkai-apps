@@ -1583,3 +1583,53 @@ export const SaveIcon = ({ className }: { className?: string }) => (
     />
   </svg>
 );
+export const CloudModelIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    fill="none"
+    height={16}
+    viewBox="0 0 16 16"
+    width={16}
+  >
+    <path
+      d="M11.6671 12.6668H6.00043C5.13501 12.6666 4.28669 12.4257 3.55028 11.9711C2.81387 11.5165 2.21838 10.8661 1.83035 10.0926C1.44231 9.31902 1.27703 8.4528 1.35296 7.59071C1.42889 6.72862 1.74305 5.90463 2.26033 5.21082C2.77761 4.517 3.47763 3.98069 4.28217 3.66182C5.0867 3.34295 5.96406 3.25408 6.8162 3.40514C7.66834 3.5562 8.46168 3.94124 9.10759 4.51723C9.75349 5.09323 10.2265 5.83748 10.4738 6.66683H11.6671C12.4627 6.66683 13.2258 6.9829 13.7884 7.54551C14.351 8.10812 14.6671 8.87118 14.6671 9.66683C14.6671 10.4625 14.351 11.2255 13.7884 11.7882C13.2258 12.3508 12.4627 12.6668 11.6671 12.6668Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const LocalModelIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    fill="none"
+    height={16}
+    viewBox="0 0 16 16"
+    width={16}
+  >
+    <path
+      d="M3.99967 12.0002H5.33301M7.99967 12.0002H11.9997M4.66634 1.3335H11.333C12.0694 1.3335 12.6663 1.93045 12.6663 2.66683V5.3335C12.6663 6.06988 12.0694 6.66683 11.333 6.66683H4.66634C3.92996 6.66683 3.33301 6.06988 3.33301 5.3335V2.66683C3.33301 1.93045 3.92996 1.3335 4.66634 1.3335ZM2.66634 9.3335H13.333C14.0694 9.3335 14.6663 9.93045 14.6663 10.6668V13.3335C14.6663 14.0699 14.0694 14.6668 13.333 14.6668H2.66634C1.92996 14.6668 1.33301 14.0699 1.33301 13.3335V10.6668C1.33301 9.93045 1.92996 9.3335 2.66634 9.3335Z"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+export const ArrowRightIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    fill="none"
+    height={24}
+    viewBox="0 0 24 24"
+    width={24}
+  >
+    <path
+      d="M9.00005 6C9.00005 6 15 10.4189 15 12C15 13.5812 9 18 9 18"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+  </svg>
+);

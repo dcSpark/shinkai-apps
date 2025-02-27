@@ -78,7 +78,7 @@ const AIsPage = () => {
 
   const onAddAgentClick = () => {
     if (isLocalShinkaiNodeIsUse) {
-      navigate('/local-ais');
+      navigate('/install-ai-models');
       return;
     }
     navigate('/add-ai');
@@ -491,16 +491,19 @@ const RemoveLLMProviderModal = ({
     },
   });
   const ollamaConfig = { host: 'http://127.0.0.1:11435' };
-  const { mutateAsync: removeOllamaModel } = useOllamaRemoveMutation(ollamaConfig, {
-    onSuccess: () => {
-      console.log('ollama model removed:', agentId);
+  const { mutateAsync: removeOllamaModel } = useOllamaRemoveMutation(
+    ollamaConfig,
+    {
+      onSuccess: () => {
+        console.log('ollama model removed:', agentId);
+      },
+      onError: (error) => {
+        toast.error(t('llmProviders.errors.deleteAgent'), {
+          description: typeof error === 'string' ? error : error.message,
+        });
+      },
     },
-    onError: (error) => {
-      toast.error(t('llmProviders.errors.deleteAgent'), {
-        description: typeof error === 'string' ? error : error.message,
-      });
-    },
-  });
+  );
   const {
     llmProviders,
     isSuccess: isSuccessLLMProviders,
@@ -545,11 +548,18 @@ const RemoveLLMProviderModal = ({
                 let llmProviderModel = llmProviders.find(
                   (provider) => provider.id === agentId,
                 )?.model;
-                const isOllama = llmProviderModel?.split(':')[0] === Models.Ollama
+                const isOllama =
+                  llmProviderModel?.split(':')[0] === Models.Ollama;
                 if (isOllama && llmProviderModel) {
-                  llmProviderModel = llmProviderModel.slice(llmProviderModel.indexOf(':') + 1);
+                  llmProviderModel = llmProviderModel.slice(
+                    llmProviderModel.indexOf(':') + 1,
+                  );
                   await removeOllamaModel({ model: llmProviderModel });
-                } else console.warn('llmProviderModel not found for agentId:', agentId);
+                } else
+                  console.warn(
+                    'llmProviderModel not found for agentId:',
+                    agentId,
+                  );
               }}
               size="sm"
               variant="destructive"

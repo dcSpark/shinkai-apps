@@ -168,3 +168,10 @@ export type SubmitRegistrationNoCodeResponse = {
   status: SubmitRegistrationNoCodeStatus;
   data?: UseRegistrationNoCodeResponse;
 };
+
+export type GetShinkaiFreeModelQuotaResponse = {
+  has_quota: boolean;
+  tokens_quota: number;
+  used_tokens: number;
+  reset_time: number;
+};
