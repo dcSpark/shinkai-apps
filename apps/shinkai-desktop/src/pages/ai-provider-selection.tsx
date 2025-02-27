@@ -28,8 +28,8 @@ const AIProviderSelection = () => {
         </h1>
         <p className="text-official-gray-400 text-base">
           <span className="font-medium text-white">
-            You already have access to a free AI model with a limited usage —
-            ready to use. <br />
+            You already have access to a free AI model with a limited usage that
+            resets daily — ready to use. <br />
             <br />
           </span>
           Tailor your experience by adding more models to fit your needs.
