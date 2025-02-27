@@ -24,11 +24,17 @@ const AIProviderSelection = () => {
     <div className="flex h-full flex-col gap-10">
       <div className="space-y-5">
         <h1 className="font-clash text-4xl font-semibold">
-          Configure Your AI Model
+          Set Up Your AI Models
         </h1>
-        <p className="text-gray-80 text-base">
-          Choose the AI model that best fits your needs. You can update this
-          later anytime.
+        <p className="text-official-gray-400 text-base">
+          <span className="font-medium text-white">
+            You already have access to a free AI model with a limited usage —
+            ready to use. <br />
+            <br />
+          </span>
+          Tailor your experience by adding more models to fit your needs.
+          Whether you want cloud-based speed or local control, you can easily
+          switch between models anytime.
         </p>
       </div>
       <div className="flex flex-col gap-5">
@@ -42,7 +48,7 @@ const AIProviderSelection = () => {
             );
             navigate('/install-ai-models?provider=cloud');
           }}
-          title="Use a Cloud Provider"
+          title="Add Cloud AI Model"
         />
 
         <ProviderCard
@@ -55,7 +61,7 @@ const AIProviderSelection = () => {
             );
             navigate('/install-ai-models?provider=local');
           }}
-          title="Install a Local Model"
+          title="Add Local AI Model"
         />
         <Link
           className={cn(
@@ -64,7 +70,7 @@ const AIProviderSelection = () => {
               size: 'auto',
               rounded: 'lg',
             }),
-            'flex flex-col text-base font-normal',
+            'inline text-center text-base font-normal',
           )}
           onClick={() => {
             completeStep(
@@ -75,7 +81,7 @@ const AIProviderSelection = () => {
           }}
           to={'/'}
         >
-          Skip for now, I&apos;ll do it later
+          Skip for now — you can add models anytime!
         </Link>
       </div>
     </div>

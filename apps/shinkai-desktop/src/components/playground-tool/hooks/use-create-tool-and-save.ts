@@ -233,10 +233,6 @@ export const useCreateToolAndSave = ({
     toolMetadataError,
   ]);
 
-  console.log('toolCodeError', toolCodeError);
-  console.log('toolMetadataError', toolMetadataError);
-  console.log('saveToolCodeError', saveToolCodeError);
-
   return {
     createToolCodeForm: form,
     createToolAndSaveTool,
