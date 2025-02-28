@@ -26,7 +26,6 @@ import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { useGetCurrentInbox } from '../../../hooks/use-current-inbox';
 import { useAuth } from '../../../store/auth';
 import { actionButtonClassnames } from '../conversation-footer';
 

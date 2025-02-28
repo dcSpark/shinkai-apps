@@ -22,6 +22,7 @@ import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries
 import { useGetJobFolderName } from '@shinkai_network/shinkai-node-state/v2/queries/getJobFolderName/useGetJobFolderName';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetNodeStorageLocation } from '@shinkai_network/shinkai-node-state/v2/queries/getNodeStorageLocation/useGetNodeStorageLocation';
+import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
 import {
@@ -68,7 +69,6 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -283,13 +283,17 @@ function ConversationChatFooter({
     chatForm.setValue('agent', locationState.agentName);
   }, [chatForm, locationState]);
 
-  const currentInbox = useGetCurrentInbox(inboxId);
+  const { data: provider } = useGetProviderFromJob({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+  });
 
   const isAgentInbox =
-    currentInbox?.agent?.type === 'Agent' || locationState?.agentName;
+    provider?.provider_type === 'Agent' || locationState?.agentName;
 
   const hasProviderEnableStreaming = streamingSupportedModels.includes(
-    currentInbox?.agent?.model.split(':')?.[0] as Models,
+    provider?.agent?.model.split(':')?.[0] as Models,
   );
 
   const debounceMessage = useDebounce(currentMessage, 500);
