@@ -149,8 +149,8 @@ function PlaygroundToolEditor({
     initialState: toolMetadataInitialValues,
   });
 
+  // When opening a playground, we need to copy the tool's real assets into the new execution environment
   const { mutateAsync: copyToolAssets } = useCopyToolAssets();
-
   useEffect(() => {
     copyToolAssets({
       nodeAddress: auth?.node_address ?? '',
