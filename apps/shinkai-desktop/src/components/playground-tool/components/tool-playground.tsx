@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-sort-props */
 import { FormProps } from '@rjsf/core';
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { useCopyToolAssets } from '@shinkai_network/shinkai-node-state/v2/mutations/copyToolAssets/useCopyToolAssets';
 import {
   Form,
   Tabs,
@@ -17,6 +18,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { LoaderIcon } from 'lucide-react';
 import { useCallback, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 
 import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
@@ -78,6 +80,8 @@ function PlaygroundToolEditor({
   initialToolRouterKeyWithVersion?: string;
 }) {
   const auth = useAuth((state) => state.auth);
+
+  const { toolRouterKey } = useParams();
 
   const form = useToolForm(createToolCodeFormInitialValues);
 
@@ -144,6 +148,24 @@ function PlaygroundToolEditor({
     forceGenerateMetadata,
     initialState: toolMetadataInitialValues,
   });
+
+  // When opening a playground, we need to copy the tool's real assets into the new execution environment
+  const { mutateAsync: copyToolAssets } = useCopyToolAssets();
+  useEffect(() => {
+    copyToolAssets({
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      xShinkaiAppId,
+      currentToolKeyPath: toolRouterKey ?? '',
+    });
+  }, [
+    copyToolAssets,
+    auth?.api_v2_key,
+    auth?.node_address,
+    xShinkaiAppId,
+    xShinkaiToolId,
+    toolRouterKey,
+  ]);
 
   const mountTimestamp = useRef(new Date());
   const handleRunCode: FormProps['onSubmit'] = useCallback(

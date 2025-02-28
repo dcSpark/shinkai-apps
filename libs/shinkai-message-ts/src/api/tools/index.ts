@@ -4,6 +4,8 @@ import {
   AddToolRequest,
   AddToolRequestRequest,
   AddToolRequestResponse,
+  CopyToolAssetsRequest,
+  CopyToolAssetsResponse,
   CreatePromptRequest,
   CreatePromptResponse,
   CreateToolCodeRequest,
@@ -691,4 +693,20 @@ export const importToolZip = async (
     },
   );
   return response.data as ImportToolZipResponse;
+};
+
+export const copyToolAssets = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: CopyToolAssetsRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/copy_tool_assets'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as CopyToolAssetsResponse;
 };

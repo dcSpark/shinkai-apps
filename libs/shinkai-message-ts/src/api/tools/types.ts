@@ -478,3 +478,13 @@ export type ImportToolZipResponse = {
   status: string;
   tool_key: string;
 };
+
+export type CopyToolAssetsRequest = {
+  is_first_playground: boolean;
+  first_path: string;
+  second_path: string;
+  is_second_playground: boolean;
+};
+export type CopyToolAssetsResponse = {
+  message: string;
+};
