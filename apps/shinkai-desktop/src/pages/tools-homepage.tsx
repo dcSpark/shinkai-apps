@@ -470,7 +470,7 @@ export const ToolsHomepage = () => {
                                 if (!auth) return;
                                 openToolInCodeEditor({
                                   token: auth?.api_v2_key,
-                                  language: CodeLanguage.Typescript,
+                                  language: form.watch('language'),
                                   nodeAddress: auth?.node_address,
                                   xShinkaiAppId,
                                   xShinkaiToolId,
