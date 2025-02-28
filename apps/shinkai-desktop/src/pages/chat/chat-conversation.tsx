@@ -1,23 +1,20 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import {
-  buildInboxIdFromJobId,
-  extractJobIdFromInbox,
-} from '@shinkai_network/shinkai-message-ts/utils';
+import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import {
   FunctionKeyV2,
   generateOptimisticAssistantMessage,
 } from '@shinkai_network/shinkai-node-state/v2/constants';
-import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
+import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import { useEffect, useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { MessageList } from '../../components/chat/components/message-list';
@@ -30,7 +27,6 @@ import {
   useWebSocketMessage,
   useWebSocketTools,
 } from '../../components/chat/websocket-message';
-import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -56,10 +52,14 @@ export const useChatConversationWithOptimisticUpdates = ({
       enabled: !!inboxId,
     },
   );
-  const currentInbox = useGetCurrentInbox();
+  const { data: provider } = useGetProviderFromJob({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+  });
 
   const hasProviderEnableStreaming = streamingSupportedModels.includes(
-    currentInbox?.agent?.model.split(':')?.[0] as Models,
+    provider?.agent?.model.split(':')?.[0] as Models,
   );
 
   const {
@@ -138,7 +138,7 @@ export const useChatConversationWithOptimisticUpdates = ({
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
   const { t } = useTranslation();
-  const navigate = useNavigate();
+
   const queryClient = useQueryClient();
 
   const { inboxId: encodedInboxId = '' } = useParams();
@@ -154,7 +154,6 @@ const ChatConversation = () => {
   const auth = useAuth((state) => state.auth);
   const optInExperimental = useSettings((state) => state.optInExperimental);
 
-  const currentInbox = useGetCurrentInbox();
   const {
     data,
     fetchPreviousPage,
@@ -207,13 +206,6 @@ const ChatConversation = () => {
       queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION, { inboxId }],
       });
-    },
-  });
-
-  const { mutateAsync: createJob } = useCreateJob({
-    onSuccess: (data) => {
-      const jobId = encodeURIComponent(buildInboxIdFromJobId(data.jobId));
-      navigate(`/inboxes/${jobId}`);
     },
   });
 

@@ -19,7 +19,6 @@ import { LoaderIcon } from 'lucide-react';
 import { useCallback, useEffect, useRef } from 'react';
 
 import { useAuth } from '../../../store/auth';
-import { useSettings } from '../../../store/settings';
 import { usePlaygroundStore } from '../context/playground-context';
 import {
   CreateToolCodeFormSchema,
@@ -79,9 +78,6 @@ function PlaygroundToolEditor({
   initialToolRouterKeyWithVersion?: string;
 }) {
   const auth = useAuth((state) => state.auth);
-  const playgroundPanelSizes = useSettings(
-    (state) => state.playgroundPanelSizes,
-  );
 
   const form = useToolForm(createToolCodeFormInitialValues);
 
@@ -92,9 +88,16 @@ function PlaygroundToolEditor({
     if (createToolCodeFormInitialValues?.tools) {
       form.setValue('tools', createToolCodeFormInitialValues.tools);
     }
+    if (createToolCodeFormInitialValues?.llmProviderId) {
+      form.setValue(
+        'llmProviderId',
+        createToolCodeFormInitialValues.llmProviderId,
+      );
+    }
   }, [
     createToolCodeFormInitialValues?.language,
     createToolCodeFormInitialValues?.tools,
+    createToolCodeFormInitialValues?.llmProviderId,
     form,
   ]);
 

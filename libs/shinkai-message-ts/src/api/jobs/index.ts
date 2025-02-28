@@ -27,6 +27,8 @@ import {
   GetLastMessagesWithBranchesRequest,
   GetLastMessagesWithBranchesResponse,
   GetLLMProvidersResponse,
+  GetProviderFromJobRequest,
+  GetProviderFromJobResponse,
   JobMessageRequest,
   JobMessageResponse,
   LLMProviderInterface,
@@ -505,4 +507,20 @@ export const removeJob = async (
     },
   );
   return response.data;
+};
+
+export const getProviderFromJob = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetProviderFromJobRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/get_job_provider'),
+    {
+      params: { job_id: payload.job_id },
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetProviderFromJobResponse;
 };

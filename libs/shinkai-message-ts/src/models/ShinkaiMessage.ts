@@ -62,13 +62,6 @@ export interface RegistrationCode {
   permissionType: string;
 }
 
-export type AgentInbox = {
-  full_identity_name: string;
-  id: string;
-  model: string;
-  type: 'Agent' | 'LLMProvider';
-};
-
 export type CreateChatInboxResponse = {
   status: string;
   message: string;
