@@ -1,13 +1,7 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import {
-  GetToolResponse,
-  GetToolsCategory,
-  ShinkaiToolHeader,
-} from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { GetToolsCategory } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDisableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/disableAllTools/useDisableAllTools';
 import { useEnableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/enableAllTools/useEnableAllTools';
-import { useImportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/importTool/useImportTool';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
@@ -16,24 +10,11 @@ import {
   AlertDescription,
   AlertTitle,
   Button,
-  buttonVariants,
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogTitle,
-  DialogTrigger,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Form,
-  FormField,
   Input,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  TextField,
   ToggleGroup,
   ToggleGroupItem,
   Tooltip,
@@ -42,19 +23,9 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import {
-  CloudDownloadIcon,
-  Eye,
-  EyeOff,
-  MoreVerticalIcon,
-  SearchIcon,
-  XIcon,
-} from 'lucide-react';
+import { Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon } from 'lucide-react';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
 import { useDebounce } from '../../hooks/use-debounce';
 import { useAuth } from '../../store/auth';
@@ -299,101 +270,6 @@ export const ToolCollection = () => {
   );
 };
 
-const importToolFormSchema = z.object({
-  url: z.string().url(),
-});
-type ImportToolFormSchema = z.infer<typeof importToolFormSchema>;
-
-export function ImportToolModal() {
-  const auth = useAuth((state) => state.auth);
-
-  const navigate = useNavigate();
-  const importToolForm = useForm<ImportToolFormSchema>({
-    resolver: zodResolver(importToolFormSchema),
-  });
-  const [isImportModalOpen, setImportModalOpen] = useState(false);
-
-  const { mutateAsync: importTool, isPending: isPendingImportSheet } =
-    useImportTool({
-      onSuccess: (data) => {
-        setImportModalOpen(false);
-        toast.success('Tool imported successfully', {
-          action: {
-            label: 'View',
-            onClick: () => {
-              navigate(`/tools/${data.tool_key}`);
-            },
-          },
-        });
-      },
-      onError: (error) => {
-        toast.error('Failed to import tool', {
-          description: error.response?.data?.message ?? error.message,
-        });
-      },
-    });
-
-  const onSubmit = async (data: ImportToolFormSchema) => {
-    await importTool({
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      url: data.url,
-    });
-  };
-
-  return (
-    <Dialog onOpenChange={setImportModalOpen} open={isImportModalOpen}>
-      <DialogTrigger
-        className={cn(
-          buttonVariants({
-            variant: 'outline',
-            size: 'xs',
-            rounded: 'lg',
-          }),
-        )}
-      >
-        <CloudDownloadIcon className="size-4" />
-        Import
-      </DialogTrigger>
-      <DialogContent className="max-w-[500px]">
-        <DialogTitle className="pb-0">Import Tool</DialogTitle>
-        <Form {...importToolForm}>
-          <form
-            className="mt-2 flex flex-col gap-6"
-            onSubmit={importToolForm.handleSubmit(onSubmit)}
-          >
-            <FormField
-              control={importToolForm.control}
-              name="url"
-              render={({ field }) => (
-                <TextField
-                  autoFocus
-                  field={{
-                    ...field,
-                    placeholder: 'https://example.com/file.zip',
-                  }}
-                  label={'URL'}
-                />
-              )}
-            />
-            <DialogFooter>
-              <Button
-                className="w-full"
-                disabled={isPendingImportSheet}
-                isLoading={isPendingImportSheet}
-                size="auto"
-                type="submit"
-              >
-                Import
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 export function DockerStatus() {
   const auth = useAuth((state) => state.auth);
   const { data: health } = useGetHealth({
@@ -441,7 +317,7 @@ export function DockerStatus() {
         <TooltipContent
           align="end"
           alignOffset={-10}
-          className="max-w-[350px] p-0"
+          className="m-0 max-w-[350px] p-0"
           side="bottom"
           sideOffset={10}
         >
@@ -451,7 +327,6 @@ export function DockerStatus() {
               config.borderColor,
               'bg-gray-300',
               config.bgColor,
-              'mb-2.5',
             )}
           >
             <svg
