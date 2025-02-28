@@ -2,15 +2,12 @@ import { FormProps } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  CodeLanguage,
   OAuth,
   ShinkaiTool,
   ShinkaiToolType,
-  ToolMetadata,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDuplicateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/duplicateTool/useDuplicateTool';
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
-import { useOpenToolInCodeEditor } from '@shinkai_network/shinkai-node-state/v2/mutations/openToolnCodeEditor/useOpenToolInCodeEditor';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
@@ -48,7 +45,6 @@ import {
   MoreVertical,
   PlayCircle,
   Rocket,
-  SquareArrowOutUpRightIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -154,20 +150,6 @@ export default function ToolDetailsCard({
         });
       },
     });
-
-  const {
-    mutateAsync: openToolInCodeEditor,
-    isPending: isOpeningToolInCodeEditor,
-  } = useOpenToolInCodeEditor({
-    onSuccess: () => {
-      toast.success(t('tools.successOpenToolInCodeEditor'));
-    },
-    onError: (error) => {
-      toast.error(t('tools.errorOpenToolInCodeEditor'), {
-        description: error.response?.data?.message ?? error.message,
-      });
-    },
-  });
 
   const { mutateAsync: exportTool, isPending: isExportingTool } = useExportTool(
     {
@@ -360,55 +342,6 @@ export default function ToolDetailsCard({
                   >
                     <CopyIcon className="mr-2 h-4 w-4" />
                     Duplicate
-                  </DropdownMenuItem>
-                )}
-                {hasToolCode && (
-                  <DropdownMenuItem
-                    className="text-xs"
-                    disabled={isOpeningToolInCodeEditor}
-                    onClick={async () => {
-                      await openToolInCodeEditor({
-                        nodeAddress: auth?.node_address ?? '',
-                        bearerToken: auth?.api_v2_key ?? '',
-                        xShinkaiAppId: `app-id-${new Date().getTime()}`,
-                        xShinkaiToolId: `tool-id-${new Date().getTime()}`,
-                        xShinkaiLLMProvider: defaultLLMProvider ?? '',
-                        payload: {
-                          code:
-                            'py_code' in tool
-                              ? tool.py_code
-                              : 'js_code' in tool
-                                ? tool.js_code
-                                : '',
-                          language:
-                            toolType === 'Python'
-                              ? CodeLanguage.Python
-                              : CodeLanguage.Typescript,
-                          config: 'config' in tool ? tool.config : [],
-                          parameters:
-                            'parameters' in tool
-                              ? (tool.parameters as any)
-                              : {},
-                          oauth: 'oauth' in tool ? tool.oauth : [],
-                          tools: [toolKey ?? ''],
-                          metadata: {
-                            name: tool.name,
-                            description: tool.description,
-                            tools: 'tools' in tool ? tool.tools : [],
-                            author: 'author' in tool ? tool.author : '',
-                            keywords: 'keywords' in tool ? tool.keywords : [],
-                            version: 'version' in tool ? tool.version : '',
-                            configurations: toolConfigSchema,
-                            parameters:
-                              'parameters' in tool ? tool.parameters : {},
-                            result: 'result' in tool ? tool.result : {},
-                          } as ToolMetadata,
-                        },
-                      });
-                    }}
-                  >
-                    <SquareArrowOutUpRightIcon className="mr-2 h-4 w-4" />
-                    Open in Code Editor
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>

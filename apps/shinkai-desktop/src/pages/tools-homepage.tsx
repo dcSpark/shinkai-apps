@@ -1,5 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { useOpenToolInCodeEditor } from '@shinkai_network/shinkai-node-state/v2/mutations/openToolnCodeEditor/useOpenToolInCodeEditor';
 import {
   BackgroundBeams,
   Button,
@@ -16,7 +17,9 @@ import {
   ArrowRight,
   ArrowUpRight,
   CircleAlert,
+  ExternalLinkIcon,
   LoaderIcon,
+  SquareArrowOutUpRightIcon,
   StoreIcon,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -42,16 +45,36 @@ import {
   ToolCollection,
 } from '../components/tools/tool-collection';
 import { VideoBanner } from '../components/video-banner';
-import { TutorialBanner } from '../store/settings';
+import { useAuth } from '../store/auth';
+import { TutorialBanner, useSettings } from '../store/settings';
 import { SHINKAI_TUTORIALS } from '../utils/constants';
 import { SHINKAI_STORE_URL } from '../utils/store';
 
 export const ToolsHomepage = () => {
   const { t } = useTranslation();
   const form = useToolForm();
+  const auth = useAuth((state) => state.auth);
   const toolHomepageScrollPositionRef = usePlaygroundStore(
     (state) => state.toolHomepageScrollPositionRef,
   );
+  const xShinkaiToolId = usePlaygroundStore((state) => state.xShinkaiToolId);
+  const xShinkaiAppId = usePlaygroundStore((state) => state.xShinkaiAppId);
+
+  const defaulAgentId = useSettings((state) => state.defaultAgentId);
+
+  const {
+    mutateAsync: openToolInCodeEditor,
+    isPending: isOpeningToolInCodeEditor,
+  } = useOpenToolInCodeEditor({
+    onSuccess: () => {
+      toast.success(t('tools.successOpenToolInCodeEditor'));
+    },
+    onError: (error) => {
+      toast.error(t('tools.errorOpenToolInCodeEditor'), {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
 
   const [step, setStep] = useState<'code' | 'metadata'>('code');
 
@@ -376,23 +399,25 @@ export const ToolsHomepage = () => {
     >
       <div className="mx-auto max-w-4xl pb-[80px]">
         <div className="mb-[80px] flex items-center justify-end gap-3 px-0 py-4">
-          <DockerStatus />
-          <ImportToolModal />
-          <Link
-            className={cn(
-              buttonVariants({
-                size: 'xs',
-                variant: 'outline',
-                rounded: 'lg',
-              }),
-            )}
-            rel="noreferrer"
-            target="_blank"
-            to={SHINKAI_STORE_URL}
-          >
-            <StoreIcon className="size-4" />
-            {t('tools.store.label')}
-          </Link>
+          <div className="flex items-center gap-3">
+            <DockerStatus />
+            <ImportToolModal />
+            <Link
+              className={cn(
+                buttonVariants({
+                  size: 'xs',
+                  variant: 'outline',
+                  rounded: 'lg',
+                }),
+              )}
+              rel="noreferrer"
+              target="_blank"
+              to={SHINKAI_STORE_URL}
+            >
+              <StoreIcon className="size-4" />
+              {t('tools.store.label')}
+            </Link>
+          </div>
         </div>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-20">
@@ -437,22 +462,44 @@ export const ToolsHomepage = () => {
                               value={form.watch('tools')}
                             />
                           </div>
-
-                          <Button
-                            disabled={form.watch('message') === ''}
-                            isLoading={isProcessing}
-                            onClick={() =>
-                              createToolAndSaveTool(form.getValues())
-                            }
-                            rounded="lg"
-                            size="xs"
-                            type="button"
-                          >
-                            <SendIcon className="size-4" />
-                            <span className="sr-only">
-                              {t('chat.sendMessage')}
-                            </span>
-                          </Button>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              className="flex items-center gap-2 border-none"
+                              isLoading={isOpeningToolInCodeEditor}
+                              onClick={() => {
+                                if (!auth) return;
+                                openToolInCodeEditor({
+                                  token: auth?.api_v2_key,
+                                  language: form.watch('language'),
+                                  nodeAddress: auth?.node_address,
+                                  xShinkaiAppId,
+                                  xShinkaiToolId,
+                                  xShinkaiLLMProvider: defaulAgentId,
+                                });
+                              }}
+                              rounded="lg"
+                              size="xs"
+                              type="button"
+                              variant="link"
+                            >
+                              Create in VSCode/Cursor
+                            </Button>
+                            <Button
+                              disabled={form.watch('message') === ''}
+                              isLoading={isProcessing}
+                              onClick={() =>
+                                createToolAndSaveTool(form.getValues())
+                              }
+                              rounded="lg"
+                              size="xs"
+                              type="button"
+                            >
+                              <SendIcon className="size-4" />
+                              <span className="sr-only">
+                                {t('chat.sendMessage')}
+                              </span>
+                            </Button>
+                          </div>
                         </div>
                       }
                       disabled={isProcessing}

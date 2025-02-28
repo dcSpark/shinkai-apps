@@ -1,15 +1,15 @@
+import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import {
-  OpenToolInCodeEditorRequest,
+  CodeLanguage,
   OpenToolInCodeEditorResponse,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
-export type OpenToolInCodeEditorInput = {
+export type OpenToolInCodeEditorInput = Token & {
   nodeAddress: string;
-  bearerToken: string;
   xShinkaiAppId: string;
   xShinkaiToolId: string;
   xShinkaiLLMProvider: string;
-  payload: OpenToolInCodeEditorRequest;
+  language: CodeLanguage;
 };
 
 export type OpenToolInCodeEditorOutput = OpenToolInCodeEditorResponse;
