@@ -334,13 +334,7 @@ export type UpdateToolCodeImplementationResponse = {
   status: string;
 };
 export type OpenToolInCodeEditorRequest = {
-  code: string;
   language: CodeLanguage;
-  config: Record<string, any>;
-  parameters: Record<string, any>;
-  oauth: OAuth[];
-  tools: string[];
-  metadata: ToolMetadata;
 };
 export type OpenToolInCodeEditorResponse = {
   message: string;

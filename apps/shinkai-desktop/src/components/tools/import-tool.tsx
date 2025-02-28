@@ -21,6 +21,7 @@ import {
   FormMessage,
   TextField,
 } from '@shinkai_network/shinkai-ui';
+import { ImportIcon } from '@shinkai_network/shinkai-ui/assets';
 import { useMeasure } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
@@ -303,7 +304,7 @@ export default function ImportToolModal() {
           }),
         )}
       >
-        <DownloadIcon className="size-4" />
+        <ImportIcon className="size-4" />
         Import
       </DialogTrigger>
       <DialogContent
