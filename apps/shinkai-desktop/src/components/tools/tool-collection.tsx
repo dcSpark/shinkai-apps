@@ -317,7 +317,7 @@ export function DockerStatus() {
         <TooltipContent
           align="end"
           alignOffset={-10}
-          className="max-w-[350px] p-0"
+          className="m-0 max-w-[350px] p-0"
           side="bottom"
           sideOffset={10}
         >
@@ -327,7 +327,6 @@ export function DockerStatus() {
               config.borderColor,
               'bg-gray-300',
               config.bgColor,
-              'mb-2.5',
             )}
           >
             <svg
