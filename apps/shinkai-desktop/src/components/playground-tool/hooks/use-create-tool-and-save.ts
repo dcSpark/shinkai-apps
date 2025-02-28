@@ -4,6 +4,7 @@ import {
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
+import { useGetAllToolAssets } from '@shinkai_network/shinkai-node-state/v2/queries/getAllToolAssets/useGetAllToolAssets';
 import { useCallback, useEffect, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -31,6 +32,13 @@ export const useAutoSaveTool = () => {
     isError: isSaveToolError,
     error: saveToolCodeError,
   } = useSaveToolCode();
+
+  const { data: assets } = useGetAllToolAssets({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    xShinkaiAppId,
+    xShinkaiToolId,
+  });
 
   const handleAutoSave = useCallback(
     async ({
@@ -88,7 +96,7 @@ export const useAutoSaveTool = () => {
           token: auth?.api_v2_key ?? '',
           nodeAddress: auth?.node_address ?? '',
           language,
-          assets: [],
+          assets: assets ?? [],
           xShinkaiAppId,
           xShinkaiToolId,
           ...(previousToolRouterKeyWithVersion && {
@@ -124,6 +132,7 @@ export const useAutoSaveTool = () => {
       auth?.shinkai_identity,
       auth?.api_v2_key,
       auth?.node_address,
+      assets,
       xShinkaiAppId,
       xShinkaiToolId,
       navigate,
