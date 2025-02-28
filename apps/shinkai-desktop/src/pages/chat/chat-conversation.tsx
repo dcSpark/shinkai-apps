@@ -1,14 +1,10 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import {
-  buildInboxIdFromJobId,
-  extractJobIdFromInbox,
-} from '@shinkai_network/shinkai-message-ts/utils';
+import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import {
   FunctionKeyV2,
   generateOptimisticAssistantMessage,
 } from '@shinkai_network/shinkai-node-state/v2/constants';
-import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
@@ -207,13 +203,6 @@ const ChatConversation = () => {
       queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION, { inboxId }],
       });
-    },
-  });
-
-  const { mutateAsync: createJob } = useCreateJob({
-    onSuccess: (data) => {
-      const jobId = encodeURIComponent(buildInboxIdFromJobId(data.jobId));
-      navigate(`/inboxes/${jobId}`);
     },
   });
 

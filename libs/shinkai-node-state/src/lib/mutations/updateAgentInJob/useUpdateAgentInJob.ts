@@ -18,7 +18,10 @@ export const useUpdateAgentInJob = (options?: Options) => {
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [FunctionKeyV2.GET_INBOXES_WITH_PAGINATION],
+        queryKey: [
+          FunctionKeyV2.GET_PROVIDER_FROM_JOB,
+          { jobId: variables.jobId },
+        ],
       });
 
       if (options?.onSuccess) {

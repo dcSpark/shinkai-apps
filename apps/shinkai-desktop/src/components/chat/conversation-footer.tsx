@@ -516,7 +516,6 @@ function ConversationChatFooter({
     }
     chatForm.reset();
   };
-  const isChatFolderDisabled = !inboxId;
 
   useEffect(() => {
     if (inboxId) return;
@@ -563,7 +562,7 @@ function ConversationChatFooter({
                   <div className="flex items-center justify-between gap-4 px-1 pb-2 pt-1">
                     <div className="flex items-center gap-2.5">
                       {inboxId ? (
-                        <AiUpdateSelectionActionBar />
+                        <AiUpdateSelectionActionBar inboxId={inboxId} />
                       ) : (
                         <AIModelSelector
                           onValueChange={(value) => {

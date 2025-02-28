@@ -3,6 +3,7 @@ import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
+import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
 import {
   CommandShortcut,
   DropdownMenu,
@@ -165,13 +166,18 @@ export const AIModelSelector = memo(AIModelSelectorBase);
 export function AiUpdateSelectionActionBarBase({
   inboxId,
 }: {
-  inboxId?: string;
+  inboxId: string;
 }) {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
-  const currentInbox = useGetCurrentInbox(inboxId);
 
-  const { mutateAsync: updateAgentInJob } = useUpdateAgentInJob({
+  const { data: provider } = useGetProviderFromJob({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    jobId: extractJobIdFromInbox(inboxId ?? ''),
+  });
+
+  const { mutateAsync: updateAgentInJob, isPending } = useUpdateAgentInJob({
     onError: (error) => {
       toast.error(t('llmProviders.errors.updateAgent'), {
         description: error.message,
@@ -182,9 +188,8 @@ export function AiUpdateSelectionActionBarBase({
   return (
     <AIModelSelector
       onValueChange={async (value) => {
-        if (!currentInbox) return;
-
-        const jobId = extractJobIdFromInbox(currentInbox?.inbox_id ?? '');
+        if (!provider || isPending) return;
+        const jobId = extractJobIdFromInbox(inboxId ?? '');
         await updateAgentInJob({
           nodeAddress: auth?.node_address ?? '',
           shinkaiIdentity: auth?.shinkai_identity ?? '',
@@ -198,7 +203,7 @@ export function AiUpdateSelectionActionBarBase({
           profile_identity_sk: auth?.profile_identity_sk ?? '',
         });
       }}
-      value={currentInbox?.agent?.id ?? ''}
+      value={provider?.agent?.id ?? ''}
     />
   );
 }

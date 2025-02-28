@@ -1,4 +1,8 @@
-import { AgentInbox } from '../../models/ShinkaiMessage';
+export type AgentOrLLMProvider = {
+  full_identity_name: string;
+  id: string;
+  model: string;
+};
 
 export enum VectorSearchMode {
   FillUpTo25k = 'FillUpTo25k',
@@ -195,9 +199,10 @@ export type Inbox = {
   last_message?: ChatMessage;
   is_finished: boolean;
   job_scope?: JobScope;
-  agent?: AgentInbox;
+
   datetime_created: string;
-};
+} & ProviderDetails;
+
 export type GetAllInboxesResponse = Inbox[];
 
 export type GetAllInboxesWithPaginationRequest = {
@@ -282,3 +287,13 @@ export type GetJobFolderNameRequest = {
 export type GetJobFolderNameResponse = {
   folder_name: string;
 };
+
+export type GetProviderFromJobRequest = {
+  job_id: string;
+};
+
+export type ProviderDetails = {
+  agent: AgentOrLLMProvider;
+  provider_type: 'Agent' | 'LLMProvider';
+};
+export type GetProviderFromJobResponse = ProviderDetails;
