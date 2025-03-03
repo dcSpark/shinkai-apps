@@ -160,7 +160,7 @@ impl OllamaApiClient {
         Ok(digest)
     }
 
-    pub async fn create_model_from_gguf(&self, _model_name: &str, gguf_data: &[u8]) -> Result<(), String> {
+    pub async fn create_model_from_gguf(&self, model_name: &str, gguf_data: &[u8]) -> Result<(), String> {
         // Check if ollama version is 0.5.7 or higher
         let version = self.get_ollama_version().await?;
         let parsed_version = Version::parse(&version)
@@ -205,7 +205,7 @@ impl OllamaApiClient {
         let client = reqwest::Client::new();
         
         let create_request = OllamaApiCreateRequest {
-            model: "my-gguf-model".to_string(),
+            model: model_name.to_string(),
             files,
         };
 
