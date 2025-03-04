@@ -33,8 +33,8 @@ const UpdateStateUI: React.FC<{
   switch (updateState) {
     case 'available':
       return (
-        <div className="flex flex-row items-center space-x-1">
-          <Download className="h-5 w-5 shrink-0" />
+        <div className="flex flex-row items-center gap-2">
+          <Download className="size-5 shrink-0" />
           <AnimatePresence>
             {sidebarExpanded && (
               <motion.span
@@ -74,7 +74,11 @@ const UpdateStateUI: React.FC<{
 
 UpdateStateUI.displayName = 'UpdateStateUI';
 
-const UpdateBanner: React.FC<{ className?: string }> = ({ className }) => {
+const UpdateBanner: React.FC<{
+  className?: string;
+  // TODO: temporary fix to display banner on onboarding step, ideally we should add check for updates in the tray options
+  isOnboardingStep?: boolean;
+}> = ({ className, isOnboardingStep }) => {
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
   const { data: updateState } = useUpdateStateQuery();
   const { mutateAsync: downloadUpdate } = useDownloadUpdateMutation();
@@ -120,7 +124,7 @@ const UpdateBanner: React.FC<{ className?: string }> = ({ className }) => {
       className={cn('flex w-full flex-col text-xs', className)}
       onClick={downloadAndInstall}
     >
-      <TooltipProvider delayDuration={0}>
+      <TooltipProvider delayDuration={isOnboardingStep ? 100000 : 0}>
         <Tooltip>
           <TooltipTrigger className="flex items-center gap-1">
             <Alert
@@ -136,9 +140,14 @@ const UpdateBanner: React.FC<{ className?: string }> = ({ className }) => {
                     updateState.downloadState?.data?.downloadProgressPercent ||
                     0
                   }
-                  sidebarExpanded={sidebarExpanded}
+                  sidebarExpanded={sidebarExpanded || !!isOnboardingStep}
                   updateState={updateState.state}
                 />
+                {isOnboardingStep && updateState.state === 'available' && (
+                  <span className="pl-[28px] text-xs text-white/80">
+                    Click here to install the latest available version.
+                  </span>
+                )}
               </div>
             </Alert>
           </TooltipTrigger>
@@ -147,7 +156,7 @@ const UpdateBanner: React.FC<{ className?: string }> = ({ className }) => {
               align="center"
               arrowPadding={2}
               className="max-w-md p-0"
-              side="right"
+              side={isOnboardingStep ? 'bottom' : 'right'}
             >
               {banner}
             </TooltipContent>
