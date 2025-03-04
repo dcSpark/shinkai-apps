@@ -66,6 +66,9 @@ type SettingsStore = {
   setPlaygroundChatPanelSize: (size: number) => void;
   playgroundCodePanelSize: number;
   setPlaygroundCodePanelSize: (size: number) => void;
+  // legacy state
+  termsAndConditionsAccepted?: boolean;
+  getTermsAndConditionsAccepted: () => boolean | undefined;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -176,14 +179,6 @@ export const useSettings = create<SettingsStore>()(
           set({ isGetStartedChecklistHidden });
         },
 
-        // optInAnalytics: undefined,
-        // acceptAnalytics: () => {
-        //   set({ optInAnalytics: true });
-        // },
-        // denyAnalytics: () => {
-        //   set({ optInAnalytics: false });
-        // },
-
         optInExperimental: false,
         setOptInExperimental: (optInExperimental) => {
           set({ optInExperimental });
@@ -257,6 +252,13 @@ export const useSettings = create<SettingsStore>()(
             compatibilityBannerDismissed: false,
             isChatSidebarCollapsed: false,
           });
+        },
+
+        // legacy state
+        termsAndConditionsAccepted: undefined,
+        getTermsAndConditionsAccepted: () => {
+          const state = get();
+          return state.termsAndConditionsAccepted;
         },
       }),
       {

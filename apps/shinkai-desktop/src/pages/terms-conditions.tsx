@@ -9,7 +9,7 @@ import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/v2/que
 import { Button, buttonVariants, Checkbox } from '@shinkai_network/shinkai-ui';
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
@@ -23,6 +23,7 @@ import { useShinkaiNodeKillMutation } from '../lib/shinkai-node-manager/shinkai-
 import { useStepNavigation } from '../routes';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
+import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 
 const TermsAndConditionsPage = () => {
   const { t, Trans } = useTranslation();
@@ -33,6 +34,21 @@ const TermsAndConditionsPage = () => {
   const completeStep = useSettings((state) => state.completeStep);
 
   useStepNavigation(OnboardingStep.TERMS_CONDITIONS);
+
+  const termsAndConditionsAcceptedLegacy = useSettings((state) =>
+    state.getTermsAndConditionsAccepted(),
+  );
+  const isLocalShinkaiNodeInUse = useShinkaiNodeManager(
+    (state) => state.isInUse,
+  );
+  useEffect(() => {
+    if (
+      termsAndConditionsAcceptedLegacy !== undefined &&
+      isLocalShinkaiNodeInUse
+    ) {
+      completeStep(OnboardingStep.TERMS_CONDITIONS, true);
+    }
+  }, [completeStep, isLocalShinkaiNodeInUse, termsAndConditionsAcceptedLegacy]);
 
   const setAuth = useAuth((state) => state.setAuth);
   const [
