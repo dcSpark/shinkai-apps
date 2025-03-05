@@ -9,7 +9,7 @@ export type OnboardingStepConfig = {
   required: boolean;
 };
 
-export const COMPLETION_DESTINATION = '/inboxes';
+export const COMPLETION_DESTINATION = '/home';
 
 export const ONBOARDING_STEPS: OnboardingStepConfig[] = [
   {

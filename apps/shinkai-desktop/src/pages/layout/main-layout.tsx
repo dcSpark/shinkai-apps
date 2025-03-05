@@ -21,7 +21,9 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
+  AIAgentIcon,
   AISearchContentIcon,
+  AisIcon,
   // AiTasksIcon,
   // BrowseSubscriptionIcon,
   CreateAIIcon,
@@ -214,6 +216,11 @@ export function MainNav() {
       href: '/inboxes',
       icon: <InboxIcon className="h-5 w-5" />,
     },
+    {
+      title: t('layout.menuItems.agents'),
+      href: '/agents',
+      icon: <AIAgentIcon className="h-5 w-5" />,
+    },
     // {
     //   title: t('layout.menuItems.aiTasks'),
     //   href: '/ai-tasks',
@@ -273,9 +280,9 @@ export function MainNav() {
 
   const footerNavigationLinks = [
     {
-      title: t('layout.menuItems.agents'),
+      title: t('layout.menuItems.ais'),
       href: '/ais',
-      icon: <BotIcon className="h-5 w-5" />,
+      icon: <AisIcon className="h-5 w-5" />,
     },
     {
       title: t('layout.menuItems.helpAndSupport'),

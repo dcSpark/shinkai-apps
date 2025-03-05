@@ -42,7 +42,7 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { ScrollArea } from '@shinkai_network/shinkai-ui';
-import { CreateAIIcon } from '@shinkai_network/shinkai-ui/assets';
+import { AisIcon, CreateAIIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BotIcon, Edit, Plus, TrashIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
@@ -50,7 +50,6 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import Agents from '../components/agent/agents';
 import { VideoBanner } from '../components/video-banner';
 import { useURLQueryParams } from '../hooks/use-url-query-params';
 import { useOllamaRemoveMutation } from '../lib/shinkai-node-manager/ollama-client';
@@ -59,6 +58,7 @@ import { TutorialBanner } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { SHINKAI_TUTORIALS } from '../utils/constants';
 import { getModelObject } from './add-ai';
+import Agents from './agents';
 import { SimpleLayout } from './layout/simple-layout';
 
 const AIsPage = () => {
@@ -85,36 +85,11 @@ const AIsPage = () => {
   };
 
   return (
-    <SimpleLayout>
-      <VideoBanner
-        name={TutorialBanner.SHINKAI_TOOLS}
-        title="Welcome to the AIs & Agents"
-        videoUrl={SHINKAI_TUTORIALS['add-ai']}
-      />
-      <Tabs
-        className="relative flex h-full flex-col"
-        defaultValue={tabSelected}
-      >
-        <TabsList
-          className={cn(
-            'grid w-full max-w-[200px] grid-cols-2 overflow-auto rounded-lg border border-gray-400 bg-transparent p-0.5',
-          )}
-        >
-          <TabsTrigger
-            className="flex h-8 items-center gap-1.5 text-xs font-semibold"
-            value="ais"
-          >
-            AIs
-          </TabsTrigger>
-          <TabsTrigger
-            className="flex h-8 items-center gap-1.5 text-xs font-semibold"
-            value="agents"
-          >
-            Agents
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent className="h-full" value="ais">
-          <div className="absolute right-3 top-0">
+    <div className="h-full">
+      <div className="mx-auto flex h-full max-w-4xl flex-col">
+        <div className="flex flex-col gap-1 pb-6 pt-10">
+          <div className="flex justify-between gap-4">
+            <h1 className="font-clash text-3xl font-medium">Manage AIs</h1>
             <Button
               className="min-w-[100px]"
               onClick={onAddAgentClick}
@@ -124,6 +99,18 @@ const AIsPage = () => {
               <span>{t('llmProviders.add')}</span>
             </Button>
           </div>
+          <p className="text-official-gray-400 text-sm">
+            Easily manage both cloud and local AI models, <br />
+            switching between them seamlessly to fit your workflow.
+          </p>
+        </div>
+
+        <VideoBanner
+          name={TutorialBanner.SHINKAI_TOOLS}
+          title="Welcome to the AIs & Agents"
+          videoUrl={SHINKAI_TUTORIALS['add-ai']}
+        />
+        <div className="flex h-full flex-col">
           <div className="flex h-full flex-col space-y-3">
             {!llmProviders?.length ? (
               <div className="flex grow flex-col items-center justify-center">
@@ -159,12 +146,9 @@ const AIsPage = () => {
               </ScrollArea>
             )}
           </div>
-        </TabsContent>
-        <TabsContent className="h-full" value="agents">
-          <Agents />
-        </TabsContent>
-      </Tabs>
-    </SimpleLayout>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -194,7 +178,7 @@ function LLMProviderCard({
       <div className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-2.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg">
-            <BotIcon className="h-6 w-6" />
+            <AisIcon className="h-6 w-6" />
           </div>
           <div className="flex flex-col items-baseline gap-2">
             <span className="w-full truncate text-start text-sm">

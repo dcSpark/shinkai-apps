@@ -30,9 +30,9 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { useAuth } from '../../store/auth';
+import { useAuth } from '../store/auth';
 
-function Agents() {
+function AgentsPage() {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const { data: agents } = useGetAgents({
@@ -41,62 +41,58 @@ function Agents() {
   });
 
   return (
-    <div className="flex h-full flex-col space-y-3">
-      <div className="absolute right-3 top-0">
-        <Button
-          className="min-w-[100px]"
-          onClick={() => {
-            navigate('/add-agent');
-          }}
-          size="sm"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Add Agent</span>
-        </Button>
-      </div>
-      {!agents?.length ? (
-        <div className="flex grow flex-col items-center justify-center">
-          <div className="mb-8 space-y-3 text-center">
-            <span aria-hidden className="text-5xl">
-              🤖
-            </span>
-            <p className="text-2xl font-semibold">No available agents</p>
-            <p className="text-center text-sm font-medium text-gray-100">
-              Create your first Agent to start asking Shinkai AI.
-            </p>
+    <div className="h-full">
+      <div className="mx-auto flex h-full max-w-4xl flex-col">
+        <div className="flex flex-col gap-1 pb-6 pt-10">
+          <div className="flex justify-between gap-4">
+            <h1 className="font-clash text-3xl font-medium">Agents</h1>
+            <Button
+              className="min-w-[100px]"
+              onClick={() => {
+                navigate('/add-agent');
+              }}
+              size="sm"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add Agent</span>
+            </Button>
           </div>
-
-          <Button
-            className="min-w-[100px]"
-            onClick={() => {
-              navigate('/add-agent');
-            }}
-            size="sm"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Add Agent</span>
-          </Button>
+          <p className="text-official-gray-400 text-sm">
+            Create and explore AI agents with personalized instructions,
+            enriched knowledge, <br /> diverse task capabilities, and more to
+            tackle your goals autonomously.
+          </p>
         </div>
-      ) : (
-        <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
-          <div className="divide-y divide-gray-400">
-            {agents?.map((agent) => (
-              <AgentCard
-                agentDescription={agent.ui_description}
-                agentId={agent.agent_id}
-                agentName={agent.name}
-                key={agent.agent_id}
-                llmProviderId={agent.llm_provider_id}
-              />
-            ))}
+        {!agents?.length ? (
+          <div className="flex grow flex-col items-center pt-10">
+            <div className="mb-8 space-y-3 text-center">
+              <p className="text-lg font-semibold">No available agents</p>
+              <p className="text-official-gray-400 text-center text-sm font-medium">
+                Create your first Agent to start exploring the power of AI.
+              </p>
+            </div>
           </div>
-        </ScrollArea>
-      )}
+        ) : (
+          <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
+            <div className="divide-y divide-gray-400">
+              {agents?.map((agent) => (
+                <AgentCard
+                  agentDescription={agent.ui_description}
+                  agentId={agent.agent_id}
+                  agentName={agent.name}
+                  key={agent.agent_id}
+                  llmProviderId={agent.llm_provider_id}
+                />
+              ))}
+            </div>
+          </ScrollArea>
+        )}
+      </div>
     </div>
   );
 }
 
-export default Agents;
+export default AgentsPage;
 
 const AgentCard = ({
   agentId,

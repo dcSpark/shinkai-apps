@@ -42,6 +42,7 @@ import {
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { ShinkaiNodeRunningOverlay } from '../lib/shinkai-node-overlay';
 import AddAIPage from '../pages/add-ai';
+import AgentsPage from '../pages/agents';
 import AIModelInstallation from '../pages/ai-model-installation';
 import AIsPage from '../pages/ais';
 import AnalyticsPage from '../pages/analytics';
@@ -56,6 +57,7 @@ import EditTaskPage from '../pages/edit-task';
 import EditToolPage from '../pages/edit-tool';
 import { ExportConnection } from '../pages/export-connection';
 import { GalxeValidation } from '../pages/galxe-validation';
+import HomePage from '../pages/home';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
@@ -305,6 +307,25 @@ const AppRoutes = () => {
                   <SetJobScopeProvider>
                     <PromptSelectionProvider>
                       <ToolsProvider>
+                        <Outlet />
+                      </ToolsProvider>
+                    </PromptSelectionProvider>
+                  </SetJobScopeProvider>
+                </ChatProvider>
+              </TooltipProvider>
+            </ProtectedRoute>
+          }
+        >
+          <Route element={<HomePage />} path={'home'} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute>
+              <TooltipProvider delayDuration={0}>
+                <ChatProvider>
+                  <SetJobScopeProvider>
+                    <PromptSelectionProvider>
+                      <ToolsProvider>
                         <ChatLayout />
                       </ToolsProvider>
                     </PromptSelectionProvider>
@@ -361,6 +382,7 @@ const AppRoutes = () => {
         >
           <Route element={<AIModelInstallation />} path="install-ai-models" />
           <Route element={<AIsPage />} path="ais" />
+          <Route element={<AgentsPage />} path="agents" />
           <Route element={<AddAIPage />} path="add-ai" />
           <Route
             element={

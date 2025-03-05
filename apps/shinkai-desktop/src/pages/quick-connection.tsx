@@ -53,7 +53,7 @@ const ConnectionOptionButton = ({
         className,
       )}
       size="auto"
-      variant="ghost"
+      variant="outline"
       {...props}
     >
       <div className="">{icon}</div>
