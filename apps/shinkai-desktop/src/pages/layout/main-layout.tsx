@@ -180,6 +180,7 @@ export function MainNav() {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
+  const resetSettings = useSettings((state) => state.resetSettings);
   const isGetStartedChecklistHidden = useSettings(
     (state) => state.isGetStartedChecklistHidden,
   );
@@ -204,7 +205,7 @@ export function MainNav() {
 
   const handleDisconnect = () => {
     logout();
-    navigate('/');
+    resetSettings();
   };
 
   const navigationLinks = [

@@ -4,9 +4,9 @@ export default {
       'Transform your web browsing experience using AI with Shinkai Visor ✨',
   },
   desktop: {
-    welcome: 'Welcome to Shinkai!',
+    welcome: 'Welcome to Shinkai',
     welcomeDescription:
-      'Shinkai is a free, open-source AI application that enhances your productivity by automating tasks and streamlining workflows.',
+      '<b>Shinkai lets you build AI agents in minutes — fast, private, and secure.</b> Run locally, collaborate through a decentralized network, and create AI workflows effortlessly. ',
     localAI: 'Shinkai Local AI',
     benefits: {
       local:
@@ -485,7 +485,7 @@ export default {
     comingSoon: 'Coming soon - Late August',
     noThanks: 'No, Thanks',
     iAgree: 'I Agree',
-    getStarted: 'Get Started',
+    getStarted: 'Get Started Free',
     passphrase: 'Passphrase',
     repeatPassphrase: 'Confirm passphrase',
     optIn: 'Opt In',
@@ -497,7 +497,7 @@ export default {
     shinkaiPrivate: 'Setup Your Local AI',
     seeOptions: 'See Options',
     termsAndConditionsText:
-      'I agree to our <a>Terms of Service</a> and <b>Privacy Policy</b>',
+      'I agree to the <a>Terms of Service</a> and <b>Privacy Policy</b>',
     recommended: 'Recommended',
     remove: 'Remove',
     install: 'Install',

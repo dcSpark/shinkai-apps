@@ -1,23 +1,14 @@
-import {
-  Stepper,
-  StepperIndicator,
-  StepperItem,
-  StepperTrigger,
-} from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 
 import { UpdateBanner } from '../../components/hardware-capabilities/update-banner';
-import { ONBOARDING_STEPS } from '../../components/onboarding/constants';
-import { useSettings } from '../../store/settings';
 
 export type OnboardingLayoutProps = React.PropsWithChildren<
   React.HTMLAttributes<HTMLDivElement>
 >;
 
 const OnboardingLayout = ({ className, ...props }: OnboardingLayoutProps) => {
-  const currentStep = useSettings((state) => state.getCurrentStep());
   return (
     <div
       className={cn(
@@ -26,49 +17,19 @@ const OnboardingLayout = ({ className, ...props }: OnboardingLayoutProps) => {
       )}
       {...props}
     >
+      <UpdateBanner
+        className="absolute left-1/2 top-8 z-[100] w-auto -translate-x-1/2 p-1"
+        isOnboardingStep
+      />
       <div className="flex h-[calc(100dvh-100px)] items-center justify-center">
         <div className="mx-auto flex h-[600px] w-full max-w-lg flex-col gap-12">
-          <UpdateBanner
-            className="absolute left-1/2 top-8 z-[100] w-auto -translate-x-1/2 p-1"
-            isOnboardingStep
+          <img
+            alt="shinkai logo"
+            className="w-24"
+            data-cy="shinkai-logo"
+            src={'./visor.svg'}
           />
-          <div
-            className={cn(
-              'flex w-full items-center justify-between',
-              currentStep !== 1 && 'justify-center',
-            )}
-          >
-            {currentStep === 1 && (
-              <img
-                alt="shinkai logo"
-                className="w-24"
-                data-cy="shinkai-logo"
-                src={'./visor.svg'}
-              />
-            )}
-            {currentStep !== 1 && (
-              <Stepper
-                className="max-w-[150px] items-start gap-4"
-                value={currentStep as number}
-              >
-                {ONBOARDING_STEPS.map((item, idx) => (
-                  <StepperItem className="flex-1" key={item.id} step={idx + 1}>
-                    <StepperTrigger
-                      className="w-full flex-col items-start gap-2"
-                      disabled
-                    >
-                      <StepperIndicator
-                        asChild
-                        className="bg-official-gray-800 h-1 w-full"
-                      >
-                        <span className="sr-only">{idx}</span>
-                      </StepperIndicator>
-                    </StepperTrigger>
-                  </StepperItem>
-                ))}
-              </Stepper>
-            )}
-          </div>
+
           <div className="flex-1">
             <Outlet />
           </div>

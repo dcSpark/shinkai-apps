@@ -251,6 +251,8 @@ export const useSettings = create<SettingsStore>()(
             heightRow: 'large',
             compatibilityBannerDismissed: false,
             isChatSidebarCollapsed: false,
+
+            termsAndConditionsAccepted: undefined,
           });
         },
 

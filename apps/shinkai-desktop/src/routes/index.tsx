@@ -43,7 +43,6 @@ import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-n
 import { ShinkaiNodeRunningOverlay } from '../lib/shinkai-node-overlay';
 import AddAIPage from '../pages/add-ai';
 import AIModelInstallation from '../pages/ai-model-installation';
-import AIProviderSelection from '../pages/ai-provider-selection';
 import AIsPage from '../pages/ais';
 import AnalyticsPage from '../pages/analytics';
 import AnalyticsSettingsPage from '../pages/analytics-settings';
@@ -294,10 +293,6 @@ const AppRoutes = () => {
             path={'terms-conditions'}
           />
           <Route element={<AnalyticsPage />} path={'analytics'} />
-          <Route
-            element={<AIProviderSelection />}
-            path={'ai-provider-selection'}
-          />
           <Route element={<QuickConnectionPage />} path={'quick-connection'} />
           <Route element={<RestoreConnectionPage />} path={'restore'} />
           <Route element={<ConnectMethodQrCodePage />} path={'connect-qr'} />
