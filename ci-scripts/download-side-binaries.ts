@@ -28,6 +28,8 @@ const OLLAMA_RESOURCES_PATH =
   './apps/shinkai-desktop/src-tauri/external-binaries/ollama/';
 const SHINKAI_NODE_RESOURCES_PATH =
   './apps/shinkai-desktop/src-tauri/external-binaries/shinkai-node/';
+const LLM_MODELS_PATH =
+  './apps/shinkai-desktop/src-tauri/llm-models/';
 
 const asBinaryName = (arch: Arch, path: string) => {
   return `${path}${arch === Arch.x86_64_pc_windows_msvc ? '.exe' : ''}`;
@@ -201,9 +203,16 @@ const downloadOllama = {
   [Arch.x86_64_pc_windows_msvc]: downloadOllamax8664PcWindowsMsvc,
 };
 
+const downloadEmbeddingModel = async () => {
+  console.log(`Downloading embedding model`);
+  const downloadUrl = `https://huggingface.co/ChristianAzinn/snowflake-arctic-embed-xs-gguf/resolve/main/snowflake-arctic-embed-xs-f16.GGUF?download=true`;
+  await downloadFile(downloadUrl, path.join(LLM_MODELS_PATH, 'snowflake-arctic-embed-xs-f16.GGUF'));
+};
+
 export const main = async () => {
   await downloadShinkaiNodeBinary(env.ARCH, env.SHINKAI_NODE_VERSION);
   await downloadOllama[env.ARCH](env.OLLAMA_VERSION);
+  await downloadEmbeddingModel();
 };
 
 main().catch(console.error);

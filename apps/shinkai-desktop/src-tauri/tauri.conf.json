@@ -21,6 +21,9 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
+    "resources": [
+      "llm-models/"
+    ],
     "macOS": {
       "minimumSystemVersion": "12.0"
     },
