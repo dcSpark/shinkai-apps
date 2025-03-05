@@ -21,7 +21,9 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
+  AIAgentIcon,
   AISearchContentIcon,
+  AisIcon,
   // AiTasksIcon,
   // BrowseSubscriptionIcon,
   CreateAIIcon,
@@ -180,6 +182,7 @@ export function MainNav() {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
+  const resetSettings = useSettings((state) => state.resetSettings);
   const isGetStartedChecklistHidden = useSettings(
     (state) => state.isGetStartedChecklistHidden,
   );
@@ -204,7 +207,7 @@ export function MainNav() {
 
   const handleDisconnect = () => {
     logout();
-    navigate('/');
+    resetSettings();
   };
 
   const navigationLinks = [
@@ -212,6 +215,11 @@ export function MainNav() {
       title: t('layout.menuItems.chats'),
       href: '/inboxes',
       icon: <InboxIcon className="h-5 w-5" />,
+    },
+    {
+      title: t('layout.menuItems.agents'),
+      href: '/agents',
+      icon: <AIAgentIcon className="h-5 w-5" />,
     },
     // {
     //   title: t('layout.menuItems.aiTasks'),
@@ -272,9 +280,9 @@ export function MainNav() {
 
   const footerNavigationLinks = [
     {
-      title: t('layout.menuItems.agents'),
+      title: t('layout.menuItems.ais'),
       href: '/ais',
-      icon: <BotIcon className="h-5 w-5" />,
+      icon: <AisIcon className="h-5 w-5" />,
     },
     {
       title: t('layout.menuItems.helpAndSupport'),
