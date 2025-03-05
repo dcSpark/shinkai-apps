@@ -11,6 +11,8 @@ use anyhow::Result;
 use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
+use tauri::path::BaseDirectory;
+use tauri::Manager;
 use tokio::sync::broadcast;
 use tokio::sync::mpsc::channel;
 
@@ -48,6 +50,7 @@ pub struct ShinkaiNodeManager {
     shinkai_node_process: ShinkaiNodeProcessHandler,
     event_broadcaster: broadcast::Sender<ShinkaiNodeManagerEvent>,
     app_resource_dir: PathBuf,
+    llm_models_path: PathBuf,
 }
 
 impl ShinkaiNodeManager {
@@ -55,7 +58,7 @@ impl ShinkaiNodeManager {
         let (ollama_sender, _ollama_receiver) = channel(100);
         let (shinkai_node_sender, _shinkai_node_receiver) = channel(100);
         let (event_broadcaster, _) = broadcast::channel(10);
-
+        let llm_models_path = app.path().resolve("llm-models", BaseDirectory::Resource).unwrap();
         ShinkaiNodeManager {
             ollama_process: OllamaProcessHandler::new(
                 app.clone(),
@@ -70,6 +73,7 @@ impl ShinkaiNodeManager {
             ),
             event_broadcaster,
             app_resource_dir,
+            llm_models_path,
         }
     }
 
@@ -125,7 +129,7 @@ impl ShinkaiNodeManager {
             });
 
             // Use the embedded GGUF model
-            let gguf_data = embedding_model::get_model_data();
+            let gguf_data = embedding_model::get_model_data(&self.llm_models_path);
 
             match ollama_api.create_model_from_gguf(&default_embedding_model, gguf_data).await {
                 Ok(_) => {
