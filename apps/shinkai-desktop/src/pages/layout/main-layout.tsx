@@ -33,7 +33,6 @@ import {
   // MySubscriptionsIcon,
   SheetIcon,
   ShinkaiCombinationMarkIcon,
-  StoreIcon,
   ToolsIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -43,7 +42,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowLeftToLine,
   ArrowRightToLine,
-  BotIcon,
   HelpCircleIcon,
 } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
@@ -63,7 +61,6 @@ import { ResetConnectionDialog } from '../../components/reset-connection-dialog'
 import config from '../../config';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
-import { SHINKAI_STORE_URL } from '../../utils/store';
 
 type NavigationLink = {
   title: string;
@@ -259,12 +256,6 @@ export function MainNav() {
       title: t('tools.label'),
       href: '/tools',
       icon: <ToolsIcon className="h-5 w-5" />,
-    },
-    {
-      title: t('tools.store.label'),
-      href: SHINKAI_STORE_URL,
-      icon: <StoreIcon className="h-5 w-5" />,
-      external: true,
     },
     {
       title: 'Scheduled Tasks',

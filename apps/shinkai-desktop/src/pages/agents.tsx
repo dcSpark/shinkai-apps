@@ -63,18 +63,21 @@ function AgentsPage() {
             tackle your goals autonomously.
           </p>
         </div>
-        {!agents?.length ? (
-          <div className="flex grow flex-col items-center pt-10">
-            <div className="mb-8 space-y-3 text-center">
-              <p className="text-lg font-semibold">No available agents</p>
-              <p className="text-official-gray-400 text-center text-sm font-medium">
-                Create your first Agent to start exploring the power of AI.
-              </p>
+        <div className="flex flex-1 flex-col space-y-3 pb-10">
+          {!agents?.length ? (
+            <div className="flex grow flex-col items-center gap-3 pt-20">
+              <div className="bg-official-gray-800 flex size-10 items-center justify-center rounded-lg p-2">
+                <AIAgentIcon className="size-full" />
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <p className="font-medium">No available agents</p>
+                <p className="text-official-gray-400 text-center text-sm font-medium">
+                  Create your first Agent to start exploring the power of AI.
+                </p>
+              </div>
             </div>
-          </div>
-        ) : (
-          <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
-            <div className="divide-y divide-gray-400">
+          ) : (
+            <div className="flex flex-col gap-3">
               {agents?.map((agent) => (
                 <AgentCard
                   agentDescription={agent.ui_description}
@@ -85,8 +88,8 @@ function AgentsPage() {
                 />
               ))}
             </div>
-          </ScrollArea>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
@@ -113,9 +116,9 @@ const AgentCard = ({
 
   return (
     <React.Fragment>
-      <div className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400">
+      <div className="border-official-gray-850 bg-official-gray-900 flex items-center justify-between gap-1 rounded-lg border p-3.5">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg">
+          <div className="flex size-8 items-center justify-center rounded-lg">
             <AIAgentIcon />
           </div>
           <div className="flex flex-col gap-1.5">
@@ -137,10 +140,10 @@ const AgentCard = ({
                     navigate(`/inboxes`, { state: { agentName: agentId } });
                   }}
                   size="sm"
-                  variant="gradient"
+                  variant="outline"
                 >
                   <CreateAIIcon className="size-4" />
-                  <span className="sr-only">New Chat</span>
+                  <span className=""> Chat</span>
                 </Button>
               </TooltipTrigger>
 

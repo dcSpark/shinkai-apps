@@ -110,42 +110,36 @@ const AIsPage = () => {
           title="Welcome to the AIs & Agents"
           videoUrl={SHINKAI_TUTORIALS['add-ai']}
         />
-        <div className="flex h-full flex-col">
-          <div className="flex h-full flex-col space-y-3">
-            {!llmProviders?.length ? (
-              <div className="flex grow flex-col items-center justify-center">
-                <div className="mb-8 space-y-3 text-center">
-                  <span aria-hidden className="text-5xl">
-                    🤖
-                  </span>
-                  <p className="text-2xl font-semibold">
-                    {t('llmProviders.notFound.title')}
-                  </p>
-                  <p className="text-center text-sm font-medium text-gray-100">
-                    {t('llmProviders.notFound.description')}
-                  </p>
-                </div>
-
-                <Button onClick={onAddAgentClick}>
-                  {t('llmProviders.add')}
-                </Button>
+        <div className="flex flex-1 flex-col space-y-3 pb-10">
+          {!llmProviders?.length ? (
+            <div className="flex grow flex-col items-center justify-center">
+              <div className="mb-8 space-y-3 text-center">
+                <span aria-hidden className="text-5xl">
+                  🤖
+                </span>
+                <p className="text-2xl font-semibold">
+                  {t('llmProviders.notFound.title')}
+                </p>
+                <p className="text-center text-sm font-medium text-gray-100">
+                  {t('llmProviders.notFound.description')}
+                </p>
               </div>
-            ) : (
-              <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
-                <div className="divide-y divide-gray-400">
-                  {llmProviders?.map((llmProvider) => (
-                    <LLMProviderCard
-                      agentApiKey={llmProvider.api_key ?? ''}
-                      externalUrl={llmProvider.external_url ?? ''}
-                      key={llmProvider.id}
-                      llmProviderId={llmProvider.id}
-                      model={llmProvider.model}
-                    />
-                  ))}
-                </div>
-              </ScrollArea>
-            )}
-          </div>
+
+              <Button onClick={onAddAgentClick}>{t('llmProviders.add')}</Button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {llmProviders?.map((llmProvider) => (
+                <LLMProviderCard
+                  agentApiKey={llmProvider.api_key ?? ''}
+                  externalUrl={llmProvider.external_url ?? ''}
+                  key={llmProvider.id}
+                  llmProviderId={llmProvider.id}
+                  model={llmProvider.model}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -175,16 +169,16 @@ function LLMProviderCard({
 
   return (
     <React.Fragment>
-      <div className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-2.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400">
+      <div className="border-official-gray-850 bg-official-gray-900 flex items-center justify-between gap-1 rounded-lg border p-3.5">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg">
-            <AisIcon className="h-6 w-6" />
+          <div className="flex size-8 items-center justify-center rounded-lg">
+            <AisIcon />
           </div>
           <div className="flex flex-col items-baseline gap-2">
             <span className="w-full truncate text-start text-sm">
               {llmProviderId}
             </span>
-            <Badge className="text-gray-80 truncate bg-gray-400 text-start text-xs font-normal shadow-none">
+            <Badge className="text-official-gray-300 bg-official-gray-850 truncate text-start text-xs font-normal shadow-none">
               {model}
             </Badge>
           </div>
@@ -197,11 +191,11 @@ function LLMProviderCard({
                   onClick={() => {
                     navigate(`/inboxes`, { state: { llmProviderId } });
                   }}
-                  size="sm"
-                  variant="gradient"
+                  size="xs"
+                  variant="outline"
                 >
                   <CreateAIIcon className="size-4" />
-                  <span className="sr-only">New Chat</span>
+                  <span className="">New Chat</span>
                 </Button>
               </TooltipTrigger>
 
