@@ -6,67 +6,68 @@ import {
   useQueryClient,
   UseQueryResult,
 } from '@tanstack/react-query';
+import { Channel, invoke } from '@tauri-apps/api/core';
+import { listen, UnlistenFn } from '@tauri-apps/api/event';
 import { debug } from '@tauri-apps/plugin-log';
-import { platform } from '@tauri-apps/plugin-os';
-import { relaunch } from '@tauri-apps/plugin-process';
-import { check, Update } from '@tauri-apps/plugin-updater';
-
-import { useShinkaiNodeKillMutation } from '../shinkai-node-manager/shinkai-node-manager-client';
+import { useEffect } from 'react';
 
 // Types
 export type DownloadState = {
-  state: 'started' | 'downloading' | 'finished';
-  data: {
-    contentLength?: number;
-    lastChunkLength?: number;
-    accumulatedLength?: number;
-    downloadProgressPercent?: number;
-  };
-} | null;
-
-export type UpdateState = {
-  state?: 'available' | 'downloading' | 'restarting';
-  update?: Update | null;
-  downloadState?: DownloadState;
+  contentLength?: number;
+  lastChunkLength?: number;
+  accumulatedLength?: number;
+  downloadProgressPercent?: number;
 };
 
-// Singleton state
-const updateState: UpdateState = {};
+export type UpdateManagerState =
+  | { event: 'no_update_available' }
+  | {
+      event: 'available';
+      data: {
+        updateMetadata: {
+          version: string;
+          currentVersion: string;
+        };
+      };
+    }
+  | { event: 'downloading'; data: { downloadState: DownloadState } }
+  | { event: 'ready_to_install'; data: { updateBytes: Uint8Array } }
+  | { event: 'installing'; data: { updateBytes: Uint8Array } }
+  | { event: 'restart_pending' };
 
-// Queries
-export const useUpdateStateQuery = (
+export const useFetchUpdateQuery = (
   options?: Omit<
-    QueryObserverOptions<UpdateState | null, Error>,
+    QueryObserverOptions<UpdateManagerState | null, Error>,
     'queryKey' | 'queryFn'
   >,
-): UseQueryResult<UpdateState | null, Error> => {
+): UseQueryResult<UpdateManagerState | null, Error> => {
+  const queryClient = useQueryClient();
   return useQuery({
-    queryKey: ['update_state'],
-    queryFn: async () => updateState,
-    notifyOnChangeProps: 'all',
+    queryKey: ['fetch_update'],
+    queryFn: async () => {
+      const updateManagerState =
+        await invoke<UpdateManagerState>('fetch_update');
+      debug(`fetch update result: ${updateManagerState}`);
+      queryClient.invalidateQueries({ queryKey: ['get_update_manager_state'] });
+      return updateManagerState;
+    },
     ...options,
   });
 };
 
-export const useCheckUpdateQuery = (
+export const useGetUpdateManagerStateQuery = (
   options?: Omit<
-    QueryObserverOptions<UpdateState | null, Error>,
+    QueryObserverOptions<UpdateManagerState | null, Error>,
     'queryKey' | 'queryFn'
   >,
-): UseQueryResult<UpdateState | null, Error> => {
-  const queryClient = useQueryClient();
+): UseQueryResult<UpdateManagerState | null, Error> => {
   return useQuery({
-    queryKey: ['check_update'],
+    queryKey: ['get_update_manager_state'],
     queryFn: async () => {
-      if (updateState.update) {
-        return updateState;
-      }
-      const update = await check();
-      debug(`check update available:${update?.available}`);
-      updateState.state = update?.available ? 'available' : undefined;
-      updateState.update = update;
-      queryClient.invalidateQueries({ queryKey: ['update_state'] });
-      return updateState;
+      const updateManagerState = await invoke<UpdateManagerState>(
+        'get_update_manager_state',
+      );
+      return updateManagerState;
     },
     ...options,
   });
@@ -75,92 +76,80 @@ export const useCheckUpdateQuery = (
 // Mutations
 export const useDownloadUpdateMutation = (options?: UseMutationOptions) => {
   const queryClient = useQueryClient();
-  const { mutateAsync: shinkaiNodeKill } = useShinkaiNodeKillMutation();
-
   return useMutation({
-    mutationFn: async (): Promise<void> => {
-      if (!updateState.update?.available) {
-        debug(`update not available`);
-        return;
-      }
-      if (updateState.downloadState) {
-        debug(
-          `update already in progress ${JSON.stringify(updateState.downloadState)}`,
-        );
-        return;
-      }
-      try {
-        updateState.state = 'downloading';
-        queryClient.invalidateQueries({ queryKey: ['update_state'] });
-        await updateState.update.downloadAndInstall((downloadEvent) => {
-          switch (downloadEvent.event) {
-            case 'Started':
-              updateState.downloadState = {
-                state: 'started',
-                data: { contentLength: downloadEvent.data.contentLength },
-              };
-              break;
-            case 'Progress': {
-              const newDownloadProgress = updateState.downloadState?.data
-                ?.contentLength
-                ? Math.round(
-                    (((updateState.downloadState?.data?.accumulatedLength ||
-                      0) +
-                      downloadEvent.data.chunkLength) /
-                      updateState.downloadState.data.contentLength) *
-                      100,
-                  )
-                : 0;
-              updateState.downloadState = {
-                state: 'downloading',
-                data: {
-                  contentLength: updateState.downloadState?.data?.contentLength,
-                  lastChunkLength: downloadEvent.data.chunkLength,
-                  accumulatedLength:
-                    (updateState.downloadState?.data?.accumulatedLength || 0) +
-                    downloadEvent.data.chunkLength,
-                  downloadProgressPercent: newDownloadProgress,
-                },
-              };
-              break;
-            }
-            case 'Finished':
-              updateState.downloadState = {
-                state: 'finished',
-                data: {
-                  ...updateState.downloadState?.data,
-                  downloadProgressPercent: 100,
-                },
-              };
-              shinkaiNodeKill();
-              break;
-          }
-          queryClient.invalidateQueries(
-            { queryKey: ['update_state'] },
-            { cancelRefetch: false },
-          );
+    mutationFn: async (): Promise<UpdateManagerState> => {
+      let updateManagerState: UpdateManagerState =
+        await invoke<UpdateManagerState>('get_update_manager_state');
+
+      const onEvent = new Channel<UpdateManagerState>();
+      onEvent.onmessage = (event: UpdateManagerState) => {
+        updateManagerState = event;
+        queryClient.invalidateQueries({
+          queryKey: ['get_update_manager_state'],
         });
-      } catch (e) {
-        console.error('Error downloading update', e);
-        updateState.state = updateState.update ? 'available' : undefined;
-        updateState.downloadState = undefined;
-        queryClient.invalidateQueries({ queryKey: ['update_state'] });
-        return;
-      }
-
-      updateState.state = 'restarting';
-      queryClient.invalidateQueries({ queryKey: ['update_state'] });
-
-      if (platform() !== 'windows') {
-        await relaunch();
-      }
+      };
+      updateManagerState = await invoke<UpdateManagerState>('download_update', {
+        onEvent,
+      });
+      return updateManagerState;
     },
     ...options,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({
-        queryKey: ['check_update', 'update_state'],
+        queryKey: ['get_update_manager_state'],
       });
       options?.onSuccess?.(...args);
     },
   });
+};
+
+// Mutations
+export const useInstallUpdateMutation = (options?: UseMutationOptions) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (): Promise<UpdateManagerState> => {
+      const updateManagerState =
+        await invoke<UpdateManagerState>('install_update');
+      return updateManagerState;
+    },
+    ...options,
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({
+        queryKey: ['get_update_manager_state'],
+      });
+      options?.onSuccess?.(...args);
+    },
+  });
+};
+
+// Mutations
+export const useRestartToApplyUpdateMutation = (
+  options?: UseMutationOptions,
+) => {
+  return useMutation({
+    mutationFn: async (): Promise<void> => {
+      await invoke('restart_to_apply_update');
+    },
+    ...options,
+  });
+};
+
+export const useUpdateManagerStateChangedListener = () => {
+  const qc = useQueryClient();
+  useEffect(() => {
+    let listener: UnlistenFn;
+    const setupListener = async () => {
+      listener = await listen<UpdateManagerState>(
+        'update-manager-state-changed',
+        (event) => {
+          console.log('update-manager-state-changed', event);
+          qc.setQueryData(['get_update_manager_state'], event.payload);
+        },
+      );
+    };
+    setupListener();
+    return () => {
+      listener?.();
+    };
+  }, [qc]);
 };

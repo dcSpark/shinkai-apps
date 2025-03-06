@@ -9,11 +9,12 @@ use crate::commands::hardware::hardware_get_summary;
 use crate::commands::shinkai_node_manager_commands::{
     shinkai_node_get_default_model, shinkai_node_get_ollama_api_url,
     shinkai_node_get_ollama_version, shinkai_node_get_options, shinkai_node_is_running,
-    shinkai_node_kill, shinkai_node_remove_storage, shinkai_node_set_default_options,
-    shinkai_node_set_options, shinkai_node_spawn, show_shinkai_node_manager_window,
-    shinkai_node_open_storage_location, shinkai_node_open_storage_location_with_path,
-    shinkai_node_open_chat_folder,
+    shinkai_node_kill, shinkai_node_open_chat_folder, shinkai_node_open_storage_location,
+    shinkai_node_open_storage_location_with_path, shinkai_node_remove_storage,
+    shinkai_node_set_default_options, shinkai_node_set_options, shinkai_node_spawn,
+    show_shinkai_node_manager_window,
 };
+use tauri_plugin_updater::UpdaterExt;
 
 use commands::logs::retrieve_logs;
 use commands::spotlight_commands::{hide_spotlight_window_app, show_spotlight_window_app};
@@ -25,6 +26,10 @@ use tauri::{Emitter, WindowEvent};
 use tauri::{Manager, RunEvent};
 use tokio::sync::{Mutex, RwLock};
 use tray::create_tray;
+use updater::{
+    download_update, fetch_update, get_update_manager_state, initialize_update_manager,
+    install_update, poll_for_updates, restart_to_apply_update, UpdateManagerStateAppState,
+};
 use windows::{recreate_window, Window};
 mod audio;
 mod commands;
@@ -36,6 +41,7 @@ mod hardware;
 mod local_shinkai_node;
 mod models;
 mod tray;
+mod updater;
 mod windows;
 
 #[derive(Clone, serde::Serialize)]
@@ -112,12 +118,16 @@ fn main() {
             post_request,
             shinkai_node_get_ollama_version,
             retrieve_logs,
+            fetch_update,
+            download_update,
+            install_update,
+            restart_to_apply_update,
+            get_update_manager_state,
         ])
         .setup(|app| {
             log::info!("starting app version: {}", env!("CARGO_PKG_VERSION"));
             let app_resource_dir = app.path().resource_dir()?;
             let app_data_dir = app.path().app_data_dir()?;
-
             {
                 let _ = SHINKAI_NODE_MANAGER_INSTANCE.set(Arc::new(RwLock::new(
                     ShinkaiNodeManager::new(app.handle().clone(), app_resource_dir, app_data_dir),
@@ -126,6 +136,8 @@ fn main() {
 
             create_tray(app.handle())?;
             setup_deep_links(app.handle())?;
+
+            initialize_update_manager(app.handle().clone(), 15);
 
             /*
                 This is the initialization pipeline
