@@ -30,10 +30,6 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
   TextField,
   Tooltip,
   TooltipContent,
@@ -41,15 +37,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { ScrollArea } from '@shinkai_network/shinkai-ui';
-import { AisIcon, CreateAIIcon } from '@shinkai_network/shinkai-ui/assets';
+import { CreateAIIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { BotIcon, Edit, Plus, TrashIcon } from 'lucide-react';
+import { Edit, Plus, TrashIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import ProviderIcon from '../components/ais/provider-icon';
 import { VideoBanner } from '../components/video-banner';
 import { useURLQueryParams } from '../hooks/use-url-query-params';
 import { useOllamaRemoveMutation } from '../lib/shinkai-node-manager/ollama-client';
@@ -58,8 +54,6 @@ import { TutorialBanner } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { SHINKAI_TUTORIALS } from '../utils/constants';
 import { getModelObject } from './add-ai';
-import Agents from './agents';
-import { SimpleLayout } from './layout/simple-layout';
 
 const AIsPage = () => {
   const { t } = useTranslation();
@@ -171,8 +165,11 @@ function LLMProviderCard({
     <React.Fragment>
       <div className="border-official-gray-850 bg-official-gray-900 flex items-center justify-between gap-1 rounded-lg border p-3.5">
         <div className="flex items-center gap-3">
-          <div className="flex size-8 items-center justify-center rounded-lg">
-            <AisIcon />
+          <div className="flex size-6 items-center justify-center rounded-lg">
+            <ProviderIcon
+              className="size-full"
+              provider={model.split(':')[0]}
+            />
           </div>
           <div className="flex flex-col items-baseline gap-2">
             <span className="w-full truncate text-start text-sm">

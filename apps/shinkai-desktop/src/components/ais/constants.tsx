@@ -1,0 +1,58 @@
+import {
+  AnthropicIcon,
+  AyaCohereIcon,
+  DeepSeekIcon,
+  ExoIcon,
+  GeminiIcon,
+  GoogleIcon,
+  GroqIcon,
+  LmStudioIcon,
+  MetaIcon,
+  MistralIcon,
+  OllamaIcon,
+  OpenAIIcon,
+  OpenRouterIcon,
+  PerplexityIcon,
+  QwenIcon,
+  TogetherAI,
+} from '@shinkai_network/shinkai-ui/assets';
+
+export enum ModelProvider {
+  Aya = 'aya',
+  Claude = 'claude',
+  DeepSeek = 'deepseek',
+  Exo = 'exo',
+  Gemini = 'gemini',
+  Google = 'google',
+  Groq = 'groq',
+  LmStudio = 'lmstudio',
+  Meta = 'meta',
+  Mistral = 'mistral',
+  Ollama = 'ollama',
+  OpenAI = 'openai',
+  OpenRouter = 'openrouter',
+  Perplexity = 'perplexity',
+  Qwen = 'qwen',
+  TogetherAI = 'togetherai',
+}
+
+export type ModelProviderKey = Lowercase<keyof typeof ModelProvider>;
+
+export const providerMappings = {
+  [ModelProvider.Aya]: AyaCohereIcon,
+  [ModelProvider.Claude]: AnthropicIcon,
+  [ModelProvider.DeepSeek]: DeepSeekIcon,
+  [ModelProvider.Exo]: ExoIcon,
+  [ModelProvider.Gemini]: GeminiIcon,
+  [ModelProvider.Google]: GoogleIcon,
+  [ModelProvider.Groq]: GroqIcon,
+  [ModelProvider.LmStudio]: LmStudioIcon,
+  [ModelProvider.Mistral]: MistralIcon,
+  [ModelProvider.Meta]: MetaIcon,
+  [ModelProvider.Ollama]: OllamaIcon,
+  [ModelProvider.OpenAI]: OpenAIIcon,
+  [ModelProvider.OpenRouter]: OpenRouterIcon,
+  [ModelProvider.Perplexity]: PerplexityIcon,
+  [ModelProvider.Qwen]: QwenIcon,
+  [ModelProvider.TogetherAI]: TogetherAI,
+};
