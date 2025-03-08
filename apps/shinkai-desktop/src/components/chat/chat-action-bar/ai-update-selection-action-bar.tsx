@@ -22,11 +22,12 @@ import {
 import { AIAgentIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BoltIcon, BotIcon, ChevronDownIcon } from 'lucide-react';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
+import ProviderIcon from '../../ais/provider-icon';
 import { actionButtonClassnames } from '../conversation-footer';
 
 export function AIModelSelectorBase({
@@ -48,6 +49,25 @@ export function AIModelSelectorBase({
     token: auth?.api_v2_key ?? '',
   });
 
+  const selectedIcon = useMemo(() => {
+    const selectedProvider = llmProviders?.find(
+      (llmProvider) => llmProvider.id === value,
+    );
+    if (selectedProvider) {
+      return (
+        <ProviderIcon
+          className="mr-1 size-4"
+          provider={selectedProvider.model.split(':')[0]}
+        />
+      );
+    }
+    const selectedAgent = agents?.find((agent) => agent.name === value);
+    if (selectedAgent) {
+      return <AIAgentIcon className="mr-1 size-4" />;
+    }
+    return <BotIcon className="mr-1 size-4" />;
+  }, [agents, llmProviders, value]);
+
   return (
     <DropdownMenu>
       <TooltipProvider delayDuration={0}>
@@ -59,7 +79,7 @@ export function AIModelSelectorBase({
                 'w-auto truncate [&[data-state=open]>.icon]:rotate-180',
               )}
             >
-              <BotIcon className="mr-1 h-4 w-4" />
+              {selectedIcon}
               <span>{value ?? 'Select'}</span>
               <ChevronDownIcon className="icon h-3 w-3" />
             </DropdownMenuTrigger>
@@ -86,7 +106,7 @@ export function AIModelSelectorBase({
           </TooltipPortal>
           <DropdownMenuContent
             align="start"
-            className="bg-official-gray-950 border-official-gray-780 max-h-[420px] min-w-[330px] overflow-y-auto border p-1 py-2"
+            className="bg-official-gray-950 border-official-gray-780 max-h-[460px] min-w-[360px] overflow-y-auto border p-1 py-2"
             side="top"
           >
             <DropdownMenuRadioGroup onValueChange={onValueChange} value={value}>
@@ -98,7 +118,7 @@ export function AIModelSelectorBase({
               {isAgentsSuccess &&
                 agents.map((agent) => (
                   <DropdownMenuRadioItem
-                    className="flex cursor-pointer items-center justify-between gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
+                    className="aria-checked:bg-official-gray-800 flex cursor-pointer items-center justify-between gap-1.5 rounded-md px-2 py-2 text-white transition-colors"
                     key={agent.name}
                     value={agent.name}
                   >
@@ -134,7 +154,7 @@ export function AIModelSelectorBase({
                   </DropdownMenuRadioItem>
                 ))}
               {isAgentsSuccess && agents.length > 0 && (
-                <DropdownMenuSeparator className="bg-gray-200" />
+                <DropdownMenuSeparator className="bg-official-gray-800" />
               )}
               <DropdownMenuLabel className="mt-2 px-2 py-1">
                 AI Models
@@ -147,7 +167,10 @@ export function AIModelSelectorBase({
                     key={llmProvider.id}
                     value={llmProvider.id}
                   >
-                    <BotIcon className="h-3.5 w-3.5 shrink-0" />
+                    <ProviderIcon
+                      className="h-3.5 w-3.5 shrink-0"
+                      provider={llmProvider.model.split(':')[0]}
+                    />
                     <div className="flex flex-col gap-1">
                       <span className="text-xs">{llmProvider.id}</span>
                     </div>

@@ -35,6 +35,7 @@ import {
   useShinkaiNodeIsRunningQuery,
   useShinkaiNodeSpawnMutation,
 } from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
+import ProviderIcon from '../ais/provider-icon';
 import { ModelCapabilityTag } from './components/model-capability-tag';
 import { ModelQuailityTag } from './components/model-quality-tag';
 import { ModelSpeedTag } from './components/model-speed-tag';
@@ -117,11 +118,10 @@ export const OllamaModels = ({
                   <CardHeader className="relative">
                     <CardTitle className="text-md mb-3 flex flex-col gap-1">
                       <span className="p-2">
-                        {model.provider
-                          ? providerLogoMap[
-                              model?.provider as keyof typeof providerLogoMap
-                            ]
-                          : null}
+                        <ProviderIcon
+                          className="h-6 w-6"
+                          provider={model.provider}
+                        />
                       </span>
 
                       <span>

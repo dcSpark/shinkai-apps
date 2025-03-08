@@ -259,7 +259,7 @@ function AgentForm({ mode }: AgentFormProps) {
       });
     },
     onSuccess: () => {
-      navigate('/ais?tab=agents');
+      navigate('/agents');
     },
   });
 

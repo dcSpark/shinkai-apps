@@ -474,6 +474,13 @@ const ChatSidebar = () => {
   const hasInboxes =
     (inboxesPagination?.pages?.at(-1)?.inboxes ?? []).length > 0;
 
+  useEffect(() => {
+    const firstItem = inboxesPagination?.pages[0]?.inboxes[0];
+    if (firstItem) {
+      navigate(`/inboxes/${encodeURIComponent(firstItem.inbox_id)}`);
+    }
+  }, []);
+
   return (
     <div className="flex h-full w-[240px] flex-col px-3 py-4 pt-6">
       <div className="mb-3 flex items-center justify-between gap-2">
@@ -494,7 +501,7 @@ const ChatSidebar = () => {
                   element?.focus?.();
                 }
 
-                navigate('/inboxes');
+                navigate('/home');
               }}
               size="icon"
               variant="tertiary"

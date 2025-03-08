@@ -120,7 +120,7 @@ const DropdownMenuRadioItem = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <DropdownMenuPrimitive.RadioItem
     className={cn(
-      'relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-gray-400 focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      'focus:bg-official-gray-800 relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       className,
     )}
     ref={ref}
@@ -144,7 +144,7 @@ const DropdownMenuLabel = React.forwardRef<
 >(({ className, inset, ...props }, ref) => (
   <DropdownMenuPrimitive.Label
     className={cn(
-      'text-xs uppercase tracking-[2px] text-gray-100',
+      'text-official-gray-400 text-xs uppercase tracking-[2px]',
       inset && 'pl-8',
       className,
     )}
