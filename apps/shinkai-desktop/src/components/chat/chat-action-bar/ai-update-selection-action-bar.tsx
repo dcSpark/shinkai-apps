@@ -106,7 +106,7 @@ export function AIModelSelectorBase({
           </TooltipPortal>
           <DropdownMenuContent
             align="start"
-            className="bg-official-gray-950 border-official-gray-780 max-h-[420px] min-w-[330px] overflow-y-auto border p-1 py-2"
+            className="bg-official-gray-950 border-official-gray-780 max-h-[460px] min-w-[360px] overflow-y-auto border p-1 py-2"
             side="top"
           >
             <DropdownMenuRadioGroup onValueChange={onValueChange} value={value}>
@@ -118,7 +118,7 @@ export function AIModelSelectorBase({
               {isAgentsSuccess &&
                 agents.map((agent) => (
                   <DropdownMenuRadioItem
-                    className="flex cursor-pointer items-center justify-between gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
+                    className="aria-checked:bg-official-gray-800 flex cursor-pointer items-center justify-between gap-1.5 rounded-md px-2 py-2 text-white transition-colors"
                     key={agent.name}
                     value={agent.name}
                   >
@@ -154,7 +154,7 @@ export function AIModelSelectorBase({
                   </DropdownMenuRadioItem>
                 ))}
               {isAgentsSuccess && agents.length > 0 && (
-                <DropdownMenuSeparator className="bg-gray-200" />
+                <DropdownMenuSeparator className="bg-official-gray-800" />
               )}
               <DropdownMenuLabel className="mt-2 px-2 py-1">
                 AI Models

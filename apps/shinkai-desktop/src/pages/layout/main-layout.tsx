@@ -349,7 +349,7 @@ export function MainNav() {
                     ? 'w-full justify-start rounded-lg bg-transparent px-4 py-3 hover:bg-gray-500'
                     : 'w-8 justify-center self-center rounded-full',
                 )}
-                onClick={() => navigate('/inboxes')}
+                onClick={() => navigate('/home')}
                 transition={{ duration: 0.3 }}
                 whileHover={{ scale: !sidebarExpanded ? 1.05 : 1 }}
               >
@@ -363,7 +363,7 @@ export function MainNav() {
                       initial="hidden"
                       variants={showAnimation}
                     >
-                      {t('chat.create')}
+                      Start
                     </motion.span>
                   )}
                 </AnimatePresence>
