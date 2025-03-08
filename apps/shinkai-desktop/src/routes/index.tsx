@@ -336,7 +336,7 @@ const AppRoutes = () => {
           }
           path="inboxes"
         >
-          <Route element={<ChatConversation />} index />
+          {/* <Route element={<ChatConversation />} index /> */}
           <Route element={<ChatConversation />} path=":inboxId" />
         </Route>
         <Route
