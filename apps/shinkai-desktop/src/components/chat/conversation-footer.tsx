@@ -94,7 +94,7 @@ import { streamingSupportedModels } from './constants';
 import { useSetJobScope } from './context/set-job-scope-context';
 
 export const actionButtonClassnames =
-  'shrink-0 inline-flex h-[30px] w-[30px] cursor-pointer items-center justify-center gap-1.5 truncate border border-official-gray-780 px-[7px] py-1.5 text-left text-xs rounded-lg font-normal text-gray-50 hover:bg-official-gray-950 hover:text-white';
+  'shrink-0 inline-flex h-[30px] w-[30px] rounded-full cursor-pointer items-center justify-center gap-1.5 truncate border border-official-gray-780 px-[7px] py-1.5 text-left text-xs font-normal text-gray-50 hover:bg-official-gray-950 hover:text-white';
 
 export type ChatConversationLocationState = {
   files: File[];
@@ -104,7 +104,7 @@ export type ChatConversationLocationState = {
   llmProviderId: string;
 };
 
-const useSelectedFilesChat = ({ inboxId }: { inboxId?: string }) => {
+export const useSelectedFilesChat = ({ inboxId }: { inboxId?: string }) => {
   const selectedFileKeysRef = useSetJobScope(
     (state) => state.selectedFileKeysRef,
   );
@@ -944,13 +944,13 @@ const FileListBase = ({
     </div>
   );
 };
-const FileList = memo(FileListBase, (prevProps, nextProps) => {
+export const FileList = memo(FileListBase, (prevProps, nextProps) => {
   if (!equal(prevProps.currentFiles, nextProps.currentFiles)) return false;
   if (prevProps.isPending !== nextProps.isPending) return false;
   return true;
 });
 
-const DropFileActive = () => (
+export const DropFileActive = () => (
   <motion.div
     animate={{ opacity: 1, y: 0 }}
     className="bg-gray-375 z-10 flex h-16 w-full items-center justify-center p-2.5"
@@ -968,7 +968,7 @@ const DropFileActive = () => (
   </motion.div>
 );
 
-const SelectedToolChat = ({
+export const SelectedToolChat = ({
   name,
   description,
   args,
@@ -980,17 +980,17 @@ const SelectedToolChat = ({
   remove: () => void;
 }) => {
   return (
-    <div className="bg-gray-375 relative max-w-full rounded-lg p-1.5 px-2">
+    <div className="relative w-full max-w-full rounded-lg p-1.5 px-2">
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex items-start gap-2 pr-6">
-            <ToolsIcon className="mt-1 aspect-square size-3.5" />
+          <div className="flex items-center gap-2 pr-6">
+            <ToolsIcon className="size-3.5" />
             <div className="flex flex-1 flex-col items-start text-xs text-gray-100">
-              <span className="line-clamp-1 font-medium text-white">
+              <span className="line-clamp-1 text-left font-medium text-white">
                 {name} -{' '}
                 <span className="text-gray-80 font-light">{description}</span>
               </span>
-              {args.length > 0 && (
+              {/* {args.length > 0 && (
                 <span className="text-gray-80">
                   <div className="inline-flex gap-1">
                     <span className="capitalize">Inputs: </span>
@@ -999,7 +999,7 @@ const SelectedToolChat = ({
                     </div>
                   </div>
                 </span>
-              )}
+              )} */}
             </div>
           </div>
         </TooltipTrigger>
@@ -1011,7 +1011,7 @@ const SelectedToolChat = ({
             side="top"
             sideOffset={10}
           >
-            <span className="text-xs text-gray-100">{description}</span>
+            <span className="text-xs text-white">{description}</span>
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>

@@ -326,7 +326,7 @@ export function UpdateChatConfigActionBarBase() {
 
   return (
     <div className="flex items-center gap-2">
-      <ToolsDisabledAlert isToolsDisabled={!form.watch('useTools')} />
+      {/* <ToolsDisabledAlert isToolsDisabled={!form.watch('useTools')} /> */}
       <Popover
         onOpenChange={(open) => {
           if (open) {
@@ -409,7 +409,7 @@ export function CreateChatConfigActionBar({
 
   return (
     <div className="flex items-center gap-2">
-      <ToolsDisabledAlert isToolsDisabled={!form.watch('useTools')} />
+      {/* <ToolsDisabledAlert isToolsDisabled={!form.watch('useTools')} /> */}
       <Popover>
         <TooltipProvider delayDuration={0}>
           <Tooltip>
