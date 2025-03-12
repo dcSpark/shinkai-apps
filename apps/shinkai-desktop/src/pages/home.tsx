@@ -8,7 +8,6 @@ import {
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
-import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
 import {
@@ -188,6 +187,7 @@ const EmptyMessage = () => {
   const { t } = useTranslation();
 
   const resetJobScope = useSetJobScope((state) => state.resetJobScope);
+
   const setPromptSelected = usePromptSelectionStore(
     (state) => state.setPromptSelected,
   );
@@ -234,6 +234,25 @@ const EmptyMessage = () => {
     resetJobScope();
     setPromptSelected(undefined);
   }, []);
+
+  useEffect(() => {
+    chatConfigForm.setValue(
+      'useTools',
+      promptSelected?.useTools ? true : DEFAULT_CHAT_CONFIG.use_tools,
+    );
+  }, [chatConfigForm, chatForm, promptSelected]);
+
+  useEffect(() => {
+    if (promptSelected) {
+      chatForm.setValue('message', promptSelected.prompt);
+    }
+  }, [chatForm, promptSelected]);
+
+  useEffect(() => {
+    if (!textareaRef.current) return;
+    textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
+    textareaRef.current.focus();
+  }, [currentMessage]);
 
   const { selectedFileKeysRef, selectedFolderKeysRef, clearSelectedFiles } =
     useSelectedFilesChat({
@@ -307,17 +326,17 @@ const EmptyMessage = () => {
 
   return (
     <div
-      className="flex size-full items-center justify-center p-6"
-      style={{ contain: 'strict' }}
+      className="flex size-full justify-center p-6"
+      // style={{ contain: 'strict' }}
     >
       <motion.div
         animate={{ opacity: 1 }}
-        className="flex w-full max-w-4xl flex-col items-stretch gap-28 pt-10 text-center"
+        className="flex w-full max-w-4xl flex-col items-stretch gap-28 text-center"
         exit={{ opacity: 0 }}
         initial={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="mx-auto flex w-full flex-col items-stretch gap-4">
+        <div className="mx-auto mt-[110px] flex w-full flex-col items-stretch gap-4">
           <div className="flex h-[52px] flex-col gap-2">
             {selectedAgent ? (
               <div>
@@ -351,35 +370,6 @@ const EmptyMessage = () => {
                     </FormLabel>
                     <FormControl>
                       <div className="">
-                        {/* <div className="flex items-center justify-between gap-4 px-1 pb-2 pt-1">
-                          <div className="flex items-center gap-2.5">
-                            <AIModelSelector
-                              onValueChange={(value) => {
-                                chatForm.setValue('agent', value);
-                              }}
-                              value={currentAI ?? ''}
-                            />
-
-                            <FileSelectionActionBar
-                              inputProps={{
-                                ...chatForm.register('files'),
-                                ...getInputFileProps(),
-                              }}
-                              onClick={openFilePicker}
-                            />
-                            <PromptSelectionActionBar />
-
-                            <ToolsSwitchActionBar
-                              checked={chatConfigForm.watch('useTools')}
-                              onCheckedChange={(checked) => {
-                                chatConfigForm.setValue('useTools', checked);
-                              }}
-                            />
-                          </div>
-
-                          <CreateChatConfigActionBar form={chatConfigForm} />
-                        </div> */}
-
                         <Popover
                           onOpenChange={setIsCommandOpen}
                           open={isCommandOpen}
@@ -508,7 +498,7 @@ const EmptyMessage = () => {
                               topAddons={
                                 <>
                                   {isDragActive && <DropFileActive />}
-                                  {/* {selectedTool && (
+                                  {selectedTool && (
                                     <SelectedToolChat
                                       args={selectedTool.args ?? []}
                                       description={selectedTool.description}
@@ -517,7 +507,7 @@ const EmptyMessage = () => {
                                         chatForm.setValue('tool', undefined);
                                       }}
                                     />
-                                  )} */}
+                                  )}
                                   {!isDragActive &&
                                     currentFiles &&
                                     currentFiles.length > 0 && (
@@ -541,8 +531,8 @@ const EmptyMessage = () => {
                           <PopoverContent
                             align="start"
                             className="w-[500px] p-0"
-                            side="top"
-                            sideOffset={10}
+                            side="bottom"
+                            sideOffset={-50}
                           >
                             <Command>
                               <CommandInput placeholder="Search tools..." />
@@ -596,7 +586,6 @@ const EmptyMessage = () => {
               animate={{ opacity: 1 }}
               className={cn(
                 'bg-official-gray-900/60 absolute inset-x-0 bottom-[1px] flex h-[40px] w-full items-center justify-between gap-2 rounded-b-lg px-2 py-2 shadow-white',
-                selectedTool && 'bg-official-gray-1000/30',
                 (searchToolList ?? [])?.length > 0 &&
                   'bg-official-gray-1000/30',
               )}
@@ -608,14 +597,17 @@ const EmptyMessage = () => {
                 !selectedTool &&
                 isSearchToolListSuccess &&
                 searchToolList?.length > 0 && (
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2 px-2">
+                    <span className="text-official-gray-400 pr-1 text-xs font-light">
+                      Suggested Tools
+                    </span>
                     {searchToolList?.map((tool, idx) => (
                       <Tooltip key={tool.tool_router_key}>
                         <TooltipTrigger asChild>
                           <motion.button
                             animate={{ opacity: 1, x: 0 }}
                             className={cn(
-                              'hover:bg-official-gray-950 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
+                              'hover:bg-official-gray-800 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
                             )}
                             exit={{ opacity: 0, x: -10 }}
                             initial={{ opacity: 0, x: -10 }}
@@ -653,9 +645,21 @@ const EmptyMessage = () => {
                         </TooltipPortal>
                       </Tooltip>
                     ))}
+                    <Link
+                      className={cn(
+                        buttonVariants({
+                          variant: 'link',
+                          size: 'xs',
+                        }),
+                        'text-official-gray-200 underline',
+                      )}
+                      to="/tools"
+                    >
+                      Explore more Tools
+                    </Link>
                   </div>
                 )}
-              {!selectedTool && !debounceMessage && (
+              {(!debounceMessage || selectedTool) && (
                 <div className="flex w-full items-center justify-between gap-2 px-2">
                   <span className="text-official-gray-400 text-xs font-light">
                     <span className="font-medium">Shift + Enter</span> for a new
@@ -666,21 +670,11 @@ const EmptyMessage = () => {
                   </span>
                 </div>
               )}
-              {selectedTool && (
-                <SelectedToolChat
-                  args={selectedTool.args ?? []}
-                  description={selectedTool.description}
-                  name={formatText(selectedTool.name)}
-                  remove={() => {
-                    chatForm.setValue('tool', undefined);
-                  }}
-                />
-              )}
             </motion.div>
           </div>
-          <div className="mt-6 flex w-full flex-wrap justify-center gap-3">
+          <div className="mt-3 flex w-full flex-wrap justify-center gap-3">
             <Badge
-              className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-2 text-left font-normal normal-case text-gray-50 transition-colors"
+              className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left font-normal normal-case text-gray-50 transition-colors"
               onClick={() => showSpotlightWindow()}
               variant="outline"
             >
@@ -698,7 +692,7 @@ const EmptyMessage = () => {
               },
             ].map((suggestion) => (
               <Badge
-                className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-2 text-left font-normal normal-case text-gray-50 transition-colors"
+                className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left font-normal normal-case text-gray-50 transition-colors"
                 key={suggestion.text}
                 onClick={() => {
                   setPromptSelected({
@@ -725,7 +719,7 @@ const EmptyMessage = () => {
               </Badge>
             ))}
             <Badge
-              className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-2 text-left font-normal normal-case text-gray-50 transition-colors"
+              className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left font-normal normal-case text-gray-50 transition-colors"
               onClick={() => onCreateJob('Tell me about the Roman Empire')}
               variant="outline"
             >

@@ -423,10 +423,10 @@ export const ToolsHomepage = () => {
           <div className="flex flex-col gap-20">
             <div className="flex min-h-[300px] w-full flex-col items-center justify-between gap-10 pt-2">
               <div className="flex flex-col gap-2">
-                <h1 className="font-clash text-center text-5xl font-semibold">
+                <h1 className="font-clash text-center text-4xl font-medium text-white">
                   Build AI Tools in Minutes
                 </h1>
-                <p className="text-official-gray-400 text-center text-lg">
+                <p className="text-official-gray-400 text-center text-sm">
                   Create, automate, and optimize your workflow with powerful AI
                   tools.
                 </p>

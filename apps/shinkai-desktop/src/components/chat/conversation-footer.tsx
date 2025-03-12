@@ -900,7 +900,7 @@ const FileListBase = ({
   const size = partial({ standard: 'jedec' });
 
   return (
-    <div className="no-scrollbar bg-official-gray-950 scroll h-16 overflow-hidden">
+    <div className="no-scrollbar bg-official-gray-1000 scroll h-16 overflow-hidden">
       <div className="flex items-center gap-3 overflow-x-auto p-2.5">
         {currentFiles.map((file, index) => (
           <div
@@ -953,7 +953,7 @@ export const FileList = memo(FileListBase, (prevProps, nextProps) => {
 export const DropFileActive = () => (
   <motion.div
     animate={{ opacity: 1, y: 0 }}
-    className="bg-gray-375 z-10 flex h-16 w-full items-center justify-center p-2.5"
+    className="bg-official-gray-1000 z-10 flex h-16 w-full items-center justify-center p-2.5"
     initial={{ opacity: 0, y: 10 }}
     transition={{ duration: 0.2 }}
   >
@@ -980,7 +980,7 @@ export const SelectedToolChat = ({
   remove: () => void;
 }) => {
   return (
-    <div className="relative w-full max-w-full rounded-lg p-1.5 px-2">
+    <div className="bg-official-gray-1000 relative w-full max-w-full rounded-lg p-1.5 px-2">
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="flex items-center gap-2 pr-6">
