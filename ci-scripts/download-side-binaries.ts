@@ -134,10 +134,10 @@ const downloadOllamaAarch64AppleDarwin = async (version: string) => {
   const downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/Ollama-darwin.zip`;
   const zippedPath = path.join(TEMP_PATH, `ollama-${Arch.aarch64_apple_darwin}.zip`);
   await downloadFile(downloadUrl, zippedPath);
-  const unzippedPath = path.join(TEMP_PATH, `ollama-linux-amd64-${version}`);
+  const unzippedPath = path.join(TEMP_PATH, `ollama-${Arch.aarch64_apple_darwin}-${version}`);
   await zl.extract(zippedPath, unzippedPath);
   const ollamaBinaryPath = asSidecarName(
-    Arch.x86_64_unknown_linux_gnu,
+    Arch.aarch64_apple_darwin,
     `./apps/shinkai-desktop/src-tauri/external-binaries/ollama/ollama`,
   );
   await ensureFile(ollamaBinaryPath);
