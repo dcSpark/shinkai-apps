@@ -11,6 +11,7 @@ You can find it <a href="https://github.com/dcSpark/shinkai-node">here</a>.</p><
 [![Mutable.ai Auto Wiki](https://img.shields.io/badge/Auto_Wiki-Mutable.ai-blue)](https://wiki.mutable.ai/dcSpark/shinkai-apps)
 
 ## Demo
+
 [![Shinkai Desktop Demo](https://img.youtube.com/vi/v8Ba7S2XMDw/0.jpg)](https://www.youtube.com/watch?v=v8Ba7S2XMDw)
 
 ## Documentation
@@ -42,31 +43,23 @@ $ git clone https://github.com/dcSpark/shinkai-apps
 
 ### Download side binaries:
 
-#### Macos
+Running
+
 ```
-ARCH="aarch64-apple-darwin" \
-OLLAMA_VERSION="v0.6.0" \
-SHINKAI_NODE_VERSION="v0.9.13" \
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
-#### Linux
-```
-ARCH="x86_64-unknown-linux-gnu" \
-OLLAMA_VERSION="v0.6.0"\
-SHINKAI_NODE_VERSION="v0.9.13" \
-npx ts-node ./ci-scripts/download-side-binaries.ts
-```
+or adding environment variables to your shell to get specific binaries:
 
-#### Windows
 ```
-$ENV:OLLAMA_VERSION="v0.6.0";
-$ENV:SHINKAI_NODE_VERSION="v0.9.13";
-$ENV:ARCH="x86_64-pc-windows-msvc";
+export ARCH="aarch64-apple-darwin"
+export OLLAMA_VERSION="v0.6.0"
+export SHINKAI_NODE_VERSION="v0.9.13"
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
 ### Run one of the projects
+
 Once you have done that simply use `npm` to compile/serve it yourself:
 
 ```

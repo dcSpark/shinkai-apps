@@ -13,6 +13,7 @@ enum Arch {
   aarch64_apple_darwin = 'aarch64-apple-darwin',
   x86_64_pc_windows_msvc = 'x86_64-pc-windows-msvc',
 }
+
 const envSchema = z.object({
   ARCH: z.nativeEnum(Arch),
   OLLAMA_VERSION: z.string().min(6),
@@ -21,7 +22,22 @@ const envSchema = z.object({
 
 type Env = z.infer<typeof envSchema>;
 
-const env: Env = envSchema.parse(process.env);
+const getCurrentTargetArch = () => {
+  const platform = process.platform;
+  const arch = process.arch;
+  if (platform === 'darwin' && arch === 'arm64')
+    return Arch.aarch64_apple_darwin;
+  if (platform === 'linux' && arch === 'x64')
+    return Arch.x86_64_unknown_linux_gnu;
+  if (platform === 'win32' && arch === 'x64')
+    return Arch.x86_64_pc_windows_msvc;
+  throw new Error(`unsupported platform: ${platform} ${arch}`);
+};
+let env: Env = envSchema.parse({
+  ARCH: (process.env.ARCH as Arch) || getCurrentTargetArch(),
+  OLLAMA_VERSION: process.env.OLLAMA_VERSION || 'v0.6.0',
+  SHINKAI_NODE_VERSION: process.env.SHINKAI_NODE_VERSION || 'v0.9.13',
+});
 
 const TEMP_PATH = './temp';
 const OLLAMA_RESOURCES_PATH =
@@ -132,9 +148,15 @@ const downloadShinkaiNodeBinary = async (arch: Arch, version: string) => {
 
 const downloadOllamaAarch64AppleDarwin = async (version: string) => {
   const downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/Ollama-darwin.zip`;
-  const zippedPath = path.join(TEMP_PATH, `ollama-${Arch.aarch64_apple_darwin}.zip`);
+  const zippedPath = path.join(
+    TEMP_PATH,
+    `ollama-${Arch.aarch64_apple_darwin}.zip`,
+  );
   await downloadFile(downloadUrl, zippedPath);
-  const unzippedPath = path.join(TEMP_PATH, `ollama-${Arch.aarch64_apple_darwin}-${version}`);
+  const unzippedPath = path.join(
+    TEMP_PATH,
+    `ollama-${Arch.aarch64_apple_darwin}-${version}`,
+  );
   await zl.extract(zippedPath, unzippedPath);
   const ollamaBinaryPath = asSidecarName(
     Arch.aarch64_apple_darwin,
@@ -228,4 +250,7 @@ export const main = async () => {
   await downloadEmbeddingModel();
 };
 
-main().catch(console.error);
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
