@@ -170,7 +170,7 @@ export const useSelectedFilesChat = ({ inboxId }: { inboxId?: string }) => {
   };
 };
 
-const SUGGESTED_TOOLS_COUNT = 3;
+export const SUGGESTED_TOOLS_COUNT = 3;
 
 function ConversationChatFooter({
   inboxId,
@@ -604,8 +604,11 @@ function ConversationChatFooter({
                       ) : (
                         <ToolsSwitchActionBar
                           checked={chatConfigForm.watch('useTools')}
-                          onCheckedChange={(checked) => {
-                            chatConfigForm.setValue('useTools', checked);
+                          onClick={() => {
+                            chatConfigForm.setValue(
+                              'useTools',
+                              !chatConfigForm.watch('useTools'),
+                            );
                           }}
                         />
                       )}

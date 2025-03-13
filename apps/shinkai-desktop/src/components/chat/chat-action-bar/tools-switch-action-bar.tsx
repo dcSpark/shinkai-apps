@@ -1,62 +1,61 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import {
-  Switch,
   Tooltip,
   TooltipContent,
   TooltipPortal,
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
+import {
+  ToolsDisabledIcon,
+  ToolsIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { memo, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { memo } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import { actionButtonClassnames } from '../conversation-footer';
-import {
-  chatConfigFormSchema,
-  ChatConfigFormSchemaType,
-} from './chat-config-action-bar';
 
 interface ToolsSwitchActionBarProps {
   checked: boolean;
   disabled?: boolean;
-  onCheckedChange: (checked: boolean) => void;
+  onClick: () => void;
 }
 
 function ToolsSwitchActionBarBase({
   disabled,
   checked,
-  onCheckedChange,
+  onClick,
 }: ToolsSwitchActionBarProps) {
   return (
     <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <label
+          <button
             className={cn(
               actionButtonClassnames,
-              'flex min-w-[74px] items-center justify-between gap-2 px-2',
+              'w-auto gap-2',
+              checked && 'bg-cyan-950 hover:bg-cyan-950',
             )}
+            disabled={disabled}
+            onClick={onClick}
+            type="button"
           >
-            <ToolsIcon className="h-4 w-4" />
-            <Switch
-              checked={checked}
-              disabled={disabled}
-              onCheckedChange={onCheckedChange}
-            />
-            <span>AI Actions</span>
-          </label>
+            {checked ? (
+              <ToolsIcon className="size-4" />
+            ) : (
+              <ToolsDisabledIcon className="size-4" />
+            )}
+            <span>Tools</span>
+          </button>
         </TooltipTrigger>
         <TooltipPortal>
           <TooltipContent>
-            AI Actions (Tools) {checked ? '(Enabled)' : '(Disabled)'}
+            {checked ? 'Disable' : 'Enable'} AI Actions (Tools)
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>
@@ -74,10 +73,6 @@ export function UpdateToolsSwitchActionBarBase() {
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
 
-  const chatConfigForm = useForm<ChatConfigFormSchemaType>({
-    resolver: zodResolver(chatConfigFormSchema),
-  });
-
   const { data: chatConfig } = useGetChatConfig(
     {
       nodeAddress: auth?.node_address ?? '',
@@ -87,19 +82,6 @@ export function UpdateToolsSwitchActionBarBase() {
     { enabled: !!inboxId },
   );
 
-  useEffect(() => {
-    if (chatConfig) {
-      chatConfigForm.reset({
-        stream: chatConfig.stream,
-        customPrompt: chatConfig.custom_prompt ?? '',
-        temperature: chatConfig.temperature,
-        topP: chatConfig.top_p,
-        topK: chatConfig.top_k,
-        useTools: chatConfig.use_tools,
-      });
-    }
-  }, [chatConfig, chatConfigForm]);
-
   const { mutateAsync: updateChatConfig, isPending } = useUpdateChatConfig({
     onError: (error) => {
       toast.error('Use tools update failed', {
@@ -108,27 +90,27 @@ export function UpdateToolsSwitchActionBarBase() {
     },
   });
 
-  const handleUpdateTool = async (useTools: boolean) => {
+  const handleUpdateTool = async () => {
     await updateChatConfig({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       jobId: extractJobIdFromInbox(inboxId),
       jobConfig: {
-        stream: chatConfigForm.getValues().stream,
-        custom_prompt: chatConfigForm.getValues().customPrompt ?? '',
-        temperature: chatConfigForm.getValues().temperature,
-        top_p: chatConfigForm.getValues().topP,
-        top_k: chatConfigForm.getValues().topK,
-        use_tools: useTools,
+        stream: chatConfig?.stream,
+        custom_prompt: chatConfig?.custom_prompt ?? '',
+        temperature: chatConfig?.temperature,
+        top_p: chatConfig?.top_p,
+        top_k: chatConfig?.top_k,
+        use_tools: !chatConfig?.use_tools,
       },
     });
   };
 
   return (
     <ToolsSwitchActionBar
-      checked={chatConfigForm.watch('useTools')}
+      checked={!!chatConfig?.use_tools}
       disabled={isPending}
-      onCheckedChange={handleUpdateTool}
+      onClick={() => handleUpdateTool()}
     />
   );
 }

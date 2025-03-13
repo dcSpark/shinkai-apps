@@ -78,7 +78,7 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel className="static space-y-1.5 text-sm text-white">
+                <FormLabel className="static space-y-1.5 text-xs text-white">
                   Enable Stream
                 </FormLabel>
               </div>
@@ -94,10 +94,12 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
             <FormControl>
               <HoverCard openDelay={200}>
                 <HoverCardTrigger asChild>
-                  <div className="grid w-full gap-4">
+                  <div className="grid w-full gap-1.5">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="temperature">Temperature</Label>
-                      <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                      <Label className="text-xs" htmlFor="temperature">
+                        Temperature
+                      </Label>
+                      <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs">
                         {field.value}
                       </span>
                     </div>
@@ -116,7 +118,7 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
                 </HoverCardTrigger>
                 <HoverCardContent
                   align="start"
-                  className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
+                  className="w-[300px] bg-gray-600 px-2 py-3 text-xs"
                   side="left"
                 >
                   Temperature is a parameter that affects the randomness of AI
@@ -136,10 +138,12 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
             <FormControl>
               <HoverCard openDelay={200}>
                 <HoverCardTrigger asChild>
-                  <div className="grid w-full gap-4">
+                  <div className="grid w-full gap-1.5">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="topP">Top P</Label>
-                      <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                      <Label className="text-xs" htmlFor="topP">
+                        Top P
+                      </Label>
+                      <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs">
                         {field.value}
                       </span>
                     </div>
@@ -159,7 +163,7 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
                 </HoverCardTrigger>
                 <HoverCardContent
                   align="start"
-                  className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
+                  className="w-[300px] bg-gray-600 px-2 py-3 text-xs"
                   side="left"
                 >
                   Adjust the probability threshold to increase the relevance of
@@ -181,10 +185,12 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
             <FormControl>
               <HoverCard openDelay={200}>
                 <HoverCardTrigger asChild>
-                  <div className="grid w-full gap-4">
+                  <div className="grid w-full gap-1.5">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="topK">Top K</Label>
-                      <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                      <Label className="text-xs" htmlFor="topK">
+                        Top K
+                      </Label>
+                      <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-xs">
                         {field.value}
                       </span>
                     </div>
@@ -203,7 +209,7 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
                 </HoverCardTrigger>
                 <HoverCardContent
                   align="start"
-                  className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
+                  className="w-[300px] bg-gray-600 px-2 py-3 text-xs"
                   side="left"
                 >
                   Adjust the count of key words for creating sequences. This
@@ -225,7 +231,7 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
             <FormLabel>System Prompt</FormLabel>
             <FormControl>
               <Textarea
-                className="!min-h-[130px] resize-none text-sm"
+                className="!min-h-[130px] resize-none text-xs"
                 spellCheck={false}
                 {...field}
               />
@@ -246,7 +252,7 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
               }}
             />
             <div className="space-y-1 leading-none">
-              <FormLabel className="static space-y-1.5 text-sm text-white">
+              <FormLabel className="static space-y-1.5 text-xs text-white">
                 Enable UI Artifacts
               </FormLabel>
             </div>
@@ -421,9 +427,10 @@ export function CreateChatConfigActionBar({
               </TooltipTrigger>
             </PopoverTrigger>
             <PopoverContent
-              align="end"
-              className="min-w-[380px] px-6 py-7 text-xs"
-              side="top"
+              // align="end"
+              className="max-h-[50vh] min-w-[380px] overflow-auto px-6 py-7 text-xs"
+              side="bottom"
+              // side="top"
             >
               <h2 className="leading-1 text-gray-80 mb-5 text-xs uppercase">
                 Chat Settings

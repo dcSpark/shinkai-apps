@@ -2,6 +2,7 @@ import { ExitIcon, GearIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useImportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/importTool/useImportTool';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
+import { useGetInboxesWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxesWithPagination';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -196,6 +197,11 @@ export function MainNav() {
     setIsConfirmLogoutDialogOpened(true);
   };
 
+  const { data: inboxesPagination } = useGetInboxesWithPagination({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
   useEffect(() => {
     if (!auth?.api_v2_key) {
       setIsApiV2KeyMissingDialogOpen(true);
@@ -210,7 +216,9 @@ export function MainNav() {
   const navigationLinks = [
     {
       title: t('layout.menuItems.chats'),
-      href: '/inboxes',
+      href: `/inboxes/${encodeURIComponent(
+        inboxesPagination?.pages[0]?.inboxes[0]?.inbox_id ?? '',
+      )}`,
       icon: <InboxIcon className="h-5 w-5" />,
     },
     {

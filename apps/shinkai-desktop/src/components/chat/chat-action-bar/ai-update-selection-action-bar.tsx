@@ -106,7 +106,7 @@ export function AIModelSelectorBase({
           </TooltipPortal>
           <DropdownMenuContent
             align="start"
-            className="bg-official-gray-950 border-official-gray-780 max-h-[460px] min-w-[360px] overflow-y-auto border p-1 py-2"
+            className="bg-official-gray-950 border-official-gray-780 max-h-[460px] min-w-[380px] overflow-y-auto border p-1 py-2"
             side="top"
           >
             <DropdownMenuRadioGroup onValueChange={onValueChange} value={value}>
@@ -122,10 +122,13 @@ export function AIModelSelectorBase({
                     key={agent.name}
                     value={agent.name}
                   >
-                    <div className="inline-flex gap-1.5">
-                      <AIAgentIcon className="h-3.5 w-3.5 shrink-0" />
+                    <div className="inline-flex gap-2">
+                      <AIAgentIcon className="mt-1 size-4 shrink-0" />
                       <div className="flex flex-col gap-1">
                         <span className="text-xs">{agent.name}</span>
+                        <span className="text-official-gray-400 line-clamp-1 text-xs">
+                          {agent.ui_description}
+                        </span>
                       </div>
                     </div>
                     <Tooltip>
@@ -156,7 +159,7 @@ export function AIModelSelectorBase({
               {isAgentsSuccess && agents.length > 0 && (
                 <DropdownMenuSeparator className="bg-official-gray-800" />
               )}
-              <DropdownMenuLabel className="mt-2 px-2 py-1">
+              <DropdownMenuLabel className="mt-2 px-2 py-1 pb-2">
                 AI Models
               </DropdownMenuLabel>
               {isLlmProviderSuccess &&
@@ -168,7 +171,7 @@ export function AIModelSelectorBase({
                     value={llmProvider.id}
                   >
                     <ProviderIcon
-                      className="h-3.5 w-3.5 shrink-0"
+                      className="size-4 shrink-0"
                       provider={llmProvider.model.split(':')[0]}
                     />
                     <div className="flex flex-col gap-1">
