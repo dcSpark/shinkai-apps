@@ -152,7 +152,7 @@ const EmptyMessage = () => {
       token: auth?.api_v2_key ?? '',
     },
     {
-      select: (data) => data.slice(0, 3),
+      select: (data) => data.slice(0, 4),
     },
   );
 
@@ -393,10 +393,7 @@ const EmptyMessage = () => {
   const selectedAgent = agents?.find((agent) => agent.agent_id === currentAI);
 
   return (
-    <div
-      className="flex size-full justify-center p-6"
-      // style={{ contain: 'strict' }}
-    >
+    <div className="flex size-full justify-center p-6">
       <motion.div
         animate={{ opacity: 1 }}
         className="flex w-full max-w-4xl flex-col items-stretch gap-28 text-center"
@@ -409,7 +406,7 @@ const EmptyMessage = () => {
             {selectedAgent ? (
               <div>
                 <p className="font-clash text-2xl font-medium uppercase text-white">
-                  {selectedAgent.name}
+                  {formatText(selectedAgent.name)}
                 </p>
                 <p className="text-official-gray-400 text-sm">
                   {selectedAgent.ui_description}
@@ -792,56 +789,118 @@ const EmptyMessage = () => {
             </Badge>
           </div>
         </div>
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5 text-left">
-              <h1 className="text-base font-medium">Explore AI Agents</h1>
-              <p className="text-official-gray-400 text-xs">
-                Create and explore custom AI agents with tailored instructions
-                and diverse skills.
-              </p>
+        <div className="flex flex-col gap-10 pb-10">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5 text-left">
+                <h1 className="text-base font-medium">Explore AI Agents</h1>
+                <p className="text-official-gray-400 text-xs">
+                  Create and explore custom AI agents with tailored instructions
+                  and diverse skills.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Link
+                  className={cn(
+                    buttonVariants({ variant: 'link', size: 'xs' }),
+                    'text-official-gray-100 underline',
+                  )}
+                  to="/agents"
+                >
+                  View All Agents
+                </Link>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      className={cn(
+                        buttonVariants({ variant: 'outline', size: 'auto' }),
+                        'size-8 p-1',
+                      )}
+                      to="/add-agent"
+                    >
+                      <PlusIcon className="size-4" />
+                      {/* <span>Create Agent</span> */}
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Create a new agent</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Link
-                className={cn(
-                  buttonVariants({ variant: 'link', size: 'xs' }),
-                  'text-official-gray-100 underline',
-                )}
-                to="/agents"
-              >
-                View All Agents
-              </Link>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    className={cn(
-                      buttonVariants({ variant: 'outline', size: 'auto' }),
-                      'size-8 p-1',
-                    )}
-                    to="/add-agent"
-                  >
-                    <PlusIcon className="size-4" />
-                    {/* <span>Create Agent</span> */}
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Create a new agent</p>
-                </TooltipContent>
-              </Tooltip>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {agents?.map((agent) => (
+                <SimpleCard
+                  agentDescription={agent.ui_description}
+                  agentId={agent.agent_id}
+                  agentName={agent.name}
+                  icon={<AIAgentIcon className="size-4" />}
+                  key={agent.agent_id}
+                  onAgentSelected={(agentId) => {
+                    chatForm.setValue('agent', agentId);
+                  }}
+                />
+              ))}
             </div>
           </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {agents?.map((agent) => (
-              <AgentCard
-                agentDescription={agent.ui_description}
-                agentId={agent.agent_id}
-                agentName={agent.name}
-                key={agent.agent_id}
-                onAgentSelected={(agentId) => {
-                  chatForm.setValue('agent', agentId);
-                }}
-              />
-            ))}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5 text-left">
+                <h1 className="text-base font-medium">Explore AI Tools</h1>
+                <p className="text-official-gray-400 text-xs">
+                  Empower your AI agents with Tools. Create custom skills or use
+                  them as workflows.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Link
+                  className={cn(
+                    buttonVariants({ variant: 'link', size: 'xs' }),
+                    'text-official-gray-100 underline',
+                  )}
+                  to="/agents"
+                >
+                  View All Tools
+                </Link>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      className={cn(
+                        buttonVariants({ variant: 'outline', size: 'auto' }),
+                        'size-8 p-1',
+                      )}
+                      to="/tools"
+                    >
+                      <PlusIcon className="size-4" />
+                      {/* <span>Create Agent</span> */}
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Create a new agent</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {toolsList?.slice(0, 4).map((tool) => (
+                <SimpleCard
+                  agentDescription={tool.description}
+                  agentId={tool.tool_router_key}
+                  agentName={tool.name}
+                  buttonText="Use Tool"
+                  icon={<ToolsIcon className="size-4" />}
+                  key={tool.tool_router_key}
+                  onAgentSelected={(toolId) => {
+                    chatForm.setValue('tool', {
+                      key: toolId,
+                      name: tool.name,
+                      description: tool.description,
+                      args: Object.keys(tool.input_args.properties ?? {}),
+                    });
+                  }}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </motion.div>
@@ -850,43 +909,46 @@ const EmptyMessage = () => {
 };
 export default EmptyMessage;
 
-const AgentCard = ({
+const SimpleCard = ({
+  icon,
   agentId,
   agentName,
   agentDescription,
   onAgentSelected,
+  buttonText,
 }: {
+  icon: React.ReactNode;
   agentId: string;
   agentName: string;
   agentDescription: string;
   onAgentSelected: (agentId: string) => void;
+  buttonText?: string;
 }) => {
   return (
-    <div className="border-official-gray-850 bg-official-gray-900 flex flex-col items-center justify-between gap-5 rounded-lg border p-4">
-      <div className="flex flex-col items-start gap-1">
-        <div className="flex items-center gap-2">
-          <div className="flex size-8 items-center justify-center rounded-lg">
-            <AIAgentIcon className="size-4" />
-          </div>
-          <span className="w-full truncate text-start text-sm">
-            {agentName}{' '}
-          </span>
+    <div className="border-official-gray-850 bg-official-gray-900 rounded-lg border p-2.5">
+      <div className="flex items-start gap-3">
+        <div className="flex size-6 items-center justify-center rounded-lg pt-2">
+          {icon}
         </div>
-        <p className="text-official-gray-400 line-clamp-2 min-h-6 text-left text-sm">
-          {agentDescription ?? 'No description'}
-        </p>
+        <div className="flex flex-col items-start gap-1">
+          <p className="w-full truncate text-start text-sm">
+            {formatText(agentName)}{' '}
+          </p>
+          <p className="text-official-gray-400 mb-1 line-clamp-2 min-h-8 text-left text-xs">
+            {agentDescription ?? 'No description'}
+          </p>
+          <Button
+            onClick={() => {
+              onAgentSelected(agentId);
+            }}
+            size="xs"
+            variant="outline"
+          >
+            <CreateAIIcon className="size-4" />
+            <span className="">{buttonText ?? 'Chat'}</span>
+          </Button>
+        </div>
       </div>
-      <Button
-        className="w-full"
-        onClick={() => {
-          onAgentSelected(agentId);
-        }}
-        size="xs"
-        variant="outline"
-      >
-        <CreateAIIcon className="size-4" />
-        <span className=""> Chat</span>
-      </Button>
     </div>
   );
 };

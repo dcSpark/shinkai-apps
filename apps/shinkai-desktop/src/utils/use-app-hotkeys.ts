@@ -27,7 +27,7 @@ const useAppHotkeys = () => {
   useHotkeys(
     ['mod+n', 'ctrl+n'],
     () => {
-      navigate('/inboxes');
+      navigate('/home');
     },
     {
       enableOnContentEditable: true,

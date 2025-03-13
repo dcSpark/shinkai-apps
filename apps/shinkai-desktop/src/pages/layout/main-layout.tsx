@@ -302,6 +302,8 @@ export function MainNav() {
     },
   ].filter(Boolean) as NavigationLink[];
 
+  const isCurrentHomePage = useLocation().pathname === '/home';
+
   return (
     <motion.aside
       animate={{
@@ -354,8 +356,10 @@ export function MainNav() {
                 className={cn(
                   'text-gray-80 mb-1.5 mt-4 flex h-8 items-center gap-2 bg-white/10 hover:bg-white/10 hover:text-white',
                   sidebarExpanded
-                    ? 'w-full justify-start rounded-lg bg-transparent px-4 py-3 hover:bg-gray-500'
+                    ? 'w-full justify-start rounded-lg bg-transparent px-4 py-3'
                     : 'w-8 justify-center self-center rounded-full',
+                  isCurrentHomePage &&
+                    'bg-white/10 text-white hover:bg-white/10',
                 )}
                 onClick={() => navigate('/home')}
                 transition={{ duration: 0.3 }}

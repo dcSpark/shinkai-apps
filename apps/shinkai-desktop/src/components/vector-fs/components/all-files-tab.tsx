@@ -486,7 +486,7 @@ const AllFiles = () => {
                 if (!isVRSelectionActive) {
                   setVRSelectionActive(true);
                 } else {
-                  navigate('/inboxes', {
+                  navigate('/home', {
                     state: {
                       selectedVRFiles: selectedFiles.map((file) => file.path),
                       selectedVRFolders: selectedFolders.map(

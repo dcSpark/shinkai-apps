@@ -186,7 +186,7 @@ function LLMProviderCard({
               <TooltipTrigger asChild>
                 <Button
                   onClick={() => {
-                    navigate(`/inboxes`, { state: { llmProviderId } });
+                    navigate(`/home`, { state: { llmProviderId } });
                   }}
                   size="xs"
                   variant="outline"

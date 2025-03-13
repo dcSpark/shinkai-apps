@@ -137,7 +137,7 @@ const AgentCard = ({
               <TooltipTrigger asChild>
                 <Button
                   onClick={() => {
-                    navigate(`/inboxes`, { state: { agentName: agentId } });
+                    navigate(`/home`, { state: { agentName: agentId } });
                   }}
                   size="sm"
                   variant="outline"

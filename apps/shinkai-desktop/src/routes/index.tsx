@@ -142,7 +142,7 @@ const useGlobalAppShortcuts = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const unlisten = listen('create-chat', () => {
-      navigate('/inboxes');
+      navigate('/home');
     });
 
     return () => {
