@@ -215,8 +215,8 @@ jobs:
       - name: Download side binaries
         env:
           ARCH: ${{ matrix.arch }}
-          SHINKAI_NODE_VERSION: v0.9.12
-          OLLAMA_VERSION: v0.5.7
+          SHINKAI_NODE_VERSION: v0.9.13
+          OLLAMA_VERSION: v0.6.0
         run: |
           npx ts-node ./ci-scripts/download-side-binaries.ts
 
@@ -295,12 +295,6 @@ jobs:
         if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
         run: |
           echo -n "${{ secrets.EV_CODE_SIGNING_CERTIFICATE }}" > OS20241029372986.cer
-
-      - name: Download file to sign
-        shell: bash
-        if: ${{ matrix.arch == 'x86_64-pc-windows-msvc' }}
-        run: |
-          curl -LO https://download.shinkai.com/shinkai-desktop/binaries/production/x86_64-pc-windows-msvc/latest/Shinkai-Desktop-latest_x86_64-pc-windows-msvc.exe
 
       - name: Sign
         shell: bash
