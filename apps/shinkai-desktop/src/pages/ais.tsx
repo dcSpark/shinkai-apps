@@ -80,7 +80,7 @@ const AIsPage = () => {
 
   return (
     <div className="h-full">
-      <div className="mx-auto flex h-full max-w-4xl flex-col">
+      <div className="container flex h-full flex-col">
         <div className="flex flex-col gap-1 pb-6 pt-10">
           <div className="flex justify-between gap-4">
             <h1 className="font-clash text-3xl font-medium">Manage AIs</h1>

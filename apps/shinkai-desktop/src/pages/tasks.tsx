@@ -156,8 +156,7 @@ export const Tasks = () => {
             className={cn(
               buttonVariants({
                 variant: 'default',
-                size: 'xs',
-                rounded: 'lg',
+                size: 'sm',
               }),
             )}
             to="/tasks/create"

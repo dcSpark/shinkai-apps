@@ -397,7 +397,7 @@ export const ToolsHomepage = () => {
       className={cn('min-h-full flex-1 overflow-auto')}
       ref={scrollElementRef}
     >
-      <div className="mx-auto max-w-4xl pb-[80px]">
+      <div className="container pb-[80px]">
         <div className="mb-[80px] flex items-center justify-end gap-3 px-0 py-4">
           <div className="flex items-center gap-3">
             <DockerStatus />

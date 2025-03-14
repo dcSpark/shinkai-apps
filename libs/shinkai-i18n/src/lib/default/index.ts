@@ -66,7 +66,7 @@ export default {
     menuItems: {
       chats: 'Chats',
       aiTasks: 'AI Tasks',
-      vectorFs: 'My AI Files Explorer',
+      vectorFs: 'AI Files Explorer',
       vectorSearch: 'AI Files Content Search',
       subscriptions: 'Browse Subscriptions',
       mySubscriptions: 'My Subscriptions',
@@ -152,7 +152,7 @@ export default {
     filesSelected: 'Selected {{count}} files',
   },
   vectorFs: {
-    label: 'My AI Files Explorer',
+    label: 'AI Files Explorer',
     localFiles: 'Local AI Files',
     allFiles: 'All Files',
     sharedFolders: 'Shared Folders',

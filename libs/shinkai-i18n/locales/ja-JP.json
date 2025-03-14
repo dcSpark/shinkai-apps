@@ -233,6 +233,7 @@
     "menuItems": {
       "agents": "AI",
       "aiTasks": "AIタスク",
+      "ais": "AI",
       "chats": "チャット",
       "disconnect": "切断",
       "helpAndSupport": "ヘルプとサポート",

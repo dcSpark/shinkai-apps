@@ -89,6 +89,7 @@ const EmptyMessage = () => {
   const setSetJobScopeOpen = useSetJobScope(
     (state) => state.setSetJobScopeOpen,
   );
+  const scrollElementRef = useRef<HTMLDivElement>(null);
   const isLoadingMessage = false;
   const { captureAnalyticEvent } = useAnalytics();
 
@@ -393,85 +394,89 @@ const EmptyMessage = () => {
   const selectedAgent = agents?.find((agent) => agent.agent_id === currentAI);
 
   return (
-    <div className="flex size-full justify-center p-6">
-      <motion.div
-        animate={{ opacity: 1 }}
-        className="flex w-full max-w-4xl flex-col items-stretch gap-28 text-center"
-        exit={{ opacity: 0 }}
-        initial={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="mx-auto mt-[110px] flex w-full flex-col items-stretch gap-4">
-          <div className="flex h-[52px] flex-col gap-2">
-            {selectedAgent ? (
-              <div>
-                <p className="font-clash text-2xl font-medium uppercase text-white">
-                  {formatText(selectedAgent.name)}
-                </p>
-                <p className="text-official-gray-400 text-sm">
-                  {selectedAgent.ui_description}
-                </p>
-              </div>
-            ) : (
-              <h1 className="font-clash text-4xl font-medium text-white">
-                How can I help you today?
-              </h1>
-            )}
-          </div>
-          <div
-            {...getRootFileProps({
-              className:
-                'relative shrink-0 pb-[40px] max-w-3xl  mx-auto w-full',
-            })}
-          >
-            <div className="relative z-[1]">
-              <Form {...chatForm}>
-                <FormField
-                  control={chatForm.control}
-                  name="message"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel className="sr-only">
-                        {t('chat.enterMessage')}
-                      </FormLabel>
-                      <FormControl>
-                        <div className="">
-                          <Popover
-                            onOpenChange={setIsCommandOpen}
-                            open={isCommandOpen}
-                          >
-                            <PopoverTrigger asChild>
-                              <ChatInputArea
-                                autoFocus
-                                bottomAddons={
-                                  <div className="flex items-center justify-between gap-4 px-1 py-0.5">
-                                    <div className="flex items-center gap-2.5">
-                                      <AIModelSelector
-                                        onValueChange={(value) => {
-                                          chatForm.setValue('agent', value);
-                                        }}
-                                        value={currentAI ?? ''}
-                                      />
-                                      <FileSelectionActionBar
-                                        inputProps={{
-                                          ...chatForm.register('files'),
-                                          ...getInputFileProps(),
-                                        }}
-                                        onClick={openFilePicker}
-                                      />
-                                      <PromptSelectionActionBar />
-                                      <ToolsSwitchActionBar
-                                        checked={chatConfigForm.watch(
-                                          'useTools',
-                                        )}
-                                        onClick={() => {
-                                          chatConfigForm.setValue(
+    <div
+      className={cn('min-h-full flex-1 overflow-auto')}
+      ref={scrollElementRef}
+    >
+      <div className="flex size-full justify-center">
+        <motion.div
+          animate={{ opacity: 1 }}
+          className="container flex w-full flex-col items-stretch gap-28 text-center"
+          exit={{ opacity: 0 }}
+          initial={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="mx-auto mt-[110px] flex w-full flex-col items-stretch gap-4">
+            <div className="flex h-[52px] flex-col gap-2">
+              {selectedAgent ? (
+                <div>
+                  <p className="font-clash text-2xl font-medium uppercase text-white">
+                    {formatText(selectedAgent.name)}
+                  </p>
+                  <p className="text-official-gray-400 text-sm">
+                    {selectedAgent.ui_description}
+                  </p>
+                </div>
+              ) : (
+                <h1 className="font-clash text-4xl font-medium text-white">
+                  How can I help you today?
+                </h1>
+              )}
+            </div>
+            <div
+              {...getRootFileProps({
+                className:
+                  'relative shrink-0 pb-[40px] max-w-3xl  mx-auto w-full',
+              })}
+            >
+              <div className="relative z-[1]">
+                <Form {...chatForm}>
+                  <FormField
+                    control={chatForm.control}
+                    name="message"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel className="sr-only">
+                          {t('chat.enterMessage')}
+                        </FormLabel>
+                        <FormControl>
+                          <div className="">
+                            <Popover
+                              onOpenChange={setIsCommandOpen}
+                              open={isCommandOpen}
+                            >
+                              <PopoverTrigger asChild>
+                                <ChatInputArea
+                                  autoFocus
+                                  bottomAddons={
+                                    <div className="flex items-center justify-between gap-4 px-1 py-0.5">
+                                      <div className="flex items-center gap-2.5">
+                                        <AIModelSelector
+                                          onValueChange={(value) => {
+                                            chatForm.setValue('agent', value);
+                                          }}
+                                          value={currentAI ?? ''}
+                                        />
+                                        <FileSelectionActionBar
+                                          inputProps={{
+                                            ...chatForm.register('files'),
+                                            ...getInputFileProps(),
+                                          }}
+                                          onClick={openFilePicker}
+                                        />
+                                        <PromptSelectionActionBar />
+                                        <ToolsSwitchActionBar
+                                          checked={chatConfigForm.watch(
                                             'useTools',
-                                            !chatConfigForm.watch('useTools'),
-                                          );
-                                        }}
-                                      />
-                                      {/* <WebSearchActionBar
+                                          )}
+                                          onClick={() => {
+                                            chatConfigForm.setValue(
+                                              'useTools',
+                                              !chatConfigForm.watch('useTools'),
+                                            );
+                                          }}
+                                        />
+                                        {/* <WebSearchActionBar
                                       checked={chatConfigForm.watch('useTools')}
                                       onClick={() => {
                                         chatConfigForm.setValue(
@@ -480,430 +485,430 @@ const EmptyMessage = () => {
                                         );
                                       }}
                                     /> */}
-                                      <VectorFsActionBar
-                                        aiFilesCount={
-                                          Object.keys(selectedKeys || {})
-                                            .length ?? 0
-                                        }
-                                        onClick={() => {
-                                          setSetJobScopeOpen(true);
-                                        }}
-                                      />
-                                    </div>
+                                        <VectorFsActionBar
+                                          aiFilesCount={
+                                            Object.keys(selectedKeys || {})
+                                              .length ?? 0
+                                          }
+                                          onClick={() => {
+                                            setSetJobScopeOpen(true);
+                                          }}
+                                        />
+                                      </div>
 
-                                    <div className="flex items-center gap-2">
-                                      <CreateChatConfigActionBar
-                                        form={chatConfigForm}
-                                      />
-                                      <Button
-                                        className={cn(
-                                          'bg-official-gray-800 size-[32px] cursor-pointer rounded-full p-2 transition-colors',
-                                        )}
-                                        disabled={
-                                          isLoadingMessage || !currentMessage
-                                        }
-                                        onClick={chatForm.handleSubmit(
-                                          onSubmit,
-                                        )}
-                                        size="icon"
-                                      >
-                                        <SendIcon className="h-full w-full" />
-                                        <span className="sr-only">
-                                          {t('chat.sendMessage')}
-                                        </span>
-                                      </Button>
+                                      <div className="flex items-center gap-2">
+                                        <CreateChatConfigActionBar
+                                          form={chatConfigForm}
+                                        />
+                                        <Button
+                                          className={cn(
+                                            'bg-official-gray-800 size-[32px] cursor-pointer rounded-full p-2 transition-colors',
+                                          )}
+                                          disabled={
+                                            isLoadingMessage || !currentMessage
+                                          }
+                                          onClick={chatForm.handleSubmit(
+                                            onSubmit,
+                                          )}
+                                          size="icon"
+                                        >
+                                          <SendIcon className="h-full w-full" />
+                                          <span className="sr-only">
+                                            {t('chat.sendMessage')}
+                                          </span>
+                                        </Button>
+                                      </div>
                                     </div>
-                                  </div>
-                                }
-                                // disabled={isLoadingMessage || isPending}
-                                onChange={field.onChange}
-                                onKeyDown={(e) => {
-                                  if (
-                                    e.key === '/' &&
-                                    !e.shiftKey &&
-                                    !e.ctrlKey &&
-                                    !e.metaKey &&
-                                    !currentMessage.trim()
-                                  ) {
-                                    e.preventDefault();
-                                    setIsCommandOpen(true);
                                   }
-                                  if (
-                                    (e.ctrlKey || e.metaKey) &&
-                                    e.key === 'z' &&
-                                    promptSelected?.prompt ===
-                                      chatForm.watch('message')
-                                  ) {
-                                    chatForm.setValue('message', '');
-                                  }
-                                }}
-                                onPaste={(event) => {
-                                  const items = event.clipboardData?.items;
-                                  if (items) {
-                                    for (let i = 0; i < items.length; i++) {
-                                      if (
-                                        items[i].type.indexOf('image') !== -1
-                                      ) {
-                                        const file = items[i].getAsFile();
-                                        if (file) {
-                                          onDrop([file]);
+                                  // disabled={isLoadingMessage || isPending}
+                                  onChange={field.onChange}
+                                  onKeyDown={(e) => {
+                                    if (
+                                      e.key === '/' &&
+                                      !e.shiftKey &&
+                                      !e.ctrlKey &&
+                                      !e.metaKey &&
+                                      !currentMessage.trim()
+                                    ) {
+                                      e.preventDefault();
+                                      setIsCommandOpen(true);
+                                    }
+                                    if (
+                                      (e.ctrlKey || e.metaKey) &&
+                                      e.key === 'z' &&
+                                      promptSelected?.prompt ===
+                                        chatForm.watch('message')
+                                    ) {
+                                      chatForm.setValue('message', '');
+                                    }
+                                  }}
+                                  onPaste={(event) => {
+                                    const items = event.clipboardData?.items;
+                                    if (items) {
+                                      for (let i = 0; i < items.length; i++) {
+                                        if (
+                                          items[i].type.indexOf('image') !== -1
+                                        ) {
+                                          const file = items[i].getAsFile();
+                                          if (file) {
+                                            onDrop([file]);
+                                          }
                                         }
                                       }
                                     }
-                                  }
-                                }}
-                                onSubmit={chatForm.handleSubmit(onSubmit)}
-                                ref={textareaRef}
-                                textareaClassName="max-h-[40vh] min-h-[100px]"
-                                topAddons={
-                                  <>
-                                    {isDragActive && <DropFileActive />}
-                                    {selectedTool && (
-                                      <SelectedToolChat
-                                        args={selectedTool.args ?? []}
-                                        description={selectedTool.description}
-                                        name={formatText(selectedTool.name)}
-                                        remove={() => {
-                                          chatForm.setValue('tool', undefined);
-                                        }}
-                                      />
-                                    )}
-                                    {!isDragActive &&
-                                      currentFiles &&
-                                      currentFiles.length > 0 && (
-                                        <FileList
-                                          currentFiles={currentFiles}
-                                          isPending={isPending}
-                                          onRemoveFile={(index) => {
-                                            const newFiles = [...currentFiles];
-                                            newFiles.splice(index, 1);
+                                  }}
+                                  onSubmit={chatForm.handleSubmit(onSubmit)}
+                                  ref={textareaRef}
+                                  textareaClassName="max-h-[40vh] min-h-[100px]"
+                                  topAddons={
+                                    <>
+                                      {isDragActive && <DropFileActive />}
+                                      {selectedTool && (
+                                        <SelectedToolChat
+                                          args={selectedTool.args ?? []}
+                                          description={selectedTool.description}
+                                          name={formatText(selectedTool.name)}
+                                          remove={() => {
                                             chatForm.setValue(
-                                              'files',
-                                              newFiles,
-                                              {
-                                                shouldValidate: true,
-                                              },
+                                              'tool',
+                                              undefined,
                                             );
                                           }}
                                         />
                                       )}
-                                  </>
-                                }
-                                value={field.value}
-                              />
-                            </PopoverTrigger>
-                            <PopoverContent
-                              align="start"
-                              className="w-[500px] p-0"
-                              side="bottom"
-                              sideOffset={-60}
+                                      {!isDragActive &&
+                                        currentFiles &&
+                                        currentFiles.length > 0 && (
+                                          <FileList
+                                            currentFiles={currentFiles}
+                                            isPending={isPending}
+                                            onRemoveFile={(index) => {
+                                              const newFiles = [
+                                                ...currentFiles,
+                                              ];
+                                              newFiles.splice(index, 1);
+                                              chatForm.setValue(
+                                                'files',
+                                                newFiles,
+                                                {
+                                                  shouldValidate: true,
+                                                },
+                                              );
+                                            }}
+                                          />
+                                        )}
+                                    </>
+                                  }
+                                  value={field.value}
+                                />
+                              </PopoverTrigger>
+                              <PopoverContent
+                                align="start"
+                                className="w-[500px] p-0"
+                                side="bottom"
+                                sideOffset={-60}
+                              >
+                                <Command>
+                                  <CommandInput placeholder="Search tools..." />
+                                  <CommandList>
+                                    <CommandEmpty>No tools found.</CommandEmpty>
+                                    <CommandGroup heading="Your Active Tools">
+                                      {isToolsListSuccess &&
+                                        toolsList?.map((tool) => (
+                                          <CommandItem
+                                            key={tool.tool_router_key}
+                                            onSelect={() => {
+                                              chatForm.setValue('tool', {
+                                                key: tool.tool_router_key,
+                                                name: tool.name,
+                                                description: tool.description,
+                                                args: Object.keys(
+                                                  tool.input_args.properties ??
+                                                    {},
+                                                ),
+                                              });
+                                              chatConfigForm.setValue(
+                                                'useTools',
+                                                true,
+                                              );
+                                              setIsCommandOpen(false);
+                                            }}
+                                          >
+                                            <ToolsIcon className="mr-2 h-4 w-4" />
+                                            <div className="flex flex-col gap-0.5 text-xs">
+                                              <span className="line-clamp-1 text-white">
+                                                {formatText(tool.name)}
+                                              </span>
+                                              <span className="text-gray-80 line-clamp-2 text-xs">
+                                                {tool.description}
+                                              </span>
+                                            </div>
+                                          </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </Form>
+              </div>
+
+              <motion.div
+                animate={{ opacity: 1 }}
+                className={cn(
+                  'bg-official-gray-850 absolute inset-x-2 bottom-1.5 z-0 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pb-1 pt-2.5 shadow-white',
+                )}
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {!!debounceMessage &&
+                  !selectedTool &&
+                  isSearchToolListSuccess &&
+                  searchToolList?.length > 0 && (
+                    <div className="flex items-center gap-2 px-2">
+                      <span className="text-official-gray-400 pr-1 text-xs font-light">
+                        Suggested Tools
+                      </span>
+                      {searchToolList?.map((tool, idx) => (
+                        <Tooltip key={tool.tool_router_key}>
+                          <TooltipTrigger asChild>
+                            <motion.button
+                              animate={{ opacity: 1, x: 0 }}
+                              className={cn(
+                                'hover:bg-official-gray-800 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
+                              )}
+                              exit={{ opacity: 0, x: -10 }}
+                              initial={{ opacity: 0, x: -10 }}
+                              key={tool.tool_router_key}
+                              onClick={() => {
+                                chatForm.setValue('tool', {
+                                  key: tool.tool_router_key,
+                                  name: tool.name,
+                                  description: tool.description,
+                                  args: Object.keys(
+                                    tool.input_args.properties ?? {},
+                                  ),
+                                });
+                                chatConfigForm.setValue('useTools', true);
+                              }}
+                              type="button"
                             >
-                              <Command>
-                                <CommandInput placeholder="Search tools..." />
-                                <CommandList>
-                                  <CommandEmpty>No tools found.</CommandEmpty>
-                                  <CommandGroup heading="Your Active Tools">
-                                    {isToolsListSuccess &&
-                                      toolsList?.map((tool) => (
-                                        <CommandItem
-                                          key={tool.tool_router_key}
-                                          onSelect={() => {
-                                            chatForm.setValue('tool', {
-                                              key: tool.tool_router_key,
-                                              name: tool.name,
-                                              description: tool.description,
-                                              args: Object.keys(
-                                                tool.input_args.properties ??
-                                                  {},
-                                              ),
-                                            });
-                                            chatConfigForm.setValue(
-                                              'useTools',
-                                              true,
-                                            );
-                                            setIsCommandOpen(false);
-                                          }}
-                                        >
-                                          <ToolsIcon className="mr-2 h-4 w-4" />
-                                          <div className="flex flex-col gap-0.5 text-xs">
-                                            <span className="line-clamp-1 text-white">
-                                              {formatText(tool.name)}
-                                            </span>
-                                            <span className="text-gray-80 line-clamp-2 text-xs">
-                                              {tool.description}
-                                            </span>
-                                          </div>
-                                        </CommandItem>
-                                      ))}
-                                  </CommandGroup>
-                                </CommandList>
-                              </Command>
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-                      </FormControl>
-                    </FormItem>
+                              <ToolsIcon className="h-3 w-3" />
+                              {formatText(tool.name)}
+                            </motion.button>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent
+                              align="start"
+                              className="max-w-[500px]"
+                              side="top"
+                            >
+                              {tool.description}
+
+                              <br />
+                              <div className="flex items-center justify-end gap-2 text-xs text-gray-100">
+                                <CommandShortcut>⌘ + {idx + 1}</CommandShortcut>
+                              </div>
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+                      ))}
+                      <Link
+                        className={cn(
+                          'hover:bg-official-gray-800 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
+                        )}
+                        to="/tools"
+                      >
+                        <EllipsisIcon className="size-4" />
+                        All Tools
+                      </Link>
+                    </div>
                   )}
-                />
-              </Form>
-            </div>
-
-            <motion.div
-              animate={{ opacity: 1 }}
-              className={cn(
-                'bg-official-gray-850 absolute inset-x-2 bottom-1.5 z-0 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pb-1 pt-2.5 shadow-white',
-              )}
-              exit={{ opacity: 0 }}
-              initial={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              {!!debounceMessage &&
-                !selectedTool &&
-                isSearchToolListSuccess &&
-                searchToolList?.length > 0 && (
-                  <div className="flex items-center gap-2 px-2">
-                    <span className="text-official-gray-400 pr-1 text-xs font-light">
-                      Suggested Tools
+                {(!debounceMessage || selectedTool) && (
+                  <div className="flex w-full items-center justify-between gap-2 px-2">
+                    <span className="text-official-gray-400 text-xs font-light">
+                      <span className="font-medium">Shift + Enter</span> for a
+                      new line
                     </span>
-                    {searchToolList?.map((tool, idx) => (
-                      <Tooltip key={tool.tool_router_key}>
-                        <TooltipTrigger asChild>
-                          <motion.button
-                            animate={{ opacity: 1, x: 0 }}
-                            className={cn(
-                              'hover:bg-official-gray-800 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
-                            )}
-                            exit={{ opacity: 0, x: -10 }}
-                            initial={{ opacity: 0, x: -10 }}
-                            key={tool.tool_router_key}
-                            onClick={() => {
-                              chatForm.setValue('tool', {
-                                key: tool.tool_router_key,
-                                name: tool.name,
-                                description: tool.description,
-                                args: Object.keys(
-                                  tool.input_args.properties ?? {},
-                                ),
-                              });
-                              chatConfigForm.setValue('useTools', true);
-                            }}
-                            type="button"
-                          >
-                            <ToolsIcon className="h-3 w-3" />
-                            {formatText(tool.name)}
-                          </motion.button>
-                        </TooltipTrigger>
-                        <TooltipPortal>
-                          <TooltipContent
-                            align="start"
-                            className="max-w-[500px]"
-                            side="top"
-                          >
-                            {tool.description}
-
-                            <br />
-                            <div className="flex items-center justify-end gap-2 text-xs text-gray-100">
-                              <CommandShortcut>⌘ + {idx + 1}</CommandShortcut>
-                            </div>
-                          </TooltipContent>
-                        </TooltipPortal>
-                      </Tooltip>
-                    ))}
-                    <Link
-                      className={cn(
-                        'hover:bg-official-gray-800 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
-                      )}
-                      to="/tools"
-                    >
-                      <EllipsisIcon className="size-4" />
-                      All Tools
-                    </Link>
+                    <span className="text-official-gray-400 text-xs font-light">
+                      <span className="font-medium">Enter</span> to send
+                    </span>
                   </div>
                 )}
-              {(!debounceMessage || selectedTool) && (
-                <div className="flex w-full items-center justify-between gap-2 px-2">
-                  <span className="text-official-gray-400 text-xs font-light">
-                    <span className="font-medium">Shift + Enter</span> for a new
-                    line
-                  </span>
-                  <span className="text-official-gray-400 text-xs font-light">
-                    <span className="font-medium">Enter</span> to send
-                  </span>
-                </div>
-              )}
-            </motion.div>
-          </div>
-          <div className="mt-3 flex w-full flex-wrap justify-center gap-3">
-            <Badge
-              className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left font-normal normal-case text-gray-50 transition-colors"
-              onClick={() => showSpotlightWindow()}
-              variant="outline"
-            >
-              Quick Ask Spotlight
-              <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
-            </Badge>
-            {[
-              {
-                text: 'Search in DuckDuckGo',
-                prompt: 'Search in DuckDuckGo for: ',
-              },
-              {
-                text: 'Summarize a Youtube video',
-                prompt: 'Summarize a Youtube video: ',
-              },
-            ].map((suggestion) => (
+              </motion.div>
+            </div>
+            <div className="mt-3 flex w-full flex-wrap justify-center gap-3">
               <Badge
                 className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left font-normal normal-case text-gray-50 transition-colors"
-                key={suggestion.text}
-                onClick={() => {
-                  setPromptSelected({
-                    name: '',
-                    prompt: suggestion.prompt,
-                    is_enabled: true,
-                    is_favorite: false,
-                    is_system: true,
-                    version: '1',
-                    useTools: true,
-                    rowid: 0,
-                  });
-                  const element = document.querySelector(
-                    '#chat-input',
-                  ) as HTMLDivElement;
-                  if (element) {
-                    element?.focus?.();
-                  }
-                }}
+                onClick={() => showSpotlightWindow()}
                 variant="outline"
               >
-                {suggestion.text}
+                Quick Ask Spotlight
                 <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
               </Badge>
-            ))}
-            <Badge
-              className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left font-normal normal-case text-gray-50 transition-colors"
-              onClick={() => onCreateJob('Tell me about the Roman Empire')}
-              variant="outline"
-            >
-              Tell me about the Roman Empire
-              <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
-            </Badge>
-          </div>
-        </div>
-        <div className="flex flex-col gap-10 pb-10">
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5 text-left">
-                <h1 className="text-base font-medium">Explore AI Agents</h1>
-                <p className="text-official-gray-400 text-xs">
-                  Create and explore custom AI agents with tailored instructions
-                  and diverse skills.
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Link
-                  className={cn(
-                    buttonVariants({ variant: 'link', size: 'xs' }),
-                    'text-official-gray-100 underline',
-                  )}
-                  to="/agents"
-                >
-                  View All Agents
-                </Link>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      className={cn(
-                        buttonVariants({ variant: 'outline', size: 'auto' }),
-                        'size-8 p-1',
-                      )}
-                      to="/add-agent"
-                    >
-                      <PlusIcon className="size-4" />
-                      {/* <span>Create Agent</span> */}
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Create a new agent</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {agents?.map((agent) => (
-                <SimpleCard
-                  agentDescription={agent.ui_description}
-                  agentId={agent.agent_id}
-                  agentName={agent.name}
-                  icon={<AIAgentIcon className="size-4" />}
-                  key={agent.agent_id}
-                  onAgentSelected={(agentId) => {
-                    chatForm.setValue('agent', agentId);
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5 text-left">
-                <h1 className="text-base font-medium">Explore AI Tools</h1>
-                <p className="text-official-gray-400 text-xs">
-                  Empower your AI agents with Tools. Create custom skills or use
-                  them as workflows.
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Link
-                  className={cn(
-                    buttonVariants({ variant: 'link', size: 'xs' }),
-                    'text-official-gray-100 underline',
-                  )}
-                  to="/agents"
-                >
-                  View All Tools
-                </Link>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      className={cn(
-                        buttonVariants({ variant: 'outline', size: 'auto' }),
-                        'size-8 p-1',
-                      )}
-                      to="/tools"
-                    >
-                      <PlusIcon className="size-4" />
-                      {/* <span>Create Agent</span> */}
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Create a new agent</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {toolsList?.slice(0, 4).map((tool) => (
-                <SimpleCard
-                  agentDescription={tool.description}
-                  agentId={tool.tool_router_key}
-                  agentName={tool.name}
-                  buttonText="Use Tool"
-                  icon={<ToolsIcon className="size-4" />}
-                  key={tool.tool_router_key}
-                  onAgentSelected={(toolId) => {
-                    chatForm.setValue('tool', {
-                      key: toolId,
-                      name: tool.name,
-                      description: tool.description,
-                      args: Object.keys(tool.input_args.properties ?? {}),
+              {[
+                {
+                  text: 'Search in DuckDuckGo',
+                  prompt: 'Search in DuckDuckGo for: ',
+                },
+                {
+                  text: 'Summarize a Youtube video',
+                  prompt: 'Summarize a Youtube video: ',
+                },
+              ].map((suggestion) => (
+                <Badge
+                  className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left font-normal normal-case text-gray-50 transition-colors"
+                  key={suggestion.text}
+                  onClick={() => {
+                    setPromptSelected({
+                      name: '',
+                      prompt: suggestion.prompt,
+                      is_enabled: true,
+                      is_favorite: false,
+                      is_system: true,
+                      version: '1',
+                      useTools: true,
+                      rowid: 0,
                     });
+                    const element = document.querySelector(
+                      '#chat-input',
+                    ) as HTMLDivElement;
+                    if (element) {
+                      element?.focus?.();
+                    }
                   }}
-                />
+                  variant="outline"
+                >
+                  {suggestion.text}
+                  <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
+                </Badge>
               ))}
+              <Badge
+                className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left font-normal normal-case text-gray-50 transition-colors"
+                onClick={() => onCreateJob('Tell me about the Roman Empire')}
+                variant="outline"
+              >
+                Tell me about the Roman Empire
+                <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
+              </Badge>
             </div>
           </div>
-        </div>
-      </motion.div>
+          <div className="flex flex-col gap-10 pb-10">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5 text-left">
+                  <h1 className="text-base font-medium">Explore AI Agents</h1>
+                  <p className="text-official-gray-400 text-xs">
+                    Create and explore custom AI agents with tailored
+                    instructions and diverse skills.
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Link
+                    className={cn(
+                      buttonVariants({ variant: 'link', size: 'xs' }),
+                      'text-official-gray-100 underline',
+                    )}
+                    to="/agents"
+                  >
+                    View All Agents
+                  </Link>
+                  <Link
+                    className={cn(
+                      buttonVariants({ variant: 'default', size: 'xs' }),
+                    )}
+                    to="/add-agent"
+                  >
+                    <PlusIcon className="size-4" />
+                    <span>New Agent</span>
+                  </Link>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {agents?.map((agent) => (
+                  <SimpleCard
+                    agentDescription={agent.ui_description}
+                    agentId={agent.agent_id}
+                    agentName={agent.name}
+                    buttonText="Use Agent"
+                    icon={<AIAgentIcon className="size-4" />}
+                    key={agent.agent_id}
+                    onAgentSelected={(agentId) => {
+                      chatForm.setValue('agent', agentId);
+                      scrollElementRef?.current?.scrollTo({
+                        top: 0,
+                        behavior: 'smooth',
+                      });
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5 text-left">
+                  <h1 className="text-base font-medium">Explore AI Tools</h1>
+                  <p className="text-official-gray-400 text-xs">
+                    Empower your AI agents with Tools. Create custom skills or
+                    use them as workflows.
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Link
+                    className={cn(
+                      buttonVariants({ variant: 'link', size: 'xs' }),
+                      'text-official-gray-100 underline',
+                    )}
+                    to="/tools"
+                  >
+                    View All Tools
+                  </Link>
+
+                  <Link
+                    className={cn(
+                      buttonVariants({ variant: 'default', size: 'xs' }),
+                    )}
+                    to="/tools"
+                  >
+                    <PlusIcon className="size-4" />
+                    <span>New Tool</span>
+                  </Link>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {toolsList?.slice(0, 4).map((tool) => (
+                  <SimpleCard
+                    agentDescription={tool.description}
+                    agentId={tool.tool_router_key}
+                    agentName={tool.name}
+                    buttonText="Use Tool"
+                    icon={<ToolsIcon className="size-4" />}
+                    key={tool.tool_router_key}
+                    onAgentSelected={(toolId) => {
+                      chatForm.setValue('tool', {
+                        key: toolId,
+                        name: tool.name,
+                        description: tool.description,
+                        args: Object.keys(tool.input_args.properties ?? {}),
+                      });
+                      scrollElementRef?.current?.scrollTo({
+                        top: 0,
+                        behavior: 'smooth',
+                      });
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 };
@@ -922,32 +927,31 @@ const SimpleCard = ({
   agentName: string;
   agentDescription: string;
   onAgentSelected: (agentId: string) => void;
-  buttonText?: string;
+  buttonText: string;
 }) => {
   return (
     <div className="border-official-gray-850 bg-official-gray-900 rounded-lg border p-2.5">
-      <div className="flex items-start gap-3">
-        <div className="flex size-6 items-center justify-center rounded-lg pt-2">
+      <div className="flex flex-col justify-start gap-1">
+        <div className="flex items-center justify-between gap-2">
           {icon}
-        </div>
-        <div className="flex flex-col items-start gap-1">
-          <p className="w-full truncate text-start text-sm">
-            {formatText(agentName)}{' '}
-          </p>
-          <p className="text-official-gray-400 mb-1 line-clamp-2 min-h-8 text-left text-xs">
-            {agentDescription ?? 'No description'}
-          </p>
           <Button
+            className="shrink-0"
             onClick={() => {
               onAgentSelected(agentId);
             }}
             size="xs"
             variant="outline"
           >
-            <CreateAIIcon className="size-4" />
-            <span className="">{buttonText ?? 'Chat'}</span>
+            <span className="">{buttonText}</span>
+            <ArrowUpRight className="h-3.5 w-3.5" />
           </Button>
         </div>
+        <p className="w-full truncate text-start text-sm">
+          {formatText(agentName)}{' '}
+        </p>
+        <p className="text-official-gray-400 line-clamp-2 min-h-8 text-left text-xs">
+          {agentDescription ?? 'No description'}
+        </p>
       </div>
     </div>
   );

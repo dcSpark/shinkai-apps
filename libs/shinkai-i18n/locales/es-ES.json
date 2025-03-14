@@ -233,6 +233,7 @@
     "menuItems": {
       "agents": "IAs",
       "aiTasks": "Tareas de IA",
+      "ais": "IA",
       "chats": "Chats",
       "disconnect": "Desconectar",
       "helpAndSupport": "Ayuda y Soporte",

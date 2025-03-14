@@ -624,7 +624,7 @@ const MainLayout = () => {
   const displaySidebar =
     !!auth && !disabledSidebarRoutes.includes(location.pathname);
 
-  const disableScrollRoutes = ['/tools'];
+  const disableScrollRoutes = ['/tools', '/home'];
   const hideScrollbar = disableScrollRoutes.includes(location.pathname);
 
   return (

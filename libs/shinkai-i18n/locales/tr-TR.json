@@ -233,6 +233,7 @@
     "menuItems": {
       "agents": "Yapay Zekalar",
       "aiTasks": "Yapay Zeka Görevleri",
+      "ais": "Yapay Zekalar",
       "chats": "Sohbetler",
       "disconnect": "Bağlantıyı Kes",
       "helpAndSupport": "Yardım ve Destek",

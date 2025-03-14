@@ -233,6 +233,7 @@
     "menuItems": {
       "agents": "AI",
       "aiTasks": "Tugas AI",
+      "ais": "AI",
       "chats": "Obrolan",
       "disconnect": "Putuskan Koneksi",
       "helpAndSupport": "Bantuan dan Dukungan",

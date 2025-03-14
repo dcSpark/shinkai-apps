@@ -246,7 +246,7 @@ export default function ToolDetailsCard({
   const hasToolCode = 'js_code' in tool || 'py_code' in tool;
 
   return (
-    <SubpageLayout className="max-w-4xl" title="">
+    <SubpageLayout className="container" title="">
       <div className="flex w-full flex-col gap-6 md:flex-row">
         <div className="size-12 overflow-hidden rounded-2xl border bg-gray-500 object-cover">
           <img

@@ -71,11 +71,7 @@ export const TaskLogs = () => {
   });
 
   return (
-    <SubpageLayout
-      alignLeft
-      className="max-w-4xl px-4"
-      title="Scheduled Task Logs"
-    >
+    <SubpageLayout alignLeft className="container" title="Scheduled Task Logs">
       {isGetRecurringTaskPending && (
         <div className="p-4 text-center text-sm">
           <p className="text-white">...</p>

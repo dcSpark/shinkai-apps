@@ -270,7 +270,7 @@ function AgentForm({ mode }: AgentFormProps) {
       });
     },
     onSuccess: () => {
-      navigate('/ais?tab=agents');
+      navigate('/agents');
     },
   });
 
@@ -318,7 +318,7 @@ function AgentForm({ mode }: AgentFormProps) {
   return (
     <TooltipProvider>
       <SubpageLayout
-        className="max-w-4xl"
+        className="container"
         title={mode === 'edit' ? 'Edit Agent' : 'Create new Agent'}
       >
         <p className="text-gray-80 -mt-8 py-3 pb-6 text-center text-sm">

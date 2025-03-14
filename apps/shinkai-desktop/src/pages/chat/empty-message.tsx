@@ -100,7 +100,7 @@ const EmptyMessage = () => {
             {t('chat.emptyStateDescription')}
           </p>
         </div>
-        <div className="grid max-w-4xl grid-cols-2 items-center gap-3">
+        <div className="container grid grid-cols-2 items-center gap-3">
           <Badge
             className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-2 text-left font-normal normal-case text-gray-50 transition-colors"
             onClick={() => showSpotlightWindow()}
