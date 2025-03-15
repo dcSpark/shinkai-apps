@@ -17,9 +17,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   CircleAlert,
-  ExternalLinkIcon,
   LoaderIcon,
-  SquareArrowOutUpRightIcon,
   StoreIcon,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -44,10 +42,8 @@ import {
   DockerStatus,
   ToolCollection,
 } from '../components/tools/tool-collection';
-import { VideoBanner } from '../components/video-banner';
 import { useAuth } from '../store/auth';
-import { TutorialBanner, useSettings } from '../store/settings';
-import { SHINKAI_TUTORIALS } from '../utils/constants';
+import { useSettings } from '../store/settings';
 import { SHINKAI_STORE_URL } from '../utils/store';
 
 export const ToolsHomepage = () => {
@@ -593,12 +589,6 @@ export const ToolsHomepage = () => {
                 </Form>
               </div>
             </div>
-
-            <VideoBanner
-              name={TutorialBanner.SHINKAI_TOOLS}
-              title="Welcome to the Shinkai Tools"
-              videoUrl={SHINKAI_TUTORIALS['shinkai-tools']}
-            />
 
             <ToolCollection />
 

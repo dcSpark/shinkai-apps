@@ -119,8 +119,8 @@ export function AIModelSelectorBase({
                 agents.map((agent) => (
                   <DropdownMenuRadioItem
                     className="aria-checked:bg-official-gray-800 flex cursor-pointer items-center justify-between gap-1.5 rounded-md px-2 py-2 text-white transition-colors"
-                    key={agent.name}
-                    value={agent.name}
+                    key={agent.agent_id}
+                    value={agent.agent_id}
                   >
                     <div className="inline-flex gap-2">
                       <AIAgentIcon className="mt-1 size-4 shrink-0" />

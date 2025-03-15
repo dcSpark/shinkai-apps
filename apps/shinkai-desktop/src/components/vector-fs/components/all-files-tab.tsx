@@ -52,9 +52,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useDebounce } from '../../../hooks/use-debounce';
 import { useURLQueryParams } from '../../../hooks/use-url-query-params';
 import { useAuth } from '../../../store/auth';
-import { TutorialBanner } from '../../../store/settings';
-import { SHINKAI_TUTORIALS } from '../../../utils/constants';
-import { VideoBanner } from '../../video-banner';
 import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
 import { VectorFsGlobalAction } from './vector-fs-drawer';
 import VectorFsFolder from './vector-fs-folder';
@@ -216,11 +213,6 @@ const AllFiles = () => {
 
   return (
     <div className="relative flex h-full flex-col">
-      <VideoBanner
-        name={TutorialBanner.FILES_EXPLORER}
-        title="Welcome to the File Explorer"
-        videoUrl={SHINKAI_TUTORIALS['file-explorer']}
-      />
       <DropdownMenu
         modal={false}
         onOpenChange={(value) => setMenuOpened(value)}

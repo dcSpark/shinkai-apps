@@ -46,13 +46,10 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import ProviderIcon from '../components/ais/provider-icon';
-import { VideoBanner } from '../components/video-banner';
 import { useURLQueryParams } from '../hooks/use-url-query-params';
 import { useOllamaRemoveMutation } from '../lib/shinkai-node-manager/ollama-client';
 import { useAuth } from '../store/auth';
-import { TutorialBanner } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
-import { SHINKAI_TUTORIALS } from '../utils/constants';
 import { getModelObject } from './add-ai';
 
 const AIsPage = () => {
@@ -99,11 +96,6 @@ const AIsPage = () => {
           </p>
         </div>
 
-        <VideoBanner
-          name={TutorialBanner.SHINKAI_TOOLS}
-          title="Welcome to the AIs & Agents"
-          videoUrl={SHINKAI_TUTORIALS['add-ai']}
-        />
         <div className="flex flex-1 flex-col space-y-3 pb-10">
           {!llmProviders?.length ? (
             <div className="flex grow flex-col items-center justify-center">

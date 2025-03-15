@@ -30,6 +30,7 @@ import {
   Switch,
   Textarea,
 } from '@shinkai_network/shinkai-ui';
+import { ChatSettingsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Settings2 } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
@@ -352,7 +353,7 @@ export function UpdateChatConfigActionBarBase() {
             <PopoverTrigger asChild>
               <TooltipTrigger asChild>
                 <button className={actionButtonClassnames} type="button">
-                  <Settings2 className="h-full w-full" />
+                  <ChatSettingsIcon className="h-full w-full" />
                 </button>
               </TooltipTrigger>
             </PopoverTrigger>
@@ -422,7 +423,7 @@ export function CreateChatConfigActionBar({
             <PopoverTrigger asChild>
               <TooltipTrigger asChild>
                 <button className={actionButtonClassnames} type="button">
-                  <Settings2 className="h-full w-full" />
+                  <ChatSettingsIcon className="h-full w-full" />
                 </button>
               </TooltipTrigger>
             </PopoverTrigger>

@@ -61,12 +61,12 @@ import { invoke } from '@tauri-apps/api/core';
 import equal from 'fast-deep-equal';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Loader2, Paperclip, X, XIcon } from 'lucide-react';
+import { EllipsisIcon, Loader2, Paperclip, X, XIcon } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAnalytics } from '../../lib/posthog-provider';
@@ -90,11 +90,12 @@ import {
   ToolsSwitchActionBar,
   UpdateToolsSwitchActionBar,
 } from './chat-action-bar/tools-switch-action-bar';
+import { UpdateVectorFsActionBar } from './chat-action-bar/vector-fs-action-bar';
 import { streamingSupportedModels } from './constants';
 import { useSetJobScope } from './context/set-job-scope-context';
 
 export const actionButtonClassnames =
-  'shrink-0 inline-flex h-[30px] w-[30px] rounded-full cursor-pointer items-center justify-center gap-1.5 truncate border border-official-gray-780 px-[7px] py-1.5 text-left text-xs font-normal text-gray-50 hover:bg-official-gray-950 hover:text-white';
+  'shrink-0 inline-flex h-[32px] w-[32px] rounded-full cursor-pointer items-center justify-center gap-1.5 truncate p-[8px] text-left text-[13px] font-normal text-official-gray-200 hover:bg-official-gray-950 hover:text-white';
 
 export type ChatConversationLocationState = {
   files: File[];
@@ -542,300 +543,330 @@ function ConversationChatFooter({
   }, [currentMessage]);
 
   return (
-    <div
-      {...getRootFileProps({
-        className: 'relative shrink-0 p-2 pb-3',
-      })}
-    >
-      <StopGeneratingButton
-        shouldStopGenerating={
-          hasProviderEnableStreaming && isLoadingMessage && !!inboxId
-        }
-      />
-      <Form {...chatForm}>
-        <FormField
-          control={chatForm.control}
-          name="message"
-          render={({ field }) => (
-            <FormItem className="w-full">
-              <FormLabel className="sr-only">
-                {t('chat.enterMessage')}
-              </FormLabel>
-              <FormControl>
-                <div className="">
-                  <div className="flex items-center justify-between gap-4 px-1 pb-2 pt-1">
-                    <div className="flex items-center gap-2.5">
-                      {inboxId ? (
-                        <AiUpdateSelectionActionBar inboxId={inboxId} />
-                      ) : (
-                        <AIModelSelector
-                          onValueChange={(value) => {
-                            chatForm.setValue('agent', value);
-                          }}
-                          value={currentAI ?? ''}
-                        />
-                      )}
-                      <FileSelectionActionBar
-                        inputProps={{
-                          ...chatForm.register('files'),
-                          ...getInputFileProps(),
-                        }}
-                        onClick={openFilePicker}
-                      />
-                      <PromptSelectionActionBar />
-                      {inboxId && (
-                        <OpenChatFolderActionBar
-                          onClick={async () => {
-                            if (!jobChatFolderName || !nodeStorageLocation)
-                              return;
-                            try {
-                              await invoke('shinkai_node_open_chat_folder', {
-                                storageLocation: nodeStorageLocation,
-                                chatFolderName: jobChatFolderName.folder_name,
-                              });
-                            } catch (error) {
-                              toast.warning(t('chat.failedToOpenChatFolder'));
+    <div className="p-3 pb-1">
+      <div
+        {...getRootFileProps({
+          className: 'relative shrink-0 pb-[40px]',
+        })}
+      >
+        <StopGeneratingButton
+          shouldStopGenerating={
+            hasProviderEnableStreaming && isLoadingMessage && !!inboxId
+          }
+        />
+        <div className="relative z-[1]">
+          <Form {...chatForm}>
+            <FormField
+              control={chatForm.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel className="sr-only">
+                    {t('chat.enterMessage')}
+                  </FormLabel>
+                  <FormControl>
+                    <div className="">
+                      <Popover
+                        onOpenChange={setIsCommandOpen}
+                        open={isCommandOpen}
+                      >
+                        <PopoverTrigger asChild>
+                          <ChatInputArea
+                            autoFocus
+                            bottomAddons={
+                              <div className="flex items-center justify-between gap-4 px-3 pb-2">
+                                <div className="flex items-center gap-2.5">
+                                  <AiUpdateSelectionActionBar
+                                    inboxId={inboxId}
+                                  />
+                                  <FileSelectionActionBar
+                                    inputProps={{
+                                      ...chatForm.register('files'),
+                                      ...getInputFileProps(),
+                                    }}
+                                    onClick={openFilePicker}
+                                  />
+                                  <PromptSelectionActionBar />
+                                  {inboxId && (
+                                    <OpenChatFolderActionBar
+                                      onClick={async () => {
+                                        if (
+                                          !jobChatFolderName ||
+                                          !nodeStorageLocation
+                                        )
+                                          return;
+                                        try {
+                                          await invoke(
+                                            'shinkai_node_open_chat_folder',
+                                            {
+                                              storageLocation:
+                                                nodeStorageLocation,
+                                              chatFolderName:
+                                                jobChatFolderName.folder_name,
+                                            },
+                                          );
+                                        } catch (error) {
+                                          toast.warning(
+                                            t('chat.failedToOpenChatFolder'),
+                                          );
+                                        }
+                                      }}
+                                    />
+                                  )}
+                                  {isAgentInbox ? null : (
+                                    <UpdateToolsSwitchActionBar />
+                                  )}
+                                  {isAgentInbox ? null : (
+                                    <UpdateVectorFsActionBar />
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {isAgentInbox ? null : (
+                                    <UpdateChatConfigActionBar />
+                                  )}
+                                  <Button
+                                    className={cn('size-[36px] p-2')}
+                                    disabled={
+                                      isLoadingMessage || !currentMessage
+                                    }
+                                    onClick={chatForm.handleSubmit(onSubmit)}
+                                    size="icon"
+                                  >
+                                    <SendIcon className="h-full w-full" />
+                                    <span className="sr-only">
+                                      {t('chat.sendMessage')}
+                                    </span>
+                                  </Button>
+                                </div>
+                                {/* <WebSearchActionBar
+                                      checked={chatConfigForm.watch('useTools')}
+                                      onClick={() => {
+                                        chatConfigForm.setValue(
+                                          'useTools',
+                                          !chatConfigForm.watch('useTools'),
+                                        );
+                                      }}
+                                    /> */}
+                                {/* <VectorFsActionBar
+                                aiFilesCount={
+                                  Object.keys(selectedKeys || {}).length ?? 0
+                                }
+                                onClick={() => {
+                                  setSetJobScopeOpen(true);
+                                }}
+                              /> */}
+                              </div>
                             }
-                          }}
-                        />
-                      )}
-                      {isAgentInbox ? null : inboxId ? (
-                        <UpdateToolsSwitchActionBar />
-                      ) : (
-                        <ToolsSwitchActionBar
-                          checked={chatConfigForm.watch('useTools')}
-                          onClick={() => {
-                            chatConfigForm.setValue(
-                              'useTools',
-                              !chatConfigForm.watch('useTools'),
-                            );
-                          }}
-                        />
-                      )}
-                    </div>
-
-                    {isAgentInbox ? null : inboxId ? (
-                      <UpdateChatConfigActionBar />
-                    ) : (
-                      <CreateChatConfigActionBar form={chatConfigForm} />
-                    )}
-                  </div>
-
-                  <Popover onOpenChange={setIsCommandOpen} open={isCommandOpen}>
-                    <PopoverTrigger asChild>
-                      <ChatInputArea
-                        autoFocus
-                        bottomAddons={
-                          <div className="relative z-50 flex items-end gap-3 self-end">
-                            {!debounceMessage && (
-                              <span className="pb-1 text-xs font-light text-gray-100">
-                                <span className="font-medium">Enter</span> to
-                                send
-                              </span>
-                            )}
-                            <Button
-                              className={cn(
-                                'hover:bg-app-gradient h-[40px] w-[40px] cursor-pointer rounded-xl bg-gray-500 p-3 transition-colors',
-                                'disabled:text-gray-80 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 disabled:bg-gray-300 hover:disabled:bg-gray-300',
-                              )}
-                              disabled={isLoadingMessage || !currentMessage}
-                              onClick={chatForm.handleSubmit(onSubmit)}
-                              size="icon"
-                              variant="tertiary"
-                            >
-                              <SendIcon className="h-full w-full" />
-                              <span className="sr-only">
-                                {t('chat.sendMessage')}
-                              </span>
-                            </Button>
-                          </div>
-                        }
-                        disabled={isLoadingMessage || isPending}
-                        onChange={field.onChange}
-                        onKeyDown={(e) => {
-                          if (
-                            e.key === '/' &&
-                            !e.shiftKey &&
-                            !e.ctrlKey &&
-                            !e.metaKey &&
-                            !currentMessage.trim()
-                          ) {
-                            e.preventDefault();
-                            setIsCommandOpen(true);
-                          }
-                          if (
-                            (e.ctrlKey || e.metaKey) &&
-                            e.key === 'z' &&
-                            promptSelected?.prompt === chatForm.watch('message')
-                          ) {
-                            chatForm.setValue('message', '');
-                          }
-                        }}
-                        onPaste={(event) => {
-                          const items = event.clipboardData?.items;
-                          if (items) {
-                            for (let i = 0; i < items.length; i++) {
-                              if (items[i].type.indexOf('image') !== -1) {
-                                const file = items[i].getAsFile();
-                                if (file) {
-                                  onDrop([file]);
+                            disabled={isLoadingMessage || isPending}
+                            onChange={field.onChange}
+                            onKeyDown={(e) => {
+                              if (
+                                e.key === '/' &&
+                                !e.shiftKey &&
+                                !e.ctrlKey &&
+                                !e.metaKey &&
+                                !currentMessage.trim()
+                              ) {
+                                e.preventDefault();
+                                setIsCommandOpen(true);
+                              }
+                              if (
+                                (e.ctrlKey || e.metaKey) &&
+                                e.key === 'z' &&
+                                promptSelected?.prompt ===
+                                  chatForm.watch('message')
+                              ) {
+                                chatForm.setValue('message', '');
+                              }
+                            }}
+                            onPaste={(event) => {
+                              const items = event.clipboardData?.items;
+                              if (items) {
+                                for (let i = 0; i < items.length; i++) {
+                                  if (items[i].type.indexOf('image') !== -1) {
+                                    const file = items[i].getAsFile();
+                                    if (file) {
+                                      onDrop([file]);
+                                    }
+                                  }
                                 }
                               }
-                            }
-                          }
-                        }}
-                        onSubmit={chatForm.handleSubmit(onSubmit)}
-                        ref={textareaRef}
-                        topAddons={
-                          <>
-                            {isDragActive && <DropFileActive />}
-                            {selectedTool && (
-                              <SelectedToolChat
-                                args={selectedTool.args ?? []}
-                                description={selectedTool.description}
-                                name={formatText(selectedTool.name)}
-                                remove={() => {
-                                  chatForm.setValue('tool', undefined);
-                                }}
-                              />
-                            )}
-                            {!isDragActive &&
-                              currentFiles &&
-                              currentFiles.length > 0 && (
-                                <FileList
-                                  currentFiles={currentFiles}
-                                  isPending={isPending}
-                                  onRemoveFile={(index) => {
-                                    const newFiles = [...currentFiles];
-                                    newFiles.splice(index, 1);
-                                    chatForm.setValue('files', newFiles, {
-                                      shouldValidate: true,
-                                    });
-                                  }}
-                                />
-                              )}
-                          </>
-                        }
-                        value={field.value}
-                      />
-                    </PopoverTrigger>
-                    <PopoverContent
-                      align="start"
-                      className="w-[500px] p-0"
-                      side="top"
-                      sideOffset={10}
-                    >
-                      <Command>
-                        <CommandInput placeholder="Search tools..." />
-                        <CommandList>
-                          <CommandEmpty>No tools found.</CommandEmpty>
-                          <CommandGroup heading="Your Active Tools">
-                            {isToolsListSuccess &&
-                              toolsList?.map((tool) => (
-                                <CommandItem
-                                  className="data-[selected='true']:bg-gray-200"
-                                  key={tool.tool_router_key}
-                                  onSelect={() => {
-                                    chatForm.setValue('tool', {
-                                      key: tool.tool_router_key,
-                                      name: tool.name,
-                                      description: tool.description,
-                                      args: Object.keys(
-                                        tool.input_args.properties ?? {},
-                                      ),
-                                    });
-                                    chatConfigForm.setValue('useTools', true);
-                                    setIsCommandOpen(false);
-                                  }}
-                                >
-                                  <ToolsIcon className="mr-2 h-4 w-4" />
-                                  <div className="flex flex-col">
-                                    <span className="line-clamp-1 text-white">
-                                      {formatText(tool.name)}
-                                    </span>
-                                    <span className="text-gray-80 line-clamp-3 text-xs">
-                                      {tool.description}
-                                    </span>
-                                  </div>
-                                </CommandItem>
-                              ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <motion.div
-                    animate={{ opacity: 1 }}
-                    className="absolute inset-x-3 bottom-2 flex items-center justify-between gap-2"
-                    exit={{ opacity: 0 }}
-                    initial={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <div className="flex gap-2">
-                      {!!debounceMessage &&
-                        !selectedTool &&
-                        isSearchToolListSuccess &&
-                        searchToolList?.length > 0 &&
-                        searchToolList?.map((tool, idx) => (
-                          <Tooltip key={tool.tool_router_key}>
-                            <TooltipTrigger asChild>
-                              <motion.button
-                                animate={{ opacity: 1, x: 0 }}
-                                className={cn(
-                                  'bg-gray-375 hover:bg-gray-450 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
+                            }}
+                            onSubmit={chatForm.handleSubmit(onSubmit)}
+                            ref={textareaRef}
+                            textareaClassName=" p-4 text-sm"
+                            topAddons={
+                              <>
+                                {isDragActive && <DropFileActive />}
+                                {selectedTool && (
+                                  <SelectedToolChat
+                                    args={selectedTool.args ?? []}
+                                    description={selectedTool.description}
+                                    name={formatText(selectedTool.name)}
+                                    remove={() => {
+                                      chatForm.setValue('tool', undefined);
+                                    }}
+                                  />
                                 )}
-                                exit={{ opacity: 0, x: -10 }}
-                                initial={{ opacity: 0, x: -10 }}
-                                key={tool.tool_router_key}
-                                onClick={() => {
-                                  chatForm.setValue('tool', {
-                                    key: tool.tool_router_key,
-                                    name: tool.name,
-                                    description: tool.description,
-                                    args: Object.keys(
-                                      tool.input_args.properties ?? {},
-                                    ),
-                                  });
-                                  chatConfigForm.setValue('useTools', true);
-                                }}
-                                type="button"
-                              >
-                                <ToolsIcon className="h-3 w-3" />
-                                {formatText(tool.name)}
-                              </motion.button>
-                            </TooltipTrigger>
-                            <TooltipPortal>
-                              <TooltipContent
-                                align="start"
-                                className="max-w-[500px]"
-                                side="top"
-                              >
-                                {tool.description}
-
-                                <br />
-                                <div className="flex items-center justify-end gap-2 text-xs text-gray-100">
-                                  <CommandShortcut>
-                                    ⌘ + {idx + 1}
-                                  </CommandShortcut>
-                                </div>
-                              </TooltipContent>
-                            </TooltipPortal>
-                          </Tooltip>
-                        ))}
-                      {!debounceMessage && (
-                        <span className="text-xs font-light text-gray-100">
-                          <span className="font-medium">Shift + Enter</span> for
-                          a new line
-                        </span>
-                      )}
+                                {!isDragActive &&
+                                  currentFiles &&
+                                  currentFiles.length > 0 && (
+                                    <FileList
+                                      currentFiles={currentFiles}
+                                      isPending={isPending}
+                                      onRemoveFile={(index) => {
+                                        const newFiles = [...currentFiles];
+                                        newFiles.splice(index, 1);
+                                        chatForm.setValue('files', newFiles, {
+                                          shouldValidate: true,
+                                        });
+                                      }}
+                                    />
+                                  )}
+                              </>
+                            }
+                            value={field.value}
+                          />
+                        </PopoverTrigger>
+                        <PopoverContent
+                          align="start"
+                          className="w-[500px] p-0"
+                          side="top"
+                          sideOffset={10}
+                        >
+                          <Command>
+                            <CommandInput placeholder="Search tools..." />
+                            <CommandList>
+                              <CommandEmpty>No tools found.</CommandEmpty>
+                              <CommandGroup heading="Your Active Tools">
+                                {isToolsListSuccess &&
+                                  toolsList?.map((tool) => (
+                                    <CommandItem
+                                      className="data-[selected='true']:bg-gray-200"
+                                      key={tool.tool_router_key}
+                                      onSelect={() => {
+                                        chatForm.setValue('tool', {
+                                          key: tool.tool_router_key,
+                                          name: tool.name,
+                                          description: tool.description,
+                                          args: Object.keys(
+                                            tool.input_args.properties ?? {},
+                                          ),
+                                        });
+                                        chatConfigForm.setValue(
+                                          'useTools',
+                                          true,
+                                        );
+                                        setIsCommandOpen(false);
+                                      }}
+                                    >
+                                      <ToolsIcon className="mr-2 h-4 w-4" />
+                                      <div className="flex flex-col">
+                                        <span className="line-clamp-1 text-white">
+                                          {formatText(tool.name)}
+                                        </span>
+                                        <span className="text-gray-80 line-clamp-3 text-xs">
+                                          {tool.description}
+                                        </span>
+                                      </div>
+                                    </CommandItem>
+                                  ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                     </div>
-                  </motion.div>
-                </div>
-              </FormControl>
-            </FormItem>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </Form>
+        </div>
+
+        <motion.div
+          animate={{ opacity: 1 }}
+          className={cn(
+            'bg-official-gray-850 absolute inset-x-2 bottom-1.5 z-0 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pb-1 pt-2.5 shadow-white',
           )}
-        />
-      </Form>
+          exit={{ opacity: 0 }}
+          initial={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {!!debounceMessage &&
+            !selectedTool &&
+            isSearchToolListSuccess &&
+            searchToolList?.length > 0 && (
+              <div className="flex items-center gap-2 px-2">
+                <span className="text-official-gray-400 pr-1 text-xs font-light">
+                  Suggested Tools
+                </span>
+                {searchToolList?.map((tool, idx) => (
+                  <Tooltip key={tool.tool_router_key}>
+                    <TooltipTrigger asChild>
+                      <motion.button
+                        animate={{ opacity: 1, x: 0 }}
+                        className={cn(
+                          'hover:bg-official-gray-800 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
+                        )}
+                        exit={{ opacity: 0, x: -10 }}
+                        initial={{ opacity: 0, x: -10 }}
+                        key={tool.tool_router_key}
+                        onClick={() => {
+                          chatForm.setValue('tool', {
+                            key: tool.tool_router_key,
+                            name: tool.name,
+                            description: tool.description,
+                            args: Object.keys(tool.input_args.properties ?? {}),
+                          });
+                          chatConfigForm.setValue('useTools', true);
+                        }}
+                        type="button"
+                      >
+                        <ToolsIcon className="h-3 w-3" />
+                        {formatText(tool.name)}
+                      </motion.button>
+                    </TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent
+                        align="start"
+                        className="max-w-[500px]"
+                        side="top"
+                      >
+                        {tool.description}
+
+                        <br />
+                        <div className="flex items-center justify-end gap-2 text-xs text-gray-100">
+                          <CommandShortcut>⌘ + {idx + 1}</CommandShortcut>
+                        </div>
+                      </TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
+                ))}
+                <Link
+                  className={cn(
+                    'hover:bg-official-gray-800 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
+                  )}
+                  to="/tools"
+                >
+                  <EllipsisIcon className="size-4" />
+                  All Tools
+                </Link>
+              </div>
+            )}
+          {(!debounceMessage || selectedTool) && (
+            <div className="flex w-full items-center justify-between gap-2 px-2">
+              <span className="text-official-gray-400 text-xs font-light">
+                <span className="font-medium">Shift + Enter</span> for a new
+                line
+              </span>
+              <span className="text-official-gray-400 text-xs font-light">
+                <span className="font-medium">Enter</span> to send
+              </span>
+            </div>
+          )}
+        </motion.div>
+      </div>
     </div>
   );
 }
@@ -983,7 +1014,7 @@ export const SelectedToolChat = ({
   remove: () => void;
 }) => {
   return (
-    <div className="bg-official-gray-1000 relative w-full max-w-full rounded-lg p-1.5 px-2">
+    <div className="bg-official-gray-1000 relative mt-1 w-full max-w-full rounded-lg p-1.5 px-2">
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="flex items-center gap-2 pr-6">
