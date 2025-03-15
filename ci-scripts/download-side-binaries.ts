@@ -28,6 +28,7 @@ const OLLAMA_RESOURCES_PATH =
   './apps/shinkai-desktop/src-tauri/external-binaries/ollama/';
 const SHINKAI_NODE_RESOURCES_PATH =
   './apps/shinkai-desktop/src-tauri/external-binaries/shinkai-node/';
+const LLM_MODELS_PATH = './apps/shinkai-desktop/src-tauri/llm-models/';
 
 const asBinaryName = (arch: Arch, path: string) => {
   return `${path}${arch === Arch.x86_64_pc_windows_msvc ? '.exe' : ''}`;
@@ -130,10 +131,21 @@ const downloadShinkaiNodeBinary = async (arch: Arch, version: string) => {
 };
 
 const downloadOllamaAarch64AppleDarwin = async (version: string) => {
-  const downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-darwin`;
-  const path = `./apps/shinkai-desktop/src-tauri/external-binaries/ollama/ollama-${Arch.aarch64_apple_darwin}`;
-  await downloadFile(downloadUrl, path);
-  await addExecPermissions(path);
+  const downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/Ollama-darwin.zip`;
+  const zippedPath = path.join(TEMP_PATH, `ollama-${Arch.aarch64_apple_darwin}.zip`);
+  await downloadFile(downloadUrl, zippedPath);
+  const unzippedPath = path.join(TEMP_PATH, `ollama-${Arch.aarch64_apple_darwin}-${version}`);
+  await zl.extract(zippedPath, unzippedPath);
+  const ollamaBinaryPath = asSidecarName(
+    Arch.aarch64_apple_darwin,
+    `./apps/shinkai-desktop/src-tauri/external-binaries/ollama/ollama`,
+  );
+  await ensureFile(ollamaBinaryPath);
+  await copyFile(
+    path.join(unzippedPath, 'Ollama.app/Contents/Resources/ollama'),
+    ollamaBinaryPath,
+  );
+  await addExecPermissions(ollamaBinaryPath);
 };
 
 const downloadOllamax8664UnknownLinuxGnu = async (version: string) => {
@@ -201,9 +213,19 @@ const downloadOllama = {
   [Arch.x86_64_pc_windows_msvc]: downloadOllamax8664PcWindowsMsvc,
 };
 
+const downloadEmbeddingModel = async () => {
+  console.log(`Downloading embedding model`);
+  const downloadUrl = `https://huggingface.co/ChristianAzinn/snowflake-arctic-embed-xs-gguf/resolve/main/snowflake-arctic-embed-xs-f16.GGUF?download=true`;
+  await downloadFile(
+    downloadUrl,
+    path.join(LLM_MODELS_PATH, 'snowflake-arctic-embed-xs-f16.GGUF'),
+  );
+};
+
 export const main = async () => {
   await downloadShinkaiNodeBinary(env.ARCH, env.SHINKAI_NODE_VERSION);
   await downloadOllama[env.ARCH](env.OLLAMA_VERSION);
+  await downloadEmbeddingModel();
 };
 
 main().catch(console.error);
