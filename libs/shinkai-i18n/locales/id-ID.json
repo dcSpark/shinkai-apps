@@ -314,14 +314,14 @@
     "version": "Versi Ollama"
   },
   "onboardingChecklist": {
-    "addAI": "Tambahkan AI",
-    "addAIDescription": "Tambahkan agen AI yang menggunakan LLM favorit Anda",
+    "addAIAgent": "Buat Agen AI Anda",
+    "addAIAgentDescription": "Tambahkan agen AI yang disesuaikan dengan kebutuhan spesifik Anda.",
     "askFiles": "Tanyakan Pertanyaan ke File",
     "askFilesButton": "Buat Obrolan dengan File",
     "askFilesDescription": "Obrolan dengan file Anda. Ajukan pertanyaan apa pun, temukan informasi, dapatkan ringkasan, dan lainnya.",
     "completedSteps": "Anda telah menyelesaikan semua langkah",
-    "createAIChat": "Buat Obrolan AI",
-    "createAIChatDescription": "Mulai percakapan dengan AI Anda",
+    "createAIChatWithAgent": "Buat Obrolan dengan Agen AI",
+    "createAIChatWithAgentDescription": "Mulai percakapan dengan agen AI Anda untuk memulai.",
     "createTool": "Buat Alat",
     "createToolButton": "Buat Alat",
     "createToolDescription": "Buat, otomatisasi, dan optimalkan alur kerja Anda dengan alat AI yang kuat.",

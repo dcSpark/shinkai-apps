@@ -28,11 +28,10 @@ import { useOnboardingSteps } from './use-onboarding-stepper';
 
 export enum GetStartedSteps {
   SetupShinkaiNode = 'SetupShinkaiNode',
-  CreateAI = 'CreateAI',
-  CreateAIChat = 'CreateAIChat',
-  UploadAFile = 'UploadAFile',
-  AskQuestionToFiles = 'AskQuestionToFiles',
+  CreateAIAgent = 'CreateAIAgent',
+  CreateAIChatWithAgent = 'CreateAIChatWithAgent',
   CreateTool = 'CreateTool',
+  EquipAgentWithTools = 'EquipAgentWithTools',
 }
 
 export enum GetStartedStatus {
@@ -56,93 +55,49 @@ export default function OnboardingStepper() {
           body: t('onboardingChecklist.setupShinkaiDesktopDescription'),
         },
         {
-          label: GetStartedSteps.CreateAI,
+          label: GetStartedSteps.CreateAIAgent,
           status:
-            currentStepsMap.get(GetStartedSteps.CreateAI) ??
+            currentStepsMap.get(GetStartedSteps.CreateAIAgent) ??
             GetStartedStatus.NotStarted,
-          title: t('onboardingChecklist.addAI'),
+          title: t('onboardingChecklist.addAIAgent'),
           body: (
             <div className="flex flex-col items-start gap-2">
-              <span>{t('onboardingChecklist.addAIDescription')}</span>
+              <span>{t('onboardingChecklist.addAIAgentDescription')}</span>
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
-                  navigate('/install-ai-models');
+                  navigate('/agents');
                 }}
                 size="sm"
                 variant="outline"
               >
                 <PlusIcon className="h-4 w-4" />
-                {t('onboardingChecklist.addAI')}
+                {t('onboardingChecklist.addAIAgent')}
               </Button>
             </div>
           ),
         },
         {
-          label: GetStartedSteps.CreateAIChat,
+          label: GetStartedSteps.CreateAIChatWithAgent,
           status:
-            currentStepsMap.get(GetStartedSteps.CreateAIChat) ??
+            currentStepsMap.get(GetStartedSteps.CreateAIChatWithAgent) ??
             GetStartedStatus.NotStarted,
-          title: t('onboardingChecklist.createAIChat'),
+          title: t('onboardingChecklist.createAIChatWithAgent'),
           body: (
             <div className="flex flex-col items-start gap-2">
-              <span>{t('onboardingChecklist.createAIChatDescription')}</span>
+              <span>
+                {t('onboardingChecklist.createAIChatWithAgentDescription')}
+              </span>
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
-                  navigate('/inboxes');
+                  navigate('/home');
                 }}
                 size="sm"
                 variant="outline"
               >
                 <PlusIcon className="h-4 w-4" />
-                {t('onboardingChecklist.createAIChat')}
-              </Button>
-            </div>
-          ),
-        },
-        {
-          label: GetStartedSteps.UploadAFile,
-          status:
-            currentStepsMap.get(GetStartedSteps.UploadAFile) ??
-            GetStartedStatus.NotStarted,
-          title: t('onboardingChecklist.uploadAFile'),
-          body: (
-            <div className="flex flex-col items-start gap-2">
-              <span>{t('onboardingChecklist.uploadAFileDescription')}</span>
-              <Button
-                className="h-auto gap-1 px-3 py-2"
-                onClick={() => {
-                  navigate('/vector-fs');
-                }}
-                size="sm"
-                variant="outline"
-              >
-                <PlusIcon className="h-4 w-4" />
-                {t('onboardingChecklist.uploadAFile')}
-              </Button>
-            </div>
-          ),
-        },
-        {
-          label: GetStartedSteps.AskQuestionToFiles,
-          status:
-            currentStepsMap.get(GetStartedSteps.AskQuestionToFiles) ??
-            GetStartedStatus.NotStarted,
-          title: t('onboardingChecklist.askFiles'),
-          body: (
-            <div className="flex flex-col items-start gap-2">
-              <span>{t('onboardingChecklist.askFilesDescription')}</span>
-              <Button
-                className="h-auto gap-1 px-3 py-2"
-                onClick={() => {
-                  navigate('/vector-fs');
-                }}
-                size="sm"
-                variant="outline"
-              >
-                <CreateAIIcon className="h-4 w-4" />
-                {t('onboardingChecklist.askFilesButton')}
+                {t('onboardingChecklist.createAIChatWithAgent')}
               </Button>
             </div>
           ),

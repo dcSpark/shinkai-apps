@@ -314,14 +314,14 @@
     "version": "Ollama 版本"
   },
   "onboardingChecklist": {
-    "addAI": "添加 AI",
-    "addAIDescription": "添加一个利用您喜爱的 LLM 的 AI 代理",
+    "addAIAgent": "创建您的 AI 代理",
+    "addAIAgentDescription": "添加一个定制的 AI 代理，以满足您的特定需求。",
     "askFiles": "向文件提问",
     "askFilesButton": "与文件创建聊天",
     "askFilesDescription": "与您的文件聊天。提出任何问题，查找信息，获取摘要等。",
     "completedSteps": "您已完成所有步骤",
-    "createAIChat": "创建 AI 聊天",
-    "createAIChatDescription": "与您的 AI 开始对话",
+    "createAIChatWithAgent": "与 AI 代理创建聊天",
+    "createAIChatWithAgentDescription": "与您的 AI 代理开始对话，以便开始使用。",
     "createTool": "创建工具",
     "createToolButton": "创建工具",
     "createToolDescription": "使用强大的人工智能工具创建、自动化和优化您的工作流程。",

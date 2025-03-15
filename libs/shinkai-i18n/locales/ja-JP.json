@@ -314,14 +314,14 @@
     "version": "Ollamaバージョン"
   },
   "onboardingChecklist": {
-    "addAI": "AIを追加",
-    "addAIDescription": "お気に入りのLLMを利用するAIエージェントを追加",
+    "addAIAgent": "AIエージェントを作成する",
+    "addAIAgentDescription": "あなたの特定のニーズに合わせたカスタマイズされたAIエージェントを追加します。",
     "askFiles": "ファイルに質問する",
     "askFilesButton": "ファイルとのチャットを作成",
     "askFilesDescription": "ファイルとチャット。質問、情報の検索、要約など",
     "completedSteps": "すべてのステップが完了しました",
-    "createAIChat": "AIチャットを作成",
-    "createAIChatDescription": "AIとの会話を開始",
+    "createAIChatWithAgent": "AIエージェントとのチャットを作成する",
+    "createAIChatWithAgentDescription": "AIエージェントとの会話を始めて、スタートしましょう。",
     "createTool": "ツールを作成",
     "createToolButton": "ツールを作成",
     "createToolDescription": "強力なAIツールを使って、ワークフローを作成、自動化、最適化します。",

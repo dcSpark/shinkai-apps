@@ -314,14 +314,14 @@
     "version": "Ollama Sürümü"
   },
   "onboardingChecklist": {
-    "addAI": "Yapay Zeka Ekle",
-    "addAIDescription": "Favori LLM'inizi kullanan bir yapay zeka ajanı ekleyin",
+    "addAIAgent": "AI Ajanınızı Oluşturun",
+    "addAIAgentDescription": "Özel ihtiyaçlarınıza göre uyarlanmış bir AI ajanı ekleyin.",
     "askFiles": "Dosyalara Sorular Sorun",
     "askFilesButton": "Dosyalarla Sohbet Oluştur",
     "askFilesDescription": "Dosyalarınızla sohbet edin. Herhangi bir soruyu sorun, bilgi bulun, özetler alın ve daha fazlası.",
     "completedSteps": "Tüm adımları tamamladınız",
-    "createAIChat": "Yapay Zeka Sohbeti Oluştur",
-    "createAIChatDescription": "Yapay zekanızla bir sohbet başlatın",
+    "createAIChatWithAgent": "AI Ajanı ile Sohbet Oluşturun",
+    "createAIChatWithAgentDescription": "Başlamak için AI ajanınızla bir sohbet başlatın.",
     "createTool": "Araç Oluştur",
     "createToolButton": "Araç Oluştur",
     "createToolDescription": "Güçlü AI araçlarıyla iş akışınızı oluşturun, otomatikleştirin ve optimize edin.",
