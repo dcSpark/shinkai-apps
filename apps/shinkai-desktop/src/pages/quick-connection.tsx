@@ -27,10 +27,7 @@ import { useForm } from 'react-hook-form';
 import { Link, To, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import {
-  OnboardingStep,
-  ProviderSelectionUser,
-} from '../components/onboarding/constants';
+import { OnboardingStep } from '../components/onboarding/constants';
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { HOME_PATH } from '../routes/name';
 import { useAuth } from '../store/auth';
@@ -56,7 +53,7 @@ const ConnectionOptionButton = ({
         className,
       )}
       size="auto"
-      variant="ghost"
+      variant="outline"
       {...props}
     >
       <div className="">{icon}</div>
@@ -114,10 +111,6 @@ const QuickConnectionPage = () => {
         setAuth(updatedSetupData);
         completeStep(OnboardingStep.TERMS_CONDITIONS, true);
         completeStep(OnboardingStep.ANALYTICS, false);
-        completeStep(
-          OnboardingStep.AI_PROVIDER_SELECTION,
-          ProviderSelectionUser.LOCAL,
-        );
         navigate(HOME_PATH);
       } else if (response.status === 'non-pristine') {
         submitRegistrationNoCodeNonPristineError();

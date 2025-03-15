@@ -67,7 +67,7 @@ const CryptoWalletPage = () => {
 
   return (
     <SimpleLayout
-      classname="max-w-4xl "
+      classname="container"
       headerRightElement={
         walletExist ? <CreateWalletDialog buttonLabel="Update Wallet" /> : null
       }

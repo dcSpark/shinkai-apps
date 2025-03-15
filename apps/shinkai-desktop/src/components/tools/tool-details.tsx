@@ -51,7 +51,7 @@ export default function ToolDetails() {
 
   if (isPending) {
     return (
-      <SubpageLayout alignLeft className="max-w-4xl" title="">
+      <SubpageLayout alignLeft className="container" title="">
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Skeleton className="bg-official-gray-900 h-16 w-16 rounded-md" />

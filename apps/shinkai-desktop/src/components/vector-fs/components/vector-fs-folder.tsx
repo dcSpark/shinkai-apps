@@ -137,7 +137,7 @@ const VectorFsFolder = ({
               )}
               onClick={(event) => {
                 event.stopPropagation();
-                navigate('/inboxes', {
+                navigate('/home', {
                   state: {
                     selectedVRFolders: [folder.path],
                   },

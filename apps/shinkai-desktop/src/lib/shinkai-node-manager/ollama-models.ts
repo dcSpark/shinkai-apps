@@ -1,5 +1,6 @@
 import { platform } from '@tauri-apps/plugin-os';
 
+import { ModelProvider } from '../../components/ais/constants';
 import OLLAMA_MODELS_REPOSITORY from './ollama-models-repository.json';
 
 export enum OllamaModelQuality {
@@ -58,7 +59,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
           capabilities: [OllamaModelCapability.TextGeneration],
           size: 1.8,
           fullName: '',
-          provider: 'Google',
+          provider: ModelProvider.Google,
         },
         {
           model: 'llama3.1',
@@ -72,7 +73,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
           capabilities: [OllamaModelCapability.TextGeneration],
           size: 4.7,
           fullName: '',
-          provider: 'Meta',
+          provider: ModelProvider.Meta,
         },
       ]
     : []),
@@ -90,7 +91,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
           capabilities: [OllamaModelCapability.TextGeneration],
           size: 5.1,
           fullName: '',
-          provider: 'C4AI',
+          provider: ModelProvider.Aya,
           platforms: ['macos'],
         },
         {
@@ -105,7 +106,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
           capabilities: [OllamaModelCapability.TextGeneration],
           size: 13,
           fullName: '',
-          provider: 'Mistral',
+          provider: ModelProvider.Mistral,
           platforms: ['macos'],
         },
       ]
@@ -122,7 +123,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     capabilities: [OllamaModelCapability.TextGeneration],
     size: 7.1,
     fullName: '',
-    provider: 'Mistral',
+    provider: ModelProvider.Mistral,
     platforms: ['windows', 'linux', 'macos'],
   },
   {
@@ -140,7 +141,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     ],
     size: 7.9,
     fullName: '',
-    provider: 'Meta',
+    provider: ModelProvider.Meta,
     platforms: ['windows', 'linux', 'macos'],
   },
 ].map((model) => {

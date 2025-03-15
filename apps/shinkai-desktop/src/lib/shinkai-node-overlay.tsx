@@ -60,7 +60,7 @@ export const ShinkaiNodeRunningOverlay = ({
 
   if (isHealthPending || isShinkaiNodeRunningPending) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-3 py-8">
+      <div className="flex size-full flex-col items-center justify-center gap-3 py-8">
         <Loader2 className="h-8 w-8 animate-spin text-white" />
         <span className="text-gray-80 text-sm">
           Checking Shinkai Node Status ...

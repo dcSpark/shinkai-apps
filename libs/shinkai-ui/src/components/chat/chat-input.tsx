@@ -44,7 +44,7 @@ const ChatInputBase = React.forwardRef<HTMLTextAreaElement, ChatInputProps>(
     return (
       <textarea
         className={cn(
-          'flex max-h-[40vh] min-h-[60px] w-full resize-none overflow-y-auto break-all border-none bg-transparent px-3 py-2 text-sm leading-normal placeholder:text-gray-100 focus:outline-none focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50',
+          'placeholder:text-official-gray-500 flex max-h-[40vh] min-h-[80px] w-full resize-none overflow-y-auto break-all border-none bg-transparent px-3 py-2 text-sm leading-normal focus:outline-none focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50',
           className,
         )}
         id="chat-input"

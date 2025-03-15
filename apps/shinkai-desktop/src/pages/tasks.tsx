@@ -43,10 +43,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { VideoBanner } from '../components/video-banner';
 import { useAuth } from '../store/auth';
-import { TutorialBanner } from '../store/settings';
-import { SHINKAI_TUTORIALS } from '../utils/constants';
 import { SimpleLayout } from './layout/simple-layout';
 
 export const Tasks = () => {
@@ -156,8 +153,7 @@ export const Tasks = () => {
             className={cn(
               buttonVariants({
                 variant: 'default',
-                size: 'xs',
-                rounded: 'lg',
+                size: 'sm',
               }),
             )}
             to="/tasks/create"
@@ -169,11 +165,6 @@ export const Tasks = () => {
       }
       title="Scheduled Tasks"
     >
-      <VideoBanner
-        name={TutorialBanner.SCHEDULED_TASKS}
-        title="Welcome to the Scheduled Tasks"
-        videoUrl={SHINKAI_TUTORIALS['scheduled-tasks']}
-      />
       <div className="divide-y divide-gray-300 pt-4">
         {isPending &&
           Array.from({ length: 8 }).map((_, idx) => (

@@ -122,7 +122,7 @@ export const GalxeValidation = () => {
 
   return (
     <SimpleLayout
-      classname="max-w-4xl"
+      classname="container"
       headerRightElement={
         <Button
           disabled={isQuestsStatusUpdating}

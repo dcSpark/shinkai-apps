@@ -108,7 +108,7 @@
     "folderWithCount_one": "{{count}} Carpeta",
     "folderWithCount_other": "{{count}} Carpetas",
     "folders": "Carpetas",
-    "getStarted": "Empezar",
+    "getStarted": "Comienza gratis",
     "iAgree": "Estoy de Acuerdo",
     "install": "Instalar",
     "installed": "Instalado",
@@ -138,7 +138,7 @@
     "shinkaiPrivate": "Shinkai Privado (Local)",
     "signUpShinkaiHosting": "Registrarse en Shinkai Hosting",
     "soon": "pronto",
-    "termsAndConditionsText": "Acepto nuestros <a>Términos de Servicio</a> y <b>Política de Privacidad</b>",
+    "termsAndConditionsText": "Acepto los <a>Términos de Servicio</a> y la <b>Política de Privacidad</b>",
     "unselectAll": "Deseleccionar todo",
     "update": "Actualizar",
     "upload": "Subir",
@@ -181,8 +181,8 @@
         "resource": "<b>Uso Eficiente de Recursos:</b> Es un modelo ligero y ultrarrápido en comparación con modelos más grandes."
       }
     },
-    "welcome": "Transforma tu experiencia de escritorio utilizando IA con Shinkai Desktop",
-    "welcomeDescription": "Shinkai es una aplicación de IA gratuita y de código abierto que mejora tu productividad al automatizar tareas y optimizar flujos de trabajo."
+    "welcome": "Bienvenido a Shinkai",
+    "welcomeDescription": "Crea, ejecuta y automatiza agentes de IA directamente en tu dispositivo: rápido, privado y seguro."
   },
   "disconnect": {
     "exportConnection": "Antes de continuar, por favor <Link>exporta tu conexión</Link> para restaurarla en cualquier momento.",
@@ -233,6 +233,7 @@
     "menuItems": {
       "agents": "IAs",
       "aiTasks": "Tareas de IA",
+      "ais": "IA",
       "chats": "Chats",
       "disconnect": "Desconectar",
       "helpAndSupport": "Ayuda y Soporte",
@@ -313,14 +314,14 @@
     "version": "Versión de Ollama"
   },
   "onboardingChecklist": {
-    "addAI": "Añadir IA",
-    "addAIDescription": "Agrega un agente de IA que utilice tu LLM favorito",
+    "addAIAgent": "Crea tu Agente de IA",
+    "addAIAgentDescription": "Añade un agente de IA personalizado adaptado a tus necesidades específicas.",
     "askFiles": "Hacer preguntas a los archivos",
     "askFilesButton": "Crear Chat con Archivos",
     "askFilesDescription": "Chatea con tus archivos. Haz cualquier pregunta, encuentra información, obtén resúmenes y más.",
     "completedSteps": "Has completado todos los pasos",
-    "createAIChat": "Crear Chat de IA",
-    "createAIChatDescription": "Inicia una conversación con tu IA",
+    "createAIChatWithAgent": "Crea un Chat con el Agente de IA",
+    "createAIChatWithAgentDescription": "Inicia una conversación con tu agente de IA para comenzar.",
     "createTool": "Crear Herramienta",
     "createToolButton": "Crear Herramienta",
     "createToolDescription": "Crea, automatiza y optimiza tu flujo de trabajo con potentes herramientas de IA.",

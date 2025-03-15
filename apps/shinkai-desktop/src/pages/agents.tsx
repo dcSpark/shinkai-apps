@@ -30,9 +30,9 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { useAuth } from '../../store/auth';
+import { useAuth } from '../store/auth';
 
-function Agents() {
+function AgentsPage() {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const { data: agents } = useGetAgents({
@@ -41,62 +41,61 @@ function Agents() {
   });
 
   return (
-    <div className="flex h-full flex-col space-y-3">
-      <div className="absolute right-3 top-0">
-        <Button
-          className="min-w-[100px]"
-          onClick={() => {
-            navigate('/add-agent');
-          }}
-          size="sm"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Add Agent</span>
-        </Button>
-      </div>
-      {!agents?.length ? (
-        <div className="flex grow flex-col items-center justify-center">
-          <div className="mb-8 space-y-3 text-center">
-            <span aria-hidden className="text-5xl">
-              🤖
-            </span>
-            <p className="text-2xl font-semibold">No available agents</p>
-            <p className="text-center text-sm font-medium text-gray-100">
-              Create your first Agent to start asking Shinkai AI.
-            </p>
+    <div className="h-full">
+      <div className="container flex h-full flex-col">
+        <div className="flex flex-col gap-1 pb-6 pt-10">
+          <div className="flex justify-between gap-4">
+            <h1 className="font-clash text-3xl font-medium">Agents</h1>
+            <Button
+              className="min-w-[100px]"
+              onClick={() => {
+                navigate('/add-agent');
+              }}
+              size="sm"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add Agent</span>
+            </Button>
           </div>
-
-          <Button
-            className="min-w-[100px]"
-            onClick={() => {
-              navigate('/add-agent');
-            }}
-            size="sm"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Add Agent</span>
-          </Button>
+          <p className="text-official-gray-400 text-sm">
+            Create and explore AI agents with personalized instructions,
+            enriched knowledge, <br /> diverse task capabilities, and more to
+            tackle your goals autonomously.
+          </p>
         </div>
-      ) : (
-        <ScrollArea className="flex h-full flex-col justify-between [&>div>div]:!block">
-          <div className="divide-y divide-gray-400">
-            {agents?.map((agent) => (
-              <AgentCard
-                agentDescription={agent.ui_description}
-                agentId={agent.agent_id}
-                agentName={agent.name}
-                key={agent.agent_id}
-                llmProviderId={agent.llm_provider_id}
-              />
-            ))}
-          </div>
-        </ScrollArea>
-      )}
+        <div className="flex flex-1 flex-col space-y-3 pb-10">
+          {!agents?.length ? (
+            <div className="flex grow flex-col items-center gap-3 pt-20">
+              <div className="bg-official-gray-800 flex size-10 items-center justify-center rounded-lg p-2">
+                <AIAgentIcon className="size-full" />
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <p className="font-medium">No available agents</p>
+                <p className="text-official-gray-400 text-center text-sm font-medium">
+                  Create your first Agent to start exploring the power of AI.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {agents?.map((agent) => (
+                <AgentCard
+                  agentDescription={agent.ui_description}
+                  agentId={agent.agent_id}
+                  agentName={agent.name}
+                  key={agent.agent_id}
+                  llmProviderId={agent.llm_provider_id}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
 
-export default Agents;
+export default AgentsPage;
 
 const AgentCard = ({
   agentId,
@@ -117,9 +116,9 @@ const AgentCard = ({
 
   return (
     <React.Fragment>
-      <div className="flex cursor-pointer items-center justify-between gap-1 rounded-lg py-3.5 pr-2.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400">
+      <div className="border-official-gray-850 bg-official-gray-900 flex items-center justify-between gap-1 rounded-lg border p-3.5">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg">
+          <div className="flex size-8 items-center justify-center rounded-lg">
             <AIAgentIcon />
           </div>
           <div className="flex flex-col gap-1.5">
@@ -138,13 +137,13 @@ const AgentCard = ({
               <TooltipTrigger asChild>
                 <Button
                   onClick={() => {
-                    navigate(`/inboxes`, { state: { agentName: agentId } });
+                    navigate(`/home`, { state: { agentName: agentId } });
                   }}
                   size="sm"
-                  variant="gradient"
+                  variant="outline"
                 >
                   <CreateAIIcon className="size-4" />
-                  <span className="sr-only">New Chat</span>
+                  <span className=""> Chat</span>
                 </Button>
               </TooltipTrigger>
 

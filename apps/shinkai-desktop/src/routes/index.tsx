@@ -42,8 +42,8 @@ import {
 import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { ShinkaiNodeRunningOverlay } from '../lib/shinkai-node-overlay';
 import AddAIPage from '../pages/add-ai';
+import AgentsPage from '../pages/agents';
 import AIModelInstallation from '../pages/ai-model-installation';
-import AIProviderSelection from '../pages/ai-provider-selection';
 import AIsPage from '../pages/ais';
 import AnalyticsPage from '../pages/analytics';
 import AnalyticsSettingsPage from '../pages/analytics-settings';
@@ -57,6 +57,7 @@ import EditTaskPage from '../pages/edit-task';
 import EditToolPage from '../pages/edit-tool';
 import { ExportConnection } from '../pages/export-connection';
 import { GalxeValidation } from '../pages/galxe-validation';
+import HomePage from '../pages/home';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
@@ -141,7 +142,7 @@ const useGlobalAppShortcuts = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const unlisten = listen('create-chat', () => {
-      navigate('/inboxes');
+      navigate('/home');
     });
 
     return () => {
@@ -294,13 +295,28 @@ const AppRoutes = () => {
             path={'terms-conditions'}
           />
           <Route element={<AnalyticsPage />} path={'analytics'} />
-          <Route
-            element={<AIProviderSelection />}
-            path={'ai-provider-selection'}
-          />
           <Route element={<QuickConnectionPage />} path={'quick-connection'} />
           <Route element={<RestoreConnectionPage />} path={'restore'} />
           <Route element={<ConnectMethodQrCodePage />} path={'connect-qr'} />
+        </Route>
+        <Route
+          element={
+            <ProtectedRoute>
+              <TooltipProvider delayDuration={0}>
+                <ChatProvider>
+                  <SetJobScopeProvider>
+                    <PromptSelectionProvider>
+                      <ToolsProvider>
+                        <Outlet />
+                      </ToolsProvider>
+                    </PromptSelectionProvider>
+                  </SetJobScopeProvider>
+                </ChatProvider>
+              </TooltipProvider>
+            </ProtectedRoute>
+          }
+        >
+          <Route element={<HomePage />} path={'home'} />
         </Route>
         <Route
           element={
@@ -320,7 +336,7 @@ const AppRoutes = () => {
           }
           path="inboxes"
         >
-          <Route element={<ChatConversation />} index />
+          {/* <Route element={<ChatConversation />} index /> */}
           <Route element={<ChatConversation />} path=":inboxId" />
         </Route>
         <Route
@@ -366,6 +382,7 @@ const AppRoutes = () => {
         >
           <Route element={<AIModelInstallation />} path="install-ai-models" />
           <Route element={<AIsPage />} path="ais" />
+          <Route element={<AgentsPage />} path="agents" />
           <Route element={<AddAIPage />} path="add-ai" />
           <Route
             element={

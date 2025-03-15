@@ -251,7 +251,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
   }, [currentCronExpression, form]);
   return (
     <SubpageLayout
-      className="max-w-4xl"
+      className="container"
       title={`${mode === 'create' ? 'Create' : 'Edit'} Scheduled Task`}
     >
       <p className="text-gray-80 -mt-8 py-3 pb-6 text-center text-sm">

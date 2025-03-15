@@ -52,9 +52,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useDebounce } from '../../../hooks/use-debounce';
 import { useURLQueryParams } from '../../../hooks/use-url-query-params';
 import { useAuth } from '../../../store/auth';
-import { TutorialBanner } from '../../../store/settings';
-import { SHINKAI_TUTORIALS } from '../../../utils/constants';
-import { VideoBanner } from '../../video-banner';
 import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
 import { VectorFsGlobalAction } from './vector-fs-drawer';
 import VectorFsFolder from './vector-fs-folder';
@@ -216,11 +213,6 @@ const AllFiles = () => {
 
   return (
     <div className="relative flex h-full flex-col">
-      <VideoBanner
-        name={TutorialBanner.FILES_EXPLORER}
-        title="Welcome to the File Explorer"
-        videoUrl={SHINKAI_TUTORIALS['file-explorer']}
-      />
       <DropdownMenu
         modal={false}
         onOpenChange={(value) => setMenuOpened(value)}
@@ -228,8 +220,8 @@ const AllFiles = () => {
       >
         <DropdownMenuTrigger asChild>
           <Button
-            className="absolute -top-12 right-0 flex gap-2 self-end px-5"
-            size="xs"
+            className="absolute -top-14 right-0 flex gap-2 self-end"
+            size="sm"
           >
             <PlusIcon className="h-4 w-4" /> {t('vectorFs.actions.addNew')}
           </Button>
@@ -486,7 +478,7 @@ const AllFiles = () => {
                 if (!isVRSelectionActive) {
                   setVRSelectionActive(true);
                 } else {
-                  navigate('/inboxes', {
+                  navigate('/home', {
                     state: {
                       selectedVRFiles: selectedFiles.map((file) => file.path),
                       selectedVRFolders: selectedFolders.map(

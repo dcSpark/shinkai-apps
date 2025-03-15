@@ -152,7 +152,7 @@ const VectorFsItem = ({
               )}
               onClick={(event) => {
                 event.stopPropagation();
-                navigate('/inboxes', {
+                navigate('/home', {
                   state: {
                     selectedVRFiles: [file.path],
                   },

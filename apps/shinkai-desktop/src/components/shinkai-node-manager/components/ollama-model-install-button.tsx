@@ -37,10 +37,11 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
   const { mutateAsync: syncOllamaModels } = useSyncOllamaModels(
     ALLOWED_OLLAMA_MODELS,
   );
-  const { data: llmProviders, isSuccess: isSuccessLLMProviders } = useGetLLMProviders({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
+  const { data: llmProviders, isSuccess: isSuccessLLMProviders } =
+    useGetLLMProviders({
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    });
   const { mutateAsync: ollamaRemove } = useOllamaRemoveMutation(ollamaConfig, {
     onSuccess: (_, input) => {
       toast.success(
@@ -129,8 +130,8 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
             // Now we depend on the llmProviders query to be successful to remove the model from ollama
             if (!isSuccessLLMProviders) return;
             await ollamaRemove({ model: model });
-            const llmProviderId = llmProviders.find(
-              (provider) => provider.model.endsWith(model),
+            const llmProviderId = llmProviders.find((provider) =>
+              provider.model.endsWith(model),
             )?.id;
             if (llmProviderId) {
               await removeLLMProvider({
@@ -157,7 +158,7 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
         </div>
       ) : (
         <Button
-          className="hover:border-brand w-full py-1.5 text-sm hover:bg-transparent hover:text-white"
+          className="w-full py-1.5 text-sm"
           onClick={() => ollamaPull({ model: model })}
           size="auto"
           variant={'outline'}

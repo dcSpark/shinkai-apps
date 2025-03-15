@@ -108,7 +108,7 @@
     "folderWithCount_one": "{{count}} Folder",
     "folderWithCount_other": "{{count}} Folder",
     "folders": "Folder",
-    "getStarted": "Mulai",
+    "getStarted": "Mulai Gratis",
     "iAgree": "Saya Setuju",
     "install": "Instal",
     "installed": "Terinstal",
@@ -138,7 +138,7 @@
     "shinkaiPrivate": "Shinkai Pribadi (Lokal)",
     "signUpShinkaiHosting": "Daftar untuk Hosting Shinkai",
     "soon": "segera",
-    "termsAndConditionsText": "Saya menyetujui <a>Syarat Layanan</a> kami dan <b>Kebijakan Privasi</b>",
+    "termsAndConditionsText": "Saya setuju dengan <a>Syarat Layanan</a> dan <b>Kebijakan Privasi</b>",
     "unselectAll": "Batalkan Pilihan Semua",
     "update": "Perbarui",
     "upload": "Unggah",
@@ -181,8 +181,8 @@
         "resource": "<b>Penggunaan Sumber Daya yang Efisien:</b> Ini adalah model ringan dan ultra-cepat dibandingkan dengan model yang lebih besar."
       }
     },
-    "welcome": "Transformasikan pengalaman desktop Anda menggunakan AI dengan Shinkai Desktop",
-    "welcomeDescription": "Shinkai adalah aplikasi AI sumber terbuka dan gratis yang meningkatkan produktivitas Anda dengan mengotomatiskan tugas dan menyederhanakan alur kerja."
+    "welcome": "Selamat datang di Shinkai",
+    "welcomeDescription": "Bangun, jalankan, dan otomatisasi agen AI langsung di perangkat Anda — cepat, pribadi, dan aman."
   },
   "disconnect": {
     "exportConnection": "Sebelum melanjutkan, harap<Link>ekspor koneksi Anda</Link>untuk memulihkan koneksi Anda kapan saja.",
@@ -233,6 +233,7 @@
     "menuItems": {
       "agents": "AI",
       "aiTasks": "Tugas AI",
+      "ais": "AI",
       "chats": "Obrolan",
       "disconnect": "Putuskan Koneksi",
       "helpAndSupport": "Bantuan dan Dukungan",
@@ -313,14 +314,14 @@
     "version": "Versi Ollama"
   },
   "onboardingChecklist": {
-    "addAI": "Tambahkan AI",
-    "addAIDescription": "Tambahkan agen AI yang menggunakan LLM favorit Anda",
+    "addAIAgent": "Buat Agen AI Anda",
+    "addAIAgentDescription": "Tambahkan agen AI yang disesuaikan dengan kebutuhan spesifik Anda.",
     "askFiles": "Tanyakan Pertanyaan ke File",
     "askFilesButton": "Buat Obrolan dengan File",
     "askFilesDescription": "Obrolan dengan file Anda. Ajukan pertanyaan apa pun, temukan informasi, dapatkan ringkasan, dan lainnya.",
     "completedSteps": "Anda telah menyelesaikan semua langkah",
-    "createAIChat": "Buat Obrolan AI",
-    "createAIChatDescription": "Mulai percakapan dengan AI Anda",
+    "createAIChatWithAgent": "Buat Obrolan dengan Agen AI",
+    "createAIChatWithAgentDescription": "Mulai percakapan dengan agen AI Anda untuk memulai.",
     "createTool": "Buat Alat",
     "createToolButton": "Buat Alat",
     "createToolDescription": "Buat, otomatisasi, dan optimalkan alur kerja Anda dengan alat AI yang kuat.",

@@ -1,16 +1,15 @@
 export enum OnboardingStep {
   TERMS_CONDITIONS = 'terms-conditions',
   ANALYTICS = 'analytics',
-  AI_PROVIDER_SELECTION = 'ai-provider-selection',
-  COMPLETE = 'complete',
 }
+
 export type OnboardingStepConfig = {
   id: OnboardingStep;
   path: string;
   required: boolean;
 };
 
-export const COMPLETION_DESTINATION = '/inboxes';
+export const COMPLETION_DESTINATION = '/home';
 
 export const ONBOARDING_STEPS: OnboardingStepConfig[] = [
   {
@@ -23,11 +22,6 @@ export const ONBOARDING_STEPS: OnboardingStepConfig[] = [
     path: '/analytics',
     required: true,
   },
-  {
-    id: OnboardingStep.AI_PROVIDER_SELECTION,
-    path: '/ai-provider-selection',
-    required: true,
-  },
 ];
 
 export enum ProviderSelectionUser {
@@ -38,13 +32,12 @@ export enum ProviderSelectionUser {
 
 type TermsChoice = boolean;
 type AnalyticsChoice = boolean;
-type AIProviderChoice = ProviderSelectionUser;
 
 export type StepChoiceMap = {
   [OnboardingStep.TERMS_CONDITIONS]: TermsChoice | null;
   [OnboardingStep.ANALYTICS]: AnalyticsChoice | null;
-  [OnboardingStep.AI_PROVIDER_SELECTION]: AIProviderChoice | null;
-  [OnboardingStep.COMPLETE]: null;
+  // [OnboardingStep.AI_PROVIDER_SELECTION]: AIProviderChoice | null;
+  // [OnboardingStep.COMPLETE]: null;
 };
 
 export type OnboardingState = {
@@ -65,10 +58,6 @@ export function validateChoice<T extends OnboardingStep>(
       return (typeof choice === 'boolean' ? choice : null) as StepChoiceMap[T];
     case OnboardingStep.ANALYTICS:
       return (typeof choice === 'boolean' ? choice : null) as StepChoiceMap[T];
-    case OnboardingStep.AI_PROVIDER_SELECTION:
-      return (
-        Object.values(ProviderSelectionUser).includes(choice) ? choice : null
-      ) as StepChoiceMap[T];
     default:
       return null as StepChoiceMap[T];
   }

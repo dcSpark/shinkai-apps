@@ -4,9 +4,9 @@ export default {
       'Transform your web browsing experience using AI with Shinkai Visor ✨',
   },
   desktop: {
-    welcome: 'Welcome to Shinkai!',
+    welcome: 'Welcome to Shinkai',
     welcomeDescription:
-      'Shinkai is a free, open-source AI application that enhances your productivity by automating tasks and streamlining workflows.',
+      '<b>Shinkai lets you build AI agents in minutes — fast, private, and secure.</b> Run locally, collaborate through a decentralized network, and create AI workflows effortlessly. ',
     localAI: 'Shinkai Local AI',
     benefits: {
       local:
@@ -66,11 +66,12 @@ export default {
     menuItems: {
       chats: 'Chats',
       aiTasks: 'AI Tasks',
-      vectorFs: 'My AI Files Explorer',
+      vectorFs: 'AI Files Explorer',
       vectorSearch: 'AI Files Content Search',
       subscriptions: 'Browse Subscriptions',
       mySubscriptions: 'My Subscriptions',
-      agents: 'AIs',
+      agents: 'Agents',
+      ais: 'AIs',
       settings: 'Settings',
       disconnect: 'Disconnect',
       helpAndSupport: 'Help and Support',
@@ -151,7 +152,7 @@ export default {
     filesSelected: 'Selected {{count}} files',
   },
   vectorFs: {
-    label: 'My AI Files Explorer',
+    label: 'AI Files Explorer',
     localFiles: 'Local AI Files',
     allFiles: 'All Files',
     sharedFolders: 'Shared Folders',
@@ -297,10 +298,12 @@ export default {
     getStartedChecklist: 'Get started checklist',
     setupShinkaiDesktop: 'Setup Shinkai Desktop',
     setupShinkaiDesktopDescription: 'Setup Shinkai Desktop to get started',
-    addAI: 'Add AI',
-    addAIDescription: 'Add an AI agent that utilizes your favorite LLM',
-    createAIChat: 'Create AI Chat',
-    createAIChatDescription: 'Start a conversation with your AI',
+    addAIAgent: 'Create your AI Agent',
+    addAIAgentDescription:
+      'Add a customized AI agent tailored to to your specific needs.',
+    createAIChatWithAgent: 'Create Chat with AI Agent',
+    createAIChatWithAgentDescription:
+      'Start a conversation with your AI agent to get started.',
     uploadAFile: 'Upload a File',
     uploadAFileDescription:
       'Keep your notes, websites, docs and others securely stored in one place.',
@@ -485,7 +488,7 @@ export default {
     comingSoon: 'Coming soon - Late August',
     noThanks: 'No, Thanks',
     iAgree: 'I Agree',
-    getStarted: 'Get Started',
+    getStarted: 'Get Started Free',
     passphrase: 'Passphrase',
     repeatPassphrase: 'Confirm passphrase',
     optIn: 'Opt In',
@@ -497,7 +500,7 @@ export default {
     shinkaiPrivate: 'Setup Your Local AI',
     seeOptions: 'See Options',
     termsAndConditionsText:
-      'I agree to our <a>Terms of Service</a> and <b>Privacy Policy</b>',
+      'I agree to the <a>Terms of Service</a> and <b>Privacy Policy</b>',
     recommended: 'Recommended',
     remove: 'Remove',
     install: 'Install',

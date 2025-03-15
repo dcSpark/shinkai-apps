@@ -44,6 +44,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
 
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
@@ -52,12 +53,7 @@ import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 
 const agentFormSchema = z.object({
-  name: z
-    .string()
-    .regex(
-      /^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/,
-      'It just accepts alphanumeric characters and underscores',
-    ),
+  name: z.string(),
   llmProviderId: z.string(),
   uiDescription: z.string(),
   storage_path: z.string(),
@@ -259,7 +255,7 @@ function AgentForm({ mode }: AgentFormProps) {
       });
     },
     onSuccess: () => {
-      navigate('/ais?tab=agents');
+      navigate('/agents');
     },
   });
 
@@ -270,7 +266,7 @@ function AgentForm({ mode }: AgentFormProps) {
       });
     },
     onSuccess: () => {
-      navigate('/ais?tab=agents');
+      navigate('/agents');
     },
   });
 
@@ -280,9 +276,10 @@ function AgentForm({ mode }: AgentFormProps) {
   });
 
   const submit = async (values: AgentFormValues) => {
+    const agentId = values.name.replace(/[^a-zA-Z0-9_]/g, '_');
     const agentData = {
-      agent_id: values.name,
-      full_identity_name: `${auth?.shinkai_identity}/main/agent/${values.name}`,
+      agent_id: agentId,
+      full_identity_name: `${auth?.shinkai_identity}/main/agent/${agentId}`,
       llm_provider_id: values.llmProviderId,
       ui_description: values.uiDescription,
       storage_path: values.storage_path,
@@ -298,11 +295,14 @@ function AgentForm({ mode }: AgentFormProps) {
       },
     };
 
-    if (mode === 'edit') {
+    if (mode === 'edit' && agent) {
       await updateAgent({
         nodeAddress: auth?.node_address ?? '',
         token: auth?.api_v2_key ?? '',
-        agent: agentData,
+        agent: merge(agentData, {
+          agent_id: agent.agent_id,
+          full_identity_name: `${auth?.shinkai_identity}/main/agent/${agent.agent_id}`,
+        }),
       });
     } else {
       await createAgent({
@@ -318,7 +318,7 @@ function AgentForm({ mode }: AgentFormProps) {
   return (
     <TooltipProvider>
       <SubpageLayout
-        className="max-w-4xl"
+        className="container"
         title={mode === 'edit' ? 'Edit Agent' : 'Create new Agent'}
       >
         <p className="text-gray-80 -mt-8 py-3 pb-6 text-center text-sm">
@@ -340,20 +340,20 @@ function AgentForm({ mode }: AgentFormProps) {
                       autoFocus
                       field={{
                         ...field,
-                        onChange: (e) => {
-                          const value = e.target.value;
-                          const alphanumericValue = value.replace(
-                            /[^a-zA-Z0-9_]/g,
-                            '_',
-                          );
-                          field.onChange({
-                            ...e,
-                            target: {
-                              value: alphanumericValue,
-                            },
-                          });
-                        },
-                        disabled: mode === 'edit',
+                        // onChange: (e) => {
+                        //   const value = e.target.value;
+                        //   const alphanumericValue = value.replace(
+                        //     /[^a-zA-Z0-9_]/g,
+                        //     '_',
+                        //   );
+                        //   field.onChange({
+                        //     ...e,
+                        //     target: {
+                        //       value: alphanumericValue,
+                        //     },
+                        //   });
+                        // },
+                        // disabled: mode === 'edit',
                       }}
                       label="Agent Name"
                     />

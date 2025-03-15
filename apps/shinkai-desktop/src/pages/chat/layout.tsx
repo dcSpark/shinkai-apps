@@ -475,9 +475,9 @@ const ChatSidebar = () => {
     (inboxesPagination?.pages?.at(-1)?.inboxes ?? []).length > 0;
 
   return (
-    <div className="flex h-full w-[240px] flex-col px-3 py-4 pt-6">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <h2>{t('chat.chats')}</h2>
+    <div className="flex h-full w-[240px] flex-col py-4 pt-6">
+      <div className="mb-3 flex items-center justify-between gap-2 px-3">
+        <h2 className="font-clash text-base font-medium">{t('chat.chats')}</h2>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -494,7 +494,7 @@ const ChatSidebar = () => {
                   element?.focus?.();
                 }
 
-                navigate('/inboxes');
+                navigate('/home');
               }}
               size="icon"
               variant="tertiary"
@@ -518,7 +518,7 @@ const ChatSidebar = () => {
           </TooltipPortal>
         </Tooltip>
       </div>
-      <ScrollArea>
+      <ScrollArea className="px-2 pr-3">
         <div className="w-full space-y-1 bg-transparent">
           {isPending &&
             Array.from({ length: 5 }).map((_, index) => (

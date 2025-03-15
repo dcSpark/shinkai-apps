@@ -45,7 +45,7 @@ export const ChatInputArea = React.forwardRef<
     return (
       <div
         className={cn(
-          'bg-official-gray-900 flex w-full max-w-full flex-col rounded-lg px-1 py-1 text-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
+          'bg-official-gray-900 flex w-full max-w-full flex-col rounded-xl text-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
           'shadow-official-gray-750 focus-within:shadow-official-gray-700 shadow-[0_0_0_1px_currentColor] transition-shadow',
         )}
       >

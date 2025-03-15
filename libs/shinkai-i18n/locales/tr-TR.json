@@ -108,7 +108,7 @@
     "folderWithCount_one": "{{count}} Klasör",
     "folderWithCount_other": "{{count}} Klasörler",
     "folders": "Klasörler",
-    "getStarted": "Başlayın",
+    "getStarted": "Ücretsiz Başlayın",
     "iAgree": "Kabul Ediyorum",
     "install": "Kur",
     "installed": "Yüklü",
@@ -138,7 +138,7 @@
     "shinkaiPrivate": "Yerel AI'nizi Kurun",
     "signUpShinkaiHosting": "Shinkai Hosting'e Kaydol",
     "soon": "yakında",
-    "termsAndConditionsText": "Hizmet <a>Şartlarını</a> ve <b>Gizlilik Politikasını</b> kabul ediyorum",
+    "termsAndConditionsText": "<a>Hizmet Şartları</a> ve <b>Gizlilik Politikası</b>nı kabul ediyorum",
     "unselectAll": "Hepsini Seçme",
     "update": "Güncelle",
     "upload": "Yükle",
@@ -181,8 +181,8 @@
         "resource": "<b>Verimli Kaynak Kullanımı:</b> Daha büyük modellere kıyasla hafif ve ultra hızlı bir modeldir."
       }
     },
-    "welcome": "Shinkai'ya Hoş Geldiniz ✨",
-    "welcomeDescription": "Shinkai, görevleri otomatikleştirerek ve iş akışlarını düzenleyerek verimliliğinizi artıran ücretsiz, açık kaynaklı bir AI uygulamasıdır."
+    "welcome": "Shinkai'ya Hoş Geldiniz",
+    "welcomeDescription": "Cihazınızda doğrudan AI ajanları oluşturun, çalıştırın ve otomatikleştirin — hızlı, özel ve güvenli."
   },
   "disconnect": {
     "exportConnection": "Devam etmeden önce, lütfen<Link>bağlantınızı dışa aktarın</Link> böylece istediğiniz zaman bağlantınızı geri yükleyebilirsiniz.",
@@ -233,6 +233,7 @@
     "menuItems": {
       "agents": "Yapay Zekalar",
       "aiTasks": "Yapay Zeka Görevleri",
+      "ais": "Yapay Zekalar",
       "chats": "Sohbetler",
       "disconnect": "Bağlantıyı Kes",
       "helpAndSupport": "Yardım ve Destek",
@@ -313,14 +314,14 @@
     "version": "Ollama Sürümü"
   },
   "onboardingChecklist": {
-    "addAI": "Yapay Zeka Ekle",
-    "addAIDescription": "Favori LLM'inizi kullanan bir yapay zeka ajanı ekleyin",
+    "addAIAgent": "AI Ajanınızı Oluşturun",
+    "addAIAgentDescription": "Özel ihtiyaçlarınıza göre uyarlanmış bir AI ajanı ekleyin.",
     "askFiles": "Dosyalara Sorular Sorun",
     "askFilesButton": "Dosyalarla Sohbet Oluştur",
     "askFilesDescription": "Dosyalarınızla sohbet edin. Herhangi bir soruyu sorun, bilgi bulun, özetler alın ve daha fazlası.",
     "completedSteps": "Tüm adımları tamamladınız",
-    "createAIChat": "Yapay Zeka Sohbeti Oluştur",
-    "createAIChatDescription": "Yapay zekanızla bir sohbet başlatın",
+    "createAIChatWithAgent": "AI Ajanı ile Sohbet Oluşturun",
+    "createAIChatWithAgentDescription": "Başlamak için AI ajanınızla bir sohbet başlatın.",
     "createTool": "Araç Oluştur",
     "createToolButton": "Araç Oluştur",
     "createToolDescription": "Güçlü AI araçlarıyla iş akışınızı oluşturun, otomatikleştirin ve optimize edin.",

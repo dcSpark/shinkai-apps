@@ -17,9 +17,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   CircleAlert,
-  ExternalLinkIcon,
   LoaderIcon,
-  SquareArrowOutUpRightIcon,
   StoreIcon,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -44,10 +42,8 @@ import {
   DockerStatus,
   ToolCollection,
 } from '../components/tools/tool-collection';
-import { VideoBanner } from '../components/video-banner';
 import { useAuth } from '../store/auth';
-import { TutorialBanner, useSettings } from '../store/settings';
-import { SHINKAI_TUTORIALS } from '../utils/constants';
+import { useSettings } from '../store/settings';
 import { SHINKAI_STORE_URL } from '../utils/store';
 
 export const ToolsHomepage = () => {
@@ -397,7 +393,7 @@ export const ToolsHomepage = () => {
       className={cn('min-h-full flex-1 overflow-auto')}
       ref={scrollElementRef}
     >
-      <div className="mx-auto max-w-4xl pb-[80px]">
+      <div className="container pb-[80px]">
         <div className="mb-[80px] flex items-center justify-end gap-3 px-0 py-4">
           <div className="flex items-center gap-3">
             <DockerStatus />
@@ -423,10 +419,10 @@ export const ToolsHomepage = () => {
           <div className="flex flex-col gap-20">
             <div className="flex min-h-[300px] w-full flex-col items-center justify-between gap-10 pt-2">
               <div className="flex flex-col gap-2">
-                <h1 className="font-clash text-center text-5xl font-semibold">
+                <h1 className="font-clash text-center text-4xl font-medium text-white">
                   Build AI Tools in Minutes
                 </h1>
-                <p className="text-official-gray-400 text-center text-lg">
+                <p className="text-official-gray-400 text-center text-sm">
                   Create, automate, and optimize your workflow with powerful AI
                   tools.
                 </p>
@@ -438,7 +434,7 @@ export const ToolsHomepage = () => {
                     <ChatInputArea
                       autoFocus
                       bottomAddons={
-                        <div className="flex items-end justify-between gap-3 pb-1 pl-1">
+                        <div className="flex items-end justify-between gap-3 px-3 pb-2">
                           <div className="flex items-center gap-3">
                             <AIModelSelector
                               onValueChange={(value) => {
@@ -485,16 +481,15 @@ export const ToolsHomepage = () => {
                               Create in VSCode/Cursor
                             </Button>
                             <Button
+                              className={cn('size-[36px] p-2')}
                               disabled={form.watch('message') === ''}
                               isLoading={isProcessing}
                               onClick={() =>
                                 createToolAndSaveTool(form.getValues())
                               }
-                              rounded="lg"
-                              size="xs"
-                              type="button"
+                              size="icon"
                             >
-                              <SendIcon className="size-4" />
+                              <SendIcon className="h-full w-full" />
                               <span className="sr-only">
                                 {t('chat.sendMessage')}
                               </span>
@@ -508,7 +503,7 @@ export const ToolsHomepage = () => {
                       }}
                       onSubmit={form.handleSubmit(createToolAndSaveTool)}
                       placeholder={'Describe the tool you want to create...'}
-                      textareaClassName="min-h-[90px]"
+                      textareaClassName="max-h-[40vh] min-h-[100px] p-4 text-sm"
                       value={form.watch('message')}
                     />
                     {error && (
@@ -593,12 +588,6 @@ export const ToolsHomepage = () => {
                 </Form>
               </div>
             </div>
-
-            <VideoBanner
-              name={TutorialBanner.SHINKAI_TOOLS}
-              title="Welcome to the Shinkai Tools"
-              videoUrl={SHINKAI_TUTORIALS['shinkai-tools']}
-            />
 
             <ToolCollection />
 

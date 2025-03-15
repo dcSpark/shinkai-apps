@@ -108,7 +108,7 @@
     "folderWithCount_one": "{{count}} 文件夹",
     "folderWithCount_other": "{{count}} 文件夹",
     "folders": "文件夹",
-    "getStarted": "开始",
+    "getStarted": "免费开始",
     "iAgree": "我同意",
     "install": "安装",
     "installed": "已安装",
@@ -138,7 +138,7 @@
     "shinkaiPrivate": "Shinkai私有（本地）",
     "signUpShinkaiHosting": "注册Shinkai Hosting",
     "soon": "即将",
-    "termsAndConditionsText": "我同意我们的<a>服务条款</a>和<b>隐私政策</b>",
+    "termsAndConditionsText": "我同意<a>服务条款</a>和<b>隐私政策</b>",
     "unselectAll": "取消全选",
     "update": "更新",
     "upload": "上传",
@@ -181,8 +181,8 @@
         "resource": "<b>高效利用资源：</b> 与较大模型相比，它是一个轻量级、超快速的模型。"
       }
     },
-    "welcome": "使用Shinkai Desktop利用人工智能改变您的桌面体验",
-    "welcomeDescription": "Shinkai 是一款免费的开源 AI 应用程序，通过自动化任务和简化工作流程来提升您的生产力。"
+    "welcome": "欢迎来到新海",
+    "welcomeDescription": "直接在您的设备上构建、运行和自动化 AI 代理——快速、私密且安全。"
   },
   "disconnect": {
     "exportConnection": "在继续之前，请<Link>导出您的连接</Link>以随时恢复连接。",
@@ -233,6 +233,7 @@
     "menuItems": {
       "agents": "AI",
       "aiTasks": "AI 任务",
+      "ais": "人工智能",
       "chats": "聊天",
       "disconnect": "断开连接",
       "helpAndSupport": "帮助与支持",
@@ -313,14 +314,14 @@
     "version": "Ollama 版本"
   },
   "onboardingChecklist": {
-    "addAI": "添加 AI",
-    "addAIDescription": "添加一个利用您喜爱的 LLM 的 AI 代理",
+    "addAIAgent": "创建您的 AI 代理",
+    "addAIAgentDescription": "添加一个定制的 AI 代理，以满足您的特定需求。",
     "askFiles": "向文件提问",
     "askFilesButton": "与文件创建聊天",
     "askFilesDescription": "与您的文件聊天。提出任何问题，查找信息，获取摘要等。",
     "completedSteps": "您已完成所有步骤",
-    "createAIChat": "创建 AI 聊天",
-    "createAIChatDescription": "与您的 AI 开始对话",
+    "createAIChatWithAgent": "与 AI 代理创建聊天",
+    "createAIChatWithAgentDescription": "与您的 AI 代理开始对话，以便开始使用。",
     "createTool": "创建工具",
     "createToolButton": "创建工具",
     "createToolDescription": "使用强大的人工智能工具创建、自动化和优化您的工作流程。",

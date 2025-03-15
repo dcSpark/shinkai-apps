@@ -138,8 +138,13 @@ const TermsAndConditionsPage = () => {
         <h1 className="font-clash text-4xl font-semibold">
           {t('desktop.welcome')}
         </h1>
-        <p className="text-gray-80 text-base">
-          {t('desktop.welcomeDescription')}
+        <p className="text-official-gray-300 text-base">
+          <Trans
+            components={{
+              b: <span className={'text-official-gray-200 font-semibold'} />,
+            }}
+            i18nKey="desktop.welcomeDescription"
+          />
         </p>
       </div>
       <div className="flex gap-3">
@@ -196,7 +201,7 @@ const TermsAndConditionsPage = () => {
         </Button>
 
         {config.isDev && (
-          <div className="text-gray-80 items-center space-x-2 text-center text-base">
+          <div className="text-gray-80 items-center space-x-2 text-center text-sm">
             <span>{t('common.alreadyHaveNode')}</span>
             <Link
               className="font-semibold text-white underline"

@@ -2,6 +2,7 @@ import { ExitIcon, GearIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useImportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/importTool/useImportTool';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
+import { useGetInboxesWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxesWithPagination';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,7 +22,9 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
+  AIAgentIcon,
   AISearchContentIcon,
+  AisIcon,
   // AiTasksIcon,
   // BrowseSubscriptionIcon,
   CreateAIIcon,
@@ -31,7 +34,6 @@ import {
   // MySubscriptionsIcon,
   SheetIcon,
   ShinkaiCombinationMarkIcon,
-  StoreIcon,
   ToolsIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -41,7 +43,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowLeftToLine,
   ArrowRightToLine,
-  BotIcon,
   HelpCircleIcon,
 } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
@@ -61,7 +62,6 @@ import { ResetConnectionDialog } from '../../components/reset-connection-dialog'
 import config from '../../config';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
-import { SHINKAI_STORE_URL } from '../../utils/store';
 
 type NavigationLink = {
   title: string;
@@ -180,6 +180,7 @@ export function MainNav() {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
+  const resetSettings = useSettings((state) => state.resetSettings);
   const isGetStartedChecklistHidden = useSettings(
     (state) => state.isGetStartedChecklistHidden,
   );
@@ -196,6 +197,11 @@ export function MainNav() {
     setIsConfirmLogoutDialogOpened(true);
   };
 
+  const { data: inboxesPagination } = useGetInboxesWithPagination({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
   useEffect(() => {
     if (!auth?.api_v2_key) {
       setIsApiV2KeyMissingDialogOpen(true);
@@ -204,14 +210,21 @@ export function MainNav() {
 
   const handleDisconnect = () => {
     logout();
-    navigate('/');
+    resetSettings();
   };
 
   const navigationLinks = [
     {
       title: t('layout.menuItems.chats'),
-      href: '/inboxes',
+      href: `/inboxes/${encodeURIComponent(
+        inboxesPagination?.pages[0]?.inboxes[0]?.inbox_id ?? '',
+      )}`,
       icon: <InboxIcon className="h-5 w-5" />,
+    },
+    {
+      title: t('layout.menuItems.agents'),
+      href: '/agents',
+      icon: <AIAgentIcon className="h-5 w-5" />,
     },
     // {
     //   title: t('layout.menuItems.aiTasks'),
@@ -253,12 +266,6 @@ export function MainNav() {
       icon: <ToolsIcon className="h-5 w-5" />,
     },
     {
-      title: t('tools.store.label'),
-      href: SHINKAI_STORE_URL,
-      icon: <StoreIcon className="h-5 w-5" />,
-      external: true,
-    },
-    {
       title: 'Scheduled Tasks',
       href: '/tasks',
       icon: <ScheduledTasksIcon className="h-5 w-5" />,
@@ -272,9 +279,9 @@ export function MainNav() {
 
   const footerNavigationLinks = [
     {
-      title: t('layout.menuItems.agents'),
+      title: t('layout.menuItems.ais'),
       href: '/ais',
-      icon: <BotIcon className="h-5 w-5" />,
+      icon: <AisIcon className="h-5 w-5" />,
     },
     {
       title: t('layout.menuItems.helpAndSupport'),
@@ -294,6 +301,8 @@ export function MainNav() {
       onClick: () => confirmDisconnect(),
     },
   ].filter(Boolean) as NavigationLink[];
+
+  const isCurrentHomePage = useLocation().pathname === '/home';
 
   return (
     <motion.aside
@@ -347,10 +356,12 @@ export function MainNav() {
                 className={cn(
                   'text-gray-80 mb-1.5 mt-4 flex h-8 items-center gap-2 bg-white/10 hover:bg-white/10 hover:text-white',
                   sidebarExpanded
-                    ? 'w-full justify-start rounded-lg bg-transparent px-4 py-3 hover:bg-gray-500'
+                    ? 'w-full justify-start rounded-lg bg-transparent px-4 py-3'
                     : 'w-8 justify-center self-center rounded-full',
+                  isCurrentHomePage &&
+                    'bg-white/10 text-white hover:bg-white/10',
                 )}
-                onClick={() => navigate('/inboxes')}
+                onClick={() => navigate('/home')}
                 transition={{ duration: 0.3 }}
                 whileHover={{ scale: !sidebarExpanded ? 1.05 : 1 }}
               >
@@ -364,7 +375,7 @@ export function MainNav() {
                       initial="hidden"
                       variants={showAnimation}
                     >
-                      {t('chat.create')}
+                      Start
                     </motion.span>
                   )}
                 </AnimatePresence>
@@ -613,7 +624,7 @@ const MainLayout = () => {
   const displaySidebar =
     !!auth && !disabledSidebarRoutes.includes(location.pathname);
 
-  const disableScrollRoutes = ['/tools'];
+  const disableScrollRoutes = ['/tools', '/home'];
   const hideScrollbar = disableScrollRoutes.includes(location.pathname);
 
   return (

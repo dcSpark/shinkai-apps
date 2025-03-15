@@ -108,7 +108,7 @@
     "folderWithCount_one": "{{count}} フォルダ",
     "folderWithCount_other": "{{count}} フォルダ",
     "folders": "フォルダ",
-    "getStarted": "開始",
+    "getStarted": "無料で始める",
     "iAgree": "同意します",
     "install": "インストール",
     "installed": "インストール済み",
@@ -138,7 +138,7 @@
     "shinkaiPrivate": "Shinkaiプライベート（ローカル）",
     "signUpShinkaiHosting": "Shinkai Hostingにサインアップ",
     "soon": "近日公開",
-    "termsAndConditionsText": "弊社の<a>利用規約</a>および<b>プライバシーポリシー</b>に同意します",
+    "termsAndConditionsText": "<a>利用規約</a>に同意し、<b>プライバシーポリシー</b>に同意します",
     "unselectAll": "すべて選択解除",
     "update": "更新",
     "upload": "アップロード",
@@ -181,8 +181,8 @@
         "resource": "<b>リソースの効率的な使用:</b> より大きなモデルと比較して、軽量で超高速なモデルです。"
       }
     },
-    "welcome": "Shinkai Desktopを使用してAIでデスクトップ体験を変革しましょう",
-    "welcomeDescription": "Shinkaiは、タスクを自動化し、ワークフローを効率化することで生産性を向上させる無料のオープンソースAIアプリケーションです。"
+    "welcome": "新海へようこそ",
+    "welcomeDescription": "デバイス上で直接AIエージェントを構築、実行、そして自動化します — 高速でプライベート、かつ安全です。"
   },
   "disconnect": {
     "exportConnection": "続行する前に、接続をいつでも復元するために<Link>接続をエクスポート</Link>してください",
@@ -233,6 +233,7 @@
     "menuItems": {
       "agents": "AI",
       "aiTasks": "AIタスク",
+      "ais": "AI",
       "chats": "チャット",
       "disconnect": "切断",
       "helpAndSupport": "ヘルプとサポート",
@@ -313,14 +314,14 @@
     "version": "Ollamaバージョン"
   },
   "onboardingChecklist": {
-    "addAI": "AIを追加",
-    "addAIDescription": "お気に入りのLLMを利用するAIエージェントを追加",
+    "addAIAgent": "AIエージェントを作成する",
+    "addAIAgentDescription": "あなたの特定のニーズに合わせたカスタマイズされたAIエージェントを追加します。",
     "askFiles": "ファイルに質問する",
     "askFilesButton": "ファイルとのチャットを作成",
     "askFilesDescription": "ファイルとチャット。質問、情報の検索、要約など",
     "completedSteps": "すべてのステップが完了しました",
-    "createAIChat": "AIチャットを作成",
-    "createAIChatDescription": "AIとの会話を開始",
+    "createAIChatWithAgent": "AIエージェントとのチャットを作成する",
+    "createAIChatWithAgentDescription": "AIエージェントとの会話を始めて、スタートしましょう。",
     "createTool": "ツールを作成",
     "createToolButton": "ツールを作成",
     "createToolDescription": "強力なAIツールを使って、ワークフローを作成、自動化、最適化します。",

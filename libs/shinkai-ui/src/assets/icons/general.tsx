@@ -1067,18 +1067,59 @@ export const ToolsIcon = ({ className }: { className?: string }) => (
     width="24"
   >
     <path
-      d="M5 10H7.5L14 16.5V19C14 20.1046 14.8954 21 16 21H19L17 19V17H19L21 19V16C21 14.8954 20.1046 14 19 14H16.5L10 7.5V5C10 3.89543 9.10457 3 8 3H5L7 5V7H5L3 5V8C3 9.10457 3.89543 10 5 10Z"
+      d="M20.3584 13.3567C19.1689 14.546 16.9308 14.4998 13.4992 14.4998C11.2914 14.4998 9.50138 12.7071 9.50024 10.4993C9.50024 7.07001 9.454 4.83065 10.6435 3.64138C11.8329 2.45212 12.3583 2.50027 17.6274 2.50027C18.1366 2.49809 18.3929 3.11389 18.0329 3.47394L15.3199 6.18714C14.6313 6.87582 14.6294 7.99233 15.3181 8.68092C16.0068 9.36952 17.1234 9.36959 17.8122 8.68109L20.5259 5.96855C20.886 5.60859 21.5019 5.86483 21.4997 6.37395C21.4997 11.6422 21.5479 12.1675 20.3584 13.3567Z"
       stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
       strokeWidth="1.5"
     />
     <path
-      d="M9 12L3.91421 17.0858C3.13317 17.8668 3.13316 19.1332 3.91421 19.9142L4.08579 20.0858C4.86683 20.8668 6.13317 20.8668 6.91421 20.0858L12 15M13.5 10.5L18.5 5.5M18.5 5.5L17.5 4.5L20 3L21 4L19.5 6.5L18.5 5.5Z"
+      d="M13.5 14.5L7.32842 20.6716C6.22386 21.7761 4.433 21.7761 3.32843 20.6716C2.22386 19.567 2.22386 17.7761 3.32843 16.6716L9.5 10.5"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M5.50896 18.5H5.5"
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
+      strokeWidth="2"
+    />
+  </svg>
+);
+export const ToolsDisabledIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    fill="none"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+  >
+    <path
+      d="M20.3584 13.3567C19.1689 14.546 16.9308 14.4998 13.4992 14.4998C11.2914 14.4998 9.50138 12.7071 9.50024 10.4993C9.50024 7.07001 9.454 4.83065 10.6435 3.64138C11.8329 2.45212 12.3583 2.50027 17.6274 2.50027C18.1366 2.49809 18.3929 3.11389 18.0329 3.47394L15.3199 6.18714C14.6313 6.87582 14.6294 7.99233 15.3181 8.68092C16.0068 9.36952 17.1234 9.36959 17.8122 8.68109L20.5259 5.96855C20.886 5.60859 21.5019 5.86483 21.4997 6.37395C21.4997 11.6422 21.5479 12.1675 20.3584 13.3567Z"
+      stroke="currentColor"
       strokeWidth="1.5"
+    />
+    <path
+      d="M13.5 14.5L7.32842 20.6716C6.22386 21.7761 4.433 21.7761 3.32843 20.6716C2.22386 19.567 2.22386 17.7761 3.32843 16.6716L9.5 10.5"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M5.50896 18.5H5.5"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    />
+    <rect
+      height="31.8502"
+      rx="0.5"
+      stroke="currentColor"
+      transform="rotate(-45 0.382812 1.08984)"
+      width="1"
+      x="0.382812"
+      y="1.08984"
     />
   </svg>
 );
@@ -1209,80 +1250,80 @@ export const ReactJsIcon = ({ className }: { className?: string }) => (
 export const AIAgentIcon = ({ className }: { className?: string }) => (
   <svg
     className={cn('shrink-0', className)}
-    fill={'none'}
-    height={24}
+    fill="none"
+    height="24"
     viewBox="0 0 24 24"
-    width={24}
+    width="24"
   >
     <path
-      d="M4 15.5C2.89543 15.5 2 14.6046 2 13.5C2 12.3954 2.89543 11.5 4 11.5"
+      d="M19 16V14C19 11.1716 19 9.75736 18.1213 8.87868C17.2426 8 15.8284 8 13 8H11C8.17157 8 6.75736 8 5.87868 8.87868C5 9.75736 5 11.1716 5 14V16C5 18.8284 5 20.2426 5.87868 21.1213C6.75736 22 8.17157 22 11 22H13C15.8284 22 17.2426 22 18.1213 21.1213C19 20.2426 19 18.8284 19 16Z"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M19 18C20.4142 18 21.1213 18 21.5607 17.5607C22 17.1213 22 16.4142 22 15C22 13.5858 22 12.8787 21.5607 12.4393C21.1213 12 20.4142 12 19 12"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M5 18C3.58579 18 2.87868 18 2.43934 17.5607C2 17.1213 2 16.4142 2 15C2 13.5858 2 12.8787 2.43934 12.4393C2.87868 12 3.58579 12 5 12"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M13.5 3.5C13.5 4.32843 12.8284 5 12 5C11.1716 5 10.5 4.32843 10.5 3.5C10.5 2.67157 11.1716 2 12 2C12.8284 2 13.5 2.67157 13.5 3.5Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M12 5V8"
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="1.5"
     />
     <path
-      d="M20 15.5C21.1046 15.5 22 14.6046 22 13.5C22 12.3954 21.1046 11.5 20 11.5"
+      d="M9 13V14"
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="1.5"
     />
     <path
-      d="M7 7L7 4"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M17 7L17 4"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <circle
-      cx="7"
-      cy="3"
-      r="1"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <circle
-      cx="17"
-      cy="3"
-      r="1"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M13.5 7H10.5C7.67157 7 6.25736 7 5.37868 7.90898C4.5 8.81796 4.5 10.2809 4.5 13.2069C4.5 16.1329 4.5 17.5958 5.37868 18.5048C6.25736 19.4138 7.67157 19.4138 10.5 19.4138H11.5253C12.3169 19.4138 12.5962 19.5773 13.1417 20.1713C13.745 20.8283 14.6791 21.705 15.5242 21.9091C16.7254 22.1994 16.8599 21.7979 16.5919 20.6531C16.5156 20.327 16.3252 19.8056 16.526 19.5018C16.6385 19.3316 16.8259 19.2898 17.2008 19.2061C17.7922 19.074 18.2798 18.8581 18.6213 18.5048C19.5 17.5958 19.5 16.1329 19.5 13.2069C19.5 10.2809 19.5 8.81796 18.6213 7.90898C17.7426 7 16.3284 7 13.5 7Z"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M9.5 15C10.0701 15.6072 10.9777 16 12 16C13.0223 16 13.9299 15.6072 14.5 15"
+      d="M15 13V14"
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="1.5"
     />
     <path
-      d="M9.00896 11H9"
+      d="M10 17.5C10 17.5 10.6667 18 12 18C13.3333 18 14 17.5 14 17.5"
       stroke="currentColor"
       strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
+      strokeWidth="1.5"
     />
-    <path
-      d="M15.009 11H15"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-    />
+  </svg>
+);
+
+export const AisIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    fill="none"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+  >
+    <g clipPath="url(#clip0_4089_8223)">
+      <path
+        d="M12 2L12.7696 5.41653C13.4224 8.3145 15.6854 10.5776 18.5834 11.2304L22 12L18.5834 12.7696C15.6854 13.4224 13.4224 15.6854 12.7696 18.5834L12 22L11.2304 18.5834C10.5776 15.6854 8.31457 13.4224 5.41657 12.7696L2 12L5.41657 11.2304C8.31443 10.5776 10.5776 8.3145 11.2304 5.41654L12 2Z"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="2.14286"
+      />
+    </g>
   </svg>
 );
 export const ToolAssetsIcon = ({ className }: { className?: string }) => (
@@ -1653,6 +1694,150 @@ export const ImportIcon = ({ className }: { className?: string }) => (
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+  </svg>
+);
+export const WebSearchIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    fill="none"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+  >
+    <path
+      d="M22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M20 5.69899C19.0653 5.76636 17.8681 6.12824 17.0379 7.20277C15.5385 9.14361 14.039 9.30556 13.0394 8.65861C11.5399 7.6882 12.8 6.11636 11.0401 5.26215C9.89313 4.70542 9.73321 3.19045 10.3716 2"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M2 11C2.7625 11.6621 3.83046 12.2682 5.08874 12.2682C7.68843 12.2682 8.20837 12.7649 8.20837 14.7518C8.20837 16.7387 8.20837 16.7387 8.72831 18.2288C9.06651 19.1981 9.18472 20.1674 8.5106 21"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M22 13.4523C21.1129 12.9411 20 12.7308 18.8734 13.5405C16.7177 15.0898 15.2314 13.806 14.5619 15.0889C13.5765 16.9775 17.0957 17.5711 14 22"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+  </svg>
+);
+
+export const WebSearchDisabledIcon = ({
+  className,
+}: {
+  className?: string;
+}) => (
+  <svg
+    className={cn('shrink-0', className)}
+    fill="none"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+  >
+    <path
+      d="M22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M20 5.69899C19.0653 5.76636 17.8681 6.12824 17.0379 7.20277C15.5385 9.14361 14.039 9.30556 13.0394 8.65861C11.5399 7.6882 12.8 6.11636 11.0401 5.26215C9.89313 4.70542 9.73321 3.19045 10.3716 2"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M2 11C2.7625 11.6621 3.83046 12.2682 5.08874 12.2682C7.68843 12.2682 8.20837 12.7649 8.20837 14.7518C8.20837 16.7387 8.20837 16.7387 8.72831 18.2288C9.06651 19.1981 9.18472 20.1674 8.5106 21"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M22 13.4523C21.1129 12.9411 20 12.7308 18.8734 13.5405C16.7177 15.0898 15.2314 13.806 14.5619 15.0889C13.5765 16.9775 17.0957 17.5711 14 22"
+      stroke="currentColor"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+    <rect
+      height="31.8502"
+      rx="0.5"
+      stroke="currentColor"
+      transform="rotate(-45 0.382812 1.08984)"
+      width="1"
+      x="0.382812"
+      y="1.08984"
+    />
+  </svg>
+);
+export const ChatSettingsIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    fill="none"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+  >
+    <path
+      d="M3.99963 5.00055L9.99963 5.00031"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M12.9996 5.00031L19.9996 5.00031"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M15.9996 9.00031L15.9996 15.0003"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M9.99963 2.00031L9.99963 8.00031"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M11.9996 16.0003L11.9996 22.0003"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M15.9996 12.0001L19.9996 12.0003"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M3.99963 12.0005L12.9996 12.0003"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M11.9996 19.0003L19.9996 19.0003"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M3.99963 19.0005L8.99963 19.0003"
+      stroke="currentColor"
+      strokeLinecap="round"
       strokeWidth="1.5"
     />
   </svg>
