@@ -270,20 +270,6 @@ function ConversationChatFooter({
     }
   }, [chatConfig, chatConfigForm]);
 
-  useEffect(() => {
-    if (!locationState?.llmProviderId) {
-      return;
-    }
-    chatForm.setValue('agent', locationState.llmProviderId);
-  }, [chatForm, locationState]);
-
-  useEffect(() => {
-    if (!locationState?.agentName) {
-      return;
-    }
-    chatForm.setValue('agent', locationState.agentName);
-  }, [chatForm, locationState]);
-
   const { data: provider } = useGetProviderFromJob({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',

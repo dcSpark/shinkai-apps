@@ -434,7 +434,7 @@ export const ToolsHomepage = () => {
                     <ChatInputArea
                       autoFocus
                       bottomAddons={
-                        <div className="flex items-end justify-between gap-3 pb-1 pl-1">
+                        <div className="flex items-end justify-between gap-3 px-3 pb-2">
                           <div className="flex items-center gap-3">
                             <AIModelSelector
                               onValueChange={(value) => {
@@ -481,16 +481,15 @@ export const ToolsHomepage = () => {
                               Create in VSCode/Cursor
                             </Button>
                             <Button
+                              className={cn('size-[36px] p-2')}
                               disabled={form.watch('message') === ''}
                               isLoading={isProcessing}
                               onClick={() =>
                                 createToolAndSaveTool(form.getValues())
                               }
-                              rounded="lg"
-                              size="xs"
-                              type="button"
+                              size="icon"
                             >
-                              <SendIcon className="size-4" />
+                              <SendIcon className="h-full w-full" />
                               <span className="sr-only">
                                 {t('chat.sendMessage')}
                               </span>
@@ -504,7 +503,7 @@ export const ToolsHomepage = () => {
                       }}
                       onSubmit={form.handleSubmit(createToolAndSaveTool)}
                       placeholder={'Describe the tool you want to create...'}
-                      textareaClassName="min-h-[90px]"
+                      textareaClassName="max-h-[40vh] min-h-[100px] p-4 text-sm"
                       value={form.watch('message')}
                     />
                     {error && (

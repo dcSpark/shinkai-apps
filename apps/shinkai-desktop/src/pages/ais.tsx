@@ -184,7 +184,7 @@ function LLMProviderCard({
                   variant="outline"
                 >
                   <CreateAIIcon className="size-4" />
-                  <span className="">New Chat</span>
+                  <span className="">Chat</span>
                 </Button>
               </TooltipTrigger>
 

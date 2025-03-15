@@ -14,7 +14,6 @@ import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/querie
 import {
   Badge,
   Button,
-  buttonVariants,
   ChatInputArea,
   Command,
   CommandEmpty,
@@ -38,7 +37,6 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import {
   AIAgentIcon,
-  CreateAIIcon,
   SendIcon,
   ToolsIcon,
 } from '@shinkai_network/shinkai-ui/assets';
@@ -48,13 +46,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-shell';
 import { motion } from 'framer-motion';
-import {
-  ArrowRight,
-  ArrowUpRight,
-  EllipsisIcon,
-  Plus,
-  PlusIcon,
-} from 'lucide-react';
+import { ArrowRight, ArrowUpRight, EllipsisIcon, Plus } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
@@ -75,6 +67,7 @@ import { VectorFsActionBar } from '../components/chat/chat-action-bar/vector-fs-
 import { WebSearchActionBar } from '../components/chat/chat-action-bar/web-search-action-bar';
 import { useSetJobScope } from '../components/chat/context/set-job-scope-context';
 import ConversationChatFooter, {
+  ChatConversationLocationState,
   DropFileActive,
   FileList,
   SelectedToolChat,
@@ -180,9 +173,7 @@ const EmptyMessage = () => {
 
   const location = useLocation();
 
-  const locationState = location.state as {
-    agentName: string;
-  };
+  const locationState = location.state as ChatConversationLocationState;
   const isAgentInbox = locationState?.agentName;
 
   const debounceMessage = useDebounce(currentMessage, 500);
@@ -203,10 +194,6 @@ const EmptyMessage = () => {
         select: (data) => data.slice(0, 3).filter((item) => item.enabled),
       },
     );
-
-  const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
-    (state) => state.isInUse,
-  );
 
   const selectedKeys = useSetJobScope((state) => state.selectedKeys);
 
@@ -273,6 +260,20 @@ const EmptyMessage = () => {
       chatForm.setValue('message', promptSelected.prompt);
     }
   }, [chatForm, promptSelected]);
+
+  useEffect(() => {
+    if (!locationState?.llmProviderId) {
+      return;
+    }
+    chatForm.setValue('agent', locationState.llmProviderId);
+  }, [chatForm, locationState]);
+
+  useEffect(() => {
+    if (!locationState?.agentName) {
+      return;
+    }
+    chatForm.setValue('agent', locationState.agentName);
+  }, [chatForm, locationState]);
 
   useEffect(() => {
     if (!textareaRef.current) return;
@@ -511,9 +512,8 @@ const EmptyMessage = () => {
                                       />
                                       <Button
                                         className={cn('size-[36px] p-2')}
-                                        disabled={
-                                          isLoadingMessage || !currentMessage
-                                        }
+                                        disabled={isPending || !currentMessage}
+                                        isLoading={isPending}
                                         onClick={chatForm.handleSubmit(
                                           onSubmit,
                                         )}
@@ -527,7 +527,7 @@ const EmptyMessage = () => {
                                     </div>
                                   </div>
                                 }
-                                // disabled={isLoadingMessage || isPending}
+                                disabled={isPending}
                                 onChange={field.onChange}
                                 onKeyDown={(e) => {
                                   if (
@@ -922,7 +922,6 @@ const EmptyMessage = () => {
                   <VideoBanner
                     duration={tool.duration}
                     key={tool.name}
-                    name={tool.name}
                     title={tool.title}
                     videoUrl={tool.videoUrl}
                   />
