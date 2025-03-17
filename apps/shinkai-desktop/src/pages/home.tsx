@@ -862,6 +862,10 @@ const EmptyMessage = () => {
                         description: tool.description,
                         args: Object.keys(tool.input_args.properties ?? {}),
                       });
+                      scrollElementRef?.current?.scrollTo({
+                        top: 0,
+                        behavior: 'smooth',
+                      });
                     },
                   }}
                   delay={idx * 0.1}
