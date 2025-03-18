@@ -22,15 +22,9 @@ import {
   CommandItem,
   CommandList,
   CommandShortcut,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
   Popover,
   PopoverAnchor,
   PopoverContent,
-  PopoverTrigger,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -41,12 +35,12 @@ import {
   SendIcon,
   ToolsIcon,
 } from '@shinkai_network/shinkai-ui/assets';
-import { delay, formatText } from '@shinkai_network/shinkai-ui/helpers';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-shell';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowRight, ArrowUpRight, EllipsisIcon, Plus } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
@@ -67,7 +61,7 @@ import { ToolsSwitchActionBar } from '../components/chat/chat-action-bar/tools-s
 import { VectorFsActionBar } from '../components/chat/chat-action-bar/vector-fs-action-bar';
 import { WebSearchActionBar } from '../components/chat/chat-action-bar/web-search-action-bar';
 import { useSetJobScope } from '../components/chat/context/set-job-scope-context';
-import ConversationChatFooter, {
+import {
   ChatConversationLocationState,
   DropFileActive,
   FileList,
@@ -367,7 +361,9 @@ const EmptyMessage = () => {
       nodeAddress: auth.node_address,
       token: auth.api_v2_key,
       llmProvider: data.agent,
-      content: selectedTool ? formattedToolMessage : data.message,
+      content: selectedTool
+        ? `${selectedTool.name} \n ${formattedToolMessage}`
+        : data.message,
       files: currentFiles,
       isHidden: false,
       toolKey: data.tool?.key,

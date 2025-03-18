@@ -372,7 +372,9 @@ function ConversationChatFooter({
         token: auth.api_v2_key,
         nodeAddress: auth.node_address,
         jobId: jobId,
-        message: selectedTool ? formattedToolMessage : data.message,
+        message: selectedTool
+          ? `${selectedTool.name} \n ${formattedToolMessage}`
+          : data.message,
         parent: '', // Note: we should set the parent if we want to retry or branch out
         files: currentFiles,
         toolKey: selectedTool?.key,
