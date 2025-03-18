@@ -165,7 +165,6 @@ function ConversationChatFooter({
   isLoadingMessage: boolean;
 }) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const auth = useAuth((state) => state.auth);
@@ -175,18 +174,9 @@ function ConversationChatFooter({
     null,
   );
 
-  const { selectedFileKeysRef, selectedFolderKeysRef, clearSelectedFiles } =
-    useSelectedFilesChat({
-      inboxId,
-    });
-
   const promptSelected = usePromptSelectionStore(
     (state) => state.promptSelected,
   );
-
-  const location = useLocation();
-
-  const locationState = location.state as ChatConversationLocationState;
 
   const chatForm = useForm<ChatMessageFormSchema>({
     resolver: zodResolver(chatMessageFormSchema),
@@ -197,21 +187,13 @@ function ConversationChatFooter({
     },
   });
 
-  const defaulAgentId = useSettings((state) => state.defaultAgentId);
-
   useEffect(() => {
     chatForm.reset();
   }, [chatForm, inboxId]);
 
-  useEffect(() => {
-    if (!defaulAgentId || inboxId) return;
-    chatForm.setValue('agent', defaulAgentId);
-  }, [chatForm, defaulAgentId, inboxId]);
-
   const selectedTool = chatForm.watch('tool');
   const currentMessage = chatForm.watch('message');
   const currentFiles = chatForm.watch('files');
-  const currentAI = chatForm.watch('agent');
 
   const { data: chatConfig } = useGetChatConfig(
     {
@@ -264,8 +246,7 @@ function ConversationChatFooter({
     jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
   });
 
-  const isAgentInbox =
-    provider?.provider_type === 'Agent' || locationState?.agentName;
+  const isAgentInbox = provider?.provider_type === 'Agent';
 
   const hasProviderEnableStreaming = streamingSupportedModels.includes(
     provider?.agent?.model.split(':')?.[0] as Models,
@@ -434,15 +415,17 @@ function ConversationChatFooter({
                   <div className="flex items-center justify-between gap-4 px-3 pb-2">
                     <div className="flex items-center gap-2.5">
                       <AiUpdateSelectionActionBar inboxId={inboxId} />
-                      <FileSelectionActionBar
-                        inputProps={{
-                          ...chatForm.register('files'),
-                          ...getInputFileProps(),
-                        }}
-                        onClick={openFilePicker}
-                      />
-                      <PromptSelectionActionBar />
-                      {inboxId && (
+                      {!selectedTool && (
+                        <FileSelectionActionBar
+                          inputProps={{
+                            ...chatForm.register('files'),
+                            ...getInputFileProps(),
+                          }}
+                          onClick={openFilePicker}
+                        />
+                      )}
+                      {!selectedTool && <PromptSelectionActionBar />}
+                      {!selectedTool && (
                         <OpenChatFolderActionBar
                           onClick={async () => {
                             if (!jobChatFolderName || !nodeStorageLocation)
@@ -458,11 +441,17 @@ function ConversationChatFooter({
                           }}
                         />
                       )}
-                      {isAgentInbox ? null : <UpdateToolsSwitchActionBar />}
-                      {isAgentInbox ? null : <UpdateVectorFsActionBar />}
+                      {isAgentInbox || selectedTool ? null : (
+                        <UpdateToolsSwitchActionBar />
+                      )}
+                      {isAgentInbox || selectedTool ? null : (
+                        <UpdateVectorFsActionBar />
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
-                      {isAgentInbox ? null : <UpdateChatConfigActionBar />}
+                      {isAgentInbox || selectedTool ? null : (
+                        <UpdateChatConfigActionBar />
+                      )}
 
                       {selectedTool ? (
                         <Button

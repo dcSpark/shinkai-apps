@@ -74,7 +74,6 @@ import { VideoBanner } from '../components/video-banner';
 import { useAnalytics } from '../lib/posthog-provider';
 import { useAuth } from '../store/auth';
 import { TutorialBanner, useSettings } from '../store/settings';
-import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { SHINKAI_DOCS_URL, SHINKAI_TUTORIALS } from '../utils/constants';
 
 export const showSpotlightWindow = async () => {
