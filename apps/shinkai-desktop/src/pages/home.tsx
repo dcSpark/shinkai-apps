@@ -590,8 +590,6 @@ const EmptyMessage = () => {
                     ref={textareaRef}
                     textareaClassName={cn(
                       'max-h-[40vh] min-h-[130px] p-4 text-sm',
-                      selectedTool &&
-                        '!h-0 max-h-[40vh] min-h-0 overflow-auto p-0',
                     )}
                     topAddons={
                       <>

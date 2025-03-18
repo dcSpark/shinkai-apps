@@ -540,7 +540,7 @@ function ConversationChatFooter({
                 }}
                 onSubmit={chatForm.handleSubmit(onSubmit)}
                 ref={textareaRef}
-                textareaClassName=" p-4 text-sm"
+                textareaClassName="p-4 text-sm"
                 topAddons={
                   <>
                     {isDragActive && <DropFileActive />}
