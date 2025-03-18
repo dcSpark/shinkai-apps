@@ -12,7 +12,7 @@ import { memo } from 'react';
 import { usePromptSelectionStore } from '../../prompt/context/prompt-selection-context';
 import { actionButtonClassnames } from '../conversation-footer';
 
-function PromptSelectionActionBarBase() {
+function PromptSelectionActionBarBase({ disabled }: { disabled?: boolean }) {
   const setPromptSelectionDrawerOpen = usePromptSelectionStore(
     (state) => state.setPromptSelectionDrawerOpen,
   );
@@ -23,9 +23,11 @@ function PromptSelectionActionBarBase() {
         <TooltipTrigger asChild>
           <button
             className={cn(actionButtonClassnames)}
+            disabled={disabled}
             onClick={() => {
               setPromptSelectionDrawerOpen(true);
             }}
+            type="button"
           >
             <PromptLibraryIcon className="h-full w-full" />
           </button>
@@ -40,5 +42,10 @@ function PromptSelectionActionBarBase() {
   );
 }
 
-const PromptSelectionActionBar = memo(PromptSelectionActionBarBase);
+const PromptSelectionActionBar = memo(
+  PromptSelectionActionBarBase,
+  (prevProps, nextProps) => {
+    return prevProps.disabled === nextProps.disabled;
+  },
+);
 export default PromptSelectionActionBar;

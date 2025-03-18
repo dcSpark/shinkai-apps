@@ -18,10 +18,9 @@ type ChatInputAreaProps = {
   bottomAddons?: React.ReactNode;
   textareaClassName?: string;
 };
-
 export const ChatInputArea = React.forwardRef<
   HTMLTextAreaElement,
-  ChatInputAreaProps
+  ChatInputAreaProps & { alternateElement?: React.ReactNode }
 >(
   (
     {
@@ -37,6 +36,7 @@ export const ChatInputArea = React.forwardRef<
       topAddons,
       bottomAddons,
       textareaClassName,
+      alternateElement,
     },
     ref,
   ) => {
@@ -55,20 +55,24 @@ export const ChatInputArea = React.forwardRef<
           className="flex cursor-text flex-col aria-disabled:cursor-not-allowed"
           onClick={() => textareaRef?.current?.focus()}
         >
-          <ChatInput
-            autoFocus={autoFocus}
-            className={textareaClassName}
-            disabled={disabled || isLoading}
-            onChange={(e) => onChange(e.target.value)}
-            onKeyDown={onKeyDown}
-            onPaste={onPaste}
-            onSend={onSubmit}
-            placeholder={
-              placeholder ?? 'Send a message, or press "/" to access tools'
-            }
-            ref={textareaRef}
-            value={value}
-          />
+          {alternateElement ? (
+            alternateElement
+          ) : (
+            <ChatInput
+              autoFocus={autoFocus}
+              className={textareaClassName}
+              disabled={disabled || isLoading}
+              onChange={(e) => onChange(e.target.value)}
+              onKeyDown={onKeyDown}
+              onPaste={onPaste}
+              onSend={onSubmit}
+              placeholder={
+                placeholder ?? 'Send a message, or press "/" to access tools'
+              }
+              ref={textareaRef}
+              value={value}
+            />
+          )}
           {bottomAddons}
         </div>
       </div>

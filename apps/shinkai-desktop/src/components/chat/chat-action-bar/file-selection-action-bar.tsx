@@ -12,6 +12,7 @@ import * as React from 'react';
 import { actionButtonClassnames } from '../conversation-footer';
 
 type FileUploadInputProps = {
+  disabled?: boolean;
   inputProps: React.InputHTMLAttributes<HTMLInputElement>;
   onClick: () => void;
 };
@@ -19,6 +20,7 @@ type FileUploadInputProps = {
 function FileSelectionActionBarBase({
   onClick,
   inputProps,
+  disabled,
 }: FileUploadInputProps) {
   const { t } = useTranslation();
 
@@ -28,6 +30,7 @@ function FileSelectionActionBarBase({
         <TooltipTrigger asChild>
           <button
             className={cn(actionButtonClassnames)}
+            disabled={disabled}
             onClick={onClick}
             type="button"
           >
@@ -41,11 +44,13 @@ function FileSelectionActionBarBase({
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>
-      <input {...inputProps} />
+      <input {...inputProps} disabled={disabled} />
     </>
   );
 }
 export const FileSelectionActionBar = React.memo(
   FileSelectionActionBarBase,
-  () => true,
+  (prevProps, nextProps) => {
+    return prevProps.disabled === nextProps.disabled;
+  },
 );

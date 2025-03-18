@@ -43,6 +43,7 @@ module.exports = {
             1100: '#0c0d0e',
           },
         },
+        // TODO: remove gray, use official-gray (gradually)
         gray: {
           80: 'hsla(0, 0%, 69%, 1)',
           100: 'hsla(250, 7%, 51%, 1)',
