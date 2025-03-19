@@ -7,6 +7,10 @@ import {
   buttonVariants,
   ChatInputArea,
   Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
   Skeleton,
 } from '@shinkai_network/shinkai-ui';
 import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
@@ -156,13 +160,72 @@ export const ToolsHomepage = () => {
                   <Skeleton className="bg-official-gray-900 h-24 w-full" />
                 </div>
               )}
-              <div className="flex h-[154px] w-full flex-col items-center justify-between gap-2 rounded-lg p-4">
-                <div className="flex w-full items-center gap-2">
-                  <Skeleton className="bg-official-gray-900 h-8 w-24 rounded-lg" />
-                  <Skeleton className="bg-official-gray-900 h-8 w-16 rounded-lg" />
-                </div>
-                <Skeleton className="bg-official-gray-900 w-full flex-1 rounded" />
-              </div>
+              <Form {...form}>
+                <form
+                  className="shrink-0 space-y-2 px-3 pt-2"
+                  onSubmit={form.handleSubmit(createToolAndSaveTool)}
+                >
+                  <div className="flex shrink-0 items-center gap-1">
+                    <FormField
+                      control={form.control}
+                      name="message"
+                      render={({ field }) => (
+                        <FormItem className="flex-1 space-y-0">
+                          <FormLabel className="sr-only">
+                            {t('chat.enterMessage')}
+                          </FormLabel>
+                          <FormControl>
+                            <div className="space-y-1.5">
+                              <ChatInputArea
+                                autoFocus
+                                bottomAddons={
+                                  <div className="relative z-50 flex items-end gap-3 self-end">
+                                    <span className="pb-1 text-xs font-light text-gray-100">
+                                      <span className="font-medium">Enter</span>{' '}
+                                      to send
+                                    </span>
+                                    <Button
+                                      className={cn(
+                                        'bg-official-gray-850 h-[40px] w-[40px] cursor-pointer rounded-xl p-3 transition-colors',
+                                        'disabled:text-gray-80 disabled:bg-official-gray-800 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 hover:disabled:bg-gray-300',
+                                      )}
+                                      // disabled={
+                                      //   isToolCodeGenerationPending ||
+                                      //   isMetadataGenerationPending ||
+                                      //   !form.watch('message')
+                                      // }
+                                      // onClick={form.handleSubmit(
+                                      //   handleCreateToolCode,
+                                      // )}
+                                      size="icon"
+                                      variant="tertiary"
+                                    >
+                                      <SendIcon className="h-full w-full" />
+                                      <span className="sr-only">
+                                        {t('chat.sendMessage')}
+                                      </span>
+                                    </Button>
+                                  </div>
+                                }
+                                // disabled={
+                                //   // isToolCodeGenerationPending ||
+                                //   // isMetadataGenerationPending
+                                // }
+                                onChange={field.onChange}
+                                onSubmit={form.handleSubmit(
+                                  createToolAndSaveTool,
+                                )}
+                                placeholder="Send message..."
+                                value={field.value}
+                              />
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </form>
+              </Form>
             </div>
           }
           rightElement={
@@ -260,7 +323,7 @@ export const ToolsHomepage = () => {
                             <p className="text-red-500">
                               Failed to generate code
                             </p>
-                            <p className="text-red-500">{error}</p>
+                            <p className="break-words text-red-500">{error}</p>
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -508,15 +571,13 @@ export const ToolsHomepage = () => {
                     />
                     {error && (
                       <div className="mt-3 flex max-w-full items-start gap-2 rounded-md bg-[#2d0607]/40 px-3 py-2.5 text-xs font-medium text-[#ff9ea1]">
-                        <CircleAlert className="mt-1 size-4" />
-                        <div>
-                          <div className="-ml-2.5 shrink-0 truncate rounded-full px-2.5 py-1 text-xs">
+                        <CircleAlert className="mt-1 size-4 shrink-0" />
+                        <div className="flex flex-1 flex-col gap-0.5">
+                          <div className="-ml-2.5 w-full shrink-0 truncate rounded-full px-2.5 py-1 text-xs">
                             Failed to generate tool. You might want to try using
                             a more powerful AI model for better results.
                           </div>
-                          <div className="text-gray-80 flex items-center gap-1 truncate py-1">
-                            {error}
-                          </div>
+                          <div className="text-gray-80 py-1">{error}</div>
                         </div>
                       </div>
                     )}
