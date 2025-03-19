@@ -59,7 +59,7 @@ import { FileSelectionActionBar } from '../components/chat/chat-action-bar/file-
 import PromptSelectionActionBar from '../components/chat/chat-action-bar/prompt-selection-action-bar';
 import { ToolsSwitchActionBar } from '../components/chat/chat-action-bar/tools-switch-action-bar';
 import { VectorFsActionBar } from '../components/chat/chat-action-bar/vector-fs-action-bar';
-import { WebSearchActionBar } from '../components/chat/chat-action-bar/web-search-action-bar';
+// import { WebSearchActionBar } from '../components/chat/chat-action-bar/web-search-action-bar';
 import { useSetJobScope } from '../components/chat/context/set-job-scope-context';
 import {
   ChatConversationLocationState,

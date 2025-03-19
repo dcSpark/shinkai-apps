@@ -838,7 +838,7 @@ export const SelectedToolChat = ({
   return (
     <motion.div
       animate={{ opacity: 1 }}
-      className="bg-official-gray-1000 mb-1 mt-1 max-h-[50vh] w-full max-w-full overflow-auto rounded-lg p-4 px-5 text-left"
+      className="bg-official-gray-1000 mb-1 max-h-[50vh] w-full max-w-full overflow-auto rounded-lg p-4 px-5 text-left"
       exit={{ opacity: 0 }}
       initial={{ opacity: 0 }}
       transition={{ duration: 0.2, ease: 'easeInOut' }}
