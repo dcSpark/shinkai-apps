@@ -216,9 +216,13 @@ export function MainNav() {
   const navigationLinks = [
     {
       title: t('layout.menuItems.chats'),
-      href: `/inboxes/${encodeURIComponent(
-        inboxesPagination?.pages[0]?.inboxes[0]?.inbox_id ?? '',
-      )}`,
+      href: `/inboxes/${
+        inboxesPagination?.pages[0]?.inboxes
+          ? encodeURIComponent(
+              inboxesPagination?.pages[0]?.inboxes[0]?.inbox_id ?? '',
+            )
+          : ''
+      }`,
       icon: <InboxIcon className="h-5 w-5" />,
     },
     {

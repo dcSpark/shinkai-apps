@@ -45,8 +45,6 @@ const ConversationHeaderWithInboxId = () => {
     (agent) => agent.agent_id === provider?.agent?.id,
   );
 
-  console.log('selectedAgent', selectedAgent);
-
   return (
     <div className="border-official-gray-780 flex h-[58px] items-center justify-between border-b px-4 py-2">
       <div className="flex w-full items-center gap-2">
