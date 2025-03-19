@@ -159,8 +159,8 @@ const downloadOllamax8664UnknownLinuxGnu = async (version: string) => {
   await mkdir(unzippedPath, { recursive: true });
   await extract({
     f: zippedPath,
-    cwd: unzippedPath,
-    strip: 1,
+    C: unzippedPath,
+    strip: 0,
   });
   const ollamaBinaryPath = asSidecarName(
     Arch.x86_64_unknown_linux_gnu,
