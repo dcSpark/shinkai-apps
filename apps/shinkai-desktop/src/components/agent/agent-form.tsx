@@ -421,7 +421,7 @@ function AgentForm({ mode }: AgentFormProps) {
                     <div className="flex items-center gap-1">
                       <Button
                         onClick={() => {
-                          navigate('/tools/create');
+                          navigate('/tools');
                         }}
                         size="xs"
                         variant="outline"

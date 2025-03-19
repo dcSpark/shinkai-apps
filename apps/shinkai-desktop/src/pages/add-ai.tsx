@@ -248,18 +248,20 @@ const AddAIPage = () => {
 
   const getHelpUrl = () => {
     console.log('Current model:', currentModel);
-    
+
     if (!currentModel) {
       return 'https://docs.shinkai.com/advanced/models';
     }
 
     const urlMap = {
       [Models.OpenAI]: 'https://docs.shinkai.com/advanced/models/gpt',
-      [Models.TogetherComputer]: 'https://docs.shinkai.com/advanced/models/together-ai',
+      [Models.TogetherComputer]:
+        'https://docs.shinkai.com/advanced/models/together-ai',
       [Models.Ollama]: 'https://docs.shinkai.com/advanced/models/ollama',
       [Models.Gemini]: 'https://docs.shinkai.com/advanced/models/gemini',
       [Models.Groq]: 'https://docs.shinkai.com/advanced/models/groq',
-      [Models.OpenRouter]: 'https://docs.shinkai.com/advanced/models/openrouter',
+      [Models.OpenRouter]:
+        'https://docs.shinkai.com/advanced/models/openrouter',
       [Models.Exo]: 'https://docs.shinkai.com/advanced/models/exo',
       [Models.Claude]: 'https://docs.shinkai.com/advanced/models/claude',
     };
@@ -271,7 +273,7 @@ const AddAIPage = () => {
     e.preventDefault();
     const url = getHelpUrl();
     console.log('Opening help URL:', url);
-    
+
     try {
       await open(url);
     } catch (error) {
@@ -280,8 +282,8 @@ const AddAIPage = () => {
   };
 
   return (
-    <SubpageLayout 
-      className="max-w-lg" 
+    <SubpageLayout
+      className="max-w-lg"
       rightElement={
         <Button
           className="gap-2"
