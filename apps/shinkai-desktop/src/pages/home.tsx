@@ -859,6 +859,8 @@ const EmptyMessage = () => {
                         description: tool.description,
                         args: tool.input_args,
                       });
+                      chatConfigForm.setValue('useTools', true);
+                      chatForm.setValue('message', 'Tool Used');
                       scrollElementRef?.current?.scrollTo({
                         top: 0,
                         behavior: 'smooth',
