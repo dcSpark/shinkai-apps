@@ -476,7 +476,7 @@ const QuickAskBodyWithResponseBase = ({ inboxId }: { inboxId: string }) => {
 
   return (
     <ScrollArea className="flex-1 text-sm [&>div>div]:!block">
-      <Collapsible className="border-b border-gray-200 bg-gray-400">
+      <Collapsible className="bg-official-gray-850 border-official-gray-780 border-b">
         <CollapsibleTrigger
           className={cn(
             'flex w-full max-w-full items-center justify-between gap-6 px-5 py-2',
