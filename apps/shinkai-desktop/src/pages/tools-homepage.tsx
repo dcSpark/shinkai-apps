@@ -61,6 +61,9 @@ export const ToolsHomepage = () => {
   const xShinkaiAppId = usePlaygroundStore((state) => state.xShinkaiAppId);
 
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
+  const currentAI = form.watch('llmProviderId');
+
+  const isCodeGeneratorModel = currentAI === 'CODE_GENERATOR';
 
   const {
     mutateAsync: openToolInCodeEditor,
@@ -88,6 +91,7 @@ export const ToolsHomepage = () => {
   const { createToolAndSaveTool, isProcessing, isError, error } =
     useCreateToolAndSave({
       form,
+      feedbackRequired: isCodeGeneratorModel,
     });
 
   const toolCode = usePlaygroundStore((state) => state.toolCode);
@@ -514,35 +518,39 @@ export const ToolsHomepage = () => {
                               }}
                               value={form.watch('language')}
                             />
-                            <ToolsSelection
-                              onChange={(value) => {
-                                form.setValue('tools', value);
-                              }}
-                              value={form.watch('tools')}
-                            />
+                            {!isCodeGeneratorModel && (
+                              <ToolsSelection
+                                onChange={(value) => {
+                                  form.setValue('tools', value);
+                                }}
+                                value={form.watch('tools')}
+                              />
+                            )}
                           </div>
                           <div className="flex items-center gap-2">
-                            <Button
-                              className="flex items-center gap-2 border-none"
-                              isLoading={isOpeningToolInCodeEditor}
-                              onClick={() => {
-                                if (!auth) return;
-                                openToolInCodeEditor({
-                                  token: auth?.api_v2_key,
-                                  language: form.watch('language'),
-                                  nodeAddress: auth?.node_address,
-                                  xShinkaiAppId,
-                                  xShinkaiToolId,
-                                  xShinkaiLLMProvider: defaulAgentId,
-                                });
-                              }}
-                              rounded="lg"
-                              size="xs"
-                              type="button"
-                              variant="link"
-                            >
-                              Create in VSCode/Cursor
-                            </Button>
+                            {!isCodeGeneratorModel && (
+                              <Button
+                                className="flex items-center gap-2 border-none"
+                                isLoading={isOpeningToolInCodeEditor}
+                                onClick={() => {
+                                  if (!auth) return;
+                                  openToolInCodeEditor({
+                                    token: auth?.api_v2_key,
+                                    language: form.watch('language'),
+                                    nodeAddress: auth?.node_address,
+                                    xShinkaiAppId,
+                                    xShinkaiToolId,
+                                    xShinkaiLLMProvider: defaulAgentId,
+                                  });
+                                }}
+                                rounded="lg"
+                                size="xs"
+                                type="button"
+                                variant="link"
+                              >
+                                Create in VSCode/Cursor
+                              </Button>
+                            )}
                             <Button
                               className={cn('size-[36px] p-2')}
                               disabled={form.watch('message') === ''}
@@ -566,7 +574,7 @@ export const ToolsHomepage = () => {
                       }}
                       onSubmit={form.handleSubmit(createToolAndSaveTool)}
                       placeholder={'Describe the tool you want to create...'}
-                      textareaClassName="max-h-[40vh] min-h-[100px] p-4 text-sm"
+                      textareaClassName="max-h-[40vh] min-h-[120px] p-4 text-sm"
                       value={form.watch('message')}
                     />
                     {error && (

@@ -150,8 +150,10 @@ export const useAutoSaveTool = () => {
 
 export const useCreateToolAndSave = ({
   form,
+  feedbackRequired = false,
 }: {
   form: UseFormReturn<CreateToolCodeFormSchema>;
+  feedbackRequired?: boolean;
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -160,6 +162,7 @@ export const useCreateToolAndSave = ({
     initialState: undefined,
     initialChatInboxId: undefined,
     createToolCodeForm: form,
+    feedbackRequired,
   });
 
   const toolCode = usePlaygroundStore((state) => state.toolCode);

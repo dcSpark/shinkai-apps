@@ -7,6 +7,7 @@ import { useUpdateToolCodeImplementation } from '@shinkai_network/shinkai-node-s
 import { PrismEditor } from 'prism-react-editor';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, UseFormReturn } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
@@ -104,6 +105,7 @@ export const useToolCode = ({
   initialChatInboxId,
   initialState,
   createToolCodeForm,
+  feedbackRequired = false,
 }: {
   initialChatInboxId?: string;
   initialState?: {
@@ -112,6 +114,7 @@ export const useToolCode = ({
     error?: string | null;
   };
   createToolCodeForm: UseFormReturn<CreateToolCodeFormSchema>;
+  feedbackRequired?: boolean;
 }) => {
   const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
   const setChatInboxId = usePlaygroundStore((state) => state.setChatInboxId);
@@ -126,6 +129,7 @@ export const useToolCode = ({
   } = useChatConversation(initialChatInboxId);
 
   const auth = useAuth((state) => state.auth);
+  const navigate = useNavigate();
 
   const baseToolCodeRef = useRef<string>('');
   const codeEditorRef = useRef<PrismEditor | null>(null);
@@ -252,6 +256,9 @@ export const useToolCode = ({
       baseToolCodeRef.current = '';
       setToolResult(null);
       executeToolCodeQuery.reset();
+      if (feedbackRequired) {
+        navigate(`/tools/tool-feedback/${data.inbox}`);
+      }
     },
   });
 

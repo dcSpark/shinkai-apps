@@ -159,7 +159,10 @@ export const PlaygroundProvider = ({
   );
 
   useEffect(() => {
-    if (location.pathname.startsWith('/tools/edit/')) {
+    if (
+      location.pathname.startsWith('/tools/edit/') ||
+      location.pathname.startsWith('/tools/tool-feedback')
+    ) {
       return;
     }
 
