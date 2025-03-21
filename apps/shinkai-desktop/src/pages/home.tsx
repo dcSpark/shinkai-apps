@@ -755,32 +755,36 @@ const EmptyMessage = () => {
               {
                 text: 'Summarize a Youtube video',
                 prompt: 'Summarize a Youtube video: ',
+                tool: toolsList?.find(
+                  (tool) =>
+                    tool.tool_router_key ===
+                    'local:::__official_shinkai:::youtube_transcript_summarizer',
+                ),
               },
               {
                 text: 'Search in DuckDuckGo',
                 prompt: 'Search in DuckDuckGo for: ',
+                tool: toolsList?.find(
+                  (tool) =>
+                    tool.tool_router_key ===
+                    'local:::__official_shinkai:::duckduckgo_search',
+                ),
               },
             ].map((suggestion) => (
               <Badge
                 className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left text-xs font-medium normal-case text-gray-50 transition-colors"
                 key={suggestion.text}
                 onClick={() => {
-                  setPromptSelected({
-                    name: '',
-                    prompt: suggestion.prompt,
-                    is_enabled: true,
-                    is_favorite: false,
-                    is_system: true,
-                    version: '1',
-                    useTools: true,
-                    rowid: 0,
+                  chatConfigForm.setValue('useTools', true);
+                  chatForm.setValue('message', 'Tool Used');
+                  if (!suggestion.tool) return;
+
+                  chatForm.setValue('tool', {
+                    key: suggestion.tool.tool_router_key,
+                    name: suggestion.tool.name,
+                    description: suggestion.tool.description,
+                    args: suggestion.tool.input_args,
                   });
-                  const element = document.querySelector(
-                    '#chat-input',
-                  ) as HTMLDivElement;
-                  if (element) {
-                    element?.focus?.();
-                  }
                 }}
                 variant="outline"
               >
@@ -859,6 +863,8 @@ const EmptyMessage = () => {
                         description: tool.description,
                         args: tool.input_args,
                       });
+                      chatConfigForm.setValue('useTools', true);
+                      chatForm.setValue('message', 'Tool Used');
                       scrollElementRef?.current?.scrollTo({
                         top: 0,
                         behavior: 'smooth',
