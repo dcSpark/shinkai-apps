@@ -57,7 +57,6 @@ function ToolFeedbackPrompt() {
     if (error) {
       resetPlaygroundStore();
       navigate('/tools');
-      toast.error(error);
     }
   }, [error, resetPlaygroundStore, navigate]);
 

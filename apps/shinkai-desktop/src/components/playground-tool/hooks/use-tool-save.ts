@@ -11,10 +11,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
-import {
-  ToolCreationState,
-  usePlaygroundStore,
-} from '../context/playground-context';
+import { usePlaygroundStore } from '../context/playground-context';
 import { ToolMetadataRawSchema, ToolMetadataRawSchemaType } from '../schemas';
 
 export interface SaveToolParams {
@@ -38,7 +35,6 @@ export function useToolSave() {
   const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
   const xShinkaiAppId = usePlaygroundStore((state) => state.xShinkaiAppId);
   const xShinkaiToolId = usePlaygroundStore((state) => state.xShinkaiToolId);
-  const setCurrentStep = usePlaygroundStore((state) => state.setCurrentStep);
   const setToolCreationError = usePlaygroundStore(
     (state) => state.setToolCreationError,
   );
@@ -70,10 +66,6 @@ export function useToolSave() {
       if (!chatInboxId || !toolMetadata || !toolCode) {
         console.error('Missing required parameters for saving tool');
         return;
-      }
-
-      if (!isPlaygroundMode) {
-        setCurrentStep(ToolCreationState.SAVING_TOOL);
       }
 
       let parsedMetadata: ToolMetadataRawSchemaType;
@@ -121,9 +113,6 @@ export function useToolSave() {
         },
         {
           onSuccess: async (data) => {
-            if (!isPlaygroundMode) {
-              setCurrentStep(ToolCreationState.COMPLETED);
-            }
             if (shouldPrefetchPlaygroundTool) {
               setTimeout(() => {
                 navigate(`/tools/edit/${data.metadata.tool_router_key}`);
@@ -149,15 +138,15 @@ export function useToolSave() {
     },
     [
       chatInboxId,
+      saveToolCode,
       auth?.shinkai_identity,
       auth?.api_v2_key,
       auth?.node_address,
       assets,
       xShinkaiAppId,
       xShinkaiToolId,
-      saveToolCode,
+      setToolCreationError,
       navigate,
-      setCurrentStep,
     ],
   );
 

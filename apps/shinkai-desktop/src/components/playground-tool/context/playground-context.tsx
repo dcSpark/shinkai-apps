@@ -43,6 +43,8 @@ type PlaygroundStore = {
   // inboxId
   chatInboxId: string | undefined;
   setChatInboxId: (chatInboxId: string | undefined) => void;
+  metadataInboxId: string | undefined;
+  setMetadataInboxId: (metadataInboxId: string | undefined) => void;
   // code
   toolCodeStatus: Status;
   setToolCodeStatus: (
@@ -110,6 +112,8 @@ const createPlaygroundStore = () =>
     // inboxId
     chatInboxId: undefined,
     setChatInboxId: (chatInboxId) => set({ chatInboxId }),
+    metadataInboxId: undefined,
+    setMetadataInboxId: (metadataInboxId) => set({ metadataInboxId }),
     // code
     toolCodeStatus: 'idle',
     setToolCodeStatus: (toolCodeStatus) =>
@@ -169,6 +173,7 @@ const createPlaygroundStore = () =>
       set({
         currentStep: ToolCreationState.PROMPT_INPUT,
         chatInboxId: undefined,
+        metadataInboxId: undefined,
         toolCodeStatus: 'idle',
         toolCode: '',
         toolCodeError: null,
@@ -203,14 +208,9 @@ export const PlaygroundProvider = ({
   );
 
   useEffect(() => {
-    if (
-      location.pathname.startsWith('/tools/edit/') ||
-      location.pathname.startsWith('/tools/tool-feedback')
-    ) {
-      return;
+    if (location.pathname.startsWith('/tools')) {
+      store.getState().resetPlaygroundStore();
     }
-
-    store.getState().resetPlaygroundStore();
   }, [location.pathname, store]);
 
   return (

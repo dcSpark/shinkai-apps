@@ -108,7 +108,8 @@ export const ToolsHomepage = () => {
     if (
       currentStep === ToolCreationState.CREATING_CODE ||
       currentStep === ToolCreationState.CREATING_METADATA ||
-      currentStep === ToolCreationState.SAVING_TOOL
+      currentStep === ToolCreationState.SAVING_TOOL ||
+      currentStep === ToolCreationState.COMPLETED
     )
       return (
         <PlaygroundToolLayout

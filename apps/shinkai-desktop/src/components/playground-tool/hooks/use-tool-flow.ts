@@ -139,7 +139,10 @@ export const useToolFlow = ({
       setToolMetadataStatus(initialState.metadataState);
     }
   }, [
-    initialState,
+    initialState?.code,
+    initialState?.codeState,
+    initialState?.metadata,
+    initialState?.metadataState,
     setToolCode,
     setToolCodeStatus,
     setToolMetadata,
@@ -183,19 +186,20 @@ export const useToolFlow = ({
     };
   }, [conversationData]);
 
-  const [metadataInboxId, setMetadataInboxId] = useState<string | undefined>(
-    undefined,
+  const metadataInboxId = usePlaygroundStore((state) => state.metadataInboxId);
+  const setMetadataInboxId = usePlaygroundStore(
+    (state) => state.setMetadataInboxId,
   );
+
   const { data: metadataConversation } =
     useChatConversationWithOptimisticUpdates({
       inboxId: metadataInboxId ?? '',
-      forceRefetchInterval: true,
     });
 
-  // useWebSocketMessage({
-  //   inboxId: metadataInboxId ?? '',
-  //   enabled: !!metadataInboxId,
-  // });
+  useWebSocketMessage({
+    inboxId: metadataInboxId ?? '',
+    enabled: !!metadataInboxId,
+  });
 
   const toolHistory = useMemo(() => {
     const messageList = formattedConversationData?.pages.flat() ?? [];
@@ -239,14 +243,12 @@ export const useToolFlow = ({
         baseToolCodeRef.current = '';
         setToolResult(null);
         executeToolCodeQuery.reset();
-
+        if (isPlaygroundMode) return;
         if (isFeedbackPage) {
           setCurrentStep(ToolCreationState.PLAN_REVIEW);
         } else if (requireFeedbackFlow) {
           navigate(`/tools/tool-feedback/${data.inbox}`);
           setCurrentStep(ToolCreationState.PLAN_REVIEW);
-        } else {
-          setCurrentStep(ToolCreationState.CREATING_CODE);
         }
       },
       onError: (error) => {
@@ -257,12 +259,14 @@ export const useToolFlow = ({
   const { mutateAsync: createToolMetadata, isPending: isCreatingMetadata } =
     useCreateToolMetadata({
       onSuccess: (data) => {
+        forceGenerateMetadata.current = false;
         setMetadataInboxId(buildInboxIdFromJobId(data.job_id));
       },
       onError: (error) => {
         setToolCreationError(
           `Failed to create tool metadata: ${error.message}`,
         );
+        forceGenerateMetadata.current = false;
       },
     });
 
@@ -276,7 +280,6 @@ export const useToolFlow = ({
   });
 
   const { handleSaveTool, isSavingTool } = useToolSave();
-  console.count('component mounted');
 
   useEffect(() => {
     const lastMessage = formattedConversationData?.pages?.at(-1)?.at(-1);
@@ -286,9 +289,7 @@ export const useToolFlow = ({
       lastMessage.role === 'assistant' && lastMessage.status.type === 'running';
 
     if (isRunning) {
-      setToolCodeStatus((prevStatus) =>
-        prevStatus !== 'pending' ? 'pending' : prevStatus,
-      );
+      setToolCodeStatus('pending');
       return;
     }
 
@@ -309,13 +310,13 @@ export const useToolFlow = ({
         validateCodeSnippet(generatedCode, currentLanguage)
       ) {
         baseToolCodeRef.current = generatedCode;
+        if (isFeedbackPage || !isPlaygroundMode) {
+          forceGenerateMetadata.current = true;
+        }
         setToolCode(generatedCode);
         setToolCodeStatus('success');
         if (!isPlaygroundMode) {
           setCurrentStep(ToolCreationState.CREATING_METADATA);
-        }
-        if (isFeedbackPage || !isPlaygroundMode) {
-          forceGenerateMetadata.current = true;
         }
       } else {
         setToolCodeError('Failed to extract code from response');
@@ -333,7 +334,6 @@ export const useToolFlow = ({
     forceGenerateMetadata,
     setToolCodeStatus,
   ]);
-  console.log(currentStep, 'currentStep');
 
   useEffect(() => {
     const lastMessage = metadataConversation?.pages?.at(-1)?.at(-1);
@@ -380,7 +380,10 @@ export const useToolFlow = ({
         setToolMetadataError('No metadata JSON code found');
 
         if (!isPlaygroundMode) {
-          setToolCreationError('Failed to extract metadata from response');
+          setToolCreationError(
+            'Failed to extract metadata from response. Metadata Response: ' +
+              JSON.stringify(lastMessage.content),
+          );
         }
       }
     }
@@ -395,7 +398,6 @@ export const useToolFlow = ({
 
   useEffect(() => {
     if (!toolCode || !forceGenerateMetadata.current || !chatInboxId) return;
-
     const generateMetadata = async () => {
       const currentTools = tools || form.watch('tools');
 
@@ -410,7 +412,6 @@ export const useToolFlow = ({
     generateMetadata();
   }, [
     toolCode,
-    forceGenerateMetadata,
     chatInboxId,
     auth?.node_address,
     auth?.api_v2_key,
@@ -418,6 +419,7 @@ export const useToolFlow = ({
     form,
     tools,
     setCurrentStep,
+    forceGenerateMetadata,
   ]);
 
   const startToolCreation = async (data: CreateToolCodeFormSchema) => {
@@ -457,17 +459,16 @@ export const useToolFlow = ({
   };
 
   const generateMetadata = async () => {
-    setToolMetadataStatus('pending');
-    forceGenerateMetadata.current = true;
+    if (!auth || !chatInboxId) return;
 
-    // const currentTools = tools || form.watch('tools');
+    const currentTools = tools || form.watch('tools');
 
-    // await createToolMetadata({
-    //   nodeAddress: auth.node_address,
-    //   token: auth.api_v2_key,
-    //   jobId: extractJobIdFromInbox(chatInboxId),
-    //   tools: currentTools,
-    // });
+    await createToolMetadata({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      jobId: extractJobIdFromInbox(chatInboxId),
+      tools: currentTools,
+    });
   };
 
   useEffect(() => {
@@ -487,6 +488,8 @@ export const useToolFlow = ({
         shouldPrefetchPlaygroundTool: true,
         onSuccess: () => {
           forceAutoSave.current = false;
+          forceGenerateMetadata.current = false;
+          forceGenerateCode.current = false;
           setCurrentStep(ToolCreationState.COMPLETED);
         },
       });
@@ -502,6 +505,8 @@ export const useToolFlow = ({
     form,
     setCurrentStep,
     forceAutoSave,
+    forceGenerateMetadata,
+    forceGenerateCode,
   ]);
 
   const handleApplyChangesCodeSubmit = useCallback(

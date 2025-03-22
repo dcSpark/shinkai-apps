@@ -223,6 +223,9 @@
   "overrides": {
     "vite": {
       "esbuild": "^0.25.0"
+    },
+    "react-scan": {
+      "esbuild": "^0.25.0"
     }
   }
 }
