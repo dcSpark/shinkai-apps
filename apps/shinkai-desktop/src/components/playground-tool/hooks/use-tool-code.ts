@@ -70,7 +70,7 @@ export const useChatConversation = (initialInboxId?: string) => {
     isChatConversationSuccess,
   } = useChatConversationWithOptimisticUpdates({
     inboxId: chatInboxId ?? '',
-    forceRefetchInterval: true,
+    // forceRefetchInterval: true,
   });
 
   const formattedConversationData = useMemo(() => {

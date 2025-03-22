@@ -5,33 +5,46 @@ import {
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
 import { useGetAllToolAssets } from '@shinkai_network/shinkai-node-state/v2/queries/getAllToolAssets/useGetAllToolAssets';
-import { useCallback, useEffect, useState } from 'react';
-import { UseFormReturn } from 'react-hook-form';
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
-import { usePlaygroundStore } from '../context/playground-context';
+import {
+  ToolCreationState,
+  usePlaygroundStore,
+} from '../context/playground-context';
 import { ToolMetadataRawSchema, ToolMetadataRawSchemaType } from '../schemas';
-import { CreateToolCodeFormSchema } from './use-tool-code';
-import { useToolFlow } from './use-tool-flow';
 
-export const useAutoSaveTool = () => {
+export interface SaveToolParams {
+  previousToolRouterKeyWithVersion?: string;
+  toolMetadata: ToolMetadata;
+  toolCode: string;
+  toolName?: string;
+  toolDescription?: string;
+  tools: string[];
+  language: CodeLanguage;
+  shouldPrefetchPlaygroundTool?: boolean;
+  onSuccess?: () => void;
+  version?: string;
+  isPlaygroundMode?: boolean;
+}
+
+export function useToolSave() {
+  const auth = useAuth((state) => state.auth);
+  const navigate = useNavigate();
+
   const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
   const xShinkaiAppId = usePlaygroundStore((state) => state.xShinkaiAppId);
   const xShinkaiToolId = usePlaygroundStore((state) => state.xShinkaiToolId);
-  const auth = useAuth((state) => state.auth);
+  const setCurrentStep = usePlaygroundStore((state) => state.setCurrentStep);
+  const setToolCreationError = usePlaygroundStore(
+    (state) => state.setToolCreationError,
+  );
 
-  const navigate = useNavigate();
-
-  const {
-    mutateAsync: saveToolCode,
-    isPending: isSavingTool,
-    isSuccess: isSaveToolSuccess,
-    isError: isSaveToolError,
-    error: saveToolCodeError,
-  } = useSaveToolCode();
+  const { mutateAsync: saveToolCode, isPending: isSavingTool } =
+    useSaveToolCode();
 
   const { data: assets } = useGetAllToolAssets({
     nodeAddress: auth?.node_address ?? '',
@@ -40,7 +53,7 @@ export const useAutoSaveTool = () => {
     xShinkaiToolId,
   });
 
-  const handleAutoSave = useCallback(
+  const handleSaveTool = useCallback(
     async ({
       previousToolRouterKeyWithVersion,
       toolMetadata,
@@ -49,26 +62,28 @@ export const useAutoSaveTool = () => {
       toolDescription,
       tools,
       language,
+      shouldPrefetchPlaygroundTool = true,
       onSuccess,
-      shouldPrefetchPlaygroundTool,
+      isPlaygroundMode = false,
       version,
-    }: {
-      previousToolRouterKeyWithVersion?: string;
-      toolMetadata: ToolMetadata;
-      toolCode: string;
-      toolName?: string;
-      toolDescription?: string;
-      tools: string[];
-      language: CodeLanguage;
-      shouldPrefetchPlaygroundTool?: boolean;
-      onSuccess?: () => void;
-      version?: string;
-    }) => {
-      if (!chatInboxId || !toolMetadata) return;
+    }: SaveToolParams) => {
+      if (!chatInboxId || !toolMetadata || !toolCode) {
+        console.error('Missing required parameters for saving tool');
+        return;
+      }
+
+      if (!isPlaygroundMode) {
+        setCurrentStep(ToolCreationState.SAVING_TOOL);
+      }
+
       let parsedMetadata: ToolMetadataRawSchemaType;
       try {
         parsedMetadata = ToolMetadataRawSchema.parse(toolMetadata);
       } catch (error) {
+        if (!isPlaygroundMode) {
+          setToolCreationError('Invalid Metadata JSON');
+        }
+
         if (error instanceof z.ZodError) {
           toast.error('Invalid Metadata JSON Value', {
             description: error.issues.map((issue) => issue.message).join(', '),
@@ -88,7 +103,7 @@ export const useAutoSaveTool = () => {
           name: toolName ?? toolMetadata.name,
           description: toolDescription ?? toolMetadata.description,
           version: version ?? toolMetadata.version ?? '0.0.1',
-          tools: tools ?? [],
+          tools,
           code: toolCode,
           author: auth?.shinkai_identity ?? '',
           metadata: parsedMetadata,
@@ -106,6 +121,9 @@ export const useAutoSaveTool = () => {
         },
         {
           onSuccess: async (data) => {
+            if (!isPlaygroundMode) {
+              setCurrentStep(ToolCreationState.COMPLETED);
+            }
             if (shouldPrefetchPlaygroundTool) {
               setTimeout(() => {
                 navigate(`/tools/edit/${data.metadata.tool_router_key}`);
@@ -122,71 +140,29 @@ export const useAutoSaveTool = () => {
               position: 'top-right',
               description: error.response?.data?.message ?? error.message,
             });
+            if (!isPlaygroundMode) {
+              setToolCreationError('Failed to save tool code');
+            }
           },
         },
       );
     },
     [
       chatInboxId,
-      saveToolCode,
       auth?.shinkai_identity,
       auth?.api_v2_key,
       auth?.node_address,
       assets,
       xShinkaiAppId,
       xShinkaiToolId,
+      saveToolCode,
       navigate,
+      setCurrentStep,
     ],
   );
 
   return {
-    handleAutoSave,
+    handleSaveTool,
     isSavingTool,
-    isSaveToolSuccess,
-    isSaveToolError,
-    saveToolCodeError,
   };
-};
-
-export const useCreateToolAndSave = ({
-  form,
-  feedbackRequired = false,
-}: {
-  form: UseFormReturn<CreateToolCodeFormSchema>;
-  feedbackRequired?: boolean;
-}) => {
-  const {
-    currentStep,
-    error,
-    isProcessing,
-    toolCode,
-    toolCodeStatus,
-    toolMetadata,
-    toolMetadataStatus,
-    toolCodeError,
-    toolMetadataError,
-    isCreatingToolCode,
-    isCreatingMetadata,
-    isSavingTool,
-    startToolCreation,
-  } = useToolFlow({
-    form,
-    requireFeedbackFlow: feedbackRequired,
-  });
-
-  const isSuccess =
-    toolCodeStatus === 'success' &&
-    toolMetadataStatus === 'success' &&
-    currentStep === 'completed';
-
-  const isError = currentStep === 'error';
-
-  return {
-    createToolCodeForm: form,
-    createToolAndSaveTool: startToolCreation,
-    isProcessing,
-    isSuccess,
-    isError,
-    error,
-  };
-};
+}

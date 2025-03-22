@@ -42,6 +42,25 @@ export function detectLanguage(code: string): string {
   }
 }
 
+export function validateCodeSnippet(
+  text: string,
+  language: CodeLanguage,
+): boolean {
+  switch (language) {
+    case CodeLanguage.Python:
+      return /^\s*def\s+\w+\s*\(.*\):|^\s*class\s+\w+\s*\(?.*?\)?:/m.test(text);
+    case CodeLanguage.Typescript:
+      return (
+        /(interface\s+\w+\s*{)|(type\s+\w+\s*=)|(function\s+\w+\s*<\w+>)/.test(
+          text,
+        ) ||
+        /export\s+async\s+function\s+\w+\s*\(.*\):\s*Promise<\{.*\}>/.test(text)
+      );
+    default:
+      return false;
+  }
+}
+
 export function getLanguage(language: string): CodeLanguage {
   switch (language) {
     case 'python':

@@ -29,11 +29,15 @@ function MetadataPanelBase({
   initialToolRouterKeyWithVersion,
   initialToolName,
   initialToolDescription,
+  toolMetadata,
+  isMetadataLoading,
 }: {
   regenerateToolMetadata: () => void;
   initialToolRouterKeyWithVersion: string;
   initialToolName: string;
   initialToolDescription: string;
+  toolMetadata: ToolMetadata | null;
+  isMetadataLoading: boolean;
 }) {
   const [validateMetadataEditorValue, setValidateMetadataEditorValue] =
     useState<string | null>(null);
@@ -42,7 +46,6 @@ function MetadataPanelBase({
     (state) => state.metadataEditorRef,
   );
   const codeEditorRef = usePlaygroundStore((state) => state.codeEditorRef);
-  const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
   const updateToolMetadata = usePlaygroundStore(
     (state) => state.updateToolMetadata,
   );

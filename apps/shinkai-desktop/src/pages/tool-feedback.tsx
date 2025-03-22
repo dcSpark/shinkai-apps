@@ -1,6 +1,4 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
-import { useCreateToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/createToolCode/useCreateToolCode';
 import {
   Button,
   ChatInputArea,
@@ -15,168 +13,58 @@ import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { LoaderIcon, LogOut } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { MessageList } from '../components/chat/components/message-list';
-import { useWebSocketMessage } from '../components/chat/websocket-message';
 import { getRandomWidth } from '../components/playground-tool/components/code-panel';
-import { usePlaygroundStore } from '../components/playground-tool/context/playground-context';
-import { useAutoSaveTool } from '../components/playground-tool/hooks/use-create-tool-and-save';
 import {
-  CreateToolCodeFormSchema,
-  useChatConversation,
-  useToolForm,
-} from '../components/playground-tool/hooks/use-tool-code';
-import { useToolMetadata } from '../components/playground-tool/hooks/use-tool-metadata';
+  ToolCreationState,
+  usePlaygroundStore,
+} from '../components/playground-tool/context/playground-context';
+import { useToolForm } from '../components/playground-tool/hooks/use-tool-code';
+import { useToolFlow } from '../components/playground-tool/hooks/use-tool-flow';
 import PlaygroundToolLayout from '../components/playground-tool/layout';
-import { extractCodeLanguage } from '../components/playground-tool/utils/code';
-import { useAuth } from '../store/auth';
-
-type ToolStep =
-  | 'initial-prompt'
-  | 'generating-code'
-  | 'generating-metadata'
-  | 'completed'
-  | 'completed-and-saved'
-  | 'error';
 
 function ToolFeedbackPrompt() {
   const { inboxId } = useParams();
-  const auth = useAuth((state) => state.auth);
-  const [step, setStep] = useState<ToolStep>('initial-prompt');
   const form = useToolForm();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const forceGenerateCode = useRef(false);
-  const forceGenerateMetadata = useRef(false);
-
-  const setToolCodeStatus = usePlaygroundStore(
-    (state) => state.setToolCodeStatus,
-  );
-  const setToolCode = usePlaygroundStore((state) => state.setToolCode);
-  const toolCode = usePlaygroundStore((state) => state.toolCode);
-  const isToolCodeGenerationSuccess = usePlaygroundStore(
-    (state) => state.toolCodeStatus === 'success',
-  );
-
-  const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
-
-  const { mutateAsync: createToolCode, isPending: isCreateToolCodePending } =
-    useCreateToolCode({
-      onSuccess: () => {
-        forceGenerateCode.current = true;
-      },
-    });
-
-  useToolMetadata({
-    tools: form.watch('tools'),
-    forceGenerateMetadata,
-  });
-
-  const handleCreateToolCode = async (data: CreateToolCodeFormSchema) => {
-    if (!auth) return;
-
-    await createToolCode({
-      nodeAddress: auth.node_address,
-      token: auth.api_v2_key,
-      message: data.message,
-      llmProviderId: data.llmProviderId,
-      jobId: inboxId ? extractJobIdFromInbox(inboxId) : undefined,
-      tools: data.tools,
-
-      language: data.language,
-    });
-
-    form.setValue('message', '');
-  };
-
   const {
-    conversationData,
+    currentStep,
+    isCreatingToolCode,
+    startToolCreation,
+    chatConversationData: conversationData,
     fetchPreviousPage,
     hasPreviousPage,
     isChatConversationLoading,
     isFetchingPreviousPage,
     isChatConversationSuccess,
-  } = useChatConversation(inboxId);
-
-  useWebSocketMessage({ inboxId: inboxId ?? '', enabled: !!inboxId });
-
-  useEffect(() => {
-    const lastMessage = conversationData?.pages?.at(-1)?.at(-1);
-    if (!lastMessage || !forceGenerateCode.current) return;
-
-    if (
-      lastMessage?.role === 'assistant' &&
-      lastMessage?.status.type === 'running'
-    ) {
-      setToolCodeStatus('pending');
-      return;
-    }
-    if (
-      lastMessage?.role === 'assistant' &&
-      lastMessage?.status.type === 'complete'
-    ) {
-      const language = extractCodeLanguage(lastMessage.content);
-      const codeBlockRegex = new RegExp(
-        `\`\`\`${language?.toLowerCase() ?? ''}\\n([\\s\\S]*?)\\n\`\`\``,
-      );
-      const tsCodeMatch = lastMessage.content.match(codeBlockRegex);
-
-      console.log(tsCodeMatch, 'tsCodeMatch');
-      if (tsCodeMatch) {
-        const generatedCode = tsCodeMatch[1].trim();
-        setToolCode(generatedCode);
-        setToolCodeStatus('success');
-        // setStep('tool-details');
-        forceGenerateMetadata.current = true;
-        setStep('generating-metadata');
-      } else {
-        setStep('initial-prompt');
-      }
-    }
-  }, [conversationData?.pages, form.watch('language')]);
-
-  const {
-    handleAutoSave,
-    isSaveToolSuccess,
-    isSaveToolError,
-    saveToolCodeError,
-  } = useAutoSaveTool();
-
-  useEffect(() => {
-    if (toolMetadata) {
-      setStep('completed');
-    }
-  }, [toolMetadata]);
-
-  useEffect(() => {
-    if (toolCode && toolMetadata && isToolCodeGenerationSuccess) {
-      setStep('completed');
-      handleAutoSave({
-        toolMetadata: toolMetadata,
-        toolCode: toolCode,
-        tools: form.getValues('tools'),
-        language: form.getValues('language'),
-        shouldPrefetchPlaygroundTool: true,
-        onSuccess: () => {
-          setStep('completed-and-saved');
-        },
-      });
-    }
-  }, [
-    toolCode,
-    toolMetadata,
-    isToolCodeGenerationSuccess,
-    handleAutoSave,
+    error,
+  } = useToolFlow({
     form,
-  ]);
+    initialInboxId: inboxId,
+  });
 
-  const renderStep = () => {
-    switch (step) {
-      case 'initial-prompt':
+  const resetPlaygroundStore = usePlaygroundStore(
+    (state) => state.resetPlaygroundStore,
+  );
+
+  useEffect(() => {
+    if (error) {
+      resetPlaygroundStore();
+      navigate('/tools');
+      toast.error(error);
+    }
+  }, [error, resetPlaygroundStore, navigate]);
+
+  const renderStep = useCallback(() => {
+    switch (currentStep) {
+      case ToolCreationState.PROMPT_INPUT:
+      case ToolCreationState.PLAN_REVIEW:
         return (
           <div
             className={cn(
@@ -192,9 +80,7 @@ function ToolFeedbackPrompt() {
               <div className="flex items-center justify-between px-4">
                 <Button
                   className="size-6 p-1"
-                  onClick={() => {
-                    navigate('/tools');
-                  }}
+                  onClick={() => navigate('/tools')}
                   size="auto"
                   variant="tertiary"
                 >
@@ -234,7 +120,10 @@ function ToolFeedbackPrompt() {
               <Form {...form}>
                 <form
                   className="shrink-0 space-y-2 px-3 pt-2"
-                  onSubmit={form.handleSubmit(handleCreateToolCode)}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    startToolCreation(form.getValues());
+                  }}
                 >
                   <div className="flex shrink-0 items-center gap-1">
                     <FormField
@@ -260,9 +149,9 @@ function ToolFeedbackPrompt() {
                                       className={cn('size-[36px] p-2')}
                                       disabled={
                                         !form.watch('message') ||
-                                        isCreateToolCodePending
+                                        isCreatingToolCode
                                       }
-                                      isLoading={isCreateToolCodePending}
+                                      isLoading={isCreatingToolCode}
                                       size="icon"
                                       type="submit"
                                     >
@@ -273,11 +162,11 @@ function ToolFeedbackPrompt() {
                                     </Button>
                                   </div>
                                 }
-                                disabled={isCreateToolCodePending}
+                                disabled={isCreatingToolCode}
                                 onChange={field.onChange}
-                                onSubmit={form.handleSubmit(
-                                  handleCreateToolCode,
-                                )}
+                                onSubmit={() => {
+                                  startToolCreation(form.getValues());
+                                }}
                                 placeholder="Send message..."
                                 value={field.value}
                               />
@@ -292,10 +181,10 @@ function ToolFeedbackPrompt() {
             </motion.div>
           </div>
         );
-      case 'generating-code':
-      case 'generating-metadata':
-      case 'completed':
-      case 'completed-and-saved':
+      case ToolCreationState.CREATING_CODE:
+      case ToolCreationState.CREATING_METADATA:
+      case ToolCreationState.SAVING_TOOL:
+      case ToolCreationState.COMPLETED:
         return (
           <div className={cn('size-full')}>
             <PlaygroundToolLayout
@@ -321,7 +210,10 @@ function ToolFeedbackPrompt() {
                   <Form {...form}>
                     <form
                       className="shrink-0 space-y-2 px-3 pt-2"
-                      onSubmit={form.handleSubmit(handleCreateToolCode)}
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        startToolCreation(form.getValues());
+                      }}
                     >
                       <div className="flex shrink-0 items-center gap-1">
                         <FormField
@@ -359,9 +251,9 @@ function ToolFeedbackPrompt() {
                                     }
                                     disabled
                                     onChange={field.onChange}
-                                    onSubmit={form.handleSubmit(
-                                      handleCreateToolCode,
-                                    )}
+                                    onSubmit={() => {
+                                      startToolCreation(form.getValues());
+                                    }}
                                     placeholder="Send message..."
                                     value={field.value}
                                   />
@@ -383,33 +275,36 @@ function ToolFeedbackPrompt() {
                       className="border-official-gray-950 bg-official-gray-1000 flex h-full w-full flex-1 flex-col gap-3 overflow-hidden rounded-lg p-3"
                       exit={{ y: -100, opacity: 0 }}
                       initial={{ y: 100, opacity: 0, rotateX: -20 }}
-                      key={step}
+                      key={currentStep}
                       transition={{ duration: 0.5, ease: 'easeInOut' }}
                     >
                       <div className="flex items-center gap-3">
-                        {step === 'generating-code' ? (
+                        {currentStep === ToolCreationState.CREATING_CODE ? (
                           <LoaderIcon className="size-4 animate-spin text-cyan-500" />
-                        ) : step === 'generating-metadata' ? (
+                        ) : currentStep ===
+                          ToolCreationState.CREATING_METADATA ? (
                           <LoaderIcon className="size-4 animate-spin text-cyan-500" />
-                        ) : step === 'completed' ? (
+                        ) : currentStep === ToolCreationState.SAVING_TOOL ? (
                           <LoaderIcon className="size-4 animate-spin text-cyan-500" />
-                        ) : step === 'completed-and-saved' ? (
+                        ) : currentStep === ToolCreationState.COMPLETED ? (
                           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500/20 text-cyan-500">
                             ✓
                           </div>
-                        ) : step === 'error' ? (
+                        ) : null}
+                        {/* : currentStep === 'error' ? (
                           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500/20 text-red-500">
                             ✗
                           </div>
-                        ) : null}
+                        )  */}
                         <h3 className="font-medium text-zinc-100">
-                          {step === 'generating-code'
+                          {currentStep === ToolCreationState.CREATING_CODE
                             ? 'Generating Code...'
-                            : step === 'generating-metadata'
+                            : currentStep ===
+                                ToolCreationState.CREATING_METADATA
                               ? 'Generating Metadata...'
-                              : step === 'completed'
+                              : currentStep === ToolCreationState.SAVING_TOOL
                                 ? 'Saving Code & Preview...'
-                                : step === 'completed-and-saved'
+                                : currentStep === ToolCreationState.COMPLETED
                                   ? 'Code & Preview Saved'
                                   : null}
                         </h3>
@@ -463,18 +358,32 @@ function ToolFeedbackPrompt() {
             />
           </div>
         );
-      case 'error':
-        return (
-          <div className="flex h-full items-center justify-center">
-            <div className="text-center text-sm text-gray-100">
-              <h1>Error</h1>
-            </div>
-          </div>
-        );
+      // case 'error':
+      //   return (
+      //     <div className="flex h-full items-center justify-center">
+      //       <div className="text-center text-sm text-gray-100">
+      //         <h1>Error</h1>
+      //         <p>{error}</p>
+      //       </div>
+      //     </div>
+      //   );
       default:
         return null;
     }
-  };
+  }, [
+    currentStep,
+    isChatConversationLoading,
+    fetchPreviousPage,
+    hasPreviousPage,
+    isFetchingPreviousPage,
+    isChatConversationSuccess,
+    t,
+    conversationData,
+    form,
+    navigate,
+    startToolCreation,
+    isCreatingToolCode,
+  ]);
 
   return <div className={cn('h-full overflow-auto')}>{renderStep()}</div>;
 }
