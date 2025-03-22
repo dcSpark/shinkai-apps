@@ -58,7 +58,7 @@ export function useToolSave() {
       toolDescription,
       tools,
       language,
-      shouldPrefetchPlaygroundTool = true,
+      shouldPrefetchPlaygroundTool = false,
       onSuccess,
       isPlaygroundMode = false,
       version,

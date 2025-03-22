@@ -12,7 +12,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { TextField } from '@shinkai_network/shinkai-ui';
 import { Form } from '@shinkai_network/shinkai-ui';
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -21,8 +20,8 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { usePlaygroundStore } from '../context/playground-context';
-import { useAutoSaveTool } from '../hooks/use-create-tool-and-save';
 import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
+import { useToolSave } from '../hooks/use-tool-save';
 
 const toolBasicInfoSchema = z.object({
   name: z.string().min(1),
@@ -53,7 +52,7 @@ export default function EditToolBasicInfoDialog({
     },
   });
 
-  const { handleAutoSave, isSavingTool } = useAutoSaveTool();
+  const { handleSaveTool, isSavingTool } = useToolSave();
 
   useEffect(() => {
     toolBasicInfoForm.setValue('name', toolName);
@@ -61,7 +60,7 @@ export default function EditToolBasicInfoDialog({
   }, [toolDescription, toolName, toolBasicInfoForm]);
 
   const onSubmit = (data: ToolBasicInfoFormSchema) => {
-    handleAutoSave({
+    handleSaveTool({
       toolMetadata: toolMetadata as ToolMetadata,
       toolCode: toolCode ?? '',
       toolDescription: data.description,
