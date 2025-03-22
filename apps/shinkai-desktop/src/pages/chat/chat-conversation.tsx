@@ -1,6 +1,5 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
-import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import {
   FunctionKeyV2,
   generateOptimisticAssistantMessage,
@@ -10,7 +9,6 @@ import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/muta
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
-import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import { useEffect, useMemo } from 'react';
@@ -18,7 +16,6 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { MessageList } from '../../components/chat/components/message-list';
-import { streamingSupportedModels } from '../../components/chat/constants';
 import { useChatStore } from '../../components/chat/context/chat-context';
 import ConversationChatFooter from '../../components/chat/conversation-footer';
 import ConversationHeader from '../../components/chat/conversation-header';
@@ -52,15 +49,6 @@ export const useChatConversationWithOptimisticUpdates = ({
       enabled: !!inboxId,
     },
   );
-  const { data: provider } = useGetProviderFromJob({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
-  });
-
-  const hasProviderEnableStreaming = streamingSupportedModels.includes(
-    provider?.agent?.model.split(':')?.[0] as Models,
-  );
 
   const {
     data,
@@ -77,8 +65,7 @@ export const useChatConversationWithOptimisticUpdates = ({
     inboxId: inboxId as string,
     shinkaiIdentity: auth?.shinkai_identity ?? '',
     profile: auth?.profile ?? '',
-    refetchIntervalEnabled:
-      !hasProviderEnableStreaming || chatConfig?.stream === false,
+    refetchIntervalEnabled: chatConfig?.stream === false,
     enabled: !!inboxId,
   });
 

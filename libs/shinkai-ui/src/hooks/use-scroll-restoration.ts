@@ -32,7 +32,7 @@ export const useScrollRestoration = ({
 
   React.useEffect(() => {
     // Small delay to ensure content is rendered
-    const timeoutId = setTimeout(restoreScroll, 0);
+    const timeoutId = setTimeout(restoreScroll, 100);
     return () => clearTimeout(timeoutId);
   }, [restoreScroll]);
 

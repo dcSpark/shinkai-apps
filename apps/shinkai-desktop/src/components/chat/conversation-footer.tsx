@@ -22,6 +22,7 @@ import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getT
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
 import {
   Button,
+  buttonVariants,
   ChatInputArea,
   Command,
   CommandEmpty,
@@ -57,12 +58,11 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
-import { useSettings } from '../../store/settings';
 import { usePromptSelectionStore } from '../prompt/context/prompt-selection-context';
 import { AiUpdateSelectionActionBar } from './chat-action-bar/ai-update-selection-action-bar';
 import {
@@ -75,7 +75,6 @@ import { OpenChatFolderActionBar } from './chat-action-bar/open-chat-folder-acti
 import PromptSelectionActionBar from './chat-action-bar/prompt-selection-action-bar';
 import { UpdateToolsSwitchActionBar } from './chat-action-bar/tools-switch-action-bar';
 import { UpdateVectorFsActionBar } from './chat-action-bar/vector-fs-action-bar';
-import { streamingSupportedModels } from './constants';
 import { useSetJobScope } from './context/set-job-scope-context';
 
 export const actionButtonClassnames =
@@ -248,10 +247,6 @@ function ConversationChatFooter({
 
   const isAgentInbox = provider?.provider_type === 'Agent';
 
-  const hasProviderEnableStreaming = streamingSupportedModels.includes(
-    provider?.agent?.model.split(':')?.[0] as Models,
-  );
-
   const debounceMessage = useDebounce(currentMessage, 500);
 
   const { data: searchToolList, isSuccess: isSearchToolListSuccess } =
@@ -385,9 +380,7 @@ function ConversationChatFooter({
         })}
       >
         <StopGeneratingButton
-          shouldStopGenerating={
-            hasProviderEnableStreaming && isLoadingMessage && !!inboxId
-          }
+          shouldStopGenerating={isLoadingMessage && !!inboxId}
         />
         <div className="relative z-[1]">
           <Popover onOpenChange={setIsCommandOpen} open={isCommandOpen}>
@@ -720,7 +713,14 @@ function StopGeneratingButtonBase({
       {shouldStopGenerating && !!inboxId && (
         <motion.button
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gray-350 absolute -top-10 left-[calc(50%-40px)] flex items-center justify-center gap-3 rounded-lg border px-2 py-1.5 text-xs text-white transition-colors hover:bg-gray-300"
+          className={cn(
+            buttonVariants({
+              variant: 'outline',
+              size: 'xs',
+              rounded: 'full',
+            }),
+            'absolute -top-11 left-[calc(50%-40px)]',
+          )}
           exit={{ opacity: 0, y: 10 }}
           initial={{ opacity: 0, y: 10 }}
           onClick={onStopGenerating}

@@ -14,6 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BoltIcon } from 'lucide-react';
@@ -47,14 +48,22 @@ export function ToolsSelection({
       <Popover>
         <PopoverTrigger asChild>
           <div
-            className={cn(actionButtonClassnames, 'w-[90px]')}
+            className={cn(
+              actionButtonClassnames,
+              'w-auto gap-2',
+              value.length > 0 && 'bg-cyan-950 hover:bg-cyan-950',
+            )}
             role="button"
             tabIndex={0}
           >
-            Tools{' '}
-            <Badge className="bg-brand inline-flex h-5 w-5 items-center justify-center rounded-full border-gray-200 p-0 text-center text-gray-50">
-              {value.length}
-            </Badge>
+            {value.length > 0 ? (
+              <Badge className="bg-official-gray-1000 inline-flex size-4 items-center justify-center rounded-full border-gray-200 p-0 text-center text-[10px] text-gray-50">
+                {value.length}
+              </Badge>
+            ) : (
+              <ToolsIcon className="size-4" />
+            )}
+            Tools
           </div>
         </PopoverTrigger>
         <PopoverContent

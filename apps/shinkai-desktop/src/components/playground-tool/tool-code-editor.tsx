@@ -13,7 +13,6 @@ import 'prism-react-editor/themes/github-dark.css';
 import 'prism-react-editor/search.css';
 
 import { Editor, EditorProps, PrismEditor } from 'prism-react-editor';
-// import { addTextareaListener } from 'prism-react-editor';
 import {
   completeSnippets,
   fuzzyFilter,
@@ -23,13 +22,9 @@ import {
 import {
   completeIdentifiers,
   completeKeywords,
-  // completeScope,
-  // globalReactAttributes,
   jsContext,
   jsDocCompletion,
   jsSnipets,
-  // jsxTagCompletion,
-  // reactTags,
 } from 'prism-react-editor/autocomplete/javascript';
 import {
   blockCommentFolding,
@@ -48,7 +43,6 @@ import {
   useHighlightMatchingTags,
   useTagMatcher,
 } from 'prism-react-editor/match-tags';
-// import { useOverscroll } from 'prism-react-editor/overscroll';
 import {
   useHighlightSelectionMatches,
   useSearchWidget,
@@ -62,13 +56,12 @@ function ReadOnly({ editor }: { editor: PrismEditor }) {
 
   useReadOnlyCodeFolding(editor, blockCommentFolding, markdownFolding);
 
-  return portal as unknown as React.ReactElement;
+  return portal ? (portal as unknown as React.ReactElement) : null;
 }
 
 const Extensions = ({ editor }: { editor: PrismEditor }) => {
   useBracketMatcher(editor);
   useHightlightBracketPairs(editor);
-  // useOverscroll(editor);
   useTagMatcher(editor);
   useHighlightMatchingTags(editor);
   useDefaultCommands(editor);
@@ -84,7 +77,7 @@ const Extensions = ({ editor }: { editor: PrismEditor }) => {
   return (
     <>
       {editor.props.readOnly && (
-        <Suspense>
+        <Suspense fallback={null}>
           <ReadOnly editor={editor} />
         </Suspense>
       )}
@@ -96,11 +89,9 @@ const Extensions = ({ editor }: { editor: PrismEditor }) => {
 registerCompletions(['javascript', 'js', 'jsx', 'tsx', 'typescript', 'ts'], {
   context: jsContext,
   sources: [
-    // completeScope(window),
     completeIdentifiers(),
     completeKeywords,
     jsDocCompletion,
-    // jsxTagCompletion(reactTags, globalReactAttributes),
     completeSnippets(jsSnipets),
   ],
 });
@@ -127,7 +118,7 @@ const ToolCodeEditor = forwardRef<
       lineHeight: '1.5',
       height: '100%',
       overflow: 'auto',
-      // @ts-expect-error css variables
+      //@ts-expect-error css variables
       '--editor__bg': '#1a1a1d',
       '--padding-left': '32px',
       ...style,

@@ -19,8 +19,8 @@ import { z } from 'zod';
 import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
 import { ToolErrorFallback } from '../error-boundary';
-import { useAutoSaveTool } from '../hooks/use-create-tool-and-save';
 import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
+import { useToolSave } from '../hooks/use-tool-save';
 import { ToolMetadataRawSchema } from '../schemas';
 import ToolCodeEditor from '../tool-code-editor';
 
@@ -29,11 +29,15 @@ function MetadataPanelBase({
   initialToolRouterKeyWithVersion,
   initialToolName,
   initialToolDescription,
+  toolMetadata,
+  isMetadataLoading,
 }: {
   regenerateToolMetadata: () => void;
   initialToolRouterKeyWithVersion: string;
   initialToolName: string;
   initialToolDescription: string;
+  toolMetadata: ToolMetadata | null;
+  isMetadataLoading: boolean;
 }) {
   const [validateMetadataEditorValue, setValidateMetadataEditorValue] =
     useState<string | null>(null);
@@ -42,7 +46,6 @@ function MetadataPanelBase({
     (state) => state.metadataEditorRef,
   );
   const codeEditorRef = usePlaygroundStore((state) => state.codeEditorRef);
-  const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
   const updateToolMetadata = usePlaygroundStore(
     (state) => state.updateToolMetadata,
   );
@@ -64,7 +67,7 @@ function MetadataPanelBase({
   const auth = useAuth((state) => state.auth);
   const form = useFormContext<CreateToolCodeFormSchema>();
 
-  const { handleAutoSave } = useAutoSaveTool();
+  const { handleSaveTool } = useToolSave();
 
   const handleMetadataUpdate = debounce((value: string) => {
     try {
@@ -90,7 +93,7 @@ function MetadataPanelBase({
         author: auth?.shinkai_identity ?? '',
       });
 
-      handleAutoSave({
+      handleSaveTool({
         toolName: initialToolName,
         toolDescription: initialToolDescription,
         toolMetadata: parseValue as unknown as ToolMetadata,

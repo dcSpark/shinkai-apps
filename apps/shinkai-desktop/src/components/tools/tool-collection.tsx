@@ -24,7 +24,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon } from 'lucide-react';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { useDebounce } from '../../hooks/use-debounce';
@@ -50,7 +50,7 @@ const toolsGroup: {
   },
 ];
 
-export const ToolCollection = () => {
+const ToolCollectionBase = () => {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
@@ -269,6 +269,7 @@ export const ToolCollection = () => {
     </div>
   );
 };
+export const ToolCollection = memo(ToolCollectionBase, () => true);
 
 export function DockerStatus() {
   const auth = useAuth((state) => state.auth);

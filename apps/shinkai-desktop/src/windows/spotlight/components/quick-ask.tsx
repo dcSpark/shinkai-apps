@@ -6,12 +6,10 @@ import {
   CreateJobFormSchema,
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
-import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import {
-  Button,
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -23,28 +21,21 @@ import {
   CommandList,
   CopyToClipboardIcon,
   DotsLoader,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
   MarkdownText,
   Popover,
   PopoverContent,
   PopoverTrigger,
   ScrollArea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Separator,
-  Switch,
-  TextField,
 } from '@shinkai_network/shinkai-ui';
-import { ShinkaiCombinationMarkIcon, ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
-import { copyToClipboard, formatText } from '@shinkai_network/shinkai-ui/helpers';
+import {
+  ShinkaiCombinationMarkIcon,
+  ToolsIcon,
+} from '@shinkai_network/shinkai-ui/assets';
+import {
+  copyToClipboard,
+  formatText,
+} from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
@@ -56,7 +47,6 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { toast } from 'sonner';
 
 import { AIModelSelector } from '../../../components/chat/chat-action-bar/ai-update-selection-action-bar';
-import { streamingSupportedModels } from '../../../components/chat/constants';
 import { useWebSocketMessage } from '../../../components/chat/websocket-message';
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
@@ -117,7 +107,8 @@ function QuickAsk() {
       token: auth?.api_v2_key ?? '',
     },
     {
-      select: (data: ShinkaiToolHeader[]) => data.filter((tool) => tool.enabled),
+      select: (data: ShinkaiToolHeader[]) =>
+        data.filter((tool) => tool.enabled),
     },
   );
 
@@ -235,14 +226,17 @@ function QuickAsk() {
           </button>
         )}
         <div className="relative flex-grow">
-          <Popover onOpenChange={(open) => {
-            setIsCommandOpen(open);
-            if (!open) {
-              if (chatForm.watch('message') === '/') {
-                chatForm.setValue('message', '');
+          <Popover
+            onOpenChange={(open) => {
+              setIsCommandOpen(open);
+              if (!open) {
+                if (chatForm.watch('message') === '/') {
+                  chatForm.setValue('message', '');
+                }
               }
-            }
-          }} open={isCommandOpen}>
+            }}
+            open={isCommandOpen}
+          >
             <PopoverTrigger asChild>
               <div className="w-full">
                 <input
@@ -335,7 +329,7 @@ function QuickAsk() {
         />
       </div>
       <Separator className="bg-gray-350" />
-      <QuickAskBody aiModel={chatForm.watch('agent')} />
+      <QuickAskBody />
 
       <Separator className="bg-gray-350" />
       <div className="flex h-10 w-full items-center justify-between px-4 py-1.5 text-xs">
@@ -414,7 +408,7 @@ function QuickAsk() {
 
 export default QuickAsk;
 
-const QuickAskBody = ({ aiModel }: { aiModel: string }) => {
+const QuickAskBody = () => {
   const { t } = useTranslation();
   const inboxId = useQuickAskStore((state) => state.inboxId);
 
@@ -443,42 +437,21 @@ const QuickAskBody = ({ aiModel }: { aiModel: string }) => {
       </div>
     );
   }
-  return (
-    <QuickAskBodyWithResponse aiModel={aiModel} inboxId={decodedInboxId} />
-  );
+  return <QuickAskBodyWithResponse inboxId={decodedInboxId} />;
 };
 
-const QuickAskBodyWithResponseBase = ({
-  inboxId,
-  aiModel,
-}: {
-  inboxId: string;
-  aiModel: string;
-}) => {
-  const auth = useAuth((state) => state.auth);
+const QuickAskBodyWithResponseBase = ({ inboxId }: { inboxId: string }) => {
   const setLoadingResponse = useQuickAskStore(
     (state) => state.setLoadingResponse,
   );
   const setMessageResponse = useQuickAskStore(
     (state) => state.setMessageResponse,
   );
-  const { llmProviders } = useGetLLMProviders({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
-
-  const currentModel = llmProviders?.find(
-    (provider) => provider.id === aiModel,
-  );
-
-  const hasProviderEnableStreaming = streamingSupportedModels.includes(
-    currentModel?.model.split(':')?.[0] as Models,
-  );
 
   const { data } = useChatConversationWithOptimisticUpdates({ inboxId });
 
   useWebSocketMessage({
-    enabled: hasProviderEnableStreaming && !!inboxId,
+    enabled: !!inboxId,
     inboxId: inboxId,
   });
 
@@ -503,7 +476,7 @@ const QuickAskBodyWithResponseBase = ({
 
   return (
     <ScrollArea className="flex-1 text-sm [&>div>div]:!block">
-      <Collapsible className="border-b border-gray-200 bg-gray-400">
+      <Collapsible className="bg-official-gray-850 border-official-gray-780 border-b">
         <CollapsibleTrigger
           className={cn(
             'flex w-full max-w-full items-center justify-between gap-6 px-5 py-2',

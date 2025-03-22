@@ -62,6 +62,7 @@ import { ResetConnectionDialog } from '../../components/reset-connection-dialog'
 import config from '../../config';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import { useViewportStore } from '../../store/viewport';
 
 type NavigationLink = {
   title: string;
@@ -628,8 +629,9 @@ const MainLayout = () => {
   const displaySidebar =
     !!auth && !disabledSidebarRoutes.includes(location.pathname);
 
-  const disableScrollRoutes = ['/tools', '/home'];
-  const hideScrollbar = disableScrollRoutes.includes(location.pathname);
+  const mainLayoutContainerRef = useViewportStore(
+    (state) => state.mainLayoutContainerRef,
+  );
 
   return (
     <div className="bg-official-gray-950 relative flex h-screen min-h-full flex-col overflow-hidden text-white">
@@ -641,13 +643,13 @@ const MainLayout = () => {
         <AnimatePresence initial={false}>
           {displaySidebar && <MainNav />}
         </AnimatePresence>
-        {hideScrollbar ? (
+
+        <div
+          className={cn('min-h-full flex-1 overflow-auto')}
+          ref={mainLayoutContainerRef}
+        >
           <Outlet />
-        ) : (
-          <div className={cn('min-h-full flex-1 overflow-auto')}>
-            <Outlet />
-          </div>
-        )}
+        </div>
       </div>
       <ResetConnectionDialog
         isOpen={needsResetApp}
