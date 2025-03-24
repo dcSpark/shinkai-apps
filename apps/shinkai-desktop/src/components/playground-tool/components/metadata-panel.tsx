@@ -30,14 +30,12 @@ function MetadataPanelBase({
   initialToolName,
   initialToolDescription,
   toolMetadata,
-  isMetadataLoading,
 }: {
   regenerateToolMetadata: () => void;
   initialToolRouterKeyWithVersion: string;
   initialToolName: string;
   initialToolDescription: string;
   toolMetadata: ToolMetadata | null;
-  isMetadataLoading: boolean;
 }) {
   const [validateMetadataEditorValue, setValidateMetadataEditorValue] =
     useState<string | null>(null);

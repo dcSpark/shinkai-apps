@@ -56,6 +56,8 @@ import { useSettings } from '../store/settings';
 import { useViewportStore } from '../store/viewport';
 import { SHINKAI_STORE_URL } from '../utils/store';
 
+const CODE_GENERATOR_MODEL_ID = 'shinkai_code_generator'; // TODO: change to production model name
+
 export const ToolsHomepage = () => {
   const { t } = useTranslation();
   const form = useToolForm();
@@ -65,7 +67,7 @@ export const ToolsHomepage = () => {
 
   const currentAI = form.watch('llmProviderId');
 
-  const isCodeGeneratorModel = currentAI === 'CODE_GENERATOR';
+  const isCodeGeneratorModel = currentAI === CODE_GENERATOR_MODEL_ID;
 
   const scrollElementRef = useRef<HTMLDivElement>(null);
   useScrollRestoration({
@@ -222,7 +224,7 @@ function ToolsHome({
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
   const currentAI = form.watch('llmProviderId');
 
-  const isCodeGeneratorModel = currentAI === 'CODE_GENERATOR';
+  const isCodeGeneratorModel = currentAI === CODE_GENERATOR_MODEL_ID;
 
   const {
     mutateAsync: openToolInCodeEditor,

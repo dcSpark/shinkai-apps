@@ -17,7 +17,7 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { LoaderIcon } from 'lucide-react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { useAuth } from '../../../store/auth';
@@ -116,10 +116,8 @@ function PlaygroundToolEditor({
     handleApplyChangesCodeSubmit,
     resetToolCode,
     handleContinueConversation,
-    codeEditorRef,
     generateMetadata,
     toolMetadata,
-    toolMetadataStatus,
     mountTimestamp,
   } = useToolFlow({
     form,
@@ -147,9 +145,6 @@ function PlaygroundToolEditor({
   const xShinkaiToolId = usePlaygroundStore((state) => state.xShinkaiToolId);
   const focusedPanel = usePlaygroundStore((state) => state.focusedPanel);
   const setFocusedPanel = usePlaygroundStore((state) => state.setFocusedPanel);
-  // const isToolCodeGenerationPending = usePlaygroundStore(
-  //   (state) => state.toolCodeStatus === 'pending',
-  // );
   const toolCodeStatus = usePlaygroundStore((state) => state.toolCodeStatus);
   const isToolCodeGenerationPending = toolCodeStatus === 'pending';
   const isToolMetadataPending = usePlaygroundStore(
@@ -250,7 +245,6 @@ function PlaygroundToolEditor({
                 isDirtyCodeEditor={isDirtyCodeEditor}
                 resetToolCode={resetToolCode}
                 setIsDirtyCodeEditor={setIsDirtyCodeEditor}
-                codeEditorRef={codeEditorRef}
               />
             </TabsContent>
             <TabsContent
@@ -268,7 +262,6 @@ function PlaygroundToolEditor({
                 initialToolDescription={toolDescription ?? ''}
                 regenerateToolMetadata={generateMetadata}
                 toolMetadata={toolMetadata}
-                isMetadataLoading={toolMetadataStatus === 'pending'}
               />
             </TabsContent>
           </Tabs>

@@ -35,15 +35,14 @@ function CodePanelBase({
   isDirtyCodeEditor,
   setIsDirtyCodeEditor,
   baseToolCodeRef,
-  codeEditorRef,
 }: {
   handleApplyChangesCodeSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   resetToolCode: () => void;
   isDirtyCodeEditor: boolean;
   setIsDirtyCodeEditor: (isDirty: boolean) => void;
   baseToolCodeRef: MutableRefObject<string>;
-  codeEditorRef: MutableRefObject<PrismEditor | null>;
 }) {
+  const codeEditorRef = usePlaygroundStore((state) => state.codeEditorRef);
   const resetCounter = usePlaygroundStore((state) => state.resetCounter);
   // const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
   const toolCode = usePlaygroundStore((state) => state.toolCode);

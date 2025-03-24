@@ -56,6 +56,9 @@ function PlaygroundHeaderBase({
   const setToolCode = usePlaygroundStore((state) => state.setToolCode);
   const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
   const setResetCounter = usePlaygroundStore((state) => state.setResetCounter);
+  const resetPlaygroundStore = usePlaygroundStore(
+    (state) => state.resetPlaygroundStore,
+  );
 
   const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
   const form = useFormContext<CreateToolCodeFormSchema>();
@@ -168,7 +171,10 @@ function PlaygroundHeaderBase({
       <div className="flex items-center gap-2">
         <Button
           className="text-gray-80 border-none"
-          onClick={() => navigate('/tools')}
+          onClick={() => {
+            resetPlaygroundStore();
+            navigate('/tools');
+          }}
           rounded="lg"
           size="xs"
           type="button"

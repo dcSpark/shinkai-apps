@@ -216,6 +216,11 @@ export function MainNav() {
 
   const navigationLinks = [
     {
+      title: 'Create AI Chat',
+      href: '/home',
+      icon: <CreateAIIcon className="h-5 w-5" />,
+    },
+    {
       title: t('layout.menuItems.chats'),
       href: `/inboxes/${
         inboxesPagination?.pages[0]?.inboxes
@@ -307,8 +312,6 @@ export function MainNav() {
     },
   ].filter(Boolean) as NavigationLink[];
 
-  const isCurrentHomePage = useLocation().pathname === '/home';
-
   return (
     <motion.aside
       animate={{
@@ -354,53 +357,6 @@ export function MainNav() {
       <div className="flex flex-1 flex-col justify-between">
         <div className="flex flex-col gap-1.5">
           {!isGetStartedChecklistHidden && <OnboardingStepper />}
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <motion.button
-                className={cn(
-                  'text-gray-80 mb-1.5 mt-4 flex h-8 items-center gap-2 bg-white/10 hover:bg-white/10 hover:text-white',
-                  sidebarExpanded
-                    ? 'w-full justify-start rounded-lg bg-transparent px-4 py-3'
-                    : 'w-8 justify-center self-center rounded-full',
-                  isCurrentHomePage &&
-                    'bg-white/10 text-white hover:bg-white/10',
-                )}
-                onClick={() => navigate('/home')}
-                transition={{ duration: 0.3 }}
-                whileHover={{ scale: !sidebarExpanded ? 1.05 : 1 }}
-              >
-                <CreateAIIcon className="h-5 w-5 shrink-0" />
-                <AnimatePresence>
-                  {sidebarExpanded && (
-                    <motion.span
-                      animate="show"
-                      className="overflow-hidden whitespace-nowrap text-xs"
-                      exit="hidden"
-                      initial="hidden"
-                      variants={showAnimation}
-                    >
-                      Start
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </motion.button>
-            </TooltipTrigger>
-            <TooltipPortal>
-              <TooltipContent
-                align="center"
-                className="flex flex-col items-center gap-1"
-                side="right"
-              >
-                <span>{t('chat.create')}</span>
-                <div className="text-gray-80 flex items-center justify-center gap-2 text-center">
-                  <span>⌘</span>
-                  <span>N</span>
-                </div>
-              </TooltipContent>
-            </TooltipPortal>
-          </Tooltip>
-
           {navigationLinks.map((item) => {
             return (
               <Fragment key={item.title}>
@@ -439,7 +395,15 @@ export function MainNav() {
                               </span>
                             </>
                           ) : (
-                            item.title
+                            <div className="flex flex-col gap-1">
+                              {item.title}
+                              {item.href === '/home' ? (
+                                <div className="text-gray-80 flex items-center justify-center gap-2 text-center">
+                                  <span>⌘</span>
+                                  <span>N</span>
+                                </div>
+                              ) : null}
+                            </div>
                           )}
                         </p>
                       </TooltipContent>

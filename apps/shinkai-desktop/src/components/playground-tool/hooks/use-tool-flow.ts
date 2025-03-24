@@ -80,8 +80,10 @@ export const useToolFlow = ({
   const forceAutoSave = usePlaygroundStore((state) => state.forceAutoSave);
 
   const baseToolCodeRef = useRef<string>(initialState?.code || '');
-  const codeEditorRef = useRef<PrismEditor | null>(null);
-  const metadataEditorRef = useRef<PrismEditor | null>(null);
+  const codeEditorRef = usePlaygroundStore((state) => state.codeEditorRef);
+  const metadataEditorRef = usePlaygroundStore(
+    (state) => state.metadataEditorRef,
+  );
 
   const [isDirtyCodeEditor, setIsDirtyCodeEditor] = useState(false);
   const resetCounter = usePlaygroundStore((state) => state.resetCounter);
@@ -310,9 +312,8 @@ export const useToolFlow = ({
         validateCodeSnippet(generatedCode, currentLanguage)
       ) {
         baseToolCodeRef.current = generatedCode;
-        if (isFeedbackPage || !isPlaygroundMode) {
-          forceGenerateMetadata.current = true;
-        }
+        forceGenerateMetadata.current = true;
+
         setToolCode(generatedCode);
         setToolCodeStatus('success');
         if (!isPlaygroundMode) {
@@ -323,6 +324,7 @@ export const useToolFlow = ({
         setToolCodeStatus('error');
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     formattedConversationData?.pages,
     form,
@@ -480,6 +482,7 @@ export const useToolFlow = ({
       toolMetadataStatus === 'success' &&
       forceAutoSave.current
     ) {
+      forceAutoSave.current = false;
       handleSaveTool({
         toolMetadata: toolMetadata,
         toolCode: toolCode,

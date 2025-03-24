@@ -190,6 +190,7 @@ const createPlaygroundStore = () =>
         forceGenerateMetadata: createRef<boolean>(),
         codeEditorRef: createRef<PrismEditor>(),
         metadataEditorRef: createRef<PrismEditor>(),
+        forceAutoSave: createRef<boolean>(),
       }),
   }));
 
