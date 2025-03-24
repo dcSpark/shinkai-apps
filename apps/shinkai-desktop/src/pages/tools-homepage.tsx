@@ -57,7 +57,7 @@ import { useSettings } from '../store/settings';
 import { useViewportStore } from '../store/viewport';
 import { SHINKAI_STORE_URL } from '../utils/store';
 
-const CODE_GENERATOR_MODEL_ID = 'shinkai-backend:code_generator'; // TODO: change to production model name
+const CODE_GENERATOR_MODEL_ID = 'shinkai-backend:CODE_GENERATOR'; // TODO: change to production model name
 
 export const ToolsHomepage = () => {
   const { t } = useTranslation();
@@ -79,8 +79,6 @@ export const ToolsHomepage = () => {
   );
 
   const isCodeGeneratorModel = currentAI === codeGenModel?.id;
-
-  console.log(isCodeGeneratorModel, 'isCodeGeneratorModel');
 
   const scrollElementRef = useRef<HTMLDivElement>(null);
   useScrollRestoration({
