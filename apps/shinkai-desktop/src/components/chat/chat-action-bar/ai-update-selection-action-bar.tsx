@@ -99,12 +99,14 @@ export function AIModelSelectorBase({
                 {t('llmProviders.switch')}
               </span>
               <div className="flex items-center gap-4 text-left">
-                <div className="flex items-center justify-center gap-2 text-xs text-gray-100">
+                <div className="text-official-gray-400 flex items-center justify-center gap-2 text-xs">
                   <CommandShortcut>⌘ [</CommandShortcut> or
                   <CommandShortcut>⌘ ]</CommandShortcut>
                 </div>
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-xs text-gray-100">Prev / Next AI</span>
+                  <span className="text-official-gray-400 text-xs">
+                    Prev / Next AI
+                  </span>
                 </div>
               </div>
             </TooltipContent>

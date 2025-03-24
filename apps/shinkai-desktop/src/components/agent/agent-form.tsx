@@ -378,7 +378,7 @@ function AgentForm({ mode }: AgentFormProps) {
                         <TextField
                           autoFocus
                           field={field}
-                          helperMessage="Name your agent"
+                          helperMessage="Enter a unique name for your AI agent"
                           label="Agent Name"
                         />
                       )}
@@ -389,19 +389,19 @@ function AgentForm({ mode }: AgentFormProps) {
                       name="uiDescription"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Description</FormLabel>
+                          <FormLabel> Description</FormLabel>
 
                           <FormControl>
                             <Textarea
-                              className="!min-h-[100px] !resize-y text-sm"
+                              className="!min-h-[100px] text-sm"
                               onChange={field.onChange}
+                              placeholder="e.g., Create user-centered designs and improve user interactions."
                               spellCheck={false}
-                              style={{ resize: 'vertical' }}
                               value={field.value}
                             />
                           </FormControl>
                           <FormDescription>
-                            Describe what this agent will help your team with
+                            Describe what your custom agent can do
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -416,8 +416,8 @@ function AgentForm({ mode }: AgentFormProps) {
                           <FormLabel>Instructions</FormLabel>
                           <FormControl>
                             <Textarea
-                              className="placeholder-official-gray-200 !min-h-[230px] !resize-y text-sm"
-                              placeholder="Enter custom system prompt"
+                              className="placeholder-official-gray-500 !min-h-[230px] text-sm"
+                              placeholder="e.g., You are a professional UX expert. Answer questions about UI/UX best practices."
                               spellCheck={false}
                               style={{ resize: 'vertical' }}
                               {...field}
