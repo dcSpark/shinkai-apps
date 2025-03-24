@@ -1,6 +1,7 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useOpenToolInCodeEditor } from '@shinkai_network/shinkai-node-state/v2/mutations/openToolnCodeEditor/useOpenToolInCodeEditor';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import {
   BackgroundBeams,
   Button,
@@ -56,18 +57,30 @@ import { useSettings } from '../store/settings';
 import { useViewportStore } from '../store/viewport';
 import { SHINKAI_STORE_URL } from '../utils/store';
 
-const CODE_GENERATOR_MODEL_ID = 'CODE_GENERATOR'; // TODO: change to production model name
+const CODE_GENERATOR_MODEL_ID = 'shinkai-backend:code_generator'; // TODO: change to production model name
 
 export const ToolsHomepage = () => {
   const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
   const form = useToolForm();
   const toolHomepageScrollPositionRef = usePlaygroundStore(
     (state) => state.toolHomepageScrollPositionRef,
   );
 
+  const { data: llmProviders } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
   const currentAI = form.watch('llmProviderId');
 
-  const isCodeGeneratorModel = currentAI === CODE_GENERATOR_MODEL_ID;
+  const codeGenModel = llmProviders?.find(
+    (provider) => provider.model === CODE_GENERATOR_MODEL_ID,
+  );
+
+  const isCodeGeneratorModel = currentAI === codeGenModel?.id;
+
+  console.log(isCodeGeneratorModel, 'isCodeGeneratorModel');
 
   const scrollElementRef = useRef<HTMLDivElement>(null);
   useScrollRestoration({
@@ -181,6 +194,7 @@ export const ToolsHomepage = () => {
       <ToolsHome
         error={error}
         form={form}
+        isCodeGeneratorModel={isCodeGeneratorModel}
         isProcessing={currentStep !== ToolCreationState.PROMPT_INPUT}
         startToolCreation={startToolCreation}
       />
@@ -195,10 +209,12 @@ function ToolsHome({
   error,
   isProcessing,
   form,
+  isCodeGeneratorModel,
 }: {
   startToolCreation: (form: any) => void;
   error: string | null;
   isProcessing: boolean;
+  isCodeGeneratorModel: boolean;
   form: UseFormReturn<CreateToolCodeFormSchema>;
 }) {
   const { t } = useTranslation();
@@ -222,9 +238,6 @@ function ToolsHome({
   });
 
   const defaulAgentId = useSettings((state) => state.defaultAgentId);
-  const currentAI = form.watch('llmProviderId');
-
-  const isCodeGeneratorModel = currentAI === CODE_GENERATOR_MODEL_ID;
 
   const {
     mutateAsync: openToolInCodeEditor,
