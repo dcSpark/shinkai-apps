@@ -33,9 +33,11 @@ import { actionButtonClassnames } from '../conversation-footer';
 export function AIModelSelectorBase({
   value,
   onValueChange,
+  className,
 }: {
   value: string;
   onValueChange: (value: string) => void;
+  className?: string;
 }) {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
@@ -76,11 +78,14 @@ export function AIModelSelectorBase({
             <DropdownMenuTrigger
               className={cn(
                 actionButtonClassnames,
-                'w-auto truncate [&[data-state=open]>.icon]:rotate-180',
+                'w-auto justify-between truncate [&[data-state=open]>.icon]:rotate-180',
+                className,
               )}
             >
-              {selectedIcon}
-              <span>{value ?? 'Select'}</span>
+              <div className="flex items-center gap-1.5">
+                {selectedIcon}
+                <span>{value ?? 'Select'}</span>
+              </div>
               <ChevronDownIcon className="icon h-3 w-3" />
             </DropdownMenuTrigger>
           </TooltipTrigger>
