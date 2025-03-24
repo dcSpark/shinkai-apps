@@ -74,11 +74,13 @@ export const ToolsHomepage = () => {
 
   const currentAI = form.watch('llmProviderId');
 
-  const codeGenModel = llmProviders?.find(
-    (provider) => provider.model === CODE_GENERATOR_MODEL_ID,
+  const currentAIModel = llmProviders?.find(
+    (provider) => provider.id === currentAI,
   );
 
-  const isCodeGeneratorModel = currentAI === codeGenModel?.id;
+  const isCodeGeneratorModel =
+    currentAIModel?.model.toLowerCase() ===
+    CODE_GENERATOR_MODEL_ID.toLowerCase();
 
   const scrollElementRef = useRef<HTMLDivElement>(null);
   useScrollRestoration({
