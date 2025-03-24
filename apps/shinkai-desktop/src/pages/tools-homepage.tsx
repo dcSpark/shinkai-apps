@@ -56,7 +56,7 @@ import { useSettings } from '../store/settings';
 import { useViewportStore } from '../store/viewport';
 import { SHINKAI_STORE_URL } from '../utils/store';
 
-const CODE_GENERATOR_MODEL_ID = 'shinkai_code_generator'; // TODO: change to production model name
+const CODE_GENERATOR_MODEL_ID = 'CODE_GENERATOR'; // TODO: change to production model name
 
 export const ToolsHomepage = () => {
   const { t } = useTranslation();
