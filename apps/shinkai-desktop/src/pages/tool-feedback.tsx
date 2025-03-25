@@ -72,7 +72,7 @@ function ToolFeedbackPrompt() {
           >
             <motion.div
               className={cn(
-                'mx-auto flex h-[80vh] w-full max-w-lg flex-col items-stretch justify-center rounded-xl border p-1 pb-3 pt-0',
+                'mx-auto flex h-[84vh] w-full max-w-lg flex-col items-stretch justify-center rounded-xl border p-1 pb-3 pt-0',
               )}
               layoutId={`left-element`}
             >
@@ -119,10 +119,7 @@ function ToolFeedbackPrompt() {
               <Form {...form}>
                 <form
                   className="shrink-0 space-y-2 px-3 pt-2"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    startToolCreation(form.getValues());
-                  }}
+                  onSubmit={form.handleSubmit(startToolCreation)}
                 >
                   <div className="flex shrink-0 items-center gap-1">
                     <FormField
@@ -209,10 +206,7 @@ function ToolFeedbackPrompt() {
                   <Form {...form}>
                     <form
                       className="shrink-0 space-y-2 px-3 pt-2"
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        startToolCreation(form.getValues());
-                      }}
+                      onSubmit={form.handleSubmit(startToolCreation)}
                     >
                       <div className="flex shrink-0 items-center gap-1">
                         <FormField
