@@ -236,18 +236,12 @@ export function MainNav() {
       href: '/agents',
       icon: <AIAgentIcon className="h-5 w-5" />,
     },
-    // {
-    //   title: t('layout.menuItems.aiTasks'),
-    //   href: '/ai-tasks',
-    //   icon: <AiTasksIcon className="h-5 w-5" />,
-    //   disabled: true,
-    // },
-    // auth?.shinkai_identity.includes('localhost') && {
-    //   title: 'Create DM Chat',
-    //   href: '/create-chat',
-    //   icon: <ChatBubbleIcon className="h-5 w-5" />,
-    // },
 
+    {
+      title: t('tools.label'),
+      href: '/tools',
+      icon: <ToolsIcon className="h-5 w-5" />,
+    },
     {
       title: t('layout.menuItems.vectorFs'),
       href: '/vector-fs',
@@ -270,11 +264,7 @@ export function MainNav() {
     //   href: '/my-subscriptions',
     //   icon: <MySubscriptionsIcon className="h-5 w-5" />,
     // },
-    {
-      title: t('tools.label'),
-      href: '/tools',
-      icon: <ToolsIcon className="h-5 w-5" />,
-    },
+
     {
       title: 'Scheduled Tasks',
       href: '/tasks',
