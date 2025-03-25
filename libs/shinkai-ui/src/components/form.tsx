@@ -93,15 +93,15 @@ const FormLabel = React.forwardRef<
   return (
     <Label
       className={cn(
-        'pointer-events-none absolute left-4 top-3 flex select-none text-xs font-medium leading-tight text-gray-100 transition-all',
+        'text-official-gray-400 pointer-events-none absolute left-4 top-3 flex select-none text-xs font-medium leading-tight transition-all',
         // input
-        'z-[1] peer-placeholder-shown:text-base peer-placeholder-shown:leading-[2.3] peer-placeholder-shown:text-gray-100',
-        'peer-focus:text-xs peer-focus:leading-tight peer-focus:text-gray-100 peer-disabled:text-gray-100 peer-disabled:peer-placeholder-shown:text-gray-100/80',
+        'peer-placeholder-shown:text-official-gray-400 z-[1] peer-placeholder-shown:text-base peer-placeholder-shown:leading-[2.3]',
+        'peer-focus:text-official-gray-400 peer-disabled:text-official-gray-400 peer-disabled:peer-placeholder-shown:text-official-gray-400/80 peer-focus:text-xs peer-focus:leading-tight',
         // select
         'peer-data-[placeholder]/select:top-5 peer-data-[placeholder]/select:text-base',
         // adornment
         'peer-[.adornment]/adornment:text-xs',
-        error && 'text-red-500 dark:text-red-900',
+        error && 'text-red-500',
         className,
       )}
       htmlFor={formItemId}
@@ -141,7 +141,7 @@ const FormDescription = React.forwardRef<
 
   return (
     <p
-      className={cn('text-[0.75rem] text-gray-100', className)}
+      className={cn('text-official-gray-400 py-1 text-[0.75rem]', className)}
       id={formDescriptionId}
       ref={ref}
       {...props}

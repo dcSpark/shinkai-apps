@@ -74,6 +74,7 @@ import { VideoBanner } from '../components/video-banner';
 import { useAnalytics } from '../lib/posthog-provider';
 import { useAuth } from '../store/auth';
 import { TutorialBanner, useSettings } from '../store/settings';
+import { useViewportStore } from '../store/viewport';
 import { SHINKAI_DOCS_URL, SHINKAI_TUTORIALS } from '../utils/constants';
 
 export const showSpotlightWindow = async () => {
@@ -86,7 +87,6 @@ const EmptyMessage = () => {
   const setSetJobScopeOpen = useSetJobScope(
     (state) => state.setSetJobScopeOpen,
   );
-  const scrollElementRef = useRef<HTMLDivElement>(null);
 
   const { captureAnalyticEvent } = useAnalytics();
 
@@ -406,95 +406,94 @@ const EmptyMessage = () => {
 
   const selectedAgent = agents?.find((agent) => agent.agent_id === currentAI);
 
+  const mainLayoutContainerRef = useViewportStore(
+    (state) => state.mainLayoutContainerRef,
+  );
   return (
-    <div
-      className={cn('min-h-full flex-1 overflow-auto')}
-      ref={scrollElementRef}
+    <motion.div
+      animate={{ opacity: 1 }}
+      className="container flex w-full flex-col items-stretch gap-28 text-center"
+      exit={{ opacity: 0 }}
+      initial={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
     >
-      <motion.div
-        animate={{ opacity: 1 }}
-        className="container flex w-full flex-col items-stretch gap-28 text-center"
-        exit={{ opacity: 0 }}
-        initial={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="mx-auto mt-[110px] flex w-full flex-col items-stretch gap-4">
-          <div className="flex h-[52px] flex-col gap-2">
-            {selectedAgent ? (
-              <div>
-                <p className="font-clash text-2xl font-medium uppercase text-white">
-                  {formatText(selectedAgent.name)}
-                </p>
-                <p className="text-official-gray-400 text-sm">
-                  {selectedAgent.ui_description}
-                </p>
-              </div>
-            ) : (
-              <h1 className="font-clash text-4xl font-medium text-white">
-                How can I help you today?
-              </h1>
-            )}
-          </div>
-          <div
-            {...getRootFileProps({
-              className:
-                'relative shrink-0 pb-[40px] max-w-3xl  mx-auto w-full',
-            })}
-          >
-            <div className="relative z-[1]">
-              <Popover onOpenChange={setIsCommandOpen} open={isCommandOpen}>
-                <PopoverAnchor>
-                  <ChatInputArea
-                    {...(selectedTool && {
-                      alternateElement: (
-                        <SelectedToolChat
-                          args={selectedTool.args}
-                          description={selectedTool.description}
-                          name={formatText(selectedTool.name)}
-                          onSubmit={chatForm.handleSubmit(onSubmit)}
-                          onToolFormChange={setToolFormData}
-                          remove={() => {
-                            chatForm.setValue('tool', undefined);
-                            chatForm.setValue('message', '');
-                            setToolFormData(null);
+      <div className="from-brand/5 pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top_center,_var(--tw-gradient-stops))] via-transparent to-transparent" />
+      <div className="mx-auto mt-[110px] flex w-full flex-col items-stretch gap-4">
+        <div className="flex h-[52px] flex-col gap-2">
+          {selectedAgent ? (
+            <div>
+              <p className="font-clash text-2xl font-medium uppercase text-white">
+                {formatText(selectedAgent.name)}
+              </p>
+              <p className="text-official-gray-400 text-sm">
+                {selectedAgent.ui_description}
+              </p>
+            </div>
+          ) : (
+            <h1 className="font-clash text-4xl font-medium text-white">
+              How can I help you today?
+            </h1>
+          )}
+        </div>
+        <div
+          {...getRootFileProps({
+            className: 'relative shrink-0 pb-[40px] max-w-3xl  mx-auto w-full',
+          })}
+        >
+          <div className="relative z-[1]">
+            <Popover onOpenChange={setIsCommandOpen} open={isCommandOpen}>
+              <PopoverAnchor>
+                <ChatInputArea
+                  {...(selectedTool && {
+                    alternateElement: (
+                      <SelectedToolChat
+                        args={selectedTool.args}
+                        description={selectedTool.description}
+                        name={formatText(selectedTool.name)}
+                        onSubmit={chatForm.handleSubmit(onSubmit)}
+                        onToolFormChange={setToolFormData}
+                        remove={() => {
+                          chatForm.setValue('tool', undefined);
+                          chatForm.setValue('message', '');
+                          setToolFormData(null);
+                        }}
+                        toolFormData={toolFormData}
+                      />
+                    ),
+                  })}
+                  autoFocus
+                  bottomAddons={
+                    <div className="flex items-center justify-between gap-4 px-3 pb-2">
+                      <div className="flex items-center gap-2.5">
+                        <AIModelSelector
+                          onValueChange={(value) => {
+                            chatForm.setValue('agent', value);
                           }}
-                          toolFormData={toolFormData}
+                          value={currentAI ?? ''}
                         />
-                      ),
-                    })}
-                    autoFocus
-                    bottomAddons={
-                      <div className="flex items-center justify-between gap-4 px-3 pb-2">
-                        <div className="flex items-center gap-2.5">
-                          <AIModelSelector
-                            onValueChange={(value) => {
-                              chatForm.setValue('agent', value);
+                        {!selectedTool && (
+                          <FileSelectionActionBar
+                            disabled={!!selectedTool}
+                            inputProps={{
+                              ...chatForm.register('files'),
+                              ...getInputFileProps(),
                             }}
-                            value={currentAI ?? ''}
+                            onClick={openFilePicker}
                           />
-                          {!selectedTool && (
-                            <FileSelectionActionBar
-                              disabled={!!selectedTool}
-                              inputProps={{
-                                ...chatForm.register('files'),
-                                ...getInputFileProps(),
-                              }}
-                              onClick={openFilePicker}
-                            />
-                          )}
-                          {!selectedTool && <PromptSelectionActionBar />}
-                          {!selectedTool && (
-                            <ToolsSwitchActionBar
-                              checked={chatConfigForm.watch('useTools')}
-                              onClick={() => {
-                                chatConfigForm.setValue(
-                                  'useTools',
-                                  !chatConfigForm.watch('useTools'),
-                                );
-                              }}
-                            />
-                          )}
-                          {/* <WebSearchActionBar
+                        )}
+                        {!selectedTool && <PromptSelectionActionBar />}
+                        {!selectedTool && (
+                          <ToolsSwitchActionBar
+                            checked={chatConfigForm.watch('useTools')}
+                            onClick={() => {
+                              chatConfigForm.setValue(
+                                'useTools',
+                                !chatConfigForm.watch('useTools'),
+                              );
+                            }}
+                          />
+                        )}
+                        {/* <WebSearchActionBar
                                       checked={chatConfigForm.watch('useTools')}
                                       onClick={() => {
                                         chatConfigForm.setValue(
@@ -503,190 +502,132 @@ const EmptyMessage = () => {
                                         );
                                       }}
                                     /> */}
-                          {!selectedTool && (
-                            <VectorFsActionBar
-                              aiFilesCount={
-                                Object.keys(selectedKeys || {}).length ?? 0
-                              }
-                              disabled={!!selectedTool}
-                              onClick={() => {
-                                setSetJobScopeOpen(true);
-                              }}
-                            />
-                          )}
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <CreateChatConfigActionBar form={chatConfigForm} />
-
-                          {selectedTool ? (
-                            <Button
-                              className={cn('size-[36px] p-2')}
-                              disabled={isPending}
-                              form="tools-form"
-                              isLoading={isPending}
-                              size="icon"
-                            >
-                              <SendIcon className="h-full w-full" />
-                              <span className="sr-only">
-                                {t('chat.sendMessage')}
-                              </span>
-                            </Button>
-                          ) : (
-                            <Button
-                              className={cn('size-[36px] p-2')}
-                              disabled={isPending || !currentMessage}
-                              isLoading={isPending}
-                              onClick={chatForm.handleSubmit(onSubmit)}
-                              size="icon"
-                            >
-                              <SendIcon className="h-full w-full" />
-                              <span className="sr-only">
-                                {t('chat.sendMessage')}
-                              </span>
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    }
-                    disabled={isPending}
-                    onChange={(value) => {
-                      chatForm.setValue('message', value);
-                    }}
-                    onKeyDown={(e) => {
-                      if (
-                        e.key === '/' &&
-                        !e.shiftKey &&
-                        !e.ctrlKey &&
-                        !e.metaKey &&
-                        !currentMessage.trim()
-                      ) {
-                        e.preventDefault();
-                        setIsCommandOpen(true);
-                      }
-                      if (
-                        (e.ctrlKey || e.metaKey) &&
-                        e.key === 'z' &&
-                        promptSelected?.prompt === chatForm.watch('message')
-                      ) {
-                        chatForm.setValue('message', '');
-                      }
-                    }}
-                    onPaste={(event) => {
-                      const items = event.clipboardData?.items;
-                      if (items) {
-                        for (let i = 0; i < items.length; i++) {
-                          if (items[i].type.indexOf('image') !== -1) {
-                            const file = items[i].getAsFile();
-                            if (file) {
-                              onDrop([file]);
+                        {!selectedTool && (
+                          <VectorFsActionBar
+                            aiFilesCount={
+                              Object.keys(selectedKeys || {}).length ?? 0
                             }
+                            disabled={!!selectedTool}
+                            onClick={() => {
+                              setSetJobScopeOpen(true);
+                            }}
+                          />
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <CreateChatConfigActionBar form={chatConfigForm} />
+
+                        {selectedTool ? (
+                          <Button
+                            className={cn('size-[36px] p-2')}
+                            disabled={isPending}
+                            form="tools-form"
+                            isLoading={isPending}
+                            size="icon"
+                          >
+                            <SendIcon className="h-full w-full" />
+                            <span className="sr-only">
+                              {t('chat.sendMessage')}
+                            </span>
+                          </Button>
+                        ) : (
+                          <Button
+                            className={cn('size-[36px] p-2')}
+                            disabled={isPending || !currentMessage}
+                            isLoading={isPending}
+                            onClick={chatForm.handleSubmit(onSubmit)}
+                            size="icon"
+                          >
+                            <SendIcon className="h-full w-full" />
+                            <span className="sr-only">
+                              {t('chat.sendMessage')}
+                            </span>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  }
+                  disabled={isPending}
+                  onChange={(value) => {
+                    chatForm.setValue('message', value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (
+                      e.key === '/' &&
+                      !e.shiftKey &&
+                      !e.ctrlKey &&
+                      !e.metaKey &&
+                      !currentMessage.trim()
+                    ) {
+                      e.preventDefault();
+                      setIsCommandOpen(true);
+                    }
+                    if (
+                      (e.ctrlKey || e.metaKey) &&
+                      e.key === 'z' &&
+                      promptSelected?.prompt === chatForm.watch('message')
+                    ) {
+                      chatForm.setValue('message', '');
+                    }
+                  }}
+                  onPaste={(event) => {
+                    const items = event.clipboardData?.items;
+                    if (items) {
+                      for (let i = 0; i < items.length; i++) {
+                        if (items[i].type.indexOf('image') !== -1) {
+                          const file = items[i].getAsFile();
+                          if (file) {
+                            onDrop([file]);
                           }
                         }
                       }
-                    }}
-                    onSubmit={chatForm.handleSubmit(onSubmit)}
-                    ref={textareaRef}
-                    textareaClassName={cn(
-                      'max-h-[40vh] min-h-[130px] p-4 text-sm',
-                    )}
-                    topAddons={
-                      <>
-                        {isDragActive && <DropFileActive />}
-                        {!isDragActive &&
-                          currentFiles &&
-                          currentFiles.length > 0 && (
-                            <FileList
-                              currentFiles={currentFiles}
-                              isPending={isPending}
-                              onRemoveFile={(index) => {
-                                const newFiles = [...currentFiles];
-                                newFiles.splice(index, 1);
-                                chatForm.setValue('files', newFiles, {
-                                  shouldValidate: true,
-                                });
-                              }}
-                            />
-                          )}
-                      </>
                     }
-                    value={chatForm.watch('message')}
-                  />
-                </PopoverAnchor>
-                <PopoverContent
-                  align="start"
-                  className="w-[500px] p-0"
-                  side="bottom"
-                  sideOffset={-120}
-                >
-                  <Command>
-                    <CommandInput placeholder="Search tools..." />
-                    <CommandList>
-                      <CommandEmpty>No tools found.</CommandEmpty>
-                      <CommandGroup heading="Your Active Tools">
-                        {isToolsListSuccess &&
-                          toolsList?.map((tool) => (
-                            <CommandItem
-                              key={tool.tool_router_key}
-                              onSelect={() => {
-                                chatForm.setValue('tool', {
-                                  key: tool.tool_router_key,
-                                  name: tool.name,
-                                  description: tool.description,
-                                  args: tool.input_args,
-                                });
-                                chatConfigForm.setValue('useTools', true);
-                                chatForm.setValue('message', 'Tool Used');
-                                setIsCommandOpen(false);
-                              }}
-                            >
-                              <ToolsIcon className="mr-2 h-4 w-4" />
-                              <div className="flex flex-col gap-0.5 text-xs">
-                                <span className="line-clamp-1 text-white">
-                                  {formatText(tool.name)}
-                                </span>
-                                <span className="text-gray-80 line-clamp-2 text-xs">
-                                  {tool.description}
-                                </span>
-                              </div>
-                            </CommandItem>
-                          ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <motion.div
-              animate={{ opacity: 1 }}
-              className={cn(
-                'bg-official-gray-850 absolute inset-x-2 bottom-1.5 z-0 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pb-1 pt-2.5 shadow-white',
-              )}
-              exit={{ opacity: 0 }}
-              initial={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              {!!debounceMessage &&
-                !selectedTool &&
-                isSearchToolListSuccess &&
-                searchToolList?.length > 0 && (
-                  <div className="flex items-center gap-2 px-2">
-                    <span className="text-official-gray-400 pr-1 text-xs font-light">
-                      Suggested Tools
-                    </span>
-                    {searchToolList?.map((tool, idx) => (
-                      <Tooltip key={tool.tool_router_key}>
-                        <TooltipTrigger asChild>
-                          <motion.button
-                            animate={{ opacity: 1, x: 0 }}
-                            className={cn(
-                              'hover:bg-official-gray-800 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
-                            )}
-                            exit={{ opacity: 0, x: -10 }}
-                            initial={{ opacity: 0, x: -10 }}
+                  }}
+                  onSubmit={chatForm.handleSubmit(onSubmit)}
+                  ref={textareaRef}
+                  textareaClassName={cn(
+                    'max-h-[40vh] min-h-[140px] rounded-xl p-4 text-base',
+                  )}
+                  topAddons={
+                    <>
+                      {isDragActive && <DropFileActive />}
+                      {!isDragActive &&
+                        currentFiles &&
+                        currentFiles.length > 0 && (
+                          <FileList
+                            currentFiles={currentFiles}
+                            isPending={isPending}
+                            onRemoveFile={(index) => {
+                              const newFiles = [...currentFiles];
+                              newFiles.splice(index, 1);
+                              chatForm.setValue('files', newFiles, {
+                                shouldValidate: true,
+                              });
+                            }}
+                          />
+                        )}
+                    </>
+                  }
+                  value={chatForm.watch('message')}
+                />
+              </PopoverAnchor>
+              <PopoverContent
+                align="start"
+                className="w-[500px] p-0"
+                side="bottom"
+                sideOffset={-120}
+              >
+                <Command>
+                  <CommandInput placeholder="Search tools..." />
+                  <CommandList>
+                    <CommandEmpty>No tools found.</CommandEmpty>
+                    <CommandGroup heading="Your Active Tools">
+                      {isToolsListSuccess &&
+                        toolsList?.map((tool) => (
+                          <CommandItem
                             key={tool.tool_router_key}
-                            onClick={() => {
+                            onSelect={() => {
                               chatForm.setValue('tool', {
                                 key: tool.tool_router_key,
                                 name: tool.name,
@@ -695,249 +636,306 @@ const EmptyMessage = () => {
                               });
                               chatConfigForm.setValue('useTools', true);
                               chatForm.setValue('message', 'Tool Used');
+                              setIsCommandOpen(false);
                             }}
-                            type="button"
                           >
-                            <ToolsIcon className="h-3 w-3" />
-                            {formatText(tool.name)}
-                          </motion.button>
-                        </TooltipTrigger>
-                        <TooltipPortal>
-                          <TooltipContent
-                            align="start"
-                            className="max-w-[500px]"
-                            side="top"
-                          >
-                            {tool.description}
-
-                            <br />
-                            <div className="flex items-center justify-end gap-2 text-xs text-gray-100">
-                              <CommandShortcut>⌘ + {idx + 1}</CommandShortcut>
+                            <ToolsIcon className="mr-2 h-4 w-4" />
+                            <div className="flex flex-col gap-0.5 text-xs">
+                              <span className="line-clamp-1 text-white">
+                                {formatText(tool.name)}
+                              </span>
+                              <span className="text-gray-80 line-clamp-2 text-xs">
+                                {tool.description}
+                              </span>
                             </div>
-                          </TooltipContent>
-                        </TooltipPortal>
-                      </Tooltip>
-                    ))}
-                    <Link
-                      className={cn(
-                        'hover:bg-official-gray-800 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
-                      )}
-                      to="/tools"
-                    >
-                      <EllipsisIcon className="size-4" />
-                      All Tools
-                    </Link>
-                  </div>
-                )}
-              {(!debounceMessage || selectedTool) && (
-                <div className="flex w-full items-center justify-between gap-2 px-2">
-                  <span className="text-official-gray-400 text-xs font-light">
-                    <span className="font-medium">Shift + Enter</span> for a new
-                    line
+                          </CommandItem>
+                        ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <motion.div
+            animate={{ opacity: 1 }}
+            className={cn(
+              'bg-official-gray-850 absolute inset-x-2 bottom-1.5 z-0 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pb-1 pt-2.5 shadow-white',
+            )}
+            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {!!debounceMessage &&
+              !selectedTool &&
+              isSearchToolListSuccess &&
+              searchToolList?.length > 0 && (
+                <div className="flex items-center gap-2 px-2">
+                  <span className="text-official-gray-400 pr-1 text-xs font-light">
+                    Suggested Tools
                   </span>
-                  <span className="text-official-gray-400 text-xs font-light">
-                    <span className="font-medium">Enter</span> to send
-                  </span>
+                  {searchToolList?.map((tool, idx) => (
+                    <Tooltip key={tool.tool_router_key}>
+                      <TooltipTrigger asChild>
+                        <motion.button
+                          animate={{ opacity: 1, x: 0 }}
+                          className={cn(
+                            'hover:bg-official-gray-800 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
+                          )}
+                          exit={{ opacity: 0, x: -10 }}
+                          initial={{ opacity: 0, x: -10 }}
+                          key={tool.tool_router_key}
+                          onClick={() => {
+                            chatForm.setValue('tool', {
+                              key: tool.tool_router_key,
+                              name: tool.name,
+                              description: tool.description,
+                              args: tool.input_args,
+                            });
+                            chatConfigForm.setValue('useTools', true);
+                            chatForm.setValue('message', 'Tool Used');
+                          }}
+                          type="button"
+                        >
+                          <ToolsIcon className="h-3 w-3" />
+                          {formatText(tool.name)}
+                        </motion.button>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent
+                          align="start"
+                          className="max-w-[500px]"
+                          side="top"
+                        >
+                          {tool.description}
+
+                          <br />
+                          <div className="flex items-center justify-end gap-2 text-xs text-gray-100">
+                            <CommandShortcut>⌘ + {idx + 1}</CommandShortcut>
+                          </div>
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
+                  ))}
+                  <Link
+                    className={cn(
+                      'hover:bg-official-gray-800 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-white transition-colors',
+                    )}
+                    to="/tools"
+                  >
+                    <EllipsisIcon className="size-4" />
+                    All Tools
+                  </Link>
                 </div>
               )}
-            </motion.div>
-          </div>
-          <div className="mx-auto mt-3 flex w-full flex-wrap justify-center gap-3">
+            {(!debounceMessage || selectedTool) && (
+              <div className="flex w-full items-center justify-between gap-2 px-2">
+                <span className="text-official-gray-400 text-xs font-light">
+                  <span className="font-medium">Shift + Enter</span> for a new
+                  line
+                </span>
+                <span className="text-official-gray-400 text-xs font-light">
+                  <span className="font-medium">Enter</span> to send
+                </span>
+              </div>
+            )}
+          </motion.div>
+        </div>
+        <div className="mx-auto mt-3 flex w-full flex-wrap justify-center gap-3">
+          <Badge
+            className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left text-xs font-medium normal-case text-gray-50 transition-colors"
+            onClick={() => showSpotlightWindow()}
+            variant="outline"
+          >
+            Quick Ask Spotlight
+            <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
+          </Badge>
+          {[
+            {
+              text: 'Summarize a Youtube video',
+              prompt: 'Summarize a Youtube video: ',
+              tool: toolsList?.find(
+                (tool) =>
+                  tool.tool_router_key ===
+                  'local:::__official_shinkai:::youtube_transcript_summarizer',
+              ),
+            },
+            {
+              text: 'Search in DuckDuckGo',
+              prompt: 'Search in DuckDuckGo for: ',
+              tool: toolsList?.find(
+                (tool) =>
+                  tool.tool_router_key ===
+                  'local:::__official_shinkai:::duckduckgo_search',
+              ),
+            },
+          ].map((suggestion) => (
             <Badge
               className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left text-xs font-medium normal-case text-gray-50 transition-colors"
-              onClick={() => showSpotlightWindow()}
+              key={suggestion.text}
+              onClick={() => {
+                chatConfigForm.setValue('useTools', true);
+                chatForm.setValue('message', 'Tool Used');
+                if (!suggestion.tool) return;
+
+                chatForm.setValue('tool', {
+                  key: suggestion.tool.tool_router_key,
+                  name: suggestion.tool.name,
+                  description: suggestion.tool.description,
+                  args: suggestion.tool.input_args,
+                });
+              }}
               variant="outline"
             >
-              Quick Ask Spotlight
+              {suggestion.text}
               <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
             </Badge>
+          ))}
+          <Badge
+            className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left text-xs font-medium normal-case text-gray-50 transition-colors"
+            onClick={() => onCreateJob('Tell me about the Roman Empire')}
+            variant="outline"
+          >
+            Tell me about the Roman Empire
+            <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
+          </Badge>
+        </div>
+      </div>
+      <div className="flex flex-col gap-12 pb-10">
+        <div className="flex flex-col gap-4">
+          <SectionHeading
+            action={{
+              label: 'New Agent',
+              onClick: () => navigate('/add-agent'),
+            }}
+            description="Build custom AI agents tailored to your specific needs"
+            title="Explore AI Agents"
+            viewAll={{
+              label: 'View All Agents',
+              onClick: () => navigate('/agents'),
+            }}
+          />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {agents?.map((agent, idx) => (
+              <Card
+                action={{
+                  label: 'Use Agent',
+                  onClick: () => {
+                    chatForm.setValue('agent', agent.agent_id);
+                    mainLayoutContainerRef?.current?.scrollTo({
+                      top: 0,
+                      behavior: 'smooth',
+                    });
+                  },
+                }}
+                delay={idx * 0.1}
+                description={agent.ui_description}
+                icon={<AIAgentIcon className="size-4" />}
+                key={agent.agent_id}
+                title={agent.name}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-col gap-4">
+          <SectionHeading
+            action={{
+              label: 'New Tool',
+              onClick: () => navigate('/tools'),
+            }}
+            description="Enhance your AI agents with tools, including custom skills or workflows."
+            title="Explore AI Tools"
+            viewAll={{
+              label: 'View All Tools',
+              onClick: () => navigate('/tools'),
+            }}
+          />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {toolsList?.slice(0, 4).map((tool, idx) => (
+              <Card
+                action={{
+                  label: 'Use Tool',
+                  onClick: () => {
+                    chatForm.setValue('tool', {
+                      key: tool.tool_router_key,
+                      name: tool.name,
+                      description: tool.description,
+                      args: tool.input_args,
+                    });
+                    chatConfigForm.setValue('useTools', true);
+                    chatForm.setValue('message', 'Tool Used');
+                    mainLayoutContainerRef?.current?.scrollTo({
+                      top: 0,
+                      behavior: 'smooth',
+                    });
+                  },
+                }}
+                delay={idx * 0.1}
+                description={tool.description}
+                icon={<ToolsIcon className="size-4" />}
+                key={tool.tool_router_key}
+                title={tool.name}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-col gap-4">
+          <SectionHeading
+            description="How to include AI in your workflow"
+            title="Watch & Learn"
+            viewAll={{
+              label: 'Explore Docs',
+              onClick: () => open(SHINKAI_DOCS_URL),
+            }}
+          />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {[
               {
-                text: 'Summarize a Youtube video',
-                prompt: 'Summarize a Youtube video: ',
-                tool: toolsList?.find(
-                  (tool) =>
-                    tool.tool_router_key ===
-                    'local:::__official_shinkai:::youtube_transcript_summarizer',
-                ),
+                name: TutorialBanner.AIS_AND_AGENTS,
+                title: 'AIs & Agents',
+                description:
+                  'Learn to create custom AI agents with tailored instructions.',
+                videoUrl: SHINKAI_TUTORIALS['add-ai'],
+                duration: '00:22',
               },
               {
-                text: 'Search in DuckDuckGo',
-                prompt: 'Search in DuckDuckGo for: ',
-                tool: toolsList?.find(
-                  (tool) =>
-                    tool.tool_router_key ===
-                    'local:::__official_shinkai:::duckduckgo_search',
-                ),
+                name: TutorialBanner.SHINKAI_TOOLS,
+                title: 'AI Tools',
+                description:
+                  'Learn to create custom AI tools with tailored instructions.',
+                videoUrl: SHINKAI_TUTORIALS['shinkai-tools'],
+                duration: '00:36',
               },
-            ].map((suggestion) => (
-              <Badge
-                className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left text-xs font-medium normal-case text-gray-50 transition-colors"
-                key={suggestion.text}
-                onClick={() => {
-                  chatConfigForm.setValue('useTools', true);
-                  chatForm.setValue('message', 'Tool Used');
-                  if (!suggestion.tool) return;
-
-                  chatForm.setValue('tool', {
-                    key: suggestion.tool.tool_router_key,
-                    name: suggestion.tool.name,
-                    description: suggestion.tool.description,
-                    args: suggestion.tool.input_args,
-                  });
-                }}
-                variant="outline"
-              >
-                {suggestion.text}
-                <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
-              </Badge>
-            ))}
-            <Badge
-              className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left text-xs font-medium normal-case text-gray-50 transition-colors"
-              onClick={() => onCreateJob('Tell me about the Roman Empire')}
-              variant="outline"
-            >
-              Tell me about the Roman Empire
-              <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
-            </Badge>
-          </div>
-        </div>
-        <div className="flex flex-col gap-12 pb-10">
-          <div className="flex flex-col gap-4">
-            <SectionHeading
-              action={{
-                label: 'New Agent',
-                onClick: () => navigate('/add-agent'),
-              }}
-              description="Build custom AI agents tailored to your specific needs"
-              title="Explore AI Agents"
-              viewAll={{
-                label: 'View All Agents',
-                onClick: () => navigate('/agents'),
-              }}
-            />
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {agents?.map((agent, idx) => (
-                <Card
-                  action={{
-                    label: 'Use Agent',
-                    onClick: () => {
-                      chatForm.setValue('agent', agent.agent_id);
-                      scrollElementRef?.current?.scrollTo({
-                        top: 0,
-                        behavior: 'smooth',
-                      });
-                    },
-                  }}
-                  delay={idx * 0.1}
-                  description={agent.ui_description}
-                  icon={<AIAgentIcon className="size-4" />}
-                  key={agent.agent_id}
-                  title={agent.name}
+              {
+                name: TutorialBanner.FILES_EXPLORER,
+                title: 'AI File Explorer',
+                description:
+                  'Learn to create custom AI file explorer with tailored instructions.',
+                videoUrl: SHINKAI_TUTORIALS['file-explorer'],
+                duration: '00:32',
+              },
+              {
+                name: TutorialBanner.SCHEDULED_TASKS,
+                title: 'Scheduled Tasks',
+                description:
+                  'Learn to create custom AI scheduled tasks with tailored instructions.',
+                videoUrl: SHINKAI_TUTORIALS['scheduled-tasks'],
+                duration: '00:30',
+              },
+            ]
+              ?.slice(0, 4)
+              .map((tool) => (
+                <VideoBanner
+                  duration={tool.duration}
+                  key={tool.name}
+                  title={tool.title}
+                  videoUrl={tool.videoUrl}
                 />
               ))}
-            </div>
-          </div>
-          <div className="flex flex-col gap-4">
-            <SectionHeading
-              action={{
-                label: 'New Tool',
-                onClick: () => navigate('/tools'),
-              }}
-              description="Enhance your AI agents with tools, including custom skills or workflows."
-              title="Explore AI Tools"
-              viewAll={{
-                label: 'View All Tools',
-                onClick: () => navigate('/tools'),
-              }}
-            />
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {toolsList?.slice(0, 4).map((tool, idx) => (
-                <Card
-                  action={{
-                    label: 'Use Tool',
-                    onClick: () => {
-                      chatForm.setValue('tool', {
-                        key: tool.tool_router_key,
-                        name: tool.name,
-                        description: tool.description,
-                        args: tool.input_args,
-                      });
-                      chatConfigForm.setValue('useTools', true);
-                      chatForm.setValue('message', 'Tool Used');
-                      scrollElementRef?.current?.scrollTo({
-                        top: 0,
-                        behavior: 'smooth',
-                      });
-                    },
-                  }}
-                  delay={idx * 0.1}
-                  description={tool.description}
-                  icon={<ToolsIcon className="size-4" />}
-                  key={tool.tool_router_key}
-                  title={tool.name}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="flex flex-col gap-4">
-            <SectionHeading
-              description="How to include AI in your workflow"
-              title="Watch & Learn"
-              viewAll={{
-                label: 'Explore Docs',
-                onClick: () => open(SHINKAI_DOCS_URL),
-              }}
-            />
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {[
-                {
-                  name: TutorialBanner.AIS_AND_AGENTS,
-                  title: 'AIs & Agents',
-                  description:
-                    'Learn to create custom AI agents with tailored instructions.',
-                  videoUrl: SHINKAI_TUTORIALS['add-ai'],
-                  duration: '00:22',
-                },
-                {
-                  name: TutorialBanner.SHINKAI_TOOLS,
-                  title: 'AI Tools',
-                  description:
-                    'Learn to create custom AI tools with tailored instructions.',
-                  videoUrl: SHINKAI_TUTORIALS['shinkai-tools'],
-                  duration: '00:36',
-                },
-                {
-                  name: TutorialBanner.FILES_EXPLORER,
-                  title: 'AI File Explorer',
-                  description:
-                    'Learn to create custom AI file explorer with tailored instructions.',
-                  videoUrl: SHINKAI_TUTORIALS['file-explorer'],
-                  duration: '00:32',
-                },
-                {
-                  name: TutorialBanner.SCHEDULED_TASKS,
-                  title: 'Scheduled Tasks',
-                  description:
-                    'Learn to create custom AI scheduled tasks with tailored instructions.',
-                  videoUrl: SHINKAI_TUTORIALS['scheduled-tasks'],
-                  duration: '00:30',
-                },
-              ]
-                ?.slice(0, 4)
-                .map((tool) => (
-                  <VideoBanner
-                    duration={tool.duration}
-                    key={tool.name}
-                    title={tool.title}
-                    videoUrl={tool.videoUrl}
-                  />
-                ))}
-            </div>
           </div>
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   );
 };
 export default EmptyMessage;
@@ -974,7 +972,7 @@ const Card: React.FC<CardProps> = ({
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       <div className="relative z-10">
         <div className="mb-4 flex items-center justify-between">
-          <div className="text-primary flex h-10 w-10 items-center justify-center rounded-full bg-white/5">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-white">
             {icon}
           </div>
           <Button

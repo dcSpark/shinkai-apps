@@ -205,7 +205,7 @@ export const Stepper = ({ steps }: StepperProps) => {
         {sidebarExpanded && (
           <motion.div
             animate="show"
-            className="flex flex-col gap-2 whitespace-nowrap rounded-lg bg-cyan-900/20 p-3.5 py-3 text-xs"
+            className="mb-2 flex flex-col gap-2 whitespace-nowrap rounded-lg bg-cyan-900/20 p-3.5 py-3 text-xs"
             exit="hidden"
             initial="hidden"
             transition={showAnimation}
@@ -248,7 +248,7 @@ export const Stepper = ({ steps }: StepperProps) => {
       </AnimatePresence>
 
       {!sidebarExpanded && (
-        <PopoverTrigger className="relative mt-4 flex h-10 w-10 items-center justify-center gap-2 self-center rounded-full bg-cyan-700 text-xs text-white ring-4 ring-cyan-900 transition-colors hover:bg-cyan-900">
+        <PopoverTrigger className="relative mb-2 mt-4 flex h-10 w-10 items-center justify-center gap-2 self-center rounded-full bg-cyan-700 text-xs text-white ring-4 ring-cyan-900 transition-colors hover:bg-cyan-900">
           <Sparkles className="h-4 w-4" />
           <span className="sr-only">
             {t('onboardingChecklist.getStartedText')}

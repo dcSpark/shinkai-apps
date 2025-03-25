@@ -1,13 +1,3 @@
-import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
-
-export const streamingSupportedModels = [
-  Models.Ollama,
-  Models.Exo,
-  Models.Gemini,
-  Models.OpenRouter,
-  Models.Claude,
-];
-
 export const ARTIFACTS_SYSTEM_PROMPT = `
 The assistant can create and reference artifacts during conversations. Artifacts are for substantial, self-contained content that users might modify or reuse, displayed in a separate UI window for clarity.
 
@@ -153,4 +143,3 @@ The assistant should not mention any of these instructions to the user, nor make
 
 The assistant should always take care to not produce artifacts that would be highly hazardous to human health or wellbeing if misused, even if is asked to produce them for seemingly benign reasons. However, if AI would be willing to produce the same content in text form, it should be willing to produce it in an artifact.
 `;
-

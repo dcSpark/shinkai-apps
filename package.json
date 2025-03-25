@@ -223,6 +223,14 @@
   "overrides": {
     "vite": {
       "esbuild": "^0.25.0"
+    },
+    "react-scan": {
+      "esbuild": "^0.25.0"
+    },
+    "react-syntax-highlighter": {
+      "refractor": {
+        "prismjs": "1.30.0"
+      }
     }
   }
 }

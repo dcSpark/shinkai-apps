@@ -30,8 +30,8 @@ import { useAuth } from '../../../store/auth';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
 import { DockerStatus } from '../../tools/tool-collection';
 import { usePlaygroundStore } from '../context/playground-context';
-import { useAutoSaveTool } from '../hooks/use-create-tool-and-save';
 import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
+import { useToolSave } from '../hooks/use-tool-save';
 import EditToolBasicInfoDialog from './edit-tool-basic-info-dialog';
 import { ManageSourcesButton } from './manage-sources-button';
 
@@ -56,6 +56,9 @@ function PlaygroundHeaderBase({
   const setToolCode = usePlaygroundStore((state) => state.setToolCode);
   const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
   const setResetCounter = usePlaygroundStore((state) => state.setResetCounter);
+  const resetPlaygroundStore = usePlaygroundStore(
+    (state) => state.resetPlaygroundStore,
+  );
 
   const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
   const form = useFormContext<CreateToolCodeFormSchema>();
@@ -64,10 +67,10 @@ function PlaygroundHeaderBase({
   const navigate = useNavigate();
   const { toolRouterKey } = useParams();
 
-  const { handleAutoSave, isSavingTool } = useAutoSaveTool();
+  const { handleSaveTool, isSavingTool } = useToolSave();
 
   const handleSaveChanges = () => {
-    handleAutoSave({
+    handleSaveTool({
       toolName: toolName,
       toolDescription: toolDescription,
       toolMetadata: toolMetadata as ToolMetadata,
@@ -168,7 +171,10 @@ function PlaygroundHeaderBase({
       <div className="flex items-center gap-2">
         <Button
           className="text-gray-80 border-none"
-          onClick={() => navigate('/tools')}
+          onClick={() => {
+            resetPlaygroundStore();
+            navigate('/tools');
+          }}
           rounded="lg"
           size="xs"
           type="button"

@@ -16,13 +16,40 @@ import { useStore } from 'zustand/index';
 
 type Status = 'idle' | 'pending' | 'success' | 'error';
 
+export type ToolCreationStep =
+  | 'initial-prompt'
+  | 'feedback-required'
+  | 'generating-code'
+  | 'generating-metadata'
+  | 'saving'
+  | 'completed'
+  | 'error';
+
+export enum ToolCreationState {
+  PROMPT_INPUT = 'PROMPT_INPUT',
+  PLAN_REVIEW = 'PLAN_REVIEW',
+  CREATING_CODE = 'CREATING_CODE',
+  CREATING_METADATA = 'CREATING_METADATA',
+  SAVING_TOOL = 'SAVING_TOOL',
+  COMPLETED = 'COMPLETED',
+}
+
 type PlaygroundStore = {
+  // steps
+  currentStep: ToolCreationState;
+  setCurrentStep: (currentStep: ToolCreationState) => void;
+  toolCreationError: string | null;
+  setToolCreationError: (toolCreationError: string | null) => void;
   // inboxId
   chatInboxId: string | undefined;
   setChatInboxId: (chatInboxId: string | undefined) => void;
+  metadataInboxId: string | undefined;
+  setMetadataInboxId: (metadataInboxId: string | undefined) => void;
   // code
   toolCodeStatus: Status;
-  setToolCodeStatus: (toolCodeStatus: Status) => void;
+  setToolCodeStatus: (
+    toolCodeStatus: Status | ((prev: Status) => Status),
+  ) => void;
   toolCode: string;
   setToolCode: (toolCode: string) => void;
   toolCodeError: string | null;
@@ -55,7 +82,9 @@ type PlaygroundStore = {
 
   metadataEditorRef: React.MutableRefObject<PrismEditor | null>;
   codeEditorRef: React.MutableRefObject<PrismEditor | null>;
-
+  forceGenerateCode: React.MutableRefObject<boolean | null>;
+  forceGenerateMetadata: React.MutableRefObject<boolean | null>;
+  forceAutoSave: React.MutableRefObject<boolean | null>;
   toolHomepageScrollPositionRef: React.MutableRefObject<{
     [key: string]: number;
   } | null>;
@@ -73,14 +102,27 @@ export const toolHomepageScrollPositionRef = createRef<{
 }>;
 toolHomepageScrollPositionRef.current = {};
 
-const createPlaygroundStore = () => {
-  return createStore<PlaygroundStore>((set) => ({
+const createPlaygroundStore = () =>
+  createStore<PlaygroundStore>((set) => ({
+    // steps
+    currentStep: ToolCreationState.PROMPT_INPUT,
+    setCurrentStep: (currentStep) => set({ currentStep }),
+    toolCreationError: null,
+    setToolCreationError: (toolCreationError) => set({ toolCreationError }),
     // inboxId
     chatInboxId: undefined,
     setChatInboxId: (chatInboxId) => set({ chatInboxId }),
+    metadataInboxId: undefined,
+    setMetadataInboxId: (metadataInboxId) => set({ metadataInboxId }),
     // code
     toolCodeStatus: 'idle',
-    setToolCodeStatus: (toolCodeStatus) => set({ toolCodeStatus }),
+    setToolCodeStatus: (toolCodeStatus) =>
+      set((state) => ({
+        toolCodeStatus:
+          typeof toolCodeStatus === 'function'
+            ? toolCodeStatus(state.toolCodeStatus)
+            : toolCodeStatus,
+      })),
     toolCode: '',
     setToolCode: (toolCode) => set({ toolCode }),
     toolCodeError: null,
@@ -124,10 +166,14 @@ const createPlaygroundStore = () => {
 
     metadataEditorRef: createRef<PrismEditor>(),
     codeEditorRef: createRef<PrismEditor>(),
-
+    forceGenerateCode: createRef<boolean>(),
+    forceGenerateMetadata: createRef<boolean>(),
+    forceAutoSave: createRef<boolean>(),
     resetPlaygroundStore: () =>
       set({
+        currentStep: ToolCreationState.PROMPT_INPUT,
         chatInboxId: undefined,
+        metadataInboxId: undefined,
         toolCodeStatus: 'idle',
         toolCode: '',
         toolCodeError: null,
@@ -140,9 +186,13 @@ const createPlaygroundStore = () => {
         xShinkaiAppId: `app-id-${Date.now()}`,
         xShinkaiToolId: `task-id-${Date.now()}`,
         selectedToolCategory: 'all',
+        forceGenerateCode: createRef<boolean>(),
+        forceGenerateMetadata: createRef<boolean>(),
+        codeEditorRef: createRef<PrismEditor>(),
+        metadataEditorRef: createRef<PrismEditor>(),
+        forceAutoSave: createRef<boolean>(),
       }),
   }));
-};
 
 const PlaygroundContext = createContext<ReturnType<
   typeof createPlaygroundStore
@@ -154,17 +204,15 @@ export const PlaygroundProvider = ({
   children: React.ReactNode;
 }) => {
   const location = useLocation();
-  const [store] = useState<ReturnType<typeof createPlaygroundStore>>(
+  const [store] = useState<ReturnType<typeof createPlaygroundStore>>(() =>
     createPlaygroundStore(),
   );
 
   useEffect(() => {
-    if (location.pathname.startsWith('/tools/edit/')) {
-      return;
+    if (location.pathname.startsWith('/tools')) {
+      store.getState().resetPlaygroundStore();
     }
-
-    store.getState().resetPlaygroundStore();
-  }, [location, location.pathname, store]);
+  }, [location.pathname, store]);
 
   return (
     <PlaygroundContext.Provider value={store}>

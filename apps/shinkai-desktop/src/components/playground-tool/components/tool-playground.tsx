@@ -17,17 +17,13 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { LoaderIcon } from 'lucide-react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
-import {
-  CreateToolCodeFormSchema,
-  useToolCode,
-  useToolForm,
-} from '../hooks/use-tool-code';
-import { useToolMetadata } from '../hooks/use-tool-metadata';
+import { CreateToolCodeFormSchema, useToolForm } from '../hooks/use-tool-code';
+import { useToolFlow } from '../hooks/use-tool-flow';
 import PlaygroundToolLayout from '../layout';
 import { detectLanguage } from '../utils/code';
 import { CodePanel } from './code-panel';
@@ -80,9 +76,7 @@ function PlaygroundToolEditor({
   initialToolRouterKeyWithVersion?: string;
 }) {
   const auth = useAuth((state) => state.auth);
-
   const { toolRouterKey } = useParams();
-
   const form = useToolForm(createToolCodeFormInitialValues);
 
   useEffect(() => {
@@ -115,39 +109,47 @@ function PlaygroundToolEditor({
     chatConversationData,
     toolHistory,
     executeToolCodeQuery,
+    executeToolCode,
     toolResultFiles,
     isDirtyCodeEditor,
     setIsDirtyCodeEditor,
-    forceGenerateMetadata,
     handleApplyChangesCodeSubmit,
     resetToolCode,
-    handleCreateToolCode,
-  } = useToolCode({
-    createToolCodeForm: form,
-    initialState: toolCodeInitialValues,
-    initialChatInboxId,
+    handleContinueConversation,
+    generateMetadata,
+    toolMetadata,
+    mountTimestamp,
+  } = useToolFlow({
+    form,
+    initialInboxId: initialChatInboxId,
+    initialState: {
+      code: toolCodeInitialValues?.code,
+      metadata: toolMetadataInitialValues?.metadata,
+      codeState: toolCodeInitialValues?.state,
+      metadataState: toolMetadataInitialValues?.state,
+      error: toolCodeInitialValues?.error || toolMetadataInitialValues?.error,
+    },
+    isPlaygroundMode: true,
   });
 
-  const toolCode = usePlaygroundStore((state) => state.toolCode);
-  const codeEditorRef = usePlaygroundStore((state) => state.codeEditorRef);
+  const handleCreateToolCode = useCallback(
+    (data: CreateToolCodeFormSchema) => {
+      handleContinueConversation(data.message);
+    },
+    [handleContinueConversation],
+  );
 
+  const toolCode = usePlaygroundStore((state) => state.toolCode);
   const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
   const xShinkaiAppId = usePlaygroundStore((state) => state.xShinkaiAppId);
   const xShinkaiToolId = usePlaygroundStore((state) => state.xShinkaiToolId);
   const focusedPanel = usePlaygroundStore((state) => state.focusedPanel);
   const setFocusedPanel = usePlaygroundStore((state) => state.setFocusedPanel);
-  const isToolCodeGenerationPending = usePlaygroundStore(
-    (state) => state.toolCodeStatus === 'pending',
-  );
+  const toolCodeStatus = usePlaygroundStore((state) => state.toolCodeStatus);
+  const isToolCodeGenerationPending = toolCodeStatus === 'pending';
   const isToolMetadataPending = usePlaygroundStore(
     (state) => state.toolMetadataStatus === 'pending',
   );
-
-  const { regenerateToolMetadata } = useToolMetadata({
-    tools: form.watch('tools'),
-    forceGenerateMetadata,
-    initialState: toolMetadataInitialValues,
-  });
 
   // When opening a playground, we need to copy the tool's real assets into the new execution environment
   const { mutateAsync: copyToolAssets } = useCopyToolAssets();
@@ -166,37 +168,6 @@ function PlaygroundToolEditor({
     xShinkaiToolId,
     toolRouterKey,
   ]);
-
-  const mountTimestamp = useRef(new Date());
-  const handleRunCode: FormProps['onSubmit'] = useCallback(
-    async (data: any) => {
-      mountTimestamp.current = new Date();
-      const { configs, params } = data.formData;
-      const currentCode = codeEditorRef?.current?.value ?? toolCode ?? '';
-      await executeToolCodeQuery.mutateAsync({
-        code: currentCode,
-        nodeAddress: auth?.node_address ?? '',
-        token: auth?.api_v2_key ?? '',
-        params,
-        llmProviderId: form.getValues('llmProviderId'),
-        tools: form.getValues('tools'),
-        language: form.getValues('language'),
-        configs,
-        xShinkaiAppId,
-        xShinkaiToolId,
-      });
-    },
-    [
-      auth?.api_v2_key,
-      auth?.node_address,
-      codeEditorRef,
-      executeToolCodeQuery,
-      form,
-      toolCode,
-      xShinkaiAppId,
-      xShinkaiToolId,
-    ],
-  );
 
   return (
     <Form {...form}>
@@ -289,7 +260,8 @@ function PlaygroundToolEditor({
                 }
                 initialToolName={toolName ?? ''}
                 initialToolDescription={toolDescription ?? ''}
-                regenerateToolMetadata={regenerateToolMetadata}
+                regenerateToolMetadata={generateMetadata}
+                toolMetadata={toolMetadata}
               />
             </TabsContent>
           </Tabs>
@@ -300,12 +272,12 @@ function PlaygroundToolEditor({
               executeToolCodeQuery.error?.response?.data?.message ??
               executeToolCodeQuery.error?.message
             }
-            handleRunCode={handleRunCode}
+            handleRunCode={executeToolCode}
             isExecutionToolCodeError={executeToolCodeQuery.isError}
             isExecutionToolCodePending={executeToolCodeQuery.isPending}
             isExecutionToolCodeSuccess={executeToolCodeQuery.isSuccess}
             mountTimestampRef={mountTimestamp}
-            regenerateToolMetadata={regenerateToolMetadata}
+            regenerateToolMetadata={generateMetadata}
             toolResultFiles={toolResultFiles}
           />
         }
