@@ -417,7 +417,7 @@ const EmptyMessage = () => {
       initial={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="from-brand/10 pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top_center,_var(--tw-gradient-stops))] via-transparent to-transparent" />
+      <div className="from-brand/5 pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top_center,_var(--tw-gradient-stops))] via-transparent to-transparent" />
       <div className="mx-auto mt-[110px] flex w-full flex-col items-stretch gap-4">
         <div className="flex h-[52px] flex-col gap-2">
           {selectedAgent ? (
