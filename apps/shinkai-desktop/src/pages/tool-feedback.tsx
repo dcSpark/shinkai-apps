@@ -15,7 +15,6 @@ import { motion } from 'framer-motion';
 import { LoaderIcon, LogOut } from 'lucide-react';
 import { useCallback, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'sonner';
 
 import { MessageList } from '../components/chat/components/message-list';
 import { getRandomWidth } from '../components/playground-tool/components/code-panel';

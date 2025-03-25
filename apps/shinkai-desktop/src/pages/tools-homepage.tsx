@@ -13,7 +13,13 @@ import {
 import { SendIcon, ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { useScrollRestoration } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { ArrowRight, ArrowUpRight, CircleAlert, StoreIcon } from 'lucide-react';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  CircleAlert,
+  LogOut,
+  StoreIcon,
+} from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Link } from 'react-router-dom';
@@ -178,7 +184,18 @@ export const ToolsHomepage = () => {
           }
           topElement={
             <div className="flex h-[45px] items-center justify-between gap-2 border-b border-gray-400 px-4 pb-2.5">
-              <Skeleton className="bg-official-gray-900 h-[30px] w-[200px]" />
+              <div className="flex items-center gap-2">
+                <Button
+                  className="size-6 p-1"
+                  onClick={() => resetPlaygroundStore()}
+                  size="auto"
+                  variant="tertiary"
+                >
+                  <LogOut className="size-full text-white" />
+                </Button>
+
+                <Skeleton className="bg-official-gray-900 h-[30px] w-[200px]" />
+              </div>
               <div className="flex items-center gap-2">
                 <Skeleton className="bg-official-gray-900 h-[30px] w-[100px]" />
                 <Skeleton className="bg-official-gray-900 h-[30px] w-[40px]" />
