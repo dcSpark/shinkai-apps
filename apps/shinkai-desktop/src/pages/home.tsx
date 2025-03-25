@@ -417,6 +417,7 @@ const EmptyMessage = () => {
       initial={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
+      <div className="from-brand/10 pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] via-transparent to-transparent" />
       <div className="mx-auto mt-[110px] flex w-full flex-col items-stretch gap-4">
         <div className="flex h-[52px] flex-col gap-2">
           {selectedAgent ? (
@@ -586,7 +587,7 @@ const EmptyMessage = () => {
                   onSubmit={chatForm.handleSubmit(onSubmit)}
                   ref={textareaRef}
                   textareaClassName={cn(
-                    'max-h-[40vh] min-h-[130px] p-4 text-sm',
+                    'max-h-[40vh] min-h-[140px] rounded-xl p-4 text-base',
                   )}
                   topAddons={
                     <>
@@ -971,7 +972,7 @@ const Card: React.FC<CardProps> = ({
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       <div className="relative z-10">
         <div className="mb-4 flex items-center justify-between">
-          <div className="text-primary flex h-10 w-10 items-center justify-center rounded-full bg-white/5">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-white">
             {icon}
           </div>
           <Button

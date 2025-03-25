@@ -14,7 +14,7 @@ import {
   FormLabel,
   Skeleton,
 } from '@shinkai_network/shinkai-ui';
-import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
+import { SendIcon, ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { useScrollRestoration } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -395,6 +395,7 @@ function ToolsHome({
                         type="button"
                         variant="outline"
                       >
+                        <ToolsIcon className="mr-1 size-4" />
                         {suggestion.text}
                         <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
                       </Button>
