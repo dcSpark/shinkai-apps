@@ -5,6 +5,7 @@ import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/get
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
 import {
+  Badge,
   CommandShortcut,
   DropdownMenu,
   DropdownMenuContent,
@@ -23,11 +24,12 @@ import { AIAgentIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BoltIcon, BotIcon, ChevronDownIcon } from 'lucide-react';
 import { memo, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import ProviderIcon from '../../ais/provider-icon';
+import { CODE_GENERATOR_MODEL_ID } from '../../tools/constants';
 import { actionButtonClassnames } from '../conversation-footer';
 
 export function AIModelSelectorBase({
@@ -40,6 +42,7 @@ export function AIModelSelectorBase({
   className?: string;
 }) {
   const { t } = useTranslation();
+  const location = useLocation();
   const auth = useAuth((state) => state.auth);
   const { isSuccess: isLlmProviderSuccess, llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
@@ -50,6 +53,14 @@ export function AIModelSelectorBase({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
+  const isRegularChatPage =
+    location.pathname.includes('inboxes') || location.pathname.includes('home');
+
+  const isToolChatPage =
+    location.pathname.includes('tools') &&
+    llmProviders
+      ?.find((llmProvider) => llmProvider.id === value)
+      ?.model.toLowerCase() === CODE_GENERATOR_MODEL_ID.toLowerCase();
 
   const selectedIcon = useMemo(() => {
     const selectedProvider = llmProviders?.find(
@@ -98,17 +109,19 @@ export function AIModelSelectorBase({
               <span className="text-center text-xs text-white">
                 {t('llmProviders.switch')}
               </span>
-              <div className="flex items-center gap-4 text-left">
-                <div className="text-official-gray-400 flex items-center justify-center gap-2 text-xs">
-                  <CommandShortcut>⌘ [</CommandShortcut> or
-                  <CommandShortcut>⌘ ]</CommandShortcut>
+              {isRegularChatPage && (
+                <div className="flex items-center gap-4 text-left">
+                  <div className="text-official-gray-400 flex items-center justify-center gap-2 text-xs">
+                    <CommandShortcut>⌘ [</CommandShortcut> or
+                    <CommandShortcut>⌘ ]</CommandShortcut>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-official-gray-400 text-xs">
+                      Prev / Next AI
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-official-gray-400 text-xs">
-                    Prev / Next AI
-                  </span>
-                </div>
-              </div>
+              )}
             </TooltipContent>
           </TooltipPortal>
           <DropdownMenuContent
@@ -184,6 +197,16 @@ export function AIModelSelectorBase({
                     <div className="flex flex-col gap-1">
                       <span className="text-xs">{llmProvider.id}</span>
                     </div>
+                    {location.pathname.includes('tools') &&
+                      llmProvider.model.toLowerCase() ===
+                        CODE_GENERATOR_MODEL_ID.toLowerCase() && (
+                        <Badge
+                          className="ml-2 border border-emerald-900 bg-emerald-900/80 text-emerald-400 hover:bg-emerald-900/80"
+                          variant="secondary"
+                        >
+                          Recommended
+                        </Badge>
+                      )}
                   </DropdownMenuRadioItem>
                 ))}
             </DropdownMenuRadioGroup>

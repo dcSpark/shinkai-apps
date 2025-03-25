@@ -8,31 +8,19 @@ import {
   buttonVariants,
   ChatInputArea,
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
   Skeleton,
 } from '@shinkai_network/shinkai-ui';
 import { SendIcon, ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { useScrollRestoration } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { AnimatePresence, motion } from 'framer-motion';
-import {
-  ArrowRight,
-  ArrowUpRight,
-  CircleAlert,
-  LoaderIcon,
-  StoreIcon,
-} from 'lucide-react';
-import { memo, useEffect, useRef, useState } from 'react';
+import { ArrowRight, ArrowUpRight, CircleAlert, StoreIcon } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import { MessageList } from '../components/chat/components/message-list';
-import { getRandomWidth } from '../components/playground-tool/components/code-panel';
 import { LanguageToolSelector } from '../components/playground-tool/components/language-tool-selector';
 import { ToolsSelection } from '../components/playground-tool/components/tools-selection';
 import {
@@ -46,7 +34,10 @@ import {
 import { useToolFlow } from '../components/playground-tool/hooks/use-tool-flow';
 import PlaygroundToolLayout from '../components/playground-tool/layout';
 import ToolCreationStatus from '../components/tools/components/tool-creation-status';
-import { TOOL_HOMEPAGE_SUGGESTIONS } from '../components/tools/constants';
+import {
+  CODE_GENERATOR_MODEL_ID,
+  TOOL_HOMEPAGE_SUGGESTIONS,
+} from '../components/tools/constants';
 import ImportToolModal from '../components/tools/import-tool';
 import {
   DockerStatus,
@@ -56,8 +47,6 @@ import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useViewportStore } from '../store/viewport';
 import { SHINKAI_STORE_URL } from '../utils/store';
-
-const CODE_GENERATOR_MODEL_ID = 'shinkai-backend:CODE_GENERATOR'; // TODO: change to production model name
 
 export const ToolsHomepage = () => {
   const { t } = useTranslation();
@@ -81,6 +70,16 @@ export const ToolsHomepage = () => {
   const isCodeGeneratorModel =
     currentAIModel?.model.toLowerCase() ===
     CODE_GENERATOR_MODEL_ID.toLowerCase();
+
+  useEffect(() => {
+    const genCodeModel = llmProviders?.find(
+      (provider) =>
+        provider.model.toLowerCase() === CODE_GENERATOR_MODEL_ID.toLowerCase(),
+    );
+    if (genCodeModel) {
+      form.setValue('llmProviderId', genCodeModel.id);
+    }
+  }, [form, llmProviders]);
 
   const scrollElementRef = useRef<HTMLDivElement>(null);
   useScrollRestoration({

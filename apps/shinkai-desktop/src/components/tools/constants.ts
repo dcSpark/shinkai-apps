@@ -33,3 +33,5 @@ export const TOOL_HOMEPAGE_SUGGESTIONS = [
     language: CodeLanguage.Typescript,
   },
 ];
+
+export const CODE_GENERATOR_MODEL_ID = 'shinkai-backend:CODE_GENERATOR';
