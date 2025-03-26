@@ -53,9 +53,9 @@ const nonOllamaProviderModels = {
   'shinkai-backend:code_generator':
     'Shinkai AI model for generating tool code.',
   'openai:gpt-4o':
-    'OpenAI GPT-4 model for high-quality text and image generation.',
+    'Powerful OpenAI model known for its ability to generate human-like text and handle complex tasks.',
   'openai:gpt-4o-mini':
-    'Lightweight OpenAI GPT-4 model for concise text and image generation.',
+    'Lightweight OpenAI model for concise text and image generation.',
   'openai:gpt-4o-2024-08-06':
     'Latest OpenAI GPT-4 model for diverse and accurate content generation.',
 } as Record<string, string>;
@@ -81,12 +81,14 @@ export function AIModelSelectorBase({
       enabled: true,
       select: (data) => {
         return data.map((provider) => {
-          const isOllama = provider.model.includes('ollama');
           let description =
             'A versatile AI model for text generation and understanding.';
-          if (isOllama) {
+          if (provider.model.includes('ollama')) {
             const model = provider.model.split(':');
             description = ollamaDescriptionMap[model[1]] || '';
+          } else if (provider.model.includes('claude')) {
+            description =
+              'Safe and thoughtful Anthropic AI model with advanced coding capabilities';
           } else {
             description = nonOllamaProviderModels[provider.model] || '';
           }
