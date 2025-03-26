@@ -179,18 +179,26 @@ export function AIModelSelectorBase({
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>
-      <DialogContent className="bg-official-gray-950 border-official-gray-780 size-full max-h-[460px] overflow-y-auto border p-1 py-2">
+      <DialogContent className="bg-official-gray-950 border-official-gray-780 size-full max-h-[500px] border p-1 py-2">
         <DialogTitle className="sr-only">
           {t('llmProviders.switch')}
         </DialogTitle>
         <Command
+          className="[&_[cmdk-input-wrapper]]:border-official-gray-850 h-full [&_[cmdk-input-wrapper]]:pb-1"
           disablePointerSelection
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setIsDialogOpen(false);
+            }
+          }}
           onValueChange={onValueChange}
           value={value}
         >
-          <CommandList className="[&_[cmdk-input-wrapper]]:border-official-gray-850 max-h-full [&_[cmdk-input-wrapper]]:pb-1">
-            <CommandInput className="pb-2" placeholder="Search..." />
-            <CommandEmpty>No results found.</CommandEmpty>
+          <CommandInput placeholder="Search..." />
+          <CommandEmpty className="text-official-gray-400 py-5 text-center text-sm">
+            No results found.
+          </CommandEmpty>
+          <CommandList className="flex max-h-full flex-col">
             <CommandGroup
               className="py-4"
               heading={
