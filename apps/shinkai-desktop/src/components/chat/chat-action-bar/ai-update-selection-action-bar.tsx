@@ -21,16 +21,39 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { AIAgentIcon } from '@shinkai_network/shinkai-ui/assets';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BoltIcon, BotIcon, ChevronDownIcon } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import OLLAMA_MODELS_REPOSITORY from '../../../lib/shinkai-node-manager/ollama-models-repository.json';
 import { useAuth } from '../../../store/auth';
 import ProviderIcon from '../../ais/provider-icon';
 import { CODE_GENERATOR_MODEL_ID } from '../../tools/constants';
 import { actionButtonClassnames } from '../conversation-footer';
+
+const ollamaDescriptionMap = OLLAMA_MODELS_REPOSITORY.reduce(
+  (acc, model) => {
+    acc[model.name] = model.description;
+    return acc;
+  },
+  {} as Record<string, string>,
+);
+
+const nonOllamaProviderModels = {
+  'shinkai-backend:free_text_inference':
+    'Shinkai AI model for testing text, images, and content generation.',
+  'shinkai-backend:code_generator':
+    'Shinkai AI model for generating tool code.',
+  'openai:gpt-4o':
+    'OpenAI GPT-4 model for high-quality text and image generation.',
+  'openai:gpt-4o-mini':
+    'Lightweight OpenAI GPT-4 model for concise text and image generation.',
+  'openai:gpt-4o-2024-08-06':
+    'Latest OpenAI GPT-4 model for diverse and accurate content generation.',
+} as Record<string, string>;
 
 export function AIModelSelectorBase({
   value,
@@ -44,10 +67,33 @@ export function AIModelSelectorBase({
   const { t } = useTranslation();
   const location = useLocation();
   const auth = useAuth((state) => state.auth);
-  const { isSuccess: isLlmProviderSuccess, llmProviders } = useGetLLMProviders({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
+  const { isSuccess: isLlmProviderSuccess, llmProviders } = useGetLLMProviders(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    },
+    {
+      enabled: true,
+      select: (data) => {
+        return data.map((provider) => {
+          const isOllama = provider.model.includes('ollama');
+          let description =
+            'A versatile AI model for text generation and understanding.';
+          if (isOllama) {
+            const model = provider.model.split(':');
+            description = ollamaDescriptionMap[model[1]] || '';
+          } else {
+            description = nonOllamaProviderModels[provider.model] || '';
+          }
+
+          return {
+            ...provider,
+            description: description,
+          };
+        });
+      },
+    },
+  );
 
   const { data: agents, isSuccess: isAgentsSuccess } = useGetAgents({
     nodeAddress: auth?.node_address ?? '',
@@ -55,12 +101,6 @@ export function AIModelSelectorBase({
   });
   const isRegularChatPage =
     location.pathname.includes('inboxes') || location.pathname.includes('home');
-
-  const isToolChatPage =
-    location.pathname.includes('tools') &&
-    llmProviders
-      ?.find((llmProvider) => llmProvider.id === value)
-      ?.model.toLowerCase() === CODE_GENERATOR_MODEL_ID.toLowerCase();
 
   const selectedIcon = useMemo(() => {
     const selectedProvider = llmProviders?.find(
@@ -126,7 +166,7 @@ export function AIModelSelectorBase({
           </TooltipPortal>
           <DropdownMenuContent
             align="start"
-            className="bg-official-gray-950 border-official-gray-780 max-h-[460px] min-w-[380px] overflow-y-auto border p-1 py-2"
+            className="bg-official-gray-950 border-official-gray-780 max-h-[460px] min-w-[380px] max-w-[500px] overflow-y-auto border p-1 py-2"
             side="top"
           >
             <DropdownMenuRadioGroup onValueChange={onValueChange} value={value}>
@@ -186,27 +226,32 @@ export function AIModelSelectorBase({
                 llmProviders?.length > 0 &&
                 llmProviders?.map((llmProvider) => (
                   <DropdownMenuRadioItem
-                    className="flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
+                    className="hover:bg-official-gray-850 aria-checked:bg-official-gray-850 flex cursor-pointer items-start gap-2 rounded-md px-2 py-2 text-white transition-colors"
                     key={llmProvider.id}
                     value={llmProvider.id}
                   >
                     <ProviderIcon
-                      className="size-4 shrink-0"
+                      className="mt-0.5 size-4 shrink-0"
                       provider={llmProvider.model.split(':')[0]}
                     />
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs">{llmProvider.id}</span>
+                    <div className="flex flex-col gap-1 text-xs">
+                      <span className="">
+                        {formatText(llmProvider.id)}
+                        {location.pathname.includes('tools') &&
+                          llmProvider.model.toLowerCase() ===
+                            CODE_GENERATOR_MODEL_ID.toLowerCase() && (
+                            <Badge
+                              className="ml-2 border border-emerald-900 bg-emerald-900/80 py-0 font-normal text-emerald-400 hover:bg-emerald-900/80"
+                              variant="secondary"
+                            >
+                              Recommended
+                            </Badge>
+                          )}
+                      </span>
+                      <span className="text-official-gray-400 line-clamp-2 text-xs">
+                        {llmProvider?.description}
+                      </span>
                     </div>
-                    {location.pathname.includes('tools') &&
-                      llmProvider.model.toLowerCase() ===
-                        CODE_GENERATOR_MODEL_ID.toLowerCase() && (
-                        <Badge
-                          className="ml-2 border border-emerald-900 bg-emerald-900/80 text-emerald-400 hover:bg-emerald-900/80"
-                          variant="secondary"
-                        >
-                          Recommended
-                        </Badge>
-                      )}
                   </DropdownMenuRadioItem>
                 ))}
             </DropdownMenuRadioGroup>

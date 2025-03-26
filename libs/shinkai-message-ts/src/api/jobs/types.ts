@@ -115,6 +115,8 @@ export type LLMProvider = {
   toolkit_permissions: string[];
   storage_bucket_permissions: string[];
   allowed_message_senders: string[];
+} & {
+  description?: string; // hardcoded in the frontend side
 };
 
 export type GetDownloadFileRequest = {
