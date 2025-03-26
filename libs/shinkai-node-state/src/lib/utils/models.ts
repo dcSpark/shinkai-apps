@@ -7,6 +7,7 @@ export enum Models {
   Groq = 'groq',
   OpenRouter = 'openrouter',
   Claude = 'claude',
+  DeepSeek = 'deepseek',
 }
 
 export const modelsConfig = {
@@ -154,6 +155,19 @@ export const modelsConfig = {
       {
         name: 'Claude 3 Haiku',
         value: 'claude-3-haiku-20240307',
+      },
+    ],
+  },
+  [Models.DeepSeek]: {
+    apiUrl: 'https://api.deepseek.com',
+    modelTypes: [
+      {
+        name: 'DeepSeek Chat',
+        value: 'deepseek-chat',
+      },
+      {
+        name: 'DeepSeek Reasoner',
+        value: 'deepseek-reasoner',
       },
     ],
   },

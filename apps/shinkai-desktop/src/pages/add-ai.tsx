@@ -73,6 +73,10 @@ const modelOptions: { value: Models; label: string }[] = [
     value: Models.Claude,
     label: 'Claude',
   },
+  {
+    value: Models.DeepSeek,
+    label: 'DeepSeek',
+  },
 ];
 
 export const getModelObject = (
@@ -92,6 +96,8 @@ export const getModelObject = (
       return { Exo: { model_type: modelType } };
     case Models.Claude:
       return { Claude: { model_type: modelType } };
+    case Models.DeepSeek:
+      return { DeepSeek: { model_type: modelType } };
     default:
       return { [model]: { model_type: modelType } };
   }
@@ -264,6 +270,8 @@ const AddAIPage = () => {
         'https://docs.shinkai.com/advanced/models/openrouter',
       [Models.Exo]: 'https://docs.shinkai.com/advanced/models/exo',
       [Models.Claude]: 'https://docs.shinkai.com/advanced/models/claude',
+      [Models.DeepSeek]:
+        'https://docs.shinkai.com/advanced/models/deepseek',
     };
 
     return urlMap[currentModel] || 'https://docs.shinkai.com/advanced/models';

@@ -127,6 +127,7 @@ export type AgentAPIModel = {
   Gemini?: Gemini;
   Exo?: Exo;
   Claude?: Claude;
+  DeepSeek?: DeepSeek;
 } & {
   [model: string]: ModelType;
 };
@@ -163,6 +164,10 @@ export interface Exo {
 }
 
 export interface Claude {
+  model_type: string;
+}
+
+export interface DeepSeek {
   model_type: string;
 }
 

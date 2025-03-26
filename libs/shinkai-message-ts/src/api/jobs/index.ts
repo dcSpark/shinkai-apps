@@ -260,6 +260,7 @@ export enum ModelPrefix {
   OpenRouter = 'openrouter',
   Exo = 'exo',
   Claude = 'claude',
+  DeepSeek = 'deepseek',
 }
 
 function getModelString(model: LLMProviderInterface): string {
@@ -279,6 +280,8 @@ function getModelString(model: LLMProviderInterface): string {
     return ModelPrefix.Exo + ':' + model.Exo.model_type;
   } else if (model?.Claude?.model_type) {
     return ModelPrefix.Claude + ':' + model.Claude.model_type;
+  } else if (model?.DeepSeek?.model_type) {
+    return ModelPrefix.DeepSeek + ':' + model.DeepSeek.model_type;
   } else if (Object.keys(model).length > 0) {
     const customModelProvider = Object.keys(model)[0];
     return `${customModelProvider}:${model[customModelProvider].model_type}`;
