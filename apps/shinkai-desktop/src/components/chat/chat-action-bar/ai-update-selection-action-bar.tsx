@@ -6,30 +6,35 @@ import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queri
 import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
 import {
   Badge,
+  buttonVariants,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
   CommandShortcut,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
   Tooltip,
   TooltipContent,
   TooltipPortal,
-  TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { AIAgentIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { BoltIcon, BotIcon, ChevronDownIcon } from 'lucide-react';
-import { memo, useMemo } from 'react';
+import { BoltIcon, BotIcon, ChevronDownIcon, PlusIcon } from 'lucide-react';
+import { memo, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import OLLAMA_MODELS_REPOSITORY from '../../../lib/shinkai-node-manager/ollama-models-repository.json';
 import { useAuth } from '../../../store/auth';
+import { useShinkaiNodeManager } from '../../../store/shinkai-node-manager';
 import ProviderIcon from '../../ais/provider-icon';
 import { CODE_GENERATOR_MODEL_ID } from '../../tools/constants';
 import { actionButtonClassnames } from '../conversation-footer';
@@ -44,7 +49,7 @@ const ollamaDescriptionMap = OLLAMA_MODELS_REPOSITORY.reduce(
 
 const nonOllamaProviderModels = {
   'shinkai-backend:free_text_inference':
-    'Shinkai AI model for testing text, images, and content generation.',
+    'Shinkai AI model for text generation.',
   'shinkai-backend:code_generator':
     'Shinkai AI model for generating tool code.',
   'openai:gpt-4o':
@@ -102,6 +107,8 @@ export function AIModelSelectorBase({
   const isRegularChatPage =
     location.pathname.includes('inboxes') || location.pathname.includes('home');
 
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const selectedIcon = useMemo(() => {
     const selectedProvider = llmProviders?.find(
       (llmProvider) => llmProvider.id === value,
@@ -121,15 +128,19 @@ export function AIModelSelectorBase({
     return <BotIcon className="mr-1 size-4" />;
   }, [agents, llmProviders, value]);
 
+  const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
+    (state) => state.isInUse,
+  );
+
   return (
-    <DropdownMenu>
-      <TooltipProvider delayDuration={0}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DropdownMenuTrigger
+    <Dialog onOpenChange={setIsDialogOpen} open={isDialogOpen}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
+            <button
               className={cn(
                 actionButtonClassnames,
-                'w-auto justify-between truncate [&[data-state=open]>.icon]:rotate-180',
+                'w-auto justify-between truncate',
                 className,
               )}
             >
@@ -138,54 +149,90 @@ export function AIModelSelectorBase({
                 <span>{value ?? 'Select'}</span>
               </div>
               <ChevronDownIcon className="icon h-3 w-3" />
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
-          <TooltipPortal>
-            <TooltipContent
-              align="center"
-              className="flex flex-col gap-1"
-              side="top"
-            >
-              <span className="text-center text-xs text-white">
-                {t('llmProviders.switch')}
-              </span>
-              {isRegularChatPage && (
-                <div className="flex items-center gap-4 text-left">
-                  <div className="text-official-gray-400 flex items-center justify-center gap-2 text-xs">
-                    <CommandShortcut>⌘ [</CommandShortcut> or
-                    <CommandShortcut>⌘ ]</CommandShortcut>
-                  </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-official-gray-400 text-xs">
-                      Prev / Next AI
-                    </span>
-                  </div>
-                </div>
-              )}
-            </TooltipContent>
-          </TooltipPortal>
-          <DropdownMenuContent
-            align="start"
-            className="bg-official-gray-950 border-official-gray-780 max-h-[460px] min-w-[380px] max-w-[500px] overflow-y-auto border p-1 py-2"
+            </button>
+          </DialogTrigger>
+        </TooltipTrigger>
+        <TooltipPortal>
+          <TooltipContent
+            align="center"
+            className="flex flex-col gap-1"
             side="top"
           >
-            <DropdownMenuRadioGroup onValueChange={onValueChange} value={value}>
-              {isAgentsSuccess && agents.length > 0 && (
-                <DropdownMenuLabel className="px-2 py-1">
-                  Agents
-                </DropdownMenuLabel>
-              )}
+            <span className="text-center text-xs text-white">
+              {t('llmProviders.switch')}
+            </span>
+            {isRegularChatPage && (
+              <div className="flex items-center gap-4 text-left">
+                <div className="text-official-gray-400 flex items-center justify-center gap-2 text-xs">
+                  <CommandShortcut>⌘ [</CommandShortcut> or
+                  <CommandShortcut>⌘ ]</CommandShortcut>
+                </div>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-official-gray-400 text-xs">
+                    Prev / Next AI
+                  </span>
+                </div>
+              </div>
+            )}
+          </TooltipContent>
+        </TooltipPortal>
+      </Tooltip>
+      <DialogContent className="bg-official-gray-950 border-official-gray-780 size-full max-h-[460px] overflow-y-auto border p-1 py-2">
+        <DialogTitle className="sr-only">
+          {t('llmProviders.switch')}
+        </DialogTitle>
+        <Command
+          disablePointerSelection
+          onValueChange={onValueChange}
+          value={value}
+        >
+          <CommandList className="[&_[cmdk-input-wrapper]]:border-official-gray-850 max-h-full [&_[cmdk-input-wrapper]]:pb-1">
+            <CommandInput className="pb-2" placeholder="Search..." />
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup
+              className="py-4"
+              heading={
+                <div className="flex items-center justify-between gap-2 pb-2">
+                  <div className="space-y-0.5">
+                    <h3 className="font-clash text-sm font-medium text-white">
+                      Agents
+                    </h3>
+                    <p className="text-official-gray-400 text-xs font-normal">
+                      Explore custom AI agents for your needs
+                    </p>
+                  </div>
+                  <Link
+                    className={cn(
+                      buttonVariants({
+                        size: 'xs',
+                      }),
+                    )}
+                    to="/add-agent"
+                  >
+                    <PlusIcon className="size-4" />
+                    Add
+                  </Link>
+                </div>
+              }
+            >
               {isAgentsSuccess &&
                 agents.map((agent) => (
-                  <DropdownMenuRadioItem
-                    className="aria-checked:bg-official-gray-800 flex cursor-pointer items-center justify-between gap-1.5 rounded-md px-2 py-2 text-white transition-colors"
+                  <CommandItem
+                    className="hover:bg-official-gray-850 data-[selected='true']:bg-official-gray-850 flex cursor-pointer items-center justify-between gap-1.5 rounded-md px-2 py-2 text-white transition-colors"
                     key={agent.agent_id}
+                    onSelect={() => {
+                      setIsDialogOpen(false);
+                    }}
                     value={agent.agent_id}
                   >
                     <div className="inline-flex gap-2">
-                      <AIAgentIcon className="mt-1 size-4 shrink-0" />
+                      <div className="bg-official-gray-900 flex size-10 shrink-0 items-center justify-center gap-2 rounded-lg p-2">
+                        <AIAgentIcon className="size-5 shrink-0" />
+                      </div>
                       <div className="flex flex-col gap-1">
-                        <span className="text-xs">{agent.name}</span>
+                        <span className="inline-flex items-center gap-1.5 text-sm">
+                          {agent.name}
+                        </span>
                         <span className="text-official-gray-400 line-clamp-1 text-xs">
                           {agent.ui_description}
                         </span>
@@ -214,34 +261,64 @@ export function AIModelSelectorBase({
                         </TooltipContent>
                       </TooltipPortal>
                     </Tooltip>
-                  </DropdownMenuRadioItem>
+                  </CommandItem>
                 ))}
-              {isAgentsSuccess && agents.length > 0 && (
-                <DropdownMenuSeparator className="bg-official-gray-800" />
-              )}
-              <DropdownMenuLabel className="mt-2 px-2 py-1 pb-2">
-                AI Models
-              </DropdownMenuLabel>
+            </CommandGroup>
+            <CommandSeparator className="" />
+            <CommandGroup
+              className="py-4"
+              heading={
+                <div className="flex items-center justify-between gap-2 pb-2">
+                  <div className="space-y-0.5">
+                    <h3 className="font-clash text-sm font-medium text-white">
+                      AI Models
+                    </h3>
+                    <p className="text-official-gray-400 text-xs font-normal">
+                      Explore a wide range of AI models
+                    </p>
+                  </div>
+                  <Link
+                    className={cn(
+                      buttonVariants({
+                        size: 'xs',
+                      }),
+                    )}
+                    to={
+                      isLocalShinkaiNodeIsUse ? '/install-ai-models' : '/add-ai'
+                    }
+                  >
+                    <PlusIcon className="size-4" />
+                    Add
+                  </Link>
+                </div>
+              }
+            >
               {isLlmProviderSuccess &&
                 llmProviders?.length > 0 &&
                 llmProviders?.map((llmProvider) => (
-                  <DropdownMenuRadioItem
-                    className="hover:bg-official-gray-850 aria-checked:bg-official-gray-850 flex cursor-pointer items-start gap-2 rounded-md px-2 py-2 text-white transition-colors"
+                  <CommandItem
+                    className="hover:bg-official-gray-850 data-[selected='true']:bg-official-gray-850 flex cursor-pointer items-start gap-2 rounded-md px-2 py-2 text-white transition-colors"
                     key={llmProvider.id}
+                    onSelect={() => {
+                      setIsDialogOpen(false);
+                    }}
                     value={llmProvider.id}
                   >
-                    <ProviderIcon
-                      className="mt-0.5 size-4 shrink-0"
-                      provider={llmProvider.model.split(':')[0]}
-                    />
-                    <div className="flex flex-col gap-1 text-xs">
-                      <span className="">
+                    <div className="bg-official-gray-900 flex size-10 shrink-0 items-center justify-center gap-2 rounded-lg p-2">
+                      <ProviderIcon
+                        className="mt-0.5 size-4 shrink-0"
+                        provider={llmProvider.model.split(':')[0]}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-sm font-medium">
                         {formatText(llmProvider.id)}
+
                         {location.pathname.includes('tools') &&
                           llmProvider.model.toLowerCase() ===
                             CODE_GENERATOR_MODEL_ID.toLowerCase() && (
                             <Badge
-                              className="ml-2 border border-emerald-900 bg-emerald-900/80 py-0 font-normal text-emerald-400 hover:bg-emerald-900/80"
+                              className="ml-2 border bg-emerald-900/40 px-1 py-0 text-xs font-medium text-emerald-400"
                               variant="secondary"
                             >
                               Recommended
@@ -252,15 +329,16 @@ export function AIModelSelectorBase({
                         {llmProvider?.description}
                       </span>
                     </div>
-                  </DropdownMenuRadioItem>
+                  </CommandItem>
                 ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </Tooltip>
-      </TooltipProvider>
-    </DropdownMenu>
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </DialogContent>
+    </Dialog>
   );
 }
+
 export const AIModelSelector = memo(AIModelSelectorBase);
 
 export function AiUpdateSelectionActionBarBase({

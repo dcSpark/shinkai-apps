@@ -101,7 +101,7 @@ const CommandSeparator = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Separator>
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.Separator
-    className={cn('bg-gray-350 -mx-1 h-px', className)}
+    className={cn('bg-official-gray-850 -mx-1 h-px', className)}
     ref={ref}
     {...props}
   />
