@@ -133,6 +133,7 @@ export type LLMProviderInterface = {
   Groq?: Groq;
   OpenRouter?: OpenRouter;
   Claude?: Claude;
+  DeepSeek?: DeepSeek;
 } & {
   [model: string]: ModelType;
 };
@@ -169,6 +170,10 @@ export interface Exo {
 }
 
 export interface Claude {
+  model_type: string;
+}
+
+export interface DeepSeek {
   model_type: string;
 }
 
