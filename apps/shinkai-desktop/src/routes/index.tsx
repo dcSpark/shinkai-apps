@@ -195,36 +195,29 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const isNavigatingRef = useRef(false);
-
   useEffect(() => {
     if (isNavigatingRef.current) return;
-    isNavigatingRef.current = true;
 
     if (skipOnboardingRoutes.includes(location.pathname)) {
-      isNavigatingRef.current = false;
       return;
     }
 
     if (!auth && location.pathname !== '/terms-conditions') {
       navigate('/terms-conditions');
-      isNavigatingRef.current = false;
       return;
     }
 
-    if (isOnboardingComplete()) {
-      const currentStep = getStepByPath(location.pathname);
-      if (currentStep) {
-        navigate(COMPLETION_DESTINATION);
-      }
-      isNavigatingRef.current = false;
+    if (isOnboardingComplete() && !!auth) {
+      navigate(COMPLETION_DESTINATION);
       return;
     }
 
     const currentStep = getStepByPath(location.pathname);
     if (currentStep && isStepCompleted(currentStep.id)) {
       const nextStep = getNextStep();
-      navigate(nextStep ? nextStep.path : COMPLETION_DESTINATION);
+      if (nextStep) {
+        navigate(nextStep.path);
+      }
       isNavigatingRef.current = false;
       return;
     }
@@ -246,17 +239,16 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    if (
-      [COMPLETION_DESTINATION, '/'].includes(location.pathname) &&
-      !isOnboardingComplete()
-    ) {
+    const isRootPath = [COMPLETION_DESTINATION, '/'].includes(
+      location.pathname,
+    );
+
+    if (isRootPath && !isOnboardingComplete()) {
       const nextStep = getNextStep();
       if (nextStep) {
         navigate(nextStep.path);
       }
     }
-
-    isNavigatingRef.current = false;
   }, [
     auth,
     isStepCompleted,
