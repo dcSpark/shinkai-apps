@@ -196,8 +196,6 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isNavigatingRef.current) return;
-
     if (skipOnboardingRoutes.includes(location.pathname)) {
       return;
     }
