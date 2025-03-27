@@ -210,40 +210,21 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    const currentStep = getStepByPath(location.pathname);
-    if (currentStep && isStepCompleted(currentStep.id)) {
-      const nextStep = getNextStep();
-      if (nextStep) {
-        navigate(nextStep.path);
-      }
-      return;
-    }
-
     const nextIncompleteStep = getNextStep();
-    const isValidCurrentPath = ![
-      COMPLETION_DESTINATION,
-      '/',
-      ...skipOnboardingRoutes,
-    ].includes(location.pathname);
+    if (!nextIncompleteStep) return;
 
-    if (
-      nextIncompleteStep &&
-      location.pathname !== nextIncompleteStep.path &&
-      isValidCurrentPath
-    ) {
-      navigate(nextIncompleteStep.path);
-      return;
-    }
-
+    const currentStep = getStepByPath(location.pathname);
     const isRootPath = [COMPLETION_DESTINATION, '/'].includes(
       location.pathname,
     );
+    const isValidPath = location.pathname === nextIncompleteStep.path;
 
-    if (isRootPath && !isOnboardingComplete()) {
-      const nextStep = getNextStep();
-      if (nextStep) {
-        navigate(nextStep.path);
-      }
+    if (
+      (currentStep && isStepCompleted(currentStep.id)) ||
+      isRootPath ||
+      !isValidPath
+    ) {
+      navigate(nextIncompleteStep.path);
     }
   }, [
     auth,
