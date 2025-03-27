@@ -16,7 +16,6 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  ScrollArea,
   Tooltip,
   TooltipContent,
   TooltipPortal,
