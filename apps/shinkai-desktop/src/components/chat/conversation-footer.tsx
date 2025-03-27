@@ -306,11 +306,16 @@ function ConversationChatFooter({
     multiple: true,
     onDrop,
   });
-  const { data: jobChatFolderName } = useGetJobFolderName({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
-  });
+  const { data: jobChatFolderName } = useGetJobFolderName(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+    },
+    {
+      enabled: !!inboxId,
+    },
+  );
   const { data: nodeStorageLocation } = useGetNodeStorageLocation({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',

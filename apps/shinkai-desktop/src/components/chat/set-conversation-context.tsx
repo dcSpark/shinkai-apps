@@ -81,11 +81,16 @@ export const SetJobScopeDrawer = () => {
       },
     });
 
-  const { data: jobFolderData } = useGetJobFolderName({
-    jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
+  const { data: jobFolderData } = useGetJobFolderName(
+    {
+      jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    },
+    {
+      enabled: !!inboxId,
+    },
+  );
 
   const selectedPaths = jobFolderData ? [jobFolderData.folder_name] : [];
 
