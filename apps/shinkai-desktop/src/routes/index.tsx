@@ -216,7 +216,6 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
       if (nextStep) {
         navigate(nextStep.path);
       }
-      isNavigatingRef.current = false;
       return;
     }
 
@@ -233,7 +232,6 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
       isValidCurrentPath
     ) {
       navigate(nextIncompleteStep.path);
-      isNavigatingRef.current = false;
       return;
     }
 
