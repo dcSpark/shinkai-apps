@@ -8,7 +8,6 @@ import {
   OnboardingStep,
 } from '../components/onboarding/constants';
 import { analyticsBulletPoints } from '../constants/analytics';
-import { useStepNavigation } from '../routes';
 import { useSettings } from '../store/settings';
 
 const AnalyticsPage = () => {
@@ -16,8 +15,6 @@ const AnalyticsPage = () => {
   const { t, Trans } = useTranslation();
   const completeStep = useSettings((state) => state.completeStep);
   const getNextStep = useSettings((state) => state.getNextStep);
-
-  useStepNavigation(OnboardingStep.ANALYTICS);
 
   const handleOptIn = () => {
     completeStep(OnboardingStep.ANALYTICS, true);

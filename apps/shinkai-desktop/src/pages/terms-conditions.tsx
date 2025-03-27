@@ -20,7 +20,6 @@ import { useShinkaiNodeRemoveStorageMutation } from '../lib/shinkai-node-manager
 import { useShinkaiNodeSpawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeKillMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 // import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
-import { useStepNavigation } from '../routes';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
@@ -32,8 +31,6 @@ const TermsAndConditionsPage = () => {
   // useShinkaiNodeEventsToast();
 
   const completeStep = useSettings((state) => state.completeStep);
-
-  useStepNavigation(OnboardingStep.TERMS_CONDITIONS);
 
   const termsAndConditionsAcceptedLegacy = useSettings((state) =>
     state.getTermsAndConditionsAccepted(),

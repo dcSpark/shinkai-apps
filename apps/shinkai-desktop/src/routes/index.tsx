@@ -195,13 +195,20 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const isNavigatingRef = useRef(false);
+
   useEffect(() => {
+    if (isNavigatingRef.current) return;
+    isNavigatingRef.current = true;
+
     if (skipOnboardingRoutes.includes(location.pathname)) {
+      isNavigatingRef.current = false;
       return;
     }
 
     if (!auth && location.pathname !== '/terms-conditions') {
       navigate('/terms-conditions');
+      isNavigatingRef.current = false;
       return;
     }
 
@@ -210,30 +217,32 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
       if (currentStep) {
         navigate(COMPLETION_DESTINATION);
       }
+      isNavigatingRef.current = false;
       return;
     }
 
     const currentStep = getStepByPath(location.pathname);
-
     if (currentStep && isStepCompleted(currentStep.id)) {
       const nextStep = getNextStep();
-      if (nextStep) {
-        navigate(nextStep.path);
-      } else {
-        navigate(COMPLETION_DESTINATION);
-      }
+      navigate(nextStep ? nextStep.path : COMPLETION_DESTINATION);
+      isNavigatingRef.current = false;
       return;
     }
 
     const nextIncompleteStep = getNextStep();
+    const isValidCurrentPath = ![
+      COMPLETION_DESTINATION,
+      '/',
+      ...skipOnboardingRoutes,
+    ].includes(location.pathname);
+
     if (
       nextIncompleteStep &&
       location.pathname !== nextIncompleteStep.path &&
-      ![COMPLETION_DESTINATION, '/', ...skipOnboardingRoutes].includes(
-        location.pathname,
-      )
+      isValidCurrentPath
     ) {
       navigate(nextIncompleteStep.path);
+      isNavigatingRef.current = false;
       return;
     }
 
@@ -246,6 +255,8 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
         navigate(nextStep.path);
       }
     }
+
+    isNavigatingRef.current = false;
   }, [
     auth,
     isStepCompleted,
@@ -257,23 +268,6 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   ]);
 
   return <OnboardingLayout>{children}</OnboardingLayout>;
-};
-
-export const useStepNavigation = (stepId: OnboardingStep) => {
-  const navigate = useNavigate();
-  const isStepCompleted = useSettings((state) => state.isStepCompleted);
-  const getNextStep = useSettings((state) => state.getNextStep);
-
-  useEffect(() => {
-    if (isStepCompleted(stepId)) {
-      const nextStep = getNextStep();
-      if (nextStep) {
-        navigate(nextStep.path);
-      } else {
-        navigate(COMPLETION_DESTINATION);
-      }
-    }
-  }, [isStepCompleted, getNextStep, navigate, stepId]);
 };
 
 const AppRoutes = () => {
