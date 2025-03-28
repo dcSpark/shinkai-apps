@@ -124,6 +124,7 @@ export function useToolSave() {
             }
           },
           onError: (error) => {
+            console.error('saving tool error: ', error);
             if (shouldPrefetchPlaygroundTool) return;
             toast.error('Failed to save tool code', {
               position: 'top-right',

@@ -61,7 +61,9 @@ export const ToolsHomepage = () => {
   const toolHomepageScrollPositionRef = usePlaygroundStore(
     (state) => state.toolHomepageScrollPositionRef,
   );
-
+  const resetPlaygroundStore = usePlaygroundStore(
+    (state) => state.resetPlaygroundStore,
+  );
   const { data: llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
@@ -76,6 +78,10 @@ export const ToolsHomepage = () => {
   const isCodeGeneratorModel =
     currentAIModel?.model.toLowerCase() ===
     CODE_GENERATOR_MODEL_ID.toLowerCase();
+
+  useEffect(() => {
+    resetPlaygroundStore();
+  }, [resetPlaygroundStore]);
 
   useEffect(() => {
     const genCodeModel = llmProviders?.find(
@@ -114,9 +120,6 @@ export const ToolsHomepage = () => {
   });
 
   const chatInboxId = usePlaygroundStore((state) => state.chatInboxId);
-  const resetPlaygroundStore = usePlaygroundStore(
-    (state) => state.resetPlaygroundStore,
-  );
 
   useEffect(() => {
     if (error) {
