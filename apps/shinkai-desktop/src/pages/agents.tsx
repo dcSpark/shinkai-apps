@@ -1,9 +1,11 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { RecurringTask } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/types';
 import { useRemoveAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/removeAgent/useRemoveAgent';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import {
+  Badge,
   Button,
   buttonVariants,
   Dialog,
@@ -16,18 +18,22 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  ScrollArea,
   Tooltip,
   TooltipContent,
   TooltipPortal,
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { AIAgentIcon, CreateAIIcon } from '@shinkai_network/shinkai-ui/assets';
+import {
+  AIAgentIcon,
+  CreateAIIcon,
+  ScheduledTasksIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import cronstrue from 'cronstrue';
 import { Edit, Plus, TrashIcon } from 'lucide-react';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../store/auth';
@@ -85,6 +91,7 @@ function AgentsPage() {
                   agentName={agent.name}
                   key={agent.agent_id}
                   llmProviderId={agent.llm_provider_id}
+                  scheduledTasks={agent.cron_tasks}
                 />
               ))}
             </div>
@@ -102,11 +109,13 @@ const AgentCard = ({
   agentName,
   // llmProviderId,
   agentDescription,
+  scheduledTasks,
 }: {
   agentId: string;
   agentName: string;
   llmProviderId: string;
   agentDescription: string;
+  scheduledTasks?: RecurringTask[];
 }) => {
   const { t } = useTranslation();
   const [isDeleteAgentDrawerOpen, setIsDeleteAgentDrawerOpen] =
@@ -114,21 +123,62 @@ const AgentCard = ({
 
   const navigate = useNavigate();
 
+  const hasScheduledTasks =
+    scheduledTasks?.length && scheduledTasks?.length > 0;
+
   return (
     <React.Fragment>
       <div className="border-official-gray-850 bg-official-gray-900 flex items-center justify-between gap-1 rounded-lg border p-3.5">
-        <div className="flex items-center gap-3">
+        <div className="flex items-start gap-3">
           <div className="flex size-8 items-center justify-center rounded-lg">
             <AIAgentIcon />
           </div>
           <div className="flex flex-col gap-1.5">
-            <span className="w-full truncate text-start text-sm">
+            <span className="inline-flex w-full items-center gap-3 truncate text-start text-sm capitalize">
               {agentName}{' '}
+              {scheduledTasks?.length && scheduledTasks?.length > 0 && (
+                <Badge
+                  className="border bg-emerald-900/40 px-1 py-0 text-xs font-medium text-emerald-400"
+                  variant="secondary"
+                >
+                  Scheduled
+                </Badge>
+              )}
             </span>
 
-            <span className="text-gray-80 text-xs">
+            <span className="text-official-gray-400 text-sm">
               {agentDescription ?? 'No description'}
             </span>
+            {hasScheduledTasks && (
+              <div className="mt-2 inline-flex gap-2">
+                {scheduledTasks.map((task) => (
+                  <TooltipProvider delayDuration={0} key={task.task_id}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link
+                          className="text-official-gray-200 bg-official-gray-850 flex items-center gap-2 rounded-md px-2 py-1 text-xs transition-colors hover:text-white"
+                          key={task.task_id}
+                          to={`/tasks/${task.task_id}`}
+                        >
+                          <ScheduledTasksIcon className="h-3 w-3" />
+                          <span>
+                            {cronstrue.toString(task.cron, {
+                              throwExceptionOnParseError: false,
+                            })}
+                          </span>
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        align="center"
+                        className="flex flex-col items-center gap-1"
+                      >
+                        Go to task details
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-4">

@@ -11,9 +11,9 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { LoaderIcon, LogOut } from 'lucide-react';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { MessageList } from '../components/chat/components/message-list';
@@ -47,6 +47,16 @@ function ToolFeedbackPrompt() {
     form,
     initialInboxId: inboxId,
   });
+
+  const isLoadingMessage = useMemo(() => {
+    const lastMessage = conversationData?.pages?.at(-1)?.at(-1);
+    return (
+      !!inboxId &&
+      lastMessage &&
+      lastMessage.role === 'assistant' &&
+      lastMessage.status.type === 'running'
+    );
+  }, [conversationData?.pages, inboxId]);
 
   const resetPlaygroundStore = usePlaygroundStore(
     (state) => state.resetPlaygroundStore,
@@ -90,7 +100,7 @@ function ToolFeedbackPrompt() {
                 <div className="size-6" />
               </div>
               {isChatConversationLoading ? (
-                <div className="bg-official-gray-950 flex w-full flex-col gap-4 p-4">
+                <div className="bg-official-gray-950 flex w-full flex-1 flex-col gap-4 overflow-y-auto p-4">
                   <Skeleton className="bg-official-gray-900 h-6 w-32" />
                   <Skeleton className="bg-official-gray-900 h-24 w-full" />
                   <Skeleton className="bg-official-gray-900 h-24 w-full" />
@@ -117,7 +127,7 @@ function ToolFeedbackPrompt() {
               )}
               <Form {...form}>
                 <form
-                  className="shrink-0 space-y-2 px-3 pt-2"
+                  className="relative shrink-0 space-y-2 px-3 pt-6"
                   onSubmit={form.handleSubmit(startToolCreation)}
                 >
                   <div className="flex shrink-0 items-center gap-1">
@@ -131,6 +141,20 @@ function ToolFeedbackPrompt() {
                           </FormLabel>
                           <FormControl>
                             <div className="space-y-1.5">
+                              <AnimatePresence>
+                                {isLoadingMessage && (
+                                  <motion.div
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="absolute inset-x-2 -top-[20px] flex items-center justify-start gap-2 rounded-t-lg bg-cyan-900/20 px-2 py-1 text-xs text-cyan-500"
+                                    exit={{ opacity: 0, y: 10 }}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    transition={{ duration: 0.2 }}
+                                  >
+                                    <LoaderIcon className="size-4 animate-spin" />
+                                    Thinking...
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
                               <ChatInputArea
                                 autoFocus
                                 bottomAddons={
@@ -144,7 +168,8 @@ function ToolFeedbackPrompt() {
                                       className={cn('size-[36px] p-2')}
                                       disabled={
                                         !form.watch('message') ||
-                                        isCreatingToolCode
+                                        isCreatingToolCode ||
+                                        isLoadingMessage
                                       }
                                       isLoading={isCreatingToolCode}
                                       size="icon"
@@ -157,7 +182,9 @@ function ToolFeedbackPrompt() {
                                     </Button>
                                   </div>
                                 }
-                                disabled={isCreatingToolCode}
+                                disabled={
+                                  isCreatingToolCode || isLoadingMessage
+                                }
                                 onChange={field.onChange}
                                 onSubmit={() => {
                                   startToolCreation(form.getValues());

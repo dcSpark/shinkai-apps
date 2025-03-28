@@ -10,7 +10,6 @@ import {
   ChatMessageFormSchema,
   chatMessageFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
-import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mutations/stopGeneratingLLM/useStopGeneratingLLM';
@@ -306,11 +305,16 @@ function ConversationChatFooter({
     multiple: true,
     onDrop,
   });
-  const { data: jobChatFolderName } = useGetJobFolderName({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
-  });
+  const { data: jobChatFolderName } = useGetJobFolderName(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+    },
+    {
+      enabled: !!inboxId,
+    },
+  );
   const { data: nodeStorageLocation } = useGetNodeStorageLocation({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',

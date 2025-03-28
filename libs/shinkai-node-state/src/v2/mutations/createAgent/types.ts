@@ -9,4 +9,5 @@ export type CreateAgentOutput = CreateAgentResponse;
 export type CreateAgentInput = Token & {
   nodeAddress: string;
   agent: Agent;
+  cronExpression?: string;
 };

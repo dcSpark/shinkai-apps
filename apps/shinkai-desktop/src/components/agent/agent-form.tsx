@@ -1,11 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
+import {
+  DEFAULT_CHAT_CONFIG,
+  FunctionKeyV2,
+} from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/createAgent/useCreateAgent';
+import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
 import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
-import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
 import {
@@ -26,6 +29,8 @@ import {
   HoverCardTrigger,
   Input,
   Label,
+  RadioGroup,
+  RadioGroupItem,
   Slider,
   Switch,
   Tabs,
@@ -39,19 +44,24 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { FilesIcon } from '@shinkai_network/shinkai-ui/assets';
+import {
+  FilesIcon,
+  ScheduledTasksIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { useQueryClient } from '@tanstack/react-query';
+import cronstrue from 'cronstrue';
 import {
   BoltIcon,
   ChevronRight,
   LucideArrowLeft,
   SearchIcon,
+  Trash2,
   XIcon,
 } from 'lucide-react';
-import { InfoCircleIcon } from 'primereact/icons/infocircle';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, To, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -59,7 +69,6 @@ import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
 
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
-import { SubpageLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { AIModelSelector } from '../chat/chat-action-bar/ai-update-selection-action-bar';
@@ -91,6 +100,7 @@ const agentFormSchema = z.object({
       vector_search_mode: z.string(),
     })
     .optional(),
+  cronExpression: z.string().optional(),
 });
 
 type AgentFormValues = z.infer<typeof agentFormSchema>;
@@ -107,8 +117,12 @@ function AgentForm({ mode }: AgentFormProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [currentTab, setCurrentTab] = useState<
-    'persona' | 'knowledge' | 'tools'
+    'persona' | 'knowledge' | 'tools' | 'schedule'
   >('persona');
+
+  const [scheduleType, setScheduleType] = useState<'normal' | 'scheduled'>(
+    'normal',
+  );
 
   const setSetJobScopeOpen = useSetJobScope(
     (state) => state.setSetJobScopeOpen,
@@ -118,18 +132,15 @@ function AgentForm({ mode }: AgentFormProps) {
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
 
-  const {
-    data: searchToolList,
-    isLoading: isSearchToolListPending,
-    isSuccess: isSearchToolListSuccess,
-  } = useGetSearchTools(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      search: debouncedSearchQuery,
-    },
-    { enabled: isSearchQuerySynced && !!searchQuery },
-  );
+  const { data: searchToolList, isLoading: isSearchToolListPending } =
+    useGetSearchTools(
+      {
+        nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
+        search: debouncedSearchQuery,
+      },
+      { enabled: isSearchQuerySynced && !!searchQuery },
+    );
 
   const selectedKeys = useSetJobScope((state) => state.selectedKeys);
   const selectedFileKeysRef = useSetJobScope(
@@ -305,13 +316,39 @@ function AgentForm({ mode }: AgentFormProps) {
     },
   });
 
-  const { llmProviders } = useGetLLMProviders({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: removeTask, isPending: isRemovingTask } =
+    useRemoveRecurringTask({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [
+            FunctionKeyV2.GET_AGENT,
+            {
+              agentId: agent?.agent_id,
+              nodeAddress: auth?.node_address ?? '',
+            },
+          ],
+        });
+        toast.success('Delete task successfully');
+      },
+      onError: (error) => {
+        toast.error('Failed remove task', {
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
+
+  const onDeleteTask = async (taskId: string) => {
+    await removeTask({
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      recurringTaskId: taskId,
+    });
+  };
 
   const submit = async (values: AgentFormValues) => {
-    const agentId = values.name.replace(/[^a-zA-Z0-9_]/g, '_');
+    const agentId = values.name.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
     const agentData = {
       agent_id: agentId,
       full_identity_name: `${auth?.shinkai_identity}/main/agent/${agentId}`,
@@ -344,14 +381,30 @@ function AgentForm({ mode }: AgentFormProps) {
         nodeAddress: auth?.node_address ?? '',
         token: auth?.api_v2_key ?? '',
         agent: agentData,
+        cronExpression: values.cronExpression,
       });
     }
   };
 
   const isPending = mode === 'edit' ? isUpdating : isCreating;
 
+  const currentCronExpression = form.watch('cronExpression');
+
+  const readableCronExpression = useMemo(() => {
+    if (!currentCronExpression) {
+      return null;
+    }
+    const readableCron = cronstrue.toString(currentCronExpression, {
+      throwExceptionOnParseError: false,
+    });
+    if (readableCron.toLowerCase().includes('error')) {
+      return null;
+    }
+    return readableCron;
+  }, [currentCronExpression]);
+
   return (
-    <div className="container flex h-full max-w-2xl flex-col">
+    <div className="container flex h-full max-w-3xl flex-col">
       <div className="flex items-center gap-5 pb-6 pt-10">
         <Link to={-1 as To}>
           <LucideArrowLeft />
@@ -427,10 +480,9 @@ function AgentForm({ mode }: AgentFormProps) {
                           <FormLabel>Instructions</FormLabel>
                           <FormControl>
                             <Textarea
-                              className="placeholder-official-gray-500 !min-h-[230px] text-sm"
+                              className="placeholder-official-gray-500 !min-h-[300px] text-sm"
                               placeholder="e.g., You are a professional UX expert. Answer questions about UI/UX best practices."
                               spellCheck={false}
-                              style={{ resize: 'vertical' }}
                               {...field}
                             />
                           </FormControl>
@@ -453,7 +505,6 @@ function AgentForm({ mode }: AgentFormProps) {
                           <span className="text-official-gray-200 text-xs">
                             Choose the model that will power your agent
                           </span>
-                          {/* <FormLabel>{t('chat.form.selectAI')}</FormLabel> */}
                           <AIModelSelector
                             className="bg-official-gray-900 !h-auto w-full rounded-lg border !border-gray-200 py-2.5"
                             onValueChange={field.onChange}
@@ -540,7 +591,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                           <Label htmlFor="temperature">
                                             Temperature
                                           </Label>
-                                          <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                                          <span className="text-official-gray-400 hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
                                             {field.value}
                                           </span>
                                         </div>
@@ -583,7 +634,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                       <div className="grid w-full gap-4">
                                         <div className="flex items-center justify-between">
                                           <Label htmlFor="topP">Top P</Label>
-                                          <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                                          <span className="text-official-gray-400 hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
                                             {field.value}
                                           </span>
                                         </div>
@@ -630,7 +681,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                       <div className="grid w-full gap-4">
                                         <div className="flex items-center justify-between">
                                           <Label htmlFor="topK">Top K</Label>
-                                          <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                                          <span className="text-official-gray-400 hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
                                             {field.value}
                                           </span>
                                         </div>
@@ -708,10 +759,10 @@ function AgentForm({ mode }: AgentFormProps) {
                     </Button>
                     {/* <Card>
                       <CardContent className="flex min-h-[200px] flex-col items-center justify-center space-y-4 p-6 text-center">
-                        <FileText className="text-muted-foreground h-10 w-10" />
+                        <FileText className="text-official-gray-400 h-10 w-10" />
                         <div>
                           <p className="font-medium">No documents added</p>
-                          <p className="text-muted-foreground text-sm">
+                          <p className="text-official-gray-400 text-sm">
                             Upload documents your agent can learn from
                           </p>
                         </div>
@@ -725,7 +776,7 @@ function AgentForm({ mode }: AgentFormProps) {
                 </TabsContent>
 
                 <TabsContent className="flex-1" value="tools">
-                  <div className="h-full space-y-6 py-4">
+                  <div className="h-full space-y-6">
                     <div className="flex items-center justify-between gap-2">
                       <div className="space-y-1">
                         <h2 className="text-base font-medium">Tools</h2>
@@ -1076,6 +1127,177 @@ function AgentForm({ mode }: AgentFormProps) {
                     </div>
                   </div>
                 </TabsContent>
+                <TabsContent value="schedule">
+                  <div className="space-y-4">
+                    <div className="space-y-1">
+                      <h2 className="text-base font-medium">Schedule</h2>
+                      <p className="text-official-gray-400 text-sm">
+                        Set when your agent will automatically run tasks.
+                      </p>
+                    </div>
+                    {(mode === 'add' || agent?.cron_tasks === null) && (
+                      <RadioGroup
+                        className="space-y-3"
+                        onValueChange={(value) =>
+                          setScheduleType(value as 'normal' | 'scheduled')
+                        }
+                        value={scheduleType}
+                      >
+                        <div className="flex items-start space-x-3 rounded-lg border p-3">
+                          <RadioGroupItem
+                            className="mt-1"
+                            id="schedule-always-on"
+                            value="normal"
+                          />
+                          <div className="space-y-1">
+                            <Label
+                              className="font-medium"
+                              htmlFor="schedule-always-on"
+                            >
+                              Normal Usage
+                            </Label>
+                            <p className="text-official-gray-400 text-sm">
+                              Agent is ready to respond immediately when used
+                              upon
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start space-x-3 rounded-lg border p-3">
+                          <RadioGroupItem
+                            className="mt-1"
+                            id="schedule-recurring"
+                            value="scheduled"
+                          />
+                          <div className="w-full space-y-4">
+                            <div className="space-y-1">
+                              <Label
+                                className="font-medium"
+                                htmlFor="schedule-recurring"
+                              >
+                                Scheduled Execution
+                              </Label>
+                              <p className="text-official-gray-400 text-sm">
+                                Configure specific times and frequencies for
+                                agent tasks
+                              </p>
+                            </div>
+
+                            {scheduleType === 'scheduled' && (
+                              <div className="space-y-4 py-5">
+                                <FormField
+                                  control={form.control}
+                                  name="cronExpression"
+                                  render={({ field }) => (
+                                    <TextField
+                                      field={field}
+                                      helperMessage="Enter a cron expression eg: */30 * * * * (every 30 min) "
+                                      label="Cron Expression"
+                                    />
+                                  )}
+                                />
+                                {readableCronExpression && (
+                                  <div className="flex items-center gap-2 text-xs">
+                                    <ScheduledTasksIcon className="size-4" />
+                                    <span>
+                                      This cron will run{' '}
+                                      {readableCronExpression.toLowerCase()}{' '}
+                                      <span className="text-gray-80 font-mono">
+                                        ({form.watch('cronExpression')})
+                                      </span>
+                                    </span>
+                                  </div>
+                                )}
+                                <div className="flex flex-wrap gap-2">
+                                  {[
+                                    {
+                                      label: 'every 5 min',
+                                      cron: '*/5 * * * *',
+                                    },
+                                    {
+                                      label: 'every 5 hours',
+                                      cron: '0 */5 * * *',
+                                    },
+                                    {
+                                      label: 'every monday at 8am',
+                                      cron: '0 8 * * 1',
+                                    },
+                                    {
+                                      label: 'every january 1st at 12am',
+                                      cron: '0 0 1 1 *',
+                                    },
+                                    {
+                                      label: 'every 1st of the month at 12pm',
+                                      cron: '0 12 1 * *',
+                                    },
+                                  ].map((item) => (
+                                    <Badge
+                                      className="bg-official-gray-850 hover:bg-official-gray-900 cursor-pointer font-normal"
+                                      key={item.cron}
+                                      onClick={() => {
+                                        form.setValue(
+                                          'cronExpression',
+                                          item.cron,
+                                        );
+                                      }}
+                                      variant="outline"
+                                    >
+                                      <span className="text-xs">
+                                        {item.label}
+                                      </span>
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </RadioGroup>
+                    )}
+                    {mode === 'edit' &&
+                      agent?.cron_tasks &&
+                      agent?.cron_tasks?.length > 0 && (
+                        <div className="mt-2 space-y-4">
+                          <div className="mb-2 flex items-center gap-2">
+                            <ScheduledTasksIcon className="size-4 text-white" />
+                            <h4 className="text-sm font-medium">
+                              Current Scheduled Tasks
+                            </h4>
+                          </div>
+                          <div className="mt-2 space-y-3">
+                            {agent?.cron_tasks?.map((task) => (
+                              <div
+                                className="bg-official-gray-900 flex items-center justify-between rounded-md border p-2"
+                                key={task.task_id}
+                              >
+                                <div className="flex items-center gap-2 pl-1">
+                                  <div className="bg-brand/70 h-2 w-2 rounded-full" />
+                                  <span className="text-sm">
+                                    {cronstrue.toString(task.cron, {
+                                      throwExceptionOnParseError: false,
+                                    })}
+                                  </span>
+                                </div>
+
+                                <Button
+                                  className="text-official-gray-400 p-2 hover:bg-red-900/10 hover:text-red-400/90"
+                                  isLoading={isRemovingTask}
+                                  onClick={() =>
+                                    onDeleteTask(task.task_id.toString())
+                                  }
+                                  size="auto"
+                                  type="button"
+                                  variant="ghost"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                  </div>
+                </TabsContent>
               </Tabs>
             </div>
           </div>
@@ -1113,12 +1335,17 @@ function AgentForm({ mode }: AgentFormProps) {
                   } else if (currentTab === 'knowledge') {
                     e.preventDefault();
                     setCurrentTab('tools');
+                  } else if (currentTab === 'tools') {
+                    e.preventDefault();
+                    setCurrentTab('schedule');
                   }
                 }}
                 size="sm"
-                type={currentTab === 'tools' ? 'submit' : 'button'}
+                type={currentTab === 'schedule' ? 'submit' : 'button'}
               >
-                {currentTab === 'tools' ? t('common.save') : t('common.next')}
+                {currentTab === 'schedule'
+                  ? t('common.save')
+                  : t('common.next')}
               </Button>
             </div>
           </div>
@@ -1159,6 +1386,15 @@ const TabNavigation = () => {
           3
         </Badge>
         <span>Tools</span>
+      </TabsTrigger>
+      <TabsTrigger
+        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        value="schedule"
+      >
+        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
+          4
+        </Badge>
+        <span>Schedule</span>
       </TabsTrigger>
     </TabsList>
   );
