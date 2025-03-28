@@ -105,6 +105,8 @@ export default function ToolDetailsCard({
     } 
   });
   
+  const [currentTab, setCurrentTab] = useState<string>('');
+  
   const {
     executeToolCode,
     executeToolCodeQuery,
@@ -277,6 +279,12 @@ export default function ToolDetailsCard({
   );
 
   const hasToolCode = 'js_code' in tool || 'py_code' in tool;
+  
+  useEffect(() => {
+    if (currentTab === 'tryitout' && hasToolCode) {
+      generateMetadata();
+    }
+  }, [currentTab, hasToolCode, generateMetadata]);
 
   return (
     <SubpageLayout className="container" title="">
@@ -383,7 +391,11 @@ export default function ToolDetailsCard({
         </div>
       </div>
 
-      <Tabs className="w-full py-8" defaultValue="description">
+      <Tabs 
+        className="w-full py-8" 
+        defaultValue="description"
+        value={currentTab}
+        onValueChange={setCurrentTab}>
         <TabsList className="mb-4 flex w-full justify-start gap-6 rounded-none border-b border-gray-200 bg-transparent pb-0">
           <TabsTrigger
             className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
@@ -414,7 +426,7 @@ export default function ToolDetailsCard({
               className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
               value="oauth"
             >
-              OAuth & Permissions
+              OAuth &amp; Permissions
             </TabsTrigger>
           )}
 
