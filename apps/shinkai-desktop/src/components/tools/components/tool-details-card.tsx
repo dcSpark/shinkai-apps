@@ -6,6 +6,7 @@ import {
   ShinkaiTool,
   ShinkaiToolType,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDuplicateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/duplicateTool/useDuplicateTool';
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
@@ -47,6 +48,7 @@ import {
   Rocket,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -54,7 +56,9 @@ import { SubpageLayout } from '../../../pages/layout/simple-layout';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
+import { ExecutionPanel } from '../../playground-tool/components/execution-panel';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
+import { useToolFlow } from '../../playground-tool/hooks/use-tool-flow';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import { parseConfigToJsonSchema } from '../utils/tool-config';
 
@@ -86,6 +90,35 @@ export default function ToolDetailsCard({
   );
   const { t } = useTranslation();
   const defaultLLMProvider = useSettings((state) => state.defaultAgentId);
+  
+  const form = useForm<{ 
+    language: CodeLanguage; 
+    llmProviderId: string; 
+    tools: string[];
+    message: string;
+  }>({ 
+    defaultValues: { 
+      language: toolType as CodeLanguage, 
+      llmProviderId: defaultLLMProvider, 
+      tools: [],
+      message: ''
+    } 
+  });
+  
+  const {
+    executeToolCode,
+    executeToolCodeQuery,
+    toolResultFiles,
+    mountTimestamp,
+    generateMetadata,
+  } = useToolFlow({
+    form,
+    isPlaygroundMode: true,
+    initialState: { 
+      code: 'js_code' in tool ? tool.js_code : 'py_code' in tool ? tool.py_code : '',
+    },
+  });
+  
   const toolConfigSchema =
     'config' in tool && tool.config?.length > 0
       ? parseConfigToJsonSchema(tool?.config ?? [])
@@ -385,6 +418,15 @@ export default function ToolDetailsCard({
             </TabsTrigger>
           )}
 
+          {hasToolCode && (
+            <TabsTrigger
+              className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+              value="tryitout"
+            >
+              Try it out
+            </TabsTrigger>
+          )}
+
           {isPlaygroundTool &&
             'author' in tool &&
             tool.author === auth?.shinkai_identity && (
@@ -645,6 +687,32 @@ export default function ToolDetailsCard({
                 >
                   {t('common.saveChanges')}
                 </Button>
+              </div>
+            </div>
+          </TabsContent>
+        )}
+
+        {hasToolCode && (
+          <TabsContent value="tryitout">
+            <div className={cn(boxContainerClass, 'w-full space-y-2')}>
+              <div className="flex flex-col gap-2">
+                <h2 className="text-base font-medium text-white">Try this tool</h2>
+                <p className="text-gray-80 text-xs mb-4">
+                  Test this tool with different inputs and see the results.
+                </p>
+                <ExecutionPanel
+                  executionToolCodeError={
+                    executeToolCodeQuery.error?.response?.data?.message ??
+                    executeToolCodeQuery.error?.message
+                  }
+                  handleRunCode={executeToolCode}
+                  isExecutionToolCodeError={executeToolCodeQuery.isError}
+                  isExecutionToolCodePending={executeToolCodeQuery.isPending}
+                  isExecutionToolCodeSuccess={executeToolCodeQuery.isSuccess}
+                  mountTimestampRef={mountTimestamp}
+                  regenerateToolMetadata={generateMetadata}
+                  toolResultFiles={toolResultFiles}
+                />
               </div>
             </div>
           </TabsContent>
