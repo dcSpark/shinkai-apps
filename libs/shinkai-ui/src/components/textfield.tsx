@@ -53,6 +53,7 @@ const TextField = ({
           autoFocus={autoFocus}
           className={cn(classes?.input)}
           endAdornment={endAdornment}
+          spellCheck={false}
           startAdornment={startAdornment}
           type={type}
           {...field}

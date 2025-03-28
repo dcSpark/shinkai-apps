@@ -12,13 +12,14 @@ export const createAgent = async ({
   const response = await createAgentApi(nodeAddress, token, {
     ...agent,
   });
+
   if (cronExpression) {
     await createRecurringTask({
       nodeAddress,
       token,
       name: agent.agent_id,
       description: agent.ui_description,
-      llmProvider: agent.llm_provider_id,
+      llmProvider: agent.agent_id,
       cronExpression,
       chatConfig: {
         custom_prompt: agent.config?.custom_prompt ?? '',

@@ -21,7 +21,6 @@ import { WalletsProvider } from '../components/crypto-wallet/context/wallets-con
 import {
   COMPLETION_DESTINATION,
   ONBOARDING_STEPS,
-  OnboardingStep,
 } from '../components/onboarding/constants';
 import { PlaygroundProvider } from '../components/playground-tool/context/playground-context';
 import { PromptSelectionProvider } from '../components/prompt/context/prompt-selection-context';

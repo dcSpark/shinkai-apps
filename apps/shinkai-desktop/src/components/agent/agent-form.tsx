@@ -1,8 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
+import {
+  DEFAULT_CHAT_CONFIG,
+  FunctionKeyV2,
+} from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/createAgent/useCreateAgent';
+import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
 import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
@@ -47,12 +51,14 @@ import {
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { useQueryClient } from '@tanstack/react-query';
 import cronstrue from 'cronstrue';
 import {
   BoltIcon,
   ChevronRight,
   LucideArrowLeft,
   SearchIcon,
+  Trash2,
   XIcon,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -310,8 +316,39 @@ function AgentForm({ mode }: AgentFormProps) {
     },
   });
 
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: removeTask, isPending: isRemovingTask } =
+    useRemoveRecurringTask({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [
+            FunctionKeyV2.GET_AGENT,
+            {
+              agentId: agent?.agent_id,
+              nodeAddress: auth?.node_address ?? '',
+            },
+          ],
+        });
+        toast.success('Delete task successfully');
+      },
+      onError: (error) => {
+        toast.error('Failed remove task', {
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
+
+  const onDeleteTask = async (taskId: string) => {
+    await removeTask({
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      recurringTaskId: taskId,
+    });
+  };
+
   const submit = async (values: AgentFormValues) => {
-    const agentId = values.name.replace(/[^a-zA-Z0-9_]/g, '_');
+    const agentId = values.name.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
     const agentData = {
       agent_id: agentId,
       full_identity_name: `${auth?.shinkai_identity}/main/agent/${agentId}`,
@@ -367,7 +404,7 @@ function AgentForm({ mode }: AgentFormProps) {
   }, [currentCronExpression]);
 
   return (
-    <div className="container flex h-full max-w-2xl flex-col">
+    <div className="container flex h-full max-w-3xl flex-col">
       <div className="flex items-center gap-5 pb-6 pt-10">
         <Link to={-1 as To}>
           <LucideArrowLeft />
@@ -443,10 +480,9 @@ function AgentForm({ mode }: AgentFormProps) {
                           <FormLabel>Instructions</FormLabel>
                           <FormControl>
                             <Textarea
-                              className="placeholder-official-gray-500 !min-h-[230px] text-sm"
+                              className="placeholder-official-gray-500 !min-h-[300px] text-sm"
                               placeholder="e.g., You are a professional UX expert. Answer questions about UI/UX best practices."
                               spellCheck={false}
-                              style={{ resize: 'vertical' }}
                               {...field}
                             />
                           </FormControl>
@@ -469,7 +505,6 @@ function AgentForm({ mode }: AgentFormProps) {
                           <span className="text-official-gray-200 text-xs">
                             Choose the model that will power your agent
                           </span>
-                          {/* <FormLabel>{t('chat.form.selectAI')}</FormLabel> */}
                           <AIModelSelector
                             className="bg-official-gray-900 !h-auto w-full rounded-lg border !border-gray-200 py-2.5"
                             onValueChange={field.onChange}
@@ -1100,123 +1135,167 @@ function AgentForm({ mode }: AgentFormProps) {
                         Set when your agent will automatically run tasks.
                       </p>
                     </div>
-
-                    <RadioGroup
-                      className="space-y-3"
-                      onValueChange={(value) =>
-                        setScheduleType(value as 'normal' | 'scheduled')
-                      }
-                      value={scheduleType}
-                    >
-                      <div className="flex items-start space-x-3 rounded-lg border p-3">
-                        <RadioGroupItem
-                          className="mt-1"
-                          id="schedule-always-on"
-                          value="normal"
-                        />
-                        <div className="space-y-1">
-                          <Label
-                            className="font-medium"
-                            htmlFor="schedule-always-on"
-                          >
-                            Normal Usage
-                          </Label>
-                          <p className="text-official-gray-400 text-sm">
-                            Agent is ready to respond immediately when used upon
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start space-x-3 rounded-lg border p-3">
-                        <RadioGroupItem
-                          className="mt-1"
-                          id="schedule-recurring"
-                          value="scheduled"
-                        />
-                        <div className="w-full space-y-4">
+                    {(mode === 'add' || agent?.cron_tasks === null) && (
+                      <RadioGroup
+                        className="space-y-3"
+                        onValueChange={(value) =>
+                          setScheduleType(value as 'normal' | 'scheduled')
+                        }
+                        value={scheduleType}
+                      >
+                        <div className="flex items-start space-x-3 rounded-lg border p-3">
+                          <RadioGroupItem
+                            className="mt-1"
+                            id="schedule-always-on"
+                            value="normal"
+                          />
                           <div className="space-y-1">
                             <Label
                               className="font-medium"
-                              htmlFor="schedule-recurring"
+                              htmlFor="schedule-always-on"
                             >
-                              Scheduled Execution
+                              Normal Usage
                             </Label>
                             <p className="text-official-gray-400 text-sm">
-                              Configure specific times and frequencies for agent
-                              tasks
+                              Agent is ready to respond immediately when used
+                              upon
                             </p>
                           </div>
+                        </div>
 
-                          {scheduleType === 'scheduled' && (
-                            <div className="space-y-4 py-5">
-                              <FormField
-                                control={form.control}
-                                name="cronExpression"
-                                render={({ field }) => (
-                                  <TextField
-                                    field={field}
-                                    helperMessage="Enter a cron expression eg: */30 * * * * (every 30 min) "
-                                    label="Cron Expression"
-                                  />
-                                )}
-                              />
-                              {readableCronExpression && (
-                                <div className="flex items-center gap-2 text-xs">
-                                  <ScheduledTasksIcon className="size-4" />
-                                  <span>
-                                    This cron will run{' '}
-                                    {readableCronExpression.toLowerCase()}{' '}
-                                    <span className="text-gray-80 font-mono">
-                                      ({form.watch('cronExpression')})
+                        <div className="flex items-start space-x-3 rounded-lg border p-3">
+                          <RadioGroupItem
+                            className="mt-1"
+                            id="schedule-recurring"
+                            value="scheduled"
+                          />
+                          <div className="w-full space-y-4">
+                            <div className="space-y-1">
+                              <Label
+                                className="font-medium"
+                                htmlFor="schedule-recurring"
+                              >
+                                Scheduled Execution
+                              </Label>
+                              <p className="text-official-gray-400 text-sm">
+                                Configure specific times and frequencies for
+                                agent tasks
+                              </p>
+                            </div>
+
+                            {scheduleType === 'scheduled' && (
+                              <div className="space-y-4 py-5">
+                                <FormField
+                                  control={form.control}
+                                  name="cronExpression"
+                                  render={({ field }) => (
+                                    <TextField
+                                      field={field}
+                                      helperMessage="Enter a cron expression eg: */30 * * * * (every 30 min) "
+                                      label="Cron Expression"
+                                    />
+                                  )}
+                                />
+                                {readableCronExpression && (
+                                  <div className="flex items-center gap-2 text-xs">
+                                    <ScheduledTasksIcon className="size-4" />
+                                    <span>
+                                      This cron will run{' '}
+                                      {readableCronExpression.toLowerCase()}{' '}
+                                      <span className="text-gray-80 font-mono">
+                                        ({form.watch('cronExpression')})
+                                      </span>
                                     </span>
+                                  </div>
+                                )}
+                                <div className="flex flex-wrap gap-2">
+                                  {[
+                                    {
+                                      label: 'every 5 min',
+                                      cron: '*/5 * * * *',
+                                    },
+                                    {
+                                      label: 'every 5 hours',
+                                      cron: '0 */5 * * *',
+                                    },
+                                    {
+                                      label: 'every monday at 8am',
+                                      cron: '0 8 * * 1',
+                                    },
+                                    {
+                                      label: 'every january 1st at 12am',
+                                      cron: '0 0 1 1 *',
+                                    },
+                                    {
+                                      label: 'every 1st of the month at 12pm',
+                                      cron: '0 12 1 * *',
+                                    },
+                                  ].map((item) => (
+                                    <Badge
+                                      className="bg-official-gray-850 hover:bg-official-gray-900 cursor-pointer font-normal"
+                                      key={item.cron}
+                                      onClick={() => {
+                                        form.setValue(
+                                          'cronExpression',
+                                          item.cron,
+                                        );
+                                      }}
+                                      variant="outline"
+                                    >
+                                      <span className="text-xs">
+                                        {item.label}
+                                      </span>
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </RadioGroup>
+                    )}
+                    {mode === 'edit' &&
+                      agent?.cron_tasks &&
+                      agent?.cron_tasks?.length > 0 && (
+                        <div className="mt-2 space-y-4">
+                          <div className="mb-2 flex items-center gap-2">
+                            <ScheduledTasksIcon className="size-4 text-white" />
+                            <h4 className="text-sm font-medium">
+                              Current Scheduled Tasks
+                            </h4>
+                          </div>
+                          <div className="mt-2 space-y-3">
+                            {agent?.cron_tasks?.map((task) => (
+                              <div
+                                className="bg-official-gray-900 flex items-center justify-between rounded-md border p-2"
+                                key={task.task_id}
+                              >
+                                <div className="flex items-center gap-2 pl-1">
+                                  <div className="bg-brand/70 h-2 w-2 rounded-full" />
+                                  <span className="text-sm">
+                                    {cronstrue.toString(task.cron, {
+                                      throwExceptionOnParseError: false,
+                                    })}
                                   </span>
                                 </div>
-                              )}
-                              <div className="flex flex-wrap gap-2">
-                                {[
-                                  {
-                                    label: 'every 5 min',
-                                    cron: '*/5 * * * *',
-                                  },
-                                  {
-                                    label: 'every 5 hours',
-                                    cron: '0 */5 * * *',
-                                  },
-                                  {
-                                    label: 'every monday at 8am',
-                                    cron: '0 8 * * 1',
-                                  },
-                                  {
-                                    label: 'every january 1st at 12am',
-                                    cron: '0 0 1 1 *',
-                                  },
-                                  {
-                                    label: 'every 1st of the month at 12pm',
-                                    cron: '0 12 1 * *',
-                                  },
-                                ].map((item) => (
-                                  <Badge
-                                    className="bg-official-gray-850 hover:bg-official-gray-900 cursor-pointer font-normal"
-                                    key={item.cron}
-                                    onClick={() => {
-                                      form.setValue(
-                                        'cronExpression',
-                                        item.cron,
-                                      );
-                                    }}
-                                    variant="outline"
-                                  >
-                                    <span className="text-xs">
-                                      {item.label}
-                                    </span>
-                                  </Badge>
-                                ))}
+
+                                <Button
+                                  className="text-official-gray-400 p-2 hover:bg-red-900/10 hover:text-red-400/90"
+                                  isLoading={isRemovingTask}
+                                  onClick={() =>
+                                    onDeleteTask(task.task_id.toString())
+                                  }
+                                  size="auto"
+                                  type="button"
+                                  variant="ghost"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
                               </div>
-                            </div>
-                          )}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    </RadioGroup>
+                      )}
                   </div>
                 </TabsContent>
               </Tabs>
