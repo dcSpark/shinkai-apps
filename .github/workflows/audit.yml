@@ -12,7 +12,9 @@ on:
 
 jobs:
   node-npm:
-    runs-on: ubuntu-22.04
+    runs-on: 
+      group: Shinkai Runners
+      labels: self-hosted
 
     steps:
       - name: Checkout
