@@ -59,6 +59,7 @@ import { SHINKAI_STORE_URL } from '../../../utils/store';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import { parseConfigToJsonSchema } from '../utils/tool-config';
+import { parseInputArgsToJsonSchema } from '../utils/tool-input-args';
 
 /**
  * Removes embedding-related fields from a tool object to prevent displaying large embedding arrays
@@ -428,14 +429,12 @@ export default function ToolDetailsCard({
               OAuth & Permissions
             </TabsTrigger>
           )}
-          {'config' in tool && tool.config && tool.config.length > 0 && (
-            <TabsTrigger
-              className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
-              value="try-it-out"
-            >
-              Try it out
-            </TabsTrigger>
-          )}
+          <TabsTrigger
+            className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+            value="try-it-out"
+          >
+            Try it out
+          </TabsTrigger>
 
           {isPlaygroundTool &&
             'author' in tool &&
@@ -738,8 +737,7 @@ export default function ToolDetailsCard({
           </TabsContent>
         )}
 
-        {'config' in tool && tool.config && tool.config.length > 0 && (
-          <TabsContent value="try-it-out">
+        <TabsContent value="try-it-out">
             <div className={boxContainerClass}>
               <div className="mb-4">
                 <h2 className="text-base font-medium text-white">
@@ -771,20 +769,34 @@ export default function ToolDetailsCard({
                     language: toolType === 'Python' 
                       ? CodeLanguage.Python 
                       : CodeLanguage.Typescript,
-                    params: formData ?? {},
+                    params: formData?.params ?? {},
                     llmProviderId: '',
                     tools: [],
-                    configs: {},
+                    configs: formData?.configs ?? {},
                     xShinkaiAppId: 'shinkai-desktop',
                     xShinkaiToolId: toolKey ?? '',
                   });
                 }}
-                schema={
-                  'config' in tool && tool.config?.length > 0
-                    ? parseConfigToJsonSchema(tool?.config ?? [])
-                    : {}
-                }
-                uiSchema={{ 'ui:submitButtonOptions': { norender: true } }}
+                schema={{
+                  type: 'object',
+                  properties: {
+                    ...(('config' in tool && tool.config?.length > 0)
+                      ? { configs: parseConfigToJsonSchema(tool?.config ?? []) }
+                      : {}),
+                    ...(('input_args' in tool && tool.input_args?.length > 0)
+                      ? { params: parseInputArgsToJsonSchema(tool?.input_args ?? []) }
+                      : {})
+                  }
+                }}
+                uiSchema={{ 
+                  'ui:submitButtonOptions': { norender: true },
+                  configs: {
+                    'ui:title': 'Configuration'
+                  },
+                  params: {
+                    'ui:title': 'Input Parameters'
+                  }
+                }}
                 validator={validator}
               />
               
@@ -837,8 +849,7 @@ export default function ToolDetailsCard({
                 </div>
               )}
             </div>
-          </TabsContent>
-        )}
+        </TabsContent>
 
         {isPlaygroundTool &&
           'author' in tool &&
