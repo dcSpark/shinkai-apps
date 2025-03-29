@@ -17,6 +17,11 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
   Form,
   FormControl,
   FormDescription,
@@ -119,6 +124,8 @@ function AgentForm({ mode }: AgentFormProps) {
   const [currentTab, setCurrentTab] = useState<
     'persona' | 'knowledge' | 'tools' | 'schedule'
   >('persona');
+
+  const [isCreateNewDialogOpen, setIsCreateNewDialogOpen] = useState(false);
 
   const [scheduleType, setScheduleType] = useState<'normal' | 'scheduled'>(
     'normal',
@@ -404,22 +411,23 @@ function AgentForm({ mode }: AgentFormProps) {
   }, [currentCronExpression]);
 
   return (
-    <div className="container flex h-full max-w-3xl flex-col">
-      <div className="flex items-center gap-5 pb-6 pt-10">
-        <Link to={-1 as To}>
-          <LucideArrowLeft />
-          <span className="sr-only">{t('common.back')}</span>
-        </Link>
-        <h1 className="font-clash text-2xl font-medium">
-          {mode === 'edit' ? 'Update Agent' : 'Create New Agent'}
-        </h1>
-      </div>
+    <>
+      <div className="container flex h-full max-w-3xl flex-col">
+        <div className="flex items-center gap-5 pb-6 pt-10">
+          <Link to={-1 as To}>
+            <LucideArrowLeft />
+            <span className="sr-only">{t('common.back')}</span>
+          </Link>
+          <h1 className="font-clash text-2xl font-medium">
+            {mode === 'edit' ? 'Update Agent' : 'Create New Agent'}
+          </h1>
+        </div>
 
-      <Form {...form}>
-        <form
-          className="flex w-full flex-1 flex-col justify-between space-y-2"
-          onSubmit={form.handleSubmit(submit)}
-        >
+        <Form {...form}>
+          <form
+            className="flex w-full flex-1 flex-col justify-between space-y-2"
+            onSubmit={form.handleSubmit(submit)}
+          >
           <div className="mx-auto w-full flex-1">
             <div className="h-full space-y-6">
               <Tabs
@@ -787,7 +795,7 @@ function AgentForm({ mode }: AgentFormProps) {
                       </div>
                       <Button
                         onClick={() => {
-                          navigate('/tools');
+                          setIsCreateNewDialogOpen(true);
                         }}
                         size="xs"
                         variant="outline"
@@ -1352,7 +1360,38 @@ function AgentForm({ mode }: AgentFormProps) {
         </form>
       </Form>
     </div>
-  );
+
+    <Dialog onOpenChange={setIsCreateNewDialogOpen} open={isCreateNewDialogOpen}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogTitle className="pb-0">Create New Tool</DialogTitle>
+        <DialogDescription>
+          If you navigate away, you will lose your unsaved progress on this agent. 
+          Would you like to save your progress first or continue to create a new tool?
+        </DialogDescription>
+        
+        <DialogFooter>
+          <div className="flex gap-2 pt-4">
+            <Button
+              className="min-w-[100px] flex-1"
+              onClick={() => setIsCreateNewDialogOpen(false)}
+              size="sm"
+              type="button"
+              variant="ghost"
+            >
+              Cancel
+            </Button>
+            <Button
+              className="min-w-[100px] flex-1"
+              onClick={() => navigate('/tools')}
+              size="sm"
+            >
+              Continue
+            </Button>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  </>);
 }
 
 export default AgentForm;
