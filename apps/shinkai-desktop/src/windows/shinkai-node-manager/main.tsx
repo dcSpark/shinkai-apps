@@ -331,8 +331,9 @@ const App = () => {
               <Form {...shinkaiNodeOptionsForm}>
                 <form className="space-y-2 pr-4">
                   {shinkaiNodeOptions &&
-                    Array.from(Object.entries(shinkaiNodeOptions)).map(
-                      ([key, value]) => {
+                    Array.from(Object.entries(shinkaiNodeOptions))
+                      .filter(([key]) => key !== 'SECRET_DESKTOP_INSTALLATION_PROOF_KEY')
+                      .map(([key, value]) => {
                         return (
                           <FormField
                             control={shinkaiNodeOptionsForm.control}
