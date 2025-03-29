@@ -58,6 +58,25 @@ import RemoveToolButton from '../../playground-tool/components/remove-tool-butto
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import { parseConfigToJsonSchema } from '../utils/tool-config';
 
+/**
+ * Removes embedding-related fields from a tool object to prevent displaying large embedding arrays
+ */
+function removeEmbeddingFields(tool: ShinkaiTool): ShinkaiTool {
+  if (!tool) return tool;
+  
+  const filteredTool = { ...tool };
+  
+  if ('embedding' in filteredTool) {
+    delete (filteredTool as any).embedding;
+  }
+  
+  if ('tool_embedding' in filteredTool) {
+    delete (filteredTool as any).tool_embedding;
+  }
+  
+  return filteredTool;
+}
+
 interface ToolDetailsProps {
   tool: ShinkaiTool;
   isEnabled: boolean;
@@ -552,7 +571,11 @@ export default function ToolDetailsCard({
                   <h2 className="text-base font-medium text-white">Metadata</h2>
                   <CopyToClipboardIcon
                     className="text-gray-80 h-4 w-auto bg-transparent"
-                    string={JSON.stringify(tool, null, 2)}
+                    string={JSON.stringify(
+                      removeEmbeddingFields(tool),
+                      null,
+                      2
+                    )}
                   >
                     <span className="text-xs">Copy</span>
                   </CopyToClipboardIcon>
@@ -565,7 +588,11 @@ export default function ToolDetailsCard({
                     borderRadius: '0.5rem',
                     overflowY: 'hidden',
                   }}
-                  value={JSON.stringify(tool, null, 2)}
+                  value={JSON.stringify(
+                    removeEmbeddingFields(tool),
+                    null,
+                    2
+                  )}
                 />
               </div>
             </div>
