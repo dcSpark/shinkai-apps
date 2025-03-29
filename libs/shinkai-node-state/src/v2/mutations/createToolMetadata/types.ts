@@ -5,6 +5,7 @@ export type CreateToolMetadataInput = Token & {
   nodeAddress: string;
   jobId: string;
   tools: string[];
+  xShinkaiToolId?: string;
 };
 
 export type CreateToolMetadataOutput = CreateToolMetadataResponse;

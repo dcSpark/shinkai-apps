@@ -461,15 +461,21 @@ export const useToolFlow = ({
 
   const generateMetadata = async () => {
     if (!auth || !chatInboxId) return;
-
-    const currentTools = tools || form.watch('tools');
-
-    await createToolMetadata({
-      nodeAddress: auth.node_address,
-      token: auth.api_v2_key,
-      jobId: extractJobIdFromInbox(chatInboxId),
-      tools: currentTools,
-    });
+    
+    try {
+      const currentTools = tools || form.watch('tools');
+      
+      await createToolMetadata({
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
+        jobId: extractJobIdFromInbox(chatInboxId),
+        tools: currentTools,
+        xShinkaiToolId: xShinkaiToolId, // Add tool ID to help server identify the context
+      });
+    } catch (error) {
+      console.error('Error generating metadata:', error);
+      setToolMetadataError(`Failed to regenerate metadata: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   };
 
   useEffect(() => {

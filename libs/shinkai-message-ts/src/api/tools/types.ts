@@ -237,6 +237,7 @@ export type CreateToolMetadataRequest = {
   language: CodeLanguage;
   job_id: string;
   tools: string[];
+  x_shinkai_tool_id?: string;
 };
 
 export type CreateToolMetadataResponse = {
