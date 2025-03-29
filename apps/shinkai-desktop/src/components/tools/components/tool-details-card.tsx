@@ -12,6 +12,7 @@ import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
+import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import {
   Alert,
   AlertDescription,
@@ -45,6 +46,7 @@ import {
   MoreVertical,
   PlayCircle,
   Rocket,
+  LoaderIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -103,6 +105,8 @@ export default function ToolDetailsCard({
   const [oauthFormData, setOAuthFormData] = useState<{ oauth: OAuth[] } | null>(
     null,
   );
+  const [tryItOutFormData, setTryItOutFormData] = useState<Record<string, any> | null>(null);
+  const [toolExecutionResult, setToolExecutionResult] = useState<Record<string, any> | null>(null);
   const { t } = useTranslation();
   const defaultLLMProvider = useSettings((state) => state.defaultAgentId);
   const toolConfigSchema =
@@ -165,6 +169,19 @@ export default function ToolDetailsCard({
       },
       onError: (error) => {
         toast.error(t('tools.errorDuplicateTool'), {
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
+
+  const { mutateAsync: executeToolCode, isPending: isExecutingTool, isError: isExecutionError, error: executionError } =
+    useExecuteToolCode({
+      onSuccess: (response) => {
+        setToolExecutionResult(response);
+        toast.success('Tool executed successfully');
+      },
+      onError: (error) => {
+        toast.error('Failed to execute tool', {
           description: error.response?.data?.message ?? error.message,
         });
       },
@@ -410,6 +427,15 @@ export default function ToolDetailsCard({
               value="oauth"
             >
               OAuth & Permissions
+            </TabsTrigger>
+          )}
+          
+          {'config' in tool && tool.config && tool.config.length > 0 && (
+            <TabsTrigger
+              className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+              value="try-it-out"
+            >
+              Try it out
             </TabsTrigger>
           )}
 
@@ -710,6 +736,108 @@ export default function ToolDetailsCard({
                   {t('common.saveChanges')}
                 </Button>
               </div>
+            </div>
+          </TabsContent>
+        )}
+
+        {'config' in tool && tool.config && tool.config.length > 0 && (
+          <TabsContent value="try-it-out">
+            <div className={boxContainerClass}>
+              <div className="mb-4">
+                <h2 className="text-base font-medium text-white">
+                  Try it out
+                </h2>
+                <p className="text-gray-80 text-xs">
+                  Test this tool with different inputs
+                </p>
+              </div>
+
+              <JsonForm
+                className="py-1"
+                formData={tryItOutFormData}
+                id="try-it-out-form"
+                noHtml5Validate={true}
+                onChange={(e) => setTryItOutFormData(e.formData)}
+                onSubmit={async (data) => {
+                  const formData = data.formData;
+                  setToolExecutionResult(null);
+
+                  await executeToolCode({
+                    nodeAddress: auth?.node_address ?? '',
+                    token: auth?.api_v2_key ?? '',
+                    code: 'py_code' in tool 
+                      ? tool.py_code 
+                      : 'js_code' in tool 
+                        ? tool.js_code 
+                        : '',
+                    language: toolType === 'Python' 
+                      ? 'python' 
+                      : 'typescript',
+                    params: formData ?? {},
+                    llmProviderId: '',
+                    tools: [],
+                    configs: {},
+                    xShinkaiAppId: 'shinkai-desktop',
+                    xShinkaiToolId: toolKey ?? '',
+                  });
+                }}
+                schema={
+                  'config' in tool && tool.config?.length > 0
+                    ? parseConfigToJsonSchema(tool?.config ?? [])
+                    : {}
+                }
+                uiSchema={{ 'ui:submitButtonOptions': { norender: true } }}
+                validator={validator}
+              />
+              
+              <div className="flex w-full justify-end">
+                <Button
+                  className="min-w-[100px]"
+                  disabled={isExecutingTool}
+                  form="try-it-out-form"
+                  isLoading={isExecutingTool}
+                  rounded="lg"
+                  size="sm"
+                  variant="outline"
+                >
+                  Run Tool
+                </Button>
+              </div>
+
+              {(isExecutingTool || isExecutionError || toolExecutionResult) && (
+                <div className="mt-6 border-t border-gray-200 pt-6">
+                  <h3 className="mb-4 text-sm font-medium text-white">Results</h3>
+                  
+                  {isExecutingTool && (
+                    <div className="flex flex-col items-center gap-2 py-4 text-xs text-gray-80">
+                      <LoaderIcon className="h-5 w-5 animate-spin" />
+                      Running Tool...
+                    </div>
+                  )}
+
+                  {isExecutionError && executionError && (
+                    <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
+                      <p>Tool execution failed.</p>
+                      <pre className="whitespace-break-spaces px-4 text-center">
+                        {executionError.response?.data?.message ?? executionError.message}
+                      </pre>
+                    </div>
+                  )}
+
+                  {toolExecutionResult && (
+                    <ToolCodeEditor
+                      language="json"
+                      name="result"
+                      readOnly
+                      style={{
+                        borderRadius: '0.5rem',
+                        overflowY: 'hidden',
+                      }}
+                      value={JSON.stringify(toolExecutionResult, null, 2)}
+                    />
+                  )}
+                </div>
+              )}
             </div>
           </TabsContent>
         )}
