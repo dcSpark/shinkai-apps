@@ -2,17 +2,18 @@ import { FormProps } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
+  CodeLanguage,
   OAuth,
   ShinkaiTool,
   ShinkaiToolType,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDuplicateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/duplicateTool/useDuplicateTool';
+import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
-import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import {
   Alert,
   AlertDescription,
@@ -43,10 +44,10 @@ import {
   CopyIcon,
   DownloadIcon,
   ExternalLinkIcon,
+  LoaderIcon,
   MoreVertical,
   PlayCircle,
   Rocket,
-  LoaderIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -54,7 +55,6 @@ import { toast } from 'sonner';
 
 import { SubpageLayout } from '../../../pages/layout/simple-layout';
 import { useAuth } from '../../../store/auth';
-import { useSettings } from '../../../store/settings';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
@@ -108,7 +108,6 @@ export default function ToolDetailsCard({
   const [tryItOutFormData, setTryItOutFormData] = useState<Record<string, any> | null>(null);
   const [toolExecutionResult, setToolExecutionResult] = useState<Record<string, any> | null>(null);
   const { t } = useTranslation();
-  const defaultLLMProvider = useSettings((state) => state.defaultAgentId);
   const toolConfigSchema =
     'config' in tool && tool.config?.length > 0
       ? parseConfigToJsonSchema(tool?.config ?? [])
@@ -429,7 +428,6 @@ export default function ToolDetailsCard({
               OAuth & Permissions
             </TabsTrigger>
           )}
-          
           {'config' in tool && tool.config && tool.config.length > 0 && (
             <TabsTrigger
               className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
@@ -771,8 +769,8 @@ export default function ToolDetailsCard({
                         ? tool.js_code 
                         : '',
                     language: toolType === 'Python' 
-                      ? 'python' 
-                      : 'typescript',
+                      ? CodeLanguage.Python 
+                      : CodeLanguage.Typescript,
                     params: formData ?? {},
                     llmProviderId: '',
                     tools: [],
