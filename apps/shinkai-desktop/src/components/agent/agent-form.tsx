@@ -2,11 +2,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
+  buildInboxIdFromJobId,
+  extractJobIdFromInbox,
+} from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
+import {
   DEFAULT_CHAT_CONFIG,
   FunctionKeyV2,
 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/createAgent/useCreateAgent';
+import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
+import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
 import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
@@ -47,6 +53,7 @@ import {
 import {
   FilesIcon,
   ScheduledTasksIcon,
+  SendIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
@@ -57,6 +64,7 @@ import {
   BoltIcon,
   ChevronRight,
   LucideArrowLeft,
+  MessageSquare,
   SearchIcon,
   Trash2,
   XIcon,
@@ -69,9 +77,12 @@ import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
 
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
+import { useChatConversationWithOptimisticUpdates } from '../../pages/chat/chat-conversation';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { AIModelSelector } from '../chat/chat-action-bar/ai-update-selection-action-bar';
+import { MessageList } from '../chat/components/message-list';
+import { useWebSocketMessage } from '../chat/websocket-message';
 
 const agentFormSchema = z.object({
   name: z.string(),
@@ -109,6 +120,188 @@ interface AgentFormProps {
   mode: 'add' | 'edit';
 }
 
+const TabNavigation = () => {
+  return (
+    <TabsList className="border-official-gray-780 flex h-auto justify-start gap-4 rounded-full bg-transparent px-0.5 py-1">
+      <TabsTrigger
+        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        value="persona"
+      >
+        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
+          1
+        </Badge>
+        <span>Persona</span>
+      </TabsTrigger>
+      <TabsTrigger
+        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        value="knowledge"
+      >
+        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
+          2
+        </Badge>
+        <span>Knowledge</span>
+      </TabsTrigger>
+      <TabsTrigger
+        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        value="tools"
+      >
+        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
+          3
+        </Badge>
+        <span>Tools</span>
+      </TabsTrigger>
+      <TabsTrigger
+        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        value="schedule"
+      >
+        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
+          4
+        </Badge>
+        <span>Schedule</span>
+      </TabsTrigger>
+    </TabsList>
+  );
+};
+
+function AgentSideChat({ agentId, onClose }: { agentId: string; onClose: () => void }) {
+  const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
+  const [chatInboxId, setChatInboxId] = useState<string | null>(null);
+  const [message, setMessage] = useState('');
+  
+  useWebSocketMessage({
+    inboxId: chatInboxId ?? '',
+    enabled: !!chatInboxId,
+  });
+  
+  const { mutateAsync: createJob } = useCreateJob({
+    onSuccess: (data) => {
+      setChatInboxId(buildInboxIdFromJobId(data.jobId));
+    },
+  });
+  
+  const { mutateAsync: sendMessageToJob } = useSendMessageToJob({});
+  
+  const {
+    data,
+    fetchPreviousPage,
+    hasPreviousPage,
+    isChatConversationLoading,
+    isFetchingPreviousPage,
+    isChatConversationSuccess,
+  } = useChatConversationWithOptimisticUpdates({
+    inboxId: chatInboxId ?? '',
+    forceRefetchInterval: true,
+  });
+  
+  const isLoadingMessage = useMemo(() => {
+    const lastMessage = data?.pages?.at(-1)?.at(-1);
+    return (
+      !!chatInboxId &&
+      lastMessage?.role === 'assistant' &&
+      lastMessage?.status.type === 'running'
+    );
+  }, [data?.pages, chatInboxId]);
+  
+  const handleSendMessage = async () => {
+    if (!auth || !message.trim()) return;
+    
+    if (!chatInboxId) {
+      await createJob({
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
+        llmProvider: agentId,
+        content: message,
+        isHidden: false,
+        chatConfig: {
+          stream: DEFAULT_CHAT_CONFIG.stream,
+          custom_prompt: '',
+          temperature: DEFAULT_CHAT_CONFIG.temperature,
+          top_p: DEFAULT_CHAT_CONFIG.top_p,
+          top_k: DEFAULT_CHAT_CONFIG.top_k,
+          use_tools: DEFAULT_CHAT_CONFIG.use_tools,
+        },
+      });
+    } else {
+      await sendMessageToJob({
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
+        jobId: extractJobIdFromInbox(chatInboxId),
+        message: message,
+        parent: '',
+      });
+    }
+    
+    setMessage('');
+  };
+  
+  return (
+    <div className="fixed right-0 top-0 z-50 flex h-full w-96 flex-col bg-gray-950 shadow-lg">
+      <div className="flex items-center justify-between border-b border-gray-800 p-4">
+        <h2 className="text-lg font-medium">Chat with Agent</h2>
+        <Button onClick={onClose} size="icon" variant="ghost">
+          <XIcon className="h-5 w-5" />
+        </Button>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto p-4">
+        {!chatInboxId ? (
+          <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
+            <span aria-hidden className="text-3xl">
+              🤖
+            </span>
+            <h2 className="text-base font-medium">
+              Chat with your Agent
+            </h2>
+            <p className="text-gray-400 text-xs">
+              Send a message to start chatting with this agent
+            </p>
+          </div>
+        ) : (
+          <MessageList
+            containerClassName="px-2"
+            disabledRetryAndEdit={true}
+            fetchPreviousPage={fetchPreviousPage}
+            hasPreviousPage={hasPreviousPage}
+            isFetchingPreviousPage={isFetchingPreviousPage}
+            isLoading={isChatConversationLoading}
+            isSuccess={isChatConversationSuccess}
+            noMoreMessageLabel={t('chat.allMessagesLoaded')}
+            paginatedMessages={data}
+          />
+        )}
+      </div>
+      
+      <div className="border-t border-gray-800 p-4">
+        <div className="flex items-center gap-2">
+          <Input
+            className="flex-1"
+            disabled={isLoadingMessage}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage();
+              }
+            }}
+            placeholder="Type a message..."
+            value={message}
+          />
+          <Button
+            className="shrink-0"
+            disabled={isLoadingMessage || !message.trim()}
+            onClick={handleSendMessage}
+            size="icon"
+            type="button"
+          >
+            <SendIcon className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AgentForm({ mode }: AgentFormProps) {
   const { agentId } = useParams();
 
@@ -119,6 +312,8 @@ function AgentForm({ mode }: AgentFormProps) {
   const [currentTab, setCurrentTab] = useState<
     'persona' | 'knowledge' | 'tools' | 'schedule'
   >('persona');
+  
+  const [isSideChatOpen, setIsSideChatOpen] = useState(false);
 
   const [scheduleType, setScheduleType] = useState<'normal' | 'scheduled'>(
     'normal',
@@ -404,22 +599,36 @@ function AgentForm({ mode }: AgentFormProps) {
   }, [currentCronExpression]);
 
   return (
-    <div className="container flex h-full max-w-3xl flex-col">
-      <div className="flex items-center gap-5 pb-6 pt-10">
-        <Link to={-1 as To}>
-          <LucideArrowLeft />
-          <span className="sr-only">{t('common.back')}</span>
-        </Link>
-        <h1 className="font-clash text-2xl font-medium">
-          {mode === 'edit' ? 'Update Agent' : 'Create New Agent'}
-        </h1>
-      </div>
+    <div className="relative">
+      <div className="container flex h-full max-w-3xl flex-col">
+        <div className="flex items-center justify-between pb-6 pt-10">
+          <div className="flex items-center gap-5">
+            <Link to={-1 as To}>
+              <LucideArrowLeft />
+              <span className="sr-only">{t('common.back')}</span>
+            </Link>
+            <h1 className="font-clash text-2xl font-medium">
+              {mode === 'edit' ? 'Update Agent' : 'Create New Agent'}
+            </h1>
+          </div>
+          {mode === 'edit' && agent && (
+            <Button
+              className="flex items-center gap-2"
+              onClick={() => setIsSideChatOpen(!isSideChatOpen)}
+              size="sm"
+              variant="outline"
+            >
+              <MessageSquare className="h-4 w-4" />
+              {isSideChatOpen ? 'Close Chat' : 'Open Chat'}
+            </Button>
+          )}
+        </div>
 
-      <Form {...form}>
-        <form
-          className="flex w-full flex-1 flex-col justify-between space-y-2"
-          onSubmit={form.handleSubmit(submit)}
-        >
+        <Form {...form}>
+          <form
+            className="flex w-full flex-1 flex-col justify-between space-y-2"
+            onSubmit={form.handleSubmit(submit)}
+          >
           <div className="mx-auto w-full flex-1">
             <div className="h-full space-y-6">
               <Tabs
@@ -781,7 +990,7 @@ function AgentForm({ mode }: AgentFormProps) {
                       <div className="space-y-1">
                         <h2 className="text-base font-medium">Tools</h2>
                         <p className="text-official-gray-400 text-sm">
-                          Select which tools & skills your agent can use to
+                          Select which tools &amp; skills your agent can use to
                           complete tasks.
                         </p>
                       </div>
@@ -1351,51 +1560,14 @@ function AgentForm({ mode }: AgentFormProps) {
           </div>
         </form>
       </Form>
+      </div>
+      
+      {/* Side Chat Panel */}
+      {isSideChatOpen && mode === 'edit' && agent && (
+        <AgentSideChat agentId={agent.agent_id} onClose={() => setIsSideChatOpen(false)} />
+      )}
     </div>
   );
 }
 
 export default AgentForm;
-
-const TabNavigation = () => {
-  return (
-    <TabsList className="border-official-gray-780 flex h-auto justify-start gap-4 rounded-full bg-transparent px-0.5 py-1">
-      <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
-        value="persona"
-      >
-        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
-          1
-        </Badge>
-        <span>Persona</span>
-      </TabsTrigger>
-      <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
-        value="knowledge"
-      >
-        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
-          2
-        </Badge>
-        <span>Knowledge</span>
-      </TabsTrigger>
-      <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
-        value="tools"
-      >
-        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
-          3
-        </Badge>
-        <span>Tools</span>
-      </TabsTrigger>
-      <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
-        value="schedule"
-      >
-        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
-          4
-        </Badge>
-        <span>Schedule</span>
-      </TabsTrigger>
-    </TabsList>
-  );
-};
