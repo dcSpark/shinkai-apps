@@ -748,70 +748,79 @@ export default function ToolDetailsCard({
                 </p>
               </div>
 
-              <JsonForm
-                className="py-1"
-                formData={tryItOutFormData}
-                id="try-it-out-form"
-                noHtml5Validate={true}
-                onChange={(e) => setTryItOutFormData(e.formData)}
-                onSubmit={async (data) => {
-                  const formData = data.formData;
-                  setToolExecutionResult(null);
+              <div>
+                {(!('input_args' in tool && Array.isArray(tool.input_args) && tool.input_args?.length > 0) && 
+                  !('input_args' in tool && tool.input_args && typeof tool.input_args === 'object' && 'properties' in (tool.input_args as any))) ? (
+                  <div className="text-gray-80 text-sm py-2">
+                    No input parameters required.
+                  </div>
+                ) : null}
+                
+                <JsonForm
+                  className="py-1"
+                  formData={tryItOutFormData}
+                  id="try-it-out-form"
+                  noHtml5Validate={true}
+                  onChange={(e) => setTryItOutFormData(e.formData)}
+                  onSubmit={async (data) => {
+                    const formData = data.formData;
+                    setToolExecutionResult(null);
 
-                  await executeToolCode({
-                    nodeAddress: auth?.node_address ?? '',
-                    token: auth?.api_v2_key ?? '',
-                    code: 'py_code' in tool 
-                      ? tool.py_code 
-                      : 'js_code' in tool 
-                        ? tool.js_code 
-                        : '',
-                    language: toolType === 'Python' 
-                      ? CodeLanguage.Python 
-                      : CodeLanguage.Typescript,
-                    params: formData?.params ?? {},
-                    llmProviderId: '',
-                    tools: [],
-                    configs: formData?.configs ?? {},
-                    xShinkaiAppId: 'shinkai-desktop',
-                    xShinkaiToolId: toolKey ?? '',
-                  });
-                }}
-                schema={{
-                  type: 'object',
-                  properties: {
-                    ...(('config' in tool && tool.config?.length > 0)
-                      ? { configs: parseConfigToJsonSchema(tool?.config ?? []) }
-                      : {}),
-                    ...(('input_args' in tool && Array.isArray(tool.input_args) && tool.input_args?.length > 0)
-                      ? { params: parseInputArgsToJsonSchema(tool?.input_args ?? []) }
-                      : ('input_args' in tool && tool.input_args && typeof tool.input_args === 'object' && 'properties' in (tool.input_args as any))
-                        ? {
-                            params: {
-                              type: 'object',
-                              properties: Object.entries((tool.input_args as any).properties).reduce((acc, [key, value]: [string, any]) => {
-                                acc[key] = {
-                                  type: value.type.toLowerCase(),
-                                  description: value.description
-                                };
-                                return acc;
-                              }, {} as Record<string, any>)
+                    await executeToolCode({
+                      nodeAddress: auth?.node_address ?? '',
+                      token: auth?.api_v2_key ?? '',
+                      code: 'py_code' in tool 
+                        ? tool.py_code 
+                        : 'js_code' in tool 
+                          ? tool.js_code 
+                          : '',
+                      language: toolType === 'Python' 
+                        ? CodeLanguage.Python 
+                        : CodeLanguage.Typescript,
+                      params: formData?.params ?? {},
+                      llmProviderId: '',
+                      tools: [],
+                      configs: formData?.configs ?? {},
+                      xShinkaiAppId: 'shinkai-desktop',
+                      xShinkaiToolId: toolKey ?? '',
+                    });
+                  }}
+                  schema={{
+                    type: 'object',
+                    properties: {
+                      ...(('config' in tool && tool.config?.length > 0)
+                        ? { configs: parseConfigToJsonSchema(tool?.config ?? []) }
+                        : {}),
+                      ...(('input_args' in tool && Array.isArray(tool.input_args) && tool.input_args?.length > 0)
+                        ? { params: parseInputArgsToJsonSchema(tool?.input_args ?? []) }
+                        : ('input_args' in tool && tool.input_args && typeof tool.input_args === 'object' && 'properties' in (tool.input_args as any))
+                          ? {
+                              params: {
+                                type: 'object',
+                                properties: Object.entries((tool.input_args as any).properties).reduce((acc, [key, value]: [string, any]) => {
+                                  acc[key] = {
+                                    type: value.type.toLowerCase(),
+                                    description: value.description
+                                  };
+                                  return acc;
+                                }, {} as Record<string, any>)
+                              }
                             }
-                          }
-                        : {})
-                  }
-                }}
-                uiSchema={{ 
-                  'ui:submitButtonOptions': { norender: true },
-                  configs: {
-                    'ui:title': 'Configuration'
-                  },
-                  params: {
-                    'ui:title': 'Input Parameters'
-                  }
-                }}
-                validator={validator}
-              />
+                          : {})
+                    }
+                  }}
+                  uiSchema={{ 
+                    'ui:submitButtonOptions': { norender: true },
+                    configs: {
+                      'ui:title': 'Configuration'
+                    },
+                    params: {
+                      'ui:title': 'Input Parameters'
+                    }
+                  }}
+                  validator={validator}
+                />
+              </div>
               
               <div className="flex w-full justify-end">
                 <Button
