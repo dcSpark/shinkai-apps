@@ -35,6 +35,7 @@ export const useDuplicateTool = (options?: Options) => {
             toolRouterKey: response.tool_router_key,
             token: variables.token,
             nodeAddress: variables.nodeAddress,
+            xShinkaiOriginalToolRouterKey: variables.toolKey,
           },
         ],
         queryFn: () =>
@@ -42,6 +43,7 @@ export const useDuplicateTool = (options?: Options) => {
             toolRouterKey: response.tool_router_key,
             token: variables.token,
             nodeAddress: variables.nodeAddress,
+            xShinkaiOriginalToolRouterKey: variables.toolKey,
           }),
       });
 
