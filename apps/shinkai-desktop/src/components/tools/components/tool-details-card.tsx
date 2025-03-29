@@ -783,9 +783,22 @@ export default function ToolDetailsCard({
                     ...(('config' in tool && tool.config?.length > 0)
                       ? { configs: parseConfigToJsonSchema(tool?.config ?? []) }
                       : {}),
-                    ...(('input_args' in tool && tool.input_args?.length > 0)
+                    ...(('input_args' in tool && Array.isArray(tool.input_args) && tool.input_args?.length > 0)
                       ? { params: parseInputArgsToJsonSchema(tool?.input_args ?? []) }
-                      : {})
+                      : ('input_args' in tool && tool.input_args && typeof tool.input_args === 'object' && 'properties' in (tool.input_args as any))
+                        ? {
+                            params: {
+                              type: 'object',
+                              properties: Object.entries((tool.input_args as any).properties).reduce((acc, [key, value]: [string, any]) => {
+                                acc[key] = {
+                                  type: value.type.toLowerCase(),
+                                  description: value.description
+                                };
+                                return acc;
+                              }, {} as Record<string, any>)
+                            }
+                          }
+                        : {})
                   }
                 }}
                 uiSchema={{ 
