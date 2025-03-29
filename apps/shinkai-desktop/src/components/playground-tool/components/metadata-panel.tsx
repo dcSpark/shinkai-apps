@@ -122,8 +122,9 @@ function MetadataPanelBase({
       const parsedToolMetadata = ToolMetadataRawSchema.parse(toolMetadata);
       return JSON.stringify(parsedToolMetadata, null, 2);
     } catch (err) {
-      setValidateMetadataEditorValue((err as Error).message);
-      return '';
+      console.error('Error formatting tool metadata:', err, toolMetadata);
+      setValidateMetadataEditorValue(`Error parsing metadata: ${(err as Error).message}`);
+      return JSON.stringify(toolMetadata, null, 2); // Return raw metadata even if schema validation fails
     }
   }, [toolMetadata]);
 

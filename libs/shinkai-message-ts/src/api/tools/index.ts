@@ -352,6 +352,7 @@ export const getPlaygroundTool = async (
         Authorization: `Bearer ${bearerToken}`,
         ...(xShinkaiOriginalToolRouterKey && {
           'x-shinkai-original-tool-router-key': xShinkaiOriginalToolRouterKey,
+          'x-shinkai-copy-metadata': 'true',
         }),
       },
       params: { tool_key: payload.tool_key },
