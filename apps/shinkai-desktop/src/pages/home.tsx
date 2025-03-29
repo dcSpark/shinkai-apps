@@ -892,7 +892,7 @@ const EmptyMessage = () => {
             {[
               {
                 name: TutorialBanner.AIS_AND_AGENTS,
-                title: 'AIs & Agents',
+                title: 'Agents',
                 description:
                   'Learn to create custom AI agents with tailored instructions.',
                 videoUrl: SHINKAI_TUTORIALS['add-ai'],

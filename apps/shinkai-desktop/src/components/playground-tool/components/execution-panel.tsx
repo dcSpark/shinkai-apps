@@ -377,11 +377,9 @@ const ToolResultBase = ({
               Generated Files
             </h1>
             <div className="flex w-full gap-2">
-              {toolResultFiles
-                ?.filter((file) => !logFileRegex.test(file))
-                ?.map((file) => (
-                  <ToolResultFileCard filePath={file} key={file} />
-                ))}
+              {toolResultFiles?.map((file) => (
+                <ToolResultFileCard filePath={file} key={file} />
+              ))}
             </div>
           </div>
         </>

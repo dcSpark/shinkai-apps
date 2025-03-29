@@ -8,7 +8,6 @@ import { useCreateToolCode } from '@shinkai_network/shinkai-node-state/v2/mutati
 import { useCreateToolMetadata } from '@shinkai_network/shinkai-node-state/v2/mutations/createToolMetadata/useCreateToolMetadata';
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import { useUpdateToolCodeImplementation } from '@shinkai_network/shinkai-node-state/v2/mutations/updateToolCodeImplementation/useUpdateToolCodeImplementation';
-import { PrismEditor } from 'prism-react-editor';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -483,6 +482,8 @@ export const useToolFlow = ({
       forceAutoSave.current
     ) {
       forceAutoSave.current = false;
+      forceGenerateMetadata.current = false;
+      forceGenerateCode.current = false;
       handleSaveTool({
         toolMetadata: toolMetadata,
         toolCode: toolCode,
@@ -588,7 +589,6 @@ export const useToolFlow = ({
   return {
     currentStep,
     error: toolCreationError,
-    // isProcessing,
 
     mountTimestamp,
 
