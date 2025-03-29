@@ -2,8 +2,15 @@ import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/type
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useRestoreToolConversation } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreToolConversation/useRestoreToolConversation';
+import { DialogClose } from '@radix-ui/react-dialog';
 import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -21,7 +28,7 @@ import {
   SaveIcon,
   Undo2Icon,
 } from 'lucide-react';
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -29,7 +36,7 @@ import { toast } from 'sonner';
 import { useAuth } from '../../../store/auth';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
 import { DockerStatus } from '../../tools/tool-collection';
-import { usePlaygroundStore } from '../context/playground-context';
+import { ToolCreationState, usePlaygroundStore } from '../context/playground-context';
 import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 import { useToolSave } from '../hooks/use-tool-save';
 import EditToolBasicInfoDialog from './edit-tool-basic-info-dialog';
@@ -59,6 +66,8 @@ function PlaygroundHeaderBase({
   const resetPlaygroundStore = usePlaygroundStore(
     (state) => state.resetPlaygroundStore,
   );
+  const currentStep = usePlaygroundStore((state) => state.currentStep);
+  const [isExitDialogOpen, setIsExitDialogOpen] = useState(false);
 
   const toolMetadata = usePlaygroundStore((state) => state.toolMetadata);
   const form = useFormContext<CreateToolCodeFormSchema>();
@@ -169,19 +178,58 @@ function PlaygroundHeaderBase({
   return (
     <div className="flex items-center justify-between gap-2 border-b border-gray-400 px-4 pb-2.5">
       <div className="flex items-center gap-2">
-        <Button
-          className="text-gray-80 border-none"
-          onClick={() => {
-            resetPlaygroundStore();
-            navigate('/tools');
-          }}
-          rounded="lg"
-          size="xs"
-          type="button"
-          variant="outline"
-        >
-          <ArrowLeft className="size-4" />
-        </Button>
+        <Dialog open={isExitDialogOpen} onOpenChange={setIsExitDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              className="text-gray-80 border-none"
+              onClick={() => {
+                if (currentStep === ToolCreationState.PROMPT_INPUT) {
+                  setIsExitDialogOpen(true);
+                } else {
+                  resetPlaygroundStore();
+                  navigate('/tools');
+                }
+              }}
+              rounded="lg"
+              size="xs"
+              type="button"
+              variant="outline"
+            >
+              <ArrowLeft className="size-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogTitle className="pb-0">Exit Tool Creation</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to exit? Your progress will be lost and you won't be able to return to this session.
+            </DialogDescription>
+            <DialogFooter>
+              <div className="flex gap-2 pt-4">
+                <DialogClose asChild className="flex-1">
+                  <Button
+                    className="min-w-[100px] flex-1"
+                    size="sm"
+                    type="button"
+                    variant="ghost"
+                  >
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button
+                  className="min-w-[100px] flex-1"
+                  onClick={() => {
+                    resetPlaygroundStore();
+                    navigate('/tools');
+                    setIsExitDialogOpen(false);
+                  }}
+                  size="sm"
+                >
+                  Exit
+                </Button>
+              </div>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <EditToolBasicInfoDialog
           initialToolRouterKeyWithVersion={initialToolRouterKeyWithVersion}
