@@ -52,11 +52,14 @@ import { useReactTooltip } from 'prism-react-editor/tooltips';
 import React, { forwardRef, Suspense } from 'react';
 
 function ReadOnly({ editor }: { editor: PrismEditor }) {
-  const [portal] = useReactTooltip(editor, null, false);
-
-  useReadOnlyCodeFolding(editor, blockCommentFolding, markdownFolding);
-
-  return portal ? (portal as unknown as React.ReactElement) : null;
+  try {
+    const [portal] = useReactTooltip(editor, null, false);
+    useReadOnlyCodeFolding(editor, blockCommentFolding, markdownFolding);
+    return portal ? (portal as unknown as React.ReactElement) : null;
+  } catch (error) {
+    console.error('Error in ReadOnly component:', error);
+    return null;
+  }
 }
 
 const Extensions = ({ editor }: { editor: PrismEditor }) => {
@@ -74,16 +77,21 @@ const Extensions = ({ editor }: { editor: PrismEditor }) => {
     filter: fuzzyFilter,
   });
 
-  return (
-    <>
-      {editor.props.readOnly && (
-        <Suspense fallback={null}>
-          <ReadOnly editor={editor} />
-        </Suspense>
-      )}
-      <IndentGuides editor={editor} />
-    </>
-  );
+  try {
+    return (
+      <>
+        {editor.props.readOnly && (
+          <Suspense fallback={null}>
+            <ReadOnly editor={editor} />
+          </Suspense>
+        )}
+        <IndentGuides editor={editor} />
+      </>
+    );
+  } catch (error) {
+    console.error('Error in Extensions component:', error);
+    return null;
+  }
 };
 
 registerCompletions(['javascript', 'js', 'jsx', 'tsx', 'typescript', 'ts'], {
@@ -106,29 +114,44 @@ const ToolCodeEditor = forwardRef<
     readOnly?: boolean;
     style?: React.CSSProperties;
   }
->(({ value, onUpdate, language, name, readOnly, style }, ref) => (
-  <Editor
-    insertSpaces={true}
-    language={language}
-    onUpdate={onUpdate}
-    readOnly={readOnly}
-    ref={ref}
-    style={{
-      fontSize: '0.75rem',
-      lineHeight: '1.5',
-      height: '100%',
-      overflow: 'auto',
-      //@ts-expect-error css variables
-      '--editor__bg': '#1a1a1d',
-      '--padding-left': '32px',
-      ...style,
-    }}
-    textareaProps={{ name: name ?? 'editor' }}
-    value={value}
-  >
-    {(editor) => <Extensions editor={editor} />}
-  </Editor>
-));
+>(({ value, onUpdate, language, name, readOnly, style }, ref) => {
+  const safeValue = typeof value === 'string' ? value : '';
+  const safeLanguage = language || 'plaintext';
+  
+  const handleUpdate: EditorProps['onUpdate'] = (updatedValue, editor) => {
+    try {
+      if (onUpdate) {
+        onUpdate(updatedValue, editor);
+      }
+    } catch (error) {
+      console.error('Error in editor onUpdate:', error);
+    }
+  };
+
+  return (
+    <Editor
+      insertSpaces={true}
+      language={safeLanguage}
+      onUpdate={handleUpdate}
+      readOnly={readOnly}
+      ref={ref}
+      style={{
+        fontSize: '0.75rem',
+        lineHeight: '1.5',
+        height: '100%',
+        overflow: 'auto',
+        //@ts-expect-error css variables
+        '--editor__bg': '#1a1a1d',
+        '--padding-left': '32px',
+        ...style,
+      }}
+      textareaProps={{ name: name ?? 'editor' }}
+      value={safeValue}
+    >
+      {(editor) => <Extensions editor={editor} />}
+    </Editor>
+  );
+});
 
 ToolCodeEditor.displayName = 'ToolCodeEditor';
 export default ToolCodeEditor;

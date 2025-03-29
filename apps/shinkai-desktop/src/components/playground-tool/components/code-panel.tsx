@@ -3,13 +3,13 @@ import { Button, Skeleton } from '@shinkai_network/shinkai-ui';
 import { debounce } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { PrismEditor } from 'prism-react-editor';
 import { memo, MutableRefObject, useCallback } from 'react';
 
 // import { useFormContext } from 'react-hook-form';
 import { usePlaygroundStore } from '../context/playground-context';
 // import { useAutoSaveTool } from '../hooks/use-create-tool-and-save';
 // import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
+import PrismErrorBoundary from '../prism-error-boundary';
 import ToolCodeEditor from '../tool-code-editor';
 import { detectLanguage } from '../utils/code';
 
@@ -109,6 +109,13 @@ function CodePanelBase({
       );
     }
     if (isToolCodeGenerationSuccess && toolCode) {
+      let detectedLanguage = 'Unknown';
+      try {
+        detectedLanguage = detectLanguage(toolCode);
+      } catch (error) {
+        console.error('Error detecting language:', error);
+      }
+      
       return (
         <form
           className="flex size-full flex-col"
@@ -118,7 +125,7 @@ function CodePanelBase({
           <div className="flex h-[40px] shrink-0 items-center justify-between rounded-t-sm border-b border-gray-400 px-3 py-2">
             <span className="text-gray-80 inline-flex items-center gap-2 pl-2 text-xs font-medium">
               {' '}
-              {detectLanguage(toolCode)}{' '}
+              {detectedLanguage}{' '}
               {isDirtyCodeEditor && (
                 <span className="size-2 shrink-0 rounded-full bg-orange-500" />
               )}
@@ -152,13 +159,17 @@ function CodePanelBase({
               )}
             </AnimatePresence>
           </div>
-          <ToolCodeEditor
-            language="ts"
-            name="editor"
-            onUpdate={handleCodeUpdate}
-            ref={codeEditorRef}
-            value={toolCode}
-          />
+          <div className="relative flex-1">
+            <PrismErrorBoundary>
+              <ToolCodeEditor
+                language="ts"
+                name="editor"
+                onUpdate={handleCodeUpdate}
+                ref={codeEditorRef}
+                value={toolCode}
+              />
+            </PrismErrorBoundary>
+          </div>
         </form>
       );
     }
