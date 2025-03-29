@@ -52,9 +52,10 @@ import { useReactTooltip } from 'prism-react-editor/tooltips';
 import React, { forwardRef, Suspense } from 'react';
 
 function ReadOnly({ editor }: { editor: PrismEditor }) {
+  const [portal] = useReactTooltip(editor, null, false);
+  useReadOnlyCodeFolding(editor, blockCommentFolding, markdownFolding);
+  
   try {
-    const [portal] = useReactTooltip(editor, null, false);
-    useReadOnlyCodeFolding(editor, blockCommentFolding, markdownFolding);
     return portal ? (portal as unknown as React.ReactElement) : null;
   } catch (error) {
     console.error('Error in ReadOnly component:', error);
