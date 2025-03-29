@@ -2,7 +2,6 @@ use futures_util::{Stream, StreamExt};
 use reqwest;
 use sha2::{Sha256, Digest};
 use std::collections::HashMap;
-use reqwest::header::HeaderValue;
 use semver::{ Version, VersionReq };
 
 use super::ollama_api_types::{OllamaApiPullRequest, OllamaApiPullResponse, OllamaApiTagsResponse, OllamaApiCreateRequest, OllamaApiCreateResponse, OllamaApiBlobResponse, OllamaApiVersionResponse};

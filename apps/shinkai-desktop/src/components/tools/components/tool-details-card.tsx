@@ -2,11 +2,14 @@ import { FormProps } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
+  CodeLanguage,
   OAuth,
   ShinkaiTool,
   ShinkaiToolType,
+  ToolArgument,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDuplicateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/duplicateTool/useDuplicateTool';
+import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
@@ -31,6 +34,10 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipPortal,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -38,6 +45,7 @@ import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import { open } from '@tauri-apps/plugin-shell';
+import { motion } from 'framer-motion';
 import {
   CopyIcon,
   DownloadIcon,
@@ -45,6 +53,8 @@ import {
   MoreVertical,
   PlayCircle,
   Rocket,
+  Wrench as WrenchIcon,
+  X as XIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -84,6 +94,7 @@ export default function ToolDetailsCard({
   const [oauthFormData, setOAuthFormData] = useState<{ oauth: OAuth[] } | null>(
     null,
   );
+  const [tryItOutFormData, setTryItOutFormData] = useState<Record<string, any> | null>(null);
   const { t } = useTranslation();
   const defaultLLMProvider = useSettings((state) => state.defaultAgentId);
   const toolConfigSchema =
@@ -186,6 +197,19 @@ export default function ToolDetailsCard({
     },
   );
 
+  const { mutateAsync: executeTool, isPending: isExecutingTool } = useExecuteToolCode({
+    onSuccess: (response: any) => {
+      toast.success('Tool executed successfully', {
+        description: JSON.stringify(response, null, 2),
+      });
+    },
+    onError: (error: { response?: { data?: { message?: string }; }; message?: string; }) => {
+      toast.error('Failed to execute tool', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
+
   useEffect(() => {
     if (tool && 'config' in tool && tool?.config?.length > 0) {
       setFormData(
@@ -236,6 +260,23 @@ export default function ToolDetailsCard({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       isToolEnabled: true,
+    });
+  };
+
+  const handleExecuteTool = async (data: any) => {
+    if (!auth?.node_address || !auth?.api_v2_key || !toolKey) return;
+
+    await executeTool({
+      code: '',  // Not needed for tool execution
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      params: data.formData,
+      language: toolType === 'Python' ? CodeLanguage.Python : CodeLanguage.Typescript,
+      tools: [],  // No tools needed for direct execution
+      configs: {},  // No configs needed for direct execution
+      llmProviderId: defaultLLMProvider,
+      xShinkaiAppId: `app-id-${Date.now()}`,  // Generate unique app ID
+      xShinkaiToolId: toolKey,  // Use the tool's key as the tool ID
     });
   };
 
@@ -376,6 +417,16 @@ export default function ToolDetailsCard({
               Configuration
             </TabsTrigger>
           )}
+
+          {'input_args' in tool && tool.input_args && (
+            <TabsTrigger
+              className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+              value="tryitout"
+            >
+              Try it out
+            </TabsTrigger>
+          )}
+
           {'oauth' in tool && tool.oauth && tool.oauth.length > 0 && (
             <TabsTrigger
               className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
@@ -569,6 +620,81 @@ export default function ToolDetailsCard({
                   variant="outline"
                 >
                   {t('common.saveChanges')}
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+        )}
+
+        {'input_args' in tool && tool.input_args && (
+          <TabsContent value="tryitout">
+            <div className={boxContainerClass}>
+              <div className="mb-4">
+                <h2 className="text-base font-medium text-white">Try it out</h2>
+                <p className="text-gray-80 text-xs">Test the tool with your own inputs</p>
+              </div>
+
+              <motion.div
+                animate={{ opacity: 1 }}
+                className="bg-official-gray-1000 mb-1 max-h-[50vh] w-full max-w-full overflow-auto rounded-lg p-4 px-5 text-left"
+                exit={{ opacity: 0 }}
+                initial={{ opacity: 0 }}
+                transition={{ duration: 0.2, ease: 'easeInOut' }}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="flex flex-1 flex-col gap-2 text-sm text-gray-100">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center gap-2">
+                          <WrenchIcon className="h-3.5 w-3.5" />
+                          <span className="line-clamp-1 text-left font-medium text-white">
+                            {tool.name}
+                          </span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent
+                          align="start"
+                          alignOffset={-10}
+                          className="max-w-[400px]"
+                          side="top"
+                          sideOffset={10}
+                        >
+                          <span className="text-xs text-white">{tool.description}</span>
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
+
+                    <JsonForm
+                      className="py-1"
+                      formData={tryItOutFormData}
+                      id="try-it-out-form"
+                      noHtml5Validate={true}
+                      onChange={(e) => setTryItOutFormData(e.formData)}
+                      onSubmit={handleExecuteTool}
+                      schema={tool.input_args}
+                      uiSchema={{
+                        [Object.keys((tool.input_args as any).properties)[0]]: {
+                          'ui:autofocus': true,
+                        },
+                      }}
+                      validator={validator}
+                    />
+                  </div>
+                </div>
+              </motion.div>
+
+              <div className="flex w-full justify-end">
+                <Button
+                  className="min-w-[100px]"
+                  disabled={isExecutingTool}
+                  form="try-it-out-form"
+                  isLoading={isExecutingTool}
+                  rounded="lg"
+                  size="sm"
+                  variant="outline"
+                >
+                  Execute
                 </Button>
               </div>
             </div>
