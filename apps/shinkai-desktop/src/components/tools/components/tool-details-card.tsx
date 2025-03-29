@@ -58,6 +58,25 @@ import RemoveToolButton from '../../playground-tool/components/remove-tool-butto
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import { parseConfigToJsonSchema } from '../utils/tool-config';
 
+/**
+ * Removes embedding-related fields from a tool object to prevent displaying large embedding arrays
+ */
+function removeEmbeddingFields(tool: ShinkaiTool): ShinkaiTool {
+  if (!tool) return tool;
+  
+  const filteredTool = { ...tool };
+  
+  if ('embedding' in filteredTool) {
+    delete (filteredTool as any).embedding;
+  }
+  
+  if ('tool_embedding' in filteredTool) {
+    delete (filteredTool as any).tool_embedding;
+  }
+  
+  return filteredTool;
+}
+
 interface ToolDetailsProps {
   tool: ShinkaiTool;
   isEnabled: boolean;
@@ -368,6 +387,15 @@ export default function ToolDetailsCard({
             </TabsTrigger>
           )}
 
+          {tool && (
+            <TabsTrigger
+              className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+              value="metadata"
+            >
+              Metadata
+            </TabsTrigger>
+          )}
+
           {'config' in tool && tool.config && tool.config.length > 0 && (
             <TabsTrigger
               className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
@@ -529,6 +557,42 @@ export default function ToolDetailsCard({
                         ? tool.js_code
                         : ''
                   }
+                />
+              </div>
+            </div>
+          </TabsContent>
+        )}
+        
+        {tool && (
+          <TabsContent value="metadata">
+            <div className={boxContainerClass}>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between gap-2 pr-4">
+                  <h2 className="text-base font-medium text-white">Metadata</h2>
+                  <CopyToClipboardIcon
+                    className="text-gray-80 h-4 w-auto bg-transparent"
+                    string={JSON.stringify(
+                      removeEmbeddingFields(tool),
+                      null,
+                      2
+                    )}
+                  >
+                    <span className="text-xs">Copy</span>
+                  </CopyToClipboardIcon>
+                </div>
+                <ToolCodeEditor
+                  language="json"
+                  name="metadata"
+                  readOnly
+                  style={{
+                    borderRadius: '0.5rem',
+                    overflowY: 'hidden',
+                  }}
+                  value={JSON.stringify(
+                    removeEmbeddingFields(tool),
+                    null,
+                    2
+                  )}
                 />
               </div>
             </div>
