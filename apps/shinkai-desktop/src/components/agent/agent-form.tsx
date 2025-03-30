@@ -17,7 +17,6 @@ import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations
 import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
-import { ChatProvider } from '../chat/context/chat-context';
 import {
   Badge,
   Button,
@@ -83,6 +82,7 @@ import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { AIModelSelector } from '../chat/chat-action-bar/ai-update-selection-action-bar';
 import { MessageList } from '../chat/components/message-list';
+import { ChatProvider } from '../chat/context/chat-context';
 import { useWebSocketMessage } from '../chat/websocket-message';
 
 const agentFormSchema = z.object({
