@@ -93,7 +93,7 @@ function ToolFeedbackPrompt() {
               layoutId={`left-element`}
             >
               <div className="flex items-center justify-between px-4">
-                <Dialog open={isExitDialogOpen} onOpenChange={setIsExitDialogOpen}>
+                <Dialog onOpenChange={setIsExitDialogOpen} open={isExitDialogOpen}>
                   <DialogTrigger asChild>
                     <Button
                       className="size-6 p-1"
@@ -107,7 +107,7 @@ function ToolFeedbackPrompt() {
                   <DialogContent className="sm:max-w-[425px]">
                     <DialogTitle className="pb-0">Exit Tool Creation</DialogTitle>
                     <DialogDescription>
-                      Are you sure you want to exit? Your progress will be lost and you won't be able to return to this session.
+                      Are you sure you want to exit? Your progress will be lost and you won’t be able to return to this session.
                     </DialogDescription>
                     <DialogFooter>
                       <div className="flex gap-2 pt-4">
