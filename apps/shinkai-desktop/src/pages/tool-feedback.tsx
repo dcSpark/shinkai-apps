@@ -443,6 +443,10 @@ function ToolFeedbackPrompt() {
     navigate,
     startToolCreation,
     isCreatingToolCode,
+    isExitDialogOpen,
+    isLoadingMessage,
+    resetPlaygroundStore,
+    setIsExitDialogOpen,
   ]);
 
   return <div className={cn('h-full overflow-auto')}>{renderStep()}</div>;
