@@ -513,6 +513,58 @@ function AgentForm({ mode }: AgentFormProps) {
       navigate('/agents');
     },
   });
+  
+  const [isQuickSaving, setIsQuickSaving] = useState(false);
+  
+  const quickSaveAgent = async () => {
+    if (!agent) return;
+    
+    try {
+      setIsQuickSaving(true);
+      const values = form.getValues();
+      const agentData = {
+        agent_id: agent.agent_id,
+        full_identity_name: `${auth?.shinkai_identity}/main/agent/${agent.agent_id}`,
+        llm_provider_id: values.llmProviderId,
+        ui_description: values.uiDescription,
+        storage_path: values.storage_path,
+        knowledge: values.knowledge,
+        tools: values.tools,
+        debug_mode: values.debugMode,
+        config: values.config,
+        name: values.name,
+        scope: {
+          vector_fs_items: Array.from(selectedFileKeysRef.values()),
+          vector_fs_folders: Array.from(selectedFolderKeysRef.values()),
+          vector_search_mode: 'FillUpTo25k',
+        },
+      };
+      
+      await updateAgent({
+        nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
+        agent: agentData,
+      });
+      
+      queryClient.invalidateQueries({
+        queryKey: [
+          FunctionKeyV2.GET_AGENT,
+          {
+            agentId: agent.agent_id,
+            nodeAddress: auth?.node_address ?? '',
+          },
+        ],
+      });
+      
+      toast.success('Agent updated successfully');
+    } catch (error: any) {
+      toast.error('Failed to update agent', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    } finally {
+      setIsQuickSaving(false);
+    }
+  };
 
   const queryClient = useQueryClient();
 
@@ -615,15 +667,29 @@ function AgentForm({ mode }: AgentFormProps) {
             </h1>
           </div>
           {mode === 'edit' && agent && (
-            <Button
-              className="flex items-center gap-2"
-              onClick={() => setIsSideChatOpen(!isSideChatOpen)}
-              size="sm"
-              variant="outline"
-            >
-              <MessageSquare className="h-4 w-4" />
-              {isSideChatOpen ? 'Close Chat' : 'Open Chat'}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                className="flex items-center gap-2"
+                isLoading={isQuickSaving}
+                onClick={quickSaveAgent}
+                size="sm"
+                variant="outline"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Save
+              </Button>
+              <Button
+                className="flex items-center gap-2"
+                onClick={() => setIsSideChatOpen(!isSideChatOpen)}
+                size="sm"
+                variant="outline"
+              >
+                <MessageSquare className="h-4 w-4" />
+                {isSideChatOpen ? 'Close Chat' : 'Open Chat'}
+              </Button>
+            </div>
           )}
         </div>
 
