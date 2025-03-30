@@ -17,6 +17,7 @@ import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations
 import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
+import { ChatProvider } from '../chat/context/chat-context';
 import {
   Badge,
   Button,
@@ -236,69 +237,71 @@ function AgentSideChat({ agentId, onClose }: { agentId: string; onClose: () => v
   };
   
   return (
-    <div className="fixed right-0 top-0 z-50 flex h-full w-96 flex-col bg-gray-950 shadow-lg">
-      <div className="flex items-center justify-between border-b border-gray-800 p-4">
-        <h2 className="text-lg font-medium">Chat with Agent</h2>
-        <Button onClick={onClose} size="icon" variant="ghost">
-          <XIcon className="h-5 w-5" />
-        </Button>
-      </div>
-      
-      <div className="flex-1 overflow-y-auto p-4">
-        {!chatInboxId ? (
-          <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-            <span aria-hidden className="text-3xl">
-              🤖
-            </span>
-            <h2 className="text-base font-medium">
-              Chat with your Agent
-            </h2>
-            <p className="text-gray-400 text-xs">
-              Send a message to start chatting with this agent
-            </p>
-          </div>
-        ) : (
-          <MessageList
-            containerClassName="px-2"
-            disabledRetryAndEdit={true}
-            fetchPreviousPage={fetchPreviousPage}
-            hasPreviousPage={hasPreviousPage}
-            isFetchingPreviousPage={isFetchingPreviousPage}
-            isLoading={isChatConversationLoading}
-            isSuccess={isChatConversationSuccess}
-            noMoreMessageLabel={t('chat.allMessagesLoaded')}
-            paginatedMessages={data}
-          />
-        )}
-      </div>
-      
-      <div className="border-t border-gray-800 p-4">
-        <div className="flex items-center gap-2">
-          <Input
-            className="flex-1"
-            disabled={isLoadingMessage}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSendMessage();
-              }
-            }}
-            placeholder="Type a message..."
-            value={message}
-          />
-          <Button
-            className="shrink-0"
-            disabled={isLoadingMessage || !message.trim()}
-            onClick={handleSendMessage}
-            size="icon"
-            type="button"
-          >
-            <SendIcon className="h-4 w-4" />
+    <ChatProvider>
+      <div className="fixed right-0 top-0 z-50 flex h-full w-96 flex-col bg-gray-950 shadow-lg">
+        <div className="flex items-center justify-between border-b border-gray-800 p-4">
+          <h2 className="text-lg font-medium">Chat with Agent</h2>
+          <Button onClick={onClose} size="icon" variant="ghost">
+            <XIcon className="h-5 w-5" />
           </Button>
         </div>
+        
+        <div className="flex-1 overflow-y-auto p-4">
+          {!chatInboxId ? (
+            <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
+              <span aria-hidden className="text-3xl">
+                🤖
+              </span>
+              <h2 className="text-base font-medium">
+                Chat with your Agent
+              </h2>
+              <p className="text-gray-400 text-xs">
+                Send a message to start chatting with this agent
+              </p>
+            </div>
+          ) : (
+            <MessageList
+              containerClassName="px-2"
+              disabledRetryAndEdit={true}
+              fetchPreviousPage={fetchPreviousPage}
+              hasPreviousPage={hasPreviousPage}
+              isFetchingPreviousPage={isFetchingPreviousPage}
+              isLoading={isChatConversationLoading}
+              isSuccess={isChatConversationSuccess}
+              noMoreMessageLabel={t('chat.allMessagesLoaded')}
+              paginatedMessages={data}
+            />
+          )}
+        </div>
+        
+        <div className="border-t border-gray-800 p-4">
+          <div className="flex items-center gap-2">
+            <Input
+              className="flex-1"
+              disabled={isLoadingMessage}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+              placeholder="Type a message..."
+              value={message}
+            />
+            <Button
+              className="shrink-0"
+              disabled={isLoadingMessage || !message.trim()}
+              onClick={handleSendMessage}
+              size="icon"
+              type="button"
+            >
+              <SendIcon className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
       </div>
-    </div>
+    </ChatProvider>
   );
 }
 
