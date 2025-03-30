@@ -540,7 +540,9 @@ function AgentForm({ mode }: AgentFormProps) {
         },
       };
       
-      await updateAgent({
+      const { updateAgent: updateAgentFn } = await import('@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/index');
+      
+      await updateAgentFn({
         nodeAddress: auth?.node_address ?? '',
         token: auth?.api_v2_key ?? '',
         agent: agentData,
@@ -554,6 +556,10 @@ function AgentForm({ mode }: AgentFormProps) {
             nodeAddress: auth?.node_address ?? '',
           },
         ],
+      });
+      
+      queryClient.invalidateQueries({
+        queryKey: [FunctionKeyV2.GET_AGENTS],
       });
       
       toast.success('Agent updated successfully');
