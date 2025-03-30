@@ -2,6 +2,12 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   Button,
   ChatInputArea,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
   Form,
   FormControl,
   FormField,
@@ -13,7 +19,7 @@ import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LoaderIcon, LogOut } from 'lucide-react';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { MessageList } from '../components/chat/components/message-list';
@@ -31,6 +37,7 @@ function ToolFeedbackPrompt() {
   const form = useToolForm();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [isExitDialogOpen, setIsExitDialogOpen] = useState(false);
 
   const {
     currentStep,
@@ -86,14 +93,48 @@ function ToolFeedbackPrompt() {
               layoutId={`left-element`}
             >
               <div className="flex items-center justify-between px-4">
-                <Button
-                  className="size-6 p-1"
-                  onClick={() => navigate('/tools')}
-                  size="auto"
-                  variant="tertiary"
-                >
-                  <LogOut className="size-full text-white" />
-                </Button>
+                <Dialog onOpenChange={setIsExitDialogOpen} open={isExitDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      className="size-6 p-1"
+                      onClick={() => setIsExitDialogOpen(true)}
+                      size="auto"
+                      variant="tertiary"
+                    >
+                      <LogOut className="size-full text-white" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogTitle className="pb-0">Exit Tool Creation</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to exit? Your progress will be lost and you won’t be able to return to this session.
+                    </DialogDescription>
+                    <DialogFooter>
+                      <div className="flex gap-2 pt-4">
+                        <Button
+                          className="min-w-[100px] flex-1"
+                          onClick={() => setIsExitDialogOpen(false)}
+                          size="sm"
+                          type="button"
+                          variant="ghost"
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          className="min-w-[100px] flex-1"
+                          onClick={() => {
+                            resetPlaygroundStore();
+                            navigate('/tools');
+                            setIsExitDialogOpen(false);
+                          }}
+                          size="sm"
+                        >
+                          Exit
+                        </Button>
+                      </div>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
                 <h1 className="font-clash py-3 text-center font-semibold">
                   Creating Tool
                 </h1>
@@ -402,6 +443,10 @@ function ToolFeedbackPrompt() {
     navigate,
     startToolCreation,
     isCreatingToolCode,
+    isExitDialogOpen,
+    isLoadingMessage,
+    resetPlaygroundStore,
+    setIsExitDialogOpen,
   ]);
 
   return <div className={cn('h-full overflow-auto')}>{renderStep()}</div>;
