@@ -1349,7 +1349,7 @@ function AgentForm({ mode }: AgentFormProps) {
                       )}
                       {searchQuery &&
                         isSearchQuerySynced &&
-                        searchToolList?.map((tool) => (
+                        searchToolList?.map((tool: any) => (
                           <FormField
                             control={form.control}
                             key={tool.tool_router_key}
@@ -1423,7 +1423,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                           const configs = tool?.config ?? [];
                                           if (
                                             configs
-                                              .map((conf) => ({
+                                              .map((conf: any) => ({
                                                 key_name:
                                                   conf.BasicConfig.key_name,
                                                 key_value:
@@ -1433,7 +1433,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                                   conf.BasicConfig.required,
                                               }))
                                               .every(
-                                                (conf) =>
+                                                (conf: any) =>
                                                   !conf.required ||
                                                   (conf.required &&
                                                     conf.key_value !== ''),
@@ -1484,16 +1484,16 @@ function AgentForm({ mode }: AgentFormProps) {
                             id="all"
                             onCheckedChange={(checked) => {
                               const isAllConfigFilled = toolsList
-                                ?.map((tool) => tool.config)
-                                .filter((item) => !!item)
+                                ?.map((tool: any) => tool.config)
+                                .filter((item: any) => !!item)
                                 .flat()
-                                ?.map((conf) => ({
+                                ?.map((conf: any) => ({
                                   key_name: conf.BasicConfig.key_name,
                                   key_value: conf.BasicConfig.key_value ?? '',
                                   required: conf.BasicConfig.required,
                                 }))
                                 .every(
-                                  (conf) =>
+                                  (conf: any) =>
                                     !conf.required ||
                                     (conf.required && conf.key_value !== ''),
                                 );
@@ -1507,7 +1507,7 @@ function AgentForm({ mode }: AgentFormProps) {
                               if (checked && toolsList) {
                                 form.setValue(
                                   'tools',
-                                  toolsList.map((tool) => tool.tool_router_key),
+                                  toolsList.map((tool: any) => tool.tool_router_key),
                                 );
                               } else {
                                 form.setValue('tools', []);
@@ -1517,7 +1517,7 @@ function AgentForm({ mode }: AgentFormProps) {
                         </div>
                       )}
                       {!searchQuery &&
-                        toolsList?.map((tool) => (
+                        toolsList?.map((tool: any) => (
                           <FormField
                             control={form.control}
                             key={tool.tool_router_key}
@@ -1575,7 +1575,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                           const configs = tool?.config ?? [];
                                           if (
                                             configs
-                                              .map((conf) => ({
+                                              .map((conf: any) => ({
                                                 key_name:
                                                   conf.BasicConfig.key_name,
                                                 key_value:
@@ -1585,7 +1585,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                                   conf.BasicConfig.required,
                                               }))
                                               .every(
-                                                (conf) =>
+                                                (conf: any) =>
                                                   !conf.required ||
                                                   (conf.required &&
                                                     conf.key_value !== ''),
@@ -1765,7 +1765,7 @@ function AgentForm({ mode }: AgentFormProps) {
                             </h4>
                           </div>
                           <div className="mt-2 space-y-3">
-                            {agent?.cron_tasks?.map((task) => (
+                            {agent?.cron_tasks?.map((task: any) => (
                               <div
                                 className="bg-official-gray-900 flex items-center justify-between rounded-md border p-2"
                                 key={task.task_id}
