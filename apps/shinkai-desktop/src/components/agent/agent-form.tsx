@@ -6,18 +6,6 @@ import {
   extractJobIdFromInbox,
 } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
-  DEFAULT_CHAT_CONFIG,
-  FunctionKeyV2,
-} from '@shinkai_network/shinkai-node-state/v2/constants';
-import { useCreateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/createAgent/useCreateAgent';
-import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
-import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
-import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
-import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
-import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
-import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
-import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
-import {
   Badge,
   Button,
   Collapsible,
@@ -169,12 +157,50 @@ function AgentSideChat({ agentId, onClose }: { agentId: string; onClose: () => v
   const auth = useAuth((state) => state.auth);
   const [chatInboxId, setChatInboxId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
-  
-  const { data: agentData } = useGetAgent({
-    agentId,
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
+  const [defaultChatConfig, setDefaultChatConfig] = useState<any>({
+    stream: true,
+    temperature: 0.7,
+    top_p: 0.9,
+    top_k: 40,
+    use_tools: false,
   });
+  
+  const [agentData, setAgentData] = useState<any>(null);
+  
+  useEffect(() => {
+    const loadAgent = async () => {
+      if (!auth?.node_address || !auth?.api_v2_key || !agentId) return;
+      
+      const { useGetAgent } = await import('@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent');
+      const { DEFAULT_CHAT_CONFIG } = await import('@shinkai_network/shinkai-node-state/v2/constants');
+      
+      setDefaultChatConfig(DEFAULT_CHAT_CONFIG);
+      
+      const getAgentHook = useGetAgent({
+        agentId,
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
+      });
+      
+      if (getAgentHook.data) {
+        setAgentData(getAgentHook.data);
+      }
+      
+      const interval = setInterval(() => {
+        getAgentHook.refetch().then(result => {
+          if (result.data) {
+            setAgentData(result.data);
+          }
+        });
+      }, 5000);
+      
+      return () => {
+        clearInterval(interval);
+      };
+    };
+    
+    loadAgent();
+  }, [agentId, auth]);
   
   const hasTools = useMemo(() => {
     return !!agentData?.tools && agentData.tools.length > 0;
@@ -185,13 +211,36 @@ function AgentSideChat({ agentId, onClose }: { agentId: string; onClose: () => v
     enabled: !!chatInboxId,
   });
   
-  const { mutateAsync: createJob } = useCreateJob({
-    onSuccess: (data) => {
-      setChatInboxId(buildInboxIdFromJobId(data.jobId));
-    },
-  });
+  const [createJobFn, setCreateJobFn] = useState<any>(null);
   
-  const { mutateAsync: sendMessageToJob } = useSendMessageToJob({});
+  useEffect(() => {
+    const loadCreateJob = async () => {
+      const { useCreateJob } = await import('@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob');
+      
+      const createJobHook = useCreateJob({
+        onSuccess: (data: any) => {
+          setChatInboxId(buildInboxIdFromJobId(data.jobId));
+        },
+      });
+      
+      setCreateJobFn(() => createJobHook.mutateAsync);
+    };
+    
+    loadCreateJob();
+  }, []);
+  
+  const [sendMessageToJobFn, setSendMessageToJobFn] = useState<any>(null);
+  
+  useEffect(() => {
+    const loadSendMessageToJob = async () => {
+      const { useSendMessageToJob } = await import('@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob');
+      
+      const sendMessageHook = useSendMessageToJob({});
+      setSendMessageToJobFn(() => sendMessageHook.mutateAsync);
+    };
+    
+    loadSendMessageToJob();
+  }, []);
   
   const {
     data,
@@ -215,26 +264,26 @@ function AgentSideChat({ agentId, onClose }: { agentId: string; onClose: () => v
   }, [data?.pages, chatInboxId]);
   
   const handleSendMessage = async () => {
-    if (!auth || !message.trim()) return;
+    if (!auth || !message.trim() || !createJobFn || !sendMessageToJobFn) return;
     
     if (!chatInboxId) {
-      await createJob({
+      await createJobFn({
         nodeAddress: auth.node_address,
         token: auth.api_v2_key,
         llmProvider: agentId,
         content: message,
         isHidden: false,
         chatConfig: {
-          stream: DEFAULT_CHAT_CONFIG.stream,
+          stream: defaultChatConfig.stream,
           custom_prompt: '',
-          temperature: DEFAULT_CHAT_CONFIG.temperature,
-          top_p: DEFAULT_CHAT_CONFIG.top_p,
-          top_k: DEFAULT_CHAT_CONFIG.top_k,
+          temperature: defaultChatConfig.temperature,
+          top_p: defaultChatConfig.top_p,
+          top_k: defaultChatConfig.top_k,
           use_tools: hasTools, // Enable tools if the agent has them
         },
       });
     } else {
-      await sendMessageToJob({
+      await sendMessageToJobFn({
         nodeAddress: auth.node_address,
         token: auth.api_v2_key,
         jobId: extractJobIdFromInbox(chatInboxId),
@@ -339,16 +388,58 @@ function AgentForm({ mode }: AgentFormProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
+  
+  const [defaultChatConfig, setDefaultChatConfig] = useState({
+    stream: true,
+    temperature: 0.7,
+    top_p: 0.9,
+    top_k: 40,
+    use_tools: true,
+  });
+  
+  useEffect(() => {
+    const loadDefaultChatConfig = async () => {
+      const { DEFAULT_CHAT_CONFIG } = await import('@shinkai_network/shinkai-node-state/v2/constants');
+      setDefaultChatConfig(DEFAULT_CHAT_CONFIG);
+    };
+    
+    loadDefaultChatConfig();
+  }, []);
 
-  const { data: searchToolList, isLoading: isSearchToolListPending } =
-    useGetSearchTools(
-      {
-        nodeAddress: auth?.node_address ?? '',
-        token: auth?.api_v2_key ?? '',
-        search: debouncedSearchQuery,
-      },
-      { enabled: isSearchQuerySynced && !!searchQuery },
-    );
+  const [searchToolList, setSearchToolList] = useState<any>(null);
+  const [isSearchToolListPending, setIsSearchToolListPending] = useState(false);
+  
+  useEffect(() => {
+    const loadSearchTools = async () => {
+      if (!isSearchQuerySynced || !searchQuery || !auth?.node_address || !auth?.api_v2_key) return;
+      
+      setIsSearchToolListPending(true);
+      
+      try {
+        const { useGetSearchTools } = await import('@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch');
+        
+        const searchToolsHook = useGetSearchTools(
+          {
+            nodeAddress: auth.node_address,
+            token: auth.api_v2_key,
+            search: debouncedSearchQuery,
+          },
+          { enabled: true }
+        );
+        
+        if (searchToolsHook.data) {
+          setSearchToolList(searchToolsHook.data);
+        }
+        
+        setIsSearchToolListPending(false);
+      } catch (error) {
+        console.error('Error loading search tools:', error);
+        setIsSearchToolListPending(false);
+      }
+    };
+    
+    loadSearchTools();
+  }, [isSearchQuerySynced, searchQuery, auth, debouncedSearchQuery]);
 
   const selectedKeys = useSetJobScope((state) => state.selectedKeys);
   const selectedFileKeysRef = useSetJobScope(
@@ -361,11 +452,37 @@ function AgentForm({ mode }: AgentFormProps) {
     (state) => state.onSelectedKeysChange,
   );
 
-  const { data: agent } = useGetAgent({
-    agentId: agentId ?? '',
-    token: auth?.api_v2_key ?? '',
-    nodeAddress: auth?.node_address ?? '',
-  });
+  const [agent, setAgent] = useState<any>(null);
+  
+  useEffect(() => {
+    const loadAgent = async () => {
+      if (!agentId || !auth?.node_address || !auth?.api_v2_key) return;
+      
+      try {
+        const { useGetAgent } = await import('@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent');
+        
+        const getAgentHook = useGetAgent({
+          agentId: agentId,
+          token: auth.api_v2_key,
+          nodeAddress: auth.node_address,
+        });
+        
+        if (getAgentHook.data) {
+          setAgent(getAgentHook.data);
+        }
+        
+        const interval = setInterval(() => {
+          getAgentHook.refetch();
+        }, 5000);
+        
+        return () => clearInterval(interval);
+      } catch (error) {
+        console.error('Error loading agent:', error);
+      }
+    };
+    
+    loadAgent();
+  }, [agentId, auth]);
 
   const form = useForm<AgentFormValues>({
     resolver: zodResolver(agentFormSchema),
@@ -377,10 +494,10 @@ function AgentForm({ mode }: AgentFormProps) {
       tools: [],
       debugMode: false,
       config: {
-        stream: DEFAULT_CHAT_CONFIG.stream,
-        temperature: DEFAULT_CHAT_CONFIG.temperature,
-        top_p: DEFAULT_CHAT_CONFIG.top_p,
-        top_k: DEFAULT_CHAT_CONFIG.top_k,
+        stream: defaultChatConfig.stream,
+        temperature: defaultChatConfig.temperature,
+        top_p: defaultChatConfig.top_p,
+        top_k: defaultChatConfig.top_k,
         custom_prompt: '',
         custom_system_prompt: '',
         other_model_params: {},
@@ -439,11 +556,11 @@ function AgentForm({ mode }: AgentFormProps) {
         custom_prompt: agent.config?.custom_prompt ?? '',
         custom_system_prompt: agent.config?.custom_system_prompt ?? '',
         temperature:
-          agent.config?.temperature ?? DEFAULT_CHAT_CONFIG.temperature,
-        top_k: agent.config?.top_k ?? DEFAULT_CHAT_CONFIG.top_k,
-        top_p: agent.config?.top_p ?? DEFAULT_CHAT_CONFIG.top_p,
+          agent.config?.temperature ?? defaultChatConfig.temperature,
+        top_k: agent.config?.top_k ?? defaultChatConfig.top_k,
+        top_p: agent.config?.top_p ?? defaultChatConfig.top_p,
         use_tools: agent.config?.use_tools ?? true,
-        stream: agent.config?.stream ?? DEFAULT_CHAT_CONFIG.stream,
+        stream: agent.config?.stream ?? defaultChatConfig.stream,
         other_model_params: agent.config?.other_model_params ?? {},
       });
       form.setValue('llmProviderId', agent.llm_provider_id);
@@ -453,23 +570,25 @@ function AgentForm({ mode }: AgentFormProps) {
         agent.scope?.vector_fs_items?.length ||
         agent.scope?.vector_fs_folders?.length
       ) {
-        const selectedVRFilesPathMap = agent.scope.vector_fs_items.reduce<
-          Record<string, { checked: boolean }>
-        >((acc: Record<string, { checked: boolean }>, filePath: string) => {
-          acc[filePath] = {
-            checked: true,
-          };
-          return acc;
-        }, {});
+        const selectedVRFilesPathMap = agent.scope.vector_fs_items.reduce(
+          (acc: Record<string, { checked: boolean }>, filePath: string) => {
+            acc[filePath] = {
+              checked: true,
+            };
+            return acc;
+          }, 
+          {} as Record<string, { checked: boolean }>
+        );
 
-        const selectedVRFoldersPathMap = agent.scope.vector_fs_folders.reduce<
-          Record<string, { checked: boolean }>
-        >((acc: Record<string, { checked: boolean }>, folderPath: string) => {
-          acc[folderPath] = {
-            checked: true,
-          };
-          return acc;
-        }, {});
+        const selectedVRFoldersPathMap = agent.scope.vector_fs_folders.reduce(
+          (acc: Record<string, { checked: boolean }>, folderPath: string) => {
+            acc[folderPath] = {
+              checked: true,
+            };
+            return acc;
+          }, 
+          {} as Record<string, { checked: boolean }>
+        );
 
         onSelectedKeysChange({
           ...selectedVRFilesPathMap,
@@ -497,32 +616,94 @@ function AgentForm({ mode }: AgentFormProps) {
     }
   }, [form, selectedFileKeysRef, selectedFolderKeysRef]);
 
-  const { data: toolsList } = useGetTools({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
+  const [toolsList, setToolsList] = useState<any>(null);
+  
+  useEffect(() => {
+    const loadToolsList = async () => {
+      if (!auth?.node_address || !auth?.api_v2_key) return;
+      
+      try {
+        const { useGetTools } = await import('@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList');
+        
+        const getToolsHook = useGetTools({
+          nodeAddress: auth.node_address,
+          token: auth.api_v2_key,
+        });
+        
+        if (getToolsHook.data) {
+          setToolsList(getToolsHook.data);
+        }
+        
+        const interval = setInterval(() => {
+          getToolsHook.refetch();
+        }, 5000);
+        
+        return () => clearInterval(interval);
+      } catch (error) {
+        console.error('Error loading tools list:', error);
+      }
+    };
+    
+    loadToolsList();
+  }, [auth]);
 
-  const { mutateAsync: createAgent, isPending: isCreating } = useCreateAgent({
-    onError: (error) => {
-      toast.error('Failed to create agent', {
-        description: error.response?.data?.message ?? error.message,
-      });
-    },
-    onSuccess: () => {
-      navigate('/agents');
-    },
-  });
+  const [createAgent, setCreateAgent] = useState<any>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  
+  useEffect(() => {
+    const loadCreateAgent = async () => {
+      try {
+        const { useCreateAgent } = await import('@shinkai_network/shinkai-node-state/v2/mutations/createAgent/useCreateAgent');
+        
+        const createAgentHook = useCreateAgent({
+          onError: (error: any) => {
+            toast.error('Failed to create agent', {
+              description: error.response?.data?.message ?? error.message,
+            });
+          },
+          onSuccess: () => {
+            navigate('/agents');
+          },
+        });
+        
+        setCreateAgent(() => createAgentHook.mutateAsync);
+        setIsCreating(createAgentHook.isPending);
+      } catch (error) {
+        console.error('Error loading create agent mutation:', error);
+      }
+    };
+    
+    loadCreateAgent();
+  }, [navigate]);
 
-  const { mutateAsync: updateAgent, isPending: isUpdating } = useUpdateAgent({
-    onError: (error) => {
-      toast.error('Failed to update agent', {
-        description: error.response?.data?.message ?? error.message,
-      });
-    },
-    onSuccess: () => {
-      navigate('/agents');
-    },
-  });
+  const [updateAgent, setUpdateAgent] = useState<any>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+  
+  useEffect(() => {
+    const loadUpdateAgent = async () => {
+      try {
+        const { useUpdateAgent } = await import('@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent');
+        
+        const updateAgentHook = useUpdateAgent({
+          onError: (error: any) => {
+            toast.error('Failed to update agent', {
+              description: error.response?.data?.message ?? error.message,
+            });
+          },
+          onSuccess: () => {
+            navigate('/agents');
+          },
+        });
+        
+        setUpdateAgent(() => updateAgentHook.mutateAsync);
+        setIsUpdating(updateAgentHook.isPending);
+      } catch (error) {
+        console.error('Error loading update agent mutation:', error);
+      }
+    };
+    
+    loadUpdateAgent();
+  }, [navigate]);
   
   const [isQuickSaving, setIsQuickSaving] = useState(false);
   
@@ -551,6 +732,7 @@ function AgentForm({ mode }: AgentFormProps) {
       };
       
       const { updateAgent: updateAgentFn } = await import('@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/index');
+      const { FunctionKeyV2 } = await import('@shinkai_network/shinkai-node-state/v2/constants');
       
       await updateAgentFn({
         nodeAddress: auth?.node_address ?? '',
@@ -584,26 +766,44 @@ function AgentForm({ mode }: AgentFormProps) {
 
   const queryClient = useQueryClient();
 
-  const { mutateAsync: removeTask, isPending: isRemovingTask } =
-    useRemoveRecurringTask({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [
-            FunctionKeyV2.GET_AGENT,
-            {
-              agentId: agent?.agent_id,
-              nodeAddress: auth?.node_address ?? '',
-            },
-          ],
+  const [removeTask, setRemoveTask] = useState<any>(null);
+  const [isRemovingTask, setIsRemovingTask] = useState(false);
+  
+  useEffect(() => {
+    const loadRemoveTask = async () => {
+      try {
+        const { useRemoveRecurringTask } = await import('@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask');
+        const { FunctionKeyV2 } = await import('@shinkai_network/shinkai-node-state/v2/constants');
+        
+        const removeTaskHook = useRemoveRecurringTask({
+          onSuccess: () => {
+            queryClient.invalidateQueries({
+              queryKey: [
+                FunctionKeyV2.GET_AGENT,
+                {
+                  agentId: agent?.agent_id,
+                  nodeAddress: auth?.node_address ?? '',
+                },
+              ],
+            });
+            toast.success('Delete task successfully');
+          },
+          onError: (error: any) => {
+            toast.error('Failed remove task', {
+              description: error.response?.data?.message ?? error.message,
+            });
+          },
         });
-        toast.success('Delete task successfully');
-      },
-      onError: (error) => {
-        toast.error('Failed remove task', {
-          description: error.response?.data?.message ?? error.message,
-        });
-      },
-    });
+        
+        setRemoveTask(() => removeTaskHook.mutateAsync);
+        setIsRemovingTask(removeTaskHook.isPending);
+      } catch (error) {
+        console.error('Error loading remove task mutation:', error);
+      }
+    };
+    
+    loadRemoveTask();
+  }, [agent?.agent_id, auth, queryClient]);
 
   const onDeleteTask = async (taskId: string) => {
     await removeTask({
