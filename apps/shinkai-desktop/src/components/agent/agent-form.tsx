@@ -25,6 +25,9 @@ import {
   Label,
   RadioGroup,
   RadioGroupItem,
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
   Slider,
   Switch,
   Tabs,
@@ -297,66 +300,68 @@ function AgentSideChat({ agentId, onClose }: { agentId: string; onClose: () => v
   
   return (
     <ChatProvider>
-      <div className="fixed right-0 top-0 z-50 flex h-full w-96 flex-col bg-gray-950 shadow-lg">
-        <div className="flex items-center justify-between border-b border-gray-800 p-4">
-          <h2 className="text-lg font-medium">Chat with Agent</h2>
-          <Button onClick={onClose} size="icon" variant="ghost">
-            <XIcon className="h-5 w-5" />
-          </Button>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto p-4">
-          {!chatInboxId ? (
-            <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-              <span aria-hidden className="text-3xl">
-                🤖
-              </span>
-              <h2 className="text-base font-medium">
-                Chat with your Agent
-              </h2>
-              <p className="text-gray-400 text-xs">
-                Send a message to start chatting with this agent
-              </p>
-            </div>
-          ) : (
-            <MessageList
-              containerClassName="px-2"
-              disabledRetryAndEdit={true}
-              fetchPreviousPage={fetchPreviousPage}
-              hasPreviousPage={hasPreviousPage}
-              isFetchingPreviousPage={isFetchingPreviousPage}
-              isLoading={isChatConversationLoading}
-              isSuccess={isChatConversationSuccess}
-              noMoreMessageLabel={t('chat.allMessagesLoaded')}
-              paginatedMessages={data}
-            />
-          )}
-        </div>
-        
-        <div className="border-t border-gray-800 p-4">
-          <div className="flex items-center gap-2">
-            <Input
-              className="flex-1"
-              disabled={isLoadingMessage}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage();
-                }
-              }}
-              placeholder="Type a message..."
-              value={message}
-            />
-            <Button
-              className="shrink-0"
-              disabled={isLoadingMessage || !message.trim()}
-              onClick={handleSendMessage}
-              size="icon"
-              type="button"
-            >
-              <SendIcon className="h-4 w-4" />
+      <div className="h-full bg-gray-950 shadow-lg">
+        <div className="flex h-full flex-col">
+          <div className="flex items-center justify-between border-b border-gray-800 p-4">
+            <h2 className="text-lg font-medium">Chat with Agent</h2>
+            <Button onClick={onClose} size="icon" variant="ghost">
+              <XIcon className="h-5 w-5" />
             </Button>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-4">
+            {!chatInboxId ? (
+              <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
+                <span aria-hidden className="text-3xl">
+                  🤖
+                </span>
+                <h2 className="text-base font-medium">
+                  Chat with your Agent
+                </h2>
+                <p className="text-gray-400 text-xs">
+                  Send a message to start chatting with this agent
+                </p>
+              </div>
+            ) : (
+              <MessageList
+                containerClassName="px-2"
+                disabledRetryAndEdit={true}
+                fetchPreviousPage={fetchPreviousPage}
+                hasPreviousPage={hasPreviousPage}
+                isFetchingPreviousPage={isFetchingPreviousPage}
+                isLoading={isChatConversationLoading}
+                isSuccess={isChatConversationSuccess}
+                noMoreMessageLabel={t('chat.allMessagesLoaded')}
+                paginatedMessages={data}
+              />
+            )}
+          </div>
+          
+          <div className="border-t border-gray-800 p-4">
+            <div className="flex items-center gap-2">
+              <Input
+                className="flex-1"
+                disabled={isLoadingMessage}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
+                }}
+                placeholder="Type a message..."
+                value={message}
+              />
+              <Button
+                className="shrink-0"
+                disabled={isLoadingMessage || !message.trim()}
+                onClick={handleSendMessage}
+                size="icon"
+                type="button"
+              >
+                <SendIcon className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -870,60 +875,61 @@ function AgentForm({ mode }: AgentFormProps) {
   }, [currentCronExpression]);
 
   return (
-    <div className="relative">
-      <div className="container flex h-full max-w-3xl flex-col">
-        <div className="flex items-center justify-between pb-6 pt-10">
-          <div className="flex items-center gap-5">
-            <Link to={-1 as To}>
-              <LucideArrowLeft />
-              <span className="sr-only">{t('common.back')}</span>
-            </Link>
-            <h1 className="font-clash text-2xl font-medium">
-              {mode === 'edit' ? 'Update Agent' : 'Create New Agent'}
-            </h1>
-          </div>
-          {mode === 'edit' && agent && (
-            <div className="flex gap-2">
-              <Button
-                className="flex items-center gap-2"
-                isLoading={isQuickSaving}
-                onClick={quickSaveAgent}
-                size="sm"
-                variant="outline"
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                Save
-              </Button>
-              <Button
-                className="flex items-center gap-2"
-                onClick={() => setIsSideChatOpen(!isSideChatOpen)}
-                size="sm"
-                variant="outline"
-              >
-                <MessageSquare className="h-4 w-4" />
-                {isSideChatOpen ? 'Close Chat' : 'Open Chat'}
-              </Button>
+    <ResizablePanelGroup className="relative" direction="horizontal">
+      <ResizablePanel defaultSize={70} minSize={50}>
+        <div className="container flex h-full max-w-3xl flex-col">
+          <div className="flex items-center justify-between pb-6 pt-10">
+            <div className="flex items-center gap-5">
+              <Link to={-1 as To}>
+                <LucideArrowLeft />
+                <span className="sr-only">{t('common.back')}</span>
+              </Link>
+              <h1 className="font-clash text-2xl font-medium">
+                {mode === 'edit' ? 'Update Agent' : 'Create New Agent'}
+              </h1>
             </div>
-          )}
-        </div>
+            {mode === 'edit' && agent && (
+              <div className="flex gap-2">
+                <Button
+                  className="flex items-center gap-2"
+                  isLoading={isQuickSaving}
+                  onClick={quickSaveAgent}
+                  size="sm"
+                  variant="outline"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Save
+                </Button>
+                <Button
+                  className="flex items-center gap-2"
+                  onClick={() => setIsSideChatOpen(!isSideChatOpen)}
+                  size="sm"
+                  variant="outline"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  {isSideChatOpen ? 'Close Chat' : 'Open Chat'}
+                </Button>
+              </div>
+            )}
+          </div>
 
-        <Form {...form}>
-          <form
-            className="flex w-full flex-1 flex-col justify-between space-y-2"
-            onSubmit={form.handleSubmit(submit)}
-          >
-          <div className="mx-auto w-full flex-1">
-            <div className="h-full space-y-6">
-              <Tabs
-                className="flex h-full flex-col gap-4"
-                defaultValue="persona"
-                onValueChange={(value) =>
-                  setCurrentTab(value as 'persona' | 'knowledge' | 'tools')
-                }
-                value={currentTab}
-              >
+          <Form {...form}>
+            <form
+              className="flex w-full flex-1 flex-col justify-between space-y-2"
+              onSubmit={form.handleSubmit(submit)}
+            >
+            <div className="mx-auto w-full flex-1">
+              <div className="h-full space-y-6">
+                <Tabs
+                  className="flex h-full flex-col gap-4"
+                  defaultValue="persona"
+                  onValueChange={(value) =>
+                    setCurrentTab(value as 'persona' | 'knowledge' | 'tools')
+                  }
+                  value={currentTab}
+                >
                 <TabNavigation />
 
                 <TabsContent className="flex-1" value="persona">
@@ -1846,12 +1852,26 @@ function AgentForm({ mode }: AgentFormProps) {
         </form>
       </Form>
       </div>
+      </ResizablePanel>
       
       {/* Side Chat Panel */}
       {isSideChatOpen && mode === 'edit' && agent && (
-        <AgentSideChat agentId={agent.agent_id} onClose={() => setIsSideChatOpen(false)} />
+        <>
+          <ResizableHandle className="bg-gray-300" />
+          <ResizablePanel 
+            className="h-full" 
+            collapsible 
+            defaultSize={30} 
+            maxSize={50} 
+            minSize={20}
+          >
+            <div className="h-full">
+              <AgentSideChat agentId={agent.agent_id} onClose={() => setIsSideChatOpen(false)} />
+            </div>
+          </ResizablePanel>
+        </>
       )}
-    </div>
+    </ResizablePanelGroup>
   );
 }
 
