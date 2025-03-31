@@ -29,15 +29,24 @@ export function extractCodeByLanguage(message: string, language: CodeLanguage) {
 }
 
 export function detectLanguage(code: string): string {
-  const typeScriptRegex =
-    /(interface\s+\w+\s*{)|(type\s+\w+\s*=)|(function\s+\w+\s*<\w+>)/;
-  const pythonRegex = /^\s*def\s+\w+\s*\(.*\):|^\s*class\s+\w+\s*\(?.*?\)?:/m;
+  try {
+    if (!code || typeof code !== 'string') {
+      return 'Unknown';
+    }
+    
+    const typeScriptRegex =
+      /(interface\s+\w+\s*{)|(type\s+\w+\s*=)|(function\s+\w+\s*<\w+>)/;
+    const pythonRegex = /^\s*def\s+\w+\s*\(.*\):|^\s*class\s+\w+\s*\(?.*?\)?:/m;
 
-  if (typeScriptRegex.test(code)) {
-    return 'TypeScript';
-  } else if (pythonRegex.test(code)) {
-    return 'Python';
-  } else {
+    if (typeScriptRegex.test(code)) {
+      return 'TypeScript';
+    } else if (pythonRegex.test(code)) {
+      return 'Python';
+    } else {
+      return 'Unknown';
+    }
+  } catch (error) {
+    console.error('Error detecting language:', error);
     return 'Unknown';
   }
 }

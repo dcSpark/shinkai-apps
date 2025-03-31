@@ -40,6 +40,7 @@ import { toast } from 'sonner';
 
 import { useAnalytics } from '../../../lib/posthog-provider';
 import { useAuth } from '../../../store/auth';
+import PrismErrorBoundary from '../../playground-tool/prism-error-boundary';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import { useVectorFsStore } from '../context/vector-fs-context';
 import {
@@ -480,11 +481,13 @@ export const CreateTextFileAction = ({
             style={{ contain: 'strict' }}
           >
             <p className="text-gray-80 text-xs font-semibold">Content</p>
-            <ToolCodeEditor
-              language="txt"
-              ref={textFileContentRef}
-              value={initialValues?.content ?? ''}
-            />
+            <PrismErrorBoundary>
+              <ToolCodeEditor
+                language="txt"
+                ref={textFileContentRef}
+                value={initialValues?.content ?? ''}
+              />
+            </PrismErrorBoundary>
           </div>
           <Button
             className="w-full"
