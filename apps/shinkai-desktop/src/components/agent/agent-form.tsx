@@ -675,9 +675,9 @@ function AgentForm({ mode }: AgentFormProps) {
   }, [currentCronExpression]);
 
   return (
-    <ResizablePanelGroup className="relative" direction="horizontal">
-      <ResizablePanel defaultSize={70} minSize={50}>
-        <div className="container flex h-full max-w-3xl flex-col">
+    <ResizablePanelGroup className="relative h-full min-h-0" direction="horizontal">
+      <ResizablePanel className="flex min-h-0 h-full flex-1" defaultSize={70} minSize={50}>
+        <div className="container flex h-full min-h-0 max-w-3xl flex-col">
           <div className="flex items-center justify-between pb-6 pt-10">
             <div className="flex items-center gap-5">
               <Link to={-1 as To}>
@@ -717,13 +717,13 @@ function AgentForm({ mode }: AgentFormProps) {
 
           <Form {...form}>
             <form
-              className="flex w-full flex-1 flex-col justify-between space-y-2"
+              className="flex w-full flex-1 min-h-0 flex-col justify-between space-y-2"
               onSubmit={form.handleSubmit(submit)}
             >
-            <div className="mx-auto w-full flex-1">
-              <div className="h-full space-y-6">
+            <div className="mx-auto w-full flex-1 min-h-0 overflow-hidden">
+              <div className="h-full min-h-0 space-y-6 overflow-hidden">
                 <Tabs
-                  className="flex h-full flex-col gap-4"
+                  className="flex h-full min-h-0 flex-col gap-4"
                   defaultValue="persona"
                   onValueChange={(value) =>
                     setCurrentTab(value as 'persona' | 'knowledge' | 'tools')
@@ -732,8 +732,8 @@ function AgentForm({ mode }: AgentFormProps) {
                 >
                   <TabNavigation />
 
-                  <TabsContent className="flex-1" value="persona">
-                    <div className="h-full space-y-8">
+                  <TabsContent className="flex-1 min-h-0 overflow-y-auto" value="persona">
+                    <div className="h-full min-h-0 space-y-8">
                       <FormField
                         control={form.control}
                         name="name"
@@ -1022,7 +1022,7 @@ function AgentForm({ mode }: AgentFormProps) {
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="knowledge">
+                  <TabsContent className="flex-1 min-h-0 overflow-y-auto" value="knowledge">
                     <div className="space-y-4">
                       <div className="space-y-1">
                         <h2 className="text-base font-medium">Knowledge Base</h2>
@@ -1057,26 +1057,11 @@ function AgentForm({ mode }: AgentFormProps) {
                           </p>
                         </div>
                       </Button>
-                      {/* <Card>
-                        <CardContent className="flex min-h-[200px] flex-col items-center justify-center space-y-4 p-6 text-center">
-                          <FileText className="text-official-gray-400 h-10 w-10" />
-                          <div>
-                            <p className="font-medium">No documents added</p>
-                            <p className="text-official-gray-400 text-sm">
-                              Upload documents your agent can learn from
-                            </p>
-                          </div>
-                          <Button className="mt-2" size="sm">
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Documents
-                          </Button>
-                        </CardContent>
-                      </Card> */}
                     </div>
                   </TabsContent>
 
-                  <TabsContent className="flex-1" value="tools">
-                    <div className="h-full space-y-6 overflow-y-auto">
+                  <TabsContent className="flex-1 min-h-0 overflow-y-auto" value="tools">
+                    <div className="h-full min-h-0 space-y-6 overflow-y-auto">
                       <div className="flex items-center justify-between gap-2">
                         <div className="space-y-1">
                           <h2 className="text-base font-medium">Tools</h2>
@@ -1196,22 +1181,6 @@ function AgentForm({ mode }: AgentFormProps) {
                                               {tool.description}
                                             </span>
                                           </label>
-
-                                          {/* <Tooltip>
-                                              <TooltipTrigger className="flex shrink-0 items-center gap-1">
-                                                <InfoCircleIcon className="h-3 w-3 text-gray-100" />
-                                              </TooltipTrigger>
-                                              <TooltipPortal>
-                                                <TooltipContent
-                                                  align="center"
-                                                  alignOffset={-10}
-                                                  className="max-w-md"
-                                                  side="top"
-                                                >
-
-                                                </TooltipContent>
-                                              </TooltipPortal>
-                                            </Tooltip> */}
                                         </div>
                                         <Switch
                                           checked={field.value.includes(
@@ -1659,13 +1628,13 @@ function AgentForm({ mode }: AgentFormProps) {
         <>
           <ResizableHandle className="bg-gray-300" />
           <ResizablePanel 
-            className="h-full" 
+            className="h-full min-h-0 flex flex-col" 
             collapsible 
             defaultSize={30} 
             maxSize={50} 
             minSize={20}
           >
-            <div className="h-full">
+            <div className="h-full min-h-0 overflow-hidden">
               <AgentSideChat agentId={agent.agent_id} onClose={() => setIsSideChatOpen(false)} />
             </div>
           </ResizablePanel>
