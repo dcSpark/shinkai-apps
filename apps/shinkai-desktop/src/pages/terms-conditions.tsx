@@ -31,9 +31,13 @@ export const LogoTapContext = createContext<{
   setShowLocalNodeOption: (show: boolean) => void;
 }>({
   tapCount: 0,
-  setTapCount: (_count: number) => {},
+  setTapCount: () => {
+    // no-op
+  },
   showLocalNodeOption: false,
-  setShowLocalNodeOption: (_show: boolean) => {},
+  setShowLocalNodeOption: () => {
+    // no-op
+  },
 });
 
 export const useLogoTap = () => useContext(LogoTapContext);
