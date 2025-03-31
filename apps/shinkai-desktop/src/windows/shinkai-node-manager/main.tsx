@@ -143,7 +143,7 @@ const App = () => {
         successShinkaiNodeSetDefaultOptionsToast();
       },
     });
-  const shinkaiNodeOptionsForm = useForm<ShinkaiNodeOptions>({
+  const shinkaiNodeOptionsForm = useForm<Partial<ShinkaiNodeOptions>>({
     resolver: zodResolver(z.any()),
   });
   const shinkaiNodeOptionsFormWatch = useWatch({
@@ -164,7 +164,12 @@ const App = () => {
   useShinkaiNodeEventsToast();
 
   useEffect(() => {
-    shinkaiNodeSetOptions(shinkaiNodeOptionsFormWatch as ShinkaiNodeOptions);
+    const options = {
+      ...shinkaiNodeOptions,
+      ...shinkaiNodeOptionsFormWatch,
+    };
+    shinkaiNodeSetOptions(options as ShinkaiNodeOptions);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shinkaiNodeOptionsFormWatch, shinkaiNodeSetOptions]);
 
   const handleReset = (): void => {
@@ -185,6 +190,25 @@ const App = () => {
       profile_identity_sk: auth?.profile_identity_sk ?? '',
     });
   };
+
+  const [shinkaiNodeOptionsForUI, setShinkaiNodeOptionsForUI] =
+    useState<Partial<ShinkaiNodeOptions>>();
+
+  useEffect(() => {
+    const filteredShinkaiNodeOptionsKeys: (keyof ShinkaiNodeOptions)[] = [
+      'secret_desktop_installation_proof_key',
+    ];
+    setShinkaiNodeOptionsForUI(
+      Object.fromEntries(
+        Object.entries(shinkaiNodeOptions ?? {}).filter(
+          ([key]) =>
+            !filteredShinkaiNodeOptionsKeys.includes(
+              key as keyof ShinkaiNodeOptions,
+            ),
+        ),
+      ) as Partial<ShinkaiNodeOptions>,
+    );
+  }, [shinkaiNodeOptions]);
 
   return (
     <div className="flex h-screen w-full flex-col space-y-2">
@@ -297,7 +321,7 @@ const App = () => {
       </div>
 
       <Tabs
-        className="mt-4 p-4 flex h-full w-full flex-col overflow-hidden"
+        className="mt-4 flex h-full w-full flex-col overflow-hidden p-4"
         defaultValue="app-logs"
       >
         <TabsList className="w-full">
@@ -330,8 +354,8 @@ const App = () => {
             <div className="mt-2 h-full [&>div>div]:!block">
               <Form {...shinkaiNodeOptionsForm}>
                 <form className="space-y-2 pr-4">
-                  {shinkaiNodeOptions &&
-                    Array.from(Object.entries(shinkaiNodeOptions)).map(
+                  {shinkaiNodeOptionsForUI &&
+                    Object.entries(shinkaiNodeOptionsForUI).map(
                       ([key, value]) => {
                         return (
                           <FormField

@@ -69,6 +69,7 @@ impl ShinkaiNodeOptions {
         base_options: ShinkaiNodeOptions,
         options: ShinkaiNodeOptions,
     ) -> ShinkaiNodeOptions {
+        let defaultOptions = ShinkaiNodeOptions::default();
         ShinkaiNodeOptions {
             node_api_ip: Some(
                 options
@@ -197,12 +198,7 @@ impl ShinkaiNodeOptions {
                     .or(base_options.shinkai_store_url)
                     .unwrap_or_default(),
             ),
-            secret_desktop_installation_proof_key: Some(
-                options
-                    .secret_desktop_installation_proof_key
-                    .or(base_options.secret_desktop_installation_proof_key)
-                    .unwrap_or_default(),
-            ),
+            secret_desktop_installation_proof_key: defaultOptions.secret_desktop_installation_proof_key,
         }
     }
 }
