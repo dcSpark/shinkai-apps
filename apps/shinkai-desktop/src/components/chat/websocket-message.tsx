@@ -17,6 +17,7 @@ import useWebSocket from 'react-use-websocket';
 import { create } from 'zustand';
 
 import { useAuth } from '../../store/auth';
+import { useChatMessagesStore } from '../../store/chat-messages';
 import { useToolsStore } from './context/tools-context';
 
 type UseWebSocketMessage = {
@@ -258,6 +259,8 @@ export const useWebSocketMessage = ({
   const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
   const queryClient = useQueryClient();
   const isStreamSupported = useRef(false);
+  const addMessage = useChatMessagesStore((state) => state.addMessage);
+  const storedMessage = useChatMessagesStore((state) => state.getMessage);
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(
     socketUrl,
@@ -270,6 +273,29 @@ export const useWebSocketMessage = ({
   const queryKey = useMemo(() => {
     return [FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION, { inboxId }];
   }, [inboxId]);
+
+  useEffect(() => {
+    if (!enabled || !inboxId) return;
+    
+    const savedMessage = storedMessage(inboxId);
+    if (savedMessage) {
+      queryClient.setQueryData(
+        queryKey,
+        produce((draft: ChatConversationInfiniteData | undefined) => {
+          if (!draft?.pages?.[0]) return;
+          const lastMessage = draft.pages.at(-1)?.at(-1);
+          if (
+            lastMessage &&
+            lastMessage.messageId === OPTIMISTIC_ASSISTANT_MESSAGE_ID &&
+            lastMessage.role === 'assistant' &&
+            lastMessage.status?.type === 'running'
+          ) {
+            lastMessage.content = savedMessage;
+          }
+        }),
+      );
+    }
+  }, [enabled, inboxId, queryClient, queryKey, storedMessage]);
 
   useEffect(() => {
     if (!enabled || !auth) return;
@@ -313,6 +339,7 @@ export const useWebSocketMessage = ({
                 lastMessage.status?.type === 'running'
               ) {
                 lastMessage.content = '';
+                addMessage(inboxId, '');
               } else {
                 const newMessages = [generateOptimisticAssistantMessage()];
                 if (lastPage) {
@@ -320,6 +347,7 @@ export const useWebSocketMessage = ({
                 } else {
                   draft.pages.push(newMessages);
                 }
+                addMessage(inboxId, '');
               }
             }),
           );
@@ -346,6 +374,9 @@ export const useWebSocketMessage = ({
               lastMessage.status?.type === 'running'
             ) {
               lastMessage.content += parseData.message;
+              
+              const currentContent = storedMessage(inboxId) || '';
+              addMessage(inboxId, currentContent + parseData.message);
             }
           }),
         );
@@ -366,6 +397,8 @@ export const useWebSocketMessage = ({
     lastMessage?.data,
     queryClient,
     queryKey,
+    addMessage,
+    storedMessage,
   ]);
 
   useEffect(() => {
