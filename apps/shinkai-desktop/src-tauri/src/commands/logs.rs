@@ -1,3 +1,5 @@
+use std::path::{self, PathBuf};
+
 use serde::Serialize;
 use tauri::Manager;
 
@@ -9,8 +11,7 @@ pub struct LogEntry {
     message: String,
 }
 
-#[tauri::command]
-pub fn retrieve_logs(app_handle: tauri::AppHandle) -> Result<Vec<LogEntry>, String> {
+fn get_log_file_path(app_handle: &tauri::AppHandle) -> Result<PathBuf, String> {
     let log_dir = app_handle.path().app_log_dir().map_err(|e| e.to_string())?;
     let product_name = app_handle
         .config()
@@ -18,6 +19,12 @@ pub fn retrieve_logs(app_handle: tauri::AppHandle) -> Result<Vec<LogEntry>, Stri
         .clone()
         .unwrap_or("Shinkai Desktop".to_string());
     let log_file = format!("{}/{}.log", log_dir.display(), product_name);
+    Ok(PathBuf::from(log_file))
+}
+
+#[tauri::command]
+pub fn retrieve_logs(app_handle: tauri::AppHandle) -> Result<Vec<LogEntry>, String> {
+    let log_file = get_log_file_path(&app_handle)?;
 
     let log_contents = match std::fs::read_to_string(log_file) {
         Ok(contents) => contents,
@@ -52,4 +59,22 @@ pub fn retrieve_logs(app_handle: tauri::AppHandle) -> Result<Vec<LogEntry>, Stri
         .collect();
 
     Ok(log_entries)
+}
+
+#[tauri::command]
+pub fn download_logs(app_handle: tauri::AppHandle, save_path: String) -> Result<String, String> {
+    let log_file = get_log_file_path(&app_handle)?;
+    match std::fs::copy(log_file.clone(), save_path.clone()) {
+        Ok(_) => Ok(save_path),
+        Err(e) => {
+            let log_file_str = log_file.to_string_lossy();
+            log::error!(
+                "failed to copy log file from {} to {}: {}",
+                log_file_str,
+                save_path.clone(),
+                e
+            );
+            return Err("failed to copy log file".to_string());
+        }
+    }
 }
