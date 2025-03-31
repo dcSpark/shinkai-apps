@@ -2,16 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  DEFAULT_CHAT_CONFIG,
-  FunctionKeyV2,
-} from '@shinkai_network/shinkai-node-state/v2/constants';
-import { useCreateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/createAgent/useCreateAgent';
-import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
-import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
-import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
-import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
-import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
-import {
   Badge,
   Button,
   Collapsible,
@@ -175,6 +165,33 @@ function AgentForm({ mode }: AgentFormProps) {
   
   const [isSideChatOpen, setIsSideChatOpen] = useState(false);
   const [isQuickSaving, setIsQuickSaving] = useState(false);
+  
+  const [chatConfig, setChatConfig] = useState({
+    stream: true,
+    temperature: 0.7,
+    top_p: 0.95,
+    top_k: 40,
+    use_tools: true,
+  });
+  const [functionKeys, setFunctionKeys] = useState({
+    GET_AGENT: 'GET_AGENT',
+    GET_CHAT_CONVERSATION_PAGINATION: 'GET_CHAT_CONVERSATION_PAGINATION',
+  });
+  
+  useEffect(() => {
+    const loadConstants = async () => {
+      try {
+        const { DEFAULT_CHAT_CONFIG, FunctionKeyV2 } = await import('@shinkai_network/shinkai-node-state/v2/constants');
+        setChatConfig(DEFAULT_CHAT_CONFIG);
+        setFunctionKeys(FunctionKeyV2);
+      } catch (error) {
+        console.error('Error loading constants:', error);
+      }
+    };
+    
+    loadConstants();
+  }, []);
+  
 
   const setSetJobScopeOpen = useSetJobScope(
     (state) => state.setSetJobScopeOpen,
@@ -184,15 +201,38 @@ function AgentForm({ mode }: AgentFormProps) {
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
 
-  const { data: searchToolList, isLoading: isSearchToolListPending } =
-    useGetSearchTools(
-      {
-        nodeAddress: auth?.node_address ?? '',
-        token: auth?.api_v2_key ?? '',
-        search: debouncedSearchQuery,
-      },
-      { enabled: isSearchQuerySynced && !!searchQuery },
-    );
+  const [searchToolList, setSearchToolList] = useState<any[]>([]);
+  const [isSearchToolListPending, setIsSearchToolListPending] = useState(false);
+  
+  useEffect(() => {
+    const fetchSearchTools = async () => {
+      if (!auth?.node_address || !auth?.api_v2_key || !debouncedSearchQuery || !isSearchQuerySynced) return;
+      
+      setIsSearchToolListPending(true);
+      try {
+        const response = await fetch(`${auth.node_address}/api/v2/tools/search?query=${encodeURIComponent(debouncedSearchQuery)}`, {
+          headers: {
+            Authorization: `Bearer ${auth.api_v2_key}`,
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch search tools');
+        }
+        
+        const data = await response.json();
+        setSearchToolList(data);
+      } catch (error) {
+        console.error('Error fetching search tools:', error);
+      } finally {
+        setIsSearchToolListPending(false);
+      }
+    };
+    
+    if (isSearchQuerySynced && !!searchQuery) {
+      fetchSearchTools();
+    }
+  }, [auth, debouncedSearchQuery, isSearchQuerySynced, searchQuery]);
 
   const selectedKeys = useSetJobScope((state) => state.selectedKeys);
   const selectedFileKeysRef = useSetJobScope(
@@ -205,11 +245,32 @@ function AgentForm({ mode }: AgentFormProps) {
     (state) => state.onSelectedKeysChange,
   );
 
-  const { data: agent } = useGetAgent({
-    agentId: agentId ?? '',
-    token: auth?.api_v2_key ?? '',
-    nodeAddress: auth?.node_address ?? '',
-  });
+  const [agent, setAgent] = useState<any>(null);
+  
+  useEffect(() => {
+    const fetchAgent = async () => {
+      if (!auth?.node_address || !auth?.api_v2_key || !agentId) return;
+      
+      try {
+        const response = await fetch(`${auth.node_address}/api/v2/agents/${agentId}`, {
+          headers: {
+            Authorization: `Bearer ${auth.api_v2_key}`,
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch agent');
+        }
+        
+        const data = await response.json();
+        setAgent(data);
+      } catch (error) {
+        console.error('Error fetching agent:', error);
+      }
+    };
+    
+    fetchAgent();
+  }, [auth, agentId]);
 
   const form = useForm<AgentFormValues>({
     resolver: zodResolver(agentFormSchema),
@@ -221,10 +282,10 @@ function AgentForm({ mode }: AgentFormProps) {
       tools: [],
       debugMode: false,
       config: {
-        stream: DEFAULT_CHAT_CONFIG.stream,
-        temperature: DEFAULT_CHAT_CONFIG.temperature,
-        top_p: DEFAULT_CHAT_CONFIG.top_p,
-        top_k: DEFAULT_CHAT_CONFIG.top_k,
+        stream: chatConfig.stream,
+        temperature: chatConfig.temperature,
+        top_p: chatConfig.top_p,
+        top_k: chatConfig.top_k,
         custom_prompt: '',
         custom_system_prompt: '',
         other_model_params: {},
@@ -283,11 +344,11 @@ function AgentForm({ mode }: AgentFormProps) {
         custom_prompt: agent.config?.custom_prompt ?? '',
         custom_system_prompt: agent.config?.custom_system_prompt ?? '',
         temperature:
-          agent.config?.temperature ?? DEFAULT_CHAT_CONFIG.temperature,
-        top_k: agent.config?.top_k ?? DEFAULT_CHAT_CONFIG.top_k,
-        top_p: agent.config?.top_p ?? DEFAULT_CHAT_CONFIG.top_p,
+          agent.config?.temperature ?? chatConfig.temperature,
+        top_k: agent.config?.top_k ?? chatConfig.top_k,
+        top_p: agent.config?.top_p ?? chatConfig.top_p,
         use_tools: agent.config?.use_tools ?? true,
-        stream: agent.config?.stream ?? DEFAULT_CHAT_CONFIG.stream,
+        stream: agent.config?.stream ?? chatConfig.stream,
         other_model_params: agent.config?.other_model_params ?? {},
       });
       form.setValue('llmProviderId', agent.llm_provider_id);
@@ -297,23 +358,25 @@ function AgentForm({ mode }: AgentFormProps) {
         agent.scope?.vector_fs_items?.length ||
         agent.scope?.vector_fs_folders?.length
       ) {
-        const selectedVRFilesPathMap = agent.scope.vector_fs_items.reduce<
-          Record<string, { checked: boolean }>
-        >((acc: Record<string, { checked: boolean }>, filePath: string) => {
-          acc[filePath] = {
-            checked: true,
-          };
-          return acc;
-        }, {});
+        const selectedVRFilesPathMap = agent.scope.vector_fs_items.reduce(
+          (acc: Record<string, { checked: boolean }>, filePath: string) => {
+            acc[filePath] = {
+              checked: true,
+            };
+            return acc;
+          }, 
+          {} as Record<string, { checked: boolean }>
+        );
 
-        const selectedVRFoldersPathMap = agent.scope.vector_fs_folders.reduce<
-          Record<string, { checked: boolean }>
-        >((acc: Record<string, { checked: boolean }>, folderPath: string) => {
-          acc[folderPath] = {
-            checked: true,
-          };
-          return acc;
-        }, {});
+        const selectedVRFoldersPathMap = agent.scope.vector_fs_folders.reduce(
+          (acc: Record<string, { checked: boolean }>, folderPath: string) => {
+            acc[folderPath] = {
+              checked: true,
+            };
+            return acc;
+          }, 
+          {} as Record<string, { checked: boolean }>
+        );
 
         onSelectedKeysChange({
           ...selectedVRFilesPathMap,
@@ -341,55 +404,129 @@ function AgentForm({ mode }: AgentFormProps) {
     }
   }, [form, selectedFileKeysRef, selectedFolderKeysRef]);
 
-  const { data: toolsList } = useGetTools({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  });
+  const [toolsList, setToolsList] = useState<any[]>([]);
+  
+  useEffect(() => {
+    const fetchTools = async () => {
+      if (!auth?.node_address || !auth?.api_v2_key) return;
+      
+      try {
+        const response = await fetch(`${auth.node_address}/api/v2/tools`, {
+          headers: {
+            Authorization: `Bearer ${auth.api_v2_key}`,
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch tools');
+        }
+        
+        const data = await response.json();
+        setToolsList(data);
+      } catch (error) {
+        console.error('Error fetching tools:', error);
+      }
+    };
+    
+    fetchTools();
+  }, [auth]);
 
-  const { mutateAsync: createAgent, isPending: isCreating } = useCreateAgent({
-    onError: (error) => {
+  const [isCreating, setIsCreating] = useState(false);
+  
+  const createAgent = async (params: { nodeAddress: string; token: string; agent: any; cronExpression?: string }) => {
+    setIsCreating(true);
+    try {
+      const response = await fetch(`${params.nodeAddress}/api/v2/agents`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${params.token}`,
+        },
+        body: JSON.stringify({
+          ...params.agent,
+          cronExpression: params.cronExpression,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create agent');
+      }
+      
+      navigate('/agents');
+    } catch (error: any) {
       toast.error('Failed to create agent', {
         description: error.response?.data?.message ?? error.message,
       });
-    },
-    onSuccess: () => {
-      navigate('/agents');
-    },
-  });
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
-  const { mutateAsync: updateAgent, isPending: isUpdating } = useUpdateAgent({
-    onError: (error) => {
+  const [isUpdating, setIsUpdating] = useState(false);
+  
+  const updateAgent = async (params: { nodeAddress: string; token: string; agent: any }) => {
+    setIsUpdating(true);
+    try {
+      const response = await fetch(`${params.nodeAddress}/api/v2/agents/${params.agent.agent_id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${params.token}`,
+        },
+        body: JSON.stringify(params.agent),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update agent');
+      }
+      
+      navigate('/agents');
+    } catch (error: any) {
       toast.error('Failed to update agent', {
         description: error.response?.data?.message ?? error.message,
       });
-    },
-    onSuccess: () => {
-      navigate('/agents');
-    },
-  });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   const queryClient = useQueryClient();
 
-  const { mutateAsync: removeTask, isPending: isRemovingTask } =
-    useRemoveRecurringTask({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [
-            FunctionKeyV2.GET_AGENT,
-            {
-              agentId: agent?.agent_id,
-              nodeAddress: auth?.node_address ?? '',
-            },
-          ],
-        });
-        toast.success('Delete task successfully');
-      },
-      onError: (error) => {
-        toast.error('Failed remove task', {
-          description: error.response?.data?.message ?? error.message,
-        });
-      },
-    });
+  const [isRemovingTask, setIsRemovingTask] = useState(false);
+  
+  const removeTask = async (params: { nodeAddress: string; token: string; recurringTaskId: string }) => {
+    setIsRemovingTask(true);
+    try {
+      const response = await fetch(`${params.nodeAddress}/api/v2/recurring-tasks/${params.recurringTaskId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${params.token}`,
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to remove task');
+      }
+      
+      queryClient.invalidateQueries({
+        queryKey: [
+          functionKeys.GET_AGENT,
+          {
+            agentId: agent?.agent_id,
+            nodeAddress: auth?.node_address ?? '',
+          },
+        ],
+      });
+      
+      toast.success('Delete task successfully');
+    } catch (error: any) {
+      toast.error('Failed remove task', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    } finally {
+      setIsRemovingTask(false);
+    }
+  };
 
   const onDeleteTask = async (taskId: string) => {
     await removeTask({
@@ -427,7 +564,7 @@ function AgentForm({ mode }: AgentFormProps) {
       
       queryClient.invalidateQueries({
         queryKey: [
-          FunctionKeyV2.GET_AGENT,
+          functionKeys.GET_AGENT,
           {
             agentId: agent.agent_id,
             nodeAddress: auth.node_address,
@@ -1049,7 +1186,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                           const configs = tool?.config ?? [];
                                           if (
                                             configs
-                                              .map((conf) => ({
+                                              .map((conf: any) => ({
                                                 key_name:
                                                   conf.BasicConfig.key_name,
                                                 key_value:
@@ -1059,7 +1196,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                                   conf.BasicConfig.required,
                                               }))
                                               .every(
-                                                (conf) =>
+                                                (conf: any) =>
                                                   !conf.required ||
                                                   (conf.required &&
                                                     conf.key_value !== ''),
@@ -1201,7 +1338,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                           const configs = tool?.config ?? [];
                                           if (
                                             configs
-                                              .map((conf) => ({
+                                              .map((conf: any) => ({
                                                 key_name:
                                                   conf.BasicConfig.key_name,
                                                 key_value:
@@ -1211,7 +1348,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                                   conf.BasicConfig.required,
                                               }))
                                               .every(
-                                                (conf) =>
+                                                (conf: any) =>
                                                   !conf.required ||
                                                   (conf.required &&
                                                     conf.key_value !== ''),
@@ -1391,7 +1528,7 @@ function AgentForm({ mode }: AgentFormProps) {
                             </h4>
                           </div>
                           <div className="mt-2 space-y-3">
-                            {agent?.cron_tasks?.map((task) => (
+                            {agent?.cron_tasks?.map((task: any) => (
                               <div
                                 className="bg-official-gray-900 flex items-center justify-between rounded-md border p-2"
                                 key={task.task_id}

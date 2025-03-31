@@ -54,16 +54,22 @@ export function AgentSideChat({ agentId, onClose }: AgentSideChatProps) {
   useEffect(() => {
     const checkAgentTools = async () => {
       try {
-        const { useGetAgent } = await import('@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent');
+        const getAgentData = async () => {
+          const response = await fetch(`${auth?.node_address}/api/v2/agents/${agentId}`, {
+            headers: {
+              Authorization: `Bearer ${auth?.api_v2_key}`,
+            },
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch agent data');
+          }
+          
+          return await response.json();
+        };
         
-        const getAgentHook = useGetAgent({
-          agentId,
-          nodeAddress: auth?.node_address ?? '',
-          token: auth?.api_v2_key ?? '',
-        });
-        
-        const agentData = await getAgentHook.refetch();
-        const tools = agentData.data?.tools || [];
+        const agentData = await getAgentData();
+        const tools = agentData.tools || [];
         setHasTools(tools.length > 0);
       } catch (error) {
         console.error('Error checking agent tools:', error);
@@ -81,21 +87,34 @@ export function AgentSideChat({ agentId, onClose }: AgentSideChatProps) {
     try {
       setIsLoading(true);
       
-      const { useCreateJob } = await import('@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob');
       const { DEFAULT_CHAT_CONFIG } = await import('@shinkai_network/shinkai-node-state/v2/constants');
-      const createJobHook = useCreateJob({});
       
-      const result = await createJobHook.mutateAsync({
-        nodeAddress: auth?.node_address ?? '',
-        token: auth?.api_v2_key ?? '',
-        llmProvider: agentId,
-        content: message,
-        chatConfig: {
-          ...DEFAULT_CHAT_CONFIG,
-          use_tools: hasTools,
-          function_calling: hasTools ? 'auto' : 'none',
-        },
-      } as any);
+      const createJob = async () => {
+        const response = await fetch(`${auth?.node_address}/api/v2/jobs`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${auth?.api_v2_key}`,
+          },
+          body: JSON.stringify({
+            llm_provider_id: agentId,
+            content: message,
+            chat_config: {
+              ...DEFAULT_CHAT_CONFIG,
+              use_tools: hasTools,
+              function_calling: hasTools ? 'auto' : 'none',
+            },
+          }),
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to create job');
+        }
+        
+        return await response.json();
+      };
+      
+      const result = await createJob();
       
       setChatInboxId(buildInboxIdFromJobId(result.jobId));
       setIsLoading(false);
@@ -114,17 +133,30 @@ export function AgentSideChat({ agentId, onClose }: AgentSideChatProps) {
     try {
       setIsLoading(true);
       
-      const { useSendMessageToJob } = await import('@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob');
       const { FunctionKeyV2 } = await import('@shinkai_network/shinkai-node-state/v2/constants');
-      const sendMessageHook = useSendMessageToJob({});
       
-      await sendMessageHook.mutateAsync({
-        nodeAddress: auth?.node_address ?? '',
-        token: auth?.api_v2_key ?? '',
-        jobId: extractJobIdFromInbox(chatInboxId),
-        message,
-        parent: '',
-      });
+      const sendMessage = async () => {
+        const jobId = extractJobIdFromInbox(chatInboxId);
+        const response = await fetch(`${auth?.node_address}/api/v2/jobs/${jobId}/messages`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${auth?.api_v2_key}`,
+          },
+          body: JSON.stringify({
+            message,
+            parent: '',
+          }),
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to send message');
+        }
+        
+        return await response.json();
+      };
+      
+      await sendMessage();
       
       queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION, { inboxId: chatInboxId }],
