@@ -31,6 +31,9 @@ import {
   Label,
   RadioGroup,
   RadioGroupItem,
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
   Slider,
   Switch,
   Tabs,
@@ -57,6 +60,8 @@ import {
   BoltIcon,
   ChevronRight,
   LucideArrowLeft,
+  MessageSquare,
+  Save,
   SearchIcon,
   Trash2,
   XIcon,
@@ -72,6 +77,7 @@ import { useSetJobScope } from '../../components/chat/context/set-job-scope-cont
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { AIModelSelector } from '../chat/chat-action-bar/ai-update-selection-action-bar';
+import { AgentSideChat } from './agent-side-chat';
 
 const agentFormSchema = z.object({
   name: z.string(),
@@ -109,6 +115,49 @@ interface AgentFormProps {
   mode: 'add' | 'edit';
 }
 
+const TabNavigation = () => {
+  return (
+    <TabsList className="border-official-gray-780 flex h-auto justify-start gap-4 rounded-full bg-transparent px-0.5 py-1">
+      <TabsTrigger
+        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        value="persona"
+      >
+        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
+          1
+        </Badge>
+        <span>Persona</span>
+      </TabsTrigger>
+      <TabsTrigger
+        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        value="knowledge"
+      >
+        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
+          2
+        </Badge>
+        <span>Knowledge</span>
+      </TabsTrigger>
+      <TabsTrigger
+        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        value="tools"
+      >
+        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
+          3
+        </Badge>
+        <span>Tools</span>
+      </TabsTrigger>
+      <TabsTrigger
+        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        value="schedule"
+      >
+        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
+          4
+        </Badge>
+        <span>Schedule</span>
+      </TabsTrigger>
+    </TabsList>
+  );
+};
+
 function AgentForm({ mode }: AgentFormProps) {
   const { agentId } = useParams();
 
@@ -123,6 +172,9 @@ function AgentForm({ mode }: AgentFormProps) {
   const [scheduleType, setScheduleType] = useState<'normal' | 'scheduled'>(
     'normal',
   );
+  
+  const [isSideChatOpen, setIsSideChatOpen] = useState(false);
+  const [isQuickSaving, setIsQuickSaving] = useState(false);
 
   const setSetJobScopeOpen = useSetJobScope(
     (state) => state.setSetJobScopeOpen,
@@ -346,6 +398,52 @@ function AgentForm({ mode }: AgentFormProps) {
       recurringTaskId: taskId,
     });
   };
+  
+  const quickSaveAgent = async () => {
+    setIsQuickSaving(true);
+    
+    try {
+      if (!auth || !agent) return;
+      
+      const values = form.getValues();
+      
+      await updateAgent({
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
+        agent: {
+          agent_id: agent.agent_id,
+          full_identity_name: `${auth?.shinkai_identity}/main/agent/${agent.agent_id}`,
+          llm_provider_id: values.llmProviderId || agent.llm_provider_id,
+          name: values.name,
+          ui_description: values.uiDescription,
+          storage_path: values.storage_path,
+          knowledge: values.knowledge,
+          tools: values.tools,
+          debug_mode: values.debugMode,
+          config: values.config,
+          scope: values.scope,
+        },
+      });
+      
+      queryClient.invalidateQueries({
+        queryKey: [
+          FunctionKeyV2.GET_AGENT,
+          {
+            agentId: agent.agent_id,
+            nodeAddress: auth.node_address,
+          },
+        ],
+      });
+      
+      toast.success('Agent updated successfully');
+    } catch (error: any) {
+      toast.error('Failed to update agent', {
+        description: error.message,
+      });
+    } finally {
+      setIsQuickSaving(false);
+    }
+  };
 
   const submit = async (values: AgentFormValues) => {
     const agentId = values.name.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
@@ -405,35 +503,63 @@ function AgentForm({ mode }: AgentFormProps) {
 
   return (
     <div className="container flex h-full max-w-3xl flex-col">
-      <div className="flex items-center gap-5 pb-6 pt-10">
-        <Link to={-1 as To}>
-          <LucideArrowLeft />
-          <span className="sr-only">{t('common.back')}</span>
-        </Link>
-        <h1 className="font-clash text-2xl font-medium">
-          {mode === 'edit' ? 'Update Agent' : 'Create New Agent'}
-        </h1>
+      <div className="flex items-center justify-between gap-5 pb-6 pt-10">
+        <div className="flex items-center gap-5">
+          <Link to={-1 as To}>
+            <LucideArrowLeft />
+            <span className="sr-only">{t('common.back')}</span>
+          </Link>
+          <h1 className="font-clash text-2xl font-medium">
+            {mode === 'edit' ? 'Update Agent' : 'Create New Agent'}
+          </h1>
+        </div>
+        
+        {mode === 'edit' && agent && (
+          <div className="flex gap-2">
+            <Button
+              className="flex items-center gap-2"
+              isLoading={isQuickSaving}
+              onClick={quickSaveAgent}
+              size="sm"
+              variant="outline"
+            >
+              <Save className="h-4 w-4" />
+              Save
+            </Button>
+            <Button
+              className="flex items-center gap-2"
+              onClick={() => setIsSideChatOpen(!isSideChatOpen)}
+              size="sm"
+              variant="outline"
+            >
+              <MessageSquare className="h-4 w-4" />
+              {isSideChatOpen ? 'Close Chat' : 'Open Chat'}
+            </Button>
+          </div>
+        )}
       </div>
 
-      <Form {...form}>
-        <form
-          className="flex w-full flex-1 flex-col justify-between space-y-2"
-          onSubmit={form.handleSubmit(submit)}
-        >
-          <div className="mx-auto w-full flex-1">
-            <div className="h-full space-y-6">
-              <Tabs
-                className="flex h-full flex-col gap-4"
-                defaultValue="persona"
-                onValueChange={(value) =>
-                  setCurrentTab(value as 'persona' | 'knowledge' | 'tools')
-                }
-                value={currentTab}
-              >
-                <TabNavigation />
+      <ResizablePanelGroup className="relative h-full" direction="horizontal">
+        <ResizablePanel defaultSize={70} minSize={50}>
+          <Form {...form}>
+            <form
+              className="flex w-full flex-1 flex-col justify-between space-y-2"
+              onSubmit={form.handleSubmit(submit)}
+            >
+              <div className="mx-auto w-full flex-1">
+                <div className="h-full space-y-6">
+                  <Tabs
+                    className="flex h-full flex-col gap-4"
+                    defaultValue="persona"
+                    onValueChange={(value) =>
+                      setCurrentTab(value as 'persona' | 'knowledge' | 'tools')
+                    }
+                    value={currentTab}
+                  >
+                    <TabNavigation />
 
-                <TabsContent className="flex-1" value="persona">
-                  <div className="h-full space-y-8">
+                    <TabsContent className="flex-1" value="persona">
+                      <div className="h-full space-y-8">
                     <FormField
                       control={form.control}
                       name="name"
@@ -781,7 +907,7 @@ function AgentForm({ mode }: AgentFormProps) {
                       <div className="space-y-1">
                         <h2 className="text-base font-medium">Tools</h2>
                         <p className="text-official-gray-400 text-sm">
-                          Select which tools & skills your agent can use to
+                          Select which tools &amp; skills your agent can use to
                           complete tasks.
                         </p>
                       </div>
@@ -1351,51 +1477,27 @@ function AgentForm({ mode }: AgentFormProps) {
           </div>
         </form>
       </Form>
+        </ResizablePanel>
+        
+        {isSideChatOpen && mode === 'edit' && agent && (
+          <>
+            <ResizableHandle className="bg-gray-300" />
+            <ResizablePanel 
+              className="h-full" 
+              collapsible 
+              defaultSize={30} 
+              maxSize={50} 
+              minSize={20}
+            >
+              <div className="h-full">
+                <AgentSideChat agentId={agent.agent_id} onClose={() => setIsSideChatOpen(false)} />
+              </div>
+            </ResizablePanel>
+          </>
+        )}
+      </ResizablePanelGroup>
     </div>
   );
 }
 
 export default AgentForm;
-
-const TabNavigation = () => {
-  return (
-    <TabsList className="border-official-gray-780 flex h-auto justify-start gap-4 rounded-full bg-transparent px-0.5 py-1">
-      <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
-        value="persona"
-      >
-        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
-          1
-        </Badge>
-        <span>Persona</span>
-      </TabsTrigger>
-      <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
-        value="knowledge"
-      >
-        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
-          2
-        </Badge>
-        <span>Knowledge</span>
-      </TabsTrigger>
-      <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
-        value="tools"
-      >
-        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
-          3
-        </Badge>
-        <span>Tools</span>
-      </TabsTrigger>
-      <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
-        value="schedule"
-      >
-        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
-          4
-        </Badge>
-        <span>Schedule</span>
-      </TabsTrigger>
-    </TabsList>
-  );
-};
