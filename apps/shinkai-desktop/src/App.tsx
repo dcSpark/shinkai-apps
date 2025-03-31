@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { BrowserRouter as Router } from 'react-router-dom';
 
+import { WebSocketProvider } from './components/chat/websocket-context';
 import FullPageErrorFallback from './components/error-boundary';
 import { OAuthConnect } from './components/oauth/oauth-connect';
 import { AnalyticsProvider } from './lib/posthog-provider';
@@ -23,10 +24,12 @@ function App() {
         <ErrorBoundary FallbackComponent={FullPageErrorFallback}>
           <AnalyticsProvider>
             <QueryProvider>
-              <OAuthConnect />
-              <Router>
-                <AppRoutes />
-              </Router>
+              <WebSocketProvider>
+                <OAuthConnect />
+                <Router>
+                  <AppRoutes />
+                </Router>
+              </WebSocketProvider>
               <Toaster />
             </QueryProvider>
           </AnalyticsProvider>

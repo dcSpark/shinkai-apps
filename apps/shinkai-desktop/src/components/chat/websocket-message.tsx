@@ -14,10 +14,12 @@ import { produce } from 'immer';
 import { createContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
+import { ReadyState } from 'react-use-websocket';
 import { create } from 'zustand';
 
 import { useAuth } from '../../store/auth';
 import { useToolsStore } from './context/tools-context';
+import { useWebSocketContext } from './websocket-context';
 
 type UseWebSocketMessage = {
   enabled?: boolean;
@@ -249,157 +251,61 @@ export const useWebSocketMessageSmooth = ({
   };
 };
 
-export const useWebSocketMessage = ({
-  enabled,
-  inboxId: defaultInboxId,
-}: UseWebSocketMessage) => {
+export const useWebSocketMessage = ({ enabled, inboxId }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
-  const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
-  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  const { lastMessage, readyState, sendMessage } = useWebSocketContext();
   const queryClient = useQueryClient();
-  const isStreamSupported = useRef(false);
-
-  const { sendMessage, lastMessage, readyState } = useWebSocket(
-    socketUrl,
-    { share: true },
-    enabled,
-  );
-  const { inboxId: encodedInboxId = '' } = useParams();
-  const inboxId = defaultInboxId || decodeURIComponent(encodedInboxId);
-
-  const queryKey = useMemo(() => {
-    return [FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION, { inboxId }];
-  }, [inboxId]);
 
   useEffect(() => {
-    if (!enabled || !auth) return;
-    if (lastMessage?.data) {
-      try {
-        const parseData: WsMessage = JSON.parse(lastMessage.data);
-        if (parseData.inbox !== inboxId) return;
+    if (enabled && readyState === ReadyState.OPEN && auth && inboxId) {
+      const wsMessage = { subscriptions: [{ topic: 'inbox', subtopic: inboxId }], unsubscriptions: [] };
+      const wsMessageString = JSON.stringify(wsMessage);
+      const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
+        wsMessageString,
+        auth?.profile_encryption_sk ?? '',
+        auth?.profile_identity_sk ?? '',
+        auth?.node_encryption_pk ?? '',
+        auth?.shinkai_identity ?? '',
+        auth?.profile ?? '',
+        auth?.shinkai_identity ?? '',
+        ''
+      );
+      sendMessage(shinkaiMessage);
 
-        const isUserMessage =
-          parseData.message_type === 'ShinkaiMessage' &&
-          parseData.message &&
-          JSON.parse(parseData.message)?.external_metadata.sender ===
-            auth.shinkai_identity &&
-          JSON.parse(parseData.message)?.body.unencrypted.internal_metadata
-            .sender_subidentity === auth.profile;
-
-        const isAssistantMessage =
-          parseData.message_type === 'ShinkaiMessage' &&
-          parseData.message &&
-          !(
-            JSON.parse(parseData.message)?.external_metadata.sender ===
-              auth.shinkai_identity &&
-            JSON.parse(parseData.message)?.body.unencrypted.internal_metadata
-              .sender_subidentity === auth.profile
-          );
-
-        if (isUserMessage) {
-          queryClient.setQueryData(
-            queryKey,
-            produce((draft: ChatConversationInfiniteData) => {
-              if (!draft?.pages?.[0]) return;
-
-              const lastPage = draft.pages[draft.pages.length - 1];
-              const lastMessage = lastPage?.[lastPage.length - 1];
-
-              // validate if optimistic message is already there
-              if (
-                lastMessage &&
-                lastMessage.messageId === OPTIMISTIC_ASSISTANT_MESSAGE_ID &&
-                lastMessage.role === 'assistant' &&
-                lastMessage.status?.type === 'running'
-              ) {
-                lastMessage.content = '';
-              } else {
-                const newMessages = [generateOptimisticAssistantMessage()];
-                if (lastPage) {
-                  lastPage.push(...newMessages);
-                } else {
-                  draft.pages.push(newMessages);
-                }
-              }
-            }),
-          );
-          return;
-        }
-
-        if (isAssistantMessage && !isStreamSupported.current) {
-          queryClient.invalidateQueries({ queryKey: queryKey });
-          return;
-        }
-        isStreamSupported.current = false;
-        if (parseData.message_type !== 'Stream') return;
-        isStreamSupported.current = true;
-
-        queryClient.setQueryData(
-          queryKey,
-          produce((draft: ChatConversationInfiniteData | undefined) => {
-            if (!draft?.pages?.[0]) return;
-            const lastMessage = draft.pages.at(-1)?.at(-1);
-            if (
-              lastMessage &&
-              lastMessage.messageId === OPTIMISTIC_ASSISTANT_MESSAGE_ID &&
-              lastMessage.role === 'assistant' &&
-              lastMessage.status?.type === 'running'
-            ) {
-              lastMessage.content += parseData.message;
-            }
-          }),
+      return () => {
+        const unsubscribeMessage = { subscriptions: [], unsubscriptions: [{ topic: 'inbox', subtopic: inboxId }] };
+        const unsubscribeString = JSON.stringify(unsubscribeMessage);
+        const shinkaiUnsubscribe = ShinkaiMessageBuilderWrapper.ws_connection(
+          unsubscribeString,
+          auth?.profile_encryption_sk ?? '',
+          auth?.profile_identity_sk ?? '',
+          auth?.node_encryption_pk ?? '',
+          auth?.shinkai_identity ?? '',
+          auth?.profile ?? '',
+          auth?.shinkai_identity ?? '',
+          ''
         );
+        sendMessage(shinkaiUnsubscribe);
+      };
+    }
+  }, [enabled, inboxId, sendMessage, readyState, auth]);
 
-        if (parseData.metadata?.is_done === true) {
-          queryClient.invalidateQueries({ queryKey: queryKey });
-          return;
+  useEffect(() => {
+    if (lastMessage?.data && inboxId) {
+      try {
+        const data = JSON.parse(lastMessage.data);
+        if (data.type === 'Stream' || data.type === 'Widget') {
+          queryClient.invalidateQueries({
+            queryKey: ['chat-conversation', inboxId],
+          });
         }
       } catch (error) {
-        console.error('Failed to parse ws message', error);
+        console.error('Failed to parse WebSocket message:', error);
       }
     }
-  }, [
-    auth?.shinkai_identity,
-    auth?.profile,
-    enabled,
-    inboxId,
-    lastMessage?.data,
-    queryClient,
-    queryKey,
-  ]);
+  }, [lastMessage, inboxId, queryClient]);
 
-  useEffect(() => {
-    if (!enabled) return;
-    const wsMessage = {
-      subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
-      unsubscriptions: [],
-    };
-    const wsMessageString = JSON.stringify(wsMessage);
-    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
-      wsMessageString,
-      auth?.profile_encryption_sk ?? '',
-      auth?.profile_identity_sk ?? '',
-      auth?.node_encryption_pk ?? '',
-      auth?.shinkai_identity ?? '',
-      auth?.profile ?? '',
-      auth?.shinkai_identity ?? '',
-      '',
-    );
-    sendMessage(shinkaiMessage);
-  }, [
-    auth?.node_encryption_pk,
-    auth?.profile,
-    auth?.profile_encryption_sk,
-    auth?.profile_identity_sk,
-    auth?.shinkai_identity,
-    enabled,
-    inboxId,
-    sendMessage,
-  ]);
-
-  return {
-    readyState,
-  };
+  return { readyState };
 };
 
 export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
