@@ -110,6 +110,7 @@ export type ShinkaiNodeOptions = {
    log_all?: string,
    proxy_identity?: string,
    rpc_url?: string,
+   secret_desktop_installation_proof_key?: string,
 };
 
 export type LogEntry = {
