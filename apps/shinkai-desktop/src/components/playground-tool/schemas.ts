@@ -48,8 +48,8 @@ export const ToolMetadataSchema = z.object({
     .object(
       {
         type: z.literal('object'),
-        properties: z.record(z.any()),
-        required: z.array(z.string()),
+        properties: z.record(z.any()).nullable().default({}),
+        required: z.array(z.string()).default([]),
       },
       { message: 'Result are required' },
     )
@@ -88,6 +88,7 @@ export const ToolMetadataSchema = z.object({
         refreshToken: z.string().default(''),
       }),
     )
+    .nullish()
     .default([]),
   runner: z.string().default('any'),
   operating_system: z.array(z.string()).default(['linux', 'macos', 'windows']),
