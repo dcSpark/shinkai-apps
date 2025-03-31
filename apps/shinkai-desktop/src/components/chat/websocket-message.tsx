@@ -17,7 +17,7 @@ import useWebSocket from 'react-use-websocket';
 import { create } from 'zustand';
 
 import { useAuth } from '../../store/auth';
-import { useChatMessagesStore } from '../../store/chat-messages';
+import { useStreamingResponseStore } from '../../store/streaming-response';
 import { useToolsStore } from './context/tools-context';
 
 type UseWebSocketMessage = {
@@ -259,8 +259,13 @@ export const useWebSocketMessage = ({
   const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
   const queryClient = useQueryClient();
   const isStreamSupported = useRef(false);
-  const addMessage = useChatMessagesStore((state) => state.addMessage);
-  const storedMessage = useChatMessagesStore((state) => state.getMessage);
+  
+  const {
+    setStreamingResponse,
+    appendStreamingResponse,
+    removeStreamingResponse,
+    getStreamingResponse,
+  } = useStreamingResponseStore();
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(
     socketUrl,
@@ -277,7 +282,7 @@ export const useWebSocketMessage = ({
   useEffect(() => {
     if (!enabled || !inboxId) return;
     
-    const savedMessage = storedMessage(inboxId);
+    const savedMessage = getStreamingResponse(inboxId);
     if (savedMessage) {
       queryClient.setQueryData(
         queryKey,
@@ -295,7 +300,7 @@ export const useWebSocketMessage = ({
         }),
       );
     }
-  }, [enabled, inboxId, queryClient, queryKey, storedMessage]);
+  }, [enabled, inboxId, queryClient, queryKey, getStreamingResponse]);
 
   useEffect(() => {
     if (!enabled || !auth) return;
@@ -339,7 +344,7 @@ export const useWebSocketMessage = ({
                 lastMessage.status?.type === 'running'
               ) {
                 lastMessage.content = '';
-                addMessage(inboxId, '');
+                setStreamingResponse(inboxId, '');
               } else {
                 const newMessages = [generateOptimisticAssistantMessage()];
                 if (lastPage) {
@@ -347,7 +352,7 @@ export const useWebSocketMessage = ({
                 } else {
                   draft.pages.push(newMessages);
                 }
-                addMessage(inboxId, '');
+                setStreamingResponse(inboxId, '');
               }
             }),
           );
@@ -375,18 +380,19 @@ export const useWebSocketMessage = ({
             ) {
               lastMessage.content += parseData.message;
               
-              const currentContent = storedMessage(inboxId) || '';
-              addMessage(inboxId, currentContent + parseData.message);
+              appendStreamingResponse(inboxId, parseData.message);
             }
           }),
         );
 
         if (parseData.metadata?.is_done === true) {
+          removeStreamingResponse(inboxId);
           queryClient.invalidateQueries({ queryKey: queryKey });
           return;
         }
       } catch (error) {
         console.error('Failed to parse ws message', error);
+        removeStreamingResponse(inboxId);
       }
     }
   }, [
@@ -397,8 +403,9 @@ export const useWebSocketMessage = ({
     lastMessage?.data,
     queryClient,
     queryKey,
-    addMessage,
-    storedMessage,
+    setStreamingResponse,
+    appendStreamingResponse,
+    removeStreamingResponse,
   ]);
 
   useEffect(() => {

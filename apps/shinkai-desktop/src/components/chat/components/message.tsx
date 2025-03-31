@@ -5,6 +5,7 @@ import {
   ToolStatusType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
+import { OPTIMISTIC_ASSISTANT_MESSAGE_ID } from '@shinkai_network/shinkai-node-state/v2/constants';
 import {
   FormattedMessage,
   ToolCall,
@@ -55,6 +56,7 @@ import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
 import { useOAuth } from '../../../store/oauth';
+import { useStreamingResponseStore } from '../../../store/streaming-response';
 import { oauthUrlMatcherFromErrorMessage } from '../../../utils/oauth';
 import { useChatStore } from '../context/chat-context';
 import { PythonCodeRunner } from '../python-code-runner/python-code-runner';
@@ -168,7 +170,7 @@ type EditMessageFormSchema = z.infer<typeof editMessageFormSchema>;
 
 export const MessageBase = ({
   message,
-  // messageId,
+  messageId,
   hidePythonExecution,
   isPending,
   handleRetryMessage,
@@ -181,6 +183,15 @@ export const MessageBase = ({
 
   const selectedArtifact = useChatStore((state) => state.selectedArtifact);
   const setArtifact = useChatStore((state) => state.setSelectedArtifact);
+  
+  const getStreamingResponse = useStreamingResponseStore((state) => state.getStreamingResponse);
+  const streamingContent = message.metadata?.inboxId ? getStreamingResponse(message.metadata.inboxId) : undefined;
+  
+  const isStreamingMessage = messageId === OPTIMISTIC_ASSISTANT_MESSAGE_ID;
+  
+  const displayContent = isStreamingMessage && streamingContent !== undefined
+    ? streamingContent
+    : message.content;
 
   const [editing, setEditing] = useState(false);
 
@@ -387,11 +398,11 @@ export const MessageBase = ({
                 {message.role === 'assistant' && (
                   <MarkdownText
                     content={extractErrorPropertyOrContent(
-                      message.content,
+                      displayContent,
                       'error_message',
                     )}
                     isRunning={
-                      !!message.content && message.status.type === 'running'
+                      isStreamingMessage || message.status.type === 'running'
                     }
                   />
                 )}
@@ -426,8 +437,8 @@ export const MessageBase = ({
                   <div className="whitespace-pre-line">{message.content}</div>
                 )}
                 {message.role === 'assistant' &&
-                  message.status.type === 'running' &&
-                  message.content === '' && (
+                  (message.status.type === 'running' || isStreamingMessage) &&
+                  displayContent === '' && (
                     <div className="whitespace-pre-line pt-1.5">
                       <DotsLoader />
                     </div>
@@ -544,7 +555,7 @@ export const MessageBase = ({
                               'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
                             )}
                             string={extractErrorPropertyOrContent(
-                              message.content,
+                              displayContent,
                               'error_message',
                             )}
                           />
