@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
+import { devtools } from 'zustand/middleware';
 
 type ChatMessagesStore = {
   messages: Record<string, string>;
@@ -10,30 +10,25 @@ type ChatMessagesStore = {
 
 export const useChatMessagesStore = create<ChatMessagesStore>()(
   devtools(
-    persist(
-      (set, get) => ({
-        messages: {},
-        
-        addMessage: (inboxId: string, content: string) => {
-          set((state) => ({
-            messages: {
-              ...state.messages,
-              [inboxId]: content,
-            },
-          }));
-        },
-        
-        getMessage: (inboxId: string) => {
-          return get().messages[inboxId];
-        },
-        
-        clearMessages: () => {
-          set({ messages: {} });
-        },
-      }),
-      {
-        name: 'chat-messages',
+    (set, get) => ({
+      messages: {},
+      
+      addMessage: (inboxId: string, content: string) => {
+        set((state) => ({
+          messages: {
+            ...state.messages,
+            [inboxId]: content,
+          },
+        }));
       },
-    ),
+      
+      getMessage: (inboxId: string) => {
+        return get().messages[inboxId];
+      },
+      
+      clearMessages: () => {
+        set({ messages: {} });
+      },
+    }),
   ),
 );
