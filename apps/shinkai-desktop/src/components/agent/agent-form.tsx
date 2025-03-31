@@ -170,6 +170,16 @@ function AgentSideChat({ agentId, onClose }: { agentId: string; onClose: () => v
   const [chatInboxId, setChatInboxId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   
+  const { data: sideAgentData } = useGetAgent({
+    agentId,
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const hasTools = useMemo(() => {
+    return !!sideAgentData?.tools && sideAgentData.tools.length > 0;
+  }, [sideAgentData]);
+  
   useWebSocketMessage({
     inboxId: chatInboxId ?? '',
     enabled: !!chatInboxId,
@@ -220,7 +230,7 @@ function AgentSideChat({ agentId, onClose }: { agentId: string; onClose: () => v
           temperature: DEFAULT_CHAT_CONFIG.temperature,
           top_p: DEFAULT_CHAT_CONFIG.top_p,
           top_k: DEFAULT_CHAT_CONFIG.top_k,
-          use_tools: DEFAULT_CHAT_CONFIG.use_tools,
+          use_tools: hasTools,
         },
       });
     } else {
