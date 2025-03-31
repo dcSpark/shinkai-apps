@@ -402,6 +402,7 @@ function ToolFeedbackPrompt() {
     navigate,
     startToolCreation,
     isCreatingToolCode,
+    isLoadingMessage,
   ]);
 
   return <div className={cn('h-full overflow-auto')}>{renderStep()}</div>;

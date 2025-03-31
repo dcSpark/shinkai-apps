@@ -514,13 +514,31 @@ function AgentForm({ mode }: AgentFormProps) {
     },
   });
   
-  const [isQuickSaving, setIsQuickSaving] = useState(false);
+  // Create a separate mutation for quick save without navigation
+  const { mutateAsync: quickSaveAgentMutation, isPending: isQuickSavePending } = useUpdateAgent({
+    onError: (error) => {
+      toast.error('Failed to update agent', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          FunctionKeyV2.GET_AGENT,
+          {
+            agentId: agent?.agent_id,
+            nodeAddress: auth?.node_address ?? '',
+          },
+        ],
+      });
+      toast.success('Agent updated successfully');
+    },
+  });
   
   const quickSaveAgent = async () => {
     if (!agent) return;
     
     try {
-      setIsQuickSaving(true);
       const values = form.getValues();
       const agentData = {
         agent_id: agent.agent_id,
@@ -540,29 +558,16 @@ function AgentForm({ mode }: AgentFormProps) {
         },
       };
       
-      await updateAgent({
+      // Use the quick save mutation that doesn't navigate
+      await quickSaveAgentMutation({
         nodeAddress: auth?.node_address ?? '',
         token: auth?.api_v2_key ?? '',
         agent: agentData,
       });
-      
-      queryClient.invalidateQueries({
-        queryKey: [
-          FunctionKeyV2.GET_AGENT,
-          {
-            agentId: agent.agent_id,
-            nodeAddress: auth?.node_address ?? '',
-          },
-        ],
-      });
-      
-      toast.success('Agent updated successfully');
     } catch (error: any) {
       toast.error('Failed to update agent', {
         description: error.response?.data?.message ?? error.message,
       });
-    } finally {
-      setIsQuickSaving(false);
     }
   };
 
@@ -670,7 +675,7 @@ function AgentForm({ mode }: AgentFormProps) {
             <div className="flex gap-2">
               <Button
                 className="flex items-center gap-2"
-                isLoading={isQuickSaving}
+                isLoading={isQuickSavePending}
                 onClick={quickSaveAgent}
                 size="sm"
                 variant="outline"
