@@ -132,9 +132,15 @@ const downloadShinkaiNodeBinary = async (arch: Arch, version: string) => {
 
 const downloadOllamaAarch64AppleDarwin = async (version: string) => {
   const downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/Ollama-darwin.zip`;
-  const zippedPath = path.join(TEMP_PATH, `ollama-${Arch.aarch64_apple_darwin}.zip`);
+  const zippedPath = path.join(
+    TEMP_PATH,
+    `ollama-${Arch.aarch64_apple_darwin}.zip`,
+  );
   await downloadFile(downloadUrl, zippedPath);
-  const unzippedPath = path.join(TEMP_PATH, `ollama-${Arch.aarch64_apple_darwin}-${version}`);
+  const unzippedPath = path.join(
+    TEMP_PATH,
+    `ollama-${Arch.aarch64_apple_darwin}-${version}`,
+  );
   await zl.extract(zippedPath, unzippedPath);
   const ollamaBinaryPath = asSidecarName(
     Arch.aarch64_apple_darwin,
@@ -172,6 +178,31 @@ const downloadOllamax8664UnknownLinuxGnu = async (version: string) => {
 };
 
 const downloadOllamax8664PcWindowsMsvc = async (version: string) => {
+  await downloadOllamax8664PcWindowsMsvcNvidia(version);
+  await downloadOllamax8664PcWindowsMsvcRocm(version);
+};
+const downloadOllamax8664PcWindowsMsvcRocm = async (version: string) => {
+  const downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-windows-amd64-rocm.zip`;
+  const zippedPath = path.join(
+    TEMP_PATH,
+    `ollama-windows-amd64-rocm-${version}.zip`,
+  );
+  await downloadFile(downloadUrl, zippedPath);
+  const unzippedPath = path.join(
+    TEMP_PATH,
+    `ollama-windows-amd64-rocm-${version}`,
+  );
+  await zl.extract(zippedPath, unzippedPath);
+  const files = await readdir(unzippedPath);
+  await cp(
+    path.join(unzippedPath, 'lib', 'ollama', 'rocm'),
+    path.join(OLLAMA_RESOURCES_PATH, 'lib', 'rocm'),
+    {
+      recursive: true,
+    },
+  );
+};
+const downloadOllamax8664PcWindowsMsvcNvidia = async (version: string) => {
   const downloadUrl = `https://github.com/ollama/ollama/releases/download/${version}/ollama-windows-amd64.zip`;
   const zippedPath = path.join(
     TEMP_PATH,
