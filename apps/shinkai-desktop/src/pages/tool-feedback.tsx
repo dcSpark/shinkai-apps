@@ -20,7 +20,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LoaderIcon, LogOut } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { MessageList } from '../components/chat/components/message-list';
 import { getRandomWidth } from '../components/playground-tool/components/code-panel';
@@ -36,8 +36,11 @@ function ToolFeedbackPrompt() {
   const { inboxId } = useParams();
   const form = useToolForm();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const [isExitDialogOpen, setIsExitDialogOpen] = useState(false);
+  
+  const preservedInboxId = location.state?.inboxId || inboxId;
 
   const {
     currentStep,
@@ -52,7 +55,7 @@ function ToolFeedbackPrompt() {
     error,
   } = useToolFlow({
     form,
-    initialInboxId: inboxId,
+    initialInboxId: preservedInboxId,
   });
 
   const isLoadingMessage = useMemo(() => {

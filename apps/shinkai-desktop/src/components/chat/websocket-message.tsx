@@ -18,6 +18,7 @@ import { create } from 'zustand';
 
 import { useAuth } from '../../store/auth';
 import { useToolsStore } from './context/tools-context';
+import { useWebSocketStore } from './websocket-store';
 
 type UseWebSocketMessage = {
   enabled?: boolean;
@@ -258,18 +259,33 @@ export const useWebSocketMessage = ({
   const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
   const queryClient = useQueryClient();
   const isStreamSupported = useRef(false);
+  
+  const { addConnection, removeConnection, hasConnection } = useWebSocketStore();
+
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = defaultInboxId || decodeURIComponent(encodedInboxId);
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(
     socketUrl,
     { share: true },
     enabled,
   );
-  const { inboxId: encodedInboxId = '' } = useParams();
-  const inboxId = defaultInboxId || decodeURIComponent(encodedInboxId);
 
   const queryKey = useMemo(() => {
     return [FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION, { inboxId }];
   }, [inboxId]);
+
+  useEffect(() => {
+    if (enabled && inboxId) {
+      addConnection(inboxId);
+    }
+    
+    return () => {
+      if (inboxId) {
+        removeConnection(inboxId);
+      }
+    };
+  }, [enabled, inboxId, addConnection, removeConnection]);
 
   useEffect(() => {
     if (!enabled || !auth) return;
@@ -369,23 +385,28 @@ export const useWebSocketMessage = ({
   ]);
 
   useEffect(() => {
-    if (!enabled) return;
-    const wsMessage = {
-      subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
-      unsubscriptions: [],
-    };
-    const wsMessageString = JSON.stringify(wsMessage);
-    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
-      wsMessageString,
-      auth?.profile_encryption_sk ?? '',
-      auth?.profile_identity_sk ?? '',
-      auth?.node_encryption_pk ?? '',
-      auth?.shinkai_identity ?? '',
-      auth?.profile ?? '',
-      auth?.shinkai_identity ?? '',
-      '',
-    );
-    sendMessage(shinkaiMessage);
+    if (!enabled || !inboxId) return;
+    
+    const needsSubscription = !hasConnection(inboxId) || readyState !== 1;
+    
+    if (needsSubscription) {
+      const wsMessage = {
+        subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
+        unsubscriptions: [],
+      };
+      const wsMessageString = JSON.stringify(wsMessage);
+      const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
+        wsMessageString,
+        auth?.profile_encryption_sk ?? '',
+        auth?.profile_identity_sk ?? '',
+        auth?.node_encryption_pk ?? '',
+        auth?.shinkai_identity ?? '',
+        auth?.profile ?? '',
+        auth?.shinkai_identity ?? '',
+        '',
+      );
+      sendMessage(shinkaiMessage);
+    }
   }, [
     auth?.node_encryption_pk,
     auth?.profile,
@@ -395,6 +416,8 @@ export const useWebSocketMessage = ({
     enabled,
     inboxId,
     sendMessage,
+    hasConnection,
+    readyState,
   ]);
 
   return {
@@ -406,6 +429,9 @@ export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
   const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  
+  const { addConnection, removeConnection, hasConnection } = useWebSocketStore();
+  
   const { sendMessage, lastMessage, readyState } = useWebSocket(
     socketUrl,
     { share: true },
@@ -421,6 +447,18 @@ export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
   const queryKey = useMemo(() => {
     return [FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION, { inboxId }];
   }, [inboxId]);
+  
+  useEffect(() => {
+    if (enabled && inboxId) {
+      addConnection(inboxId);
+    }
+    
+    return () => {
+      if (inboxId) {
+        removeConnection(inboxId);
+      }
+    };
+  }, [enabled, inboxId, addConnection, removeConnection]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -502,23 +540,28 @@ export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
   }, [enabled, inboxId, lastMessage?.data, queryClient]);
 
   useEffect(() => {
-    if (!enabled) return;
-    const wsMessage = {
-      subscriptions: [{ topic: 'widget', subtopic: inboxId }],
-      unsubscriptions: [],
-    };
-    const wsMessageString = JSON.stringify(wsMessage);
-    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
-      wsMessageString,
-      auth?.profile_encryption_sk ?? '',
-      auth?.profile_identity_sk ?? '',
-      auth?.node_encryption_pk ?? '',
-      auth?.shinkai_identity ?? '',
-      auth?.profile ?? '',
-      auth?.shinkai_identity ?? '',
-      '',
-    );
-    sendMessage(shinkaiMessage);
+    if (!enabled || !inboxId) return;
+    
+    const needsSubscription = !hasConnection(inboxId) || readyState !== 1;
+    
+    if (needsSubscription) {
+      const wsMessage = {
+        subscriptions: [{ topic: 'widget', subtopic: inboxId }],
+        unsubscriptions: [],
+      };
+      const wsMessageString = JSON.stringify(wsMessage);
+      const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
+        wsMessageString,
+        auth?.profile_encryption_sk ?? '',
+        auth?.profile_identity_sk ?? '',
+        auth?.node_encryption_pk ?? '',
+        auth?.shinkai_identity ?? '',
+        auth?.profile ?? '',
+        auth?.shinkai_identity ?? '',
+        '',
+      );
+      sendMessage(shinkaiMessage);
+    }
   }, [
     auth?.node_encryption_pk,
     auth?.profile,
@@ -528,6 +571,8 @@ export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
     enabled,
     inboxId,
     sendMessage,
+    hasConnection,
+    readyState,
   ]);
 
   return { readyState };

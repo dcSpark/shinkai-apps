@@ -248,8 +248,13 @@ export const useToolFlow = ({
         if (isFeedbackPage) {
           setCurrentStep(ToolCreationState.PLAN_REVIEW);
         } else if (requireFeedbackFlow) {
-          navigate(`/tools/tool-feedback/${data.inbox}`);
           setCurrentStep(ToolCreationState.PLAN_REVIEW);
+          navigate(`/tools/tool-feedback/${data.inbox}`, {
+            state: { 
+              preserveWebsocket: true,
+              inboxId: data.inbox
+            }
+          });
         }
       },
       onError: (error) => {
