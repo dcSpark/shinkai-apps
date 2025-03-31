@@ -7,6 +7,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import FullPageErrorFallback from './components/error-boundary';
+import { WebSocketProvider } from './components/chat/websocket-store';
 import { OAuthConnect } from './components/oauth/oauth-connect';
 import { AnalyticsProvider } from './lib/posthog-provider';
 import AppRoutes from './routes';
@@ -23,11 +24,13 @@ function App() {
         <ErrorBoundary FallbackComponent={FullPageErrorFallback}>
           <AnalyticsProvider>
             <QueryProvider>
-              <OAuthConnect />
-              <Router>
-                <AppRoutes />
-              </Router>
-              <Toaster />
+              <WebSocketProvider>
+                <OAuthConnect />
+                <Router>
+                  <AppRoutes />
+                </Router>
+                <Toaster />
+              </WebSocketProvider>
             </QueryProvider>
           </AnalyticsProvider>
         </ErrorBoundary>

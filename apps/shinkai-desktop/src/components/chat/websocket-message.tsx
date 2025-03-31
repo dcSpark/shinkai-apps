@@ -260,7 +260,9 @@ export const useWebSocketMessage = ({
   const queryClient = useQueryClient();
   const isStreamSupported = useRef(false);
   
-  const { addConnection, removeConnection, hasConnection } = useWebSocketStore();
+  const addConnection = useWebSocketStore(state => state.addConnection);
+  const removeConnection = useWebSocketStore(state => state.removeConnection);
+  const hasConnection = useWebSocketStore(state => state.hasConnection);
 
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = defaultInboxId || decodeURIComponent(encodedInboxId);
@@ -430,7 +432,9 @@ export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
   const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
   
-  const { addConnection, removeConnection, hasConnection } = useWebSocketStore();
+  const addConnection = useWebSocketStore(state => state.addConnection);
+  const removeConnection = useWebSocketStore(state => state.removeConnection);
+  const hasConnection = useWebSocketStore(state => state.hasConnection);
   
   const { sendMessage, lastMessage, readyState } = useWebSocket(
     socketUrl,
