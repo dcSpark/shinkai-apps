@@ -70,6 +70,7 @@ import SheetProject from '../pages/sheet-project';
 import { TaskLogs } from '../pages/task-logs';
 import { Tasks } from '../pages/tasks';
 import TermsAndConditionsPage from '../pages/terms-conditions';
+import { LogoTapProvider } from '../pages/terms-conditions';
 import ToolFeedbackPrompt from '../pages/tool-feedback';
 import { ToolsHomepage } from '../pages/tools-homepage';
 import { useAuth } from '../store/auth';
@@ -235,7 +236,11 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
     navigate,
   ]);
 
-  return <OnboardingLayout>{children}</OnboardingLayout>;
+  return (
+    <LogoTapProvider>
+      <OnboardingLayout>{children}</OnboardingLayout>
+    </LogoTapProvider>
+  );
 };
 
 const AppRoutes = () => {
