@@ -468,6 +468,11 @@ const EmptyMessage = () => {
                         <AIModelSelector
                           onValueChange={(value) => {
                             chatForm.setValue('agent', value);
+                            
+                            const selectedAgent = agents?.find((agent) => agent.agent_id === value);
+                            if (selectedAgent && selectedAgent.tools?.length > 0) {
+                              chatConfigForm.setValue('useTools', true);
+                            }
                           }}
                           value={currentAI ?? ''}
                         />
