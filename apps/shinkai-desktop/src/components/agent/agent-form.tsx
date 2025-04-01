@@ -491,6 +491,15 @@ function AgentForm({ mode }: AgentFormProps) {
     }
   }, [agent, form, mode, onSelectedKeysChange]);
 
+  useEffect(() => {
+    if (mode === 'edit') {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get('openChat') === 'true') {
+        setIsSideChatOpen(true);
+      }
+    }
+  }, [mode]);
+
   // Effect to handle drawer open/close
   useEffect(() => {
     const scope = form.getValues('scope');
@@ -618,7 +627,7 @@ function AgentForm({ mode }: AgentFormProps) {
     });
   };
 
-  const submit = async (values: AgentFormValues) => {
+  const submit = async (values: AgentFormValues, options?: { openChat?: boolean }) => {
     const agentId = values.name.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
     const agentData = {
       agent_id: agentId,
@@ -654,7 +663,14 @@ function AgentForm({ mode }: AgentFormProps) {
         agent: agentData,
         cronExpression: values.cronExpression,
       });
+      
+      if (options?.openChat) {
+        navigate(`/agents/edit/${agentId}?openChat=true`);
+        return;
+      }
     }
+    
+    navigate('/agents');
   };
 
   const isPending = mode === 'edit' ? isUpdating : isCreating;
@@ -718,7 +734,7 @@ function AgentForm({ mode }: AgentFormProps) {
           <Form {...form}>
             <form
               className="flex w-full flex-1 min-h-0 flex-col justify-between space-y-2"
-              onSubmit={form.handleSubmit(submit)}
+              onSubmit={form.handleSubmit((values) => submit(values))}
             >
             <div className="mx-auto w-full flex-1 min-h-0 overflow-hidden">
               <div className="h-full min-h-0 space-y-6 overflow-hidden">
@@ -1616,6 +1632,21 @@ function AgentForm({ mode }: AgentFormProps) {
                     ? t('common.save')
                     : t('common.next')}
                 </Button>
+                {mode === 'add' && currentTab === 'schedule' && (
+                  <Button
+                    className="min-w-[120px] flex items-center gap-2"
+                    disabled={isPending}
+                    isLoading={isPending}
+                    onClick={() => {
+                      form.handleSubmit((values) => submit(values, { openChat: true }))();
+                    }}
+                    size="sm"
+                    type="button"
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    Save & Test Agent
+                  </Button>
+                )}
               </div>
             </div>
           </form>
