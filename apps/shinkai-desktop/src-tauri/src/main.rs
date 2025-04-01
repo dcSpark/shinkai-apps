@@ -15,7 +15,7 @@ use crate::commands::shinkai_node_manager_commands::{
     shinkai_node_open_chat_folder,
 };
 
-use commands::logs::retrieve_logs;
+use commands::logs::{download_logs, retrieve_logs};
 use commands::spotlight_commands::{hide_spotlight_window_app, show_spotlight_window_app};
 use deep_links::setup_deep_links;
 use global_shortcuts::global_shortcut_handler;
@@ -112,6 +112,7 @@ fn main() {
             post_request,
             shinkai_node_get_ollama_version,
             retrieve_logs,
+            download_logs,
         ])
         .setup(|app| {
             log::info!("starting app version: {}", env!("CARGO_PKG_VERSION"));

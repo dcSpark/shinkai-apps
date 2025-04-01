@@ -34,17 +34,7 @@ export const useDownloadTauriLogsMutation = (
 ): UseMutationResult<{ savePath: string; fileName: string }, Error, void> => {
   return useMutation({
     mutationFn: async (): Promise<{ savePath: string; fileName: string }> => {
-      const tauriLogs = await retrieveLogs();
-      info('retrieved logs from Tauri backend');
-
-      const file = new Blob([tauriLogs], {
-        type: 'text/plain',
-      });
-
-      const arrayBuffer = await file.arrayBuffer();
-      const content = new Uint8Array(arrayBuffer);
-      const fileName = `tauri-logs-${new Date().toISOString().replace(/:/g, '-')}.txt`;
-      info(`generated log filename: ${fileName}`);
+      const fileName = `shinkai-logs-${new Date().toISOString().replace(/:/g, '-')}.log`;
 
       info('opening save dialog for logs download');
       const savePath = await save({
@@ -52,7 +42,7 @@ export const useDownloadTauriLogsMutation = (
         filters: [
           {
             name: 'File',
-            extensions: ['txt'],
+            extensions: ['log'],
           },
         ],
       });
@@ -63,10 +53,8 @@ export const useDownloadTauriLogsMutation = (
       }
 
       info(`writing logs to file at path: ${savePath}`);
-      await writeFile(savePath, content, {
-        baseDir: BaseDirectory.Download,
-      });
-      info('successfully wrote logs to file');
+      await invoke('download_logs', { savePath });
+      info(`successfully wrote logs to file at path: ${savePath}`);
 
       return { savePath, fileName };
     },
@@ -74,6 +62,6 @@ export const useDownloadTauriLogsMutation = (
   });
 };
 
-export const retrieveLogs = async (): Promise<string> => {
+export const retrieveLogs = async (): Promise<LogEntry[]> => {
   return invoke('retrieve_logs');
 };
