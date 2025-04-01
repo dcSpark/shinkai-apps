@@ -343,11 +343,18 @@ export const getPlaygroundTool = async (
   nodeAddress: string,
   bearerToken: string,
   payload: GetPlaygroundToolRequest,
+  xShinkaiOriginalToolRouterKey?: string,
 ) => {
   const response = await httpClient.get(
     urlJoin(nodeAddress, '/v2/get_playground_tool'),
     {
-      headers: { Authorization: `Bearer ${bearerToken}` },
+      headers: { 
+        Authorization: `Bearer ${bearerToken}`,
+        ...(xShinkaiOriginalToolRouterKey && {
+          'x-shinkai-original-tool-router-key': xShinkaiOriginalToolRouterKey,
+          'x-shinkai-copy-metadata': 'true',
+        }),
+      },
       params: { tool_key: payload.tool_key },
       responseType: 'json',
     },

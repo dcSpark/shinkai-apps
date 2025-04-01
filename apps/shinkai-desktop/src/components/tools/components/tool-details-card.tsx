@@ -158,11 +158,11 @@ export default function ToolDetailsCard({
     useDuplicateTool({
       onSuccess: (response) => {
         toast.success(t('tools.successDuplicateTool'), {
-          description: 'You can now find the tool in the tools list',
+          description: 'You can now edit the tool in the playground',
           action: {
-            label: 'View',
+            label: 'Edit',
             onClick: () => {
-              navigate(`/tools/${response.tool_router_key}`);
+              navigate(`/tools/edit/${response.tool_router_key}`);
             },
           },
         });
