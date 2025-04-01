@@ -1,11 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusIcon, UploadIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api/methods';
 import {
   buildInboxIdFromJobId,
   extractJobIdFromInbox,
 } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
-import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api/methods';
 import {
   DEFAULT_CHAT_CONFIG,
   FunctionKeyV2,
