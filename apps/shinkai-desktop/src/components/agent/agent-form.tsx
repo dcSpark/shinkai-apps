@@ -5,6 +5,7 @@ import {
   buildInboxIdFromJobId,
   extractJobIdFromInbox,
 } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
+import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api/methods';
 import {
   DEFAULT_CHAT_CONFIG,
   FunctionKeyV2,
@@ -352,7 +353,7 @@ function AgentForm({ mode }: AgentFormProps) {
   );
   
   const { mutateAsync: uploadVRFiles, isPending: isUploading } = useUploadVRFiles({
-    onSuccess: (_, variables) => {
+    onSuccess: async (_, variables) => {
       toast.dismiss('uploading-VR-files');
       toast.success(t('vectorFs.success.filesUploaded'));
       const newPaths = variables.files.map(file => `/My Files (Private)/${file.name}`);
@@ -361,17 +362,51 @@ function AgentForm({ mode }: AgentFormProps) {
       form.setValue('knowledge', [...currentKnowledge, ...newPaths]);
       
       const newSelectedKeys = { ...selectedKeys } || {};
-      newPaths.forEach(path => {
-        selectedFileKeysRef.set(path, path);
-        newSelectedKeys[path] = { checked: true };
-      });
+      
+      for (const path of newPaths) {
+        try {
+          if (!auth) continue;
+          
+          const fileInfo = await retrieveVectorResource(
+            auth.node_address,
+            auth.shinkai_identity ?? '',
+            auth.profile ?? '',
+            auth.shinkai_identity ?? '',
+            auth.profile ?? '',
+            path,
+            {
+              my_device_encryption_sk: auth.my_device_encryption_sk ?? '',
+              my_device_identity_sk: auth.my_device_identity_sk ?? '',
+              node_encryption_pk: auth.node_encryption_pk ?? '',
+              profile_encryption_sk: auth.profile_encryption_sk ?? '',
+              profile_identity_sk: auth.profile_identity_sk ?? '',
+            }
+          );
+          
+          selectedFileKeysRef.set(path, {
+            ...fileInfo.data,
+            path: path,
+            vr_header: {
+              resource_name: fileInfo.data.name,
+              resource_source: fileInfo.data.source,
+            },
+          });
+          
+          newSelectedKeys[path] = { checked: true };
+        } catch (error) {
+          console.error('Error retrieving file information:', error);
+          selectedFileKeysRef.set(path, path);
+          newSelectedKeys[path] = { checked: true };
+        }
+      }
+      
       onSelectedKeysChange(newSelectedKeys);
       
       setUploadFiles([]);
       setIsUploadDialogOpen(false);
     },
-    onError: (error) => {
-      toast.error(t('vectorFs.error.filesUploadFailed'), {
+    onError: (error: any) => {
+      toast.error(t('vectorFs.error.filesUploadFailed', 'Files upload failed'), {
         description: error?.message || 'Error uploading files'
       });
       console.error('Error uploading files:', error);
@@ -382,7 +417,7 @@ function AgentForm({ mode }: AgentFormProps) {
     if (!auth) return;
     
     if (uploadFiles.length === 0) {
-      toast.error(t('vectorFs.error.noFilesSelected'), {
+      toast.error(t('vectorFs.error.noFilesSelected', 'No files selected'), {
         description: 'Please select at least one file to upload'
       });
       return;
@@ -399,8 +434,8 @@ function AgentForm({ mode }: AgentFormProps) {
         destinationPath: '/My Files (Private)',
         files: uploadFiles,
       });
-    } catch (error) {
-      toast.error(t('vectorFs.error.filesUploadFailed'), {
+    } catch (error: any) {
+      toast.error(t('vectorFs.error.filesUploadFailed', 'Files upload failed'), {
         id: 'uploading-VR-files',
         description: error?.message || 'Error uploading files'
       });
