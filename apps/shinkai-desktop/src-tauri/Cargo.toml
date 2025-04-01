@@ -10,7 +10,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "2.0.5", features = [] }
+tauri-build = { version = "2.1.1", features = [] }
 
 [dependencies]
 tauri = { version = "2.4", features = [ "macos-private-api", "tray-icon", "image-png", "devtools"] }
@@ -44,17 +44,18 @@ kill_tree = { version = "0.2", features = ["tokio"] }
 semver = "1.0"
 sha2 = "0.10"
 
+tauri-plugin = "2.1.1"
 tauri-plugin-global-shortcut = "2.2"
 tauri-plugin-shell = "2.2"
 tauri-plugin-single-instance = { version = "2.2", features = ["deep-link"] }
-tauri-plugin-updater = "2.3"
+tauri-plugin-updater = "2.6"  
 tauri-plugin-dialog = "2.2"
 tauri-plugin-fs ="2.2"
 tauri-plugin-os = "2.2"
 tauri-plugin-process = "2.2"
-tauri-plugin-log = "2.2"
+tauri-plugin-log = "2.3"
 tauri-plugin-deep-link = "2.2.0"
-tauri-plugin-opener = "2.2.5"
+tauri-plugin-opener = "2.2.6"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
