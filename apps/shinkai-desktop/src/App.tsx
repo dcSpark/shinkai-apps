@@ -6,8 +6,8 @@ import { useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-import FullPageErrorFallback from './components/error-boundary';
 import { WebSocketProvider } from './components/chat/websocket-store';
+import FullPageErrorFallback from './components/error-boundary';
 import { OAuthConnect } from './components/oauth/oauth-connect';
 import { AnalyticsProvider } from './lib/posthog-provider';
 import AppRoutes from './routes';
