@@ -329,6 +329,7 @@ function AgentSideChat({ agentId, onClose }: { agentId: string; onClose: () => v
 }
 
 function AgentForm({ mode }: AgentFormProps) {
+  const queryClient = useQueryClient();
   const { agentId } = useParams();
 
   const defaultAgentId = useSettings((state) => state.defaultAgentId);
@@ -352,7 +353,8 @@ function AgentForm({ mode }: AgentFormProps) {
   );
   
   const { mutateAsync: uploadVRFiles, isPending: isUploading } = useUploadVRFiles({
-    onSuccess: (_, variables) => {
+    onSuccess: async (_, variables) => {
+      
       toast.dismiss('uploading-VR-files');
       toast.success(t('vectorFs.success.filesUploaded'));
       const newPaths = variables.files.map(file => `/My Files (Private)/${file.name}`);
@@ -360,29 +362,44 @@ function AgentForm({ mode }: AgentFormProps) {
       const currentKnowledge = form.getValues('knowledge');
       form.setValue('knowledge', [...currentKnowledge, ...newPaths]);
       
-      const newSelectedKeys = { ...selectedKeys } || {};
+      const newSelectedKeys = selectedKeys ? { ...selectedKeys } : {};
       newPaths.forEach(path => {
         selectedFileKeysRef.set(path, path);
         newSelectedKeys[path] = { checked: true };
       });
       onSelectedKeysChange(newSelectedKeys);
       
+      await queryClient.invalidateQueries({
+        queryKey: [
+          'getListDirectoryContents',
+          {
+            nodeAddress: auth?.node_address,
+            path: '/',
+          },
+        ],
+      });
+      console.log('Queries invalidated');
+      
       setUploadFiles([]);
       setIsUploadDialogOpen(false);
     },
     onError: (error) => {
-      toast.error(t('vectorFs.error.filesUploadFailed'), {
-        description: error?.message || 'Error uploading files'
+      console.error('Upload error:', error);
+      toast.error(t('vectorFs.errors.filesUploadFailed'), {
+        description: (error as Error)?.message || 'Error uploading files'
       });
-      console.error('Error uploading files:', error);
     }
   });
   
   const handleFileUpload = async () => {
-    if (!auth) return;
+    if (!auth) {
+      console.error('No auth available');
+      return;
+    }
     
     if (uploadFiles.length === 0) {
-      toast.error(t('vectorFs.error.noFilesSelected'), {
+      console.log('No files selected for upload');
+      toast.error(t('vectorFs.errors.noFilesSelected'), {
         description: 'Please select at least one file to upload'
       });
       return;
@@ -400,11 +417,11 @@ function AgentForm({ mode }: AgentFormProps) {
         files: uploadFiles,
       });
     } catch (error) {
-      toast.error(t('vectorFs.error.filesUploadFailed'), {
+      console.error('Upload error in handler:', error);
+      toast.error(t('vectorFs.errors.filesUploadFailed'), {
         id: 'uploading-VR-files',
-        description: error?.message || 'Error uploading files'
+        description: (error as Error)?.message || 'Error uploading files'
       });
-      console.error('Error uploading files:', error);
     }
   };
 
@@ -652,8 +669,6 @@ function AgentForm({ mode }: AgentFormProps) {
       });
     }
   };
-
-  const queryClient = useQueryClient();
 
   const { mutateAsync: removeTask, isPending: isRemovingTask } =
     useRemoveRecurringTask({
@@ -1145,7 +1160,7 @@ function AgentForm({ mode }: AgentFormProps) {
                       </div>
                     </div>
                     
-                    <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+                    <Dialog onOpenChange={setIsUploadDialogOpen} open={isUploadDialogOpen}>
                       <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Upload Files</DialogTitle>
@@ -1163,9 +1178,9 @@ function AgentForm({ mode }: AgentFormProps) {
                             value={uploadFiles}
                           />
                           <Button 
-                            onClick={handleFileUpload}
                             disabled={isUploading || uploadFiles.length === 0}
                             isLoading={isUploading}
+                            onClick={handleFileUpload}
                           >
                             {t('common.upload')}
                           </Button>

@@ -9,19 +9,21 @@ export function transformDataToTreeNodes(
   const result: TreeNode[] = [];
 
   for (const item of data ?? []) {
+    const itemPath = item.path.startsWith('/') ? item.path : `/${item.path}`;
+    
     const itemNode: TreeNode = {
-      key: item.path,
+      key: itemPath,
       label: item.name,
       data: item,
       icon: item.is_directory ? 'icon-folder' : 'icon-file',
       children: item.is_directory
         ? transformDataToTreeNodes(
             item.children ?? [],
-            item.path,
+            itemPath,
             selectedPaths,
           )
         : undefined,
-      className: selectedPaths?.includes(item.path) ? 'p-node-disabled' : '',
+      className: selectedPaths?.includes(itemPath) ? 'p-node-disabled' : '',
     };
     result.push(itemNode);
   }

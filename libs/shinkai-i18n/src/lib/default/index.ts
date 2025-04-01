@@ -88,7 +88,7 @@ export default {
   quickAsk: {
     emptyStateTitle: 'Ask Shinkai AI',
     emptyStateDescription:
-      'Try “How to make a HTTP request in JavaScript” , “Give me the top 10 rock music in the 80s”, “Explain me how internet works”',
+      'Try "How to make a HTTP request in JavaScript" , "Give me the top 10 rock music in the 80s", "Explain me how internet works"',
   },
   chat: {
     chats: 'Chats',
@@ -209,6 +209,8 @@ export default {
       fileMoved: 'Error moving file',
       fileDeleted: 'Error deleting file',
       fileCopied: 'Error copying file',
+      noFilesSelected: 'No files selected',
+      filesUploadFailed: 'Failed to upload files'
     },
     home: 'Home',
     emptyState: {
