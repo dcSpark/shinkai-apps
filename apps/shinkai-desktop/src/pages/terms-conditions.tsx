@@ -9,7 +9,7 @@ import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/v2/que
 import { Button, buttonVariants, Checkbox } from '@shinkai_network/shinkai-ui';
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { useEffect, useState } from 'react';
+import { createContext, useContext,useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
@@ -24,10 +24,47 @@ import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 
+export const LogoTapContext = createContext<{
+  tapCount: number;
+  setTapCount: (count: number) => void;
+  showLocalNodeOption: boolean;
+  setShowLocalNodeOption: (show: boolean) => void;
+}>({
+  tapCount: 0,
+  setTapCount: () => {
+    // no-op
+  },
+  showLocalNodeOption: false,
+  setShowLocalNodeOption: () => {
+    // no-op
+  },
+});
+
+export const useLogoTap = () => useContext(LogoTapContext);
+
+export const LogoTapProvider = ({ children }: { children: React.ReactNode }) => {
+  const [tapCount, setTapCount] = useState(0);
+  const [showLocalNodeOption, setShowLocalNodeOption] = useState(false);
+
+  return (
+    <LogoTapContext.Provider
+      value={{
+        tapCount,
+        setTapCount,
+        showLocalNodeOption,
+        setShowLocalNodeOption,
+      }}
+    >
+      {children}
+    </LogoTapContext.Provider>
+  );
+};
+
 const TermsAndConditionsPage = () => {
   const { t, Trans } = useTranslation();
   const [termsAndConditionsAccepted, setTermsAndConditionsAccepted] =
     useState(false);
+  const { showLocalNodeOption } = useLogoTap();
   // useShinkaiNodeEventsToast();
 
   const completeStep = useSettings((state) => state.completeStep);
@@ -197,7 +234,7 @@ const TermsAndConditionsPage = () => {
           {t('common.getStarted')}
         </Button>
 
-        {config.isDev && (
+        {(config.isDev || showLocalNodeOption) && (
           <div className="text-gray-80 items-center space-x-2 text-center text-sm">
             <span>{t('common.alreadyHaveNode')}</span>
             <Link

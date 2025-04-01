@@ -1,14 +1,26 @@
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import { UpdateBanner } from '../../components/hardware-capabilities/update-banner';
+import { LogoTapContext } from '../terms-conditions';
 
 export type OnboardingLayoutProps = React.PropsWithChildren<
   React.HTMLAttributes<HTMLDivElement>
 >;
 
 const OnboardingLayout = ({ className, ...props }: OnboardingLayoutProps) => {
+  const { tapCount, setTapCount, setShowLocalNodeOption } = useContext(LogoTapContext);
+
+  const handleLogoTap = () => {
+    const newCount = tapCount + 1;
+    setTapCount(newCount);
+    if (newCount >= 5) {
+      setShowLocalNodeOption(true);
+      setTapCount(0);
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -25,8 +37,9 @@ const OnboardingLayout = ({ className, ...props }: OnboardingLayoutProps) => {
         <div className="mx-auto flex h-[600px] w-full max-w-lg flex-col gap-12">
           <img
             alt="shinkai logo"
-            className="w-24"
+            className="w-24 cursor-pointer"
             data-cy="shinkai-logo"
+            onClick={handleLogoTap}
             src={'./visor.svg'}
           />
 
@@ -50,4 +63,5 @@ const OnboardingLayout = ({ className, ...props }: OnboardingLayoutProps) => {
     </div>
   );
 };
+
 export default OnboardingLayout;
