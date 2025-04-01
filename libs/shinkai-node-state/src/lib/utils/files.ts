@@ -9,7 +9,9 @@ export function transformDataToTreeNodes(
   const result: TreeNode[] = [];
 
   for (const item of data ?? []) {
+    console.log('Processing item:', item);
     const itemPath = item.path.startsWith('/') ? item.path : `/${item.path}`;
+    console.log('Item path:', itemPath);
     
     const itemNode: TreeNode = {
       key: itemPath,
