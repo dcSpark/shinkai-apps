@@ -67,6 +67,7 @@ export const useGetChatConversationWithPagination = (
       };
     },
     enabled: input.enabled,
+    refetchOnWindowFocus: false,
   });
   return response;
 };
