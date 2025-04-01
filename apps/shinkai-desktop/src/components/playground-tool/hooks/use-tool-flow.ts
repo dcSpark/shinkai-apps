@@ -248,7 +248,11 @@ export const useToolFlow = ({
         if (isFeedbackPage) {
           setCurrentStep(ToolCreationState.PLAN_REVIEW);
         } else if (requireFeedbackFlow) {
-          navigate(`/tools/tool-feedback/${data.inbox}`);
+          navigate(`/tools/tool-feedback/${data.inbox}`, {
+            state: {
+              form: form.getValues(),
+            }
+          });
           setCurrentStep(ToolCreationState.PLAN_REVIEW);
         }
       },
