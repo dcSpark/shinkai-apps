@@ -96,9 +96,7 @@ export const SetJobScopeDrawer = () => {
 
   useEffect(() => {
     if (isVRFilesSuccess) {
-      setNodes(
-        transformDataToTreeNodes(fileInfoArray, undefined, selectedPaths),
-      );
+      setNodes(transformDataToTreeNodes(fileInfoArray, undefined, selectedPaths));
     }
   }, [fileInfoArray, isVRFilesSuccess, jobFolderData]);
 

@@ -88,7 +88,7 @@ export default {
   quickAsk: {
     emptyStateTitle: 'Ask Shinkai AI',
     emptyStateDescription:
-      'Try “How to make a HTTP request in JavaScript” , “Give me the top 10 rock music in the 80s”, “Explain me how internet works”',
+      'Try "How to make a HTTP request in JavaScript" , "Give me the top 10 rock music in the 80s", "Explain me how internet works"',
   },
   chat: {
     chats: 'Chats',
@@ -174,8 +174,10 @@ export default {
       shareFolderText:
         'You can share folders that you store in AI Files with anyone.',
       unshareFolderText:
-        'Everyone will be removed from this folder. You’ll still keep a copy of this folder in your AI Files. <br /> Note: Removed members will keep a copy of this shared folder.',
+        'Everyone will be removed from this folder. You\'ll still keep a copy of this folder in your AI Files. <br /> Note: Removed members will keep a copy of this shared folder.',
     },
+    uploadFiles: 'Upload Files',
+    uploadFilesDescription: 'Select files to upload to your agent\'s knowledge base',
     forms: {
       folderName: 'Folder Name',
       folderDescription: 'Folder Description',
@@ -207,6 +209,8 @@ export default {
       fileMoved: 'Error moving file',
       fileDeleted: 'Error deleting file',
       fileCopied: 'Error copying file',
+      noFilesSelected: 'No files selected',
+      filesUploadFailed: 'Failed to upload files'
     },
     home: 'Home',
     emptyState: {
