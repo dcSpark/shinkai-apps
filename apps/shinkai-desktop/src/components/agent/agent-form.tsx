@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PlusIcon } from '@radix-ui/react-icons';
+import { PlusIcon, UploadIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   buildInboxIdFromJobId,
@@ -14,6 +14,7 @@ import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/c
 import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
+import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadVRFiles/useUploadVRFiles';
 import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
@@ -23,6 +24,12 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  FileUploader,
   Form,
   FormControl,
   FormDescription,
@@ -333,6 +340,8 @@ function AgentForm({ mode }: AgentFormProps) {
   >('persona');
   
   const [isSideChatOpen, setIsSideChatOpen] = useState(false);
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const [uploadFiles, setUploadFiles] = useState<File[]>([]);
 
   const [scheduleType, setScheduleType] = useState<'normal' | 'scheduled'>(
     'normal',
@@ -341,6 +350,48 @@ function AgentForm({ mode }: AgentFormProps) {
   const setSetJobScopeOpen = useSetJobScope(
     (state) => state.setSetJobScopeOpen,
   );
+  
+  const { mutateAsync: uploadVRFiles, isPending: isUploading } = useUploadVRFiles({
+    onSuccess: (_, variables) => {
+      toast.success(t('vectorFs.success.filesUploaded'));
+      const newPaths = variables.files.map(file => `/My Files (Private)/${file.name}`);
+      const currentKnowledge = form.getValues('knowledge');
+      form.setValue('knowledge', [...currentKnowledge, ...newPaths]);
+      setUploadFiles([]);
+      setIsUploadDialogOpen(false);
+    },
+    onError: (error) => {
+      toast.error(t('vectorFs.error.filesUploadFailed'));
+      console.error('Error uploading files:', error);
+    }
+  });
+  
+  const handleFileUpload = async () => {
+    if (!auth) return;
+    
+    if (uploadFiles.length === 0) {
+      toast.error(t('vectorFs.error.noFilesSelected'));
+      return;
+    }
+    
+    toast.loading(t('vectorFs.pending.filesUploading'), {
+      id: 'uploading-VR-files',
+    });
+    
+    try {
+      await uploadVRFiles({
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
+        destinationPath: '/My Files (Private)',
+        files: uploadFiles,
+      });
+    } catch (error) {
+      toast.error(t('vectorFs.error.filesUploadFailed'), {
+        id: 'uploading-VR-files',
+      });
+      console.error('Error uploading files:', error);
+    }
+  };
 
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
@@ -1032,32 +1083,80 @@ function AgentForm({ mode }: AgentFormProps) {
                         </p>
                       </div>
 
-                      <Button
-                        className={cn(
-                          'flex h-auto w-auto items-center gap-2 rounded-lg px-2.5 py-1.5',
-                        )}
-                        onClick={() => {
-                          setSetJobScopeOpen(true);
-                        }}
-                        size="auto"
-                        type="button"
-                        variant="outline"
-                      >
-                        <div className="flex items-center gap-2">
-                          {Object.keys(selectedKeys || {}).length > 0 ? (
-                            <Badge className="bg-official-gray-1000 inline-flex size-4 items-center justify-center rounded-full border-gray-200 p-0 text-center text-[10px] text-gray-50">
-                              {Object.keys(selectedKeys || {}).length}
-                            </Badge>
-                          ) : (
-                            <FilesIcon className="size-4" />
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          className={cn(
+                            'flex h-auto w-auto items-center gap-2 rounded-lg px-2.5 py-1.5',
                           )}
+                          onClick={() => {
+                            setSetJobScopeOpen(true);
+                          }}
+                          size="auto"
+                          type="button"
+                          variant="outline"
+                        >
+                          <div className="flex items-center gap-2">
+                            {Object.keys(selectedKeys || {}).length > 0 ? (
+                              <Badge className="bg-official-gray-1000 inline-flex size-4 items-center justify-center rounded-full border-gray-200 p-0 text-center text-[10px] text-gray-50">
+                                {Object.keys(selectedKeys || {}).length}
+                              </Badge>
+                            ) : (
+                              <FilesIcon className="size-4" />
+                            )}
 
-                          <p className="text-xs text-white">
-                            {t('vectorFs.localFiles')}
-                          </p>
-                        </div>
-                      </Button>
+                            <p className="text-xs text-white">
+                              {t('vectorFs.localFiles')}
+                            </p>
+                          </div>
+                        </Button>
+                        <Button
+                          className={cn(
+                            'flex h-auto w-auto items-center gap-2 rounded-lg px-2.5 py-1.5',
+                          )}
+                          onClick={() => {
+                            setIsUploadDialogOpen(true);
+                          }}
+                          size="auto"
+                          type="button"
+                          variant="outline"
+                        >
+                          <div className="flex items-center gap-2">
+                            <UploadIcon className="size-4" />
+                            <p className="text-xs text-white">
+                              Upload Files
+                            </p>
+                          </div>
+                        </Button>
+                      </div>
                     </div>
+                    
+                    <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Upload Files</DialogTitle>
+                          <DialogDescription>
+                            Select files to upload to your agent's knowledge base
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex flex-col gap-4">
+                          <FileUploader
+                            allowMultiple
+                            descriptionText={t('common.uploadAFileDescription')}
+                            onChange={(acceptedFiles) => {
+                              setUploadFiles(acceptedFiles);
+                            }}
+                            value={uploadFiles}
+                          />
+                          <Button 
+                            onClick={handleFileUpload}
+                            disabled={isUploading || uploadFiles.length === 0}
+                            isLoading={isUploading}
+                          >
+                            {t('common.upload')}
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </TabsContent>
 
                   <TabsContent className="flex-1 min-h-0 overflow-y-auto" value="tools">
