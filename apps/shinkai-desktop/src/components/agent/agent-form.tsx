@@ -353,15 +353,27 @@ function AgentForm({ mode }: AgentFormProps) {
   
   const { mutateAsync: uploadVRFiles, isPending: isUploading } = useUploadVRFiles({
     onSuccess: (_, variables) => {
+      toast.dismiss('uploading-VR-files');
       toast.success(t('vectorFs.success.filesUploaded'));
       const newPaths = variables.files.map(file => `/My Files (Private)/${file.name}`);
+      
       const currentKnowledge = form.getValues('knowledge');
       form.setValue('knowledge', [...currentKnowledge, ...newPaths]);
+      
+      const newSelectedKeys = { ...selectedKeys } || {};
+      newPaths.forEach(path => {
+        selectedFileKeysRef.set(path, path);
+        newSelectedKeys[path] = { checked: true };
+      });
+      onSelectedKeysChange(newSelectedKeys);
+      
       setUploadFiles([]);
       setIsUploadDialogOpen(false);
     },
     onError: (error) => {
-      toast.error(t('vectorFs.error.filesUploadFailed'));
+      toast.error(t('vectorFs.error.filesUploadFailed'), {
+        description: error?.message || 'Error uploading files'
+      });
       console.error('Error uploading files:', error);
     }
   });
@@ -370,7 +382,9 @@ function AgentForm({ mode }: AgentFormProps) {
     if (!auth) return;
     
     if (uploadFiles.length === 0) {
-      toast.error(t('vectorFs.error.noFilesSelected'));
+      toast.error(t('vectorFs.error.noFilesSelected'), {
+        description: 'Please select at least one file to upload'
+      });
       return;
     }
     
@@ -388,6 +402,7 @@ function AgentForm({ mode }: AgentFormProps) {
     } catch (error) {
       toast.error(t('vectorFs.error.filesUploadFailed'), {
         id: 'uploading-VR-files',
+        description: error?.message || 'Error uploading files'
       });
       console.error('Error uploading files:', error);
     }
