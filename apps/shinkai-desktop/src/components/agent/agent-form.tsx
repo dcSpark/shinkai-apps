@@ -1135,7 +1135,7 @@ function AgentForm({ mode }: AgentFormProps) {
                         <DialogHeader>
                           <DialogTitle>Upload Files</DialogTitle>
                           <DialogDescription>
-                            Select files to upload to your agent's knowledge base
+                            Select files to upload to your agent&apos;s knowledge base
                           </DialogDescription>
                         </DialogHeader>
                         <div className="flex flex-col gap-4">
