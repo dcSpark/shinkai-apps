@@ -203,16 +203,9 @@ export const PlaygroundProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const location = useLocation();
   const [store] = useState<ReturnType<typeof createPlaygroundStore>>(() =>
     createPlaygroundStore(),
   );
-
-  useEffect(() => {
-    if (location.pathname.startsWith('/tools')) {
-      store.getState().resetPlaygroundStore();
-    }
-  }, [location.pathname, store]);
 
   return (
     <PlaygroundContext.Provider value={store}>

@@ -20,7 +20,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LoaderIcon, LogOut } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { MessageList } from '../components/chat/components/message-list';
 import { getRandomWidth } from '../components/playground-tool/components/code-panel';
@@ -34,7 +34,8 @@ import PlaygroundToolLayout from '../components/playground-tool/layout';
 
 function ToolFeedbackPrompt() {
   const { inboxId } = useParams();
-  const form = useToolForm();
+  const { state } = useLocation();
+  const form = useToolForm({ ...state?.form, message: '' });
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [isExitDialogOpen, setIsExitDialogOpen] = useState(false);
@@ -93,7 +94,10 @@ function ToolFeedbackPrompt() {
               layoutId={`left-element`}
             >
               <div className="flex items-center justify-between px-4">
-                <Dialog onOpenChange={setIsExitDialogOpen} open={isExitDialogOpen}>
+                <Dialog
+                  onOpenChange={setIsExitDialogOpen}
+                  open={isExitDialogOpen}
+                >
                   <DialogTrigger asChild>
                     <Button
                       className="size-6 p-1"
@@ -105,9 +109,12 @@ function ToolFeedbackPrompt() {
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[425px]">
-                    <DialogTitle className="pb-0">Exit Tool Creation</DialogTitle>
+                    <DialogTitle className="pb-0">
+                      Exit Tool Creation
+                    </DialogTitle>
                     <DialogDescription>
-                      Are you sure you want to exit? Your progress will be lost and you won’t be able to return to this session.
+                      Are you sure you want to exit? Your progress will be lost
+                      and you won’t be able to return to this session.
                     </DialogDescription>
                     <DialogFooter>
                       <div className="flex gap-2 pt-4">

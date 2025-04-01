@@ -143,6 +143,9 @@ Every command, if it's needed, build projects and it's dependencies according to
 
 > When you build a project, NX builds a cache (to make it faster), if you want to skip it just add the parameter `--skip-nx-cache` to the previous commands.
 
+- Create a dev build
+  - `NODE_OPTIONS="--max_old_space_size=8192" npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json"`
+
 ## Dev conventions
 
 ### Monorepo

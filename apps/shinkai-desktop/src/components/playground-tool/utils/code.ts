@@ -36,7 +36,7 @@ export function detectLanguage(code: string): string {
     
     const typeScriptRegex =
       /(interface\s+\w+\s*{)|(type\s+\w+\s*=)|(function\s+\w+\s*<\w+>)/;
-    const pythonRegex = /^\s*def\s+\w+\s*\(.*\):|^\s*class\s+\w+\s*\(?.*?\)?:/m;
+    const pythonRegex = /^\s*async\s+def\s+run\(/m;
 
     if (typeScriptRegex.test(code)) {
       return 'TypeScript';
@@ -57,7 +57,7 @@ export function validateCodeSnippet(
 ): boolean {
   switch (language) {
     case CodeLanguage.Python:
-      return /^\s*def\s+\w+\s*\(.*\):|^\s*class\s+\w+\s*\(?.*?\)?:/m.test(text);
+      return /^\s*async\s+def\s+run\(/m.test(text);
     case CodeLanguage.Typescript:
       return (
         /(interface\s+\w+\s*{)|(type\s+\w+\s*=)|(function\s+\w+\s*<\w+>)/.test(
