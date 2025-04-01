@@ -473,6 +473,9 @@ const EmptyMessage = () => {
                             if (selectedAgent && selectedAgent.tools?.length > 0) {
                               chatConfigForm.setValue('useTools', true);
                             }
+                            else if (selectedAgent && selectedAgent.tools?.length === 0) {
+                              chatConfigForm.setValue('useTools', false);
+                            }
                           }}
                           value={currentAI ?? ''}
                         />
