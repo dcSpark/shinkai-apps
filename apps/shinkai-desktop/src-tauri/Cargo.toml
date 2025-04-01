@@ -44,7 +44,6 @@ kill_tree = { version = "0.2", features = ["tokio"] }
 semver = "1.0"
 sha2 = "0.10"
 
-tauri-plugin = "2.1.1"
 tauri-plugin-global-shortcut = "2.2"
 tauri-plugin-shell = "2.2"
 tauri-plugin-single-instance = { version = "2.2", features = ["deep-link"] }
