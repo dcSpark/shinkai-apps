@@ -358,6 +358,7 @@ function ConversationChatFooter({
         parent: '', // Note: we should set the parent if we want to retry or branch out
         files: currentFiles,
         toolKey: selectedTool?.key,
+        additionalPrompt: toolFormData?.additionalPrompt,
       });
     }
     chatForm.reset();
@@ -839,6 +840,8 @@ export const SelectedToolChat = ({
   onToolFormChange: (formData: Record<string, any> | null) => void;
   onSubmit: (formData: any) => void;
 }) => {
+  const [additionalPrompt, setAdditionalPrompt] = useState<string>('');
+
   return (
     <motion.div
       animate={{ opacity: 1 }}
@@ -877,7 +880,12 @@ export const SelectedToolChat = ({
             id="tools-form"
             noHtml5Validate={true}
             onChange={(e) => onToolFormChange(e.formData)}
-            onSubmit={onSubmit}
+            onSubmit={(formData) => {
+              onSubmit({
+                ...formData,
+                additionalPrompt,
+              });
+            }}
             schema={args}
             uiSchema={{
               [Object.keys(args.properties)[0]]: {
@@ -887,6 +895,16 @@ export const SelectedToolChat = ({
             }}
             validator={validator}
           />
+
+          <div className="mt-2">
+            <label className="text-xs font-medium text-gray-100">Additional Prompt</label>
+            <textarea
+              className="bg-official-gray-950 mt-1 w-full resize-none rounded-md border-none p-2 text-sm text-white"
+              onChange={(e) => setAdditionalPrompt(e.target.value)}
+              placeholder="Add custom text to append to the generated prompt"
+              value={additionalPrompt}
+            />
+          </div>
         </div>
       </div>
 

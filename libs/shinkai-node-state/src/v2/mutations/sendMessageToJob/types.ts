@@ -8,6 +8,7 @@ export type SendMessageToJobInput = Token & {
   files?: File[];
   parent: string | null;
   toolKey?: string;
+  additionalPrompt?: string;
 };
 
 export type SendMessageToJobOutput = JobMessageResponse;

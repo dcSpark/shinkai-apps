@@ -19,6 +19,7 @@ export const createJob = async ({
   selectedVRFiles,
   selectedVRFolders,
   chatConfig,
+  additionalPrompt,
 }: CreateJobInput) => {
   const { job_id: jobId } = await createJobApi(nodeAddress, token, {
     llm_provider: llmProvider,
@@ -30,6 +31,7 @@ export const createJob = async ({
       associated_ui: sheetId ? { Sheet: sheetId } : null,
       is_hidden: isHidden,
     },
+    additional_prompt: additionalPrompt,
   });
 
   if (chatConfig) {
@@ -53,6 +55,7 @@ export const createJob = async ({
       tool_key: toolKey,
       fs_files_paths: [],
       job_filenames: filenames,
+      additional_prompt: additionalPrompt,
     },
   });
 

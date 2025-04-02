@@ -15,6 +15,7 @@ export type CreateJobInput = Token & {
   selectedVRFiles?: ShinkaiPath[];
   selectedVRFolders?: ShinkaiPath[];
   chatConfig?: JobConfig;
+  additionalPrompt?: string;
 };
 
 export type CreateJobOutput = {

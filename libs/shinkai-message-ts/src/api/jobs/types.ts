@@ -29,6 +29,7 @@ export type CreateJobRequest = {
       | null;
     is_hidden: boolean;
   };
+  additional_prompt?: string;
 };
 export type CreateJobResponse = {
   job_id: string;
@@ -67,6 +68,7 @@ export type JobMessage = {
   parent: string | null;
   sheet_job_data?: null;
   tool_key?: string;
+  additional_prompt?: string;
   metadata?: {
     tps?: string;
     duration_ms: string;

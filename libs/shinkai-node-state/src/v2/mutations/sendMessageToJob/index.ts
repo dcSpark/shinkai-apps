@@ -13,6 +13,7 @@ export const sendMessageToJob = async ({
   parent,
   files,
   toolKey,
+  additionalPrompt,
 }: SendMessageToJobInput) => {
   let filenames: string[] = [];
   if (files && files.length > 0) {
@@ -28,6 +29,7 @@ export const sendMessageToJob = async ({
       tool_key: toolKey,
       fs_files_paths: [],
       job_filenames: filenames,
+      additional_prompt: additionalPrompt,
     },
   });
 };

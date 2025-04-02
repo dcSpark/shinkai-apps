@@ -12,6 +12,7 @@ export const createJobFormSchema = z.object({
       args: z.array(z.string()).optional(),
     })
     .optional(),
+  additionalPrompt: z.string().optional(),
 });
 
 export type CreateJobFormSchema = z.infer<typeof createJobFormSchema>;
