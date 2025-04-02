@@ -50,32 +50,25 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
         <p className="text-gray-80 line-clamp-2 text-xs">{tool.description}</p>
       </div>
 
-      <div className="relative flex justify-end">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Link
-              className={cn(
-                buttonVariants({
-                  variant: 'outline',
-                  size: 'sm',
-                }),
-                'group min-h-auto h-auto w-10 rounded-md py-2 flex justify-center relative',
-              )}
-              to={`/tools/${tool.tool_router_key}#try-it-out`}
-            >
-              <div className="absolute right-0 flex items-center transition-all duration-300 group-hover:right-[105px]">
-                <span className="whitespace-nowrap opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  {t('common.tryItOut', 'Try it out')}
-                </span>
-              </div>
-              <PlayCircle className="h-4 w-4" />
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent align="center" side="top">
-            {t('common.tryItOut', 'Try it out')}
-          </TooltipContent>
-        </Tooltip>
-      </div>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Link
+            className={cn(
+              buttonVariants({
+                variant: 'outline',
+                size: 'sm',
+              }),
+              'min-h-auto h-auto w-10 rounded-md py-2 flex justify-center',
+            )}
+            to={`/tools/${tool.tool_router_key}#try-it-out`}
+          >
+            <PlayCircle className="h-4 w-4" />
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent align="center" side="top">
+          {t('common.tryItOut', 'Try it out')}
+        </TooltipContent>
+      </Tooltip>
       
       <Link
         className={cn(
