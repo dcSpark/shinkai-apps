@@ -58,10 +58,10 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
           }),
           'min-h-auto h-auto rounded-md py-2',
         )}
-        to={`/tools/${tool.tool_router_key}`}
+        to={`/tools/${tool.tool_router_key}#try-it-out`}
       >
-        <BoltIcon className="mr-1.5 h-4 w-4" />
-        {t('common.configure')}
+        <PlayCircle className="mr-1.5 h-4 w-4" />
+        {t('common.tryItOut', 'Try it out')}
       </Link>
       
       <Link
@@ -72,10 +72,10 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
           }),
           'min-h-auto h-auto rounded-md py-2',
         )}
-        to={`/tools/${tool.tool_router_key}#try-it-out`}
+        to={`/tools/${tool.tool_router_key}`}
       >
-        <PlayCircle className="mr-1.5 h-4 w-4" />
-        {t('common.tryItOut', 'Try it out')}
+        <BoltIcon className="mr-1.5 h-4 w-4" />
+        {t('common.configure')}
       </Link>
 
       <Tooltip>
