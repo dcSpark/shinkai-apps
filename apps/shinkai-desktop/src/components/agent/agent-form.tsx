@@ -68,6 +68,7 @@ import {
   ChevronRight,
   LucideArrowLeft,
   MessageSquare,
+  RefreshCwIcon,
   SearchIcon,
   Trash2,
   XIcon,
@@ -255,9 +256,14 @@ function AgentSideChat({ agentId, onClose }: { agentId: string; onClose: () => v
         <div className="flex h-full flex-col">
           <div className="flex items-center justify-between border-b border-gray-800 p-4">
             <h2 className="text-lg font-medium">Ask Your Agent</h2>
-            <Button onClick={onClose} size="icon" variant="ghost">
-              <XIcon className="h-5 w-5" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button onClick={() => setChatInboxId(null)} size="icon" variant="ghost" title="Reset Chat">
+                <RefreshCwIcon className="h-5 w-5" />
+              </Button>
+              <Button onClick={onClose} size="icon" variant="ghost">
+                <XIcon className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
           
           <div className="flex-1 overflow-y-auto p-4">
