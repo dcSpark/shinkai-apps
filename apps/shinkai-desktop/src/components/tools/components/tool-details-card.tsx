@@ -87,9 +87,7 @@ function removeEmbeddingFields(tool: ShinkaiTool): ShinkaiTool {
  */
 function sanitizeFileName(name: string): string {
   let sanitized = name.replace(/[^a-zA-Z0-9_]/g, '_');
-  
   sanitized = sanitized.replace(/_+/g, '_');
-  
   sanitized = sanitized.replace(/^_+|_+$/g, '');
   
   return sanitized || 'untitled_tool';
@@ -204,9 +202,8 @@ export default function ToolDetailsCard({
 
   const { mutateAsync: exportTool, isPending: isExportingTool } = useExportTool(
     {
-      onSuccess: async (response, variables) => {
-        const toolName = variables.toolKey.split(':::')?.[1] ?? 'untitled_tool';
-        const sanitizedToolName = sanitizeFileName(toolName);
+      onSuccess: async (response, _variables) => {
+        const sanitizedToolName = sanitizeFileName(tool.name);
         const file = new Blob([response ?? ''], {
           type: 'application/octet-stream',
         });
