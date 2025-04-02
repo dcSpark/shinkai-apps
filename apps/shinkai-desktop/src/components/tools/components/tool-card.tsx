@@ -58,11 +58,11 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
                 variant: 'outline',
                 size: 'sm',
               }),
-              'group min-h-auto h-auto w-10 rounded-md py-2 transition-all duration-300 hover:w-[115px]',
+              'group min-h-auto h-auto w-10 rounded-md py-2 flex justify-center transition-all duration-300 hover:w-[115px] hover:justify-start',
             )}
             to={`/tools/${tool.tool_router_key}#try-it-out`}
           >
-            <PlayCircle className="h-4 w-4" />
+            <PlayCircle className="h-4 w-4 flex-shrink-0" />
             <span className="ml-1.5 max-w-0 overflow-hidden whitespace-nowrap transition-all duration-300 group-hover:max-w-xs">
               {t('common.tryItOut', 'Try it out')}
             </span>
