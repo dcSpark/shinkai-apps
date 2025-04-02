@@ -341,6 +341,7 @@ function ConversationChatFooter({
     if (!auth || data.message.trim() === '') return;
 
     if (isJobInbox(inboxId)) {
+      // Format the tool parameters including additionalPrompt
       const formattedToolMessage = Object.keys(toolFormData ?? {})
         .map((key) => {
           return `${key}: ${toolFormData?.[key]}`;
@@ -839,14 +840,52 @@ export const SelectedToolChat = ({
   onToolFormChange: (formData: Record<string, any> | null) => void;
   onSubmit: (formData: any) => void;
 }) => {
+  // Create an enhanced schema that includes the additional request field
+  const enhancedSchema = {
+    ...args,
+    properties: {
+      ...(args.properties || {}),
+      thenDoAdditionalUserRequest: {
+        type: "string",
+        title: "Additional Request",
+        description: "Optional text that will be added to the prompt sent to the AI"
+      }
+    }
+  };
+  
+  // Create a custom UI schema to properly order and format fields
+  const uiSchema = {
+    ...Object.keys(args.properties || {}).reduce((acc: Record<string, any>, key) => {
+      acc[key] = { "ui:order": 1 }; // Put regular parameters first
+      return acc;
+    }, {}),
+    'thenDoAdditionalUserRequest': {
+      'ui:widget': 'textarea',
+      'ui:options': {
+        rows: 3
+      },
+      'ui:order': 2, // Put additional request last
+      'ui:placeholder': 'Add additional instructions or context for the AI',
+      'ui:classNames': 'custom-placeholder'
+    },
+    'ui:submitButtonOptions': { norender: true }
+  };
+  
   return (
     <motion.div
       animate={{ opacity: 1 }}
-      className="bg-official-gray-1000 mb-1 max-h-[50vh] w-full max-w-full overflow-auto rounded-lg p-4 px-5 text-left"
+      className="bg-official-gray-1000 mb-1 max-h-[50vh] w-full max-w-full overflow-auto rounded-lg p-4 px-5 text-left [&_textarea::placeholder]:text-[rgb(176,176,176)]"
       exit={{ opacity: 0 }}
       initial={{ opacity: 0 }}
       transition={{ duration: 0.2, ease: 'easeInOut' }}
     >
+      <style>
+        {`
+          .custom-placeholder::placeholder {
+            color: rgb(176, 176, 176) !important;
+          }
+        `}
+      </style>
       <div className="flex items-center gap-2">
         <div className="flex flex-1 flex-col gap-2 text-sm text-gray-100">
           <Tooltip>
@@ -878,13 +917,8 @@ export const SelectedToolChat = ({
             noHtml5Validate={true}
             onChange={(e) => onToolFormChange(e.formData)}
             onSubmit={onSubmit}
-            schema={args}
-            uiSchema={{
-              [Object.keys(args.properties)[0]]: {
-                'ui:autofocus': true,
-              },
-              'ui:submitButtonOptions': { norender: true },
-            }}
+            schema={enhancedSchema}
+            uiSchema={uiSchema}
             validator={validator}
           />
         </div>
