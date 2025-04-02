@@ -30,6 +30,7 @@ const Feedback = () => {
                 e.preventDefault();
                 
                 const formData = new FormData(e.target as HTMLFormElement);
+                formData.append("source", "shinkai-desktop-app");
                 
                 fetch("https://formspree.io/f/mgvawbkv", {
                   method: "POST",
