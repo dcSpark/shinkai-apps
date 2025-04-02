@@ -3,9 +3,11 @@ import { urlJoin } from '../../utils/url-join';
 import {
   CreateAgentRequest,
   CreateAgentResponse,
+  ExportAgentResponse,
   GetAgentRequest,
   GetAgentResponse,
   GetAgentsResponse,
+  ImportAgentResponse,
   RemoveAgentRequest,
   RemoveAgentResponse,
   UpdateAgentRequest,
@@ -84,4 +86,39 @@ export const getAgents = async (nodeAddress: string, bearerToken: string) => {
     },
   );
   return response.data as GetAgentsResponse;
+};
+
+export const exportAgent = async (
+  nodeAddress: string,
+  bearerToken: string,
+  agentId: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/export_agent'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      params: { agent_id: agentId },
+      responseType: 'blob',
+    },
+  );
+  return response.data as ExportAgentResponse;
+};
+
+export const importAgent = async (
+  nodeAddress: string,
+  bearerToken: string,
+  file: File,
+) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/import_agent'),
+    formData,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as ImportAgentResponse;
 };

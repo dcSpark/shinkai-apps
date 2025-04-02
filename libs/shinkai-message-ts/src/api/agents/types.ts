@@ -34,3 +34,15 @@ export type GetAgentRequest = {
 export type GetAgentResponse = Agent;
 
 export type GetAgentsResponse = Agent[];
+
+export type ExportAgentRequest = {
+  agent_id: string;
+};
+
+export type ExportAgentResponse = Blob;
+
+export type ImportAgentRequest = {
+  file: File;
+};
+
+export type ImportAgentResponse = Agent;

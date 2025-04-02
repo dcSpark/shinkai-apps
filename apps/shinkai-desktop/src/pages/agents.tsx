@@ -2,6 +2,7 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { RecurringTask } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/types';
+import { useExportAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/exportAgent/useExportAgent';
 import { useRemoveAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/removeAgent/useRemoveAgent';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import {
@@ -31,11 +32,12 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import cronstrue from 'cronstrue';
-import { Edit, Plus, TrashIcon } from 'lucide-react';
+import { DownloadIcon, Edit, Plus, TrashIcon } from 'lucide-react';
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import ImportAgentModal from '../components/agent/import-agent-modal';
 import { useAuth } from '../store/auth';
 
 function AgentsPage() {
@@ -52,16 +54,19 @@ function AgentsPage() {
         <div className="flex flex-col gap-1 pb-6 pt-10">
           <div className="flex justify-between gap-4">
             <h1 className="font-clash text-3xl font-medium">Agents</h1>
-            <Button
-              className="min-w-[100px]"
-              onClick={() => {
-                navigate('/add-agent');
-              }}
-              size="sm"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Add Agent</span>
-            </Button>
+            <div className="flex gap-2">
+              <ImportAgentModal />
+              <Button
+                className="min-w-[100px]"
+                onClick={() => {
+                  navigate('/add-agent');
+                }}
+                size="sm"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Add Agent</span>
+              </Button>
+            </div>
           </div>
           <p className="text-official-gray-400 text-sm">
             Create and explore AI agents with personalized instructions,
@@ -120,8 +125,30 @@ const AgentCard = ({
   const { t } = useTranslation();
   const [isDeleteAgentDrawerOpen, setIsDeleteAgentDrawerOpen] =
     React.useState(false);
-
+  const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
+  
+  const { mutateAsync: exportAgent } = useExportAgent({
+    onSuccess: async (response) => {
+      const file = new Blob([response ?? ''], {
+        type: 'application/octet-stream',
+      });
+      const url = URL.createObjectURL(file);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${agentName.replace(/\s+/g, '_')}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success('Agent exported successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to export agent', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
 
   const hasScheduledTasks =
     scheduledTasks?.length && scheduledTasks?.length > 0;
@@ -238,6 +265,17 @@ const AgentCard = ({
                   icon: <Edit className="mr-3 h-4 w-4" />,
                   onClick: () => {
                     navigate(`/agents/edit/${agentId}`);
+                  },
+                },
+                {
+                  name: 'Export',
+                  icon: <DownloadIcon className="mr-3 h-4 w-4" />,
+                  onClick: () => {
+                    exportAgent({
+                      agentId,
+                      nodeAddress: auth?.node_address ?? '',
+                      token: auth?.api_v2_key ?? '',
+                    });
                   },
                 },
                 {
