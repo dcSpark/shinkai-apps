@@ -14,6 +14,7 @@ import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/querie
 import {
   Badge,
   Button,
+  buttonVariants,
   ChatInputArea,
   Command,
   CommandEmpty,

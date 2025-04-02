@@ -37,10 +37,11 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { getVersion } from '@tauri-apps/api/app';
 import { formatDuration, intervalToDuration } from 'date-fns';
-import { motion, progress } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ExternalLinkIcon, InfoIcon, MessageSquare, ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
