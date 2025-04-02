@@ -386,7 +386,10 @@ export default function ToolDetailsCard({
         </div>
       </div>
 
-      <Tabs className="w-full py-8" defaultValue="description">
+      <Tabs 
+        className="w-full py-8" 
+        defaultValue="description"
+        value={window.location.hash === '#try-it-out' ? 'try-it-out' : undefined}>
         <TabsList className="mb-4 flex w-full justify-start gap-6 rounded-none border-b border-gray-200 bg-transparent pb-0">
           <TabsTrigger
             className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
