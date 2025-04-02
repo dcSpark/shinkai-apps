@@ -249,7 +249,7 @@ const ToolCollectionBase = () => {
           {Array.from({ length: 8 }).map((_, idx) => (
             <div
               className={cn(
-                'grid animate-pulse grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm px-2 py-3 pr-4 text-left text-sm',
+                'grid animate-pulse grid-cols-[1fr_40px_115px_36px] items-center gap-5 rounded-sm px-2 py-3 pr-4 text-left text-sm',
               )}
               key={idx}
             >
@@ -261,6 +261,7 @@ const ToolCollectionBase = () => {
                 </div>
               </div>
               <span className="h-7 w-full rounded-md bg-gray-300" />
+              <span className="h-7 w-10 rounded-md bg-gray-300" />
               <span className="h-5 w-[36px] rounded-full bg-gray-300" />
             </div>
           ))}
