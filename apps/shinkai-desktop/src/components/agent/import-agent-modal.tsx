@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useImportAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/importAgent/useImportAgent';
 import {
@@ -22,7 +21,7 @@ import {
 import { ImportIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { XIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
