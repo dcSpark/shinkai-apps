@@ -13,7 +13,7 @@ import {
   PopoverTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { Form } from '@shinkai_network/shinkai-ui';
-import { ChevronDown } from 'lucide-react';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useEffect, useState } from 'react';
 import { useForm, useFormContext } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -33,10 +33,12 @@ export default function EditToolBasicInfoDialog({
   toolName,
   toolDescription,
   initialToolRouterKeyWithVersion,
+  className,
 }: {
   toolName: string;
   toolDescription: string;
   initialToolRouterKeyWithVersion: string;
+  className?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const toolCode = usePlaygroundStore((state) => state.toolCode);
@@ -93,9 +95,12 @@ export default function EditToolBasicInfoDialog({
       }}
       open={isOpen}
     >
-      <PopoverTrigger className="hover:bg-official-gray-900 transtion-colors flex max-w-[400px] items-center gap-2 truncate rounded-lg p-1 text-base font-medium">
-        {toolName}
-        <ChevronDown className="size-3" />
+      <PopoverTrigger className={cn(
+        "hover:bg-official-gray-900 transtion-colors flex max-w-[400px] items-center gap-2 truncate rounded-lg p-1 text-base font-medium",
+        className
+      )}>
+        <span className="truncate">{toolName}</span>
+        <Button size="xs" variant="ghost" className="px-2 h-6">Edit</Button>
       </PopoverTrigger>
       <PopoverContent
         align="start"
