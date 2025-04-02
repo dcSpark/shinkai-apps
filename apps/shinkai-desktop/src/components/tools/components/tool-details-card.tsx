@@ -80,6 +80,21 @@ function removeEmbeddingFields(tool: ShinkaiTool): ShinkaiTool {
   return filteredTool;
 }
 
+/**
+ * Sanitizes a string to be used as a filename following the [a-zA-Z0-9_]+ pattern
+ * @param name The name to sanitize
+ * @returns A sanitized string containing only alphanumeric characters and underscores
+ */
+function sanitizeFileName(name: string): string {
+  let sanitized = name.replace(/[^a-zA-Z0-9_]/g, '_');
+  
+  sanitized = sanitized.replace(/_+/g, '_');
+  
+  sanitized = sanitized.replace(/^_+|_+$/g, '');
+  
+  return sanitized || 'untitled_tool';
+}
+
 interface ToolDetailsProps {
   tool: ShinkaiTool;
   isEnabled: boolean;
@@ -191,6 +206,7 @@ export default function ToolDetailsCard({
     {
       onSuccess: async (response, variables) => {
         const toolName = variables.toolKey.split(':::')?.[1] ?? 'untitled_tool';
+        const sanitizedToolName = sanitizeFileName(toolName);
         const file = new Blob([response ?? ''], {
           type: 'application/octet-stream',
         });
@@ -199,7 +215,7 @@ export default function ToolDetailsCard({
         const content = new Uint8Array(arrayBuffer);
 
         const savePath = await save({
-          defaultPath: `${toolName}.zip`,
+          defaultPath: `${sanitizedToolName}.zip`,
           filters: [{ name: 'Zip File', extensions: ['zip'] }],
         });
 
