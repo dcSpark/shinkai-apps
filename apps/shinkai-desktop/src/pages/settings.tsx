@@ -38,7 +38,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { getVersion } from '@tauri-apps/api/app';
 import { formatDuration, intervalToDuration } from 'date-fns';
 import { motion, progress } from 'framer-motion';
-import { ExternalLinkIcon, InfoIcon, ShieldCheck } from 'lucide-react';
+import { ExternalLinkIcon, InfoIcon, MessageSquare, ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -219,7 +219,23 @@ const SettingsPage = () => {
   );
   return (
     <SimpleLayout classname="max-w-xl" title={t('settings.layout.general')}>
-      <p className="mb-6">{t('settings.description')}</p>
+      <div className="flex items-center justify-between mb-6">
+        <p>{t('settings.description')}</p>
+        <Link 
+          to="/settings/feedback"
+          className={cn(
+            buttonVariants({ 
+              size: 'xs',
+              variant: 'outline',
+              rounded: 'lg'
+            }),
+            'gap-1'
+          )}
+        >
+          <MessageSquare className="h-4 w-4" />
+          {t('feedback.button', 'Feedback')}
+        </Link>
+      </div>
       <div className="flex flex-col space-y-8 pr-2.5">
         <div className="flex flex-col space-y-8">
           {shinkaiFreeModelQuota && (

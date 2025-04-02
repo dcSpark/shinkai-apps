@@ -18,6 +18,7 @@ import {
   ArrowUpRight,
   CircleAlert,
   LogOut,
+  MessageSquare,
   StoreIcon,
 } from 'lucide-react';
 import { useEffect, useRef } from 'react';
@@ -299,13 +300,31 @@ function ToolsHome({
         <div className="flex flex-col gap-20">
           <div className="flex min-h-[300px] w-full flex-col items-center justify-between gap-10 pt-2">
             <div className="flex flex-col gap-2">
-              <h1 className="font-clash text-center text-4xl font-medium text-white">
-                Build AI Tools in Minutes
-              </h1>
-              <p className="text-official-gray-400 text-center text-sm">
-                Create, automate, and optimize your workflow with powerful AI
-                tools.
-              </p>
+              <div className="flex flex-col items-center">
+                <div className="flex items-center justify-center gap-4 w-full">
+                  <h1 className="font-clash text-center text-4xl font-medium text-white">
+                    Build AI Tools in Minutes
+                  </h1>
+                  <Link 
+                    to="/settings/feedback"
+                    className={cn(
+                      buttonVariants({ 
+                        size: 'xs',
+                        variant: 'outline',
+                        rounded: 'lg'
+                      }),
+                      'gap-1'
+                    )}
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    {t('feedback.button', 'Feedback')}
+                  </Link>
+                </div>
+                <p className="text-official-gray-400 text-center text-sm">
+                  Create, automate, and optimize your workflow with powerful AI
+                  tools.
+                </p>
+              </div>
             </div>
 
             <div className="w-full max-w-3xl">

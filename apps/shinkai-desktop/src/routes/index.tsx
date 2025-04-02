@@ -73,6 +73,7 @@ import TermsAndConditionsPage from '../pages/terms-conditions';
 import { LogoTapProvider } from '../pages/terms-conditions';
 import ToolFeedbackPrompt from '../pages/tool-feedback';
 import { ToolsHomepage } from '../pages/tools-homepage';
+import Feedback from '../pages/feedback';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
@@ -443,6 +444,7 @@ const AppRoutes = () => {
           path={'settings'}
         >
           <Route element={<SettingsPage />} index />
+          <Route element={<Feedback />} path={'feedback'} />
           <Route element={<ExportConnection />} path={'export-connection'} />
           <Route element={<PublicKeys />} path={'public-keys'} />
           <Route

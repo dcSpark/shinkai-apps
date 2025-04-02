@@ -41,7 +41,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-shell';
 import { motion } from 'framer-motion';
-import { ArrowRight, ArrowUpRight, EllipsisIcon, Plus } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, EllipsisIcon, MessageSquare, Plus } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
@@ -430,9 +430,25 @@ const EmptyMessage = () => {
               </p>
             </div>
           ) : (
-            <h1 className="font-clash text-4xl font-medium text-white">
-              How can I help you today?
-            </h1>
+            <div className="flex items-center justify-between w-full">
+              <h1 className="font-clash text-4xl font-medium text-white">
+                How can I help you today?
+              </h1>
+              <Link 
+                to="/settings/feedback"
+                className={cn(
+                  buttonVariants({ 
+                    size: 'xs',
+                    variant: 'outline',
+                    rounded: 'lg'
+                  }),
+                  'gap-1'
+                )}
+              >
+                <MessageSquare className="h-4 w-4" />
+                {t('feedback.button', 'Feedback')}
+              </Link>
+            </div>
           )}
         </div>
         <div
