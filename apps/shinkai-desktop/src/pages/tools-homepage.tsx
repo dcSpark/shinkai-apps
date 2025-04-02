@@ -367,6 +367,7 @@ function ToolsHome({
                             isLoading={isProcessing}
                             onClick={() => startToolCreation(form.getValues())}
                             size="icon"
+                            type="button"
                           >
                             <SendIcon className="h-full w-full" />
                             <span className="sr-only">
