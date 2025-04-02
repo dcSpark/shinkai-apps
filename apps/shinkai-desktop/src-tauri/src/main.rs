@@ -45,6 +45,7 @@ struct Payload {
 }
 
 fn main() {
+    let _ = fix_path_env::fix();
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
             app.emit("single-instance", Payload { args: argv, cwd })
