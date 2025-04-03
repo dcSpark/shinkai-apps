@@ -1,8 +1,8 @@
 import { useState } from 'react';
+
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { Button } from '@shinkai_network/shinkai-ui';
-import { Input } from '@shinkai_network/shinkai-ui';
-import { Textarea } from '@shinkai_network/shinkai-ui';
+import { Button, Input, Textarea } from '@shinkai_network/shinkai-ui';
+
 import { SimpleLayout } from './layout/simple-layout';
 
 const Feedback = () => {

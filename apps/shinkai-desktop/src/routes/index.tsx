@@ -1,7 +1,3 @@
-import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
-import { TooltipProvider } from '@shinkai_network/shinkai-ui';
-import { listen } from '@tauri-apps/api/event';
-import { debug } from '@tauri-apps/plugin-log';
 import React, { useEffect, useRef } from 'react';
 import {
   Navigate,
@@ -11,6 +7,11 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
+
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
+import { TooltipProvider } from '@shinkai_network/shinkai-ui';
+import { listen } from '@tauri-apps/api/event';
+import { debug } from '@tauri-apps/plugin-log';
 
 import AddAgentPage from '../components/agent/add-agent';
 import EditAgentPage from '../components/agent/edit-agent';
