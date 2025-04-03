@@ -431,25 +431,29 @@ const EmptyMessage = () => {
               </p>
             </div>
           ) : (
-            <div className="flex items-center justify-between w-full">
-              <h1 className="font-clash text-4xl font-medium text-white">
-                How can I help you today?
-              </h1>
-              <Link 
-                to="/settings/feedback"
-                className={cn(
-                  buttonVariants({ 
-                    size: 'xs',
-                    variant: 'outline',
-                    rounded: 'lg'
-                  }),
-                  'gap-1'
-                )}
-              >
-                <MessageSquare className="h-4 w-4" />
-                {t('feedback.button', 'Feedback')}
-              </Link>
-            </div>
+            <>
+              <div className="text-center">
+                <h1 className="font-clash text-4xl font-medium text-white">
+                  How can I help you today?
+                </h1>
+              </div>
+              <div className="absolute top-4 right-4">
+                <Link 
+                  className={cn(
+                    buttonVariants({ 
+                      size: 'xs',
+                      variant: 'outline',
+                      rounded: 'lg'
+                    }),
+                    'gap-1'
+                  )}
+                  to="/settings/feedback"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  {t('feedback.button', 'Feedback')}
+                </Link>
+              </div>
+            </>
           )}
         </div>
         <div

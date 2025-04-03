@@ -294,6 +294,20 @@ function ToolsHome({
             <StoreIcon className="size-4" />
             {t('tools.store.label')}
           </Link>
+          <Link 
+            className={cn(
+              buttonVariants({ 
+                size: 'xs',
+                variant: 'outline',
+                rounded: 'lg'
+              }),
+              'gap-1'
+            )}
+            to="/settings/feedback"
+          >
+            <MessageSquare className="h-4 w-4" />
+            {t('feedback.button', 'Feedback')}
+          </Link>
         </div>
       </div>
       <div className="flex flex-col gap-4">
@@ -452,7 +466,6 @@ function ToolsHome({
                     Visit App Store <ArrowRight className="h-4 w-4" />
                   </a>
                   <Link 
-                    to="/settings/feedback"
                     className={cn(
                       buttonVariants({ 
                         size: 'xs',
@@ -461,6 +474,7 @@ function ToolsHome({
                       }),
                       'gap-1'
                     )}
+                    to="/settings/feedback"
                   >
                     <MessageSquare className="h-4 w-4" />
                     {t('feedback.button', 'Feedback')}

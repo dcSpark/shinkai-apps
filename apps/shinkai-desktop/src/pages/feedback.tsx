@@ -1,8 +1,9 @@
-import { useState } from 'react';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { Button } from '@shinkai_network/shinkai-ui';
 import { Input } from '@shinkai_network/shinkai-ui';
 import { Textarea } from '@shinkai_network/shinkai-ui';
+import { useState } from 'react';
+
 import { SimpleLayout } from './layout/simple-layout';
 
 const Feedback = () => {
@@ -24,8 +25,8 @@ const Feedback = () => {
           ) : (
             <form
               action="https://formspree.io/f/mgvawbkv"
-              method="POST"
               className="space-y-4"
+              method="POST"
               onSubmit={(e) => {
                 e.preventDefault();
                 
@@ -54,29 +55,29 @@ const Feedback = () => {
               }}
             >
               <div>
-                <label htmlFor="feedback" className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-medium mb-1" htmlFor="feedback">
                   {t('feedback.feedbackLabel', 'Your Feedback')}
                 </label>
                 <Textarea 
+                  className="w-full" 
                   id="feedback" 
                   name="feedback" 
                   placeholder={t('feedback.feedbackPlaceholder', 'Please share your thoughts, suggestions, or questions...')} 
-                  required 
-                  className="w-full"
+                  required
                 />
               </div>
               
               <div>
-                <label htmlFor="contact" className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-medium mb-1" htmlFor="contact">
                   {t('feedback.contactLabel', 'Contact Information')}
                 </label>
                 <Input 
+                  className="w-full" 
                   id="contact" 
                   name="contact" 
-                  type="text" 
                   placeholder={t('feedback.contactPlaceholder', 'Email or phone number')} 
                   required 
-                  className="w-full"
+                  type="text"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   {t('feedback.contactHelp', 'How can we reach you if we have questions?')}
