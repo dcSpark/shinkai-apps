@@ -31,6 +31,9 @@ import {
   ScheduledTasksIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { save } from '@tauri-apps/plugin-dialog';
+import * as fs from '@tauri-apps/plugin-fs';
+import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import cronstrue from 'cronstrue';
 import { DownloadIcon, Edit, Plus, TrashIcon } from 'lucide-react';
 import React from 'react';
@@ -109,6 +112,14 @@ function AgentsPage() {
 
 export default AgentsPage;
 
+function sanitizeFileName(name: string): string {
+  let sanitized = name.replace(/[^a-zA-Z0-9_]/g, '_');
+  sanitized = sanitized.replace(/_+/g, '_');
+  sanitized = sanitized.replace(/^_+|_+$/g, '');
+  
+  return sanitized || 'untitled_agent';
+}
+
 const AgentCard = ({
   agentId,
   agentName,
@@ -130,17 +141,28 @@ const AgentCard = ({
   
   const { mutateAsync: exportAgent } = useExportAgent({
     onSuccess: async (response) => {
+      const sanitizedAgentName = sanitizeFileName(agentName);
       const file = new Blob([response ?? ''], {
         type: 'application/octet-stream',
       });
-      const url = URL.createObjectURL(file);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${agentName.replace(/\s+/g, '_')}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+
+      const arrayBuffer = await file.arrayBuffer();
+      const content = new Uint8Array(arrayBuffer);
+
+      const savePath = await save({
+        defaultPath: `${sanitizedAgentName}.zip`,
+        filters: [{ name: 'Zip File', extensions: ['zip'] }],
+      });
+
+      if (!savePath) {
+        toast.info('File saving cancelled');
+        return;
+      }
+
+      await fs.writeFile(savePath, content, {
+        baseDir: BaseDirectory.Download,
+      });
+
       toast.success('Agent exported successfully');
     },
     onError: (error) => {

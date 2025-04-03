@@ -109,11 +109,13 @@ export const importAgent = async (
   bearerToken: string,
   file: File,
 ) => {
+  const fileData = await file.arrayBuffer();
+
   const formData = new FormData();
-  formData.append('file', file);
+  formData.append('file', new Blob([fileData]));
 
   const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v2/import_agent'),
+    urlJoin(nodeAddress, '/v2/import_agent_zip'),
     formData,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
