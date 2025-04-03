@@ -431,24 +431,26 @@ const EmptyMessage = () => {
               </p>
             </div>
           ) : (
-            <div className="flex items-center justify-between w-full">
+            <div className="flex flex-col w-full">
+              <div className="flex justify-end mb-2">
+                <Link 
+                  to="/settings/feedback"
+                  className={cn(
+                    buttonVariants({ 
+                      size: 'xs',
+                      variant: 'outline',
+                      rounded: 'lg'
+                    }),
+                    'gap-1'
+                  )}
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  {t('feedback.button', 'Feedback')}
+                </Link>
+              </div>
               <h1 className="font-clash text-4xl font-medium text-white">
                 How can I help you today?
               </h1>
-              <Link 
-                to="/settings/feedback"
-                className={cn(
-                  buttonVariants({ 
-                    size: 'xs',
-                    variant: 'outline',
-                    rounded: 'lg'
-                  }),
-                  'gap-1'
-                )}
-              >
-                <MessageSquare className="h-4 w-4" />
-                {t('feedback.button', 'Feedback')}
-              </Link>
             </div>
           )}
         </div>
