@@ -301,25 +301,9 @@ function ToolsHome({
           <div className="flex min-h-[300px] w-full flex-col items-center justify-between gap-10 pt-2">
             <div className="flex flex-col gap-2">
               <div className="flex flex-col items-center">
-                <div className="flex items-center justify-center gap-4 w-full">
-                  <h1 className="font-clash text-center text-4xl font-medium text-white">
-                    Build AI Tools in Minutes
-                  </h1>
-                  <Link 
-                    to="/settings/feedback"
-                    className={cn(
-                      buttonVariants({ 
-                        size: 'xs',
-                        variant: 'outline',
-                        rounded: 'lg'
-                      }),
-                      'gap-1'
-                    )}
-                  >
-                    <MessageSquare className="h-4 w-4" />
-                    {t('feedback.button', 'Feedback')}
-                  </Link>
-                </div>
+                <h1 className="font-clash text-center text-4xl font-medium text-white">
+                  Build AI Tools in Minutes
+                </h1>
                 <p className="text-official-gray-400 text-center text-sm">
                   Create, automate, and optimize your workflow with powerful AI
                   tools.
@@ -458,14 +442,30 @@ function ToolsHome({
                 </p>
               </div>
               <div className="isolate flex flex-row gap-4">
-                <a
-                  className={cn(buttonVariants({ size: 'sm' }), 'gap-4 px-4')}
-                  href={SHINKAI_STORE_URL}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  Visit App Store <ArrowRight className="h-4 w-4" />
-                </a>
+                <div className="flex items-center gap-3">
+                  <a
+                    className={cn(buttonVariants({ size: 'sm' }), 'gap-4 px-4')}
+                    href={SHINKAI_STORE_URL}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    Visit App Store <ArrowRight className="h-4 w-4" />
+                  </a>
+                  <Link 
+                    to="/settings/feedback"
+                    className={cn(
+                      buttonVariants({ 
+                        size: 'xs',
+                        variant: 'outline',
+                        rounded: 'lg'
+                      }),
+                      'gap-1'
+                    )}
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    {t('feedback.button', 'Feedback')}
+                  </Link>
+                </div>
               </div>
             </div>
             <BackgroundBeams />
