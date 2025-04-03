@@ -14,6 +14,7 @@ import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/querie
 import {
   Badge,
   Button,
+  buttonVariants,
   ChatInputArea,
   Command,
   CommandEmpty,
@@ -41,7 +42,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-shell';
 import { motion } from 'framer-motion';
-import { ArrowRight, ArrowUpRight, EllipsisIcon, Plus } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, EllipsisIcon, MessageSquare, Plus } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
@@ -430,9 +431,29 @@ const EmptyMessage = () => {
               </p>
             </div>
           ) : (
-            <h1 className="font-clash text-4xl font-medium text-white">
-              How can I help you today?
-            </h1>
+            <>
+              <div className="text-center">
+                <h1 className="font-clash text-4xl font-medium text-white">
+                  How can I help you today?
+                </h1>
+              </div>
+              <div className="absolute top-4 right-4">
+                <Link 
+                  className={cn(
+                    buttonVariants({ 
+                      size: 'xs',
+                      variant: 'outline',
+                      rounded: 'lg'
+                    }),
+                    'gap-1'
+                  )}
+                  to="/settings/feedback"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  {t('feedback.button', 'Feedback')}
+                </Link>
+              </div>
+            </>
           )}
         </div>
         <div
