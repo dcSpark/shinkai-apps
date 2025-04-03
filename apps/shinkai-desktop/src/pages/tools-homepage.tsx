@@ -452,7 +452,6 @@ function ToolsHome({
                     Visit App Store <ArrowRight className="h-4 w-4" />
                   </a>
                   <Link 
-                    to="/settings/feedback"
                     className={cn(
                       buttonVariants({ 
                         size: 'xs',
@@ -461,6 +460,7 @@ function ToolsHome({
                       }),
                       'gap-1'
                     )}
+                    to="/settings/feedback"
                   >
                     <MessageSquare className="h-4 w-4" />
                     {t('feedback.button', 'Feedback')}

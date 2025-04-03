@@ -406,7 +406,6 @@ export function MainNav() {
                 
                 {isChatsItem && (
                   <Link 
-                    to="/settings/feedback"
                     className={cn(
                       buttonVariants({ 
                         size: 'xs',
@@ -415,6 +414,7 @@ export function MainNav() {
                       }),
                       'gap-1 mx-4 mt-1 mb-2'
                     )}
+                    to="/settings/feedback"
                   >
                     <MessageSquare className="h-4 w-4" />
                     {sidebarExpanded && (

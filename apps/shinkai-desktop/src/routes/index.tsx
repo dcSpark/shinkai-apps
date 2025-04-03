@@ -1,3 +1,7 @@
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
+import { TooltipProvider } from '@shinkai_network/shinkai-ui';
+import { listen } from '@tauri-apps/api/event';
+import { debug } from '@tauri-apps/plugin-log';
 import React, { useEffect, useRef } from 'react';
 import {
   Navigate,
@@ -7,11 +11,6 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom';
-
-import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
-import { TooltipProvider } from '@shinkai_network/shinkai-ui';
-import { listen } from '@tauri-apps/api/event';
-import { debug } from '@tauri-apps/plugin-log';
 
 import AddAgentPage from '../components/agent/add-agent';
 import EditAgentPage from '../components/agent/edit-agent';
@@ -56,6 +55,7 @@ import CryptoWalletPage from '../pages/crypto-wallet';
 import EditTaskPage from '../pages/edit-task';
 import EditToolPage from '../pages/edit-tool';
 import { ExportConnection } from '../pages/export-connection';
+import Feedback from '../pages/feedback';
 import { GalxeValidation } from '../pages/galxe-validation';
 import HomePage from '../pages/home';
 import MainLayout from '../pages/layout/main-layout';
@@ -72,9 +72,8 @@ import { TaskLogs } from '../pages/task-logs';
 import { Tasks } from '../pages/tasks';
 import TermsAndConditionsPage from '../pages/terms-conditions';
 import { LogoTapProvider } from '../pages/terms-conditions';
-import Feedback from '../pages/feedback';
-import { ToolsHomepage } from '../pages/tools-homepage';
 import ToolFeedbackPrompt from '../pages/tool-feedback';
+import { ToolsHomepage } from '../pages/tools-homepage';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';

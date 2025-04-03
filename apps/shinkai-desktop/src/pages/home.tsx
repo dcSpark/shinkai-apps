@@ -434,7 +434,6 @@ const EmptyMessage = () => {
             <div className="flex flex-col w-full">
               <div className="flex justify-end mb-2">
                 <Link 
-                  to="/settings/feedback"
                   className={cn(
                     buttonVariants({ 
                       size: 'xs',
@@ -443,6 +442,7 @@ const EmptyMessage = () => {
                     }),
                     'gap-1'
                   )}
+                  to="/settings/feedback"
                 >
                   <MessageSquare className="h-4 w-4" />
                   {t('feedback.button', 'Feedback')}
