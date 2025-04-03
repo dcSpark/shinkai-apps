@@ -55,6 +55,7 @@ import CryptoWalletPage from '../pages/crypto-wallet';
 import EditTaskPage from '../pages/edit-task';
 import EditToolPage from '../pages/edit-tool';
 import { ExportConnection } from '../pages/export-connection';
+import Feedback from '../pages/feedback';
 import { GalxeValidation } from '../pages/galxe-validation';
 import HomePage from '../pages/home';
 import MainLayout from '../pages/layout/main-layout';
@@ -443,6 +444,7 @@ const AppRoutes = () => {
           path={'settings'}
         >
           <Route element={<SettingsPage />} index />
+          <Route element={<Feedback />} path={'feedback'} />
           <Route element={<ExportConnection />} path={'export-connection'} />
           <Route element={<PublicKeys />} path={'public-keys'} />
           <Route
