@@ -53,7 +53,11 @@ export const ChatInputArea = React.forwardRef<
         <div
           aria-disabled={disabled}
           className="flex cursor-text flex-col aria-disabled:cursor-not-allowed"
-          onClick={() => textareaRef?.current?.focus()}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              textareaRef?.current?.focus();
+            }
+          }}
         >
           {alternateElement ? (
             alternateElement

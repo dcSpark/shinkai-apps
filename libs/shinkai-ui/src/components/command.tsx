@@ -12,9 +12,10 @@ const Command = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive
     className={cn(
-      'bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md',
+      'bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md [&_[cmdk-list]]:scroll-auto [&_[cmdk-list]]:scroll-pt-0',
       className,
     )}
+    loop={true}
     ref={ref}
     {...props}
   />
@@ -59,7 +60,7 @@ const CommandList = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.List>
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.List
-    className={cn('max-h-[300px] overflow-y-auto overflow-x-hidden', className)}
+    className={cn('max-h-[300px] overflow-y-auto overflow-x-hidden scroll-auto scroll-pt-0', className)}
     ref={ref}
     {...props}
   />
