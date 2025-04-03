@@ -14,6 +14,7 @@ import {
   AlertDialogTitle,
   Badge,
   Button,
+  buttonVariants,
   Separator,
   Tooltip,
   TooltipContent,
@@ -44,6 +45,7 @@ import {
   ArrowLeftToLine,
   ArrowRightToLine,
   HelpCircleIcon,
+  MessageSquare,
 } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
 import {
@@ -347,7 +349,8 @@ export function MainNav() {
       <div className="flex flex-1 flex-col justify-between">
         <div className="flex flex-col gap-1.5">
           {!isGetStartedChecklistHidden && <OnboardingStepper />}
-          {navigationLinks.map((item) => {
+          {navigationLinks.map((item, index) => {
+            const isChatsItem = item.title === t('layout.menuItems.chats');
             return (
               <Fragment key={item.title}>
                 {optInExperimental && item.href === '/sheets' && (
@@ -400,6 +403,25 @@ export function MainNav() {
                     </TooltipPortal>
                   </Tooltip>
                 </TooltipProvider>
+                
+                {isChatsItem && (
+                  <Link 
+                    to="/settings/feedback"
+                    className={cn(
+                      buttonVariants({ 
+                        size: 'xs',
+                        variant: 'outline',
+                        rounded: 'lg'
+                      }),
+                      'gap-1 mx-4 mt-1 mb-2'
+                    )}
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    {sidebarExpanded && (
+                      <span className="text-xs">{t('feedback.button', 'Feedback')}</span>
+                    )}
+                  </Link>
+                )}
               </Fragment>
             );
           })}
