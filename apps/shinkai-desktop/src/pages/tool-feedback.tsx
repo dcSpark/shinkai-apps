@@ -89,7 +89,7 @@ function ToolFeedbackPrompt() {
           >
             <motion.div
               className={cn(
-                'mx-auto flex h-[84vh] w-full max-w-lg flex-col items-stretch justify-center rounded-xl border p-1 pb-3 pt-0',
+                'mx-auto flex h-[84vh] w-full max-w-2xl flex-col items-stretch justify-center rounded-xl border p-1 pb-3 pt-0',
               )}
               layoutId={`left-element`}
             >
