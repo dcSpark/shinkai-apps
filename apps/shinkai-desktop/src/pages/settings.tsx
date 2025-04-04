@@ -223,7 +223,6 @@ const SettingsPage = () => {
       <div className="flex items-center justify-between mb-6">
         <p>{t('settings.description')}</p>
         <Link 
-          to="/settings/feedback"
           className={cn(
             buttonVariants({ 
               size: 'xs',
@@ -232,6 +231,7 @@ const SettingsPage = () => {
             }),
             'gap-1'
           )}
+          to="/settings/feedback"
         >
           <MessageSquare className="h-4 w-4" />
           {t('feedback.button', 'Feedback')}
