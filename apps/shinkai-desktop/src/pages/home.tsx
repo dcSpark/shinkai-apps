@@ -413,7 +413,7 @@ const EmptyMessage = () => {
   return (
     <motion.div
       animate={{ opacity: 1 }}
-      className="container flex w-full flex-col items-stretch gap-28 text-center"
+      className="container-fluid flex w-full flex-col items-stretch gap-28 text-center px-4 md:px-8 lg:px-12"
       exit={{ opacity: 0 }}
       initial={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
@@ -458,7 +458,7 @@ const EmptyMessage = () => {
         </div>
         <div
           {...getRootFileProps({
-            className: 'relative shrink-0 pb-[40px] max-w-3xl  mx-auto w-full',
+            className: 'relative shrink-0 pb-[40px] max-w-[1152px] mx-auto w-full',
           })}
         >
           <div className="relative z-[1]">
@@ -616,7 +616,7 @@ const EmptyMessage = () => {
                   onSubmit={chatForm.handleSubmit(onSubmit)}
                   ref={textareaRef}
                   textareaClassName={cn(
-                    'max-h-[40vh] min-h-[140px] rounded-xl p-4 text-base',
+                    'max-h-[60vh] min-h-[220px] h-full rounded-xl p-4 text-base',
                   )}
                   topAddons={
                     <>
@@ -830,7 +830,7 @@ const EmptyMessage = () => {
           </Badge>
         </div>
       </div>
-      <div className="flex flex-col gap-12 pb-10">
+      <div className="mx-auto w-full max-w-5xl flex flex-col gap-12 pb-10">
         <div className="flex flex-col gap-4">
           <SectionHeading
             action={{

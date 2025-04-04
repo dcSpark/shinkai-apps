@@ -102,7 +102,7 @@ const ToolCollectionBase = () => {
   });
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 max-w-[956px] mx-auto">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h2 className="text-lg font-semibold tracking-tight">
