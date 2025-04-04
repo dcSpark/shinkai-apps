@@ -14,6 +14,8 @@ import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
+import { ToolCall } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { GeneratedFiles } from '../../chat/components/message';
 import {
   Alert,
   AlertDescription,
@@ -875,16 +877,39 @@ export default function ToolDetailsCard({
                   )}
 
                   {toolExecutionResult && (
-                    <ToolCodeEditor
-                      language="json"
-                      name="result"
-                      readOnly
-                      style={{
-                        borderRadius: '0.5rem',
-                        overflowY: 'hidden',
-                      }}
-                      value={JSON.stringify(toolExecutionResult, null, 2)}
-                    />
+                    <>
+                      <ToolCodeEditor
+                        language="json"
+                        name="result"
+                        readOnly
+                        style={{
+                          borderRadius: '0.5rem',
+                          overflowY: 'hidden',
+                        }}
+                        value={JSON.stringify(toolExecutionResult, null, 2)}
+                      />
+                      
+                      {/* Extract and display generated files if present */}
+                      {toolExecutionResult.__created_files__ && toolExecutionResult.__created_files__.length > 0 && (
+                        <GeneratedFiles
+                          toolCalls={[
+                            {
+                              name: toolKey || 'tool',
+                              toolRouterKey: toolKey || '',
+                              generatedFiles: toolExecutionResult.__created_files__.map((filePath: string) => {
+                                const fileName = filePath.split('/').pop() || '';
+                                return {
+                                  name: fileName,
+                                  path: filePath,
+                                  type: 'text', // Default to text, can be improved with better type detection
+                                  id: filePath,
+                                };
+                              }),
+                            } as ToolCall,
+                          ]}
+                        />
+                      )}
+                    </>
                   )}
                 </div>
               )}
