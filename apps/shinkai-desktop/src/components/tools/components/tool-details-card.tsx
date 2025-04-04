@@ -15,7 +15,6 @@ import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/muta
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import { ToolCall } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
-import { GeneratedFiles } from '../../chat/components/message';
 import {
   Alert,
   AlertDescription,
@@ -58,6 +57,7 @@ import { toast } from 'sonner';
 import { SubpageLayout } from '../../../pages/layout/simple-layout';
 import { useAuth } from '../../../store/auth';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
+import { GeneratedFiles } from '../../chat/components/message';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import { parseConfigToJsonSchema } from '../utils/tool-config';
