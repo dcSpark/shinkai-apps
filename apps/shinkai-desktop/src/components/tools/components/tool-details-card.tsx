@@ -13,9 +13,7 @@ import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
-import { useGetShinkaiFileProtocol } from '@shinkai_network/shinkai-node-state/v2/queries/getShinkaiFileProtocol/useGetShinkaiFileProtocol';
 import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
-import { fileIconMap, FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import {
   Alert,
   AlertDescription,
@@ -29,6 +27,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  FileList,
   JsonForm,
   Switch,
   Tabs,
@@ -48,7 +47,6 @@ import {
   ExternalLinkIcon,
   LoaderIcon,
   MoreVertical,
-  Paperclip,
   PlayCircle,
   Rocket,
 } from 'lucide-react';
@@ -894,14 +892,20 @@ export default function ToolDetailsCard({
                       {toolExecutionResult.__created_files__ && toolExecutionResult.__created_files__.length > 0 && (
                         <div className="mt-4 flex flex-col items-start gap-1 rounded-md py-4 pt-1.5">
                           <span className="text-gray-80 text-xs">Generated Files</span>
-                          <div className="flex flex-wrap gap-3 mt-2">
-                            {toolExecutionResult.__created_files__.map((filePath: string) => (
-                              <ToolResultFileCard 
-                                filePath={filePath} 
-                                key={filePath} 
-                              />
-                            ))}
-                          </div>
+                          <FileList
+                            className="mt-2"
+                            files={toolExecutionResult.__created_files__.map((filePath: string) => {
+                              const fileName = filePath.split('/').pop() || '';
+                              const fileExtension = fileName.split('.').pop() || '';
+                              return {
+                                name: fileName,
+                                path: filePath,
+                                type: 'text',
+                                id: filePath,
+                                extension: fileExtension
+                              };
+                            })}
+                          />
                         </div>
                       )}
                     </>
@@ -1034,76 +1038,5 @@ export function ToolIcon() {
         />
       </svg>
     </div>
-  );
-}
-
-function ToolResultFileCard({ filePath }: { filePath: string }) {
-  const auth = useAuth((state) => state.auth);
-  const { refetch } = useGetShinkaiFileProtocol(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      file: filePath,
-    },
-    {
-      enabled: false,
-    },
-  );
-
-  const fileNameBase =
-    filePath.split('/')?.at(-1)?.split('.')?.at(0) ?? 'untitled_tool';
-  const fileExtension = filePath.split('/')?.at(-1)?.split('.')?.at(-1) ?? '';
-
-  return (
-    <Button
-      className="flex justify-start gap-2"
-      onClick={async () => {
-        const response = await refetch();
-        const file = new Blob([response.data ?? ''], {
-          type: 'application/octet-stream',
-        });
-
-        const arrayBuffer = await file.arrayBuffer();
-        const content = new Uint8Array(arrayBuffer);
-
-        const savePath = await save({
-          defaultPath: `${fileNameBase}.${fileExtension}`,
-          filters: [
-            {
-              name: 'File',
-              extensions: [fileExtension],
-            },
-          ],
-        });
-
-        if (!savePath) {
-          toast.info('File saving cancelled');
-          return;
-        }
-
-        await fs.writeFile(savePath, content, {
-          baseDir: BaseDirectory.Download,
-        });
-
-        toast.success(`${fileNameBase} downloaded successfully`);
-      }}
-      rounded="lg"
-      size="xs"
-      variant="outline"
-    >
-      <div className="flex shrink-0 items-center">
-        {fileExtension && fileIconMap[fileExtension] ? (
-          <FileTypeIcon
-            className="text-gray-80 h-[18px] w-[18px] shrink-0"
-            type={fileExtension}
-          />
-        ) : (
-          <Paperclip className="text-gray-80 h-3.5 w-3.5 shrink-0" />
-        )}
-      </div>
-      <div className="truncate text-left text-xs">
-        {filePath.split('/')?.at(-1)}
-      </div>
-    </Button>
   );
 }
