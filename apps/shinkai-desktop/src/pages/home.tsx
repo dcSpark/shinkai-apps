@@ -434,7 +434,7 @@ const EmptyMessage = () => {
             <>
               <div className="text-center">
                 <h1 className="font-clash text-4xl font-medium text-white">
-                  How can I help you today?
+                  Chat with Shinkai
                 </h1>
               </div>
               <div className="absolute top-4 right-4">
@@ -616,7 +616,7 @@ const EmptyMessage = () => {
                   onSubmit={chatForm.handleSubmit(onSubmit)}
                   ref={textareaRef}
                   textareaClassName={cn(
-                    'max-h-[40vh] min-h-[140px] rounded-xl p-4 text-base',
+                    'max-h-[40vh] min-h-[200px] rounded-xl p-4 text-base',
                   )}
                   topAddons={
                     <>
@@ -837,10 +837,10 @@ const EmptyMessage = () => {
               label: 'New Agent',
               onClick: () => navigate('/add-agent'),
             }}
-            description="Build custom AI agents tailored to your specific needs"
-            title="Explore AI Agents"
+            description="Enhance your chat with specialized AI assistants"
+            title="AI Assistants"
             viewAll={{
-              label: 'View All Agents',
+              label: 'View All Assistants',
               onClick: () => navigate('/agents'),
             }}
           />
