@@ -19,6 +19,7 @@ import { BoltIcon, PlayCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../../../store/auth';
+import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 
 export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
   const { t } = useTranslation();
@@ -29,7 +30,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
   return (
     <div
       className={cn(
-        'grid grid-cols-[1fr_40px_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
+        'grid grid-cols-[1fr_40px_40px_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
       )}
       key={tool.tool_router_key}
     >
@@ -69,6 +70,13 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
           {t('common.tryItOut', 'Try it out')}
         </TooltipContent>
       </Tooltip>
+      
+      <div className="flex justify-center">
+        <RemoveToolButton
+          isPlaygroundTool={tool.author === auth?.shinkai_identity}
+          toolKey={tool.tool_router_key}
+        />
+      </div>
       
       <Link
         className={cn(
