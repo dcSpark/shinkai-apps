@@ -1,5 +1,6 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useRemoveTool } from '@shinkai_network/shinkai-node-state/v2/mutations/removeTool/useRemoveTool';
 import {
   Button,
@@ -15,6 +16,7 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { useQueryClient } from '@tanstack/react-query';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -33,10 +35,18 @@ export default function RemoveToolButton({
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const { mutateAsync: removeTool, isPending: isRemoveToolPending } =
     useRemoveTool({
       onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [FunctionKeyV2.GET_SEARCH_TOOLS],
+        });
+        
         toast.success('Tool has been removed successfully');
         setIsOpen(false);
         navigate('/tools');
