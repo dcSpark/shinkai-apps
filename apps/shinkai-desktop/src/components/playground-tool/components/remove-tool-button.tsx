@@ -1,14 +1,21 @@
 import { DialogClose } from '@radix-ui/react-dialog';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useRemoveTool } from '@shinkai_network/shinkai-node-state/v2/mutations/removeTool/useRemoveTool';
 import {
   Button,
+  buttonVariants,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogTitle,
   DialogTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -22,6 +29,7 @@ export default function RemoveToolButton({
   isPlaygroundTool: boolean;
   toolKey: string;
 }) {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -52,9 +60,24 @@ export default function RemoveToolButton({
   return (
     <Dialog onOpenChange={setIsOpen} open={isOpen}>
       <DialogTrigger asChild>
-        <Button className="rounded-lg" size="sm" variant="outline">
-          Remove Tool
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              className={cn(
+                buttonVariants({
+                  variant: 'outline',
+                  size: 'sm',
+                }),
+                'min-h-auto h-auto w-10 rounded-md py-2 flex justify-center'
+              )}
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent align="center" side="top">
+            {t('common.deleteTool', 'Delete Tool')}
+          </TooltipContent>
+        </Tooltip>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogTitle className="pb-0">Delete Tool</DialogTitle>

@@ -30,7 +30,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
   return (
     <div
       className={cn(
-        'grid grid-cols-[1fr_40px_115px_100px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
+        'grid grid-cols-[1fr_40px_40px_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
       )}
       key={tool.tool_router_key}
     >
@@ -71,6 +71,13 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
         </TooltipContent>
       </Tooltip>
       
+      <div className="flex justify-center">
+        <RemoveToolButton
+          isPlaygroundTool={tool.author === auth?.shinkai_identity}
+          toolKey={tool.tool_router_key}
+        />
+      </div>
+      
       <Link
         className={cn(
           buttonVariants({
@@ -84,13 +91,6 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
         <BoltIcon className="mr-1.5 h-4 w-4" />
         {t('common.configure')}
       </Link>
-
-      <div className="flex justify-center">
-        <RemoveToolButton
-          isPlaygroundTool={tool.author === auth?.shinkai_identity}
-          toolKey={tool.tool_router_key}
-        />
-      </div>
 
       <Tooltip>
         <TooltipTrigger asChild className="flex items-center gap-1">
