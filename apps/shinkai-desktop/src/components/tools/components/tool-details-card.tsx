@@ -13,8 +13,8 @@ import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
-import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
 import { ToolCall } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
 import { GeneratedFiles } from '../../chat/components/message';
 import {
   Alert,
