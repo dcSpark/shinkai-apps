@@ -9,7 +9,10 @@ export function parseInputArgsToJsonSchema(inputArgs: ToolArgument[]): RJSFSchem
     properties: {},
   };
 
-  inputArgs.forEach((arg) => {
+  const requiredArgs = inputArgs.filter(arg => arg.is_required);
+  const optionalArgs = inputArgs.filter(arg => !arg.is_required);
+  
+  [...requiredArgs, ...optionalArgs].forEach((arg) => {
     const { name, description, is_required, arg_type } = arg;
 
     if (is_required) {

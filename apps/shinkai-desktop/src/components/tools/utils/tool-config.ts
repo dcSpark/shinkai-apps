@@ -20,7 +20,21 @@ export function parseConfigToJsonSchema(config: ToolConfig[]): RJSFSchema {
     properties: {},
   };
 
+  const requiredConfigs: ToolConfig[] = [];
+  const optionalConfigs: ToolConfig[] = [];
+
   config.forEach((item) => {
+    const { BasicConfig } = item;
+    const { required } = BasicConfig;
+
+    if (required) {
+      requiredConfigs.push(item);
+    } else {
+      optionalConfigs.push(item);
+    }
+  });
+
+  [...requiredConfigs, ...optionalConfigs].forEach((item) => {
     const { BasicConfig } = item;
     const { key_name, description, required, type } = BasicConfig;
 
