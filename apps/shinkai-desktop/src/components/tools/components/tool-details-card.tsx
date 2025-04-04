@@ -309,7 +309,7 @@ export default function ToolDetailsCard({
           <h1 className="mb-2 text-lg font-bold">
             {formatText(tool.name ?? '')}
           </h1>
-          <p className="text-gray-80 mb-4 line-clamp-2 text-sm">
+          <p className="text-gray-80 mb-4 whitespace-pre-wrap line-clamp-2 text-sm">
             {tool.description}
           </p>
         </div>
