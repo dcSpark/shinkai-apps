@@ -59,9 +59,9 @@ export default function RemoveToolButton({
 
   return (
     <Dialog onOpenChange={setIsOpen} open={isOpen}>
-      <DialogTrigger asChild>
-        <Tooltip>
-          <TooltipTrigger asChild>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
             <button
               className={cn(
                 buttonVariants({
@@ -73,12 +73,12 @@ export default function RemoveToolButton({
             >
               <Trash2 className="h-4 w-4" />
             </button>
-          </TooltipTrigger>
-          <TooltipContent align="center" side="top">
-            {t('common.deleteTool', 'Delete Tool')}
-          </TooltipContent>
-        </Tooltip>
-      </DialogTrigger>
+          </DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent align="center" side="top">
+          {t('common.deleteTool', 'Delete Tool')}
+        </TooltipContent>
+      </Tooltip>
       <DialogContent className="sm:max-w-[425px]">
         <DialogTitle className="pb-0">Delete Tool</DialogTitle>
         <DialogDescription>
