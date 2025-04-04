@@ -13,6 +13,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
   Input,
   ToggleGroup,
@@ -23,12 +24,13 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon } from 'lucide-react';
+import { CheckSquare, Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon, XSquare } from 'lucide-react';
 import { memo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { useDebounce } from '../../hooks/use-debounce';
 import { useAuth } from '../../store/auth';
+import RemoveToolButton from '../playground-tool/components/remove-tool-button';
 import { usePlaygroundStore } from '../playground-tool/context/playground-context';
 import ToolCard from './components/tool-card';
 
@@ -54,6 +56,8 @@ const ToolCollectionBase = () => {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTools, setSelectedTools] = useState<string[]>([]);
+  const [deleteToolKey, setDeleteToolKey] = useState<string | null>(null);
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
 
@@ -153,21 +157,45 @@ const ToolCollectionBase = () => {
         searchToolList?.length > 0 && (
           <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
             {searchToolList?.map((tool) => (
-              <ToolCard key={tool.tool_router_key} tool={tool} />
+              <ToolCard 
+                key={tool.tool_router_key} 
+                tool={tool}
+                selected={selectedTools.includes(tool.tool_router_key)}
+                onSelect={(toolKey, isSelected) => {
+                  setSelectedTools(prev => 
+                    isSelected 
+                      ? [...prev, toolKey] 
+                      : prev.filter(key => key !== toolKey)
+                  );
+                }}
+                onDelete={(toolKey) => {
+                  setDeleteToolKey(toolKey);
+                }}
+              />
             ))}
           </div>
         )}
       {!searchQuery && isSearchQuerySynced && (
         <div>
           <div className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-2">
+              {selectedTools.length > 0 && (
+                <RemoveToolButton
+                  isPlaygroundTool={selectedToolCategory === 'my_tools'}
+                  toolKeys={selectedTools}
+                  onSuccess={() => setSelectedTools([])}
+                />
+              )}
+            </div>
             <ToggleGroup
-              className="border-official-gray-780 rounded-full border bg-transparent px-0.5 py-1"
-              onValueChange={(value) => {
-                setSelectedToolCategory(value as GetToolsCategory);
-              }}
-              type="single"
-              value={selectedToolCategory}
-            >
+                className="border-official-gray-780 rounded-full border bg-transparent px-0.5 py-1"
+                onValueChange={(value) => {
+                  setSelectedToolCategory(value as GetToolsCategory);
+                  setSelectedTools([]);
+                }}
+                type="single"
+                value={selectedToolCategory}
+              >
               <ToggleGroupItem
                 className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
                 key="all"
@@ -200,6 +228,33 @@ const ToolCollectionBase = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
+                {toolsList && toolsList.length > 0 && (
+                  <>
+                    <DropdownMenuItem
+                      className="text-xs"
+                      onClick={() => {
+                        if (toolsList) {
+                          setSelectedTools(toolsList.map(tool => tool.tool_router_key));
+                        }
+                      }}
+                    >
+                      <CheckSquare className="mr-2 h-4 w-4" />
+                      Select All Tools
+                    </DropdownMenuItem>
+                    {selectedTools.length > 0 && (
+                      <DropdownMenuItem
+                        className="text-xs"
+                        onClick={() => {
+                          setSelectedTools([]);
+                        }}
+                      >
+                        <XSquare className="mr-2 h-4 w-4" />
+                        Clear Selection
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem
                   className="text-xs"
                   onClick={() => {
@@ -237,7 +292,21 @@ const ToolCollectionBase = () => {
               </div>
             ) : (
               toolsList?.map((tool) => (
-                <ToolCard key={tool.tool_router_key} tool={tool} />
+                <ToolCard 
+                  key={tool.tool_router_key} 
+                  tool={tool} 
+                  selected={selectedTools.includes(tool.tool_router_key)}
+                  onSelect={(toolKey, isSelected) => {
+                    setSelectedTools(prev => 
+                      isSelected 
+                        ? [...prev, toolKey] 
+                        : prev.filter(key => key !== toolKey)
+                    );
+                  }}
+                  onDelete={(toolKey) => {
+                    setDeleteToolKey(toolKey);
+                  }}
+                />
               ))
             )}
           </div>
@@ -249,10 +318,11 @@ const ToolCollectionBase = () => {
           {Array.from({ length: 8 }).map((_, idx) => (
             <div
               className={cn(
-                'grid animate-pulse grid-cols-[1fr_40px_115px_36px] items-center gap-5 rounded-sm px-2 py-3 pr-4 text-left text-sm',
+                'grid animate-pulse grid-cols-[auto_1fr_40px_115px_36px_auto] items-center gap-5 rounded-sm px-2 py-3 pr-4 text-left text-sm',
               )}
               key={idx}
             >
+              <span className="h-5 w-5 rounded-sm bg-gray-300" />
               <div className="flex w-full flex-1 flex-col gap-3">
                 <span className="h-4 w-36 rounded-sm bg-gray-300" />
                 <div className="flex flex-col gap-1">
@@ -263,9 +333,20 @@ const ToolCollectionBase = () => {
               <span className="h-7 w-full rounded-md bg-gray-300" />
               <span className="h-7 w-10 rounded-md bg-gray-300" />
               <span className="h-5 w-[36px] rounded-full bg-gray-300" />
+              <span className="h-9 w-9 rounded-md bg-gray-300" />
             </div>
           ))}
         </div>
+      )}
+      
+      {deleteToolKey && (
+        <RemoveToolButton
+          isPlaygroundTool={selectedToolCategory === 'my_tools'}
+          toolKeys={deleteToolKey}
+          onSuccess={() => {
+            setDeleteToolKey(null);
+          }}
+        />
       )}
     </div>
   );

@@ -491,22 +491,27 @@ export const useToolFlow = ({
       toolMetadataStatus === 'success' &&
       forceAutoSave.current
     ) {
-      forceAutoSave.current = false;
-      forceGenerateMetadata.current = false;
-      forceGenerateCode.current = false;
-      handleSaveTool({
-        toolMetadata: toolMetadata,
-        toolCode: toolCode,
-        tools: form.getValues('tools'),
-        language: form.getValues('language'),
-        shouldPrefetchPlaygroundTool: true,
-        onSuccess: () => {
-          forceAutoSave.current = false;
-          forceGenerateMetadata.current = false;
-          forceGenerateCode.current = false;
-          setCurrentStep(ToolCreationState.COMPLETED);
-        },
-      });
+      const timeSinceMount = new Date().getTime() - mountTimestamp.current.getTime();
+      const MIN_EDIT_TIME_MS = 30000; // 30 seconds - user should have spent time on this tool
+
+      if (forceAutoSave.current === true && timeSinceMount > MIN_EDIT_TIME_MS) {
+        forceAutoSave.current = false;
+        forceGenerateMetadata.current = false;
+        forceGenerateCode.current = false;
+        handleSaveTool({
+          toolMetadata: toolMetadata,
+          toolCode: toolCode,
+          tools: form.getValues('tools'),
+          language: form.getValues('language'),
+          shouldPrefetchPlaygroundTool: true,
+          onSuccess: () => {
+            forceAutoSave.current = false;
+            forceGenerateMetadata.current = false;
+            forceGenerateCode.current = false;
+            setCurrentStep(ToolCreationState.COMPLETED);
+          },
+        });
+      }
     }
   }, [
     toolCode,

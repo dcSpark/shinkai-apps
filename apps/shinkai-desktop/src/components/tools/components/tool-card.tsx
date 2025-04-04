@@ -4,6 +4,7 @@ import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/muta
 import {
   Badge,
   buttonVariants,
+  Checkbox,
   Switch,
   Tooltip,
   TooltipContent,
@@ -15,12 +16,22 @@ import {
   getVersionFromTool,
 } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { BoltIcon, PlayCircle } from 'lucide-react';
+import { BoltIcon, PlayCircle, TrashIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../../../store/auth';
 
-export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
+export default function ToolCard({ 
+  tool, 
+  selected = false, 
+  onSelect, 
+  onDelete 
+}: { 
+  tool: ShinkaiToolHeader; 
+  selected?: boolean; 
+  onSelect?: (toolKey: string, selected: boolean) => void; 
+  onDelete?: (toolKey: string) => void;
+}) {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
 
@@ -29,10 +40,20 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
   return (
     <div
       className={cn(
-        'grid grid-cols-[1fr_40px_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
+        'grid grid-cols-[auto_1fr_40px_115px_36px_auto] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
       )}
       key={tool.tool_router_key}
     >
+      {onSelect && (
+        <div className="flex items-center justify-center">
+          <Checkbox 
+            checked={selected}
+            onCheckedChange={(checked) => {
+              onSelect(tool.tool_router_key, checked === true);
+            }}
+          />
+        </div>
+      )}
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-white">
@@ -107,6 +128,25 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>
+      
+      {onDelete && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button 
+              className={cn(
+                buttonVariants({ variant: 'outline', size: 'icon' }),
+                'h-9 w-9 rounded-md'
+              )}
+              onClick={() => onDelete(tool.tool_router_key)}
+            >
+              <TrashIcon className="h-4 w-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent align="center" side="top">
+            {t('common.delete', 'Delete')}
+          </TooltipContent>
+        </Tooltip>
+      )}
     </div>
   );
 }

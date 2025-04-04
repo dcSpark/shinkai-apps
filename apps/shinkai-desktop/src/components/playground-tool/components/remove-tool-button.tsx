@@ -17,10 +17,12 @@ import { useAuth } from '../../../store/auth';
 
 export default function RemoveToolButton({
   isPlaygroundTool,
-  toolKey,
+  toolKeys,
+  onSuccess,
 }: {
   isPlaygroundTool: boolean;
-  toolKey: string;
+  toolKeys: string | string[];
+  onSuccess?: () => void;
 }) {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
@@ -31,7 +33,7 @@ export default function RemoveToolButton({
       onSuccess: () => {
         toast.success('Tool has been removed successfully');
         setIsOpen(false);
-        navigate('/tools');
+        onSuccess?.();
       },
       onError: (error) => {
         toast.error('Failed to remove tool', {
@@ -41,12 +43,28 @@ export default function RemoveToolButton({
     });
 
   const handleRemove = async () => {
-    await removeTool({
-      toolKey: toolKey ?? '',
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      isPlaygroundTool,
-    });
+    const toolKeysArray = Array.isArray(toolKeys) ? toolKeys : [toolKeys];
+    
+    try {
+      for (const toolKey of toolKeysArray) {
+        await removeTool({
+          toolKey,
+          nodeAddress: auth?.node_address ?? '',
+          token: auth?.api_v2_key ?? '',
+          isPlaygroundTool,
+        });
+      }
+      
+      toast.success(toolKeysArray.length > 1 
+        ? 'Tools have been removed successfully' 
+        : 'Tool has been removed successfully');
+      setIsOpen(false);
+      onSuccess?.() || (toolKeysArray.length === 1 && navigate('/tools'));
+    } catch (error: any) {
+      toast.error('Failed to remove tool', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    }
   };
 
   return (
@@ -57,10 +75,15 @@ export default function RemoveToolButton({
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogTitle className="pb-0">Delete Tool</DialogTitle>
+        <DialogTitle className="pb-0">
+          {Array.isArray(toolKeys) && toolKeys.length > 1 
+            ? `Delete ${toolKeys.length} Tools` 
+            : 'Delete Tool'}
+        </DialogTitle>
         <DialogDescription>
-          Are you sure you want to delete this tool? This action cannot be
-          undone.
+          {Array.isArray(toolKeys) && toolKeys.length > 1 
+            ? 'Are you sure you want to delete these tools? This action cannot be undone.'
+            : 'Are you sure you want to delete this tool? This action cannot be undone.'}
         </DialogDescription>
 
         <DialogFooter>
