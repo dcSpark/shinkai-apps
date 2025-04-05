@@ -23,8 +23,6 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-  ToggleGroup,
-  ToggleGroupItem,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -43,27 +41,6 @@ import RemoveToolButton from '../playground-tool/components/remove-tool-button';
 import { usePlaygroundStore } from '../playground-tool/context/playground-context';
 import ToolCard from './components/tool-card';
 
-const toolsGroup: {
-  label: string;
-  value: GetToolsCategory;
-}[] = [
-  {
-    label: 'MCP Servers',
-    value: 'mcp_servers',
-  },
-  {
-    label: 'Default Tools',
-    value: 'default',
-  },
-  {
-    label: 'My Tools',
-    value: 'my_tools',
-  },
-  {
-    label: 'Downloaded',
-    value: 'downloaded',
-  },
-];
 
 const ToolCollectionBase = () => {
   const auth = useAuth((state) => state.auth);
@@ -74,10 +51,6 @@ const ToolCollectionBase = () => {
 
   const selectedToolCategory = usePlaygroundStore(
     (state) => state.selectedToolCategory,
-  );
-
-  const setSelectedToolCategory = usePlaygroundStore(
-    (state) => state.setSelectedToolCategory,
   );
 
   const { data: toolsList, isPending } = useGetTools({
@@ -188,56 +161,45 @@ const ToolCollectionBase = () => {
       {!searchQuery && isSearchQuerySynced && (
         <Tabs
           className="flex h-full w-full flex-col"
-          onValueChange={(value) => setActiveTab(value)}
+          onValueChange={(value) => {
+            setActiveTab(value);
+            const categoryMap: Record<string, GetToolsCategory | 'all'> = {
+              'all': 'all',
+              'mcp-servers': 'mcp_servers',
+              'default-tools': 'default',
+              'my-tools': 'my_tools',
+              'downloaded': 'downloaded'
+            };
+            const setSelectedToolCategory = usePlaygroundStore(
+              (state) => state.setSelectedToolCategory
+            );
+            setSelectedToolCategory(categoryMap[value]);
+          }}
           value={activeTab}
         >
           <TabsList className="mb-4 max-w-md">
             <TabsTrigger className="flex flex-1 items-center gap-2" value="all">
-              All
+              {t('tools.tabs.all', 'All')}
             </TabsTrigger>
             <TabsTrigger className="flex flex-1 items-center gap-2" value="mcp-servers">
-              MCP Servers
+              {t('tools.tabs.mcpServers', 'MCP Servers')}
             </TabsTrigger>
             <TabsTrigger className="flex flex-1 items-center gap-2" value="default-tools">
-              Default Tools
+              {t('tools.tabs.defaultTools', 'Default Tools')}
             </TabsTrigger>
             <TabsTrigger className="flex flex-1 items-center gap-2" value="my-tools">
-              My Tools
+              {t('tools.tabs.myTools', 'My Tools')}
             </TabsTrigger>
             <TabsTrigger className="flex flex-1 items-center gap-2" value="downloaded">
-              Downloaded
+              {t('tools.tabs.downloaded', 'Downloaded')}
             </TabsTrigger>
           </TabsList>
           
           <TabsContent value="all">
             <div className="flex w-full items-center justify-between">
-              <ToggleGroup
-                className="border-official-gray-780 rounded-full border bg-transparent px-0.5 py-1"
-                onValueChange={(value) => {
-                  setSelectedToolCategory(value as GetToolsCategory);
-                }}
-                type="single"
-                value={selectedToolCategory}
-              >
-                <ToggleGroupItem
-                  className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
-                  key="all"
-                  size="sm"
-                  value="all"
-                >
-                  All
-                </ToggleGroupItem>
-                {toolsGroup.map((tool) => (
-                  <ToggleGroupItem
-                    className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
-                    key={tool.value}
-                    size="sm"
-                    value={tool.value}
-                  >
-                    {tool.label}
-                  </ToggleGroupItem>
-                ))}
-              </ToggleGroup>
+              <div>
+                {/* Filter options if needed */}
+              </div>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

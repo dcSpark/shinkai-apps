@@ -1,6 +1,11 @@
 import { setToolMcpEnabled } from '@shinkai_network/shinkai-message-ts/api/tools/index';
-import { useMutation } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { AxiosError } from 'axios';
+
+import { FunctionKeyV2 } from '../../constants';
 
 type UseSetToolMcpEnabledInput = {
   nodeAddress: string;
@@ -21,6 +26,7 @@ export const useSetToolMcpEnabled = (options?: {
     context: unknown,
   ) => void;
 }) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (params: UseSetToolMcpEnabledInput) => {
       return setToolMcpEnabled(
@@ -30,7 +36,28 @@ export const useSetToolMcpEnabled = (options?: {
         params.mcpEnabled,
       );
     },
-    onSuccess: options?.onSuccess,
+    onSuccess: (response, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: [FunctionKeyV2.GET_SEARCH_TOOLS],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: [
+          FunctionKeyV2.GET_TOOL,
+          {
+            toolKey: variables.toolRouterKey,
+          },
+        ],
+      });
+
+      if (options?.onSuccess) {
+        options.onSuccess(response, variables, context);
+      }
+    },
     onError: options?.onError,
   });
 };

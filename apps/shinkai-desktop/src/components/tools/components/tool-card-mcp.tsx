@@ -32,13 +32,13 @@ export default function ToolCardMcp({ tool }: { tool: ShinkaiToolHeader }) {
     onSuccess: () => {
       toast.success(
         tool.mcp_enabled
-          ? 'MCP server mode disabled'
-          : 'MCP server mode enabled'
+          ? t('tools.mcpServerDisabled', 'MCP server mode disabled')
+          : t('tools.mcpServerEnabled', 'MCP server mode enabled')
       );
     },
-    onError: (error: any) => {
-      toast.error('Failed to update MCP server mode', {
-        description: error.response?.data?.message ?? error.message,
+    onError: (error: Error) => {
+      toast.error(t('tools.mcpServerUpdateFailed', 'Failed to update MCP server mode'), {
+        description: error.message,
       });
     },
   });
@@ -151,7 +151,7 @@ export default function ToolCardMcp({ tool }: { tool: ShinkaiToolHeader }) {
         </TooltipTrigger>
         <TooltipPortal>
           <TooltipContent align="center" side="top">
-            MCP Server
+            {t('tools.mcpServer', 'MCP Server')}
           </TooltipContent>
         </TooltipPortal>
       </Tooltip>

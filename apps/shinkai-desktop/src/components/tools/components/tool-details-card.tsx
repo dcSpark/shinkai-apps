@@ -176,11 +176,11 @@ export default function ToolDetailsCard({
   const { mutateAsync: setToolMcpEnabled, isPending: isTogglingMcpEnabled } =
     useSetToolMcpEnabled({
       onSuccess: () => {
-        toast.success('MCP server mode updated successfully');
+        toast.success(t('tools.mcpServerUpdated', 'MCP server mode updated successfully'));
       },
-      onError: (error: any) => {
-        toast.error('Failed to update MCP server mode', {
-          description: error.response?.data?.message ?? error.message,
+      onError: (error: Error) => {
+        toast.error(t('tools.mcpServerUpdateFailed', 'Failed to update MCP server mode'), {
+          description: error.message,
         });
       },
     });
@@ -366,7 +366,7 @@ export default function ToolDetailsCard({
                   )}
                   htmlFor="mcp-switch"
                 >
-                  MCP Server
+                  {t('tools.mcpServer', 'MCP Server')}
                 </label>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -385,7 +385,9 @@ export default function ToolDetailsCard({
                     />
                   </TooltipTrigger>
                   <TooltipContent align="center" side="top">
-                    {tool.mcp_enabled ? 'Disable MCP server mode' : 'Enable MCP server mode'}
+                    {tool.mcp_enabled 
+                      ? t('tools.mcpServerDisable', 'Disable MCP server mode') 
+                      : t('tools.mcpServerEnable', 'Enable MCP server mode')}
                   </TooltipContent>
                 </Tooltip>
               </div>
