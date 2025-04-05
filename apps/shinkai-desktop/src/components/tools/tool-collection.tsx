@@ -8,7 +8,6 @@ import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/muta
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   Alert,
   AlertDescription,
@@ -29,6 +28,7 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { useQueryClient } from '@tanstack/react-query';
 import { Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 import { toast } from 'sonner';
@@ -221,7 +221,7 @@ const ToolCollectionBase = () => {
             {selectedToolCategory === 'mcp_servers' && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-official-gray-400 hover:text-white">
+                  <Button className="text-official-gray-400 hover:text-white" size="sm" variant="ghost">
                     Add To External Client
                   </Button>
                 </DropdownMenuTrigger>
@@ -305,15 +305,13 @@ const ToolCollectionBase = () => {
                     </div>
                     <p className="text-gray-80 line-clamp-2 text-xs">{tool.description}</p>
                   </div>
-                  <div></div>
-                  <div></div>
+                  <div />
+                  <div />
                   <div className="text-gray-80 text-xs flex items-center">
                     <Tooltip>
                       <TooltipTrigger asChild className="flex items-center gap-1">
                         <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className={tool.mcp_enabled === true ? "text-green-400" : ""}
+                          className={tool.mcp_enabled === true ? "text-green-400" : ""} 
                           onClick={async () => {
                             if (auth) {
                               const updatedTool = {
@@ -339,6 +337,8 @@ const ToolCollectionBase = () => {
                               });
                             }
                           }}
+                          size="sm"
+                          variant="ghost"
                         >
                           {tool.mcp_enabled === true ? "Enabled" : "Disabled"}
                         </Button>
