@@ -221,7 +221,7 @@ const ToolCollectionBase = () => {
             {selectedToolCategory === 'mcp_servers' && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="text-official-gray-400 hover:text-white">
                     Add To External Client
                   </Button>
                 </DropdownMenuTrigger>
@@ -308,38 +308,47 @@ const ToolCollectionBase = () => {
                   <div></div>
                   <div></div>
                   <div className="text-gray-80 text-xs flex items-center">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      className={tool.mcp_enabled === true ? "text-green-400" : ""}
-                      onClick={async () => {
-                        if (auth) {
-                          const updatedTool = {
-                            ...tool,
-                            mcp_enabled: tool.mcp_enabled !== true,
-                          };
+                    <Tooltip>
+                      <TooltipTrigger asChild className="flex items-center gap-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className={tool.mcp_enabled === true ? "text-green-400" : ""}
+                          onClick={async () => {
+                            if (auth) {
+                              const updatedTool = {
+                                ...tool,
+                                mcp_enabled: tool.mcp_enabled !== true,
+                              };
 
-                          queryClient.setQueryData(
-                            [FunctionKeyV2.GET_LIST_TOOLS],
-                            (oldData: any) => {
-                              if (!oldData) return oldData;
-                              return oldData.map((t: any) =>
-                                t.tool_router_key === tool.tool_router_key ? updatedTool : t
+                              queryClient.setQueryData(
+                                [FunctionKeyV2.GET_LIST_TOOLS],
+                                (oldData: any) => {
+                                  if (!oldData) return oldData;
+                                  return oldData.map((t: any) =>
+                                    t.tool_router_key === tool.tool_router_key ? updatedTool : t
+                                  );
+                                }
                               );
-                            }
-                          );
 
-                          await setToolMcpEnabled({
-                            toolRouterKey: tool.tool_router_key,
-                            mcpEnabled: tool.mcp_enabled !== true,
-                            nodeAddress: auth.node_address,
-                            token: auth.api_v2_key,
-                          });
-                        }
-                      }}
-                    >
-                      {tool.mcp_enabled === true ? "Enabled" : "Disabled"}
-                    </Button>
+                              await setToolMcpEnabled({
+                                toolRouterKey: tool.tool_router_key,
+                                mcpEnabled: tool.mcp_enabled !== true,
+                                nodeAddress: auth.node_address,
+                                token: auth.api_v2_key,
+                              });
+                            }
+                          }}
+                        >
+                          {tool.mcp_enabled === true ? "Enabled" : "Disabled"}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent align="center" side="top">
+                          MCP Server {tool.mcp_enabled === true ? "Enabled" : "Disabled"}
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
                   </div>
                   <Tooltip>
                     <TooltipTrigger asChild className="flex items-center gap-1">
