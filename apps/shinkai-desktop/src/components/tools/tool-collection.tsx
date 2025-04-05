@@ -1,11 +1,13 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { GetToolsCategory } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useDisableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/disableAllTools/useDisableAllTools';
 import { useEnableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/enableAllTools/useEnableAllTools';
 import { useSetToolMcpEnabled } from '@shinkai_network/shinkai-node-state/v2/mutations/setToolMcpEnabled/useSetToolMcpEnabled';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Alert,
   AlertDescription,
@@ -60,6 +62,7 @@ const toolsGroup: {
 const ToolCollectionBase = () => {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
@@ -286,6 +289,21 @@ const ToolCollectionBase = () => {
                           checked={tool.mcp_enabled === true}
                           onCheckedChange={async () => {
                             if (auth) {
+                              const updatedTool = {
+                                ...tool,
+                                mcp_enabled: tool.mcp_enabled !== true,
+                              };
+                              
+                              queryClient.setQueryData(
+                                [FunctionKeyV2.GET_LIST_TOOLS],
+                                (oldData: any) => {
+                                  if (!oldData) return oldData;
+                                  return oldData.map((t: any) =>
+                                    t.tool_router_key === tool.tool_router_key ? updatedTool : t
+                                  );
+                                }
+                              );
+                              
                               await setToolMcpEnabled({
                                 toolRouterKey: tool.tool_router_key,
                                 mcpEnabled: tool.mcp_enabled !== true,
