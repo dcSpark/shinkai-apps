@@ -913,7 +913,7 @@ export default function ToolDetailsCard({
                   {isExecutionError && executionError && (
                     <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
                       <p>Tool execution failed.</p>
-                      <pre className="whitespace-break-spaces px-4 text-center">
+                      <pre className="whitespace-break-spaces break-words px-4 text-center">
                         {executionError.response?.data?.message ?? executionError.message}
                       </pre>
                     </div>

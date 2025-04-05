@@ -274,7 +274,7 @@ function ExecutionPanelBase({
                               Tool execution failed. Try generating the tool
                               code again.
                             </p>
-                            <pre className="whitespace-break-spaces px-4 text-center">
+                            <pre className="whitespace-break-spaces break-words px-4 text-center">
                               {executionToolCodeError}
                             </pre>
                           </div>
