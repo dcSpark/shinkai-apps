@@ -294,7 +294,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                   <FormLabel>Task Prompt</FormLabel>
                   <FormControl>
                     <Textarea
-                      className="!min-h-[130px] resize-none text-sm"
+                      className="!min-h-[130px] resize-vertical text-sm"
                       placeholder="e.g. Give me top hacker news stories"
                       spellCheck={false}
                       {...field}
@@ -463,7 +463,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                         <FormLabel>System Prompt</FormLabel>
                         <FormControl>
                           <Textarea
-                            className="!min-h-[130px] resize-none text-sm"
+                            className="!min-h-[130px] resize-vertical text-sm"
                             spellCheck={false}
                             {...field}
                           />
