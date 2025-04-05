@@ -314,9 +314,10 @@ const ToolCollectionBase = () => {
                           className={tool.mcp_enabled === true ? "text-green-400" : ""} 
                           onClick={async () => {
                             if (auth) {
+                              const newMcpEnabled = tool.mcp_enabled !== true;
                               const updatedTool = {
                                 ...tool,
-                                mcp_enabled: tool.mcp_enabled !== true,
+                                mcp_enabled: newMcpEnabled,
                               };
 
                               queryClient.setQueryData(
@@ -328,10 +329,15 @@ const ToolCollectionBase = () => {
                                   );
                                 }
                               );
+                              
+                              queryClient.invalidateQueries({
+                                queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
+                                refetchType: 'none', // Don't refetch, just invalidate to trigger re-render
+                              });
 
                               await setToolMcpEnabled({
                                 toolRouterKey: tool.tool_router_key,
-                                mcpEnabled: tool.mcp_enabled !== true,
+                                mcpEnabled: newMcpEnabled,
                                 nodeAddress: auth.node_address,
                                 token: auth.api_v2_key,
                               });
