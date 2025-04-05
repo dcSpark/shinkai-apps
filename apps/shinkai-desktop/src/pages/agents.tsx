@@ -58,6 +58,15 @@ function AgentsPage() {
           <div className="flex justify-between gap-4">
             <h1 className="font-clash text-3xl font-medium">Agents</h1>
             <div className="flex gap-2">
+              <Button
+                className="min-w-[100px]"
+                onClick={() => navigate('/ais')}
+                size="sm"
+                variant="outline"
+              >
+                <CreateAIIcon className="h-4 w-4" />
+                <span>AIs</span>
+              </Button>
               <ImportAgentModal />
               <Button
                 className="min-w-[100px]"
