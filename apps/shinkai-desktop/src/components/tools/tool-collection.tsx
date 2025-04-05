@@ -41,6 +41,7 @@ const toolsGroup: {
   label: string;
   value: GetToolsCategory;
 }[] = [
+
   {
     label: 'MCP Servers',
     value: 'mcp_servers',
@@ -110,7 +111,7 @@ const ToolCollectionBase = () => {
       toast.error(error.response?.data?.message ?? error.message);
     },
   });
-  
+
   const { mutateAsync: setToolMcpEnabled } = useSetToolMcpEnabled({
     onSuccess: () => {
       toast.success('MCP server mode updated successfully');
@@ -258,7 +259,7 @@ const ToolCollectionBase = () => {
               toolsList?.map((tool) => (
                 <div
                   className={cn(
-                    'grid grid-cols-[1fr_40px_40px_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
+                    'grid grid-cols-[1fr_120px_40px_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
                   )}
                   key={tool.tool_router_key}
                 >
@@ -273,7 +274,26 @@ const ToolCollectionBase = () => {
                     </div>
                     <p className="text-gray-80 line-clamp-2 text-xs">{tool.description}</p>
                   </div>
-                  <div></div>
+                  <div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          Add To External Client
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                          Claude Desktop
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          Cursor
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          Custom
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                   <div></div>
                   <div className="text-gray-80 text-xs flex items-center">
                     {tool.mcp_enabled === true ? (
@@ -293,7 +313,7 @@ const ToolCollectionBase = () => {
                                 ...tool,
                                 mcp_enabled: tool.mcp_enabled !== true,
                               };
-                              
+
                               queryClient.setQueryData(
                                 [FunctionKeyV2.GET_LIST_TOOLS],
                                 (oldData: any) => {
@@ -303,7 +323,7 @@ const ToolCollectionBase = () => {
                                   );
                                 }
                               );
-                              
+
                               await setToolMcpEnabled({
                                 toolRouterKey: tool.tool_router_key,
                                 mcpEnabled: tool.mcp_enabled !== true,
