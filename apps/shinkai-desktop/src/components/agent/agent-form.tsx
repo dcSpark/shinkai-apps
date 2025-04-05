@@ -257,7 +257,7 @@ function AgentSideChat({ agentId, onClose }: { agentId: string; onClose: () => v
           <div className="flex items-center justify-between border-b border-gray-800 p-4">
             <h2 className="text-lg font-medium">Ask Your Agent</h2>
             <div className="flex items-center gap-2">
-              <Button onClick={() => setChatInboxId(null)} size="icon" variant="ghost" title="Reset Chat">
+              <Button onClick={() => setChatInboxId(null)} size="icon" title="Reset Chat" variant="ghost">
                 <RefreshCwIcon className="h-5 w-5" />
               </Button>
               <Button onClick={onClose} size="icon" variant="ghost">

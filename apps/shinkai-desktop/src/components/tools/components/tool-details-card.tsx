@@ -27,6 +27,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  FileList,
   JsonForm,
   Switch,
   Tabs,
@@ -919,16 +920,39 @@ export default function ToolDetailsCard({
                   )}
 
                   {toolExecutionResult && (
-                    <ToolCodeEditor
-                      language="json"
-                      name="result"
-                      readOnly
-                      style={{
-                        borderRadius: '0.5rem',
-                        overflowY: 'hidden',
-                      }}
-                      value={JSON.stringify(toolExecutionResult, null, 2)}
-                    />
+                    <>
+                      <ToolCodeEditor
+                        language="json"
+                        name="result"
+                        readOnly
+                        style={{
+                          borderRadius: '0.5rem',
+                          overflowY: 'hidden',
+                        }}
+                        value={JSON.stringify(toolExecutionResult, null, 2)}
+                      />
+                      
+                      {/* Extract and display generated files if present */}
+                      {toolExecutionResult.__created_files__ && toolExecutionResult.__created_files__.length > 0 && (
+                        <div className="mt-4 flex flex-col items-start gap-1 rounded-md py-4 pt-1.5">
+                          <span className="text-gray-80 text-xs">Generated Files</span>
+                          <FileList
+                            className="mt-2"
+                            files={toolExecutionResult.__created_files__.map((filePath: string) => {
+                              const fileName = filePath.split('/').pop() || '';
+                              const fileExtension = fileName.split('.').pop() || '';
+                              return {
+                                name: fileName,
+                                path: filePath,
+                                type: 'text',
+                                id: filePath,
+                                extension: fileExtension
+                              };
+                            })}
+                          />
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               )}
