@@ -145,15 +145,15 @@ export const TaskLogs = () => {
           )}
           {isSuccess && logs.length > 0 && (
             <div className="divide-gray-375 divide-y py-2">
-              <div className="grid grid-cols-[360px_100px_100px_1fr] items-center gap-6 py-1.5 font-mono text-xs text-gray-50">
+              <div className="grid grid-cols-[360px_100px_130px_1fr] items-center gap-6 py-1.5 font-mono text-xs text-gray-50">
                 <span>Execution Time</span>
                 <span>Status</span>
-                <span>Chat</span>
-                <span>Message</span>
+                <span>Job Chat</span>
+                <span>Internal Errors</span>
               </div>
               {logs.map((log) => (
                 <div
-                  className="grid grid-cols-[360px_100px_100px_1fr] items-center gap-6 py-3 text-xs"
+                  className="grid grid-cols-[360px_100px_130px_1fr] items-center gap-6 py-3 text-xs"
                   key={log.execution_time}
                 >
                   <div className="text-muted-foreground shrink-0 font-mono">
