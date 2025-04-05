@@ -60,6 +60,7 @@ import RemoveToolButton from '../../playground-tool/components/remove-tool-butto
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import { parseConfigToJsonSchema } from '../utils/tool-config';
 import { parseInputArgsToJsonSchema } from '../utils/tool-input-args';
+import EditToolDetailsDialog from './edit-tool-details-dialog';
 
 /**
  * Removes embedding-related fields from a tool object to prevent displaying large embedding arrays
@@ -442,7 +443,7 @@ export default function ToolDetailsCard({
               className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
               value="oauth"
             >
-              OAuth & Permissions
+              OAuth &amp; Permissions
             </TabsTrigger>
           )}
           <TabsTrigger
@@ -519,7 +520,19 @@ export default function ToolDetailsCard({
                 }
                 return (
                   <div className="flex flex-col gap-1" key={label}>
-                    <span className="text-gray-80 text-xs">{label}</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-80 text-xs">{label}</span>
+                      {(label === 'Description' || label === 'Keyword' || label === 'Version') && (
+                        <EditToolDetailsDialog
+                          className="ml-auto"
+                          currentValue={String(value)}
+                          fieldName={label === 'Description' ? 'description' : label === 'Keyword' ? 'keywords' : 'version'}
+                          tool={tool}
+                          toolKey={toolKey as string}
+                          toolType={toolType}
+                        />
+                      )}
+                    </div>
                     <span className="whitespace-pre-wrap text-sm text-white">
                       {value}
                     </span>
@@ -527,12 +540,43 @@ export default function ToolDetailsCard({
                 );
               })}
             <div className="flex flex-col gap-1">
-              <span className="text-gray-80 text-xs">Preview</span>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-80 text-xs">Preview</span>
+                <EditToolDetailsDialog
+                  className="ml-auto"
+                  currentValue={toolStoreDetails?.assets?.bannerUrl ?? ''}
+                  fieldName="previewUrl"
+                  tool={tool}
+                  toolKey={toolKey as string}
+                  toolType={toolType}
+                />
+              </div>
               <div className="aspect-video overflow-hidden rounded-lg border border-zinc-800 bg-gray-500 object-cover object-top">
                 <img
                   alt=""
                   className="size-full"
                   src={toolStoreDetails?.assets?.bannerUrl ?? ''}
+                />
+              </div>
+            </div>
+            
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-80 text-xs">Icon</span>
+                <EditToolDetailsDialog
+                  className="ml-auto"
+                  currentValue={toolStoreDetails?.assets?.iconUrl ?? ''}
+                  fieldName="iconUrl"
+                  tool={tool}
+                  toolKey={toolKey as string}
+                  toolType={toolType}
+                />
+              </div>
+              <div className="h-16 w-16 overflow-hidden rounded-lg border border-zinc-800 bg-gray-500 object-cover object-center">
+                <img
+                  alt=""
+                  className="size-full"
+                  src={toolStoreDetails?.assets?.iconUrl ?? ''}
                 />
               </div>
             </div>
