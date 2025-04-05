@@ -100,7 +100,7 @@ export default function EditToolBasicInfoDialog({
         className
       )}>
         <span className="truncate">{toolName}</span>
-        <Button size="xs" variant="ghost" className="px-2 h-6">Edit</Button>
+        <Button className="px-2 h-6" size="xs" variant="ghost">Edit</Button>
       </PopoverTrigger>
       <PopoverContent
         align="start"
