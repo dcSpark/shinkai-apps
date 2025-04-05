@@ -52,6 +52,10 @@ const ToolCollectionBase = () => {
   const selectedToolCategory = usePlaygroundStore(
     (state) => state.selectedToolCategory,
   );
+  
+  const setSelectedToolCategory = usePlaygroundStore(
+    (state) => state.setSelectedToolCategory
+  );
 
   const { data: toolsList, isPending } = useGetTools({
     nodeAddress: auth?.node_address ?? '',
@@ -170,10 +174,8 @@ const ToolCollectionBase = () => {
               'my-tools': 'my_tools',
               'downloaded': 'downloaded'
             };
-            const setSelectedToolCategory = usePlaygroundStore(
-              (state) => state.setSelectedToolCategory
-            );
-            setSelectedToolCategory(categoryMap[value]);
+            const categoryValue = categoryMap[value];
+            setSelectedToolCategory(categoryValue);
           }}
           value={activeTab}
         >
