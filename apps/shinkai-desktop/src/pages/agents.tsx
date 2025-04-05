@@ -27,6 +27,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import {
   AIAgentIcon,
+  AisIcon,
   CreateAIIcon,
   ScheduledTasksIcon,
 } from '@shinkai_network/shinkai-ui/assets';
@@ -64,7 +65,7 @@ function AgentsPage() {
                 size="sm"
                 variant="outline"
               >
-                <CreateAIIcon className="h-4 w-4" />
+                <AisIcon className="h-4 w-4" />
                 <span>AIs</span>
               </Button>
               <ImportAgentModal />
