@@ -4,6 +4,7 @@ import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants'
 import { useDisableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/disableAllTools/useDisableAllTools';
 import { useEnableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/enableAllTools/useEnableAllTools';
 import { useSetToolMcpEnabled } from '@shinkai_network/shinkai-node-state/v2/mutations/setToolMcpEnabled/useSetToolMcpEnabled';
+import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
@@ -120,6 +121,15 @@ const ToolCollectionBase = () => {
       toast.error(error.message);
     },
   });
+  
+  const { mutateAsync: toggleEnableTool } = useToggleEnableTool({
+    onSuccess: () => {
+      toast.success('Tool state updated successfully');
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   return (
     <div className="flex flex-col gap-8 max-w-[956px] mx-auto">
@@ -208,6 +218,27 @@ const ToolCollectionBase = () => {
               ))}
             </ToggleGroup>
 
+            {selectedToolCategory === 'mcp_servers' && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    Add To External Client
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
+                    Claude Desktop
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Cursor
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    Custom
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -274,59 +305,52 @@ const ToolCollectionBase = () => {
                     </div>
                     <p className="text-gray-80 line-clamp-2 text-xs">{tool.description}</p>
                   </div>
-                  <div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          Add To External Client
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                          Claude Desktop
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          Cursor
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          Custom
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
+                  <div></div>
                   <div></div>
                   <div className="text-gray-80 text-xs flex items-center">
-                    {tool.mcp_enabled === true ? (
-                      <span className="text-green-400">Enabled</span>
-                    ) : (
-                      <span>Disabled</span>
-                    )}
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className={tool.mcp_enabled === true ? "text-green-400" : ""}
+                      onClick={async () => {
+                        if (auth) {
+                          const updatedTool = {
+                            ...tool,
+                            mcp_enabled: tool.mcp_enabled !== true,
+                          };
+
+                          queryClient.setQueryData(
+                            [FunctionKeyV2.GET_LIST_TOOLS],
+                            (oldData: any) => {
+                              if (!oldData) return oldData;
+                              return oldData.map((t: any) =>
+                                t.tool_router_key === tool.tool_router_key ? updatedTool : t
+                              );
+                            }
+                          );
+
+                          await setToolMcpEnabled({
+                            toolRouterKey: tool.tool_router_key,
+                            mcpEnabled: tool.mcp_enabled !== true,
+                            nodeAddress: auth.node_address,
+                            token: auth.api_v2_key,
+                          });
+                        }
+                      }}
+                    >
+                      {tool.mcp_enabled === true ? "Enabled" : "Disabled"}
+                    </Button>
                   </div>
                   <Tooltip>
                     <TooltipTrigger asChild className="flex items-center gap-1">
                       <div>
                         <Switch
-                          checked={tool.mcp_enabled === true}
+                          checked={tool.enabled === true}
                           onCheckedChange={async () => {
                             if (auth) {
-                              const updatedTool = {
-                                ...tool,
-                                mcp_enabled: tool.mcp_enabled !== true,
-                              };
-
-                              queryClient.setQueryData(
-                                [FunctionKeyV2.GET_LIST_TOOLS],
-                                (oldData: any) => {
-                                  if (!oldData) return oldData;
-                                  return oldData.map((t: any) =>
-                                    t.tool_router_key === tool.tool_router_key ? updatedTool : t
-                                  );
-                                }
-                              );
-
-                              await setToolMcpEnabled({
-                                toolRouterKey: tool.tool_router_key,
-                                mcpEnabled: tool.mcp_enabled !== true,
+                              await toggleEnableTool({
+                                toolKey: tool.tool_router_key,
+                                isToolEnabled: tool.enabled !== true,
                                 nodeAddress: auth.node_address,
                                 token: auth.api_v2_key,
                               });
@@ -337,7 +361,7 @@ const ToolCollectionBase = () => {
                     </TooltipTrigger>
                     <TooltipPortal>
                       <TooltipContent align="center" side="top">
-                        MCP Server Mode
+                        Tool Enabled
                       </TooltipContent>
                     </TooltipPortal>
                   </Tooltip>
