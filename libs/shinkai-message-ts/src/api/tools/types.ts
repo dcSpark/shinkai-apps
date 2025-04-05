@@ -13,6 +13,7 @@ export type ShinkaiToolHeader = {
   input_args: {
     properties: Record<string, { description: string; type: string }>;
   };
+  mcp_enabled?: boolean;
 };
 
 export type ToolConfig = {
@@ -72,6 +73,7 @@ export type DenoShinkaiTool = {
   activated: boolean;
   embedding?: Embedding;
   result: Record<string, any>;
+  mcp_enabled?: boolean;
 };
 export type PythonShinkaiTool = {
   activated: boolean;
@@ -87,6 +89,7 @@ export type PythonShinkaiTool = {
     json: string;
   };
   result: JSToolResult;
+  mcp_enabled?: boolean;
 };
 export type RustShinkaiTool = {
   description: string;
@@ -97,6 +100,7 @@ export type RustShinkaiTool = {
   };
   tool_embedding?: Embedding;
   tool_router_key: string;
+  mcp_enabled?: boolean;
 };
 
 export type NetworkShinkaiTool = {
@@ -114,6 +118,7 @@ export type NetworkShinkaiTool = {
   toolkit_name: string;
   usage_type: ToolUsageType;
   version: string;
+  mcp_enabled?: boolean;
 };
 
 export type ShinkaiToolType = 'Deno' | 'Python' | 'Rust' | 'Network';
@@ -128,7 +133,7 @@ export type GetToolResponse = {
   type: ShinkaiToolType;
 };
 
-export type GetToolsCategory = 'downloaded' | 'default' | 'system' | 'my_tools';
+export type GetToolsCategory = 'downloaded' | 'default' | 'system' | 'my_tools' | 'mcp_servers';
 export type GetToolsRequest = {
   category?: GetToolsCategory;
 };

@@ -2,6 +2,7 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { GetToolsCategory } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDisableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/disableAllTools/useDisableAllTools';
 import { useEnableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/enableAllTools/useEnableAllTools';
+import { useSetToolMcpEnabled } from '@shinkai_network/shinkai-node-state/v2/mutations/setToolMcpEnabled/useSetToolMcpEnabled';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
@@ -9,33 +10,47 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
+  Badge,
   Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   Input,
+  Switch,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   ToggleGroup,
   ToggleGroupItem,
   Tooltip,
   TooltipContent,
   TooltipPortal,
   TooltipTrigger,
+  buttonVariants,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon } from 'lucide-react';
+import { formatText, getVersionFromTool } from '@shinkai_network/shinkai-ui/helpers';
+import { BoltIcon, Eye, EyeOff, MoreVerticalIcon, PlayCircle, SearchIcon, XIcon } from 'lucide-react';
 import { memo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useDebounce } from '../../hooks/use-debounce';
 import { useAuth } from '../../store/auth';
 import { usePlaygroundStore } from '../playground-tool/context/playground-context';
+import RemoveToolButton from '../playground-tool/components/remove-tool-button';
 import ToolCard from './components/tool-card';
 
 const toolsGroup: {
   label: string;
   value: GetToolsCategory;
 }[] = [
+  {
+    label: 'MCP Servers',
+    value: 'mcp_servers',
+  },
   {
     label: 'Default Tools',
     value: 'default',
@@ -100,6 +115,19 @@ const ToolCollectionBase = () => {
       toast.error(error.response?.data?.message ?? error.message);
     },
   });
+  
+  const { mutateAsync: setToolMcpEnabled } = useSetToolMcpEnabled({
+    onSuccess: () => {
+      toast.success('MCP server mode updated successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to update MCP server mode', {
+        description: error.message,
+      });
+    },
+  });
+
+  const [activeTab, setActiveTab] = useState('all');
 
   return (
     <div className="flex flex-col gap-8 max-w-[956px] mx-auto">
@@ -158,90 +186,302 @@ const ToolCollectionBase = () => {
           </div>
         )}
       {!searchQuery && isSearchQuerySynced && (
-        <div>
-          <div className="flex w-full items-center justify-between">
-            <ToggleGroup
-              className="border-official-gray-780 rounded-full border bg-transparent px-0.5 py-1"
-              onValueChange={(value) => {
-                setSelectedToolCategory(value as GetToolsCategory);
-              }}
-              type="single"
-              value={selectedToolCategory}
-            >
-              <ToggleGroupItem
-                className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
-                key="all"
-                size="sm"
-                value="all"
+        <Tabs
+          className="flex h-full w-full flex-col"
+          onValueChange={(value) => setActiveTab(value)}
+          value={activeTab}
+        >
+          <TabsList className="mb-4 max-w-md">
+            <TabsTrigger className="flex flex-1 items-center gap-2" value="all">
+              All
+            </TabsTrigger>
+            <TabsTrigger className="flex flex-1 items-center gap-2" value="mcp-servers">
+              MCP Servers
+            </TabsTrigger>
+            <TabsTrigger className="flex flex-1 items-center gap-2" value="default-tools">
+              Default Tools
+            </TabsTrigger>
+            <TabsTrigger className="flex flex-1 items-center gap-2" value="my-tools">
+              My Tools
+            </TabsTrigger>
+            <TabsTrigger className="flex flex-1 items-center gap-2" value="downloaded">
+              Downloaded
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="all">
+            <div className="flex w-full items-center justify-between">
+              <ToggleGroup
+                className="border-official-gray-780 rounded-full border bg-transparent px-0.5 py-1"
+                onValueChange={(value) => {
+                  setSelectedToolCategory(value as GetToolsCategory);
+                }}
+                type="single"
+                value={selectedToolCategory}
               >
-                All
-              </ToggleGroupItem>
-              {toolsGroup.map((tool) => (
                 <ToggleGroupItem
                   className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
-                  key={tool.value}
+                  key="all"
                   size="sm"
-                  value={tool.value}
+                  value="all"
                 >
-                  {tool.label}
+                  All
                 </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
+                {toolsGroup.map((tool) => (
+                  <ToggleGroupItem
+                    className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
+                    key={tool.value}
+                    size="sm"
+                    value={tool.value}
+                  >
+                    {tool.label}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  className="text-gray-80"
-                  rounded="lg"
-                  size="icon"
-                  variant="outline"
-                >
-                  <MoreVerticalIcon className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
-                <DropdownMenuItem
-                  className="text-xs"
-                  onClick={() => {
-                    enableAllTools({
-                      nodeAddress: auth?.node_address ?? '',
-                      token: auth?.api_v2_key ?? '',
-                    });
-                  }}
-                >
-                  <Eye className="mr-2 h-4 w-4" />
-                  Enable All Tools
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-xs"
-                  onClick={() => {
-                    disableAllTools({
-                      nodeAddress: auth?.node_address ?? '',
-                      token: auth?.api_v2_key ?? '',
-                    });
-                  }}
-                >
-                  <EyeOff className="mr-2 h-4 w-4" />
-                  Disable All Tools
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
-            {toolsList?.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-2 py-8">
-                <p className="text-official-gray-400 text-sm">
-                  No tools found in this category. Create a new tool or install
-                  from the App Store.
-                </p>
-              </div>
-            ) : (
-              toolsList?.map((tool) => (
-                <ToolCard key={tool.tool_router_key} tool={tool} />
-              ))
-            )}
-          </div>
-        </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    className="text-gray-80"
+                    rounded="lg"
+                    size="icon"
+                    variant="outline"
+                  >
+                    <MoreVerticalIcon className="size-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
+                  <DropdownMenuItem
+                    className="text-xs"
+                    onClick={() => {
+                      enableAllTools({
+                        nodeAddress: auth?.node_address ?? '',
+                        token: auth?.api_v2_key ?? '',
+                      });
+                    }}
+                  >
+                    <Eye className="mr-2 h-4 w-4" />
+                    Enable All Tools
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-xs"
+                    onClick={() => {
+                      disableAllTools({
+                        nodeAddress: auth?.node_address ?? '',
+                        token: auth?.api_v2_key ?? '',
+                      });
+                    }}
+                  >
+                    <EyeOff className="mr-2 h-4 w-4" />
+                    Disable All Tools
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
+              {toolsList?.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-2 py-8">
+                  <p className="text-official-gray-400 text-sm">
+                    No tools found in this category. Create a new tool or install
+                    from the App Store.
+                  </p>
+                </div>
+              ) : (
+                toolsList?.map((tool) => (
+                  <ToolCard key={tool.tool_router_key} tool={tool} />
+                ))
+              )}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="mcp-servers">
+            <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
+              {toolsList?.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-2 py-8">
+                  <p className="text-official-gray-400 text-sm">
+                    No tools found in this category. Create a new tool or install
+                    from the App Store.
+                  </p>
+                </div>
+              ) : (
+                toolsList?.map((tool) => (
+                  <div
+                    className={cn(
+                      'grid grid-cols-[1fr_40px_40px_115px_36px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
+                    )}
+                    key={tool.tool_router_key}
+                  >
+                    <div className="flex flex-col gap-2.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-white">
+                          {formatText(tool.name)}{' '}
+                        </span>
+                        <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
+                          {getVersionFromTool(tool)}
+                        </Badge>
+                        {tool.author !== '@@official.shinkai' && (
+                          <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
+                            {tool.author}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-gray-80 line-clamp-2 text-xs">{tool.description}</p>
+                    </div>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link
+                          className={cn(
+                            buttonVariants({
+                              variant: 'outline',
+                              size: 'sm',
+                            }),
+                            'min-h-auto h-auto w-10 rounded-md py-2 flex justify-center',
+                          )}
+                          to={`/tools/${tool.tool_router_key}#try-it-out`}
+                        >
+                          <PlayCircle className="h-4 w-4" />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent align="center" side="top">
+                        {t('common.tryItOut', 'Try it out')}
+                      </TooltipContent>
+                    </Tooltip>
+                    
+                    <div className="flex justify-center">
+                      <RemoveToolButton
+                        isPlaygroundTool={tool.author === auth?.shinkai_identity}
+                        toolKey={tool.tool_router_key}
+                      />
+                    </div>
+                    
+                    <Link
+                      className={cn(
+                        buttonVariants({
+                          variant: 'outline',
+                          size: 'sm',
+                        }),
+                        'min-h-auto h-auto rounded-md py-2',
+                      )}
+                      to={`/tools/${tool.tool_router_key}`}
+                    >
+                      <BoltIcon className="mr-1.5 h-4 w-4" />
+                      {t('common.configure')}
+                    </Link>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild className="flex items-center gap-1">
+                        <div>
+                          <Switch
+                            checked={tool.enabled}
+                            disabled={isPending}
+                            onCheckedChange={async () => {
+                              await enableAllTools({
+                                nodeAddress: auth?.node_address ?? '',
+                                token: auth?.api_v2_key ?? '',
+                              });
+                            }}
+                          />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent align="center" side="top">
+                          {t('common.enabled')}
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild className="flex items-center gap-1">
+                        <div>
+                          <Switch
+                            checked={tool.mcp_enabled ?? false}
+                            disabled={!tool.enabled}
+                            onCheckedChange={async () => {
+                              try {
+                                await setToolMcpEnabled({
+                                  nodeAddress: auth?.node_address ?? '',
+                                  token: auth?.api_v2_key ?? '',
+                                  toolRouterKey: tool.tool_router_key,
+                                  mcpEnabled: !(tool.mcp_enabled ?? false)
+                                });
+                                toast.success(
+                                  tool.mcp_enabled
+                                    ? 'MCP server mode disabled'
+                                    : 'MCP server mode enabled'
+                                );
+                              } catch (error: any) {
+                                toast.error('Failed to update MCP server mode', {
+                                  description: error.message,
+                                });
+                              }
+                            }}
+                          />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent align="center" side="top">
+                          MCP Server
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
+                  </div>
+                ))
+              )}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="default-tools">
+            <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
+              {toolsList?.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-2 py-8">
+                  <p className="text-official-gray-400 text-sm">
+                    No tools found in this category. Create a new tool or install
+                    from the App Store.
+                  </p>
+                </div>
+              ) : (
+                toolsList?.map((tool) => (
+                  <ToolCard key={tool.tool_router_key} tool={tool} />
+                ))
+              )}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="my-tools">
+            <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
+              {toolsList?.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-2 py-8">
+                  <p className="text-official-gray-400 text-sm">
+                    No tools found in this category. Create a new tool or install
+                    from the App Store.
+                  </p>
+                </div>
+              ) : (
+                toolsList?.map((tool) => (
+                  <ToolCard key={tool.tool_router_key} tool={tool} />
+                ))
+              )}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="downloaded">
+            <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
+              {toolsList?.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-2 py-8">
+                  <p className="text-official-gray-400 text-sm">
+                    No tools found in this category. Create a new tool or install
+                    from the App Store.
+                  </p>
+                </div>
+              ) : (
+                toolsList?.map((tool) => (
+                  <ToolCard key={tool.tool_router_key} tool={tool} />
+                ))
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       )}
 
       {(isPending || !isSearchQuerySynced || isSearchToolListPending) && (

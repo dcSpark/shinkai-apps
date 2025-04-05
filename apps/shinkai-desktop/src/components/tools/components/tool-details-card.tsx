@@ -11,6 +11,7 @@ import { useDuplicateTool } from '@shinkai_network/shinkai-node-state/v2/mutatio
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
+import { useSetToolMcpEnabled } from '@shinkai_network/shinkai-node-state/v2/mutations/setToolMcpEnabled/useSetToolMcpEnabled';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
@@ -34,11 +35,15 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
+
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import { open } from '@tauri-apps/plugin-shell';
 import {
@@ -168,6 +173,18 @@ export default function ToolDetailsCard({
 
   const { mutateAsync: toggleEnableTool, isPending: isTogglingEnableTool } =
     useToggleEnableTool();
+    
+  const { mutateAsync: setToolMcpEnabled, isPending: isTogglingMcpEnabled } =
+    useSetToolMcpEnabled({
+      onSuccess: () => {
+        toast.success('MCP server mode updated successfully');
+      },
+      onError: (error: any) => {
+        toast.error('Failed to update MCP server mode', {
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
 
   const { mutateAsync: duplicateTool, isPending: isDuplicatingTool } =
     useDuplicateTool({
@@ -317,29 +334,62 @@ export default function ToolDetailsCard({
         </div>
         <div className="flex items-center gap-3">
           <div className="mb-4 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <label
-                className={cn(
-                  'text-sm',
-                  isEnabled ? 'text-gray-50' : 'text-gray-80',
-                )}
-                htmlFor="tool-switch"
-              >
-                {isEnabled ? 'Enabled' : 'Disabled'}
-              </label>
-              <Switch
-                checked={isEnabled}
-                disabled={isTogglingEnableTool}
-                id="tool-switch"
-                onCheckedChange={async () => {
-                  await toggleEnableTool({
-                    toolKey: toolKey ?? '',
-                    isToolEnabled: !isEnabled,
-                    nodeAddress: auth?.node_address ?? '',
-                    token: auth?.api_v2_key ?? '',
-                  });
-                }}
-              />
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <label
+                  className={cn(
+                    'text-sm',
+                    isEnabled ? 'text-gray-50' : 'text-gray-80',
+                  )}
+                  htmlFor="tool-switch"
+                >
+                  {isEnabled ? 'Enabled' : 'Disabled'}
+                </label>
+                <Switch
+                  checked={isEnabled}
+                  disabled={isTogglingEnableTool}
+                  id="tool-switch"
+                  onCheckedChange={async () => {
+                    await toggleEnableTool({
+                      toolKey: toolKey ?? '',
+                      isToolEnabled: !isEnabled,
+                      nodeAddress: auth?.node_address ?? '',
+                      token: auth?.api_v2_key ?? '',
+                    });
+                  }}
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <label
+                  className={cn(
+                    'text-sm',
+                    tool.mcp_enabled ? 'text-gray-50' : 'text-gray-80',
+                  )}
+                  htmlFor="mcp-switch"
+                >
+                  MCP Server
+                </label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Switch
+                      checked={tool.mcp_enabled ?? false}
+                      disabled={!isEnabled || isTogglingMcpEnabled}
+                      id="mcp-switch"
+                      onCheckedChange={async () => {
+                        await setToolMcpEnabled({
+                          toolRouterKey: toolKey ?? '',
+                          mcpEnabled: !(tool.mcp_enabled ?? false),
+                          nodeAddress: auth?.node_address ?? '',
+                          token: auth?.api_v2_key ?? '',
+                        });
+                      }}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent align="center" side="top">
+                    {tool.mcp_enabled ? 'Disable MCP server mode' : 'Enable MCP server mode'}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </div>
             {isPlaygroundTool &&
               'author' in tool &&
