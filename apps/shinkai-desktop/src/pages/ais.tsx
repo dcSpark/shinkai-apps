@@ -37,7 +37,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { CreateAIIcon } from '@shinkai_network/shinkai-ui/assets';
+import { AIAgentIcon, CreateAIIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Edit, Plus, TrashIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
@@ -81,14 +81,25 @@ const AIsPage = () => {
         <div className="flex flex-col gap-1 pb-6 pt-10">
           <div className="flex justify-between gap-4">
             <h1 className="font-clash text-3xl font-medium">Manage AIs</h1>
-            <Button
-              className="min-w-[100px]"
-              onClick={onAddAgentClick}
-              size="sm"
-            >
-              <Plus className="h-4 w-4" />
-              <span>{t('llmProviders.add')}</span>
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                className="min-w-[100px]"
+                onClick={() => navigate('/agents')}
+                size="sm"
+                variant="outline"
+              >
+                <AIAgentIcon className="h-4 w-4" />
+                <span>Agents</span>
+              </Button>
+              <Button
+                className="min-w-[100px]"
+                onClick={onAddAgentClick}
+                size="sm"
+              >
+                <Plus className="h-4 w-4" />
+                <span>{t('llmProviders.add')}</span>
+              </Button>
+            </div>
           </div>
           <p className="text-official-gray-400 text-sm">
             Easily manage both cloud and local AI models, <br />
