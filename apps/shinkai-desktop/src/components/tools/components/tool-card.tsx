@@ -48,7 +48,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
             </Badge>
           )}
         </div>
-        <p className="text-gray-80 line-clamp-2 text-xs">{tool.description}</p>
+        <p className="text-gray-80 whitespace-pre-wrap line-clamp-2 text-xs">{tool.description}</p>
       </div>
 
       <Tooltip>
