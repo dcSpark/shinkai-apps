@@ -584,7 +584,7 @@ function ConversationChatFooter({
                             <span className="line-clamp-1 text-white">
                               {formatText(tool.name)}
                             </span>
-                            <span className="text-gray-80 line-clamp-3 text-xs">
+                            <span className="text-gray-80 whitespace-pre-wrap line-clamp-3 text-xs">
                               {tool.description}
                             </span>
                           </div>
@@ -647,7 +647,7 @@ function ConversationChatFooter({
                         className="max-w-[500px]"
                         side="top"
                       >
-                        {tool.description}
+                        <span className="whitespace-pre-wrap">{tool.description}</span>
 
                         <br />
                         <div className="flex items-center justify-end gap-2 text-xs text-gray-100">
