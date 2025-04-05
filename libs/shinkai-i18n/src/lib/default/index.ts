@@ -628,6 +628,14 @@ export default {
         text: 'No tools found for the search query',
       },
     },
+    tabs: {
+      all: 'All',
+      mcpServers: 'MCP Servers',
+      defaultTools: 'Default Tools',
+      myTools: 'My Tools',
+      downloaded: 'Downloaded',
+    },
+    mcpServer: 'MCP Server',
     store: {
       label: 'Explore AI Store',
     },

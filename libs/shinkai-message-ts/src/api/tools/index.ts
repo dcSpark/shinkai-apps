@@ -717,3 +717,23 @@ export const copyToolAssets = async (
   );
   return response.data as CopyToolAssetsResponse;
 };
+
+export const setToolMcpEnabled = async (
+  nodeAddress: string,
+  bearerToken: string,
+  toolRouterKey: string,
+  mcpEnabled: boolean,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/set_tool_mcp_enabled'),
+    {
+      tool_router_key: toolRouterKey,
+      mcp_enabled: mcpEnabled,
+    },
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
+};
