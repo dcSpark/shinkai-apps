@@ -12,6 +12,7 @@ import {
   AlertTitle,
   Badge,
   Button,
+  buttonVariants,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -28,10 +29,9 @@ import {
   TooltipContent,
   TooltipPortal,
   TooltipTrigger,
-  buttonVariants,
 } from '@shinkai_network/shinkai-ui';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { formatText, getVersionFromTool } from '@shinkai_network/shinkai-ui/helpers';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BoltIcon, Eye, EyeOff, MoreVerticalIcon, PlayCircle, SearchIcon, XIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -39,8 +39,8 @@ import { toast } from 'sonner';
 
 import { useDebounce } from '../../hooks/use-debounce';
 import { useAuth } from '../../store/auth';
-import { usePlaygroundStore } from '../playground-tool/context/playground-context';
 import RemoveToolButton from '../playground-tool/components/remove-tool-button';
+import { usePlaygroundStore } from '../playground-tool/context/playground-context';
 import ToolCard from './components/tool-card';
 
 const toolsGroup: {
@@ -120,7 +120,7 @@ const ToolCollectionBase = () => {
     onSuccess: () => {
       toast.success('MCP server mode updated successfully');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error('Failed to update MCP server mode', {
         description: error.message,
       });

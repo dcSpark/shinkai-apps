@@ -43,7 +43,6 @@ import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
-
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import { open } from '@tauri-apps/plugin-shell';
 import {

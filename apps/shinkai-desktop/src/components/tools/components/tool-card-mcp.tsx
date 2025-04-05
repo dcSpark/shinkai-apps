@@ -1,7 +1,7 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
-import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useSetToolMcpEnabled } from '@shinkai_network/shinkai-node-state/v2/mutations/setToolMcpEnabled/useSetToolMcpEnabled';
+import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import {
   Badge,
   buttonVariants,
@@ -36,7 +36,7 @@ export default function ToolCardMcp({ tool }: { tool: ShinkaiToolHeader }) {
           : 'MCP server mode enabled'
       );
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error('Failed to update MCP server mode', {
         description: error.response?.data?.message ?? error.message,
       });
