@@ -13,6 +13,7 @@ export type ShinkaiToolHeader = {
   input_args: {
     properties: Record<string, { description: string; type: string }>;
   };
+  mcp_enabled: boolean | null;
 };
 
 export type ToolConfig = {
@@ -128,7 +129,7 @@ export type GetToolResponse = {
   type: ShinkaiToolType;
 };
 
-export type GetToolsCategory = 'downloaded' | 'default' | 'system' | 'my_tools';
+export type GetToolsCategory = 'downloaded' | 'default' | 'system' | 'my_tools' | 'mcp_servers' | 'all';
 export type GetToolsRequest = {
   category?: GetToolsCategory;
 };

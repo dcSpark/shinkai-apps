@@ -2,6 +2,7 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { GetToolsCategory } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDisableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/disableAllTools/useDisableAllTools';
 import { useEnableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/enableAllTools/useEnableAllTools';
+import { useSetToolMcpEnabled } from '@shinkai_network/shinkai-node-state/v2/mutations/setToolMcpEnabled/useSetToolMcpEnabled';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
@@ -9,12 +10,14 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
+  Badge,
   Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   Input,
+  Switch,
   ToggleGroup,
   ToggleGroupItem,
   Tooltip,
@@ -36,6 +39,14 @@ const toolsGroup: {
   label: string;
   value: GetToolsCategory;
 }[] = [
+  {
+    label: 'All',
+    value: 'all',
+  },
+  {
+    label: 'MCP Servers',
+    value: 'mcp_servers',
+  },
   {
     label: 'Default Tools',
     value: 'default',
@@ -98,6 +109,15 @@ const ToolCollectionBase = () => {
     },
     onError: (error) => {
       toast.error(error.response?.data?.message ?? error.message);
+    },
+  });
+  
+  const { mutateAsync: setToolMcpEnabled } = useSetToolMcpEnabled({
+    onSuccess: () => {
+      toast.success('MCP server mode updated successfully');
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 
@@ -235,6 +255,60 @@ const ToolCollectionBase = () => {
                   from the App Store.
                 </p>
               </div>
+            ) : selectedToolCategory === 'mcp_servers' ? (
+              toolsList?.map((tool) => (
+                <div
+                  className={cn(
+                    'grid grid-cols-[1fr_40px_40px_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
+                  )}
+                  key={tool.tool_router_key}
+                >
+                  <div className="flex flex-col gap-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-white">
+                        {tool.name}{' '}
+                      </span>
+                      <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
+                        {tool.author}
+                      </Badge>
+                    </div>
+                    <p className="text-gray-80 line-clamp-2 text-xs">{tool.description}</p>
+                  </div>
+                  <div></div>
+                  <div></div>
+                  <div className="text-gray-80 text-xs flex items-center">
+                    {tool.mcp_enabled === true ? (
+                      <span className="text-green-400">Enabled</span>
+                    ) : (
+                      <span>Disabled</span>
+                    )}
+                  </div>
+                  <Tooltip>
+                    <TooltipTrigger asChild className="flex items-center gap-1">
+                      <div>
+                        <Switch
+                          checked={tool.mcp_enabled === true}
+                          onCheckedChange={async () => {
+                            if (auth) {
+                              await setToolMcpEnabled({
+                                toolRouterKey: tool.tool_router_key,
+                                mcpEnabled: tool.mcp_enabled !== true,
+                                nodeAddress: auth.node_address,
+                                token: auth.api_v2_key,
+                              });
+                            }
+                          }}
+                        />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent align="center" side="top">
+                        MCP Server Mode
+                      </TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
+                </div>
+              ))
             ) : (
               toolsList?.map((tool) => (
                 <ToolCard key={tool.tool_router_key} tool={tool} />
