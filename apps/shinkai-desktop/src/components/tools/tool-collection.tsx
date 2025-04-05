@@ -40,10 +40,6 @@ const toolsGroup: {
   value: GetToolsCategory;
 }[] = [
   {
-    label: 'All',
-    value: 'all',
-  },
-  {
     label: 'MCP Servers',
     value: 'mcp_servers',
   },
