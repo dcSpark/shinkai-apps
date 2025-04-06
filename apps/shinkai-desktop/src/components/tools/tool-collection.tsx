@@ -91,7 +91,6 @@ const ToolCollectionBase = () => {
       toolsList.forEach(tool => {
         initialState[tool.tool_router_key] = tool.mcp_enabled === true;
       });
-      console.log('Initializing mcpEnabledState with:', initialState);
       setMcpEnabledState(initialState);
     }
   }, [toolsList]);
@@ -344,66 +343,44 @@ const ToolCollectionBase = () => {
                                 : tool.mcp_enabled === true;
                               const newMcpEnabled = !currentState;
                               
-                              console.log('Before toggle - Current tool.mcp_enabled:', tool.mcp_enabled);
-                              console.log('Current mcpEnabledState:', mcpEnabledState[tool.tool_router_key]);
-                              console.log('Using currentState for toggle:', currentState);
-                              console.log('Toggling to new MCP state:', newMcpEnabled);
-                              
                               const updatedTool = {
                                 ...tool,
                                 mcp_enabled: newMcpEnabled,
                               };
                               
-                              console.log('Created updated tool object:', updatedTool);
-
-                              const beforeCache = queryClient.getQueryData([FunctionKeyV2.GET_LIST_TOOLS]);
-                              console.log('Cache before update:', beforeCache);
+                              queryClient.getQueryData([FunctionKeyV2.GET_LIST_TOOLS]);
 
                               queryClient.setQueryData(
                                 [FunctionKeyV2.GET_LIST_TOOLS],
                                 (oldData: unknown) => {
                                   if (!oldData || !Array.isArray(oldData)) {
-                                    console.log('Invalid oldData format:', oldData);
                                     return oldData;
                                   }
                                   
-                                  const newData = oldData.map((t) =>
+                                  return oldData.map((t) =>
                                     t.tool_router_key === tool.tool_router_key ? updatedTool : t
                                   );
-                                  console.log('New data after mapping:', newData);
-                                  return newData;
                                 }
                               );
                               
-                              const afterCache = queryClient.getQueryData([FunctionKeyV2.GET_LIST_TOOLS]);
-                              console.log('Cache after update:', afterCache);
+                              queryClient.getQueryData([FunctionKeyV2.GET_LIST_TOOLS]);
                               
                               // queryClient.invalidateQueries({
                               //   queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
                               // });
 
-                              setMcpEnabledState(prev => {
-                                console.log('Updating mcpEnabledState from:', prev[tool.tool_router_key], 'to:', newMcpEnabled);
-                                return {
-                                  ...prev,
-                                  [tool.tool_router_key]: newMcpEnabled
-                                };
-                              });
+                              setMcpEnabledState(prev => ({
+                                ...prev,
+                                [tool.tool_router_key]: newMcpEnabled
+                              }));
                               
                               try {
-                                console.log('Calling setToolMcpEnabled API with:', {
-                                  toolRouterKey: tool.tool_router_key,
-                                  mcpEnabled: newMcpEnabled
-                                });
-                                
-                                const response = await setToolMcpEnabled({
+                                await setToolMcpEnabled({
                                   toolRouterKey: tool.tool_router_key,
                                   mcpEnabled: newMcpEnabled,
                                   nodeAddress: auth.node_address,
                                   token: auth.api_v2_key,
                                 });
-                                
-                                console.log('API response:', response);
                               } catch (error) {
                                 setMcpEnabledState(prev => ({
                                   ...prev,
@@ -503,17 +480,9 @@ const ToolCollectionBase = () => {
     </div>
   );
 };
-const ToolCollectionWithLogging = () => {
-  console.log('ToolCollection rendering');
-  
-  const queryClient = useQueryClient();
-  const toolsData = queryClient.getQueryData([FunctionKeyV2.GET_LIST_TOOLS]);
-  console.log('Current tools data in cache:', toolsData);
-  
+export const ToolCollection = () => {
   return <ToolCollectionBase />;
 };
-
-export const ToolCollection = ToolCollectionWithLogging;
 
 export function DockerStatus() {
   const auth = useAuth((state) => state.auth);
