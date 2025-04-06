@@ -313,7 +313,13 @@ const ToolCollectionBase = () => {
                     <Tooltip>
                       <TooltipTrigger asChild className="flex items-center gap-1">
                         <Button 
-                          className={tool.mcp_enabled === true ? "text-green-400" : ""} 
+                          className={
+                            (mcpEnabledState[tool.tool_router_key] !== undefined 
+                              ? mcpEnabledState[tool.tool_router_key] 
+                              : tool.mcp_enabled === true) 
+                            ? "text-green-400" 
+                            : ""
+                          } 
                           disabled={tool.enabled !== true}
                           onClick={async () => {
                             if (auth) {
