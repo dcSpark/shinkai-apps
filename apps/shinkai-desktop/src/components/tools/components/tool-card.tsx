@@ -111,9 +111,9 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
                 
                 queryClient.setQueryData(
                   [FunctionKeyV2.GET_LIST_TOOLS],
-                  (oldData: any) => {
+                  (oldData: ShinkaiToolHeader[] | undefined) => {
                     if (!oldData) return oldData;
-                    return oldData.map((t: any) =>
+                    return oldData.map((t: ShinkaiToolHeader) =>
                       t.tool_router_key === tool.tool_router_key ? updatedTool : t
                     );
                   }
