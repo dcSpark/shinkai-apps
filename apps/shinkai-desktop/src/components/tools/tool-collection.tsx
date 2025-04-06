@@ -328,9 +328,9 @@ const ToolCollectionBase = () => {
 
                               queryClient.setQueryData(
                                 [FunctionKeyV2.GET_LIST_TOOLS],
-                                (oldData: any) => {
-                                  if (!oldData) return oldData;
-                                  return oldData.map((t: any) =>
+                                (oldData: unknown) => {
+                                  if (!oldData || !Array.isArray(oldData)) return oldData;
+                                  return oldData.map((t) =>
                                     t.tool_router_key === tool.tool_router_key ? updatedTool : t
                                   );
                                 }
@@ -350,9 +350,9 @@ const ToolCollectionBase = () => {
                               } catch (error) {
                                 queryClient.setQueryData(
                                   [FunctionKeyV2.GET_LIST_TOOLS],
-                                  (oldData: any) => {
-                                    if (!oldData) return oldData;
-                                    return oldData.map((t: any) =>
+                                  (oldData: unknown) => {
+                                    if (!oldData || !Array.isArray(oldData)) return oldData;
+                                    return oldData.map((t) =>
                                       t.tool_router_key === tool.tool_router_key ? { ...tool } : t
                                     );
                                   }
