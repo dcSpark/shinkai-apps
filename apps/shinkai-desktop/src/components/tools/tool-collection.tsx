@@ -371,6 +371,9 @@ const ToolCollectionBase = () => {
                                 });
                                 
                                 console.log('API response:', response);
+                                
+                                tool.mcp_enabled = newMcpEnabled;
+                                console.log('Directly updated tool object:', tool);
                               } catch (error) {
                                 queryClient.setQueryData(
                                   [FunctionKeyV2.GET_LIST_TOOLS],
