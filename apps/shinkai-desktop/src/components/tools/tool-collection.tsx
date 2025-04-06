@@ -239,10 +239,13 @@ const ToolCollectionBase = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => {
+                    const auth = useAuth.getState().auth;
+                    const nodeUrl = auth?.node_address || 'http://localhost:9950';
+                    
                     import('../../lib/external-clients/claude-desktop').then(({ displayClaudeDesktopInstructions }) => {
                       displayClaudeDesktopInstructions('shinkai-mcp-server', {
                         command: 'npx',
-                        args: ['-y', 'supergateway', '--sse', 'http://localhost:9950/mcp/sse']
+                        args: ['-y', 'supergateway', '--sse', `${nodeUrl}/mcp/sse`]
                       });
                     });
                   }}>
