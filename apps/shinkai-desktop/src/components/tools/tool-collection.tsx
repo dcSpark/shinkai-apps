@@ -30,7 +30,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon } from 'lucide-react';
-import { memo, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 import { useDebounce } from '../../hooks/use-debounce';
@@ -68,6 +68,8 @@ const ToolCollectionBase = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
+  
+  const [mcpEnabledState, setMcpEnabledState] = useState<Record<string, boolean>>({});
 
   const selectedToolCategory = usePlaygroundStore(
     (state) => state.selectedToolCategory,
@@ -82,6 +84,16 @@ const ToolCollectionBase = () => {
     token: auth?.api_v2_key ?? '',
     category: selectedToolCategory === 'all' ? undefined : selectedToolCategory,
   });
+  
+  useEffect(() => {
+    if (toolsList && toolsList.length > 0) {
+      const initialState: Record<string, boolean> = {};
+      toolsList.forEach(tool => {
+        initialState[tool.tool_router_key] = tool.mcp_enabled === true;
+      });
+      setMcpEnabledState(initialState);
+    }
+  }, [toolsList]);
 
   const {
     data: searchToolList,
@@ -311,7 +323,13 @@ const ToolCollectionBase = () => {
                     <Tooltip>
                       <TooltipTrigger asChild className="flex items-center gap-1">
                         <Button 
-                          className={tool.mcp_enabled === true ? "text-green-400" : ""} 
+                          className={
+                            (mcpEnabledState[tool.tool_router_key] !== undefined 
+                              ? mcpEnabledState[tool.tool_router_key] 
+                              : tool.mcp_enabled === true) 
+                            ? "text-green-400" 
+                            : ""
+                          } 
                           disabled={tool.enabled !== true}
                           onClick={async () => {
                             if (auth) {
@@ -320,46 +338,83 @@ const ToolCollectionBase = () => {
                                 return;
                               }
                               
-                              const newMcpEnabled = tool.mcp_enabled !== true;
+                              const currentState = mcpEnabledState[tool.tool_router_key] !== undefined 
+                                ? mcpEnabledState[tool.tool_router_key] 
+                                : tool.mcp_enabled === true;
+                              const newMcpEnabled = !currentState;
+                              
                               const updatedTool = {
                                 ...tool,
                                 mcp_enabled: newMcpEnabled,
                               };
+                              
+                              queryClient.getQueryData([FunctionKeyV2.GET_LIST_TOOLS]);
 
                               queryClient.setQueryData(
                                 [FunctionKeyV2.GET_LIST_TOOLS],
-                                (oldData: any) => {
-                                  if (!oldData) return oldData;
-                                  return oldData.map((t: any) =>
+                                (oldData: unknown) => {
+                                  if (!oldData || !Array.isArray(oldData)) {
+                                    return oldData;
+                                  }
+                                  
+                                  return oldData.map((t) =>
                                     t.tool_router_key === tool.tool_router_key ? updatedTool : t
                                   );
                                 }
                               );
                               
-                              queryClient.invalidateQueries({
-                                queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
-                                refetchType: 'none', // Don't refetch, just invalidate to trigger re-render
-                              });
+                              queryClient.getQueryData([FunctionKeyV2.GET_LIST_TOOLS]);
+                              
+                              // queryClient.invalidateQueries({
+                              //   queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
+                              // });
 
-                              await setToolMcpEnabled({
-                                toolRouterKey: tool.tool_router_key,
-                                mcpEnabled: newMcpEnabled,
-                                nodeAddress: auth.node_address,
-                                token: auth.api_v2_key,
-                              });
+                              setMcpEnabledState(prev => ({
+                                ...prev,
+                                [tool.tool_router_key]: newMcpEnabled
+                              }));
+                              
+                              try {
+                                await setToolMcpEnabled({
+                                  toolRouterKey: tool.tool_router_key,
+                                  mcpEnabled: newMcpEnabled,
+                                  nodeAddress: auth.node_address,
+                                  token: auth.api_v2_key,
+                                });
+                              } catch (error) {
+                                setMcpEnabledState(prev => ({
+                                  ...prev,
+                                  [tool.tool_router_key]: tool.mcp_enabled === true
+                                }));
+                                
+                                queryClient.setQueryData(
+                                  [FunctionKeyV2.GET_LIST_TOOLS],
+                                  (oldData: unknown) => {
+                                    if (!oldData || !Array.isArray(oldData)) return oldData;
+                                    return oldData.map((t) =>
+                                      t.tool_router_key === tool.tool_router_key ? { ...tool } : t
+                                    );
+                                  }
+                                );
+                                throw error; // Let the error handler handle the error
+                              }
                             }
                           }}
                           size="sm"
                           variant="ghost"
                         >
-                          {tool.mcp_enabled === true ? "Enabled" : "Disabled"}
+                          {mcpEnabledState[tool.tool_router_key] !== undefined 
+                            ? mcpEnabledState[tool.tool_router_key] ? "Enabled" : "Disabled"
+                            : tool.mcp_enabled === true ? "Enabled" : "Disabled"}
                         </Button>
                       </TooltipTrigger>
                       <TooltipPortal>
                         <TooltipContent align="center" side="top">
                           {tool.enabled !== true 
                             ? "Enable tool first to manage MCP Server mode" 
-                            : `MCP Server ${tool.mcp_enabled === true ? "Enabled" : "Disabled"}`}
+                            : `MCP Server ${mcpEnabledState[tool.tool_router_key] !== undefined 
+                                ? mcpEnabledState[tool.tool_router_key] ? "Enabled" : "Disabled"
+                                : tool.mcp_enabled === true ? "Enabled" : "Disabled"}`}
                         </TooltipContent>
                       </TooltipPortal>
                     </Tooltip>
@@ -425,7 +480,9 @@ const ToolCollectionBase = () => {
     </div>
   );
 };
-export const ToolCollection = memo(ToolCollectionBase, () => true);
+export const ToolCollection = () => {
+  return <ToolCollectionBase />;
+};
 
 export function DockerStatus() {
   const auth = useAuth((state) => state.auth);

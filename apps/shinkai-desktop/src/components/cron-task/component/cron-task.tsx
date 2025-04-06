@@ -22,7 +22,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
@@ -281,8 +280,8 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
               render={({ field }) => (
                 <TextField 
                   field={field} 
-                  label="Task Description" 
-                  helperMessage="Briefly describe your agent's purpose (not used by the agent)."
+                  helperMessage="Briefly describe your agent's purpose (not used by the agent)." 
+                  label="Task Description"
                 />
               )}
             />

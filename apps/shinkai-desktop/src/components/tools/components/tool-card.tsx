@@ -11,12 +11,12 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   formatText,
   getVersionFromTool,
 } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { useQueryClient } from '@tanstack/react-query';
 import { BoltIcon, PlayCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -111,9 +111,9 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
                 
                 queryClient.setQueryData(
                   [FunctionKeyV2.GET_LIST_TOOLS],
-                  (oldData: any) => {
-                    if (!oldData) return oldData;
-                    return oldData.map((t: any) =>
+                  (oldData: unknown) => {
+                    if (!oldData || !Array.isArray(oldData)) return oldData;
+                    return oldData.map((t) =>
                       t.tool_router_key === tool.tool_router_key ? updatedTool : t
                     );
                   }
