@@ -30,7 +30,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon } from 'lucide-react';
-import { memo, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 import { useDebounce } from '../../hooks/use-debounce';
@@ -84,6 +84,17 @@ const ToolCollectionBase = () => {
     token: auth?.api_v2_key ?? '',
     category: selectedToolCategory === 'all' ? undefined : selectedToolCategory,
   });
+  
+  useEffect(() => {
+    if (toolsList && toolsList.length > 0) {
+      const initialState: Record<string, boolean> = {};
+      toolsList.forEach(tool => {
+        initialState[tool.tool_router_key] = tool.mcp_enabled === true;
+      });
+      console.log('Initializing mcpEnabledState with:', initialState);
+      setMcpEnabledState(initialState);
+    }
+  }, [toolsList]);
 
   const {
     data: searchToolList,
@@ -331,6 +342,7 @@ const ToolCollectionBase = () => {
                               const newMcpEnabled = tool.mcp_enabled !== true;
                               console.log('Before toggle - Current MCP state:', tool.mcp_enabled);
                               console.log('Toggling to new MCP state:', newMcpEnabled);
+                              console.log('Current mcpEnabledState for this tool:', mcpEnabledState[tool.tool_router_key]);
                               
                               const updatedTool = {
                                 ...tool,
@@ -365,10 +377,13 @@ const ToolCollectionBase = () => {
                               //   queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
                               // });
 
-                              setMcpEnabledState(prev => ({
-                                ...prev,
-                                [tool.tool_router_key]: newMcpEnabled
-                              }));
+                              setMcpEnabledState(prev => {
+                                console.log('Updating mcpEnabledState from:', prev[tool.tool_router_key], 'to:', newMcpEnabled);
+                                return {
+                                  ...prev,
+                                  [tool.tool_router_key]: newMcpEnabled
+                                };
+                              });
                               
                               try {
                                 console.log('Calling setToolMcpEnabled API with:', {
@@ -491,7 +506,7 @@ const ToolCollectionWithLogging = () => {
   return <ToolCollectionBase />;
 };
 
-export const ToolCollection = memo(ToolCollectionWithLogging);
+export const ToolCollection = ToolCollectionWithLogging;
 
 export function DockerStatus() {
   const auth = useAuth((state) => state.auth);
