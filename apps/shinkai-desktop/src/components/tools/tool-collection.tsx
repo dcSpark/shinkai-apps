@@ -388,7 +388,10 @@ const ToolCollectionBase = () => {
                           size="sm"
                           variant="ghost"
                         >
-                          {tool.mcp_enabled === true ? "Enabled" : "Disabled"}
+                          {(() => {
+                            console.log(`Rendering button text for tool ${tool.tool_router_key}, mcp_enabled:`, tool.mcp_enabled);
+                            return tool.mcp_enabled === true ? "Enabled" : "Disabled";
+                          })()}
                         </Button>
                       </TooltipTrigger>
                       <TooltipPortal>
