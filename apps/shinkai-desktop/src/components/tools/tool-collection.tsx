@@ -68,6 +68,8 @@ const ToolCollectionBase = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
+  
+  const [mcpEnabledState, setMcpEnabledState] = useState<Record<string, boolean>>({});
 
   const selectedToolCategory = usePlaygroundStore(
     (state) => state.selectedToolCategory,
@@ -357,6 +359,11 @@ const ToolCollectionBase = () => {
                               //   queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
                               // });
 
+                              setMcpEnabledState(prev => ({
+                                ...prev,
+                                [tool.tool_router_key]: newMcpEnabled
+                              }));
+                              
                               try {
                                 console.log('Calling setToolMcpEnabled API with:', {
                                   toolRouterKey: tool.tool_router_key,
@@ -371,10 +378,12 @@ const ToolCollectionBase = () => {
                                 });
                                 
                                 console.log('API response:', response);
-                                
-                                tool.mcp_enabled = newMcpEnabled;
-                                console.log('Directly updated tool object:', tool);
                               } catch (error) {
+                                setMcpEnabledState(prev => ({
+                                  ...prev,
+                                  [tool.tool_router_key]: tool.mcp_enabled === true
+                                }));
+                                
                                 queryClient.setQueryData(
                                   [FunctionKeyV2.GET_LIST_TOOLS],
                                   (oldData: unknown) => {
@@ -391,10 +400,9 @@ const ToolCollectionBase = () => {
                           size="sm"
                           variant="ghost"
                         >
-                          {(() => {
-                            console.log(`Rendering button text for tool ${tool.tool_router_key}, mcp_enabled:`, tool.mcp_enabled);
-                            return tool.mcp_enabled === true ? "Enabled" : "Disabled";
-                          })()}
+                          {mcpEnabledState[tool.tool_router_key] !== undefined 
+                            ? mcpEnabledState[tool.tool_router_key] ? "Enabled" : "Disabled"
+                            : tool.mcp_enabled === true ? "Enabled" : "Disabled"}
                         </Button>
                       </TooltipTrigger>
                       <TooltipPortal>
