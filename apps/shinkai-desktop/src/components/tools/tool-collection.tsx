@@ -336,17 +336,29 @@ const ToolCollectionBase = () => {
                                 }
                               );
                               
-                              queryClient.invalidateQueries({
-                                queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
-                                refetchType: 'none', // Don't refetch, just invalidate to trigger re-render
-                              });
+                              // queryClient.invalidateQueries({
+                              //   queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
+                              // });
 
-                              await setToolMcpEnabled({
-                                toolRouterKey: tool.tool_router_key,
-                                mcpEnabled: newMcpEnabled,
-                                nodeAddress: auth.node_address,
-                                token: auth.api_v2_key,
-                              });
+                              try {
+                                await setToolMcpEnabled({
+                                  toolRouterKey: tool.tool_router_key,
+                                  mcpEnabled: newMcpEnabled,
+                                  nodeAddress: auth.node_address,
+                                  token: auth.api_v2_key,
+                                });
+                              } catch (error) {
+                                queryClient.setQueryData(
+                                  [FunctionKeyV2.GET_LIST_TOOLS],
+                                  (oldData: any) => {
+                                    if (!oldData) return oldData;
+                                    return oldData.map((t: any) =>
+                                      t.tool_router_key === tool.tool_router_key ? { ...tool } : t
+                                    );
+                                  }
+                                );
+                                throw error; // Let the error handler handle the error
+                              }
                             }
                           }}
                           size="sm"
