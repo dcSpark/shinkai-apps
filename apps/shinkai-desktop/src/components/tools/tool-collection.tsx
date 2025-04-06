@@ -339,10 +339,15 @@ const ToolCollectionBase = () => {
                                 return;
                               }
                               
-                              const newMcpEnabled = tool.mcp_enabled !== true;
-                              console.log('Before toggle - Current MCP state:', tool.mcp_enabled);
+                              const currentState = mcpEnabledState[tool.tool_router_key] !== undefined 
+                                ? mcpEnabledState[tool.tool_router_key] 
+                                : tool.mcp_enabled === true;
+                              const newMcpEnabled = !currentState;
+                              
+                              console.log('Before toggle - Current tool.mcp_enabled:', tool.mcp_enabled);
+                              console.log('Current mcpEnabledState:', mcpEnabledState[tool.tool_router_key]);
+                              console.log('Using currentState for toggle:', currentState);
                               console.log('Toggling to new MCP state:', newMcpEnabled);
-                              console.log('Current mcpEnabledState for this tool:', mcpEnabledState[tool.tool_router_key]);
                               
                               const updatedTool = {
                                 ...tool,
@@ -430,7 +435,9 @@ const ToolCollectionBase = () => {
                         <TooltipContent align="center" side="top">
                           {tool.enabled !== true 
                             ? "Enable tool first to manage MCP Server mode" 
-                            : `MCP Server ${tool.mcp_enabled === true ? "Enabled" : "Disabled"}`}
+                            : `MCP Server ${mcpEnabledState[tool.tool_router_key] !== undefined 
+                                ? mcpEnabledState[tool.tool_router_key] ? "Enabled" : "Disabled"
+                                : tool.mcp_enabled === true ? "Enabled" : "Disabled"}`}
                         </TooltipContent>
                       </TooltipPortal>
                     </Tooltip>
