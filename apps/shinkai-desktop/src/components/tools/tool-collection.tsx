@@ -312,8 +312,14 @@ const ToolCollectionBase = () => {
                       <TooltipTrigger asChild className="flex items-center gap-1">
                         <Button 
                           className={tool.mcp_enabled === true ? "text-green-400" : ""} 
+                          disabled={tool.enabled !== true}
                           onClick={async () => {
                             if (auth) {
+                              if (tool.enabled !== true) {
+                                toast.error('Tool must be enabled before changing MCP server mode');
+                                return;
+                              }
+                              
                               const newMcpEnabled = tool.mcp_enabled !== true;
                               const updatedTool = {
                                 ...tool,
@@ -351,7 +357,9 @@ const ToolCollectionBase = () => {
                       </TooltipTrigger>
                       <TooltipPortal>
                         <TooltipContent align="center" side="top">
-                          MCP Server {tool.mcp_enabled === true ? "Enabled" : "Disabled"}
+                          {tool.enabled !== true 
+                            ? "Enable tool first to manage MCP Server mode" 
+                            : `MCP Server ${tool.mcp_enabled === true ? "Enabled" : "Disabled"}`}
                         </TooltipContent>
                       </TooltipPortal>
                     </Tooltip>

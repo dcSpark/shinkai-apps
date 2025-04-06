@@ -1,5 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import {
   Badge,
@@ -10,6 +11,7 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   formatText,
   getVersionFromTool,
@@ -24,6 +26,7 @@ import RemoveToolButton from '../../playground-tool/components/remove-tool-butto
 export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
+  const queryClient = useQueryClient();
 
   const { mutateAsync: toggleEnableTool, isPending } = useToggleEnableTool();
 
@@ -99,9 +102,31 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
               checked={tool.enabled}
               disabled={isPending}
               onCheckedChange={async () => {
+                const newEnabledState = !tool.enabled;
+                
+                const updatedTool = {
+                  ...tool,
+                  enabled: newEnabledState,
+                };
+                
+                queryClient.setQueryData(
+                  [FunctionKeyV2.GET_LIST_TOOLS],
+                  (oldData: any) => {
+                    if (!oldData) return oldData;
+                    return oldData.map((t: any) =>
+                      t.tool_router_key === tool.tool_router_key ? updatedTool : t
+                    );
+                  }
+                );
+                
+                queryClient.invalidateQueries({
+                  queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
+                  refetchType: 'none',
+                });
+                
                 await toggleEnableTool({
                   toolKey: tool.tool_router_key,
-                  isToolEnabled: !tool.enabled,
+                  isToolEnabled: newEnabledState,
                   nodeAddress: auth?.node_address ?? '',
                   token: auth?.api_v2_key ?? '',
                 });
