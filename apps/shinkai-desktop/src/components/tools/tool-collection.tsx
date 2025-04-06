@@ -466,6 +466,11 @@ const ToolCollectionBase = () => {
 };
 const ToolCollectionWithLogging = () => {
   console.log('ToolCollection rendering');
+  
+  const queryClient = useQueryClient();
+  const toolsData = queryClient.getQueryData([FunctionKeyV2.GET_LIST_TOOLS]);
+  console.log('Current tools data in cache:', toolsData);
+  
   return <ToolCollectionBase />;
 };
 
