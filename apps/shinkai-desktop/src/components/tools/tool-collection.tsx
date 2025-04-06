@@ -238,13 +238,24 @@ const ToolCollectionBase = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    import('../../lib/external-clients/claude-desktop').then(({ displayClaudeDesktopInstructions }) => {
+                      displayClaudeDesktopInstructions('shinkai-mcp-server', {
+                        command: 'npx',
+                        args: ['-y', 'supergateway', '--sse', 'http://localhost:9950/mcp/sse']
+                      });
+                    });
+                  }}>
                     Claude Desktop
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    toast.info('Cursor configuration will be implemented in a future update');
+                  }}>
                     Cursor
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    toast.info('Custom configuration will be implemented in a future update');
+                  }}>
                     Custom
                   </DropdownMenuItem>
                 </DropdownMenuContent>
