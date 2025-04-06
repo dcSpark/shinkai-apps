@@ -143,6 +143,41 @@ const ToolCollectionBase = () => {
     },
   });
 
+  const handleAddToCursor = () => {
+    try {
+      if (!auth?.node_address) {
+        toast.error('Node address not found');
+        return;
+      }
+
+      const url = new URL(auth.node_address);
+      const baseUrl = `${url.protocol}//${url.host}`;
+      const sseUrl = `${baseUrl}/mcp/sse`;
+
+      window.navigator.clipboard.writeText(JSON.stringify({
+        "mcpServers": {
+          "shinkai-mcp-server": {
+            "command": "npx",
+            "args": [
+              "-y",
+              "supergateway",
+              "--sse",
+              sseUrl
+            ]
+          }
+        }
+      }, null, 2));
+
+      toast.success(
+        'Cursor configuration copied to clipboard. Please paste it into your ~/.cursor/mcp.json file.',
+        { duration: 5000 }
+      );
+    } catch (error) {
+      console.error('Error adding to Cursor:', error);
+      toast.error('Failed to add to Cursor. Please try again.');
+    }
+  };
+
   return (
     <div className="flex flex-col gap-8 max-w-[956px] mx-auto">
       <div className="flex items-center justify-between">
@@ -241,7 +276,7 @@ const ToolCollectionBase = () => {
                   <DropdownMenuItem>
                     Claude Desktop
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleAddToCursor}>
                     Cursor
                   </DropdownMenuItem>
                   <DropdownMenuItem>
