@@ -19,11 +19,8 @@ export const useSetToolMcpEnabled = (options?: Options) => {
 
   return useMutation({
     mutationFn: (input: SetToolMcpEnabledInput) => setToolMcpEnabled(input),
-    onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({
-        queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
-      });
-
+    onSuccess: async (data, variables) => {
+      
       await queryClient.invalidateQueries({
         queryKey: [
           FunctionKeyV2.GET_TOOL,
@@ -36,7 +33,7 @@ export const useSetToolMcpEnabled = (options?: Options) => {
       });
 
       if (options?.onSuccess) {
-        options.onSuccess(_, variables, undefined);
+        options.onSuccess(data, variables, undefined);
       }
     },
     ...options,
