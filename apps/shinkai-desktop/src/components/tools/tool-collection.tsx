@@ -461,7 +461,12 @@ const ToolCollectionBase = () => {
     </div>
   );
 };
-export const ToolCollection = memo(ToolCollectionBase);
+const ToolCollectionWithLogging = () => {
+  console.log('ToolCollection rendering');
+  return <ToolCollectionBase />;
+};
+
+export const ToolCollection = memo(ToolCollectionWithLogging);
 
 export function DockerStatus() {
   const auth = useAuth((state) => state.auth);
