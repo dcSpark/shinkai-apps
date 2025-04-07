@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { setPreferences } from '@shinkai_network/shinkai-message-ts/api/methods';
 import { useAuth } from '../../store/auth';
+import { shinkaiNodeSetDefaultLlmProvider } from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
 
 interface DefaultLlmProviderUpdaterProps {
   defaultAgentId: string;
@@ -21,9 +21,11 @@ export const DefaultLlmProviderUpdater: React.FC<DefaultLlmProviderUpdaterProps>
       if (!auth?.node_address || !auth?.api_v2_key) {
         throw new Error('Node address and API key are required');
       }
-      return setPreferences(auth.node_address, auth.api_v2_key, {
-        default_llm_provider: llmProvider,
-      });
+      return shinkaiNodeSetDefaultLlmProvider(
+        llmProvider,
+        auth.node_address,
+        auth.api_v2_key
+      );
     },
     onError: (error) => {
       console.error('Failed to set default LLM provider:', error);
