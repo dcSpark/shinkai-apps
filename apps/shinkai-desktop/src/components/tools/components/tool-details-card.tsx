@@ -27,6 +27,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  FileList,
   JsonForm,
   Switch,
   Tabs,
@@ -60,6 +61,7 @@ import RemoveToolButton from '../../playground-tool/components/remove-tool-butto
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import { parseConfigToJsonSchema } from '../utils/tool-config';
 import { parseInputArgsToJsonSchema } from '../utils/tool-input-args';
+import EditToolDetailsDialog from './edit-tool-details-dialog';
 
 /**
  * Removes embedding-related fields from a tool object to prevent displaying large embedding arrays
@@ -309,7 +311,7 @@ export default function ToolDetailsCard({
           <h1 className="mb-2 text-lg font-bold">
             {formatText(tool.name ?? '')}
           </h1>
-          <p className="text-gray-80 mb-4 line-clamp-2 text-sm">
+          <p className="text-gray-80 mb-4 whitespace-pre-wrap line-clamp-2 text-sm">
             {tool.description}
           </p>
         </div>
@@ -442,7 +444,7 @@ export default function ToolDetailsCard({
               className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
               value="oauth"
             >
-              OAuth & Permissions
+              OAuth &amp; Permissions
             </TabsTrigger>
           )}
           <TabsTrigger
@@ -519,7 +521,19 @@ export default function ToolDetailsCard({
                 }
                 return (
                   <div className="flex flex-col gap-1" key={label}>
-                    <span className="text-gray-80 text-xs">{label}</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-80 text-xs">{label}</span>
+                      {(label === 'Description' || label === 'Keyword' || label === 'Version') && (
+                        <EditToolDetailsDialog
+                          className="ml-auto"
+                          currentValue={String(value)}
+                          fieldName={label === 'Description' ? 'description' : label === 'Keyword' ? 'keywords' : 'version'}
+                          tool={tool}
+                          toolKey={toolKey as string}
+                          toolType={toolType}
+                        />
+                      )}
+                    </div>
                     <span className="whitespace-pre-wrap text-sm text-white">
                       {value}
                     </span>
@@ -527,12 +541,43 @@ export default function ToolDetailsCard({
                 );
               })}
             <div className="flex flex-col gap-1">
-              <span className="text-gray-80 text-xs">Preview</span>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-80 text-xs">Preview</span>
+                <EditToolDetailsDialog
+                  className="ml-auto"
+                  currentValue={toolStoreDetails?.assets?.bannerUrl ?? ''}
+                  fieldName="previewUrl"
+                  tool={tool}
+                  toolKey={toolKey as string}
+                  toolType={toolType}
+                />
+              </div>
               <div className="aspect-video overflow-hidden rounded-lg border border-zinc-800 bg-gray-500 object-cover object-top">
                 <img
                   alt=""
                   className="size-full"
                   src={toolStoreDetails?.assets?.bannerUrl ?? ''}
+                />
+              </div>
+            </div>
+            
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-80 text-xs">Icon</span>
+                <EditToolDetailsDialog
+                  className="ml-auto"
+                  currentValue={toolStoreDetails?.assets?.iconUrl ?? ''}
+                  fieldName="iconUrl"
+                  tool={tool}
+                  toolKey={toolKey as string}
+                  toolType={toolType}
+                />
+              </div>
+              <div className="h-16 w-16 overflow-hidden rounded-lg border border-zinc-800 bg-gray-500 object-cover object-center">
+                <img
+                  alt=""
+                  className="size-full"
+                  src={toolStoreDetails?.assets?.iconUrl ?? ''}
                 />
               </div>
             </div>
@@ -868,23 +913,46 @@ export default function ToolDetailsCard({
                   {isExecutionError && executionError && (
                     <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
                       <p>Tool execution failed.</p>
-                      <pre className="whitespace-break-spaces px-4 text-center">
+                      <pre className="whitespace-break-spaces break-words px-4 text-center">
                         {executionError.response?.data?.message ?? executionError.message}
                       </pre>
                     </div>
                   )}
 
                   {toolExecutionResult && (
-                    <ToolCodeEditor
-                      language="json"
-                      name="result"
-                      readOnly
-                      style={{
-                        borderRadius: '0.5rem',
-                        overflowY: 'hidden',
-                      }}
-                      value={JSON.stringify(toolExecutionResult, null, 2)}
-                    />
+                    <>
+                      <ToolCodeEditor
+                        language="json"
+                        name="result"
+                        readOnly
+                        style={{
+                          borderRadius: '0.5rem',
+                          overflowY: 'hidden',
+                        }}
+                        value={JSON.stringify(toolExecutionResult, null, 2)}
+                      />
+                      
+                      {/* Extract and display generated files if present */}
+                      {toolExecutionResult.__created_files__ && toolExecutionResult.__created_files__.length > 0 && (
+                        <div className="mt-4 flex flex-col items-start gap-1 rounded-md py-4 pt-1.5">
+                          <span className="text-gray-80 text-xs">Generated Files</span>
+                          <FileList
+                            className="mt-2"
+                            files={toolExecutionResult.__created_files__.map((filePath: string) => {
+                              const fileName = filePath.split('/').pop() || '';
+                              const fileExtension = fileName.split('.').pop() || '';
+                              return {
+                                name: fileName,
+                                path: filePath,
+                                type: 'text',
+                                id: filePath,
+                                extension: fileExtension
+                              };
+                            })}
+                          />
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               )}

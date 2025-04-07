@@ -8,6 +8,9 @@ import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getT
 import {
   Badge,
   Button,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
@@ -15,6 +18,7 @@ import {
   DropdownMenuTrigger,
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -274,18 +278,30 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
               control={form.control}
               name="description"
               render={({ field }) => (
-                <TextField field={field} label="Task Description" />
+                <TextField 
+                  field={field} 
+                  helperMessage="Briefly describe your agent's purpose (not used by the agent)." 
+                  label="Task Description"
+                />
               )}
             />
             <FormField
               control={form.control}
               name="jobMessage.content"
               render={({ field }) => (
-                <TextField
-                  field={field}
-                  helperMessage="e.g. Give me top hacker news stories "
-                  label="Task Prompt"
-                />
+                <FormItem>
+                  <FormLabel>Task Prompt</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      className="!min-h-[130px] text-sm"
+                      placeholder="e.g. Give me top hacker news stories"
+                      resize="vertical"
+                      spellCheck={false}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>e.g. Give me top hacker news stories</FormDescription>
+                </FormItem>
               )}
             />
             <FormField
@@ -355,7 +371,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
 
                 <div className="space-y-4">
                   <div className="grid grid-cols-[1fr_auto] items-center">
-                    <span className="text-gray-80 text-xs">AI/Agent</span>
+                    <span className="text-gray-80 text-xs">AI / Agent</span>
                     <AIModelSelector
                       onValueChange={(value) => {
                         form.setValue('llmOrAgentId', value);
@@ -365,7 +381,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                   </div>
                   <div className="grid grid-cols-[1fr_auto] items-center">
                     <span className="text-gray-80 text-xs">
-                      Tool (optional)
+                      Force Tool Usage (Optional)
                     </span>
 
                     <DropdownMenu>
@@ -430,7 +446,15 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                     </DropdownMenu>
                   </div>
                 </div>
-                <div className="space-y-4">
+                
+                <Collapsible className="space-y-4">
+                  <CollapsibleTrigger
+                    className="text-official-gray-400 hover:text-official-gray-300 flex items-center gap-1 text-sm [&[data-state=open]>svg]:rotate-90"
+                  >
+                    Advanced
+                    <ChevronDownIcon className="h-3 w-3" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-4">
                   <FormField
                     control={form.control}
                     name="jobConfig.custom_system_prompt"
@@ -439,7 +463,8 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                         <FormLabel>System Prompt</FormLabel>
                         <FormControl>
                           <Textarea
-                            className="!min-h-[130px] resize-none text-sm"
+                            className="!min-h-[130px] text-sm"
+                            resize="vertical"
                             spellCheck={false}
                             {...field}
                           />
@@ -625,7 +650,8 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                       </FormItem>
                     )}
                   />
-                </div>
+                  </CollapsibleContent>
+                </Collapsible>
               </div>
             </div>
           </div>

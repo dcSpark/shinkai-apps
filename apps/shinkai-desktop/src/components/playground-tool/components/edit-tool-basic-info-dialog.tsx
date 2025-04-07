@@ -11,6 +11,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Textarea,
 } from '@shinkai_network/shinkai-ui';
 import { Form } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -100,7 +101,7 @@ export default function EditToolBasicInfoDialog({
         className
       )}>
         <span className="truncate">{toolName}</span>
-        <Button size="xs" variant="ghost" className="px-2 h-6">Edit</Button>
+        <Button className="px-2 h-6" size="xs" variant="ghost">Edit</Button>
       </PopoverTrigger>
       <PopoverContent
         align="start"
@@ -144,8 +145,8 @@ export default function EditToolBasicInfoDialog({
                   <Label className="text-xs font-medium" htmlFor="description">
                     Description
                   </Label>
-                  <Input
-                    className="placeholder-gray-80 bg-official-gray-900 !h-[40px] resize-none border-none py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                  <Textarea
+                    className="placeholder-gray-80 bg-official-gray-900 resize-none border-none py-2 pl-2 pt-2 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                     id="description"
                     onChange={field.onChange}
                     placeholder="Tool Description"

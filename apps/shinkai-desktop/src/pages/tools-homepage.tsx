@@ -274,7 +274,7 @@ function ToolsHome({
   });
 
   return (
-    <div className="container pb-[80px]">
+    <div className="container pb-[80px] max-w-[1152px]">
       <div className="mb-[80px] flex items-center justify-end gap-3 px-0 py-4">
         <div className="flex items-center gap-3">
           <DockerStatus />
@@ -310,7 +310,7 @@ function ToolsHome({
           </Link>
         </div>
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 max-w-[1152px]">
         <div className="flex flex-col gap-20">
           <div className="flex min-h-[300px] w-full flex-col items-center justify-between gap-10 pt-2">
             <div className="flex flex-col gap-2">
@@ -325,7 +325,7 @@ function ToolsHome({
               </div>
             </div>
 
-            <div className="w-full max-w-3xl">
+            <div className="w-full max-w-[1152px]">
               <Form {...form}>
                 <form>
                   <ChatInputArea
@@ -402,7 +402,7 @@ function ToolsHome({
                       startToolCreation(form.getValues());
                     }}
                     placeholder={'Describe the tool you want to create...'}
-                    textareaClassName="max-h-[40vh] min-h-[120px] p-4 text-sm"
+                    textareaClassName="max-h-[200px] min-h-[200px] p-4 text-sm"
                     value={form.watch('message')}
                   />
                   {error && (
