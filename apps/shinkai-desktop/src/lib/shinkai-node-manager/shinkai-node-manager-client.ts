@@ -1,3 +1,4 @@
+import { setPreferences } from '@shinkai_network/shinkai-message-ts/api/methods';
 import {
   QueryClient,
   QueryObserverOptions,
@@ -10,7 +11,6 @@ import {
 import { invoke } from '@tauri-apps/api/core';
 import { relaunch } from '@tauri-apps/plugin-process';
 
-import { setPreferences } from '@shinkai_network/shinkai-message-ts/api/methods';
 import { ShinkaiNodeOptions } from './shinkai-node-manager-client-types';
 
 // Client
