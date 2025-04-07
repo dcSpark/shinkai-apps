@@ -183,6 +183,24 @@ export const useDefaultAgentByDefault = () => {
     defaultAgentId,
     defaultModel,
   ]);
+
+  useEffect(() => {
+    if (auth?.node_address && auth?.api_v2_key && defaultAgentId) {
+      import('@shinkai_network/shinkai-message-ts/api/methods')
+        .then(({ setPreferences }) => {
+          setPreferences(
+            auth.node_address,
+            auth.api_v2_key,
+            { default_llm_provider: defaultAgentId }
+          ).catch((error: Error) => {
+            console.error('Failed to sync default LLM provider with backend:', error);
+          });
+        })
+        .catch((error: Error) => {
+          console.error('Failed to import setPreferences:', error);
+        });
+    }
+  }, [auth, defaultAgentId]);
 };
 
 const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {

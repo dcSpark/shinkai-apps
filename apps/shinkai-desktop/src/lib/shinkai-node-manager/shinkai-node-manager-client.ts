@@ -201,3 +201,17 @@ export const useShinkaiNodeRespawnMutation = (options?: UseMutationOptions) => {
   });
   return { ...response };
 };
+
+export const useShinkaiNodeSetDefaultLlmProviderMutation = (
+  options?: UseMutationOptions<void, Error, string>
+) => {
+  const response = useMutation({
+    mutationFn: async (defaultLlmProvider: string): Promise<void> => {
+      return invoke('shinkai_node_set_default_llm_provider', {
+        defaultLlmProvider,
+      });
+    },
+    ...options,
+  });
+  return { ...response };
+};

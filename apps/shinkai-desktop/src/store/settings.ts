@@ -162,6 +162,30 @@ export const useSettings = create<SettingsStore>()(
         defaultAgentId: '',
         setDefaultAgentId: (defaultAgentId) => {
           set({ defaultAgentId });
+          
+          import('@shinkai_network/shinkai-message-ts/api/methods')
+            .then(({ setPreferences }) => {
+              const authStr = localStorage.getItem('auth');
+              if (authStr) {
+                try {
+                  const auth = JSON.parse(authStr);
+                  if (auth?.node_address && auth?.api_v2_key) {
+                    setPreferences(
+                      auth.node_address,
+                      auth.api_v2_key,
+                      { default_llm_provider: defaultAgentId }
+                    ).catch((error: Error) => {
+                      console.error('Failed to set default LLM provider:', error);
+                    });
+                  }
+                } catch (error) {
+                  console.error('Failed to parse auth from localStorage:', error);
+                }
+              }
+            })
+            .catch((error: Error) => {
+              console.error('Failed to import setPreferences:', error);
+            });
         },
 
         defaultSpotlightAiId: '',

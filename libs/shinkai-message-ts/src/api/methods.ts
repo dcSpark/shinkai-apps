@@ -1316,3 +1316,19 @@ export const retrieveFilesForJob = async (
   );
   return response.data;
 };
+
+export const setPreferences = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: { default_llm_provider: string },
+): Promise<any> => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/set_preferences'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
+};
