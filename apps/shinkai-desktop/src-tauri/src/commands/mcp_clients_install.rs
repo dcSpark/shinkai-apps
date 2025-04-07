@@ -4,6 +4,9 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use tauri::AppHandle;
 use crate::local_shinkai_node::process_handlers::process_utils::kill_process_by_name;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::fs::File;
 
 // --- Error Types ---
 #[derive(Debug)]
@@ -330,4 +333,544 @@ pub async fn get_claude_config_help(
     log::debug!("Generating Claude config help for server '{}', binary '{}', args {:?}", server_id, binary_path, server_args);
     // Pass the server_args to the instruction generation function
     Ok(get_claude_config_instructions(&server_id, &binary_path, &server_args))
+}
+
+// --- Cursor Integration --- //
+
+// --- Cursor Error Types ---
+#[derive(Debug)]
+pub enum CursorIntegrationError {
+    ConfigNotFound(String),
+    InvalidJson(String),
+    NoMcpServers,
+    IoError(std::io::Error),
+}
+
+impl std::fmt::Display for CursorIntegrationError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CursorIntegrationError::ConfigNotFound(path) => {
+                write!(f, "Cursor configuration file not found at {}", path)
+            }
+            CursorIntegrationError::InvalidJson(err) => {
+                write!(f, "Invalid JSON configuration: {}", err)
+            }
+            CursorIntegrationError::NoMcpServers => {
+                write!(f, "No mcpServers found in Cursor configuration")
+            }
+            CursorIntegrationError::IoError(err) => write!(f, "IO Error: {}", err),
+        }
+    }
+}
+
+impl std::error::Error for CursorIntegrationError {}
+
+impl From<std::io::Error> for CursorIntegrationError {
+    fn from(err: std::io::Error) -> Self {
+        CursorIntegrationError::IoError(err)
+    }
+}
+
+// Need to implement From<serde_json::Error> for CursorIntegrationError as well
+impl From<serde_json::Error> for CursorIntegrationError {
+    fn from(err: serde_json::Error) -> Self {
+        CursorIntegrationError::InvalidJson(err.to_string())
+    }
+}
+
+// --- Cursor Data Models ---
+#[derive(Serialize, Deserialize, Clone, Debug)]
+struct CursorMcpConfig {
+    #[serde(rename = "mcpServers")]
+    pub mcp_servers: Option<HashMap<String, McpServer>>,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+#[serde(tag = "type", rename_all = "lowercase")]
+enum McpServer {
+    Command(CommandMcpServer),
+    Sse(SseMcpServer),
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+struct CommandMcpServer {
+    pub command: String,
+    pub args: Vec<String>,
+    pub env: Option<HashMap<String, String>>,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+struct SseMcpServer {
+    pub url: String,
+    pub env: Option<HashMap<String, String>>,
+}
+
+// --- Cursor Path Resolution ---
+fn get_cursor_config_path() -> Result<PathBuf, CursorIntegrationError> {
+    match env::consts::OS {
+        "windows" => {
+            // On Windows, Cursor config *might* be in APPDATA, but often it's directly in the user profile.
+            // Let's prioritize the user profile path (~/.cursor) but use APPDATA as a fallback concept if needed.
+            // However, the guide explicitly states ~/.cursor/mcp.json is used on all platforms.
+            // So, we will stick to using the HOME equivalent for Windows as well.
+            let home = env::var("USERPROFILE").map_err(|_| {
+                CursorIntegrationError::IoError(std::io::Error::new(
+                    std::io::ErrorKind::NotFound,
+                    "USERPROFILE environment variable not found",
+                ))
+            })?;
+            let config_path = PathBuf::from(home).join(".cursor/mcp.json");
+            log::info!("Cursor MCP config path (Windows): {}", config_path.display());
+            Ok(config_path)
+        }
+        "macos" | "linux" => {
+            let home = env::var("HOME").map_err(|_| {
+                CursorIntegrationError::IoError(std::io::Error::new(
+                    std::io::ErrorKind::NotFound,
+                    "HOME environment variable not found",
+                ))
+            })?;
+            let config_path = PathBuf::from(home).join(".cursor/mcp.json");
+            log::info!("Cursor MCP config path (Unix): {}", config_path.display());
+            Ok(config_path)
+        }
+        os => {
+             // Add error for unsupported OS
+             let err_msg = format!("Unsupported operating system for Cursor config path: {}", os);
+             log::error!("{}", err_msg);
+             Err(CursorIntegrationError::IoError(std::io::Error::new(
+                 std::io::ErrorKind::Unsupported,
+                 err_msg,
+            )))
+        }
+    }
+}
+
+fn backup_cursor_config(config_path: &PathBuf) -> Result<PathBuf, CursorIntegrationError> {
+    if !config_path.exists() {
+        return Ok(config_path.clone());
+    }
+    let timestamp = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))?
+        .as_secs();
+    let backup_path = config_path.with_extension(format!("json.backup_{}", timestamp));
+    std::fs::copy(config_path, &backup_path)?;
+    log::info!(
+        "Created backup of Cursor config at: {}",
+        backup_path.display()
+    );
+    Ok(backup_path)
+}
+
+// --- Cursor Core Integration Functions ---
+pub fn is_cursor_installed() -> Result<bool, CursorIntegrationError> {
+    let config_path = get_cursor_config_path()?;
+    // Check if the directory exists as a proxy for installation
+    Ok(config_path.parent().map_or(false, |p| p.exists()))
+}
+
+pub fn is_server_configured_in_cursor(server_id: &str) -> Result<bool, CursorIntegrationError> {
+    let config_path = get_cursor_config_path()?;
+    if !config_path.exists() {
+        log::info!("Cursor config file not found at {}, server cannot be configured.", config_path.display());
+        return Ok(false);
+    }
+    
+    let config_content = match fs::read_to_string(&config_path) {
+        Ok(content) => content,
+        Err(e) => {
+            log::error!("Failed to read Cursor config file at {}: {}. Assuming server not configured.", config_path.display(), e);
+            // Propagate IO error
+            return Err(CursorIntegrationError::IoError(e)); 
+        }
+    };
+    
+    if config_content.trim().is_empty() {
+        log::info!("Cursor config file is empty. Server '{}' is not configured.", server_id);
+        return Ok(false);
+    }
+
+    // Parse leniently into a generic Value first
+    match serde_json::from_str::<Value>(&config_content) {
+        Ok(parsed_value) => {
+            // Check if mcpServers key exists and is an object
+            if let Some(servers_value) = parsed_value.get("mcpServers") {
+                if let Some(servers_map) = servers_value.as_object() {
+                    // Simply check if the key exists in the map
+                    let is_configured = servers_map.contains_key(server_id);
+                    if is_configured {
+                        log::info!("✅ Server '{}' key found in Cursor config.", server_id);
+                    } else {
+                        log::info!("❌ Server '{}' key not found in Cursor config.", server_id);
+                    }
+                    Ok(is_configured)
+                } else {
+                    log::warn!("'mcpServers' key found in Cursor config, but it is not a JSON object. Assuming server '{}' not configured.", server_id);
+                    Ok(false)
+                }
+            } else {
+                log::info!("'mcpServers' key not found in Cursor config. Server '{}' is not configured.", server_id);
+                Ok(false)
+            }
+        }
+        Err(e) => {
+            // Log error if the entire JSON is invalid, but treat as "not configured" for the check
+            log::error!(
+                "Cursor config file at {} is invalid JSON. Assuming server '{}' not configured. Error: {}",
+                config_path.display(),
+                server_id,
+                e
+            );
+             // Propagate JSON error
+            Err(CursorIntegrationError::InvalidJson(e.to_string()))
+        }
+    }
+}
+
+pub enum ServerConfigType {
+    Command {
+        binary_path: String,
+        args: Vec<String>,
+        env: Option<HashMap<String, String>>,
+    },
+    SSE {
+        url: String,
+        env: Option<HashMap<String, String>>,
+    },
+}
+
+pub fn configure_server_in_cursor(
+    server_id: &str,
+    config_type: ServerConfigType,
+) -> Result<(), CursorIntegrationError> {
+    // Check if already configured (using the robust check)
+    if is_server_configured_in_cursor(server_id)? {
+        log::info!("Server '{}' is already configured in Cursor", server_id);
+        return Ok(());
+    }
+    
+    let config_path = get_cursor_config_path()?;
+    
+    // Ensure parent directory exists
+    if let Some(parent) = config_path.parent() {
+        if !parent.exists() {
+            std::fs::create_dir_all(parent)?;
+            log::info!("Created directory: {}", parent.display());
+        }
+    }
+    
+    // Backup existing config if it exists
+    if config_path.exists() {
+        backup_cursor_config(&config_path)?;
+    }
+
+    // Read existing config content
+    let existing_content = if config_path.exists() {
+        fs::read_to_string(&config_path)?
+    } else {
+        String::new() // Start with empty if file doesn't exist
+    };
+
+    // Parse existing content more leniently
+    let mut existing_servers: HashMap<String, McpServer> = HashMap::new();
+    if !existing_content.trim().is_empty() {
+        match serde_json::from_str::<Value>(&existing_content) {
+            Ok(parsed_value) => {
+                if let Some(servers_value) = parsed_value.get("mcpServers") {
+                    if let Some(servers_map) = servers_value.as_object() {
+                        for (key, server_value) in servers_map {
+                            // Attempt to deserialize each server individually
+                            match serde_json::from_value::<McpServer>(server_value.clone()) {
+                                Ok(server) => {
+                                    existing_servers.insert(key.clone(), server);
+                                }
+                                Err(e) => {
+                                    // Log warning for invalid entries but don't fail
+                                    log::warn!(
+                                        "Skipping invalid server entry '{}' in Cursor config: {}. Error: {}",
+                                        key,
+                                        server_value,
+                                        e
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Err(e) => {
+                // Handle case where the entire existing JSON is invalid
+                log::error!(
+                    "Existing Cursor config file at {} is invalid JSON and will be overwritten. Error: {}",
+                    config_path.display(),
+                    e
+                );
+                // Proceed with an empty map, effectively overwriting the invalid file
+                existing_servers.clear(); 
+            }
+        }
+    }
+
+    // Add or update our server configuration
+    match config_type {
+        ServerConfigType::Command { binary_path, args, env } => {
+            existing_servers.insert(
+                server_id.to_string(),
+                McpServer::Command(CommandMcpServer {
+                    command: binary_path,
+                    args,
+                    env,
+                }),
+            );
+            log::info!("Adding/Updating Cursor Command-based server configuration for '{}'", server_id);
+        }
+        ServerConfigType::SSE { url, env } => {
+            existing_servers.insert(
+                server_id.to_string(),
+                McpServer::Sse(SseMcpServer {
+                    url,
+                    env,
+                }),
+            );
+            log::info!("Adding/Updating Cursor SSE-based server configuration for '{}'", server_id);
+        }
+    }
+    
+    // Construct the final config object
+    let final_config = CursorMcpConfig {
+        mcp_servers: Some(existing_servers),
+    };
+
+    // Write the updated configuration
+    std::fs::write(
+        &config_path,
+        serde_json::to_string_pretty(&final_config)?,
+    )?;
+    
+    log::info!("✅ Successfully configured server '{}' in Cursor", server_id);
+    log::info!("Configuration written to: {}", config_path.display());
+    log::info!("Please restart Cursor for the changes to take effect.");
+    
+    Ok(())
+}
+
+// --- Cursor Config Helpers ---
+pub mod cursor_config_helpers {
+    use super::*;
+    pub fn configure_command_server(
+        server_id: &str,
+        binary_path: &str,
+        args: Vec<String>,
+        env: Option<HashMap<String, String>>,
+    ) -> Result<(), CursorIntegrationError> {
+        configure_server_in_cursor(
+            server_id,
+            ServerConfigType::Command {
+                binary_path: binary_path.to_string(),
+                args,
+                env,
+            },
+        )
+    }
+    pub fn configure_sse_server(
+        server_id: &str,
+        url: &str,
+        env: Option<HashMap<String, String>>,
+    ) -> Result<(), CursorIntegrationError> {
+        configure_server_in_cursor(
+            server_id,
+            ServerConfigType::SSE {
+                url: url.to_string(),
+                env,
+            },
+        )
+    }
+}
+
+// --- Cursor Manual Instructions ---
+pub fn get_cursor_command_config_instructions(
+    server_id: &str,
+    binary_path: &str,
+    args: &[String],
+    env: Option<&HashMap<String, String>>,
+) -> Result<String, CursorIntegrationError> {
+    let config_path_res = get_cursor_config_path();
+    let config_path_display = config_path_res.as_ref().map(|p| p.display().to_string()).unwrap_or_else(|_| "<Cursor config path could not be determined>".to_string());
+
+    let command_server = CommandMcpServer {
+        command: binary_path.to_string(),
+        args: args.to_vec(),
+        env: env.cloned(),
+    };
+    let mut servers = HashMap::new();
+    servers.insert(server_id.to_string(), McpServer::Command(command_server));
+    let sample_config = CursorMcpConfig { mcp_servers: Some(servers) };
+    let pretty_json = serde_json::to_string_pretty(&sample_config)?;
+
+    Ok(format!(
+        r#"
+# Cursor Integration Instructions (Command-based)
+
+1.  **Close Cursor** if it's running.
+2.  Open or create the configuration file at:
+    `{config_path_display}`
+3.  **If the file exists and has content**, carefully merge the following JSON structure into the existing `mcpServers` object. Create the `mcpServers` object if it doesn't exist.
+    **If the file is empty or does not exist**, paste the entire content below:
+
+```json
+{pretty_json}
+```
+
+4.  Save the file.
+5.  **Restart Cursor**. Your Shinkai server should now be available.
+
+**Note:** Ensure the final JSON is valid. You might need to add a comma (`,`) if adding this server after another entry in `mcpServers`.
+"#,
+        config_path_display = config_path_display,
+        pretty_json = pretty_json
+    ))
+}
+
+pub fn get_cursor_sse_config_instructions(
+    server_id: &str,
+    url: &str,
+    env: Option<&HashMap<String, String>>,
+) -> Result<String, CursorIntegrationError> {
+    let config_path_res = get_cursor_config_path();
+    let config_path_display = config_path_res.as_ref().map(|p| p.display().to_string()).unwrap_or_else(|_| "<Cursor config path could not be determined>".to_string());
+
+    let sse_server = SseMcpServer {
+        url: url.to_string(),
+        env: env.cloned(),
+    };
+    let mut servers = HashMap::new();
+    servers.insert(server_id.to_string(), McpServer::Sse(sse_server));
+    let sample_config = CursorMcpConfig { mcp_servers: Some(servers) };
+    let pretty_json = serde_json::to_string_pretty(&sample_config)?;
+
+    Ok(format!(
+        r#"
+# Cursor Integration Instructions (SSE-based)
+
+1.  **Close Cursor** if it's running.
+2.  Open or create the configuration file at:
+    `{config_path_display}`
+3.  **If the file exists and has content**, carefully merge the following JSON structure into the existing `mcpServers` object. Create the `mcpServers` object if it doesn't exist.
+    **If the file is empty or does not exist**, paste the entire content below:
+
+```json
+{pretty_json}
+```
+
+4.  Save the file.
+5.  **Restart Cursor**. Your Shinkai server should now be available via SSE.
+
+**Note:** Ensure the final JSON is valid. You might need to add a comma (`,`) if adding this server after another entry in `mcpServers`.
+"#,
+        config_path_display = config_path_display,
+        pretty_json = pretty_json
+    ))
+}
+
+// --- Cursor Tauri Commands ---
+
+#[tauri::command]
+pub async fn check_cursor_installed() -> Result<bool, String> {
+    is_cursor_installed().map_err(|e| {
+        log::error!("Error checking Cursor installation: {}", e);
+        e.to_string()
+    })
+}
+
+#[tauri::command]
+pub async fn is_server_registered_in_cursor(server_id: String) -> Result<bool, String> {
+    is_server_configured_in_cursor(&server_id).map_err(|e| {
+        log::error!(
+            "Error checking if server '{}' is configured in Cursor: {}",
+            server_id,
+            e
+        );
+        e.to_string()
+    })
+}
+
+#[tauri::command]
+pub async fn register_command_server_in_cursor(
+    server_id: String,
+    binary_path: String,
+    args: Vec<String>,
+    env: Option<HashMap<String, String>>,
+) -> Result<(), String> {
+    log::info!(
+        "Attempting to register COMMAND server '{}' in Cursor with binary '{}' and args {:?}",
+        server_id,
+        binary_path,
+        args
+    );
+    cursor_config_helpers::configure_command_server(&server_id, &binary_path, args, env).map_err(|e| {
+        log::error!("Error configuring COMMAND server '{}' in Cursor: {}", server_id, e);
+        e.to_string()
+    })
+}
+
+#[tauri::command]
+pub async fn register_sse_server_in_cursor(
+    server_id: String,
+    url: String,
+    env: Option<HashMap<String, String>>,
+) -> Result<(), String> {
+    log::info!(
+        "Attempting to register SSE server '{}' in Cursor with URL '{}'",
+        server_id,
+        url
+    );
+    cursor_config_helpers::configure_sse_server(&server_id, &url, env).map_err(|e| {
+        log::error!("Error configuring SSE server '{}' in Cursor: {}", server_id, e);
+        e.to_string()
+    })
+}
+
+#[tauri::command]
+pub async fn get_cursor_command_config_help(
+    server_id: String,
+    binary_path: String,
+    args: Vec<String>,
+    // Note: Env is omitted for simplicity in help, but could be added
+) -> Result<String, String> {
+    log::debug!(
+        "Generating Cursor COMMAND config help for server '{}', binary '{}', args {:?}",
+        server_id,
+        binary_path,
+        args
+    );
+    get_cursor_command_config_instructions(&server_id, &binary_path, &args, None).map_err(|e| {
+        log::error!(
+            "Error generating Cursor COMMAND config help for server '{}': {}",
+            server_id,
+            e
+        );
+        e.to_string()
+    })
+}
+
+#[tauri::command]
+pub async fn get_cursor_sse_config_help(
+    server_id: String,
+    url: String,
+    // Note: Env is omitted for simplicity in help, but could be added
+) -> Result<String, String> {
+    log::debug!(
+        "Generating Cursor SSE config help for server '{}', URL '{}'",
+        server_id,
+        url
+    );
+    get_cursor_sse_config_instructions(&server_id, &url, None).map_err(|e| {
+        log::error!(
+            "Error generating Cursor SSE config help for server '{}': {}",
+            server_id,
+            e
+        );
+        e.to_string()
+    })
 }

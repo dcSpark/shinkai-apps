@@ -19,6 +19,12 @@ use crate::commands::mcp_clients_install::{
     get_claude_config_help,
     is_server_registered_in_claude,
     register_server_in_claude,
+    check_cursor_installed,
+    get_cursor_command_config_help,
+    get_cursor_sse_config_help,
+    is_server_registered_in_cursor,
+    register_command_server_in_cursor,
+    register_sse_server_in_cursor,
 };
 use crate::commands::logs::{download_logs, retrieve_logs};
 use crate::commands::spotlight_commands::{hide_spotlight_window_app, show_spotlight_window_app};
@@ -123,6 +129,12 @@ fn main() {
             is_server_registered_in_claude,
             register_server_in_claude,
             get_claude_config_help,
+            check_cursor_installed,
+            is_server_registered_in_cursor,
+            register_command_server_in_cursor,
+            register_sse_server_in_cursor,
+            get_cursor_command_config_help,
+            get_cursor_sse_config_help,
         ])
         .setup(|app| {
             log::info!("starting app version: {}", env!("CARGO_PKG_VERSION"));

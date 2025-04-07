@@ -35,9 +35,13 @@ import { useEffect,useState } from 'react';
 import { toast } from 'sonner';
 
 import { useDebounce } from '../../hooks/use-debounce';
+import { handleConfigureClaude } from '../../lib/external-clients/claude-desktop';
+import { handleConfigureCursor } from '../../lib/external-clients/cursor';
 import { useAuth } from '../../store/auth';
 import { usePlaygroundStore } from '../playground-tool/context/playground-context';
 import ToolCard from './components/tool-card';
+
+const MCP_SERVER_ID = 'shinkai-mcp-server';
 
 const toolsGroup: {
   label: string;
@@ -239,73 +243,10 @@ const ToolCollectionBase = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={async () => {
-                    const auth = useAuth.getState().auth;
-                    const nodeUrl = auth?.node_address || 'http://localhost:9950';
-                    const serverId = 'shinkai-mcp-server';
-                    const command = 'npx'; // Command to run the server
-                    // Args for the command. Ensure nodeUrl is correctly interpolated.
-                    const args = ['-y', 'supergateway', '--sse', `${nodeUrl}/mcp/sse`];
-
-                    const loadingToastId = toast.loading('Attempting automatic Claude Desktop configuration...');
-
-                    try {
-                      // Call the new backend command to automatically configure Claude
-                      await invoke('register_server_in_claude', {
-                        serverId: serverId,
-                        binaryPath: command,
-                        serverArgs: args
-                      });
-                      toast.success('Claude Desktop configured successfully!', {
-                        id: loadingToastId,
-                        description: 'Please restart Claude for the changes to take effect.',
-                      });
-                    } catch (error) {
-                      // Log the detailed error for debugging
-                      console.error('Automatic Claude Desktop configuration failed:', error);
-                      
-                      let errorMessage = 'Automatic configuration failed.';
-                      // Provide more specific error context if available
-                      if (typeof error === 'string') {
-                        errorMessage += ` Error: ${error}`;
-                      } else if (error instanceof Error) {
-                        errorMessage += ` Error: ${error.message}`;
-                      }
-
-                      // Fallback: Fetch and display manual instructions
-                      try {
-                        const helpText = await invoke<string>('get_claude_config_help', {
-                          serverId: serverId,
-                          binaryPath: command,
-                          serverArgs: args
-                        });
-                        toast.error(errorMessage, {
-                          id: loadingToastId,
-                          description: helpText, // Display the markdown instructions
-                          duration: 20000, // Give user more time to read/copy
-                          action: {
-                            label: 'Copy Instructions',
-                            onClick: () => {
-                              navigator.clipboard.writeText(helpText);
-                              toast.info('Manual instructions copied to clipboard');
-                            }
-                          }
-                        });
-                      } catch (helpError) {
-                         // If fetching help text also fails, just show the original error
-                         console.error('Failed to fetch Claude config help text:', helpError);
-                         toast.error(errorMessage, { 
-                           id: loadingToastId,
-                           description: 'Could not retrieve manual setup instructions.'
-                         });
-                      }
-                    }
-                  }}>
+                  <DropdownMenuItem onClick={() => handleConfigureClaude(MCP_SERVER_ID)}>
                     Claude Desktop
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => {
-                    toast.info('Cursor configuration will be implemented in a future update');
-                  }}>
+                  <DropdownMenuItem onClick={() => handleConfigureCursor(MCP_SERVER_ID)}>
                     Cursor
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => {
