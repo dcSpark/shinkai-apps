@@ -29,6 +29,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
+import { invoke } from '@tauri-apps/api/core';
 import { Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon } from 'lucide-react';
 import { useEffect,useState } from 'react';
 import { toast } from 'sonner';
@@ -238,16 +239,67 @@ const ToolCollectionBase = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => {
+                  <DropdownMenuItem onClick={async () => {
                     const auth = useAuth.getState().auth;
                     const nodeUrl = auth?.node_address || 'http://localhost:9950';
-                    
-                    import('../../lib/external-clients/claude-desktop').then(({ displayClaudeDesktopInstructions }) => {
-                      displayClaudeDesktopInstructions('shinkai-mcp-server', {
-                        command: 'npx',
-                        args: ['-y', 'supergateway', '--sse', `${nodeUrl}/mcp/sse`]
+                    const serverId = 'shinkai-mcp-server';
+                    const command = 'npx'; // Command to run the server
+                    // Args for the command. Ensure nodeUrl is correctly interpolated.
+                    const args = ['-y', 'supergateway', '--sse', `${nodeUrl}/mcp/sse`];
+
+                    const loadingToastId = toast.loading('Attempting automatic Claude Desktop configuration...');
+
+                    try {
+                      // Call the new backend command to automatically configure Claude
+                      await invoke('register_server_in_claude', {
+                        serverId: serverId,
+                        binaryPath: command,
+                        serverArgs: args
                       });
-                    });
+                      toast.success('Claude Desktop configured successfully!', {
+                        id: loadingToastId,
+                        description: 'Please restart Claude for the changes to take effect.',
+                      });
+                    } catch (error) {
+                      // Log the detailed error for debugging
+                      console.error('Automatic Claude Desktop configuration failed:', error);
+                      
+                      let errorMessage = 'Automatic configuration failed.';
+                      // Provide more specific error context if available
+                      if (typeof error === 'string') {
+                        errorMessage += ` Error: ${error}`;
+                      } else if (error instanceof Error) {
+                        errorMessage += ` Error: ${error.message}`;
+                      }
+
+                      // Fallback: Fetch and display manual instructions
+                      try {
+                        const helpText = await invoke<string>('get_claude_config_help', {
+                          serverId: serverId,
+                          binaryPath: command,
+                          serverArgs: args
+                        });
+                        toast.error(errorMessage, {
+                          id: loadingToastId,
+                          description: helpText, // Display the markdown instructions
+                          duration: 20000, // Give user more time to read/copy
+                          action: {
+                            label: 'Copy Instructions',
+                            onClick: () => {
+                              navigator.clipboard.writeText(helpText);
+                              toast.info('Manual instructions copied to clipboard');
+                            }
+                          }
+                        });
+                      } catch (helpError) {
+                         // If fetching help text also fails, just show the original error
+                         console.error('Failed to fetch Claude config help text:', helpError);
+                         toast.error(errorMessage, { 
+                           id: loadingToastId,
+                           description: 'Could not retrieve manual setup instructions.'
+                         });
+                      }
+                    }
                   }}>
                     Claude Desktop
                   </DropdownMenuItem>
