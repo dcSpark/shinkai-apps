@@ -11,6 +11,14 @@ import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/querie
 import {
   Alert,
   AlertDescription,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   AlertTitle,
   Badge,
   Button,
@@ -29,13 +37,13 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
-import { invoke } from '@tauri-apps/api/core';
 import { Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon } from 'lucide-react';
 import { useEffect,useState } from 'react';
 import { toast } from 'sonner';
 
 import { useDebounce } from '../../hooks/use-debounce';
 import { handleConfigureClaude } from '../../lib/external-clients/claude-desktop';
+import { ConfigError } from '../../lib/external-clients/common';
 import { handleConfigureCursor } from '../../lib/external-clients/cursor';
 import { useAuth } from '../../store/auth';
 import { usePlaygroundStore } from '../playground-tool/context/playground-context';
@@ -75,6 +83,12 @@ const ToolCollectionBase = () => {
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
   
   const [mcpEnabledState, setMcpEnabledState] = useState<Record<string, boolean>>({});
+
+  // State for the error dialog
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogTitle, setDialogTitle] = useState('');
+  const [dialogDescription, setDialogDescription] = useState('');
+  const [dialogHelpText, setDialogHelpText] = useState('');
 
   const selectedToolCategory = usePlaygroundStore(
     (state) => state.selectedToolCategory,
@@ -147,6 +161,24 @@ const ToolCollectionBase = () => {
       toast.error(error.message);
     },
   });
+
+  const handleConfigureClick = async (configureFn: (serverId: string) => Promise<void>, clientName: string) => {
+    try {
+      await configureFn(MCP_SERVER_ID);
+    } catch (error) {
+      if (error instanceof ConfigError) {
+        setDialogTitle(`Automatic ${clientName} Configuration Failed`);
+        setDialogDescription(error.message + ' Please follow the instructions below for manual setup:');
+        setDialogHelpText(error.helpText);
+        setDialogOpen(true);
+      } else if (error instanceof Error) {
+        toast.error(`Failed to configure ${clientName}: ${error.message}`);
+      } else {
+        toast.error(`An unknown error occurred while configuring ${clientName}.`);
+      }
+      console.error(`Configuration error for ${clientName}:`, error);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-8 max-w-[956px] mx-auto">
@@ -243,10 +275,10 @@ const ToolCollectionBase = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => handleConfigureClaude(MCP_SERVER_ID)}>
+                  <DropdownMenuItem onClick={() => handleConfigureClick(handleConfigureClaude, 'Claude Desktop')}>
                     Claude Desktop
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleConfigureCursor(MCP_SERVER_ID)}>
+                  <DropdownMenuItem onClick={() => handleConfigureClick(handleConfigureCursor, 'Cursor')}>
                     Cursor
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => {
@@ -484,6 +516,29 @@ const ToolCollectionBase = () => {
           ))}
         </div>
       )}
+
+      {/* Error Dialog */}
+      <AlertDialog onOpenChange={setDialogOpen} open={dialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{dialogTitle}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {dialogDescription}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="my-4 max-h-[60vh] overflow-y-auto rounded bg-gray-800 p-3 text-sm">
+            <pre><code>{dialogHelpText}</code></pre>
+          </div>
+          <AlertDialogFooter className="flex justify-between gap-4">
+            <AlertDialogCancel>Close</AlertDialogCancel>
+            <AlertDialogAction onClick={() => {
+              navigator.clipboard.writeText(dialogHelpText);
+              toast.info('Manual instructions copied to clipboard');
+              setDialogOpen(false); // Close dialog after copying
+            }}>Copy Instructions</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

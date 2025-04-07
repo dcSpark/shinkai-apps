@@ -315,6 +315,10 @@ pub async fn register_server_in_claude(
     binary_path: String,
     server_args: Vec<String>, // Receive args from frontend
 ) -> Result<(), String> {
+    log::info!("(TEMP TEST) Simulating failure for register_server_in_claude for server '{}'", server_id);
+    // TEMP: Always return an error to test the frontend dialog
+    Err(format!("Simulated configuration failure for testing dialog (Claude: '{}').", server_id))
+    /* Original code:
     log::info!("Attempting to register server '{}' with binary '{}' and args {:?}", server_id, binary_path, server_args);
     configure_server_in_claude(app, &server_id, &binary_path, server_args)
         .await
@@ -322,6 +326,7 @@ pub async fn register_server_in_claude(
             log::error!("Error configuring server '{}' in Claude: {}", server_id, e);
             e.to_string()
         })
+    */
 }
 
 #[tauri::command]
@@ -820,6 +825,10 @@ pub async fn register_sse_server_in_cursor(
     url: String,
     env: Option<HashMap<String, String>>,
 ) -> Result<(), String> {
+    log::info!("(TEMP TEST) Simulating failure for register_sse_server_in_cursor for server '{}'", server_id);
+    // TEMP: Always return an error to test the frontend dialog
+    Err(format!("Simulated configuration failure for testing dialog (Cursor SSE: '{}').", server_id))
+    /* Original code:
     log::info!(
         "Attempting to register SSE server '{}' in Cursor with URL '{}'",
         server_id,
@@ -829,6 +838,7 @@ pub async fn register_sse_server_in_cursor(
         log::error!("Error configuring SSE server '{}' in Cursor: {}", server_id, e);
         e.to_string()
     })
+    */
 }
 
 #[tauri::command]

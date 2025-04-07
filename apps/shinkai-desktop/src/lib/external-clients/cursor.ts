@@ -2,6 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth'; // Adjust path as needed
+import { ConfigError } from './common'; // Import from common.ts
 
 export const handleConfigureCursor = async (serverId: string) => {
   const auth = useAuth.getState().auth;
@@ -19,6 +20,7 @@ export const handleConfigureCursor = async (serverId: string) => {
       description: 'Please restart Cursor for the changes to take effect.',
     });
   } catch (error) {
+    toast.dismiss(loadingToastId);
     console.error('Automatic Cursor configuration failed:', error);
     let errorMessage = 'Automatic configuration failed.';
     if (typeof error === 'string') {
@@ -27,29 +29,25 @@ export const handleConfigureCursor = async (serverId: string) => {
       errorMessage += ` Error: ${error.message}`;
     }
 
+    let helpText: string | null = null; // Declare helpText here
     try {
-      const helpText = await invoke<string>('get_cursor_sse_config_help', {
+      helpText = await invoke<string>('get_cursor_sse_config_help', {
         serverId: serverId,
         url: sseUrl,
       });
-      toast.error(errorMessage, {
-        id: loadingToastId,
-        description: helpText,
-        duration: 20000,
-        action: {
-          label: 'Copy Instructions',
-          onClick: () => {
-            navigator.clipboard.writeText(helpText);
-            toast.info('Manual instructions copied to clipboard');
-          },
-        },
-      });
+      // Do not throw ConfigError here
     } catch (helpError) {
       console.error('Failed to fetch Cursor config help text:', helpError);
-      toast.error(errorMessage, {
-        id: loadingToastId,
-        description: 'Could not retrieve manual setup instructions.',
-      });
+      // Throw regular error if fetching help text fails
+      throw new Error(`${errorMessage} Could not retrieve manual setup instructions.`);
+    }
+
+    // If helpText was successfully fetched in the try block above, throw ConfigError now.
+    if (helpText) {
+      throw new ConfigError(errorMessage, helpText);
+    } else {
+      // Added for robustness, similar to claude-desktop.ts
+      throw new Error(`${errorMessage} Could not retrieve manual setup instructions (unexpected state).`);
     }
   }
 }; 

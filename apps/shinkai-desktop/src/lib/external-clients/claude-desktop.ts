@@ -2,6 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth'; // Adjust path as needed
+import { ConfigError } from './common'; // Import from common.ts
 
 export interface McpServerConfig {
   command: string;
@@ -74,6 +75,7 @@ export const handleConfigureClaude = async (serverId: string) => {
       description: 'Please restart Claude for the changes to take effect.',
     });
   } catch (error) {
+    toast.dismiss(loadingToastId);
     console.error('Automatic Claude Desktop configuration failed:', error);
     let errorMessage = 'Automatic configuration failed.';
     if (typeof error === 'string') {
@@ -82,30 +84,30 @@ export const handleConfigureClaude = async (serverId: string) => {
       errorMessage += ` Error: ${error.message}`;
     }
 
+    let helpText: string | null = null; // Declare helpText here
     try {
-      const helpText = await invoke<string>('get_claude_config_help', {
+      // Attempt to fetch help text
+      helpText = await invoke<string>('get_claude_config_help', {
         serverId: serverId,
         binaryPath: command,
         serverArgs: args,
       });
-      toast.error(errorMessage, {
-        id: loadingToastId,
-        description: helpText,
-        duration: 20000,
-        action: {
-          label: 'Copy Instructions',
-          onClick: () => {
-            navigator.clipboard.writeText(helpText);
-            toast.info('Manual instructions copied to clipboard');
-          },
-        },
-      });
+      // Do not throw ConfigError here
     } catch (helpError) {
       console.error('Failed to fetch Claude config help text:', helpError);
-      toast.error(errorMessage, {
-        id: loadingToastId,
-        description: 'Could not retrieve manual setup instructions.',
-      });
+      // Throw regular error if fetching help text fails
+      throw new Error(`${errorMessage} Could not retrieve manual setup instructions.`);
+    }
+
+    // If helpText was successfully fetched in the try block above, throw ConfigError now.
+    // The null check ensures we don't proceed if helpText wasn't assigned.
+    if (helpText) {
+      throw new ConfigError(errorMessage, helpText);
+    } else {
+       // This case should theoretically not be reached if the catch above throws,
+       // but added for robustness. If helpText is null here, something went wrong
+       // without an exception being caught by the inner catch.
+       throw new Error(`${errorMessage} Could not retrieve manual setup instructions (unexpected state).`);
     }
   }
 };
