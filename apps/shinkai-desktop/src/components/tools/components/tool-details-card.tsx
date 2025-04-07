@@ -11,6 +11,7 @@ import { useDuplicateTool } from '@shinkai_network/shinkai-node-state/v2/mutatio
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
+import { useSetToolMcpEnabled } from '@shinkai_network/shinkai-node-state/v2/mutations/setToolMcpEnabled/useSetToolMcpEnabled';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
@@ -34,6 +35,9 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -123,6 +127,7 @@ export default function ToolDetailsCard({
   );
   const [tryItOutFormData, setTryItOutFormData] = useState<Record<string, any> | null>(null);
   const [toolExecutionResult, setToolExecutionResult] = useState<Record<string, any> | null>(null);
+  const [mcpEnabled, setMcpEnabled] = useState<boolean>('mcp_enabled' in tool ? !!tool.mcp_enabled : false);
   const { t } = useTranslation();
   const toolConfigSchema =
     'config' in tool && tool.config?.length > 0
@@ -168,6 +173,18 @@ export default function ToolDetailsCard({
 
   const { mutateAsync: toggleEnableTool, isPending: isTogglingEnableTool } =
     useToggleEnableTool();
+    
+  const { mutateAsync: setToolMcpEnabled, isPending: isSettingMcpEnabled } =
+    useSetToolMcpEnabled({
+      onSuccess: () => {
+        toast.success('MCP server mode updated successfully');
+      },
+      onError: (error) => {
+        toast.error('Failed to update MCP server mode', {
+          description: error.message,
+        });
+      },
+    });
 
   const { mutateAsync: duplicateTool, isPending: isDuplicatingTool } =
     useDuplicateTool({
@@ -256,6 +273,10 @@ export default function ToolDetailsCard({
       setOAuthFormData({ oauth: tool.oauth });
     }
   }, [tool]);
+  
+  useEffect(() => {
+    setMcpEnabled('mcp_enabled' in tool ? !!tool.mcp_enabled : false);
+  }, [tool]);
 
   const handleSaveToolConfig: FormProps['onSubmit'] = async (data) => {
     const formData = data.formData;
@@ -341,6 +362,48 @@ export default function ToolDetailsCard({
                 }}
               />
             </div>
+            {isEnabled && (
+              <div className="flex items-center gap-2 ml-4">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center gap-2">
+                      <label
+                        className={cn(
+                          'text-sm',
+                          mcpEnabled ? 'text-green-400' : 'text-gray-80',
+                        )}
+                        htmlFor="mcp-switch"
+                      >
+                        MCP {mcpEnabled ? 'Enabled' : 'Disabled'}
+                      </label>
+                      <Switch
+                        checked={mcpEnabled}
+                        disabled={isSettingMcpEnabled}
+                        id="mcp-switch"
+                        onCheckedChange={async () => {
+                          const newMcpEnabled = !mcpEnabled;
+                          setMcpEnabled(newMcpEnabled);
+                          try {
+                            await setToolMcpEnabled({
+                              toolRouterKey: toolKey ?? '',
+                              mcpEnabled: newMcpEnabled,
+                              nodeAddress: auth?.node_address ?? '',
+                              token: auth?.api_v2_key ?? '',
+                            });
+                          } catch (error) {
+                            setMcpEnabled('mcp_enabled' in tool ? !!tool.mcp_enabled : false);
+                            throw error;
+                          }
+                        }}
+                      />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent align="center" side="top">
+                    MCP Server Mode: When enabled, this tool can run on an MCP server
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            )}
             {isPlaygroundTool &&
               'author' in tool &&
               tool.author === auth?.shinkai_identity && (
