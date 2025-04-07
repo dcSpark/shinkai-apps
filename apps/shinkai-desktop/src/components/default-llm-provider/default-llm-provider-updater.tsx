@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { useAuth } from '../../store/auth';
+
 import { shinkaiNodeSetDefaultLlmProvider } from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
+import { useAuth } from '../../store/auth';
 
 interface DefaultLlmProviderUpdaterProps {
   defaultAgentId: string;
