@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { GetToolsCategory } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
@@ -30,7 +32,6 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 import { useDebounce } from '../../hooks/use-debounce';
