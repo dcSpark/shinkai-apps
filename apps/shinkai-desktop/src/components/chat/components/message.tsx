@@ -334,7 +334,7 @@ export const MessageBase = ({
                   message.toolCalls &&
                   message.toolCalls.length > 0 && (
                     <Accordion
-                      className="space-y-1.5 self-baseline pb-3 overflow-x-auto"
+                      className="space-y-1.5 self-baseline pb-3 overflow-x-auto max-w-full"
                       type="multiple"
                     >
                       {message.toolCalls.map((tool, index) => {
@@ -343,7 +343,7 @@ export const MessageBase = ({
                             className="bg-app-gradient overflow-hidden rounded-lg"
                             disabled={tool.status !== ToolStatusType.Complete}
                             key={`${tool.name}-${index}`}
-                            value={tool.name}
+                            value={`${tool.name}-${index}`}
                           >
                             <AccordionTrigger
                               className={cn(
