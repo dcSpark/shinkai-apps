@@ -131,6 +131,10 @@ export const modelsConfig = {
         name: 'Llama 3.1 8B Instant',
         value: 'llama-3.1-8b-instant',
       },
+      {
+        name: 'Qwen-QWQ-32B',
+        value: 'qwen-qwq-32b',
+      }
     ],
   },
   [Models.OpenRouter]: {
