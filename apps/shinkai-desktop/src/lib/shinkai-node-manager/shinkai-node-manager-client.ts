@@ -215,3 +215,11 @@ export const useShinkaiNodeSetDefaultLlmProviderMutation = (
   });
   return { ...response };
 };
+
+export const shinkaiNodeSetDefaultLlmProvider = async (
+  defaultLlmProvider: string
+): Promise<void> => {
+  return invoke('shinkai_node_set_default_llm_provider', {
+    defaultLlmProvider,
+  });
+};

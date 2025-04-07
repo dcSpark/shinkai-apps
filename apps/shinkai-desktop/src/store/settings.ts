@@ -163,18 +163,25 @@ export const useSettings = create<SettingsStore>()(
         setDefaultAgentId: (defaultAgentId) => {
           set({ defaultAgentId });
           
-          import('../lib/shinkai-node-manager/shinkai-node-manager-client')
-            .then(({ useShinkaiNodeSetDefaultLlmProviderMutation }) => {
-              const { mutate } = useShinkaiNodeSetDefaultLlmProviderMutation({
-                onError: (error) => {
-                  console.error('Failed to set default LLM provider:', error);
-                },
-              });
-              mutate(defaultAgentId);
-            })
-            .catch((error) => {
-              console.error('Failed to import useShinkaiNodeSetDefaultLlmProviderMutation:', error);
-            });
+          const authStr = localStorage.getItem('auth');
+          if (authStr) {
+            try {
+              const auth = JSON.parse(authStr);
+              if (auth?.node_address && auth?.api_v2_key) {
+                import('@tauri-apps/api/core').then(({ invoke }) => {
+                  invoke('shinkai_node_set_default_llm_provider', {
+                    defaultLlmProvider: defaultAgentId,
+                  }).catch((error: Error) => {
+                    console.error('Failed to set default LLM provider:', error);
+                  });
+                }).catch((error: Error) => {
+                  console.error('Failed to import invoke:', error);
+                });
+              }
+            } catch (error) {
+              console.error('Failed to parse auth from localStorage:', error);
+            }
+          }
         },
 
         defaultSpotlightAiId: '',

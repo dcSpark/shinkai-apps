@@ -1,6 +1,7 @@
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { TooltipProvider } from '@shinkai_network/shinkai-ui';
 import { listen } from '@tauri-apps/api/event';
+import { invoke } from '@tauri-apps/api/core';
 import { debug } from '@tauri-apps/plugin-log';
 import React, { useEffect, useRef } from 'react';
 import {
@@ -186,18 +187,11 @@ export const useDefaultAgentByDefault = () => {
 
   useEffect(() => {
     if (auth?.node_address && auth?.api_v2_key && defaultAgentId) {
-      import('../lib/shinkai-node-manager/shinkai-node-manager-client')
-        .then(({ useShinkaiNodeSetDefaultLlmProviderMutation }) => {
-          const { mutate } = useShinkaiNodeSetDefaultLlmProviderMutation({
-            onError: (error) => {
-              console.error('Failed to sync default LLM provider with backend:', error);
-            },
-          });
-          mutate(defaultAgentId);
-        })
-        .catch((error) => {
-          console.error('Failed to import useShinkaiNodeSetDefaultLlmProviderMutation:', error);
-        });
+      invoke('shinkai_node_set_default_llm_provider', {
+        defaultLlmProvider: defaultAgentId,
+      }).catch((error: Error) => {
+        console.error('Failed to sync default LLM provider with backend:', error);
+      });
     }
   }, [auth, defaultAgentId]);
 };
