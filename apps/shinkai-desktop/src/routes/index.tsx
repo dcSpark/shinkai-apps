@@ -1,7 +1,6 @@
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { TooltipProvider } from '@shinkai_network/shinkai-ui';
 import { listen } from '@tauri-apps/api/event';
-import { invoke } from '@tauri-apps/api/core';
 import { debug } from '@tauri-apps/plugin-log';
 import React, { useEffect, useRef } from 'react';
 import {
@@ -185,15 +184,7 @@ export const useDefaultAgentByDefault = () => {
     defaultModel,
   ]);
 
-  useEffect(() => {
-    if (auth?.node_address && auth?.api_v2_key && defaultAgentId) {
-      invoke('shinkai_node_set_default_llm_provider', {
-        defaultLlmProvider: defaultAgentId,
-      }).catch((error: Error) => {
-        console.error('Failed to sync default LLM provider with backend:', error);
-      });
-    }
-  }, [auth, defaultAgentId]);
+  return null;
 };
 
 const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
@@ -255,14 +246,21 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+import DefaultLlmProviderUpdater from '../components/default-llm-provider/default-llm-provider-updater';
+
 const AppRoutes = () => {
   useAppHotkeys();
   useGlobalAppShortcuts();
   useDefaultAgentByDefault();
+  
+  const defaultAgentId = useSettings((state) => state.defaultAgentId);
 
   return (
-    <Routes>
-      <Route element={<MainLayout />}>
+    <>
+      {/* Use the DefaultLlmProviderUpdater component to update the default LLM provider */}
+      {defaultAgentId && <DefaultLlmProviderUpdater defaultAgentId={defaultAgentId} />}
+      <Routes>
+        <Route element={<MainLayout />}>
         <Route
           element={
             <OnboardingGuard>
@@ -479,6 +477,7 @@ const AppRoutes = () => {
         path="*"
       />
     </Routes>
+    </>
   );
 };
 export default AppRoutes;
