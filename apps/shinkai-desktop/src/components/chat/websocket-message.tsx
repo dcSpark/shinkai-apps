@@ -8,7 +8,10 @@ import {
   generateOptimisticAssistantMessage,
   OPTIMISTIC_ASSISTANT_MESSAGE_ID,
 } from '@shinkai_network/shinkai-node-state/v2/constants';
-import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import {
+  ChatConversationInfiniteData,
+  ToolCall,
+} from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import { createContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -456,13 +459,15 @@ export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
                 lastMessage.role === 'assistant' &&
                 lastMessage.status?.type === 'running'
               ) {
-                const existingToolCall = lastMessage.toolCalls.find(
-                  (call) => call.name === tool.tool_name,
-                );
+                const existingToolCall: ToolCall | undefined =
+                  lastMessage.toolCalls?.[tool.index];
 
                 if (existingToolCall) {
-                  existingToolCall.status = tool.status.type_;
-                  existingToolCall.result = tool.result?.data.message;
+                  lastMessage.toolCalls[tool.index] = {
+                    ...lastMessage.toolCalls[tool.index],
+                    status: tool.status.type_,
+                    result: tool.result?.data.message,
+                  };
                 } else {
                   lastMessage.toolCalls.push({
                     name: tool.tool_name,
@@ -473,13 +478,6 @@ export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
                     result: tool.result?.data.message,
                   });
                 }
-
-                lastMessage.content =
-                  tool.status.type_ === 'Running'
-                    ? 'Processing'
-                    : tool.status.type_ === 'Complete'
-                      ? 'Getting AI response'
-                      : '';
               }
             }),
           );
