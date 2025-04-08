@@ -257,6 +257,15 @@ export default function ToolDetailsCard({
     }
   }, [tool]);
 
+  useEffect(() => {
+    if (formData) {
+      setTryItOutFormData(prevData => ({
+        ...prevData,
+        configs: formData
+      }));
+    }
+  }, [formData]);
+
   const handleSaveToolConfig: FormProps['onSubmit'] = async (data) => {
     const formData = data.formData;
     await updateTool({
