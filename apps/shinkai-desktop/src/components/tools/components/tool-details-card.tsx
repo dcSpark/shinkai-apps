@@ -56,6 +56,7 @@ import { toast } from 'sonner';
 
 import { SubpageLayout } from '../../../pages/layout/simple-layout';
 import { useAuth } from '../../../store/auth';
+import { useSettings } from '../../../store/settings';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
@@ -116,7 +117,7 @@ export default function ToolDetailsCard({
     token: auth?.api_v2_key ?? '',
     toolRouterKey: toolKey ?? '',
   });
-
+  const defaultAgentId = useSettings((state) => state.defaultAgentId);
   const [formData, setFormData] = useState<Record<string, any> | null>(null);
   const [oauthFormData, setOAuthFormData] = useState<{ oauth: OAuth[] } | null>(
     null,
@@ -831,7 +832,7 @@ export default function ToolDetailsCard({
                       ? CodeLanguage.Python 
                       : CodeLanguage.Typescript,
                     params: formData?.params ?? {},
-                    llmProviderId: '',
+                    llmProviderId: defaultAgentId ?? '',
                     tools: [],
                     configs: formData?.configs ?? {},
                     xShinkaiAppId: 'shinkai-desktop',
