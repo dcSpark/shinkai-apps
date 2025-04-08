@@ -22,6 +22,7 @@ import { ToolErrorFallback } from '../error-boundary';
 import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 import { useToolSave } from '../hooks/use-tool-save';
 import { ToolMetadataRawSchema } from '../schemas';
+import { sortToolMetadataForDisplay } from '../utils/metadata-utils';
 import ToolCodeEditor from '../tool-code-editor';
 
 function MetadataPanelBase({
@@ -120,7 +121,10 @@ function MetadataPanelBase({
     if (!toolMetadata) return '';
     try {
       const parsedToolMetadata = ToolMetadataRawSchema.parse(toolMetadata);
-      return JSON.stringify(parsedToolMetadata, null, 2);
+      
+      const sortedForDisplay = sortToolMetadataForDisplay(parsedToolMetadata as ToolMetadata);
+      
+      return JSON.stringify(sortedForDisplay, null, 2);
     } catch (err) {
       console.error('Error formatting tool metadata:', err, toolMetadata);
       setValidateMetadataEditorValue(`Error parsing metadata: ${(err as Error).message}`);
