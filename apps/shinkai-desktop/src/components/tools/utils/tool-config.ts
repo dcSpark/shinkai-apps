@@ -20,21 +20,7 @@ export function parseConfigToJsonSchema(config: ToolConfig[]): RJSFSchema {
     properties: {},
   };
 
-  const requiredConfigs: ToolConfig[] = [];
-  const optionalConfigs: ToolConfig[] = [];
-
   config.forEach((item) => {
-    const { BasicConfig } = item;
-    const { required } = BasicConfig;
-
-    if (required) {
-      requiredConfigs.push(item);
-    } else {
-      optionalConfigs.push(item);
-    }
-  });
-
-  [...requiredConfigs, ...optionalConfigs].forEach((item) => {
     const { BasicConfig } = item;
     const { key_name, description, required, type } = BasicConfig;
 
@@ -49,4 +35,43 @@ export function parseConfigToJsonSchema(config: ToolConfig[]): RJSFSchema {
   });
 
   return schema;
+}
+
+/**
+ * Creates a sorted schema with required properties first, followed by optional properties.
+ * This function does not modify the original data structure but only changes the display order.
+ */
+export function createSortedConfigSchema(schema: RJSFSchema): RJSFSchema {
+  if (!schema.properties || !schema.required) {
+    return schema;
+  }
+
+  const sortedSchema: RJSFSchema = {
+    ...schema,
+    properties: {},
+  };
+
+  schema.required.forEach((key) => {
+    if (schema.properties && schema.properties[key]) {
+      if (!sortedSchema.properties) {
+        sortedSchema.properties = {};
+      }
+      sortedSchema.properties[key] = schema.properties[key];
+    }
+  });
+
+  if (schema.properties) {
+    Object.keys(schema.properties).forEach((key) => {
+      if (!schema.required?.includes(key)) {
+        if (!sortedSchema.properties) {
+          sortedSchema.properties = {};
+        }
+        if (schema.properties && schema.properties[key]) {
+          sortedSchema.properties[key] = schema.properties[key];
+        }
+      }
+    });
+  }
+
+  return sortedSchema;
 }

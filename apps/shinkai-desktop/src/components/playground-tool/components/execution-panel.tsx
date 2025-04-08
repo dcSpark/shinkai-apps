@@ -23,6 +23,8 @@ import { memo, MutableRefObject, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
+import { createSortedConfigSchema } from '../../tools/utils/tool-config';
+import { createSortedInputArgsSchema } from '../../tools/utils/tool-input-args';
 import { usePlaygroundStore } from '../context/playground-context';
 import { ToolErrorFallback } from '../error-boundary';
 import ToolCodeEditor from '../tool-code-editor';
@@ -228,14 +230,14 @@ function ExecutionPanelBase({
                         Object.keys(toolMetadata.configurations.properties)
                           .length > 0
                           ? {
-                              configs: toolMetadata.configurations,
+                              configs: createSortedConfigSchema(toolMetadata.configurations),
                             }
                           : {}),
                         ...(toolMetadata?.parameters?.properties &&
                         Object.keys(toolMetadata.parameters.properties).length >
                           0
                           ? {
-                              params: toolMetadata.parameters,
+                              params: createSortedInputArgsSchema(toolMetadata.parameters),
                             }
                           : {}),
                       },
