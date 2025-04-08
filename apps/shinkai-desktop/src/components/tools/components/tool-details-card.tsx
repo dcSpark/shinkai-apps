@@ -59,8 +59,8 @@ import { useAuth } from '../../../store/auth';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
-import { parseConfigToJsonSchema, createSortedConfigSchema } from '../utils/tool-config';
-import { parseInputArgsToJsonSchema, createSortedInputArgsSchema } from '../utils/tool-input-args';
+import { createSortedConfigSchema,parseConfigToJsonSchema } from '../utils/tool-config';
+import { createSortedInputArgsSchema,parseInputArgsToJsonSchema } from '../utils/tool-input-args';
 import EditToolDetailsDialog from './edit-tool-details-dialog';
 
 /**
