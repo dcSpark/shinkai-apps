@@ -17,6 +17,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
+import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -74,13 +75,13 @@ export default function RemoveToolButton({
             <button
               className={cn(
                 buttonVariants({
-                  variant: 'ghost',
-                  size: 'xs',
+                  variant: 'outline',
+                  size: 'sm',
                 }),
-                'px-2 h-6'
+                'min-h-auto h-auto w-10 rounded-md py-2 flex justify-center'
               )}
             >
-              Remove
+              <Trash2 className="h-4 w-4" />
             </button>
           </DialogTrigger>
         </TooltipTrigger>
