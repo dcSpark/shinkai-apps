@@ -1,12 +1,12 @@
 use serde_json::{json, Value};
 use std::env;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::{PathBuf};
 use tauri::AppHandle;
 use crate::local_shinkai_node::process_handlers::process_utils::kill_process_by_name;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::fs::File;
+
 
 // --- Error Types ---
 #[derive(Debug)]
