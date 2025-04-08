@@ -287,6 +287,27 @@
     },
     "switch": "AIを切り替え"
   },
+  "mcpClients": {
+    "claudeFailMessageBase": "自動Claude設定に失敗しました。",
+    "claudeLoading": "自動Claudeデスクトップ設定を試みています...",
+    "claudeSuccessDescription": "変更を反映させるためにClaudeを再起動してください。",
+    "claudeSuccessTitle": "Claudeデスクトップが正常に設定されました！",
+    "configFailDescription": "{{errorMessage}} 以下の手順に従って手動設定を行ってください:",
+    "configFailTitle": "{{clientName}}の自動設定に失敗しました",
+    "copyJsonButton": "JSON設定をコピー",
+    "copyJsonSuccess": "JSON設定がクリップボードにコピーされました",
+    "copySuccessCommand": "コマンドがクリップボードにコピーされました",
+    "copySuccessUrl": "SSE URLがクリップボードにコピーされました",
+    "cursorFailMessageBase": "自動Cursor設定に失敗しました。",
+    "cursorLoading": "自動Cursor設定を試みています...",
+    "cursorSuccessDescription": "変更を反映させるためにCursorを再起動してください。",
+    "cursorSuccessTitle": "Cursorが正常に設定されました！",
+    "customCopyCommandButton": "コマンドをコピー",
+    "customCopySseUrlButton": "SSE URLをコピー",
+    "customDescriptionPrimary": "外部クライアントを接続する推奨方法は、サーバー送信イベント（SSE）を使用することです。",
+    "customDescriptionSecondary": "クライアントがSSEをサポートしていない場合は、次のコマンドを使用してShinkai MCPサーバーを別のプロセスとして実行できます：",
+    "customTitle": "カスタム外部クライアント設定"
+  },
   "notifications": {
     "messageReceived": {
       "description": "{{inboxName}} からの応答を受信しました",

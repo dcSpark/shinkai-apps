@@ -287,6 +287,27 @@
     },
     "switch": "切换人工智能"
   },
+  "mcpClients": {
+    "claudeFailMessageBase": "自动配置 Claude 失败。",
+    "claudeLoading": "正在尝试自动配置 Claude Desktop...",
+    "claudeSuccessDescription": "请重启 Claude 以使更改生效。",
+    "claudeSuccessTitle": "Claude Desktop 配置成功！",
+    "configFailDescription": "{{errorMessage}} 请按照以下说明进行手动设置：",
+    "configFailTitle": "自动配置 {{clientName}} 失败",
+    "copyJsonButton": "复制 JSON 配置",
+    "copyJsonSuccess": "JSON 配置已复制到剪贴板",
+    "copySuccessCommand": "命令已复制到剪贴板",
+    "copySuccessUrl": "SSE URL已复制到剪贴板",
+    "cursorFailMessageBase": "自动配置 Cursor 失败。",
+    "cursorLoading": "正在尝试自动配置 Cursor...",
+    "cursorSuccessDescription": "请重启 Cursor 以使更改生效。",
+    "cursorSuccessTitle": "Cursor 配置成功！",
+    "customCopyCommandButton": "复制命令",
+    "customCopySseUrlButton": "复制SSE URL",
+    "customDescriptionPrimary": "连接外部客户端的推荐方式是通过服务器推送事件（SSE）。",
+    "customDescriptionSecondary": "如果您的客户端不支持SSE，您可以使用以下命令将Shinkai MCP服务器作为单独的进程运行：",
+    "customTitle": "自定义外部客户端配置"
+  },
   "notifications": {
     "messageReceived": {
       "description": "您收到了来自{{inboxName}}的回复",
