@@ -287,6 +287,20 @@
     },
     "switch": "Ganti AI"
   },
+  "mcpClients": {
+    "claudeFailMessageBase": "Konfigurasi otomatis Claude gagal.",
+    "claudeLoading": "Mencoba konfigurasi otomatis Claude Desktop...",
+    "claudeSuccessDescription": "Silakan restart Claude agar perubahan dapat diterapkan.",
+    "claudeSuccessTitle": "Claude Desktop berhasil dikonfigurasi!",
+    "configFailDescription": "{{errorMessage}} Silakan ikuti petunjuk di bawah untuk pengaturan manual:",
+    "configFailTitle": "Konfigurasi Otomatis {{clientName}} Gagal",
+    "copyJsonButton": "Salin Konfigurasi JSON",
+    "copyJsonSuccess": "Konfigurasi JSON telah disalin ke clipboard",
+    "cursorFailMessageBase": "Konfigurasi otomatis Cursor gagal.",
+    "cursorLoading": "Mencoba konfigurasi otomatis Cursor...",
+    "cursorSuccessDescription": "Silakan restart Cursor agar perubahan dapat diterapkan.",
+    "cursorSuccessTitle": "Cursor berhasil dikonfigurasi!"
+  },
   "notifications": {
     "messageReceived": {
       "description": "Anda telah menerima tanggapan dari {{inboxName}}",

@@ -287,6 +287,20 @@
     },
     "switch": "Cambiar IA"
   },
+  "mcpClients": {
+    "claudeFailMessageBase": "La configuración automática de Claude ha fallado.",
+    "claudeLoading": "Intentando la configuración automática de Claude Desktop...",
+    "claudeSuccessDescription": "Por favor, reinicia Claude para que los cambios surtan efecto.",
+    "claudeSuccessTitle": "¡Claude Desktop configurado con éxito!",
+    "configFailDescription": "{{errorMessage}} Por favor, sigue las instrucciones a continuación para la configuración manual:",
+    "configFailTitle": "La configuración automática de {{clientName}} ha fallado",
+    "copyJsonButton": "Copiar configuración JSON",
+    "copyJsonSuccess": "Configuración JSON copiada al portapapeles",
+    "cursorFailMessageBase": "La configuración automática de Cursor ha fallado.",
+    "cursorLoading": "Intentando la configuración automática de Cursor...",
+    "cursorSuccessDescription": "Por favor, reinicia Cursor para que los cambios surtan efecto.",
+    "cursorSuccessTitle": "¡Cursor configurado con éxito!"
+  },
   "notifications": {
     "messageReceived": {
       "description": "Has recibido una respuesta de {{inboxName}}",

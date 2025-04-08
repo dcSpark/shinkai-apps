@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
+import { TFunction } from 'i18next'; // Import TFunction from i18next core
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth'; // Adjust path as needed
@@ -21,29 +22,31 @@ export const getClaudeDesktopConfigPath = (): string => {
   }
 };
 
-export const handleConfigureClaude = async (serverId: string) => {
+export const handleConfigureClaude = async (serverId: string, t: TFunction) => {
   const auth = useAuth.getState().auth;
-  const nodeUrl = auth?.node_address || 'http://localhost:9550'; // Use the correct port if different
-  const loadingToastId = toast.loading('Attempting automatic Claude Desktop configuration...');
+  const nodeUrl = auth?.node_address || 'http://localhost:9550';
+  const loadingToastId = toast.loading(t('mcpClients.claudeLoading'));
 
   try {
     const denoBinPath = await getDenoBinPath();
     const command = denoBinPath;
     const args = ['run', '-A', 'npm:supergateway', '--sse', `${nodeUrl}/mcp/sse`];
 
+    // Call the actual invoke function
     await invoke('register_server_in_claude', {
       serverId: serverId,
       binaryPath: command,
       serverArgs: args,
     });
-    toast.success('Claude Desktop configured successfully!', {
+    toast.success(t('mcpClients.claudeSuccessTitle'), {
       id: loadingToastId,
-      description: 'Please restart Claude for the changes to take effect.',
+      description: t('mcpClients.claudeSuccessDescription'),
     });
+
   } catch (error) {
     toast.dismiss(loadingToastId);
     console.error('Automatic Claude Desktop configuration failed:', error);
-    let errorMessage = 'Automatic configuration failed.';
+    let errorMessage = t('mcpClients.claudeFailMessageBase');
     if (typeof error === 'string') {
       errorMessage += ` Error: ${error}`;
     } else if (error instanceof Error) {
@@ -52,7 +55,6 @@ export const handleConfigureClaude = async (serverId: string) => {
 
     let helpText: string | null = null; // Declare helpText here
     try {
-      // Attempt to fetch help text with updated command/args
       const command = 'npx';
       const args = ['-y','supergateway', '--sse', `${nodeUrl}/mcp/sse`];
       helpText = await invoke<string>('get_claude_config_help', {
@@ -60,21 +62,14 @@ export const handleConfigureClaude = async (serverId: string) => {
         binaryPath: command,
         serverArgs: args,
       });
-      // Do not throw ConfigError here
     } catch (helpError) {
       console.error('Failed to fetch Claude config help text:', helpError);
-      // Throw regular error if fetching help text fails
       throw new Error(`${errorMessage} Could not retrieve manual setup instructions.`);
     }
 
-    // If helpText was successfully fetched in the try block above, throw ConfigError now.
-    // The null check ensures we don't proceed if helpText wasn't assigned.
     if (helpText) {
       throw new ConfigError(errorMessage, helpText);
     } else {
-       // This case should theoretically not be reached if the catch above throws,
-       // but added for robustness. If helpText is null here, something went wrong
-       // without an exception being caught by the inner catch.
        throw new Error(`${errorMessage} Could not retrieve manual setup instructions (unexpected state).`);
     }
   }

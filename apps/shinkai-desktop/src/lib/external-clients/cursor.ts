@@ -1,28 +1,29 @@
 import { invoke } from '@tauri-apps/api/core';
+import { TFunction } from 'i18next';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth'; // Adjust path as needed
 import { ConfigError } from './common'; // Import from common.ts
 
-export const handleConfigureCursor = async (serverId: string) => {
+export const handleConfigureCursor = async (serverId: string, t: TFunction) => {
   const auth = useAuth.getState().auth;
   const nodeUrl = auth?.node_address || 'http://localhost:9950';
   const sseUrl = `${nodeUrl}/mcp/sse`;
-  const loadingToastId = toast.loading('Attempting automatic Cursor configuration...');
+  const loadingToastId = toast.loading(t('mcpClients.cursorLoading'));
 
   try {
     await invoke('register_sse_server_in_cursor', {
       serverId: serverId,
       url: sseUrl,
     });
-    toast.success('Cursor configured successfully!', {
+    toast.success(t('mcpClients.cursorSuccessTitle'), {
       id: loadingToastId,
-      description: 'Please restart Cursor for the changes to take effect.',
+      description: t('mcpClients.cursorSuccessDescription'),
     });
   } catch (error) {
     toast.dismiss(loadingToastId);
     console.error('Automatic Cursor configuration failed:', error);
-    let errorMessage = 'Automatic configuration failed.';
+    let errorMessage = t('mcpClients.cursorFailMessageBase');
     if (typeof error === 'string') {
       errorMessage += ` Error: ${error}`;
     } else if (error instanceof Error) {
@@ -50,4 +51,4 @@ export const handleConfigureCursor = async (serverId: string) => {
       throw new Error(`${errorMessage} Could not retrieve manual setup instructions (unexpected state).`);
     }
   }
-}; 
+};

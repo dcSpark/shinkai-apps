@@ -287,6 +287,20 @@
     },
     "switch": "切换人工智能"
   },
+  "mcpClients": {
+    "claudeFailMessageBase": "自动配置 Claude 失败。",
+    "claudeLoading": "正在尝试自动配置 Claude Desktop...",
+    "claudeSuccessDescription": "请重启 Claude 以使更改生效。",
+    "claudeSuccessTitle": "Claude Desktop 配置成功！",
+    "configFailDescription": "{{errorMessage}} 请按照以下说明进行手动设置：",
+    "configFailTitle": "自动配置 {{clientName}} 失败",
+    "copyJsonButton": "复制 JSON 配置",
+    "copyJsonSuccess": "JSON 配置已复制到剪贴板",
+    "cursorFailMessageBase": "自动配置 Cursor 失败。",
+    "cursorLoading": "正在尝试自动配置 Cursor...",
+    "cursorSuccessDescription": "请重启 Cursor 以使更改生效。",
+    "cursorSuccessTitle": "Cursor 配置成功！"
+  },
   "notifications": {
     "messageReceived": {
       "description": "您收到了来自{{inboxName}}的回复",

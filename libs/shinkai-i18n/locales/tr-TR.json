@@ -287,6 +287,20 @@
     },
     "switch": "Yapay Zeka Değiştir"
   },
+  "mcpClients": {
+    "claudeFailMessageBase": "Otomatik Claude yapılandırması başarısız oldu.",
+    "claudeLoading": "Otomatik Claude Masaüstü yapılandırması deniliyor...",
+    "claudeSuccessDescription": "Değişikliklerin etkili olması için lütfen Claude'u yeniden başlatın.",
+    "claudeSuccessTitle": "Claude Masaüstü başarıyla yapılandırıldı!",
+    "configFailDescription": "{{errorMessage}} Lütfen manuel kurulum için aşağıdaki talimatları izleyin:",
+    "configFailTitle": "{{clientName}} Otomatik Yapılandırması Başarısız Oldu",
+    "copyJsonButton": "JSON Yapılandırmasını Kopyala",
+    "copyJsonSuccess": "JSON yapılandırması panoya kopyalandı",
+    "cursorFailMessageBase": "Otomatik Cursor yapılandırması başarısız oldu.",
+    "cursorLoading": "Otomatik Cursor yapılandırması deniliyor...",
+    "cursorSuccessDescription": "Değişikliklerin etkili olması için lütfen Cursor'u yeniden başlatın.",
+    "cursorSuccessTitle": "Cursor başarıyla yapılandırıldı!"
+  },
   "notifications": {
     "messageReceived": {
       "description": "{{inboxName}}'den bir yanıt aldınız",

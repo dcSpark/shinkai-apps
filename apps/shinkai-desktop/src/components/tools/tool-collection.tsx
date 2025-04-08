@@ -37,6 +37,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
+import { TFunction } from 'i18next';
 import { Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon } from 'lucide-react';
 import { useEffect,useState } from 'react';
 import { toast } from 'sonner';
@@ -77,6 +78,7 @@ const toolsGroup: {
 const ToolCollectionBase = () => {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
+
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
@@ -163,19 +165,18 @@ const ToolCollectionBase = () => {
     },
   });
 
-  const handleConfigureClick = async (configureFn: (serverId: string) => Promise<void>, clientName: string) => {
+  const handleConfigureClick = async (configureFn: (serverId: string, tFunc: TFunction) => Promise<void>, clientName: string) => {
     try {
-      await configureFn(MCP_SERVER_ID);
+      await configureFn(MCP_SERVER_ID, t);
     } catch (error) {
       if (error instanceof ConfigError) {
-        // Extract JSON config from help text
         const jsonMatch = error.helpText.match(/```json\s*([\s\S]*?)\s*```/);
         const extractedJson = jsonMatch ? jsonMatch[1].trim() : '';
 
-        setDialogTitle(`Automatic ${clientName} Configuration Failed`);
-        setDialogDescription(error.message + ' Please follow the instructions below for manual setup:');
+        setDialogTitle(t('mcpClients.configFailTitle', { clientName }));
+        setDialogDescription(t('mcpClients.configFailDescription', { errorMessage: error.message }));
         setDialogHelpText(error.helpText);
-        setJsonConfigToCopy(extractedJson); // Store extracted JSON
+        setJsonConfigToCopy(extractedJson);
         setDialogOpen(true);
       } else if (error instanceof Error) {
         toast.error(`Failed to configure ${clientName}: ${error.message}`);
@@ -281,10 +282,10 @@ const ToolCollectionBase = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => handleConfigureClick(handleConfigureClaude, 'Claude Desktop')}>
+                  <DropdownMenuItem onClick={() => handleConfigureClick((serverId, tFunc) => handleConfigureClaude(serverId, tFunc), 'Claude Desktop')}>
                     Claude Desktop
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleConfigureClick(handleConfigureCursor, 'Cursor')}>
+                  <DropdownMenuItem onClick={() => handleConfigureClick((serverId, tFunc) => handleConfigureCursor(serverId, tFunc), 'Cursor')}>
                     Cursor
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => {
@@ -536,18 +537,18 @@ const ToolCollectionBase = () => {
             <pre><code>{dialogHelpText}</code></pre>
           </div>
           <AlertDialogFooter className="flex justify-between gap-4">
-            <AlertDialogCancel>Close</AlertDialogCancel>
+            <AlertDialogCancel>{t('oauth.close')}</AlertDialogCancel>
             <AlertDialogAction 
-              disabled={!jsonConfigToCopy} // Disable if no JSON found
+              disabled={!jsonConfigToCopy}
               onClick={() => {
                 if (jsonConfigToCopy) {
                   navigator.clipboard.writeText(jsonConfigToCopy);
-                  toast.success('JSON configuration copied to clipboard');
-                  setDialogOpen(false); // Close dialog after copying
+                  toast.success(t('mcpClients.copyJsonSuccess'));
+                  setDialogOpen(false);
                 }
               }}
             >
-              Copy JSON Config
+              {t('mcpClients.copyJsonButton')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
