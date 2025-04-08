@@ -296,10 +296,17 @@
     "configFailTitle": "Konfigurasi Otomatis {{clientName}} Gagal",
     "copyJsonButton": "Salin Konfigurasi JSON",
     "copyJsonSuccess": "Konfigurasi JSON telah disalin ke clipboard",
+    "copySuccessCommand": "Perintah telah disalin ke papan klip",
+    "copySuccessUrl": "URL SSE telah disalin ke papan klip",
     "cursorFailMessageBase": "Konfigurasi otomatis Cursor gagal.",
     "cursorLoading": "Mencoba konfigurasi otomatis Cursor...",
     "cursorSuccessDescription": "Silakan restart Cursor agar perubahan dapat diterapkan.",
-    "cursorSuccessTitle": "Cursor berhasil dikonfigurasi!"
+    "cursorSuccessTitle": "Cursor berhasil dikonfigurasi!",
+    "customCopyCommandButton": "Salin Perintah",
+    "customCopySseUrlButton": "Salin URL SSE",
+    "customDescriptionPrimary": "Cara yang disarankan untuk menghubungkan klien eksternal Anda adalah melalui Server-Sent Events (SSE).",
+    "customDescriptionSecondary": "Jika klien Anda tidak mendukung SSE, Anda dapat menjalankan server Shinkai MCP sebagai proses terpisah menggunakan perintah ini:",
+    "customTitle": "Konfigurasi Klien Eksternal Kustom"
   },
   "notifications": {
     "messageReceived": {

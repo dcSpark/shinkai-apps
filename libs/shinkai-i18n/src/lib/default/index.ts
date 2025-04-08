@@ -699,5 +699,12 @@ export default {
     cursorSuccessTitle: 'Cursor configured successfully!',
     cursorSuccessDescription: 'Please restart Cursor for the changes to take effect.',
     cursorFailMessageBase: 'Automatic Cursor configuration failed.',
+    customTitle: 'Custom External Client Configuration',
+    customDescriptionPrimary: 'The recommended way to connect your external client is via Server-Sent Events (SSE).',
+    customDescriptionSecondary: 'If your client does not support SSE, you can run the Shinkai MCP server as a separate process using this command:',
+    customCopySseUrlButton: 'Copy SSE URL',
+    customCopyCommandButton: 'Copy Command',
+    copySuccessUrl: 'SSE URL copied to clipboard',
+    copySuccessCommand: 'Command copied to clipboard',
   },
 };

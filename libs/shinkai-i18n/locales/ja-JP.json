@@ -1,6 +1,4 @@
 {
-  "": {
-  },
   "aiFilesSearch": {
     "description": "AIファイル全体を簡単に検索してコンテンツを見つける",
     "filesSelected": "{{count}} 個のファイルが選択されました",
@@ -298,10 +296,17 @@
     "configFailTitle": "{{clientName}}の自動設定に失敗しました",
     "copyJsonButton": "JSON設定をコピー",
     "copyJsonSuccess": "JSON設定がクリップボードにコピーされました",
+    "copySuccessCommand": "コマンドがクリップボードにコピーされました",
+    "copySuccessUrl": "SSE URLがクリップボードにコピーされました",
     "cursorFailMessageBase": "自動Cursor設定に失敗しました。",
     "cursorLoading": "自動Cursor設定を試みています...",
     "cursorSuccessDescription": "変更を反映させるためにCursorを再起動してください。",
-    "cursorSuccessTitle": "Cursorが正常に設定されました！"
+    "cursorSuccessTitle": "Cursorが正常に設定されました！",
+    "customCopyCommandButton": "コマンドをコピー",
+    "customCopySseUrlButton": "SSE URLをコピー",
+    "customDescriptionPrimary": "外部クライアントを接続する推奨方法は、サーバー送信イベント（SSE）を使用することです。",
+    "customDescriptionSecondary": "クライアントがSSEをサポートしていない場合は、次のコマンドを使用してShinkai MCPサーバーを別のプロセスとして実行できます：",
+    "customTitle": "カスタム外部クライアント設定"
   },
   "notifications": {
     "messageReceived": {

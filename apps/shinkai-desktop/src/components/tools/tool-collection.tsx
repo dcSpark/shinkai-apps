@@ -44,7 +44,7 @@ import { toast } from 'sonner';
 
 import { useDebounce } from '../../hooks/use-debounce';
 import { handleConfigureClaude } from '../../lib/external-clients/claude-desktop';
-import { ConfigError } from '../../lib/external-clients/common';
+import { ConfigError, getDenoBinPath } from '../../lib/external-clients/common';
 import { handleConfigureCursor } from '../../lib/external-clients/cursor';
 import { useAuth } from '../../store/auth';
 import { usePlaygroundStore } from '../playground-tool/context/playground-context';
@@ -92,6 +92,9 @@ const ToolCollectionBase = () => {
   const [dialogDescription, setDialogDescription] = useState('');
   const [dialogHelpText, setDialogHelpText] = useState('');
   const [jsonConfigToCopy, setJsonConfigToCopy] = useState(''); // State for JSON config
+  const [customDialogOpen, setCustomDialogOpen] = useState(false); // State for custom dialog
+  const [customSseUrl, setCustomSseUrl] = useState('');         // State for SSE URL
+  const [customCommand, setCustomCommand] = useState('');       // State for Command
 
   const selectedToolCategory = usePlaygroundStore(
     (state) => state.selectedToolCategory,
@@ -185,6 +188,20 @@ const ToolCollectionBase = () => {
       }
       console.error(`Configuration error for ${clientName}:`, error);
     }
+  };
+
+  const handleShowCustomInstructions = async () => {
+    // Generate SSE URL (same logic as cursor)
+    const nodeUrl = auth?.node_address || 'http://localhost:9550'; // Default or get from auth
+    const sseUrl = `${nodeUrl}/mcp/sse`;
+    setCustomSseUrl(sseUrl);
+
+    // Generate Command (using deno as requested, referencing the SSE URL)
+    const denoBinPath = await getDenoBinPath(); // Get deno path
+    const command = `${denoBinPath} run -A npm:supergateway --sse ${sseUrl}`; // Use deno
+    setCustomCommand(command);
+
+    setCustomDialogOpen(true); // Open the dialog
   };
 
   return (
@@ -288,9 +305,7 @@ const ToolCollectionBase = () => {
                   <DropdownMenuItem onClick={() => handleConfigureClick((serverId, tFunc) => handleConfigureCursor(serverId, tFunc), 'Cursor')}>
                     Cursor
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => {
-                    toast.info('Custom configuration will be implemented in a future update');
-                  }}>
+                  <DropdownMenuItem onClick={handleShowCustomInstructions}>
                     Custom
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -550,6 +565,48 @@ const ToolCollectionBase = () => {
             >
               {t('mcpClients.copyJsonButton')}
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Custom Instructions Dialog */}
+      <AlertDialog onOpenChange={setCustomDialogOpen} open={customDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('mcpClients.customTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('mcpClients.customDescriptionPrimary')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="my-2 rounded bg-gray-800 p-3">
+            <pre className="mt-1 whitespace-pre-wrap text-sm"><code>{customSseUrl}</code></pre>
+          </div>
+          <AlertDialogDescription className="mt-4">
+            {t('mcpClients.customDescriptionSecondary')}
+          </AlertDialogDescription>
+          <div className="my-2 rounded bg-gray-800 p-3">
+            <pre className="mt-1 whitespace-pre-wrap text-sm"><code>{customCommand}</code></pre>
+          </div>
+          <AlertDialogFooter className="mt-4 flex justify-end gap-4">
+            <AlertDialogCancel>{t('oauth.close')}</AlertDialogCancel>
+            <div className="flex flex-grow justify-center gap-4">
+                <AlertDialogAction
+                    onClick={() => {
+                    navigator.clipboard.writeText(customSseUrl);
+                    toast.success(t('mcpClients.copySuccessUrl'));
+                    }}
+                >
+                    {t('mcpClients.customCopySseUrlButton')}
+                </AlertDialogAction>
+                <AlertDialogAction
+                    onClick={() => {
+                    navigator.clipboard.writeText(customCommand);
+                    toast.success(t('mcpClients.copySuccessCommand'));
+                    }}
+                >
+                    {t('mcpClients.customCopyCommandButton')}
+                </AlertDialogAction>
+            </div>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
