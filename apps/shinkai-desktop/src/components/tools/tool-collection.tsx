@@ -89,6 +89,7 @@ const ToolCollectionBase = () => {
   const [dialogTitle, setDialogTitle] = useState('');
   const [dialogDescription, setDialogDescription] = useState('');
   const [dialogHelpText, setDialogHelpText] = useState('');
+  const [jsonConfigToCopy, setJsonConfigToCopy] = useState(''); // State for JSON config
 
   const selectedToolCategory = usePlaygroundStore(
     (state) => state.selectedToolCategory,
@@ -167,9 +168,14 @@ const ToolCollectionBase = () => {
       await configureFn(MCP_SERVER_ID);
     } catch (error) {
       if (error instanceof ConfigError) {
+        // Extract JSON config from help text
+        const jsonMatch = error.helpText.match(/```json\s*([\s\S]*?)\s*```/);
+        const extractedJson = jsonMatch ? jsonMatch[1].trim() : '';
+
         setDialogTitle(`Automatic ${clientName} Configuration Failed`);
         setDialogDescription(error.message + ' Please follow the instructions below for manual setup:');
         setDialogHelpText(error.helpText);
+        setJsonConfigToCopy(extractedJson); // Store extracted JSON
         setDialogOpen(true);
       } else if (error instanceof Error) {
         toast.error(`Failed to configure ${clientName}: ${error.message}`);
@@ -531,11 +537,18 @@ const ToolCollectionBase = () => {
           </div>
           <AlertDialogFooter className="flex justify-between gap-4">
             <AlertDialogCancel>Close</AlertDialogCancel>
-            <AlertDialogAction onClick={() => {
-              navigator.clipboard.writeText(dialogHelpText);
-              toast.info('Manual instructions copied to clipboard');
-              setDialogOpen(false); // Close dialog after copying
-            }}>Copy Instructions</AlertDialogAction>
+            <AlertDialogAction 
+              disabled={!jsonConfigToCopy} // Disable if no JSON found
+              onClick={() => {
+                if (jsonConfigToCopy) {
+                  navigator.clipboard.writeText(jsonConfigToCopy);
+                  toast.success('JSON configuration copied to clipboard');
+                  setDialogOpen(false); // Close dialog after copying
+                }
+              }}
+            >
+              Copy JSON Config
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
