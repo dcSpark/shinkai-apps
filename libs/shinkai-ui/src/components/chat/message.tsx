@@ -31,6 +31,7 @@ import { CopyToClipboardIcon } from '../copy-to-clipboard-icon';
 import { DotsLoader } from '../dots-loader';
 import { Form, FormField } from '../form';
 import { MarkdownText } from '../markdown-preview';
+import { PrettyJsonPrint } from '../pretty-json-print';
 import {
   Tooltip,
   TooltipContent,
@@ -301,12 +302,12 @@ const MessageBase = ({
                       className="space-y-1.5 self-baseline pb-3"
                       type="multiple"
                     >
-                      {message.toolCalls.map((tool) => {
+                      {message.toolCalls.map((tool, index) => {
                         return (
                           <AccordionItem
                             className="bg-app-gradient overflow-hidden rounded-lg"
                             disabled={tool.status !== ToolStatusType.Complete}
-                            key={tool.name}
+                            key={`${tool.name}-${index}`}
                             value={tool.name}
                           >
                             <AccordionTrigger
@@ -324,7 +325,7 @@ const MessageBase = ({
                                 toolRouterKey={tool.toolRouterKey}
                               />
                             </AccordionTrigger>
-                            <AccordionContent className="bg-gray-450 flex flex-col gap-1 rounded-b-lg px-3 pb-3 pt-2 text-xs">
+                            <AccordionContent className="bg-gray-450 flex flex-col gap-1 rounded-b-lg px-3 pb-3 pt-2 text-xs overflow-x-scroll">
                               {Object.keys(tool.args).length > 0 && (
                                 <span className="font-medium text-white">
                                   {tool.name}(
@@ -340,7 +341,7 @@ const MessageBase = ({
                                 <div>
                                   <span>Response:</span>
                                   <span className="text-gray-80 break-all font-mono">
-                                    {JSON.stringify(tool.result, null, 2)}
+                                    <PrettyJsonPrint json={tool.result} />
                                   </span>
                                 </div>
                               )}

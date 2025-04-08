@@ -6,6 +6,7 @@ import {
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import {
+  AssistantMessage,
   FormattedMessage,
   ToolCall,
 } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
@@ -31,6 +32,7 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { PrettyJsonPrint } from '@shinkai_network/shinkai-ui';
 import {
   appIcon,
   ReactJsIcon,
@@ -332,16 +334,16 @@ export const MessageBase = ({
                   message.toolCalls &&
                   message.toolCalls.length > 0 && (
                     <Accordion
-                      className="space-y-1.5 self-baseline pb-3"
+                      className="space-y-1.5 self-baseline pb-3 overflow-x-auto max-w-full"
                       type="multiple"
                     >
-                      {message.toolCalls.map((tool) => {
+                      {message.toolCalls.map((tool, index) => {
                         return (
                           <AccordionItem
                             className="bg-app-gradient overflow-hidden rounded-lg"
                             disabled={tool.status !== ToolStatusType.Complete}
-                            key={tool.name}
-                            value={tool.name}
+                            key={`${tool.name}-${index}`}
+                            value={`${tool.name}-${index}`}
                           >
                             <AccordionTrigger
                               className={cn(
@@ -364,7 +366,7 @@ export const MessageBase = ({
                                   {tool.name}(
                                   {Object.keys(tool.args).length > 0 && (
                                     <span className="text-gray-80 font-mono font-medium">
-                                      {JSON.stringify(tool.args)}
+                                      <PrettyJsonPrint json={tool.args} />
                                     </span>
                                   )}
                                   )
@@ -374,7 +376,7 @@ export const MessageBase = ({
                                 <div>
                                   <span>Response:</span>
                                   <span className="text-gray-80 break-all font-mono">
-                                    {JSON.stringify(tool.result, null, 2)}
+                                    <PrettyJsonPrint json={tool.result} />
                                   </span>
                                 </div>
                               )}
@@ -425,6 +427,17 @@ export const MessageBase = ({
                 {message.role === 'user' && (
                   <div className="whitespace-pre-line">{message.content}</div>
                 )}
+                {message.role === 'assistant' &&
+                  message.toolCalls?.some(
+                    (tool) => tool.status === 'Running',
+                  ) &&
+                  message.content === '' && (
+                    <div className="whitespace-pre-line pt-1.5">
+                      <span className="text-gray-80 text-xs">
+                        Executing tools
+                      </span>
+                    </div>
+                  )}
                 {message.role === 'assistant' &&
                   message.status.type === 'running' &&
                   message.content === '' && (
@@ -590,7 +603,16 @@ export const Message = memo(MessageBase, (prev, next) => {
   return (
     prev.messageId === next.messageId &&
     prev.message.content === next.message.content &&
-    prev.minimalistMode === next.minimalistMode
+    prev.minimalistMode === next.minimalistMode &&
+    (prev.message as AssistantMessage).toolCalls?.length ===
+      (next.message as AssistantMessage).toolCalls?.length &&
+    (prev.message as AssistantMessage)?.toolCalls?.every((prevTool, index) => {
+      const nextToolCalls = next.message as AssistantMessage;
+      return (
+        prevTool.name === nextToolCalls.toolCalls?.[index]?.name &&
+        prevTool?.status === nextToolCalls.toolCalls?.[index]?.status
+      );
+    })
   );
 });
 
