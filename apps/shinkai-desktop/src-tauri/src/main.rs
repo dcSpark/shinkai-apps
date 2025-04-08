@@ -14,9 +14,20 @@ use crate::commands::shinkai_node_manager_commands::{
     shinkai_node_open_storage_location, shinkai_node_open_storage_location_with_path,
     shinkai_node_open_chat_folder,
 };
-
-use commands::logs::{download_logs, retrieve_logs};
-use commands::spotlight_commands::{hide_spotlight_window_app, show_spotlight_window_app};
+use crate::commands::mcp_clients_install::{
+    check_claude_installed,
+    get_claude_config_help,
+    is_server_registered_in_claude,
+    register_server_in_claude,
+    check_cursor_installed,
+    get_cursor_command_config_help,
+    get_cursor_sse_config_help,
+    is_server_registered_in_cursor,
+    register_command_server_in_cursor,
+    register_sse_server_in_cursor,
+};
+use crate::commands::logs::{download_logs, retrieve_logs};
+use crate::commands::spotlight_commands::{hide_spotlight_window_app, show_spotlight_window_app};
 use deep_links::setup_deep_links;
 use global_shortcuts::global_shortcut_handler;
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
@@ -114,6 +125,16 @@ fn main() {
             shinkai_node_get_ollama_version,
             retrieve_logs,
             download_logs,
+            check_claude_installed,
+            is_server_registered_in_claude,
+            register_server_in_claude,
+            get_claude_config_help,
+            check_cursor_installed,
+            is_server_registered_in_cursor,
+            register_command_server_in_cursor,
+            register_sse_server_in_cursor,
+            get_cursor_command_config_help,
+            get_cursor_sse_config_help,
         ])
         .setup(|app| {
             log::info!("starting app version: {}", env!("CARGO_PKG_VERSION"));

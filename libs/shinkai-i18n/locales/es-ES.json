@@ -1,4 +1,6 @@
 {
+  "": {
+  },
   "aiFilesSearch": {
     "description": "Busca para encontrar contenido en todos los archivos de tus archivos AI fácilmente",
     "filesSelected": "Seleccionados {{count}} archivos",
@@ -286,6 +288,27 @@
       "updateAgent": "IA actualizada exitosamente"
     },
     "switch": "Cambiar IA"
+  },
+  "mcpClients": {
+    "claudeFailMessageBase": "La configuración automática de Claude ha fallado.",
+    "claudeLoading": "Intentando la configuración automática de Claude Desktop...",
+    "claudeSuccessDescription": "Por favor, reinicia Claude para que los cambios surtan efecto.",
+    "claudeSuccessTitle": "¡Claude Desktop configurado con éxito!",
+    "configFailDescription": "{{errorMessage}} Por favor, sigue las instrucciones a continuación para la configuración manual:",
+    "configFailTitle": "La configuración automática de {{clientName}} ha fallado",
+    "copyJsonButton": "Copiar configuración JSON",
+    "copyJsonSuccess": "Configuración JSON copiada al portapapeles",
+    "copySuccessCommand": "Comando copiado al portapapeles",
+    "copySuccessUrl": "URL SSE copiada al portapapeles",
+    "cursorFailMessageBase": "La configuración automática de Cursor ha fallado.",
+    "cursorLoading": "Intentando la configuración automática de Cursor...",
+    "cursorSuccessDescription": "Por favor, reinicia Cursor para que los cambios surtan efecto.",
+    "cursorSuccessTitle": "¡Cursor configurado con éxito!",
+    "customCopyCommandButton": "Copiar Comando",
+    "customCopySseUrlButton": "Copiar URL SSE",
+    "customDescriptionPrimary": "La forma recomendada de conectar tu cliente externo es a través de Eventos Enviados por el Servidor (SSE).",
+    "customDescriptionSecondary": "Si tu cliente no soporta SSE, puedes ejecutar el servidor Shinkai MCP como un proceso separado utilizando este comando:",
+    "customTitle": "Configuración de Cliente Externo Personalizado"
   },
   "notifications": {
     "messageReceived": {
