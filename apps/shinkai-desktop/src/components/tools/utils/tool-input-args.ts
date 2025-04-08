@@ -9,10 +9,7 @@ export function parseInputArgsToJsonSchema(inputArgs: ToolArgument[]): RJSFSchem
     properties: {},
   };
 
-  const requiredArgs = inputArgs.filter(arg => arg.is_required);
-  const optionalArgs = inputArgs.filter(arg => !arg.is_required);
-  
-  [...requiredArgs, ...optionalArgs].forEach((arg) => {
+  inputArgs.forEach((arg) => {
     const { name, description, is_required, arg_type } = arg;
 
     if (is_required) {
@@ -26,6 +23,45 @@ export function parseInputArgsToJsonSchema(inputArgs: ToolArgument[]): RJSFSchem
   });
 
   return schema;
+}
+
+/**
+ * Creates a sorted schema with required properties first, followed by optional properties.
+ * This function does not modify the original data structure but only changes the display order.
+ */
+export function createSortedInputArgsSchema(schema: RJSFSchema): RJSFSchema {
+  if (!schema.properties || !schema.required) {
+    return schema;
+  }
+
+  const sortedSchema: RJSFSchema = {
+    ...schema,
+    properties: {},
+  };
+
+  schema.required.forEach((key) => {
+    if (schema.properties && schema.properties[key]) {
+      if (!sortedSchema.properties) {
+        sortedSchema.properties = {};
+      }
+      sortedSchema.properties[key] = schema.properties[key];
+    }
+  });
+
+  if (schema.properties) {
+    Object.keys(schema.properties).forEach((key) => {
+      if (!schema.required?.includes(key)) {
+        if (!sortedSchema.properties) {
+          sortedSchema.properties = {};
+        }
+        if (schema.properties && schema.properties[key]) {
+          sortedSchema.properties[key] = schema.properties[key];
+        }
+      }
+    });
+  }
+
+  return sortedSchema;
 }
 
 function mapArgTypeToJsonSchemaType(argType: string): JSONSchema7TypeName {

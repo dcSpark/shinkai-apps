@@ -59,8 +59,8 @@ import { useAuth } from '../../../store/auth';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
-import { parseConfigToJsonSchema } from '../utils/tool-config';
-import { parseInputArgsToJsonSchema } from '../utils/tool-input-args';
+import { parseConfigToJsonSchema, createSortedConfigSchema } from '../utils/tool-config';
+import { parseInputArgsToJsonSchema, createSortedInputArgsSchema } from '../utils/tool-input-args';
 import EditToolDetailsDialog from './edit-tool-details-dialog';
 
 /**
@@ -126,7 +126,7 @@ export default function ToolDetailsCard({
   const { t } = useTranslation();
   const toolConfigSchema =
     'config' in tool && tool.config?.length > 0
-      ? parseConfigToJsonSchema(tool?.config ?? [])
+      ? createSortedConfigSchema(parseConfigToJsonSchema(tool?.config ?? []))
       : {};
 
   const {
@@ -842,10 +842,10 @@ export default function ToolDetailsCard({
                   type: 'object',
                   properties: {
                     ...(('config' in tool && tool.config?.length > 0)
-                      ? { configs: parseConfigToJsonSchema(tool?.config ?? []) }
+                      ? { configs: createSortedConfigSchema(parseConfigToJsonSchema(tool?.config ?? [])) }
                       : {}),
                     ...(('input_args' in tool && Array.isArray(tool.input_args) && tool.input_args?.length > 0)
-                      ? { params: parseInputArgsToJsonSchema(tool?.input_args ?? []) }
+                      ? { params: createSortedInputArgsSchema(parseInputArgsToJsonSchema(tool?.input_args ?? [])) }
                       : ('input_args' in tool && tool.input_args && typeof tool.input_args === 'object' && 'properties' in (tool.input_args as any))
                         ? {
                             params: {
