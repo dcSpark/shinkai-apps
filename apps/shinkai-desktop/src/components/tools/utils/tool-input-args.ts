@@ -16,10 +16,12 @@ export function parseInputArgsToJsonSchema(inputArgs: ToolArgument[]): RJSFSchem
       schema.required?.push(name);
     }
 
-    schema.properties![name] = {
-      type: mapArgTypeToJsonSchemaType(arg_type),
-      description,
-    };
+    if (schema.properties) {
+      schema.properties[name] = {
+        type: mapArgTypeToJsonSchemaType(arg_type),
+        description,
+      };
+    }
   });
 
   return schema;
