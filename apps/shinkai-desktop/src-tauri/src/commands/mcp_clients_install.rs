@@ -271,15 +271,16 @@ pub fn get_claude_config_instructions(
 2.  Locate or create the Claude configuration file. The typical location is:
     `{config_path_display}`
 3.  Open the file in a text editor.
-4.  **If the file exists and contains JSON**, carefully merge the following `mcpServers` configuration. Ensure you place `{server_id}` correctly within the existing `mcpServers` object if it exists. Create the `mcpServers` object if it doesn't.
+4.  In case of using an npx command to run the MCP ensure that you have Node.js installed in your machine.
+5.  **If the file exists and contains JSON**, carefully merge the following `mcpServers` configuration. Ensure you place `{server_id}` correctly within the existing `mcpServers` object if it exists. Create the `mcpServers` object if it doesn't.
     **If the file is empty or does not exist**, paste the entire content below:
 
 ```json
 {pretty_json}
 ```
 
-5.  Save the file.
-6.  Start Claude. Your Shinkai server should now be available.
+6.  Save the file.
+7.  Start Claude. Your Shinkai server should now be available.
 
 **Note:** If you encounter issues, please ensure the JSON structure is valid after merging. You might need to add a comma (`,`) if adding this server entry after another existing entry within `mcpServers`.
 "#,
@@ -315,10 +316,6 @@ pub async fn register_server_in_claude(
     binary_path: String,
     server_args: Vec<String>, // Receive args from frontend
 ) -> Result<(), String> {
-    log::info!("(TEMP TEST) Simulating failure for register_server_in_claude for server '{}'", server_id);
-    // TEMP: Always return an error to test the frontend dialog
-    Err(format!("Simulated configuration failure for testing dialog (Claude: '{}').", server_id))
-    /* Original code:
     log::info!("Attempting to register server '{}' with binary '{}' and args {:?}", server_id, binary_path, server_args);
     configure_server_in_claude(app, &server_id, &binary_path, server_args)
         .await
@@ -326,7 +323,6 @@ pub async fn register_server_in_claude(
             log::error!("Error configuring server '{}' in Claude: {}", server_id, e);
             e.to_string()
         })
-    */
 }
 
 #[tauri::command]
@@ -825,10 +821,6 @@ pub async fn register_sse_server_in_cursor(
     url: String,
     env: Option<HashMap<String, String>>,
 ) -> Result<(), String> {
-    log::info!("(TEMP TEST) Simulating failure for register_sse_server_in_cursor for server '{}'", server_id);
-    // TEMP: Always return an error to test the frontend dialog
-    Err(format!("Simulated configuration failure for testing dialog (Cursor SSE: '{}').", server_id))
-    /* Original code:
     log::info!(
         "Attempting to register SSE server '{}' in Cursor with URL '{}'",
         server_id,
@@ -838,7 +830,6 @@ pub async fn register_sse_server_in_cursor(
         log::error!("Error configuring SSE server '{}' in Cursor: {}", server_id, e);
         e.to_string()
     })
-    */
 }
 
 #[tauri::command]

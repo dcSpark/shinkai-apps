@@ -2,7 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth'; // Adjust path as needed
-import { ConfigError } from './common'; // Import from common.ts
+import { ConfigError, getDenoBinPath } from './common'; // Import from common.ts
 
 export interface McpServerConfig {
   command: string;
@@ -59,12 +59,14 @@ If it exists, merge this configuration with existing content.
 
 export const handleConfigureClaude = async (serverId: string) => {
   const auth = useAuth.getState().auth;
-  const nodeUrl = auth?.node_address || 'http://localhost:9950';
-  const command = 'npx'; // Command to run the server
-  const args = ['-y', 'supergateway', '--sse', `${nodeUrl}/mcp/sse`];
+  const nodeUrl = auth?.node_address || 'http://localhost:9550'; // Use the correct port if different
   const loadingToastId = toast.loading('Attempting automatic Claude Desktop configuration...');
 
   try {
+    const denoBinPath = await getDenoBinPath();
+    const command = denoBinPath;
+    const args = ['run', '-A', 'npm:supergateway', '--sse', `${nodeUrl}/mcp/sse`];
+
     await invoke('register_server_in_claude', {
       serverId: serverId,
       binaryPath: command,
@@ -86,7 +88,9 @@ export const handleConfigureClaude = async (serverId: string) => {
 
     let helpText: string | null = null; // Declare helpText here
     try {
-      // Attempt to fetch help text
+      // Attempt to fetch help text with updated command/args
+      const command = 'npx';
+      const args = ['-y','supergateway', '--sse', `${nodeUrl}/mcp/sse`];
       helpText = await invoke<string>('get_claude_config_help', {
         serverId: serverId,
         binaryPath: command,
