@@ -23,6 +23,7 @@ import { z } from 'zod';
 import { usePlaygroundStore } from '../context/playground-context';
 import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 import { useToolSave } from '../hooks/use-tool-save';
+import RemoveToolButton from './remove-tool-button';
 
 const toolBasicInfoSchema = z.object({
   name: z.string().min(1),
@@ -102,6 +103,7 @@ export default function EditToolBasicInfoDialog({
       )}>
         <span className="truncate">{toolName}</span>
         <Button className="px-2 h-6" size="xs" variant="ghost">Edit</Button>
+        <RemoveToolButton isPlaygroundTool={true} toolKey={initialToolRouterKeyWithVersion} />
       </PopoverTrigger>
       <PopoverContent
         align="start"
