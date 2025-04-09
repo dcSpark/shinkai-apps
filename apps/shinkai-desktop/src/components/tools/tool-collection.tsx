@@ -39,7 +39,6 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { TFunction } from 'i18next';
 import { Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon } from 'lucide-react';
-
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
