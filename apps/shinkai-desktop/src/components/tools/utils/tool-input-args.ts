@@ -24,7 +24,7 @@ export function parseInputArgsToJsonSchema(inputArgs: ToolArgument[]): RJSFSchem
     schema.properties![name] = {
       type: schemaType,
       description,
-      ...(schemaType === 'array' ? { items: { type: 'string' } } : {}),
+      ...(schemaType === 'array' ? { items: ((schema.properties?.[name] as any)?.items) || { type: 'string' } } : {}),
     };
   });
 
