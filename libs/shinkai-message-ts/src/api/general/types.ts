@@ -103,6 +103,7 @@ export type Tool = {
     type_: ToolStatusType;
     reason?: string;
   };
+  index: number;
 };
 
 export type WsMessage = {

@@ -11,6 +11,14 @@ import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/querie
 import {
   Alert,
   AlertDescription,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   AlertTitle,
   Badge,
   Button,
@@ -29,14 +37,20 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
+import { TFunction } from 'i18next';
 import { Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon } from 'lucide-react';
 import { useEffect,useState } from 'react';
 import { toast } from 'sonner';
 
 import { useDebounce } from '../../hooks/use-debounce';
+import { handleConfigureClaude } from '../../lib/external-clients/claude-desktop';
+import { ConfigError, getDenoBinPath } from '../../lib/external-clients/common';
+import { handleConfigureCursor } from '../../lib/external-clients/cursor';
 import { useAuth } from '../../store/auth';
 import { usePlaygroundStore } from '../playground-tool/context/playground-context';
 import ToolCard from './components/tool-card';
+
+const MCP_SERVER_ID = 'shinkai-mcp-server';
 
 const toolsGroup: {
   label: string;
@@ -64,12 +78,23 @@ const toolsGroup: {
 const ToolCollectionBase = () => {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
+
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
   
   const [mcpEnabledState, setMcpEnabledState] = useState<Record<string, boolean>>({});
+
+  // State for the error dialog
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogTitle, setDialogTitle] = useState('');
+  const [dialogDescription, setDialogDescription] = useState('');
+  const [dialogHelpText, setDialogHelpText] = useState('');
+  const [jsonConfigToCopy, setJsonConfigToCopy] = useState(''); // State for JSON config
+  const [customDialogOpen, setCustomDialogOpen] = useState(false); // State for custom dialog
+  const [customSseUrl, setCustomSseUrl] = useState('');         // State for SSE URL
+  const [customCommand, setCustomCommand] = useState('');       // State for Command
 
   const selectedToolCategory = usePlaygroundStore(
     (state) => state.selectedToolCategory,
@@ -142,6 +167,42 @@ const ToolCollectionBase = () => {
       toast.error(error.message);
     },
   });
+
+  const handleConfigureClick = async (configureFn: (serverId: string, tFunc: TFunction) => Promise<void>, clientName: string) => {
+    try {
+      await configureFn(MCP_SERVER_ID, t);
+    } catch (error) {
+      if (error instanceof ConfigError) {
+        const jsonMatch = error.helpText.match(/```json\s*([\s\S]*?)\s*```/);
+        const extractedJson = jsonMatch ? jsonMatch[1].trim() : '';
+
+        setDialogTitle(t('mcpClients.configFailTitle', { clientName }));
+        setDialogDescription(t('mcpClients.configFailDescription', { errorMessage: error.message }));
+        setDialogHelpText(error.helpText);
+        setJsonConfigToCopy(extractedJson);
+        setDialogOpen(true);
+      } else if (error instanceof Error) {
+        toast.error(`Failed to configure ${clientName}: ${error.message}`);
+      } else {
+        toast.error(`An unknown error occurred while configuring ${clientName}.`);
+      }
+      console.error(`Configuration error for ${clientName}:`, error);
+    }
+  };
+
+  const handleShowCustomInstructions = async () => {
+    // Generate SSE URL (same logic as cursor)
+    const nodeUrl = auth?.node_address || 'http://localhost:9550'; // Default or get from auth
+    const sseUrl = `${nodeUrl}/mcp/sse`;
+    setCustomSseUrl(sseUrl);
+
+    // Generate Command (using deno as requested, referencing the SSE URL)
+    const denoBinPath = await getDenoBinPath(); // Get deno path
+    const command = `${denoBinPath} run -A npm:supergateway --sse ${sseUrl}`; // Use deno
+    setCustomCommand(command);
+
+    setCustomDialogOpen(true); // Open the dialog
+  };
 
   return (
     <div className="flex flex-col gap-8 max-w-[956px] mx-auto">
@@ -238,13 +299,13 @@ const ToolCollectionBase = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleConfigureClick((serverId, tFunc) => handleConfigureClaude(serverId, tFunc), 'Claude Desktop')}>
                     Claude Desktop
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleConfigureClick((serverId, tFunc) => handleConfigureCursor(serverId, tFunc), 'Cursor')}>
                     Cursor
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleShowCustomInstructions}>
                     Custom
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -477,6 +538,78 @@ const ToolCollectionBase = () => {
           ))}
         </div>
       )}
+
+      {/* Error Dialog */}
+      <AlertDialog onOpenChange={setDialogOpen} open={dialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{dialogTitle}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {dialogDescription}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="my-4 max-h-[60vh] overflow-y-auto rounded bg-gray-800 p-3 text-sm">
+            <pre><code>{dialogHelpText}</code></pre>
+          </div>
+          <AlertDialogFooter className="flex justify-between gap-4">
+            <AlertDialogCancel>{t('oauth.close')}</AlertDialogCancel>
+            <AlertDialogAction 
+              disabled={!jsonConfigToCopy}
+              onClick={() => {
+                if (jsonConfigToCopy) {
+                  navigator.clipboard.writeText(jsonConfigToCopy);
+                  toast.success(t('mcpClients.copyJsonSuccess'));
+                  setDialogOpen(false);
+                }
+              }}
+            >
+              {t('mcpClients.copyJsonButton')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Custom Instructions Dialog */}
+      <AlertDialog onOpenChange={setCustomDialogOpen} open={customDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('mcpClients.customTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('mcpClients.customDescriptionPrimary')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="my-2 rounded bg-gray-800 p-3">
+            <pre className="mt-1 whitespace-pre-wrap text-sm"><code>{customSseUrl}</code></pre>
+          </div>
+          <AlertDialogDescription className="mt-4">
+            {t('mcpClients.customDescriptionSecondary')}
+          </AlertDialogDescription>
+          <div className="my-2 rounded bg-gray-800 p-3">
+            <pre className="mt-1 whitespace-pre-wrap text-sm"><code>{customCommand}</code></pre>
+          </div>
+          <AlertDialogFooter className="mt-4 flex justify-end gap-4">
+            <AlertDialogCancel>{t('oauth.close')}</AlertDialogCancel>
+            <div className="flex flex-grow justify-center gap-4">
+                <AlertDialogAction
+                    onClick={() => {
+                    navigator.clipboard.writeText(customSseUrl);
+                    toast.success(t('mcpClients.copySuccessUrl'));
+                    }}
+                >
+                    {t('mcpClients.customCopySseUrlButton')}
+                </AlertDialogAction>
+                <AlertDialogAction
+                    onClick={() => {
+                    navigator.clipboard.writeText(customCommand);
+                    toast.success(t('mcpClients.copySuccessCommand'));
+                    }}
+                >
+                    {t('mcpClients.customCopyCommandButton')}
+                </AlertDialogAction>
+            </div>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
