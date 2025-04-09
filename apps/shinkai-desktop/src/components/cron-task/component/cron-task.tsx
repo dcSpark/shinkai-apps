@@ -110,8 +110,8 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
         temperature: DEFAULT_CHAT_CONFIG.temperature,
         top_k: DEFAULT_CHAT_CONFIG.top_k,
         top_p: DEFAULT_CHAT_CONFIG.top_p,
-        stream: DEFAULT_CHAT_CONFIG.stream,
-        use_tools: DEFAULT_CHAT_CONFIG.use_tools,
+        stream: DEFAULT_CHAT_CONFIG.stream ?? false,
+        use_tools: DEFAULT_CHAT_CONFIG.use_tools ?? false,
       },
       llmOrAgentId: defaultAgentId,
       jobMessage: {
@@ -126,28 +126,19 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
       initialValues &&
       'CreateJobWithConfigAndMessage' in initialValues.action
     ) {
+      const initialConfig = initialValues.action.CreateJobWithConfigAndMessage.config;
       form.reset({
         cronExpression: initialValues.cron,
         description: initialValues.description,
         name: initialValues.name,
         jobConfig: {
-          custom_system_prompt:
-            initialValues.action.CreateJobWithConfigAndMessage.config
-              .custom_system_prompt ?? '',
-          custom_prompt:
-            initialValues.action.CreateJobWithConfigAndMessage.config
-              .custom_prompt,
-          temperature:
-            initialValues.action.CreateJobWithConfigAndMessage.config
-              .temperature,
-          top_k:
-            initialValues.action.CreateJobWithConfigAndMessage.config.top_k,
-          top_p:
-            initialValues.action.CreateJobWithConfigAndMessage.config.top_p,
-          stream:
-            initialValues.action.CreateJobWithConfigAndMessage.config.stream,
-          use_tools:
-            initialValues.action.CreateJobWithConfigAndMessage.config.use_tools,
+          custom_system_prompt: initialConfig.custom_system_prompt ?? '',
+          custom_prompt: initialConfig.custom_prompt,
+          temperature: initialConfig.temperature,
+          top_k: initialConfig.top_k,
+          top_p: initialConfig.top_p,
+          stream: initialConfig.stream ?? false,
+          use_tools: initialConfig.use_tools ?? false,
         },
         jobMessage: {
           content:
@@ -167,7 +158,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
             : defaultAgentId,
       });
     }
-  }, [form, initialValues]);
+  }, [form, initialValues, defaultAgentId]);
 
   const { data: toolsList, isSuccess: isToolListSuccess } = useGetTools({
     nodeAddress: auth?.node_address ?? '',
@@ -264,7 +255,15 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
       <Form {...form}>
         <form
           className="flex grid grid-cols-2 flex-col justify-between gap-8 pt-4"
-          onSubmit={form.handleSubmit(submit)}
+          onSubmit={form.handleSubmit(
+            submit,
+            (errors) => {
+              console.error('Form validation errors:', errors);
+              toast.error("Validation failed. Please check the form fields.", {
+                description: Object.values(errors).map(e => e.message).join('\n'),
+              });
+            }
+          )}
         >
           <div className="space-y-4">
             <FormField

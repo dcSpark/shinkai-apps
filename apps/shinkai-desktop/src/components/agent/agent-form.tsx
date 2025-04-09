@@ -11,6 +11,7 @@ import {
 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/createAgent/useCreateAgent';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
+import { useCreateRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/createRecurringTask/useCreateRecurringTask';
 import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
@@ -404,6 +405,7 @@ function AgentForm({ mode }: AgentFormProps) {
         vector_fs_folders: [],
         vector_search_mode: 'FillUpTo25k',
       },
+      cronExpression: '',
     },
   });
 
@@ -438,7 +440,7 @@ function AgentForm({ mode }: AgentFormProps) {
     }
   }, [setSetJobScopeOpen, selectedFileKeysRef, selectedFolderKeysRef, form]);
 
-  // Effect to handle initial agent data
+  // Effect to handle initial agent data and schedule type
   useEffect(() => {
     if (mode === 'edit' && agent) {
       form.setValue('name', agent.name);
@@ -459,6 +461,16 @@ function AgentForm({ mode }: AgentFormProps) {
         other_model_params: agent.config?.other_model_params ?? {},
       });
       form.setValue('llmProviderId', agent.llm_provider_id);
+
+      // Set schedule type and cron expression based on existing tasks
+      if (agent.cron_tasks && agent.cron_tasks.length > 0) {
+        setScheduleType('scheduled');
+        // Assuming only one cron task per agent for this form
+        form.setValue('cronExpression', agent.cron_tasks[0]?.cron ?? ''); 
+      } else {
+        setScheduleType('normal');
+        form.setValue('cronExpression', '');
+      }
 
       // Set selected files and folders
       if (
@@ -529,19 +541,13 @@ function AgentForm({ mode }: AgentFormProps) {
         description: error.response?.data?.message ?? error.message,
       });
     },
-    onSuccess: () => {
-      navigate('/agents');
-    },
   });
 
   const { mutateAsync: updateAgent, isPending: isUpdating } = useUpdateAgent({
     onError: (error) => {
-      toast.error('Failed to update agent', {
+      toast.error('Failed to update agent core data', {
         description: error.response?.data?.message ?? error.message,
       });
-    },
-    onSuccess: () => {
-      navigate('/agents');
     },
   });
   
@@ -567,13 +573,27 @@ function AgentForm({ mode }: AgentFormProps) {
   });
   
   const quickSaveAgent = async () => {
-    if (!agent) return;
-    
+    if (!agent || !auth) return;
+
     try {
       const values = form.getValues();
+      // Calculate cron validity for quick save
+      const currentCronExpressionValue = values.cronExpression;
+      let isCronValidForQuickSave = false;
+      if (scheduleType === 'scheduled' && currentCronExpressionValue) {
+        try {
+          const readable = cronstrue.toString(currentCronExpressionValue, { throwExceptionOnParseError: true });
+          isCronValidForQuickSave = !readable.toLowerCase().includes('error');
+        } catch (e) {
+          isCronValidForQuickSave = false;
+        }
+      } else if (scheduleType === 'normal') {
+         isCronValidForQuickSave = true; // It's valid to save in normal mode
+      }
+
       const agentData = {
         agent_id: agent.agent_id,
-        full_identity_name: `${auth?.shinkai_identity}/main/agent/${agent.agent_id}`,
+        full_identity_name: agent.full_identity_name,
         llm_provider_id: values.llmProviderId,
         ui_description: values.uiDescription,
         storage_path: values.storage_path,
@@ -588,17 +608,78 @@ function AgentForm({ mode }: AgentFormProps) {
           vector_search_mode: 'FillUpTo25k',
         },
       };
-      
-      // Use the quick save mutation that doesn't navigate
+
+      // Call the update mutation WITHOUT cronExpression
       await quickSaveAgentMutation({
-        nodeAddress: auth?.node_address ?? '',
-        token: auth?.api_v2_key ?? '',
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
         agent: agentData,
       });
+
+      const existingTask = agent.cron_tasks?.[0];
+      const desiredCron = scheduleType === 'scheduled' ? values.cronExpression : undefined;
+
+      if (desiredCron && isCronValidForQuickSave) {
+        if (!existingTask) {
+          await createTask({
+            nodeAddress: auth.node_address,
+            token: auth.api_v2_key,
+            name: agent.agent_id,
+            description: values.uiDescription || agent.agent_id,
+            llmProvider: agent.agent_id,
+            cronExpression: desiredCron,
+            chatConfig: {
+                custom_prompt: values.config?.custom_prompt ?? '',
+                temperature: values.config?.temperature,
+                top_p: values.config?.top_p,
+                top_k: values.config?.top_k,
+            },
+            message: values.uiDescription || 'Scheduled run',
+            toolKey: values.tools.length > 0 ? values.tools[0] : '',
+          });
+        } else if (existingTask.cron !== desiredCron) {
+           // Use correct parameters for removeTask
+           await removeTask({ 
+             nodeAddress: auth.node_address,
+             token: auth.api_v2_key,
+             recurringTaskId: existingTask.task_id.toString() 
+           });
+           await createTask({
+            nodeAddress: auth.node_address,
+            token: auth.api_v2_key,
+            name: agent.agent_id,
+            description: values.uiDescription || agent.agent_id,
+            llmProvider: agent.agent_id,
+            cronExpression: desiredCron,
+            chatConfig: {
+                custom_prompt: values.config?.custom_prompt ?? '',
+                temperature: values.config?.temperature,
+                top_p: values.config?.top_p,
+                top_k: values.config?.top_k,
+            },
+            message: values.uiDescription || 'Scheduled run',
+            toolKey: values.tools.length > 0 ? values.tools[0] : '',
+           });
+        }
+      } else if (!desiredCron && existingTask) {
+         // Use correct parameters for removeTask
+         await removeTask({ 
+           nodeAddress: auth.node_address,
+           token: auth.api_v2_key,
+           recurringTaskId: existingTask.task_id.toString() 
+         });
+      } else if (desiredCron && !isCronValidForQuickSave) {
+          // toast.error("Invalid Cron Expression. Quick save did not update schedule.");
+      }
+      // --- End Cron Handling ---
+
     } catch (error: any) {
-      toast.error('Failed to update agent', {
-        description: error.response?.data?.message ?? error.message,
-      });
+      console.error("Quick save error:", error);
+      if (!error.response?.data?.message) {
+         toast.error('Failed to quick save agent schedule', {
+            description: error.message || 'An unexpected error occurred.',
+         });
+      }
     }
   };
 
@@ -616,6 +697,9 @@ function AgentForm({ mode }: AgentFormProps) {
             },
           ],
         });
+        // Clear cron expression in form after successful deletion
+        form.setValue('cronExpression', '');
+        setScheduleType('normal');
         toast.success('Delete task successfully');
       },
       onError: (error) => {
@@ -633,11 +717,44 @@ function AgentForm({ mode }: AgentFormProps) {
     });
   };
 
-  const submit = async (values: AgentFormValues, options?: { openChat?: boolean }) => {
-    const agentId = values.name.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
+  const { mutateAsync: createTask, isPending: isCreatingTask } = 
+    useCreateRecurringTask({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [
+            FunctionKeyV2.GET_AGENT,
+            {
+              agentId: agentId ?? form.getValues('name').replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase(), 
+              nodeAddress: auth?.node_address ?? '',
+            },
+          ],
+        });
+        toast.success('Scheduled task created successfully');
+      },
+      onError: (error) => {
+        toast.error('Failed to create scheduled task', {
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
+
+ const submit = async (values: AgentFormValues, options?: { openChat?: boolean }) => {
+    if (!auth) {
+       toast.error("Authentication details are missing.");
+       return;
+    }
+
+    // Use memoized readableCronExpression for validation
+    if (scheduleType === 'scheduled' && (!values.cronExpression || !readableCronExpression)) {
+       toast.error("Invalid or empty Cron Expression. Cannot save.");
+       setCurrentTab('schedule');
+       return;
+    }
+
+    const agentIdToUse = mode === 'edit' && agent ? agent.agent_id : values.name.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
     const agentData = {
-      agent_id: agentId,
-      full_identity_name: `${auth?.shinkai_identity}/main/agent/${agentId}`,
+      agent_id: agentIdToUse,
+      full_identity_name: `${auth.shinkai_identity}/main/agent/${agentIdToUse}`,
       llm_provider_id: values.llmProviderId,
       ui_description: values.uiDescription,
       storage_path: values.storage_path,
@@ -653,33 +770,109 @@ function AgentForm({ mode }: AgentFormProps) {
       },
     };
 
-    if (mode === 'edit' && agent) {
-      await updateAgent({
-        nodeAddress: auth?.node_address ?? '',
-        token: auth?.api_v2_key ?? '',
-        agent: merge(agentData, {
-          agent_id: agent.agent_id,
-          full_identity_name: `${auth?.shinkai_identity}/main/agent/${agent.agent_id}`,
-        }),
-      });
-    } else {
-      await createAgent({
-        nodeAddress: auth?.node_address ?? '',
-        token: auth?.api_v2_key ?? '',
-        agent: agentData,
-        cronExpression: values.cronExpression,
-      });
-      
-      if (options?.openChat) {
-        navigate(`/agents/edit/${agentId}?openChat=true`);
-        return;
+    try {
+      if (mode === 'edit' && agent) {
+        // Step 1: Update Agent Core Data
+        await updateAgent({
+          nodeAddress: auth.node_address,
+          token: auth.api_v2_key,
+          agent: merge(agentData, {
+            agent_id: agent.agent_id,
+            full_identity_name: agent.full_identity_name
+          }),
+        });
+
+        // Step 2: Handle Cron Task Logic (Create/Update/Delete)
+        const existingTask = agent.cron_tasks?.[0];
+        const desiredCron = scheduleType === 'scheduled' ? values.cronExpression : undefined;
+
+        if (desiredCron) { // User wants a schedule
+          if (!existingTask) { // No existing task -> Create
+             await createTask({
+               nodeAddress: auth.node_address,
+               token: auth.api_v2_key,
+               name: agent.agent_id,
+               description: values.uiDescription || agent.agent_id,
+               llmProvider: agent.agent_id,
+               cronExpression: desiredCron,
+               chatConfig: {
+                   custom_prompt: values.config?.custom_prompt ?? '',
+                   temperature: values.config?.temperature,
+                   top_p: values.config?.top_p,
+                   top_k: values.config?.top_k,
+               },
+               message: values.uiDescription || 'Scheduled run',
+               toolKey: values.tools.length > 0 ? values.tools[0] : '',
+             });
+          } else if (existingTask.cron !== desiredCron) { // Existing task, cron changed -> Remove + Create
+             await removeTask({ 
+               nodeAddress: auth.node_address,
+               token: auth.api_v2_key,
+               recurringTaskId: existingTask.task_id.toString() 
+             });
+             await createTask({
+               nodeAddress: auth.node_address,
+               token: auth.api_v2_key,
+               name: agent.agent_id,
+               description: values.uiDescription || agent.agent_id,
+               llmProvider: agent.agent_id,
+               cronExpression: desiredCron,
+               chatConfig: {
+                   custom_prompt: values.config?.custom_prompt ?? '',
+                   temperature: values.config?.temperature,
+                   top_p: values.config?.top_p,
+                   top_k: values.config?.top_k,
+               },
+               message: values.uiDescription || 'Scheduled run',
+               toolKey: values.tools.length > 0 ? values.tools[0] : '',
+             });
+          }
+          // If desiredCron and existingTask.cron are the same, do nothing to the task
+        } else if (!desiredCron && existingTask) { // User wants 'normal' mode, but task exists -> Remove
+           await removeTask({ 
+             nodeAddress: auth.node_address,
+             token: auth.api_v2_key,
+             recurringTaskId: existingTask.task_id.toString() 
+           });
+        }
+        
+        // --- End Cron Handling ---
+
+        // Step 3: Show success and navigate ONLY if all above steps succeeded
+        toast.success("Agent updated successfully!");
+        navigate('/agents');
+
+      } else { // --- Create New Agent ---
+        const cronToPass = scheduleType === 'scheduled' ? values.cronExpression : undefined;
+        await createAgent({ // createAgent handles cron internally
+          nodeAddress: auth.node_address,
+          token: auth.api_v2_key,
+          agent: agentData,
+          cronExpression: cronToPass,
+        });
+
+        // Show success and navigate after creation succeeds
+        toast.success("Agent created successfully!");
+        if (options?.openChat) {
+          navigate(`/agents/edit/${agentIdToUse}?openChat=true`);
+        } else {
+           navigate('/agents');
+        }
       }
+    } catch (error: any) { // Catch errors from ANY await above
+      console.error("Submit error:", error);
+      // Avoid redundant toasts if mutation's onError already fired
+      if (!error.response?.data?.message) {
+         // Provide a generic error if the specific mutation didn't toast
+         toast.error('Failed to save agent settings', {
+            description: error.message || 'An unexpected error occurred.',
+         });
+      }
+      // Do NOT navigate on error
     }
-    
-    navigate('/agents');
   };
 
-  const isPending = mode === 'edit' ? isUpdating : isCreating;
+  const isPending = mode === 'edit' ? (isUpdating || isCreatingTask || isRemovingTask) : (isCreating || isCreatingTask);
 
   const currentCronExpression = form.watch('cronExpression');
 
@@ -687,13 +880,18 @@ function AgentForm({ mode }: AgentFormProps) {
     if (!currentCronExpression) {
       return null;
     }
-    const readableCron = cronstrue.toString(currentCronExpression, {
-      throwExceptionOnParseError: false,
-    });
-    if (readableCron.toLowerCase().includes('error')) {
-      return null;
+    try {
+      const readableCron = cronstrue.toString(currentCronExpression, {
+        throwExceptionOnParseError: true, // Ensure errors are caught
+      });
+      // Check for error strings just in case throwException doesn't catch everything
+       if (readableCron.toLowerCase().includes('error')) {
+         return null;
+       }
+      return readableCron;
+    } catch (e) {
+       return null; // Invalid cron expression
     }
-    return readableCron;
   }, [currentCronExpression]);
 
   return (
@@ -740,7 +938,8 @@ function AgentForm({ mode }: AgentFormProps) {
           <Form {...form}>
             <form
               className="flex w-full flex-1 min-h-0 flex-col justify-between space-y-2"
-              onSubmit={form.handleSubmit((values) => submit(values))}
+              // Pass values directly, options are handled inside submit
+              onSubmit={form.handleSubmit(values => submit(values))} 
             >
             <div className="mx-auto w-full flex-1 min-h-0 overflow-hidden">
               <div className="h-full min-h-0 space-y-6 overflow-hidden">
@@ -748,7 +947,7 @@ function AgentForm({ mode }: AgentFormProps) {
                   className="flex h-full min-h-0 flex-col gap-4"
                   defaultValue="persona"
                   onValueChange={(value) =>
-                    setCurrentTab(value as 'persona' | 'knowledge' | 'tools')
+                    setCurrentTab(value as 'persona' | 'knowledge' | 'tools' | 'schedule')
                   }
                   value={currentTab}
                 >
@@ -762,8 +961,11 @@ function AgentForm({ mode }: AgentFormProps) {
                         render={({ field }) => (
                           <TextField
                             autoFocus
-                            field={field}
-                            helperMessage="Enter a unique name for your AI agent"
+                            field={{
+                              ...field,
+                              disabled: mode === 'edit' // Prevent editing name/ID in edit mode
+                            }}
+                            helperMessage={mode === 'edit' ? "Agent name cannot be changed after creation." : "Enter a unique name for your AI agent (used as ID)."}
                             label="Agent Name"
                           />
                         )}
@@ -1270,6 +1472,7 @@ function AgentForm({ mode }: AgentFormProps) {
                             </label>
                             <Switch
                               checked={
+                                (toolsList?.length ?? 0) > 0 && // Only checked if tools exist
                                 form.watch('tools').length === toolsList?.length
                               }
                               id="all"
@@ -1288,7 +1491,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                       !conf.required ||
                                       (conf.required && conf.key_value !== ''),
                                   );
-                                if (!isAllConfigFilled) {
+                                if (!isAllConfigFilled && checked) { // Check config only when enabling all
                                   toast.error('Tool configuration', {
                                     description:
                                       'Please fill in the config required in tool details',
@@ -1426,12 +1629,19 @@ function AgentForm({ mode }: AgentFormProps) {
                           Set when your agent will automatically run tasks.
                         </p>
                       </div>
-                      {(mode === 'add' || agent?.cron_tasks === null) && (
+                      {/* Conditional rendering logic for schedule options */}
+                      {/* Only show radio group if mode is 'add' OR if mode is 'edit' AND there are no existing tasks */}
+                      {(mode === 'add' || (mode === 'edit' && (!agent?.cron_tasks || agent.cron_tasks.length === 0))) && (
                         <RadioGroup
                           className="space-y-3"
-                          onValueChange={(value) =>
-                            setScheduleType(value as 'normal' | 'scheduled')
-                          }
+                          onValueChange={(value) => {
+                            const newType = value as 'normal' | 'scheduled';
+                            setScheduleType(newType);
+                            // Clear cronExpression if switching to normal
+                            if (newType === 'normal') {
+                               form.setValue('cronExpression', '');
+                            }
+                          }}
                           value={scheduleType}
                         >
                           <div className="flex items-start space-x-3 rounded-lg border p-3">
@@ -1499,6 +1709,9 @@ function AgentForm({ mode }: AgentFormProps) {
                                       </span>
                                     </div>
                                   )}
+                                  {!readableCronExpression && form.watch('cronExpression') && (
+                                    <p className="text-xs text-red-500">Invalid Cron Expression</p>
+                                  )}
                                   <div className="flex flex-wrap gap-2">
                                     {[
                                       {
@@ -1545,6 +1758,7 @@ function AgentForm({ mode }: AgentFormProps) {
                           </div>
                         </RadioGroup>
                       )}
+                      {/* Show current tasks only in edit mode if they exist */}
                       {mode === 'edit' &&
                         agent?.cron_tasks &&
                         agent?.cron_tasks?.length > 0 && (
@@ -1552,11 +1766,12 @@ function AgentForm({ mode }: AgentFormProps) {
                             <div className="mb-2 flex items-center gap-2">
                               <ScheduledTasksIcon className="size-4 text-white" />
                               <h4 className="text-sm font-medium">
-                                Current Scheduled Tasks
+                                Current Scheduled Task
                               </h4>
                             </div>
                             <div className="mt-2 space-y-3">
-                              {agent?.cron_tasks?.map((task) => (
+                              {/* Assuming only one task is manageable via this form */}
+                              {agent?.cron_tasks?.slice(0, 1).map((task) => (
                                 <div
                                   className="bg-official-gray-900 flex items-center justify-between rounded-md border p-2"
                                   key={task.task_id}
@@ -1566,7 +1781,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                     <span className="text-sm">
                                       {cronstrue.toString(task.cron, {
                                         throwExceptionOnParseError: false,
-                                      })}
+                                      })} ({task.cron})
                                     </span>
                                   </div>
 
@@ -1585,6 +1800,17 @@ function AgentForm({ mode }: AgentFormProps) {
                                 </div>
                               ))}
                             </div>
+                             {/* Option to switch back to normal if a task exists */}
+                             <Button 
+                               className="text-xs text-blue-400 p-0 h-auto" 
+                               onClick={() => {
+                                 setScheduleType('normal');
+                                 form.setValue('cronExpression', ''); // Clear expression when switching
+                               }}
+                               variant="link"
+                             >
+                               Switch back to Normal Usage (will remove schedule on save)
+                             </Button>
                           </div>
                         )}
                     </div>
@@ -1605,6 +1831,8 @@ function AgentForm({ mode }: AgentFormProps) {
                       setCurrentTab('persona');
                     } else if (currentTab === 'tools') {
                       setCurrentTab('knowledge');
+                    } else if (currentTab === 'schedule') {
+                       setCurrentTab('tools'); // Go back to tools from schedule
                     }
                   }}
                   size="sm"
@@ -1616,10 +1844,16 @@ function AgentForm({ mode }: AgentFormProps) {
                     : t('common.back')}
                 </Button>
                 <Button
-                  className="min-w-[120px]"
-                  disabled={isPending}
                   isLoading={isPending}
                   onClick={(e) => {
+                    // Check validity before navigating or submitting
+                    if (scheduleType === 'scheduled' && (!form.watch('cronExpression') || !readableCronExpression)) {
+                       toast.error("Invalid or empty Cron Expression for scheduled execution.");
+                       e.preventDefault(); // Prevent moving forward
+                       setCurrentTab('schedule'); // Stay on schedule tab
+                       return;
+                    }
+
                     if (currentTab === 'persona') {
                       e.preventDefault();
                       setCurrentTab('knowledge');
@@ -1629,10 +1863,16 @@ function AgentForm({ mode }: AgentFormProps) {
                     } else if (currentTab === 'tools') {
                       e.preventDefault();
                       setCurrentTab('schedule');
-                    }
+                    } 
+                    // If currentTab is 'schedule', the button type is 'submit', 
+                    // so default form submission occurs (handled by onSubmit)
                   }}
                   size="sm"
+                  title={ (scheduleType === 'scheduled' && (!form.watch('cronExpression') || !readableCronExpression)) ? "Please enter a valid Cron Expression" : "" }
                   type={currentTab === 'schedule' ? 'submit' : 'button'}
+                  className="min-w-[120px]"
+                  // Disable Next/Save if scheduleType is 'scheduled' but cron expression is invalid or empty
+                  disabled={isPending || (scheduleType === 'scheduled' && (!form.watch('cronExpression') || !readableCronExpression))}
                 >
                   {currentTab === 'schedule'
                     ? t('common.save')
@@ -1640,14 +1880,17 @@ function AgentForm({ mode }: AgentFormProps) {
                 </Button>
                 {mode === 'add' && currentTab === 'schedule' && (
                   <Button
-                    className="min-w-[120px] flex items-center gap-2"
-                    disabled={isPending}
                     isLoading={isPending}
                     onClick={() => {
-                      form.handleSubmit((values) => submit(values, { openChat: true }))();
+                      // Trigger form validation and submission with the openChat option
+                       form.handleSubmit((values) => submit(values, { openChat: true }))();
                     }}
                     size="sm"
+                    title={ (scheduleType === 'scheduled' && (!form.watch('cronExpression') || !readableCronExpression)) ? "Please enter a valid Cron Expression" : "" }
                     type="button"
+                    className="min-w-[120px] flex items-center gap-2"
+                    // Also disable if schedule invalid
+                    disabled={isPending || (scheduleType === 'scheduled' && (!form.watch('cronExpression') || !readableCronExpression))}
                   >
                     <MessageSquare className="h-4 w-4" />
                     Save & Test Agent
