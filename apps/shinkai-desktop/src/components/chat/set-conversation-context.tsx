@@ -116,7 +116,7 @@ export const SetJobScopeDrawer = () => {
       <SheetContent>
         <SheetHeader className="mb-3">
           <SheetTitle className="flex h-[40px] items-center gap-4">
-            {t('chat.form.setContext') + '===1'}
+            {t('chat.form.setContext')}
             {Object.keys(selectedKeys ?? {}).length > 0 && (
               <Badge className="bg-brand text-sm text-white">
                 {Object.keys(selectedKeys ?? {}).length}
