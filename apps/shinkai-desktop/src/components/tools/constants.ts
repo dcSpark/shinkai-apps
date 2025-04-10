@@ -2,6 +2,12 @@ import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/type
 
 export const TOOL_HOMEPAGE_SUGGESTIONS = [
   {
+    text: 'Solana Token Swap with Jupiter',
+    prompt:
+      'Create a TypeScript tool that performs token swaps on Solana using Jupiter Exchange. The tool should accept input parameters for the source token, destination token, amount to swap, slippage tolerance, and wallet configuration. Implement connection to Solana network, Jupiter SDK integration, route finding with best price discovery, and transaction execution. Include proper error handling for insufficient funds, route not found, and failed transactions. The tool should return the transaction signature and swap details including input/output amounts and effective price. Add TypeScript types for all interfaces and implement proper input validation.',
+    language: CodeLanguage.Typescript,
+  },
+  {
     text: 'Generate video transcripts from audio',
     prompt:
       'Create a Python tool that converts video files to SRT subtitles using the Faster Whisper speech-to-text model. The tool should accept a video filename and Whisper model configuration (size, device, compute type) as inputs, transcribe the audio using faster-whisper, format the results as SRT subtitles, and save them alongside the original video. Return the path to the generated SRT file. Add default values to CONFIG if possible.',
@@ -12,14 +18,17 @@ export const TOOL_HOMEPAGE_SUGGESTIONS = [
     prompt: 'Create a tool that downloads and saves a pdf from a URL.',
     language: CodeLanguage.Python,
   },
-
+  {
+    text: 'Download YouTube Video Transcript',
+    prompt: 'Create a TypeScript tool that downloads transcripts from YouTube videos without using an API. The tool should accept a YouTube video URL as input, use web scraping techniques to extract the available closed captions/subtitles, and return the transcript in a structured format. Include error handling for videos without captions, invalid URLs, and network issues. The tool should support multiple languages if available and allow saving the transcript to a file.',
+    language: CodeLanguage.Typescript,
+  },
   {
     text: 'Export text to .odt file',
     prompt:
       'Create a tool that allows to export text to an .odt file (OpenDocument). The text is given as input.',
     language: CodeLanguage.Typescript,
   },
-
   {
     text: 'Fetch Crypto Prices from Coingeckos API',
     prompt:
