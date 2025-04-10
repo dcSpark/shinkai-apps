@@ -18,6 +18,7 @@ import { ChatProvider } from '../components/chat/context/chat-context';
 import { SetJobScopeProvider } from '../components/chat/context/set-job-scope-context';
 import { ToolsProvider } from '../components/chat/context/tools-context';
 import { WalletsProvider } from '../components/crypto-wallet/context/wallets-context';
+import DefaultLlmProviderUpdater from '../components/default-llm-provider/default-llm-provider-updater';
 import {
   COMPLETION_DESTINATION,
   ONBOARDING_STEPS,
@@ -183,6 +184,8 @@ export const useDefaultAgentByDefault = () => {
     defaultAgentId,
     defaultModel,
   ]);
+
+  return null;
 };
 
 const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
@@ -248,10 +251,15 @@ const AppRoutes = () => {
   useAppHotkeys();
   useGlobalAppShortcuts();
   useDefaultAgentByDefault();
+  
+  const defaultAgentId = useSettings((state) => state.defaultAgentId);
 
   return (
-    <Routes>
-      <Route element={<MainLayout />}>
+    <>
+      {/* Use the DefaultLlmProviderUpdater component to update the default LLM provider */}
+      {defaultAgentId && <DefaultLlmProviderUpdater defaultAgentId={defaultAgentId} />}
+      <Routes>
+        <Route element={<MainLayout />}>
         <Route
           element={
             <OnboardingGuard>
@@ -468,6 +476,7 @@ const AppRoutes = () => {
         path="*"
       />
     </Routes>
+    </>
   );
 };
 export default AppRoutes;

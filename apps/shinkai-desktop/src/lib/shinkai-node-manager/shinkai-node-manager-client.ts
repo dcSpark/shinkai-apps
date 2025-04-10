@@ -1,3 +1,4 @@
+import { setPreferences } from '@shinkai_network/shinkai-message-ts/api/methods';
 import {
   QueryClient,
   QueryObserverOptions,
@@ -200,4 +201,35 @@ export const useShinkaiNodeRespawnMutation = (options?: UseMutationOptions) => {
     },
   });
   return { ...response };
+};
+
+export const useShinkaiNodeSetDefaultLlmProviderMutation = (
+  options?: UseMutationOptions<void, Error, string>
+) => {
+  const response = useMutation({
+    mutationFn: async (defaultLlmProvider: string): Promise<void> => {
+      if (!defaultLlmProvider) {
+        throw new Error('Default LLM provider is required');
+      }
+      return Promise.resolve();
+    },
+    ...options,
+  });
+  return { ...response };
+};
+
+export const shinkaiNodeSetDefaultLlmProvider = async (
+  defaultLlmProvider: string,
+  nodeAddress: string,
+  apiToken: string
+): Promise<void> => {
+  if (!defaultLlmProvider || !nodeAddress || !apiToken) {
+    throw new Error('Default LLM provider, node address, and API token are required');
+  }
+  
+  await setPreferences(nodeAddress, apiToken, {
+    default_llm_provider: defaultLlmProvider,
+  });
+  
+  return Promise.resolve();
 };
