@@ -212,6 +212,7 @@ export const Tasks = () => {
                     cronExpression: task.cron,
                     description: task.description,
                     jobId,
+                    toolKey: task.action?.CreateJobWithConfigAndMessage?.message?.tool_key,
                     llmProvider,
                     name: task.name,
                     message,
