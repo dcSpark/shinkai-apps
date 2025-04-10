@@ -588,13 +588,18 @@ export const useToolFlow = ({
     [executeToolCodeQuery, form, auth, toolCode, xShinkaiAppId, xShinkaiToolId],
   );
 
-  const { __created_files__: toolResultFiles, ...toolResultWithoutFiles } =
-    (toolResult || {
-      __created_files__: [],
-    }) as {
-      __created_files__: string[];
-      [key: string]: any;
-    };
+  const toolResultFiles = useMemo(() => {
+    return (toolResult as any)?.__created_files__ ?? [];
+  }, [toolResult]);
+
+  const toolResultWithoutFiles = useMemo(() => {
+    if (!toolResult) {
+      return {};
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { __created_files__, ...rest } = toolResult as any;
+    return rest;
+  }, [toolResult]);
 
   return {
     currentStep,
@@ -627,8 +632,8 @@ export const useToolFlow = ({
 
     executeToolCode,
     executeToolCodeQuery,
-    toolResult: toolResultWithoutFiles,
     toolResultFiles,
+    toolResult: toolResultWithoutFiles,
 
     isCreatingToolCode,
     isCreatingMetadata,
