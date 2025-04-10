@@ -146,7 +146,7 @@ export const SetJobScopeDrawer = () => {
               }
               selectedFileKeysRef.delete(String(e.node.key));
             }}
-            propagateSelectionDown={false}
+            propagateSelectionDown={true}
             propagateSelectionUp={false}
             pt={treeOptions}
             selectionKeys={selectedKeys}
