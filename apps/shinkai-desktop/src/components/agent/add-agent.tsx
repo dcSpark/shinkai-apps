@@ -16,6 +16,9 @@ import {
   HoverCardContent,
   HoverCardTrigger,
   Label,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Select,
   SelectContent,
   SelectItem,
@@ -55,6 +58,7 @@ const addAgentFormSchema = z.object({
   storage_path: z.string(),
   knowledge: z.array(z.string()),
   tools: z.array(z.string()),
+  tools_config_override: z.record(z.record(z.string())).optional(),
   debugMode: z.boolean(),
   config: z
     .object({
@@ -85,6 +89,7 @@ function AddAgentPage() {
       storage_path: '',
       knowledge: [],
       tools: [],
+      tools_config_override: {},
       debugMode: false,
       config: {
         stream: DEFAULT_CHAT_CONFIG.stream,
@@ -133,6 +138,7 @@ function AddAgentPage() {
         storage_path: values.storage_path,
         knowledge: values.knowledge,
         tools: values.tools,
+        tools_config_override: values.tools_config_override,
         debug_mode: values.debugMode,
         config: values.config,
         name: values.name,
@@ -382,29 +388,62 @@ function AddAgentPage() {
                                     </Tooltip>
                                   </div>
                                   {(tool.config ?? []).length > 0 && (
-                                    <Tooltip>
-                                      <TooltipTrigger
-                                        asChild
-                                        className="flex shrink-0 items-center gap-1"
-                                      >
-                                        <Link
-                                          className="text-gray-80 size-3.5 rounded-lg hover:text-white"
-                                          to={`/tools/${tool.tool_router_key}`}
+                                    <div className="flex items-center gap-1">
+                                      <Tooltip>
+                                        <TooltipTrigger
+                                          asChild
+                                          className="flex shrink-0 items-center gap-1"
                                         >
-                                          <BoltIcon className="size-full" />
-                                        </Link>
-                                      </TooltipTrigger>
-                                      <TooltipPortal>
-                                        <TooltipContent
-                                          align="center"
-                                          alignOffset={-10}
-                                          className="max-w-md"
-                                          side="top"
-                                        >
-                                          <p>Configure tool</p>
-                                        </TooltipContent>
-                                      </TooltipPortal>
-                                    </Tooltip>
+                                          <Link
+                                            className="text-gray-80 size-3.5 rounded-lg hover:text-white"
+                                            to={`/tools/${tool.tool_router_key}`}
+                                          >
+                                            <BoltIcon className="size-full" />
+                                          </Link>
+                                        </TooltipTrigger>
+                                        <TooltipPortal>
+                                          <TooltipContent
+                                            align="center"
+                                            alignOffset={-10}
+                                            className="max-w-md"
+                                            side="top"
+                                          >
+                                            <p>Configure tool</p>
+                                          </TooltipContent>
+                                        </TooltipPortal>
+                                      </Tooltip>
+                                      <Popover>
+                                        <PopoverTrigger asChild>
+                                          <Button
+                                            className="ml-1 h-5 w-5 p-0"
+                                            size="icon"
+                                            variant="ghost"
+                                          >
+                                            <BoltIcon className="h-3 w-3" />
+                                            <span className="sr-only">Override configuration</span>
+                                          </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-80">
+                                          <div className="space-y-4">
+                                            <h4 className="font-medium">Override Configuration</h4>
+                                            {(tool.config || []).map((conf) => (
+                                              <FormField
+                                                control={form.control}
+                                                key={conf.BasicConfig.key_name}
+                                                name={`tools_config_override.${tool.tool_router_key}.${conf.BasicConfig.key_name}`}
+                                                render={({ field }) => (
+                                                  <TextField
+                                                    field={field}
+                                                    label={formatText(conf.BasicConfig.key_name)}
+                                                    type={conf.BasicConfig.key_name.toLowerCase().includes('password') ? "password" : "text"}
+                                                  />
+                                                )}
+                                              />
+                                            ))}
+                                          </div>
+                                        </PopoverContent>
+                                      </Popover>
+                                    </div>
                                   )}
                                 </div>
                               </FormControl>

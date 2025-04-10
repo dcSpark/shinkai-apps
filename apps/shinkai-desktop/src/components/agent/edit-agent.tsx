@@ -17,6 +17,9 @@ import {
   HoverCardContent,
   HoverCardTrigger,
   Label,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Select,
   SelectContent,
   SelectItem,
@@ -33,7 +36,8 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
-import { PlusIcon } from 'lucide-react';
+import { BoltIcon, PlusIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -55,6 +59,7 @@ const editAgentFormSchema = z.object({
   storage_path: z.string(),
   knowledge: z.array(z.string()),
   tools: z.array(z.string()),
+  tools_config_override: z.record(z.record(z.string())).optional(),
   debugMode: z.boolean(),
   config: z
     .object({
@@ -91,6 +96,7 @@ function EditAgentPage() {
       storage_path: '',
       knowledge: [],
       tools: [],
+      tools_config_override: {},
       debugMode: false,
     },
   });
@@ -102,6 +108,7 @@ function EditAgentPage() {
       form.setValue('storage_path', agent.storage_path);
       form.setValue('knowledge', agent.knowledge);
       form.setValue('tools', agent.tools);
+      form.setValue('tools_config_override', agent.tools_config_override || {});
       form.setValue('debugMode', agent.debug_mode);
       form.setValue('config', agent.config as JobConfig);
       form.setValue('llmProviderId', agent.llm_provider_id);
@@ -141,6 +148,7 @@ function EditAgentPage() {
         storage_path: values.storage_path,
         knowledge: values.knowledge,
         tools: values.tools,
+        tools_config_override: values.tools_config_override,
         debug_mode: values.debugMode,
         config: values.config as JobConfig,
         name: values.name,
@@ -321,6 +329,64 @@ function EditAgentPage() {
                                 </Tooltip>
                               </TooltipProvider>
                             </div>
+                            {(tool.config ?? []).length > 0 && (
+                              <div className="flex items-center gap-1 ml-auto">
+                                <Tooltip>
+                                  <TooltipTrigger
+                                    asChild
+                                    className="flex shrink-0 items-center gap-1"
+                                  >
+                                    <Link
+                                      className="text-gray-80 size-3.5 rounded-lg hover:text-white"
+                                      to={`/tools/${tool.tool_router_key}`}
+                                    >
+                                      <BoltIcon className="size-full" />
+                                    </Link>
+                                  </TooltipTrigger>
+                                  <TooltipPortal>
+                                    <TooltipContent
+                                      align="center"
+                                      alignOffset={-10}
+                                      className="max-w-md"
+                                      side="top"
+                                    >
+                                      <p>Configure tool</p>
+                                    </TooltipContent>
+                                  </TooltipPortal>
+                                </Tooltip>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      className="ml-1 h-5 w-5 p-0"
+                                      size="icon"
+                                      variant="ghost"
+                                    >
+                                      <BoltIcon className="h-3 w-3" />
+                                      <span className="sr-only">Override configuration</span>
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-80">
+                                    <div className="space-y-4">
+                                      <h4 className="font-medium">Override Configuration</h4>
+                                      {(tool.config || []).map((conf) => (
+                                        <FormField
+                                          control={form.control}
+                                          key={conf.BasicConfig.key_name}
+                                          name={`tools_config_override.${tool.tool_router_key}.${conf.BasicConfig.key_name}`}
+                                          render={({ field }) => (
+                                            <TextField
+                                              field={field}
+                                              label={formatText(conf.BasicConfig.key_name)}
+                                              type={conf.BasicConfig.key_name.toLowerCase().includes('password') ? "password" : "text"}
+                                            />
+                                          )}
+                                        />
+                                      ))}
+                                    </div>
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
+                            )}
                           </div>
                         </FormItem>
                       )}
