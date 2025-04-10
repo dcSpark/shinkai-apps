@@ -859,12 +859,15 @@ export default function ToolDetailsCard({
                       : ('input_args' in tool && tool.input_args && typeof tool.input_args === 'object' && 'properties' in (tool.input_args as any))
                         ? {
                             params: {
+                              required: (tool.input_args as any).required ?? [],
                               type: 'object',
                               properties: Object.entries((tool.input_args as any).properties).reduce((acc, [key, value]: [string, any]) => {
+                                const type = value.type.toLowerCase();
                                 acc[key] = {
-                                  type: value.type.toLowerCase(),
-                                  description: value.description
+                                  type,
+                                  description: value.description,
                                 };
+                                if (type === 'array') ((value.items) && (acc[key].items = value.items)) || (acc[key].items = { type: 'string' });
                                 return acc;
                               }, {} as Record<string, any>)
                             }

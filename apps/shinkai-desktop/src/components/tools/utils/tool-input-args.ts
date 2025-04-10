@@ -19,9 +19,12 @@ export function parseInputArgsToJsonSchema(inputArgs: ToolArgument[]): RJSFSchem
       schema.required?.push(name);
     }
 
+    const schemaType = mapArgTypeToJsonSchemaType(arg_type);
+    
     schema.properties![name] = {
-      type: mapArgTypeToJsonSchemaType(arg_type),
+      type: schemaType,
       description,
+      ...(schemaType === 'array' ? { items: ((schema.properties?.[name] as any)?.items) || { type: 'string' } } : {}),
     };
   });
 
