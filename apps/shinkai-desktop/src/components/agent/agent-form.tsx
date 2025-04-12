@@ -16,6 +16,7 @@ import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/m
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
 import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
+import { useGetInboxesWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxesWithPagination';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
 import {
@@ -24,6 +25,13 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
   Form,
   FormControl,
   FormDescription,
@@ -67,6 +75,7 @@ import cronstrue from 'cronstrue';
 import {
   BoltIcon,
   ChevronRight,
+  HistoryIcon,
   LucideArrowLeft,
   MessageSquare,
   RefreshCwIcon,
@@ -174,12 +183,31 @@ function AgentSideChat({ agentId, onClose }: { agentId: string; onClose: () => v
   const auth = useAuth((state) => state.auth);
   const [chatInboxId, setChatInboxId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   
   const { data: sideAgentData } = useGetAgent({
     agentId,
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
+  
+  const { data: inboxesPagination } = useGetInboxesWithPagination({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    limit: 10, // Limit to 10 conversations for better performance
+  });
+  
+  const agentConversations = useMemo(() => {
+    if (!inboxesPagination?.pages) return [];
+    
+    return inboxesPagination.pages
+      .flatMap(page => page.inboxes)
+      .filter(inbox => 
+        inbox.provider_type === 'Agent' && 
+        inbox.agent?.id === agentId
+      )
+      .slice(0, 5); // Show only the 5 most recent conversations
+  }, [inboxesPagination, agentId]);
 
   const hasTools = useMemo(() => {
     return !!sideAgentData?.tools && sideAgentData.tools.length > 0;
@@ -258,6 +286,39 @@ function AgentSideChat({ agentId, onClose }: { agentId: string; onClose: () => v
           <div className="flex items-center justify-between border-b border-gray-800 p-4">
             <h2 className="text-lg font-medium">Ask Your Agent</h2>
             <div className="flex items-center gap-2">
+              <DropdownMenu onOpenChange={setIsDropdownOpen} open={isDropdownOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button size="icon" title="Conversation History" variant="ghost">
+                    <HistoryIcon className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>Previous Conversations</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {agentConversations.length === 0 ? (
+                    <DropdownMenuItem disabled>No previous conversations</DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuGroup>
+                      {agentConversations.map((inbox) => (
+                        <DropdownMenuItem 
+                          key={inbox.inbox_id}
+                          onClick={() => {
+                            setChatInboxId(inbox.inbox_id);
+                            setIsDropdownOpen(false);
+                          }}
+                        >
+                          <span className="truncate text-sm">
+                            {inbox.last_message 
+                              ? inbox.last_message.job_message.content?.slice(0, 25) + (inbox.last_message.job_message.content?.length > 25 ? '...' : '') 
+                              : 'Conversation ' + inbox.inbox_id.slice(-6)}
+                          </span>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuGroup>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
               <Button onClick={() => setChatInboxId(null)} size="icon" title="Reset Chat" variant="ghost">
                 <RefreshCwIcon className="h-5 w-5" />
               </Button>
