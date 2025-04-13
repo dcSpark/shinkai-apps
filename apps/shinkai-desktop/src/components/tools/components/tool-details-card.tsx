@@ -829,6 +829,16 @@ export default function ToolDetailsCard({
                   const formData = data.formData;
                   setToolExecutionResult(null);
 
+                  const sanitizedParams = formData?.params ? Object.entries(formData.params).reduce((acc, [key, value]) => {
+                    acc[key] = value === null ? '' : value;
+                    return acc;
+                  }, {} as Record<string, any>) : {};
+                  
+                  const sanitizedConfigs = formData?.configs ? Object.entries(formData.configs).reduce((acc, [key, value]) => {
+                    acc[key] = value === null ? '' : value;
+                    return acc;
+                  }, {} as Record<string, any>) : {};
+                  
                   await executeToolCode({
                     nodeAddress: auth?.node_address ?? '',
                     token: auth?.api_v2_key ?? '',
@@ -840,10 +850,10 @@ export default function ToolDetailsCard({
                     language: toolType === 'Python' 
                       ? CodeLanguage.Python 
                       : CodeLanguage.Typescript,
-                    params: formData?.params ?? {},
+                    params: sanitizedParams,
                     llmProviderId: defaultAgentId ?? '',
                     tools: [],
-                    configs: formData?.configs ?? {},
+                    configs: sanitizedConfigs,
                     xShinkaiAppId: 'shinkai-desktop',
                     xShinkaiToolId: toolKey ?? '',
                   });
