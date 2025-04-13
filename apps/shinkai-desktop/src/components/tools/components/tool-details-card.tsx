@@ -287,12 +287,18 @@ export default function ToolDetailsCard({
   };
 
   const handleSaveOAuthConfig: FormProps['onSubmit'] = async (data) => {
-    const oauth = data.formData.oauth;
+    const sanitizedOAuth = data.formData.oauth ? data.formData.oauth.map((item: any) => {
+      return Object.entries(item).reduce((acc: any, [key, value]) => {
+        acc[key] = value === null ? '' : value;
+        return acc;
+      }, {});
+    }) : [];
+    
     await updateTool({
       toolKey: toolKey ?? '',
       toolType: toolType,
       toolPayload: {
-        oauth,
+        oauth: sanitizedOAuth,
       } as ShinkaiTool,
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
