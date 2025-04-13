@@ -269,16 +269,26 @@ export default function ToolDetailsCard({
 
   const handleSaveToolConfig: FormProps['onSubmit'] = async (data) => {
     const formData = data.formData;
+    console.log('Original formData:', JSON.stringify(formData, null, 2));
+    
+    const sanitizedConfig = Object.entries(formData).map(([key_name, key_value]) => {
+      const sanitizedValue = key_value === null ? '' : key_value;
+      console.log(`Sanitizing config ${key_name}: ${JSON.stringify(key_value)} -> ${JSON.stringify(sanitizedValue)}`);
+      return {
+        BasicConfig: {
+          key_name,
+          key_value: sanitizedValue,
+        },
+      };
+    });
+    
+    console.log('Sanitized config:', JSON.stringify(sanitizedConfig, null, 2));
+    
     await updateTool({
       toolKey: toolKey ?? '',
       toolType: toolType,
       toolPayload: {
-        config: Object.entries(formData).map(([key_name, key_value]) => ({
-          BasicConfig: {
-            key_name,
-            key_value: key_value === null ? '' : key_value,
-          },
-        })),
+        config: sanitizedConfig,
       } as ShinkaiTool,
       isToolEnabled: true,
       nodeAddress: auth?.node_address ?? '',
@@ -717,10 +727,14 @@ export default function ToolDetailsCard({
                 id="parameters-form"
                 noHtml5Validate={true}
                 onChange={(e) => {
+                  console.log('Form onChange - Original formData:', JSON.stringify(e.formData, null, 2));
                   const sanitizedFormData = Object.entries(e.formData).reduce((acc, [key, value]) => {
-                    acc[key] = value === null ? '' : value;
+                    const sanitizedValue = value === null ? '' : value;
+                    console.log(`Form onChange - Sanitizing ${key}: ${JSON.stringify(value)} -> ${JSON.stringify(sanitizedValue)}`);
+                    acc[key] = sanitizedValue;
                     return acc;
                   }, {} as Record<string, any>);
+                  console.log('Form onChange - Sanitized formData:', JSON.stringify(sanitizedFormData, null, 2));
                   setFormData(sanitizedFormData);
                 }}
                 onSubmit={handleSaveToolConfig}
