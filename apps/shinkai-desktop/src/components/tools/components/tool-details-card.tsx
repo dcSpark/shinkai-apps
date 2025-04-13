@@ -847,7 +847,25 @@ export default function ToolDetailsCard({
                 formData={tryItOutFormData}
                 id="try-it-out-form"
                 noHtml5Validate={true}
-                onChange={(e) => setTryItOutFormData(e.formData)}
+                onChange={(e) => {
+                  const sanitizedFormData = { ...e.formData };
+                  
+                  if (sanitizedFormData.params) {
+                    sanitizedFormData.params = Object.entries(sanitizedFormData.params).reduce((acc, [key, value]) => {
+                      acc[key] = value === null ? '' : value;
+                      return acc;
+                    }, {} as Record<string, any>);
+                  }
+                  
+                  if (sanitizedFormData.configs) {
+                    sanitizedFormData.configs = Object.entries(sanitizedFormData.configs).reduce((acc, [key, value]) => {
+                      acc[key] = value === null ? '' : value;
+                      return acc;
+                    }, {} as Record<string, any>);
+                  }
+                  
+                  setTryItOutFormData(sanitizedFormData);
+                }}
                 onSubmit={async (data) => {
                   const formData = data.formData;
                   setToolExecutionResult(null);
