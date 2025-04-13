@@ -716,7 +716,13 @@ export default function ToolDetailsCard({
                 formData={formData}
                 id="parameters-form"
                 noHtml5Validate={true}
-                onChange={(e) => setFormData(e.formData)}
+                onChange={(e) => {
+                  const sanitizedFormData = Object.entries(e.formData).reduce((acc, [key, value]) => {
+                    acc[key] = value === null ? '' : value;
+                    return acc;
+                  }, {} as Record<string, any>);
+                  setFormData(sanitizedFormData);
+                }}
                 onSubmit={handleSaveToolConfig}
                 schema={toolConfigSchema}
                 uiSchema={{ 'ui:submitButtonOptions': { norender: true } }}
@@ -753,7 +759,18 @@ export default function ToolDetailsCard({
                 formData={oauthFormData}
                 id="oauth-form"
                 noHtml5Validate={true}
-                onChange={(e) => setOAuthFormData(e.formData)}
+                onChange={(e) => {
+                  const sanitizedOAuthFormData = { ...e.formData };
+                  if (sanitizedOAuthFormData.oauth) {
+                    sanitizedOAuthFormData.oauth = sanitizedOAuthFormData.oauth.map((item: any) => {
+                      return Object.entries(item).reduce((acc: any, [key, value]) => {
+                        acc[key] = value === null ? '' : value;
+                        return acc;
+                      }, {});
+                    });
+                  }
+                  setOAuthFormData(sanitizedOAuthFormData);
+                }}
                 onSubmit={handleSaveOAuthConfig}
                 schema={{
                   type: 'object',
