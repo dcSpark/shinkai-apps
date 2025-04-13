@@ -63,7 +63,7 @@ export function parseConfigToJsonSchema(config: ToolConfig[]): RJSFSchema {
     schema.properties[key_name] = {
       type: fieldType,
       description: `${description}${required ? ' (Required)' : ' (Optional)'}`,
-      ...(fieldType === 'string' && !required ? { default: '' } : {})
+      ...(fieldType === 'string' ? { default: '' } : {})
     };
   });
 
