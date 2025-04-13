@@ -14,6 +14,7 @@ type ToolConfigSchema = {
 };
 
 export function parseConfigToJsonSchema(config: ToolConfig[]): RJSFSchema {
+
   const schema: ToolConfigSchema = {
     type: 'object',
     required: [],
@@ -23,7 +24,18 @@ export function parseConfigToJsonSchema(config: ToolConfig[]): RJSFSchema {
   const requiredConfigs: ToolConfig[] = [];
   const optionalConfigs: ToolConfig[] = [];
 
-  config.forEach((item) => {
+  const sanitizedConfig = config.map(item => {
+    const { BasicConfig } = item;
+    const sanitizedBasicConfig = { ...BasicConfig };
+    
+    if (sanitizedBasicConfig.key_value === null) {
+      sanitizedBasicConfig.key_value = '';
+    }
+    
+    return { BasicConfig: sanitizedBasicConfig };
+  });
+
+  sanitizedConfig.forEach((item) => {
     const { BasicConfig } = item;
     const { required } = BasicConfig;
 
@@ -42,11 +54,17 @@ export function parseConfigToJsonSchema(config: ToolConfig[]): RJSFSchema {
       schema.required.push(key_name);
     }
 
+    const fieldType = (type || 'string') as JSONSchema7TypeName;
+    
+
+
     schema.properties[key_name] = {
-      type: (type || 'string') as JSONSchema7TypeName,
+      type: fieldType,
       description: `${description}${required ? ' (Required)' : ' (Optional)'}`,
+      ...(fieldType === 'string' ? { default: '' } : {})
     };
   });
+
 
   return schema;
 }

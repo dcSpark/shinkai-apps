@@ -243,7 +243,12 @@ export default function ToolDetailsCard({
       setFormData(
         tool.config.reduce(
           (acc, item) => {
-            acc[item.BasicConfig.key_name] = item.BasicConfig.key_value;
+            const value = item.BasicConfig.key_value;
+            const type = item.BasicConfig.type || 'string';
+            
+            acc[item.BasicConfig.key_name] = 
+              (type === 'string' && value === null) ? '' : value;
+            
             return acc;
           },
           {} as Record<string, any>,
@@ -260,25 +265,35 @@ export default function ToolDetailsCard({
 
   useEffect(() => {
     if (formData) {
+      const sanitizedConfigs = Object.entries(formData).reduce((acc, [key, value]) => {
+        acc[key] = value === null ? '' : value;
+        return acc;
+      }, {} as Record<string, any>);
+      
       setTryItOutFormData(prevData => ({
         ...prevData,
-        configs: formData
+        configs: sanitizedConfigs
       }));
     }
   }, [formData]);
 
   const handleSaveToolConfig: FormProps['onSubmit'] = async (data) => {
     const formData = data.formData;
+    const sanitizedConfig = Object.entries(formData).map(([key_name, key_value]) => {
+      const sanitizedValue = key_value === null ? '' : key_value;
+      return {
+        BasicConfig: {
+          key_name,
+          key_value: sanitizedValue,
+        },
+      };
+    });
+    
     await updateTool({
       toolKey: toolKey ?? '',
       toolType: toolType,
       toolPayload: {
-        config: Object.entries(formData).map(([key_name, key_value]) => ({
-          BasicConfig: {
-            key_name,
-            key_value,
-          },
-        })),
+        config: sanitizedConfig,
       } as ShinkaiTool,
       isToolEnabled: true,
       nodeAddress: auth?.node_address ?? '',
@@ -287,12 +302,18 @@ export default function ToolDetailsCard({
   };
 
   const handleSaveOAuthConfig: FormProps['onSubmit'] = async (data) => {
-    const oauth = data.formData.oauth;
+    const sanitizedOAuth = data.formData.oauth ? data.formData.oauth.map((item: any) => {
+      return Object.entries(item).reduce((acc: any, [key, value]) => {
+        acc[key] = value === null ? '' : value;
+        return acc;
+      }, {});
+    }) : [];
+    
     await updateTool({
       toolKey: toolKey ?? '',
       toolType: toolType,
       toolPayload: {
-        oauth,
+        oauth: sanitizedOAuth,
       } as ShinkaiTool,
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
@@ -710,7 +731,14 @@ export default function ToolDetailsCard({
                 formData={formData}
                 id="parameters-form"
                 noHtml5Validate={true}
-                onChange={(e) => setFormData(e.formData)}
+                onChange={(e) => {
+                  const sanitizedFormData = Object.entries(e.formData).reduce((acc, [key, value]) => {
+                    const sanitizedValue = value === null ? '' : value;
+                    acc[key] = sanitizedValue;
+                    return acc;
+                  }, {} as Record<string, any>);
+                  setFormData(sanitizedFormData);
+                }}
                 onSubmit={handleSaveToolConfig}
                 schema={toolConfigSchema}
                 uiSchema={{ 'ui:submitButtonOptions': { norender: true } }}
@@ -747,7 +775,18 @@ export default function ToolDetailsCard({
                 formData={oauthFormData}
                 id="oauth-form"
                 noHtml5Validate={true}
-                onChange={(e) => setOAuthFormData(e.formData)}
+                onChange={(e) => {
+                  const sanitizedOAuthFormData = { ...e.formData };
+                  if (sanitizedOAuthFormData.oauth) {
+                    sanitizedOAuthFormData.oauth = sanitizedOAuthFormData.oauth.map((item: any) => {
+                      return Object.entries(item).reduce((acc: any, [key, value]) => {
+                        acc[key] = value === null ? '' : value;
+                        return acc;
+                      }, {});
+                    });
+                  }
+                  setOAuthFormData(sanitizedOAuthFormData);
+                }}
                 onSubmit={handleSaveOAuthConfig}
                 schema={{
                   type: 'object',
@@ -824,11 +863,39 @@ export default function ToolDetailsCard({
                 formData={tryItOutFormData}
                 id="try-it-out-form"
                 noHtml5Validate={true}
-                onChange={(e) => setTryItOutFormData(e.formData)}
+                onChange={(e) => {
+                  const sanitizedFormData = { ...e.formData };
+                  
+                  if (sanitizedFormData.params) {
+                    sanitizedFormData.params = Object.entries(sanitizedFormData.params).reduce((acc, [key, value]) => {
+                      acc[key] = value === null ? '' : value;
+                      return acc;
+                    }, {} as Record<string, any>);
+                  }
+                  
+                  if (sanitizedFormData.configs) {
+                    sanitizedFormData.configs = Object.entries(sanitizedFormData.configs).reduce((acc, [key, value]) => {
+                      acc[key] = value === null ? '' : value;
+                      return acc;
+                    }, {} as Record<string, any>);
+                  }
+                  
+                  setTryItOutFormData(sanitizedFormData);
+                }}
                 onSubmit={async (data) => {
                   const formData = data.formData;
                   setToolExecutionResult(null);
 
+                  const sanitizedParams = formData?.params ? Object.entries(formData.params).reduce((acc, [key, value]) => {
+                    acc[key] = value === null ? '' : value;
+                    return acc;
+                  }, {} as Record<string, any>) : {};
+                  
+                  const sanitizedConfigs = formData?.configs ? Object.entries(formData.configs).reduce((acc, [key, value]) => {
+                    acc[key] = value === null ? '' : value;
+                    return acc;
+                  }, {} as Record<string, any>) : {};
+                  
                   await executeToolCode({
                     nodeAddress: auth?.node_address ?? '',
                     token: auth?.api_v2_key ?? '',
@@ -840,10 +907,10 @@ export default function ToolDetailsCard({
                     language: toolType === 'Python' 
                       ? CodeLanguage.Python 
                       : CodeLanguage.Typescript,
-                    params: formData?.params ?? {},
+                    params: sanitizedParams,
                     llmProviderId: defaultAgentId ?? '',
                     tools: [],
-                    configs: formData?.configs ?? {},
+                    configs: sanitizedConfigs,
                     xShinkaiAppId: 'shinkai-desktop',
                     xShinkaiToolId: toolKey ?? '',
                   });
