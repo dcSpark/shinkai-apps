@@ -276,7 +276,7 @@ export default function ToolDetailsCard({
         config: Object.entries(formData).map(([key_name, key_value]) => ({
           BasicConfig: {
             key_name,
-            key_value,
+            key_value: key_value === null ? '' : key_value,
           },
         })),
       } as ShinkaiTool,
