@@ -25,7 +25,19 @@ export function parseConfigToJsonSchema(config: ToolConfig[]): RJSFSchema {
   const requiredConfigs: ToolConfig[] = [];
   const optionalConfigs: ToolConfig[] = [];
 
-  config.forEach((item) => {
+  const sanitizedConfig = config.map(item => {
+    const { BasicConfig } = item;
+    const sanitizedBasicConfig = { ...BasicConfig };
+    
+    if (sanitizedBasicConfig.key_value === null) {
+      console.log(`Converting null key_value to empty string for ${sanitizedBasicConfig.key_name}`);
+      sanitizedBasicConfig.key_value = '';
+    }
+    
+    return { BasicConfig: sanitizedBasicConfig };
+  });
+
+  sanitizedConfig.forEach((item) => {
     const { BasicConfig } = item;
     const { required } = BasicConfig;
 
@@ -51,6 +63,7 @@ export function parseConfigToJsonSchema(config: ToolConfig[]): RJSFSchema {
     schema.properties[key_name] = {
       type: fieldType,
       description: `${description}${required ? ' (Required)' : ' (Optional)'}`,
+      ...(fieldType === 'string' && !required ? { default: '' } : {})
     };
   });
 

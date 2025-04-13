@@ -243,7 +243,13 @@ export default function ToolDetailsCard({
       setFormData(
         tool.config.reduce(
           (acc, item) => {
-            acc[item.BasicConfig.key_name] = item.BasicConfig.key_value;
+            const value = item.BasicConfig.key_value;
+            const type = item.BasicConfig.type || 'string';
+            
+            acc[item.BasicConfig.key_name] = 
+              (type === 'string' && value === null) ? '' : value;
+            
+            console.log(`Initial form data for ${item.BasicConfig.key_name}: ${JSON.stringify(value)} -> ${JSON.stringify(acc[item.BasicConfig.key_name])}`);
             return acc;
           },
           {} as Record<string, any>,
@@ -260,9 +266,15 @@ export default function ToolDetailsCard({
 
   useEffect(() => {
     if (formData) {
+      const sanitizedConfigs = Object.entries(formData).reduce((acc, [key, value]) => {
+        acc[key] = value === null ? '' : value;
+        console.log(`Setting tryItOutFormData config ${key}: ${JSON.stringify(value)} -> ${JSON.stringify(acc[key])}`);
+        return acc;
+      }, {} as Record<string, any>);
+      
       setTryItOutFormData(prevData => ({
         ...prevData,
-        configs: formData
+        configs: sanitizedConfigs
       }));
     }
   }, [formData]);
