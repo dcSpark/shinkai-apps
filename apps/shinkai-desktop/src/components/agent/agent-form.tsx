@@ -1659,7 +1659,7 @@ function AgentForm({ mode }: AgentFormProps) {
                               </Label>
                               <p className="text-official-gray-400 text-sm">
                                 Agent is ready to respond immediately when used
-                                upon
+                                upon in a chat.
                               </p>
                             </div>
                           </div>
@@ -1676,11 +1676,11 @@ function AgentForm({ mode }: AgentFormProps) {
                                   className="font-medium"
                                   htmlFor="schedule-recurring"
                                 >
-                                  Scheduled Execution
+                                  Normal Usage + Scheduled Execution
                                 </Label>
                                 <p className="text-official-gray-400 text-sm">
-                                  Configure specific times and frequencies for
-                                  agent tasks
+                                  Normal usage and also configure specific times and frequencies for
+                                  agent tasks e.g. Twitter Agent that performs a workflow like checking and answering messages every 5 minutes.
                                 </p>
                               </div>
 
