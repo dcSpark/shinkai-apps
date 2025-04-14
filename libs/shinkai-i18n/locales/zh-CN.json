@@ -95,6 +95,7 @@
     "copy": "复制",
     "create": "创建",
     "delete": "删除",
+    "deleteTool": "删除工具",
     "disconnect": "断开连接",
     "done": "完成",
     "edit": "编辑",
@@ -139,6 +140,7 @@
     "signUpShinkaiHosting": "注册Shinkai Hosting",
     "soon": "即将",
     "termsAndConditionsText": "我同意<a>服务条款</a>和<b>隐私政策</b>",
+    "tryItOut": "试试看",
     "unselectAll": "取消全选",
     "update": "更新",
     "upload": "上传",
@@ -207,6 +209,9 @@
   },
   "extension": {
     "welcome": "使用 Shinkai Visor ✨ 变革您的网页浏览体验"
+  },
+  "feedback": {
+    "button": "反馈"
   },
   "galxe": {
     "errors": {

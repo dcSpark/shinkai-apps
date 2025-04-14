@@ -460,7 +460,9 @@
     "done": "Done",
     "resetFilters": "Reset Filters",
     "folderLocation": "Folder Location:",
-    "installed": "Installed"
+    "installed": "Installed",
+    "deleteTool": "Delete Tool",
+    "tryItOut": "Try It Out"
   },
   "quickConnection": {
     "label": "Quick Connection",
@@ -641,5 +643,8 @@
     "customCopyCommandButton": "Copy Command",
     "copySuccessUrl": "SSE URL copied to clipboard",
     "copySuccessCommand": "Command copied to clipboard"
+  },
+  "feedback": {
+    "button": "Feedback"
   }
 }

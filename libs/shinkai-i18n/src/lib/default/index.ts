@@ -509,6 +509,8 @@ export default {
     resetFilters: 'Reset Filters',
     folderLocation: 'Folder Location:',
     installed: 'Installed',
+    deleteTool: 'Delete Tool',
+    tryItOut: 'Try It Out',
   },
   quickConnection: {
     label: 'Quick Connection',
@@ -688,23 +690,31 @@ export default {
   },
   mcpClients: {
     configFailTitle: 'Automatic {{clientName}} Configuration Failed',
-    configFailDescription: '{{errorMessage}} Please follow the instructions below for manual setup:',
+    configFailDescription:
+      '{{errorMessage}} Please follow the instructions below for manual setup:',
     copyJsonSuccess: 'JSON configuration copied to clipboard',
     copyJsonButton: 'Copy JSON Config',
     claudeLoading: 'Attempting automatic Claude Desktop configuration...',
     claudeSuccessTitle: 'Claude Desktop configured successfully!',
-    claudeSuccessDescription: 'Please restart Claude for the changes to take effect.',
+    claudeSuccessDescription:
+      'Please restart Claude for the changes to take effect.',
     claudeFailMessageBase: 'Automatic Claude configuration failed.',
     cursorLoading: 'Attempting automatic Cursor configuration...',
     cursorSuccessTitle: 'Cursor configured successfully!',
-    cursorSuccessDescription: 'Please restart Cursor for the changes to take effect.',
+    cursorSuccessDescription:
+      'Please restart Cursor for the changes to take effect.',
     cursorFailMessageBase: 'Automatic Cursor configuration failed.',
     customTitle: 'Custom External Client Configuration',
-    customDescriptionPrimary: 'The recommended way to connect your external client is via Server-Sent Events (SSE).',
-    customDescriptionSecondary: 'If your client does not support SSE, you can run the Shinkai MCP server as a separate process using this command:',
+    customDescriptionPrimary:
+      'The recommended way to connect your external client is via Server-Sent Events (SSE).',
+    customDescriptionSecondary:
+      'If your client does not support SSE, you can run the Shinkai MCP server as a separate process using this command:',
     customCopySseUrlButton: 'Copy SSE URL',
     customCopyCommandButton: 'Copy Command',
     copySuccessUrl: 'SSE URL copied to clipboard',
     copySuccessCommand: 'Command copied to clipboard',
+  },
+  feedback: {
+    button: 'Feedback',
   },
 };

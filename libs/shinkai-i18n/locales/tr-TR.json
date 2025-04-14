@@ -95,6 +95,7 @@
     "copy": "Kopyala",
     "create": "Oluştur",
     "delete": "Sil",
+    "deleteTool": "Aracı Sil",
     "disconnect": "Bağlantıyı Kes",
     "done": "Tamam",
     "edit": "Düzenle",
@@ -139,6 +140,7 @@
     "signUpShinkaiHosting": "Shinkai Hosting'e Kaydol",
     "soon": "yakında",
     "termsAndConditionsText": "<a>Hizmet Şartları</a> ve <b>Gizlilik Politikası</b>nı kabul ediyorum",
+    "tryItOut": "Deneyin",
     "unselectAll": "Hepsini Seçme",
     "update": "Güncelle",
     "upload": "Yükle",
@@ -207,6 +209,9 @@
   },
   "extension": {
     "welcome": "Shinkai Visor ile web tarayıcı deneyiminizi AI ile dönüştürün ✨"
+  },
+  "feedback": {
+    "button": "Geri Bildirim"
   },
   "galxe": {
     "errors": {

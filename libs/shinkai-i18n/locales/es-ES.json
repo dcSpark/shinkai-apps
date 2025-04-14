@@ -1,6 +1,4 @@
 {
-  "": {
-  },
   "aiFilesSearch": {
     "description": "Busca para encontrar contenido en todos los archivos de tus archivos AI fácilmente",
     "filesSelected": "Seleccionados {{count}} archivos",
@@ -97,6 +95,7 @@
     "copy": "Copiar",
     "create": "Crear",
     "delete": "Eliminar",
+    "deleteTool": "Eliminar herramienta",
     "disconnect": "Desconectar",
     "done": "Hecho",
     "edit": "Editar",
@@ -141,6 +140,7 @@
     "signUpShinkaiHosting": "Registrarse en Shinkai Hosting",
     "soon": "pronto",
     "termsAndConditionsText": "Acepto los <a>Términos de Servicio</a> y la <b>Política de Privacidad</b>",
+    "tryItOut": "Pruébalo",
     "unselectAll": "Deseleccionar todo",
     "update": "Actualizar",
     "upload": "Subir",
@@ -209,6 +209,9 @@
   },
   "extension": {
     "welcome": "Transforma tu experiencia de navegación web utilizando IA con Shinkai Visor ✨"
+  },
+  "feedback": {
+    "button": "Comentarios"
   },
   "galxe": {
     "errors": {

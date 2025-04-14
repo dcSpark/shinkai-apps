@@ -95,6 +95,7 @@
     "copy": "Salin",
     "create": "Buat",
     "delete": "Hapus",
+    "deleteTool": "Hapus Alat",
     "disconnect": "Putuskan Koneksi",
     "done": "Selesai",
     "edit": "Edit",
@@ -139,6 +140,7 @@
     "signUpShinkaiHosting": "Daftar untuk Hosting Shinkai",
     "soon": "segera",
     "termsAndConditionsText": "Saya setuju dengan <a>Syarat Layanan</a> dan <b>Kebijakan Privasi</b>",
+    "tryItOut": "Coba Sekarang",
     "unselectAll": "Batalkan Pilihan Semua",
     "update": "Perbarui",
     "upload": "Unggah",
@@ -207,6 +209,9 @@
   },
   "extension": {
     "welcome": "Transformasikan pengalaman menjelajah web Anda menggunakan kecerdasan buatan dengan Shinkai Visor ✨"
+  },
+  "feedback": {
+    "button": "Umpan Balik"
   },
   "galxe": {
     "errors": {

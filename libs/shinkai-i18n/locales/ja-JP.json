@@ -95,6 +95,7 @@
     "copy": "コピー",
     "create": "作成する",
     "delete": "削除",
+    "deleteTool": "ツールを削除",
     "disconnect": "切断",
     "done": "完了",
     "edit": "編集",
@@ -139,6 +140,7 @@
     "signUpShinkaiHosting": "Shinkai Hostingにサインアップ",
     "soon": "近日公開",
     "termsAndConditionsText": "<a>利用規約</a>に同意し、<b>プライバシーポリシー</b>に同意します",
+    "tryItOut": "試してみる",
     "unselectAll": "すべて選択解除",
     "update": "更新",
     "upload": "アップロード",
@@ -207,6 +209,9 @@
   },
   "extension": {
     "welcome": "Shinkai Visorを使用してAIでWebブラウジング体験を変えましょう ✨"
+  },
+  "feedback": {
+    "button": "フィードバック"
   },
   "galxe": {
     "errors": {
