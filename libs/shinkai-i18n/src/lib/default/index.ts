@@ -88,7 +88,7 @@ export default {
   quickAsk: {
     emptyStateTitle: 'Ask Shinkai AI',
     emptyStateDescription:
-      'Try “How to make a HTTP request in JavaScript” , “Give me the top 10 rock music in the 80s”, “Explain me how internet works”',
+      'Try "How to make a HTTP request in JavaScript" , "Give me the top 10 rock music in the 80s", "Explain me how internet works"',
   },
   chat: {
     chats: 'Chats',
@@ -642,15 +642,28 @@ export default {
     lookingForMoreTools: 'Looking for more tools?',
     visitStore:
       'Visit the Shinkai Store to discover and install additional tools to enhance your workflow',
+    notifications: {
+      feedbackRequired: {
+        title: 'Feedback Required',
+        description: 'Please provide feedback on the generated code.',
+      },
+      codeGenerationComplete: {
+        title: 'Code Generation Complete',
+        description: 'The code has been generated successfully.',
+      },
+      metadataGenerationComplete: {
+        title: 'Metadata Generation Complete',
+        description: 'The metadata has been generated successfully.',
+      },
+    },
+    disconnect: {
+      modalTitle: 'Disconnect Shinkai',
+      modalDescription:
+        'Are you sure you want to disconnect? This will permanently delete your data',
+      exportConnection:
+        'Before continuing, please<Link>export your connection</Link>to restore your connection at any time.',
+    },
   },
-  disconnect: {
-    modalTitle: 'Disconnect Shinkai',
-    modalDescription:
-      'Are you sure you want to disconnect? This will permanently delete your data',
-    exportConnection:
-      'Before continuing, please<Link>export your connection</Link>to restore your connection at any time.',
-  },
-
   errors: {
     nodeUnavailable: {
       title: 'Node Unavailable',

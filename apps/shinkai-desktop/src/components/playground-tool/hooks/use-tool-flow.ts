@@ -1,4 +1,5 @@
 import { FormProps } from '@rjsf/core';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   buildInboxIdFromJobId,
@@ -56,6 +57,7 @@ export const useToolFlow = ({
   isPlaygroundMode = false,
   tools,
 }: ToolFlowOptions) => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
 
@@ -138,10 +140,10 @@ export const useToolFlow = ({
     debug('sending feedback notification');
     feedbackNotificationSentRef.current = true;
     handleSendNotification(
-      'Feedback Required',
-      'Your input is needed for the code generation process.',
+      t('tools.notifications.feedbackRequired.title'),
+      t('tools.notifications.feedbackRequired.description'),
     );
-  }, []);
+  }, [t]);
 
   // Send notifications for generation completion
   const sendCodeGenerationCompleteNotification = useCallback(() => {
@@ -152,10 +154,10 @@ export const useToolFlow = ({
     debug('sending code generation complete notification');
     notificationSentRef.current = true;
     handleSendNotification(
-      'Code Generation Complete',
-      'The tool code has been generated successfully.',
+      t('tools.notifications.codeGenerationComplete.title'),
+      t('tools.notifications.codeGenerationComplete.description'),
     );
-  }, []);
+  }, [t]);
 
   const sendMetadataGenerationCompleteNotification = useCallback(() => {
     if (notificationSentRef.current) {
@@ -165,10 +167,10 @@ export const useToolFlow = ({
     debug('sending metadata generation complete notification');
     notificationSentRef.current = true;
     handleSendNotification(
-      'Tool Creation Complete',
-      'The tool metadata has been generated and the tool is ready.',
+      t('tools.notifications.metadataGenerationComplete.title'),
+      t('tools.notifications.metadataGenerationComplete.description'),
     );
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (initialState?.code) {
