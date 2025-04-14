@@ -82,7 +82,7 @@ export function UpdateVectorFsActionBar() {
 
   const { data: jobFolderData } = useGetJobFolderName(
     {
-      jobId: extractJobIdFromInbox(inboxId),
+      jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
     },
