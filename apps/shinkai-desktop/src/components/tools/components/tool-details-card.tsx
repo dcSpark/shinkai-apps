@@ -60,7 +60,6 @@ import { useSettings } from '../../../store/settings';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
-import { parseInputArgsToJsonSchema } from '../utils/tool-input-args';
 import EditToolDetailsDialog from './edit-tool-details-dialog';
 
 /**
@@ -125,13 +124,14 @@ export default function ToolDetailsCard({
     string,
     any
   > | null>(null);
+
   const [toolExecutionResult, setToolExecutionResult] = useState<Record<
     string,
     any
   > | null>(null);
   const { t } = useTranslation();
-  const toolConfigSchema = 'config' in tool && tool.config ? tool.config : {};
 
+  console.log(tryItOutFormData, 'tryItOutFormData');
   const {
     mutateAsync: publishTool,
     isPending: isPublishingTool,
@@ -248,20 +248,11 @@ export default function ToolDetailsCard({
   useEffect(() => {
     if (
       tool &&
-      'config' in tool &&
-      tool?.config?.properties &&
-      Object.keys(tool.config.properties).length > 0
+      'configFormData' in tool &&
+      tool?.configFormData &&
+      Object.keys(tool.configFormData).length > 0
     ) {
-      setFormData(
-        // TODO: add current values to the form data, backend changes
-        Object.entries(tool.config.properties).reduce(
-          (acc, [key, value]) => {
-            acc[key] = value.key_value ?? '';
-            return acc;
-          },
-          {} as Record<string, any>,
-        ),
-      );
+      setFormData(tool.configFormData);
     }
   }, [tool]);
 
@@ -270,29 +261,6 @@ export default function ToolDetailsCard({
       setOAuthFormData({ oauth: tool.oauth });
     }
   }, [tool]);
-
-  useEffect(() => {
-    if (formData) {
-      console.log(tool.input_args, 'value');
-      const sanitizedConfigs = Object.entries(
-        tool.input_args.properties,
-      ).reduce(
-        (acc, [key, value]) => {
-          acc[key] =
-            value === null && !tool.input_args.required.includes(key)
-              ? ''
-              : value;
-          return acc;
-        },
-        {} as Record<string, any>,
-      );
-
-      setTryItOutFormData((prevData) => ({
-        ...prevData,
-        configs: sanitizedConfigs,
-      }));
-    }
-  }, [formData, tool]);
 
   const handleSaveToolConfig: FormProps['onSubmit'] = async (data) => {
     const formData = data.formData;
@@ -308,18 +276,17 @@ export default function ToolDetailsCard({
         };
       },
     );
-    console.log(formData, 'formData', sanitizedConfig);
 
-    // await updateTool({
-    //   toolKey: toolKey ?? '',
-    //   toolType: toolType,
-    //   toolPayload: {
-    //     config: sanitizedConfig,
-    //   } as unknown as ShinkaiTool,
-    //   isToolEnabled: true,
-    //   nodeAddress: auth?.node_address ?? '',
-    //   token: auth?.api_v2_key ?? '',
-    // });
+    await updateTool({
+      toolKey: toolKey ?? '',
+      toolType: toolType,
+      toolPayload: {
+        config: sanitizedConfig,
+      } as unknown as ShinkaiTool,
+      isToolEnabled: true,
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    });
   };
 
   const handleSaveOAuthConfig: FormProps['onSubmit'] = async (data) => {
@@ -341,6 +308,53 @@ export default function ToolDetailsCard({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       isToolEnabled: true,
+    });
+  };
+
+  const handleExecuteTool: FormProps['onSubmit'] = async (data) => {
+    const formData = data.formData;
+    console.log(formData, 'formData');
+    setToolExecutionResult(null);
+
+    const sanitizedParams = formData?.params
+      ? Object.entries(formData.params).reduce(
+          (acc, [key, value]) => {
+            acc[key] = value === null ? '' : value;
+            return acc;
+          },
+          {} as Record<string, any>,
+        )
+      : {};
+
+    const sanitizedConfigs = formData?.configs
+      ? Object.entries(formData.configs).reduce(
+          (acc, [key, value]) => {
+            acc[key] = value === null ? '' : value;
+            return acc;
+          },
+          {} as Record<string, any>,
+        )
+      : {};
+
+    await executeToolCode({
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      code:
+        'py_code' in tool
+          ? tool.py_code
+          : 'js_code' in tool
+            ? tool.js_code
+            : '',
+      language:
+        toolType === CodeLanguage.Python
+          ? CodeLanguage.Python
+          : CodeLanguage.Typescript,
+      params: sanitizedParams,
+      llmProviderId: defaultAgentId ?? '',
+      tools: [],
+      configs: sanitizedConfigs,
+      xShinkaiAppId: 'shinkai-desktop',
+      xShinkaiToolId: toolKey ?? '',
     });
   };
 
@@ -488,10 +502,10 @@ export default function ToolDetailsCard({
             </TabsTrigger>
           )}
 
-          {'config' in tool &&
-            tool.config &&
-            tool.config.properties &&
-            Object.keys(tool.config.properties).length > 0 && (
+          {'configurations' in tool &&
+            tool.configurations &&
+            tool.configurations.properties &&
+            Object.keys(tool.configurations.properties).length > 0 && (
               <TabsTrigger
                 className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
                 value="configuration"
@@ -747,10 +761,10 @@ export default function ToolDetailsCard({
           </TabsContent>
         )}
 
-        {'config' in tool &&
-          tool.config &&
-          tool.config.properties &&
-          Object.keys(tool.config.properties).length > 0 && (
+        {'configurations' in tool &&
+          tool.configurations &&
+          tool.configurations.properties &&
+          Object.keys(tool.configurations.properties).length > 0 && (
             <TabsContent value="configuration">
               <div className={boxContainerClass}>
                 <div className="mb-4">
@@ -765,22 +779,13 @@ export default function ToolDetailsCard({
                 <JsonForm
                   className="py-1"
                   formData={formData}
-                  id="parameters-form"
+                  id="configurations-form"
                   noHtml5Validate={true}
                   onChange={(e) => {
                     setFormData(e.formData);
-                    // const sanitizedFormData = Object.entries(e.formData).reduce(
-                    //   (acc, [key, value]) => {
-                    //     const sanitizedValue = value === null ? '' : value;
-                    //     acc[key] = sanitizedValue;
-                    //     return acc;
-                    //   },
-                    //   {} as Record<string, any>,
-                    // );
-                    // setFormData(sanitizedFormData);
                   }}
                   onSubmit={handleSaveToolConfig}
-                  schema={toolConfigSchema}
+                  schema={tool.configurations}
                   uiSchema={{ 'ui:submitButtonOptions': { norender: true } }}
                   validator={validator}
                 />
@@ -788,7 +793,7 @@ export default function ToolDetailsCard({
                   <Button
                     className="min-w-[100px]"
                     disabled={isPending}
-                    form="parameters-form"
+                    form="configurations-form"
                     isLoading={isPending}
                     rounded="lg"
                     size="sm"
@@ -908,59 +913,14 @@ export default function ToolDetailsCard({
               onChange={(e) => {
                 setTryItOutFormData(e.formData);
               }}
-              onSubmit={async (data) => {
-                const formData = data.formData;
-                setToolExecutionResult(null);
-
-                // const sanitizedParams = formData?.params
-                //   ? Object.entries(formData.params).reduce(
-                //       (acc, [key, value]) => {
-                //         acc[key] = value === null ? '' : value;
-                //         return acc;
-                //       },
-                //       {} as Record<string, any>,
-                //     )
-                //   : {};
-
-                // const sanitizedConfigs = formData?.configs
-                //   ? Object.entries(formData.configs).reduce(
-                //       (acc, [key, value]) => {
-                //         acc[key] = value === null ? '' : value;
-                //         return acc;
-                //       },
-                //       {} as Record<string, any>,
-                //     )
-                //   : {};
-
-                await executeToolCode({
-                  nodeAddress: auth?.node_address ?? '',
-                  token: auth?.api_v2_key ?? '',
-                  code:
-                    'py_code' in tool
-                      ? tool.py_code
-                      : 'js_code' in tool
-                        ? tool.js_code
-                        : '',
-                  language:
-                    toolType === 'Python'
-                      ? CodeLanguage.Python
-                      : CodeLanguage.Typescript,
-                  params: formData.params,
-                  llmProviderId: defaultAgentId ?? '',
-                  tools: [],
-                  configs: formData.configs,
-                  xShinkaiAppId: 'shinkai-desktop',
-                  xShinkaiToolId: toolKey ?? '',
-                });
-              }}
+              onSubmit={handleExecuteTool}
               schema={{
                 type: 'object',
                 properties: {
-                  ...('config' in tool &&
-                  tool.config &&
-                  tool.config.properties &&
-                  Object.keys(tool.config.properties).length > 0
-                    ? { configs: tool.config }
+                  ...('configurations' in tool &&
+                  tool.configurations?.properties &&
+                  Object.keys(tool.configurations.properties).length > 0
+                    ? { configs: tool.configurations }
                     : {}),
                   ...('input_args' in tool &&
                   tool?.input_args?.properties &&
@@ -999,6 +959,7 @@ export default function ToolDetailsCard({
                 isLoading={isExecutingTool}
                 rounded="lg"
                 size="sm"
+                type="submit"
                 variant="outline"
               >
                 Run Tool

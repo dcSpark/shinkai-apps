@@ -28,6 +28,16 @@ export type ToolArgument = {
   required: string[];
 };
 
+export type ToolConfigBase = {
+  BasicConfig: {
+    description: string;
+    key_name: string;
+    key_value: string | null;
+    required: boolean;
+    type: string | null;
+  };
+};
+
 type Embedding = {
   id: string;
   vector: number[];
@@ -59,7 +69,9 @@ export type DenoShinkaiTool = {
   name: string;
   author: string;
   js_code: string;
-  config: ToolConfig;
+  config: ToolConfigBase;
+  configurations: ToolConfig;
+  configFormData: Record<string, any>;
   description: string;
   keywords: string[];
   oauth: OAuth[];
@@ -75,7 +87,9 @@ export type PythonShinkaiTool = {
   keywords: string[];
   input_args: ToolArgument;
   description: string;
-  config: ToolConfig;
+  config: ToolConfigBase;
+  configurations: ToolConfig;
+  configFormData: Record<string, any>;
   name: string;
   oauth: OAuth[];
   py_code: string;
@@ -97,7 +111,9 @@ export type RustShinkaiTool = {
 
 export type NetworkShinkaiTool = {
   activated: boolean;
-  config: ToolConfig;
+  config: ToolConfigBase;
+  configurations: ToolConfig;
+  configFormData: Record<string, any>;
   description: string;
   embedding: null | string;
   input_args: ToolArgument;
