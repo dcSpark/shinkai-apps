@@ -1695,6 +1695,23 @@ function AgentForm({ mode }: AgentFormProps) {
                                 <div className="space-y-4 py-5">
                                   <FormField
                                     control={form.control}
+                                    name="aiPrompt"
+                                    render={({ field }) => (
+                                      <Textarea
+                                        {...field}
+                                        className="min-h-[120px]"
+                                        id="aiPrompt"
+                                        placeholder="Enter AI instructions for the scheduled execution..."
+                                        resize="vertical"
+                                      />
+                                    )}
+                                  />
+                                  <p className="text-sm text-official-gray-400">
+                                    This AI Prompt will be used instead of the agent description when the scheduled task runs.
+                                  </p>
+                                  
+                                  <FormField
+                                    control={form.control}
                                     name="cronExpression"
                                     render={({ field }) => (
                                       <TextField
@@ -1719,23 +1736,6 @@ function AgentForm({ mode }: AgentFormProps) {
                                   {!readableCronExpression && form.watch('cronExpression') && (
                                     <p className="text-xs text-red-500">Invalid Cron Expression</p>
                                   )}
-                                  
-                                  <FormField
-                                    control={form.control}
-                                    name="aiPrompt"
-                                    render={({ field }) => (
-                                      <Textarea
-                                        {...field}
-                                        className="min-h-[120px]"
-                                        id="aiPrompt"
-                                        placeholder="Enter AI instructions for the scheduled execution..."
-                                        resize="vertical"
-                                      />
-                                    )}
-                                  />
-                                  <p className="text-sm text-official-gray-400">
-                                    This AI Prompt will be used instead of the agent description when the scheduled task runs.
-                                  </p>
                                   <div className="flex flex-wrap gap-2">
                                     {[
                                       {
