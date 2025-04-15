@@ -2,7 +2,7 @@ import { JobMessage } from '../jobs/types';
 
 export type ShinkaiToolHeader = {
   author: string;
-  config?: ToolConfig[];
+  config?: ToolConfigBase[];
   description: string;
   enabled: boolean;
   formatted_tool_summary_for_ui: string;
