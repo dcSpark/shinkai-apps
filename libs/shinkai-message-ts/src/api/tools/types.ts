@@ -17,20 +17,15 @@ export type ShinkaiToolHeader = {
 };
 
 export type ToolConfig = {
-  BasicConfig: {
-    description: string;
-    key_name: string;
-    key_value: string | null;
-    required: boolean;
-    type: string | null;
-  };
+  type: 'object';
+  properties: Record<string, any>;
+  required: string[];
 };
 
 export type ToolArgument = {
-  name: string;
-  arg_type: string;
-  description: string;
-  is_required: boolean;
+  type: 'object';
+  properties: Record<string, any>;
+  required: string[];
 };
 
 type Embedding = {
@@ -64,11 +59,11 @@ export type DenoShinkaiTool = {
   name: string;
   author: string;
   js_code: string;
-  config: ToolConfig[];
+  config: ToolConfig;
   description: string;
   keywords: string[];
   oauth: OAuth[];
-  input_args: ToolArgument[];
+  input_args: ToolArgument;
   config_set: boolean;
   activated: boolean;
   embedding?: Embedding;
@@ -78,9 +73,9 @@ export type PythonShinkaiTool = {
   activated: boolean;
   author: string;
   keywords: string[];
-  input_args: ToolArgument[];
+  input_args: ToolArgument;
   description: string;
-  config: ToolConfig[];
+  config: ToolConfig;
   name: string;
   oauth: OAuth[];
   py_code: string;
@@ -91,7 +86,7 @@ export type PythonShinkaiTool = {
 };
 export type RustShinkaiTool = {
   description: string;
-  input_args: ToolArgument[];
+  input_args: ToolArgument;
   name: string;
   output_arg: {
     json: string;
@@ -102,10 +97,10 @@ export type RustShinkaiTool = {
 
 export type NetworkShinkaiTool = {
   activated: boolean;
-  config: ToolConfig[];
+  config: ToolConfig;
   description: string;
   embedding: null | string;
-  input_args: ToolArgument[];
+  input_args: ToolArgument;
   name: string;
   output_arg: {
     json: string;
@@ -129,7 +124,13 @@ export type GetToolResponse = {
   type: ShinkaiToolType;
 };
 
-export type GetToolsCategory = 'downloaded' | 'default' | 'system' | 'my_tools' | 'mcp_servers' | 'all';
+export type GetToolsCategory =
+  | 'downloaded'
+  | 'default'
+  | 'system'
+  | 'my_tools'
+  | 'mcp_servers'
+  | 'all';
 export type GetToolsRequest = {
   category?: GetToolsCategory;
 };

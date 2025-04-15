@@ -60,7 +60,6 @@ import { useSettings } from '../../../store/settings';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
-import { parseConfigToJsonSchema } from '../utils/tool-config';
 import { parseInputArgsToJsonSchema } from '../utils/tool-input-args';
 import EditToolDetailsDialog from './edit-tool-details-dialog';
 
@@ -69,17 +68,17 @@ import EditToolDetailsDialog from './edit-tool-details-dialog';
  */
 function removeEmbeddingFields(tool: ShinkaiTool): ShinkaiTool {
   if (!tool) return tool;
-  
+
   const filteredTool = { ...tool };
-  
+
   if ('embedding' in filteredTool) {
     delete (filteredTool as any).embedding;
   }
-  
+
   if ('tool_embedding' in filteredTool) {
     delete (filteredTool as any).tool_embedding;
   }
-  
+
   return filteredTool;
 }
 
@@ -92,7 +91,7 @@ function sanitizeFileName(name: string): string {
   let sanitized = name.replace(/[^a-zA-Z0-9_]/g, '_');
   sanitized = sanitized.replace(/_+/g, '_');
   sanitized = sanitized.replace(/^_+|_+$/g, '');
-  
+
   return sanitized || 'untitled_tool';
 }
 
@@ -122,13 +121,16 @@ export default function ToolDetailsCard({
   const [oauthFormData, setOAuthFormData] = useState<{ oauth: OAuth[] } | null>(
     null,
   );
-  const [tryItOutFormData, setTryItOutFormData] = useState<Record<string, any> | null>(null);
-  const [toolExecutionResult, setToolExecutionResult] = useState<Record<string, any> | null>(null);
+  const [tryItOutFormData, setTryItOutFormData] = useState<Record<
+    string,
+    any
+  > | null>(null);
+  const [toolExecutionResult, setToolExecutionResult] = useState<Record<
+    string,
+    any
+  > | null>(null);
   const { t } = useTranslation();
-  const toolConfigSchema =
-    'config' in tool && tool.config?.length > 0
-      ? parseConfigToJsonSchema(tool?.config ?? [])
-      : {};
+  const toolConfigSchema = 'config' in tool && tool.config ? tool.config : {};
 
   const {
     mutateAsync: publishTool,
@@ -152,6 +154,7 @@ export default function ToolDetailsCard({
     onSuccess: (_, variables) => {
       if (
         'config' in variables.toolPayload &&
+        // @ts-expect-error - TODO: fix this, update the tool config format when updating the tool in backend
         variables.toolPayload.config?.length > 0
       ) {
         toast.success('Tool configuration updated successfully');
@@ -190,18 +193,22 @@ export default function ToolDetailsCard({
       },
     });
 
-  const { mutateAsync: executeToolCode, isPending: isExecutingTool, isError: isExecutionError, error: executionError } =
-    useExecuteToolCode({
-      onSuccess: (response) => {
-        setToolExecutionResult(response);
-        toast.success('Tool executed successfully');
-      },
-      onError: (error) => {
-        toast.error('Failed to execute tool', {
-          description: error.response?.data?.message ?? error.message,
-        });
-      },
-    });
+  const {
+    mutateAsync: executeToolCode,
+    isPending: isExecutingTool,
+    isError: isExecutionError,
+    error: executionError,
+  } = useExecuteToolCode({
+    onSuccess: (response) => {
+      setToolExecutionResult(response);
+      toast.success('Tool executed successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to execute tool', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
 
   const { mutateAsync: exportTool, isPending: isExportingTool } = useExportTool(
     {
@@ -239,16 +246,17 @@ export default function ToolDetailsCard({
   );
 
   useEffect(() => {
-    if (tool && 'config' in tool && tool?.config?.length > 0) {
+    if (
+      tool &&
+      'config' in tool &&
+      tool?.config?.properties &&
+      Object.keys(tool.config.properties).length > 0
+    ) {
       setFormData(
-        tool.config.reduce(
-          (acc, item) => {
-            const value = item.BasicConfig.key_value;
-            const type = item.BasicConfig.type || 'string';
-            
-            acc[item.BasicConfig.key_name] = 
-              (type === 'string' && value === null) ? '' : value;
-            
+        // TODO: add current values to the form data, backend changes
+        Object.entries(tool.config.properties).reduce(
+          (acc, [key, value]) => {
+            acc[key] = value.key_value ?? '';
             return acc;
           },
           {} as Record<string, any>,
@@ -265,50 +273,65 @@ export default function ToolDetailsCard({
 
   useEffect(() => {
     if (formData) {
-      const sanitizedConfigs = Object.entries(formData).reduce((acc, [key, value]) => {
-        acc[key] = value === null ? '' : value;
-        return acc;
-      }, {} as Record<string, any>);
-      
-      setTryItOutFormData(prevData => ({
+      console.log(tool.input_args, 'value');
+      const sanitizedConfigs = Object.entries(
+        tool.input_args.properties,
+      ).reduce(
+        (acc, [key, value]) => {
+          acc[key] =
+            value === null && !tool.input_args.required.includes(key)
+              ? ''
+              : value;
+          return acc;
+        },
+        {} as Record<string, any>,
+      );
+
+      setTryItOutFormData((prevData) => ({
         ...prevData,
-        configs: sanitizedConfigs
+        configs: sanitizedConfigs,
       }));
     }
-  }, [formData]);
+  }, [formData, tool]);
 
   const handleSaveToolConfig: FormProps['onSubmit'] = async (data) => {
     const formData = data.formData;
-    const sanitizedConfig = Object.entries(formData).map(([key_name, key_value]) => {
-      const sanitizedValue = key_value === null ? '' : key_value;
-      return {
-        BasicConfig: {
-          key_name,
-          key_value: sanitizedValue,
-        },
-      };
-    });
-    
-    await updateTool({
-      toolKey: toolKey ?? '',
-      toolType: toolType,
-      toolPayload: {
-        config: sanitizedConfig,
-      } as ShinkaiTool,
-      isToolEnabled: true,
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-    });
+
+    const sanitizedConfig = Object.entries(formData).map(
+      ([key_name, key_value]) => {
+        const sanitizedValue = key_value == null ? '' : key_value;
+        return {
+          BasicConfig: {
+            key_name,
+            key_value: sanitizedValue,
+          },
+        };
+      },
+    );
+    console.log(formData, 'formData', sanitizedConfig);
+
+    // await updateTool({
+    //   toolKey: toolKey ?? '',
+    //   toolType: toolType,
+    //   toolPayload: {
+    //     config: sanitizedConfig,
+    //   } as unknown as ShinkaiTool,
+    //   isToolEnabled: true,
+    //   nodeAddress: auth?.node_address ?? '',
+    //   token: auth?.api_v2_key ?? '',
+    // });
   };
 
   const handleSaveOAuthConfig: FormProps['onSubmit'] = async (data) => {
-    const sanitizedOAuth = data.formData.oauth ? data.formData.oauth.map((item: any) => {
-      return Object.entries(item).reduce((acc: any, [key, value]) => {
-        acc[key] = value === null ? '' : value;
-        return acc;
-      }, {});
-    }) : [];
-    
+    const sanitizedOAuth = data.formData.oauth
+      ? data.formData.oauth.map((item: any) => {
+          return Object.entries(item).reduce((acc: any, [key, value]) => {
+            acc[key] = value === null ? '' : value;
+            return acc;
+          }, {});
+        })
+      : [];
+
     await updateTool({
       toolKey: toolKey ?? '',
       toolType: toolType,
@@ -342,7 +365,7 @@ export default function ToolDetailsCard({
           <h1 className="mb-2 text-lg font-bold">
             {formatText(tool.name ?? '')}
           </h1>
-          <p className="text-gray-80 mb-4 whitespace-pre-wrap line-clamp-2 text-sm">
+          <p className="text-gray-80 mb-4 line-clamp-2 whitespace-pre-wrap text-sm">
             {tool.description}
           </p>
         </div>
@@ -432,10 +455,13 @@ export default function ToolDetailsCard({
         </div>
       </div>
 
-      <Tabs 
-        className="w-full py-8" 
+      <Tabs
+        className="w-full py-8"
         defaultValue="description"
-        value={window.location.hash === '#try-it-out' ? 'try-it-out' : undefined}>
+        value={
+          window.location.hash === '#try-it-out' ? 'try-it-out' : undefined
+        }
+      >
         <TabsList className="mb-4 flex w-full justify-start gap-6 rounded-none border-b border-gray-200 bg-transparent pb-0">
           <TabsTrigger
             className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
@@ -462,14 +488,17 @@ export default function ToolDetailsCard({
             </TabsTrigger>
           )}
 
-          {'config' in tool && tool.config && tool.config.length > 0 && (
-            <TabsTrigger
-              className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
-              value="configuration"
-            >
-              Configuration
-            </TabsTrigger>
-          )}
+          {'config' in tool &&
+            tool.config &&
+            tool.config.properties &&
+            Object.keys(tool.config.properties).length > 0 && (
+              <TabsTrigger
+                className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+                value="configuration"
+              >
+                Configuration
+              </TabsTrigger>
+            )}
           {'oauth' in tool && tool.oauth && tool.oauth.length > 0 && (
             <TabsTrigger
               className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
@@ -554,11 +583,19 @@ export default function ToolDetailsCard({
                   <div className="flex flex-col gap-1" key={label}>
                     <div className="flex items-center justify-between">
                       <span className="text-gray-80 text-xs">{label}</span>
-                      {(label === 'Description' || label === 'Keyword' || label === 'Version') && (
+                      {(label === 'Description' ||
+                        label === 'Keyword' ||
+                        label === 'Version') && (
                         <EditToolDetailsDialog
                           className="ml-auto"
                           currentValue={String(value)}
-                          fieldName={label === 'Description' ? 'description' : label === 'Keyword' ? 'keywords' : 'version'}
+                          fieldName={
+                            label === 'Description'
+                              ? 'description'
+                              : label === 'Keyword'
+                                ? 'keywords'
+                                : 'version'
+                          }
                           tool={tool}
                           toolKey={toolKey as string}
                           toolType={toolType}
@@ -591,7 +628,7 @@ export default function ToolDetailsCard({
                 />
               </div>
             </div>
-            
+
             <div className="flex flex-col gap-1">
               <div className="flex items-center justify-between">
                 <span className="text-gray-80 text-xs">Icon</span>
@@ -677,7 +714,7 @@ export default function ToolDetailsCard({
             </div>
           </TabsContent>
         )}
-        
+
         {tool && (
           <TabsContent value="metadata">
             <div className={boxContainerClass}>
@@ -689,7 +726,7 @@ export default function ToolDetailsCard({
                     string={JSON.stringify(
                       removeEmbeddingFields(tool),
                       null,
-                      2
+                      2,
                     )}
                   >
                     <span className="text-xs">Copy</span>
@@ -703,63 +740,66 @@ export default function ToolDetailsCard({
                     borderRadius: '0.5rem',
                     overflowY: 'hidden',
                   }}
-                  value={JSON.stringify(
-                    removeEmbeddingFields(tool),
-                    null,
-                    2
-                  )}
+                  value={JSON.stringify(removeEmbeddingFields(tool), null, 2)}
                 />
               </div>
             </div>
           </TabsContent>
         )}
 
-        {'config' in tool && tool.config.length > 0 && (
-          <TabsContent value="configuration">
-            <div className={boxContainerClass}>
-              <div className="mb-4">
-                <h2 className="text-base font-medium text-white">
-                  Configuration
-                </h2>
-                <p className="text-gray-80 text-xs">
-                  Configure the settings for this tool
-                </p>
-              </div>
+        {'config' in tool &&
+          tool.config &&
+          tool.config.properties &&
+          Object.keys(tool.config.properties).length > 0 && (
+            <TabsContent value="configuration">
+              <div className={boxContainerClass}>
+                <div className="mb-4">
+                  <h2 className="text-base font-medium text-white">
+                    Configuration
+                  </h2>
+                  <p className="text-gray-80 text-xs">
+                    Configure the settings for this tool
+                  </p>
+                </div>
 
-              <JsonForm
-                className="py-1"
-                formData={formData}
-                id="parameters-form"
-                noHtml5Validate={true}
-                onChange={(e) => {
-                  const sanitizedFormData = Object.entries(e.formData).reduce((acc, [key, value]) => {
-                    const sanitizedValue = value === null ? '' : value;
-                    acc[key] = sanitizedValue;
-                    return acc;
-                  }, {} as Record<string, any>);
-                  setFormData(sanitizedFormData);
-                }}
-                onSubmit={handleSaveToolConfig}
-                schema={toolConfigSchema}
-                uiSchema={{ 'ui:submitButtonOptions': { norender: true } }}
-                validator={validator}
-              />
-              <div className="flex w-full justify-end">
-                <Button
-                  className="min-w-[100px]"
-                  disabled={isPending}
-                  form="parameters-form"
-                  isLoading={isPending}
-                  rounded="lg"
-                  size="sm"
-                  variant="outline"
-                >
-                  {t('common.saveChanges')}
-                </Button>
+                <JsonForm
+                  className="py-1"
+                  formData={formData}
+                  id="parameters-form"
+                  noHtml5Validate={true}
+                  onChange={(e) => {
+                    setFormData(e.formData);
+                    // const sanitizedFormData = Object.entries(e.formData).reduce(
+                    //   (acc, [key, value]) => {
+                    //     const sanitizedValue = value === null ? '' : value;
+                    //     acc[key] = sanitizedValue;
+                    //     return acc;
+                    //   },
+                    //   {} as Record<string, any>,
+                    // );
+                    // setFormData(sanitizedFormData);
+                  }}
+                  onSubmit={handleSaveToolConfig}
+                  schema={toolConfigSchema}
+                  uiSchema={{ 'ui:submitButtonOptions': { norender: true } }}
+                  validator={validator}
+                />
+                <div className="flex w-full justify-end">
+                  <Button
+                    className="min-w-[100px]"
+                    disabled={isPending}
+                    form="parameters-form"
+                    isLoading={isPending}
+                    rounded="lg"
+                    size="sm"
+                    variant="outline"
+                  >
+                    {t('common.saveChanges')}
+                  </Button>
+                </div>
               </div>
-            </div>
-          </TabsContent>
-        )}
+            </TabsContent>
+          )}
 
         {'oauth' in tool && tool.oauth && tool.oauth.length > 0 && (
           <TabsContent value="oauth">
@@ -778,12 +818,16 @@ export default function ToolDetailsCard({
                 onChange={(e) => {
                   const sanitizedOAuthFormData = { ...e.formData };
                   if (sanitizedOAuthFormData.oauth) {
-                    sanitizedOAuthFormData.oauth = sanitizedOAuthFormData.oauth.map((item: any) => {
-                      return Object.entries(item).reduce((acc: any, [key, value]) => {
-                        acc[key] = value === null ? '' : value;
-                        return acc;
-                      }, {});
-                    });
+                    sanitizedOAuthFormData.oauth =
+                      sanitizedOAuthFormData.oauth.map((item: any) => {
+                        return Object.entries(item).reduce(
+                          (acc: any, [key, value]) => {
+                            acc[key] = value === null ? '' : value;
+                            return acc;
+                          },
+                          {},
+                        );
+                      });
                   }
                   setOAuthFormData(sanitizedOAuthFormData);
                 }}
@@ -848,195 +892,185 @@ export default function ToolDetailsCard({
         )}
 
         <TabsContent value="try-it-out">
-            <div className={boxContainerClass}>
-              <div className="mb-4">
-                <h2 className="text-base font-medium text-white">
-                  Try it out
-                </h2>
-                <p className="text-gray-80 text-xs">
-                  Test this tool with different inputs
-                </p>
-              </div>
+          <div className={boxContainerClass}>
+            <div className="mb-4">
+              <h2 className="text-base font-medium text-white">Try it out</h2>
+              <p className="text-gray-80 text-xs">
+                Test this tool with different inputs
+              </p>
+            </div>
 
-              <JsonForm
-                className="py-1"
-                formData={tryItOutFormData}
-                id="try-it-out-form"
-                noHtml5Validate={true}
-                onChange={(e) => {
-                  const sanitizedFormData = { ...e.formData };
-                  
-                  if (sanitizedFormData.params) {
-                    sanitizedFormData.params = Object.entries(sanitizedFormData.params).reduce((acc, [key, value]) => {
-                      acc[key] = value === null ? '' : value;
-                      return acc;
-                    }, {} as Record<string, any>);
-                  }
-                  
-                  if (sanitizedFormData.configs) {
-                    sanitizedFormData.configs = Object.entries(sanitizedFormData.configs).reduce((acc, [key, value]) => {
-                      acc[key] = value === null ? '' : value;
-                      return acc;
-                    }, {} as Record<string, any>);
-                  }
-                  
-                  setTryItOutFormData(sanitizedFormData);
-                }}
-                onSubmit={async (data) => {
-                  const formData = data.formData;
-                  setToolExecutionResult(null);
+            <JsonForm
+              className="py-1"
+              formData={tryItOutFormData}
+              id="try-it-out-form"
+              noHtml5Validate={true}
+              onChange={(e) => {
+                setTryItOutFormData(e.formData);
+              }}
+              onSubmit={async (data) => {
+                const formData = data.formData;
+                setToolExecutionResult(null);
 
-                  const sanitizedParams = formData?.params ? Object.entries(formData.params).reduce((acc, [key, value]) => {
-                    acc[key] = value === null ? '' : value;
-                    return acc;
-                  }, {} as Record<string, any>) : {};
-                  
-                  const sanitizedConfigs = formData?.configs ? Object.entries(formData.configs).reduce((acc, [key, value]) => {
-                    acc[key] = value === null ? '' : value;
-                    return acc;
-                  }, {} as Record<string, any>) : {};
-                  
-                  await executeToolCode({
-                    nodeAddress: auth?.node_address ?? '',
-                    token: auth?.api_v2_key ?? '',
-                    code: 'py_code' in tool 
-                      ? tool.py_code 
-                      : 'js_code' in tool 
-                        ? tool.js_code 
+                // const sanitizedParams = formData?.params
+                //   ? Object.entries(formData.params).reduce(
+                //       (acc, [key, value]) => {
+                //         acc[key] = value === null ? '' : value;
+                //         return acc;
+                //       },
+                //       {} as Record<string, any>,
+                //     )
+                //   : {};
+
+                // const sanitizedConfigs = formData?.configs
+                //   ? Object.entries(formData.configs).reduce(
+                //       (acc, [key, value]) => {
+                //         acc[key] = value === null ? '' : value;
+                //         return acc;
+                //       },
+                //       {} as Record<string, any>,
+                //     )
+                //   : {};
+
+                await executeToolCode({
+                  nodeAddress: auth?.node_address ?? '',
+                  token: auth?.api_v2_key ?? '',
+                  code:
+                    'py_code' in tool
+                      ? tool.py_code
+                      : 'js_code' in tool
+                        ? tool.js_code
                         : '',
-                    language: toolType === 'Python' 
-                      ? CodeLanguage.Python 
+                  language:
+                    toolType === 'Python'
+                      ? CodeLanguage.Python
                       : CodeLanguage.Typescript,
-                    params: sanitizedParams,
-                    llmProviderId: defaultAgentId ?? '',
-                    tools: [],
-                    configs: sanitizedConfigs,
-                    xShinkaiAppId: 'shinkai-desktop',
-                    xShinkaiToolId: toolKey ?? '',
-                  });
-                }}
-                schema={{
-                  type: 'object',
-                  properties: {
-                    ...(('config' in tool && tool.config?.length > 0)
-                      ? { configs: parseConfigToJsonSchema(tool?.config ?? []) }
-                      : {}),
-                    ...(('input_args' in tool && Array.isArray(tool.input_args) && tool.input_args?.length > 0)
-                      ? { params: parseInputArgsToJsonSchema(tool?.input_args ?? []) }
-                      : ('input_args' in tool && tool.input_args && typeof tool.input_args === 'object' && 'properties' in (tool.input_args as any))
-                        ? {
-                            params: {
-                              required: (tool.input_args as any).required ?? [],
-                              type: 'object',
-                              properties: Object.entries((tool.input_args as any).properties).reduce((acc, [key, value]: [string, any]) => {
-                                const type = value.type.toLowerCase();
-                                acc[key] = {
-                                  type,
-                                  description: value.description,
-                                };
-                                if (type === 'array') ((value.items) && (acc[key].items = value.items)) || (acc[key].items = { type: 'string' });
-                                return acc;
-                              }, {} as Record<string, any>)
-                            }
-                          }
-                        : {})
-                  }
-                }}
-                uiSchema={{ 
-                  'ui:submitButtonOptions': { norender: true },
-                  configs: {
-                    'ui:title': 'Configuration'
-                  },
-                  params: {
-                    'ui:title': 'Input Parameters'
-                  }
-                }}
-                validator={validator}
-              />
+                  params: formData.params,
+                  llmProviderId: defaultAgentId ?? '',
+                  tools: [],
+                  configs: formData.configs,
+                  xShinkaiAppId: 'shinkai-desktop',
+                  xShinkaiToolId: toolKey ?? '',
+                });
+              }}
+              schema={{
+                type: 'object',
+                properties: {
+                  ...('config' in tool &&
+                  tool.config &&
+                  tool.config.properties &&
+                  Object.keys(tool.config.properties).length > 0
+                    ? { configs: tool.config }
+                    : {}),
+                  ...('input_args' in tool &&
+                  tool?.input_args?.properties &&
+                  Object.keys(tool.input_args.properties).length > 0
+                    ? {
+                        params: tool.input_args,
+                      }
+                    : {}),
+                },
+              }}
+              uiSchema={{
+                'ui:submitButtonOptions': { norender: true },
+                configs: {
+                  'ui:title': 'Configuration',
+                },
+                params: {
+                  'ui:title': 'Input Parameters',
+                },
+              }}
+              validator={validator}
+            />
 
-              {(!('input_args' in tool) || !tool.input_args || 
-                (Array.isArray(tool.input_args) && tool.input_args.length === 0) || 
-                (!Array.isArray(tool.input_args) && typeof tool.input_args === 'object' && 
-                 (!('properties' in tool.input_args) || 
-                  !(tool.input_args as any).properties || 
-                  Object.keys((tool.input_args as any).properties).length === 0))) && (
-                <div className="text-gray-80 text-sm py-2">
-                  No input parameters required.
-                </div>
-              )}
-              
-              <div className="flex w-full justify-end">
-                <Button
-                  className="min-w-[100px]"
-                  disabled={isExecutingTool}
-                  form="try-it-out-form"
-                  isLoading={isExecutingTool}
-                  rounded="lg"
-                  size="sm"
-                  variant="outline"
-                >
-                  Run Tool
-                </Button>
+            {(!('input_args' in tool) ||
+              !tool.input_args ||
+              Object.keys(tool.input_args.properties).length === 0) && (
+              <div className="text-official-gray-400 py-2 text-sm">
+                No input parameters required.
               </div>
+            )}
 
-              {(isExecutingTool || isExecutionError || toolExecutionResult) && (
-                <div className="mt-6 border-t border-gray-200 pt-6">
-                  <h3 className="mb-4 text-sm font-medium text-white">Results</h3>
-                  
-                  {isExecutingTool && (
-                    <div className="flex flex-col items-center gap-2 py-4 text-xs text-gray-80">
-                      <LoaderIcon className="h-5 w-5 animate-spin" />
-                      Running Tool...
-                    </div>
-                  )}
+            <div className="flex w-full justify-end">
+              <Button
+                className="min-w-[100px]"
+                disabled={isExecutingTool}
+                form="try-it-out-form"
+                isLoading={isExecutingTool}
+                rounded="lg"
+                size="sm"
+                variant="outline"
+              >
+                Run Tool
+              </Button>
+            </div>
 
-                  {isExecutionError && executionError && (
-                    <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
-                      <p>Tool execution failed.</p>
-                      <pre className="whitespace-break-spaces break-words px-4 text-center">
-                        {executionError.response?.data?.message ?? executionError.message}
-                      </pre>
-                    </div>
-                  )}
+            {(isExecutingTool || isExecutionError || toolExecutionResult) && (
+              <div className="mt-6 border-t border-gray-200 pt-6">
+                <h3 className="mb-4 text-sm font-medium text-white">Results</h3>
 
-                  {toolExecutionResult && (
-                    <>
-                      <ToolCodeEditor
-                        language="json"
-                        name="result"
-                        readOnly
-                        style={{
-                          borderRadius: '0.5rem',
-                          overflowY: 'hidden',
-                        }}
-                        value={JSON.stringify(toolExecutionResult, null, 2)}
-                      />
-                      
-                      {/* Extract and display generated files if present */}
-                      {toolExecutionResult.__created_files__ && toolExecutionResult.__created_files__.length > 0 && (
+                {isExecutingTool && (
+                  <div className="text-gray-80 flex flex-col items-center gap-2 py-4 text-xs">
+                    <LoaderIcon className="h-5 w-5 animate-spin" />
+                    Running Tool...
+                  </div>
+                )}
+
+                {isExecutionError && executionError && (
+                  <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
+                    <p>Tool execution failed.</p>
+                    <pre className="whitespace-break-spaces break-words px-4 text-center">
+                      {executionError.response?.data?.message ??
+                        executionError.message}
+                    </pre>
+                  </div>
+                )}
+
+                {toolExecutionResult && (
+                  <>
+                    <ToolCodeEditor
+                      language="json"
+                      name="result"
+                      readOnly
+                      style={{
+                        borderRadius: '0.5rem',
+                        overflowY: 'hidden',
+                      }}
+                      value={JSON.stringify(toolExecutionResult, null, 2)}
+                    />
+
+                    {/* Extract and display generated files if present */}
+                    {toolExecutionResult.__created_files__ &&
+                      toolExecutionResult.__created_files__.length > 0 && (
                         <div className="mt-4 flex flex-col items-start gap-1 rounded-md py-4 pt-1.5">
-                          <span className="text-gray-80 text-xs">Generated Files</span>
+                          <span className="text-gray-80 text-xs">
+                            Generated Files
+                          </span>
                           <FileList
                             className="mt-2"
-                            files={toolExecutionResult.__created_files__.map((filePath: string) => {
-                              const fileName = filePath.split('/').pop() || '';
-                              const fileExtension = fileName.split('.').pop() || '';
-                              return {
-                                name: fileName,
-                                path: filePath,
-                                type: 'text',
-                                id: filePath,
-                                extension: fileExtension
-                              };
-                            })}
+                            files={toolExecutionResult.__created_files__.map(
+                              (filePath: string) => {
+                                const fileName =
+                                  filePath.split('/').pop() || '';
+                                const fileExtension =
+                                  fileName.split('.').pop() || '';
+                                return {
+                                  name: fileName,
+                                  path: filePath,
+                                  type: 'text',
+                                  id: filePath,
+                                  extension: fileExtension,
+                                };
+                              },
+                            )}
                           />
                         </div>
                       )}
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </TabsContent>
 
         {isPlaygroundTool &&
@@ -1090,8 +1124,8 @@ export default function ToolDetailsCard({
                     <AlertDescription className="text-xs">
                       <p className="">
                         Your tool has been successfully prepared for publishing.
-                        To complete the process, you&apos;ll need to finalize the
-                        submission details on the app store.{' '}
+                        To complete the process, you&apos;ll need to finalize
+                        the submission details on the app store.{' '}
                         <a
                           className="font-medium text-inherit underline"
                           href={`${SHINKAI_STORE_URL}/store/revisions/complete?id=${publishToolData?.response.revisionId}`}
