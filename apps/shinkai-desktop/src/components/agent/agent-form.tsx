@@ -1463,6 +1463,58 @@ function AgentForm({ mode }: AgentFormProps) {
                           )}
                         </div>
                         <div className="flex flex-col gap-5 overflow-auto">
+                          {/* Tool Configuration Overrides */}
+                          <Collapsible className="mb-4">
+                            <CollapsibleTrigger
+                              className={cn(
+                                'text-official-gray-400 hover:text-official-gray-300 flex items-center gap-1 text-sm',
+                                '[&[data-state=open]>svg]:rotate-90',
+                                '[&[data-state=open]>span.input]:block',
+                                '[&[data-state=open]>span.content]:hidden',
+                              )}
+                            >
+                              Tool Configuration Overrides
+                              <ChevronRight className="ml-1 size-4" />
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                              <div className="space-y-4 py-6">
+                                <p className="text-official-gray-400 text-sm">
+                                  Override tool configurations for this agent. These overrides take precedence over the default tool configurations.
+                                </p>
+                                <FormField
+                                  control={form.control}
+                                  name="tools_config_override"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormControl>
+                                        <Textarea
+                                          className="!min-h-[150px] text-sm font-mono"
+                                          onChange={(e) => {
+                                            try {
+                                              const value = e.target.value ? JSON.parse(e.target.value) : {};
+                                              field.onChange(value);
+                                            } catch (error) {
+                                              field.onChange(e.target.value);
+                                            }
+                                          }}
+                                          placeholder='{"tool_router_key": {"config_key": "config_value"}}'
+                                          spellCheck={false}
+                                          value={typeof field.value === 'object' 
+                                            ? JSON.stringify(field.value, null, 2) 
+                                            : field.value}
+                                        />
+                                      </FormControl>
+                                      <FormDescription>
+                                        Enter tool configuration overrides in JSON format. Keys are tool router keys, values are configuration overrides.
+                                      </FormDescription>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
+                            </CollapsibleContent>
+                          </Collapsible>
+
                           {(isPending ||
                             !isSearchQuerySynced ||
                             isSearchToolListPending) && (
