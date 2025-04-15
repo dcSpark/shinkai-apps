@@ -33,6 +33,7 @@ import { VectorFolderSelectionProvider } from '../components/vector-fs/component
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
 import VectorFs from '../components/vector-fs/vector-fs';
 import SearchNodeFiles from '../components/vector-search/search-node-files';
+import { useConfigDeepLink } from '../hooks/config-deeplink';
 import {
   useShinkaiNodeGetDefaultModel,
   useShinkaiNodeIsRunningQuery,
@@ -251,7 +252,8 @@ const AppRoutes = () => {
   useAppHotkeys();
   useGlobalAppShortcuts();
   useDefaultAgentByDefault();
-  
+  useConfigDeepLink();
+
   const defaultAgentId = useSettings((state) => state.defaultAgentId);
 
   return (

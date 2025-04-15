@@ -584,6 +584,9 @@
         "title": "Pembuatan Metadata Selesai"
       }
     },
+    "setupDescription": "Untuk menggunakan fitur ini, kami perlu mengonfigurasi beberapa pengaturan terlebih dahulu. Ini hanya akan memakan waktu sebentar dan membantu memastikan semuanya berjalan lancar.",
+    "setupNow": "Atur Sekarang",
+    "setupRequired": "Pengaturan Alat Diperlukan",
     "store": {
       "label": "Jelajahi Toko AI"
     },

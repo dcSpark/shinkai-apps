@@ -584,6 +584,9 @@
         "title": "Meta Veriler Üretimi Tamamlandı"
       }
     },
+    "setupDescription": "Bu özelliği kullanmak için önce bazı ayarları yapılandırmamız gerekiyor. Bu sadece bir dakikanızı alacak ve her şeyin sorunsuz çalışmasını sağlamaya yardımcı olacaktır.",
+    "setupNow": "Şimdi Kur",
+    "setupRequired": "Araç Kurulumu Gerekli",
     "store": {
       "label": "Yapay Zeka Mağazasını Keşfet"
     },

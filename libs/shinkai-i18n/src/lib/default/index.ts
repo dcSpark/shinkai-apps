@@ -642,6 +642,10 @@ export default {
     lookingForMoreTools: 'Looking for more tools?',
     visitStore:
       'Visit the Shinkai Store to discover and install additional tools to enhance your workflow',
+    setupRequired: 'Tool Setup Required',
+    setupDescription:
+      'To use this feature, we need to configure some settings first. This will only take a minute and helps ensure everything works smoothly.',
+    setupNow: 'Set Up Now',
     notifications: {
       feedbackRequired: {
         title: 'Feedback Required',

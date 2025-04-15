@@ -1,6 +1,4 @@
 {
-  "": {
-  },
   "aiFilesSearch": {
     "description": "Busca para encontrar contenido en todos los archivos de tus archivos AI fácilmente",
     "filesSelected": "Seleccionados {{count}} archivos",
@@ -586,6 +584,9 @@
         "title": "Generación de metadatos completa"
       }
     },
+    "setupDescription": "Para utilizar esta función, necesitamos configurar algunos ajustes primero. Esto solo tomará un minuto y ayuda a garantizar que todo funcione sin problemas.",
+    "setupNow": "Configurar Ahora",
+    "setupRequired": "Configuración de Herramientas Requerida",
     "store": {
       "label": "Explorar la Tienda de IA"
     },
