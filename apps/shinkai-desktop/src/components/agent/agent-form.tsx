@@ -42,6 +42,11 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Slider,
   Switch,
   Tabs,
@@ -1484,32 +1489,176 @@ function AgentForm({ mode }: AgentFormProps) {
                                 <FormField
                                   control={form.control}
                                   name="tools_config_override"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormControl>
-                                        <Textarea
-                                          className="!min-h-[150px] text-sm font-mono"
-                                          onChange={(e) => {
-                                            try {
-                                              const value = e.target.value ? JSON.parse(e.target.value) : {};
-                                              field.onChange(value);
-                                            } catch (error) {
-                                              field.onChange(e.target.value);
-                                            }
-                                          }}
-                                          placeholder='{"tool_router_key": {"config_key": "config_value"}}'
-                                          spellCheck={false}
-                                          value={typeof field.value === 'object' 
-                                            ? JSON.stringify(field.value, null, 2) 
-                                            : field.value}
-                                        />
-                                      </FormControl>
-                                      <FormDescription>
-                                        Enter tool configuration overrides in JSON format. Keys are tool router keys, values are configuration overrides.
-                                      </FormDescription>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
+                                  render={({ field }) => {
+                                    const toolsConfigOverride = field.value || {};
+                                    
+                                    // Get available tools from the toolsList
+                                    const availableTools = toolsList?.tools || [];
+                                    
+                                    return (
+                                      <FormItem>
+                                        <div className="space-y-4">
+                                          {/* Tool selector */}
+                                          <div className="flex flex-col gap-2">
+                                            <label className="text-sm font-medium">Select Tool</label>
+                                            <div className="flex gap-2">
+                                              <Select
+                                                onValueChange={(value) => {
+                                                  // Create empty config for the selected tool if it doesn't exist
+                                                  if (!toolsConfigOverride[value]) {
+                                                    const updatedConfig = {
+                                                      ...toolsConfigOverride,
+                                                      [value]: {}
+                                                    };
+                                                    field.onChange(updatedConfig);
+                                                  }
+                                                }}
+                                              >
+                                                <SelectTrigger className="w-full">
+                                                  <SelectValue placeholder="Select a tool to configure" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                  {availableTools.map((tool) => (
+                                                    <SelectItem key={tool.tool_router_key} value={tool.tool_router_key}>
+                                                      {tool.name}
+                                                    </SelectItem>
+                                                  ))}
+                                                </SelectContent>
+                                              </Select>
+                                            </div>
+                                          </div>
+                                          
+                                          {/* Tool configurations */}
+                                          {Object.keys(toolsConfigOverride).length > 0 && (
+                                            <div className="space-y-4 border border-gray-700 rounded-md p-4">
+                                              <div className="flex flex-col gap-4">
+                                                {Object.entries(toolsConfigOverride).map(([toolKey, config]) => (
+                                                  <div key={toolKey} className="space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                      <h4 className="text-sm font-medium">
+                                                        {availableTools.find(t => t.tool_router_key === toolKey)?.name || toolKey}
+                                                      </h4>
+                                                      <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                          const updatedConfig = { ...toolsConfigOverride };
+                                                          delete updatedConfig[toolKey];
+                                                          field.onChange(updatedConfig);
+                                                        }}
+                                                      >
+                                                        <XIcon className="h-4 w-4" />
+                                                      </Button>
+                                                    </div>
+                                                    
+                                                    {/* Config key-value pairs */}
+                                                    <div className="space-y-2">
+                                                      {Object.entries(config as Record<string, any>).map(([configKey, configValue]) => (
+                                                        <div key={`${toolKey}-${configKey}`} className="flex items-center gap-2">
+                                                          <Input
+                                                            className="flex-1"
+                                                            value={configKey}
+                                                            placeholder="Config key"
+                                                            onChange={(e) => {
+                                                              const newKey = e.target.value;
+                                                              if (newKey && newKey !== configKey) {
+                                                                const updatedToolConfig = { ...config as Record<string, any> };
+                                                                delete updatedToolConfig[configKey];
+                                                                updatedToolConfig[newKey] = configValue;
+                                                                
+                                                                const updatedConfig = {
+                                                                  ...toolsConfigOverride,
+                                                                  [toolKey]: updatedToolConfig
+                                                                };
+                                                                field.onChange(updatedConfig);
+                                                              }
+                                                            }}
+                                                          />
+                                                          <Input
+                                                            className="flex-1"
+                                                            value={typeof configValue === 'object' ? JSON.stringify(configValue) : String(configValue)}
+                                                            placeholder="Config value"
+                                                            onChange={(e) => {
+                                                              let value = e.target.value;
+                                                              try {
+                                                                if (value.startsWith('{') || value.startsWith('[') || 
+                                                                    value === 'true' || value === 'false' || 
+                                                                    !isNaN(Number(value))) {
+                                                                  value = JSON.parse(value);
+                                                                }
+                                                              } catch (error) {
+                                                              }
+                                                              
+                                                              const updatedToolConfig = { 
+                                                                ...config as Record<string, any>,
+                                                                [configKey]: value
+                                                              };
+                                                              
+                                                              const updatedConfig = {
+                                                                ...toolsConfigOverride,
+                                                                [toolKey]: updatedToolConfig
+                                                              };
+                                                              field.onChange(updatedConfig);
+                                                            }}
+                                                          />
+                                                          <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                              const updatedToolConfig = { ...config as Record<string, any> };
+                                                              delete updatedToolConfig[configKey];
+                                                              
+                                                              const updatedConfig = {
+                                                                ...toolsConfigOverride,
+                                                                [toolKey]: updatedToolConfig
+                                                              };
+                                                              field.onChange(updatedConfig);
+                                                            }}
+                                                          >
+                                                            <XIcon className="h-4 w-4" />
+                                                          </Button>
+                                                        </div>
+                                                      ))}
+                                                      
+                                                      {/* Add new config button */}
+                                                      <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="w-full mt-2"
+                                                        onClick={() => {
+                                                          const updatedToolConfig = {
+                                                            ...config as Record<string, any>,
+                                                            '': ''
+                                                          };
+                                                          
+                                                          const updatedConfig = {
+                                                            ...toolsConfigOverride,
+                                                            [toolKey]: updatedToolConfig
+                                                          };
+                                                          field.onChange(updatedConfig);
+                                                        }}
+                                                      >
+                                                        Add Config
+                                                      </Button>
+                                                    </div>
+                                                  </div>
+                                                ))}
+                                              </div>
+                                            </div>
+                                          )}
+                                          
+                                          {Object.keys(toolsConfigOverride).length === 0 && (
+                                            <div className="text-center p-4 border border-dashed border-gray-700 rounded-md">
+                                              <p className="text-official-gray-400 text-sm">
+                                                Select a tool to add configuration overrides
+                                              </p>
+                                            </div>
+                                          )}
+                                        </div>
+                                        <FormMessage />
+                                      </FormItem>
+                                    );
+                                  }}
                                 />
                               </div>
                             </CollapsibleContent>
@@ -2155,7 +2304,7 @@ function AgentForm({ mode }: AgentFormProps) {
                       }
                     >
                       <MessageSquare className="h-4 w-4" />
-                      Save & Test Agent
+                      <span>Save &amp; Test Agent</span>
                     </Button>
                   )}
                 </div>
