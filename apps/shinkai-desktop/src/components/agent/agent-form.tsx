@@ -118,6 +118,7 @@ const agentFormSchema = z.object({
       vector_search_mode: z.string(),
     })
     .optional(),
+  tools_config_override: z.record(z.record(z.any())).optional(),
   cronExpression: z.string().optional(),
   aiPrompt: z.string().optional(),
 });
@@ -438,6 +439,7 @@ function AgentForm({ mode }: AgentFormProps) {
         vector_fs_folders: [],
         vector_search_mode: 'FillUpTo25k',
       },
+      tools_config_override: {},
       cronExpression: '',
       aiPrompt: '',
     },
@@ -457,6 +459,7 @@ function AgentForm({ mode }: AgentFormProps) {
           vector_fs_folders: Array.from(selectedFolderKeysRef.values()),
           vector_search_mode: 'FillUpTo25k',
         },
+        tools_config_override: form.getValues().tools_config_override || {},
       };
       form.setValue('scope', agentData.scope);
     }
@@ -495,6 +498,7 @@ function AgentForm({ mode }: AgentFormProps) {
         other_model_params: agent.config?.other_model_params ?? {},
       });
       form.setValue('llmProviderId', agent.llm_provider_id);
+      form.setValue('tools_config_override', agent.tools_config_override || {});
 
       // Set schedule type and cron expression based on existing tasks
       if (agent.cron_tasks && agent.cron_tasks.length > 0) {
@@ -656,6 +660,7 @@ function AgentForm({ mode }: AgentFormProps) {
           vector_fs_folders: Array.from(selectedFolderKeysRef.values()),
           vector_search_mode: 'FillUpTo25k',
         },
+        tools_config_override: values.tools_config_override || {},
       };
 
       // Call the update mutation WITHOUT cronExpression
@@ -835,6 +840,7 @@ function AgentForm({ mode }: AgentFormProps) {
         vector_fs_folders: Array.from(selectedFolderKeysRef.values()),
         vector_search_mode: 'FillUpTo25k',
       },
+      tools_config_override: values.tools_config_override || {},
     };
 
     try {
