@@ -1707,7 +1707,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                     )}
                                   />
                                   <p className="text-sm text-official-gray-400">
-                                    This AI Prompt will be used instead of the agent description when the scheduled task runs.
+                                    Write the prompt that will be used for the scheduled execution.
                                   </p>
                                   
                                   <FormField
