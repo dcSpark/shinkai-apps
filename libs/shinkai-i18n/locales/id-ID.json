@@ -95,6 +95,7 @@
     "copy": "Salin",
     "create": "Buat",
     "delete": "Hapus",
+    "deleteTool": "Hapus Alat",
     "disconnect": "Putuskan Koneksi",
     "done": "Selesai",
     "edit": "Edit",
@@ -139,6 +140,7 @@
     "signUpShinkaiHosting": "Daftar untuk Hosting Shinkai",
     "soon": "segera",
     "termsAndConditionsText": "Saya setuju dengan <a>Syarat Layanan</a> dan <b>Kebijakan Privasi</b>",
+    "tryItOut": "Coba Sekarang",
     "unselectAll": "Batalkan Pilihan Semua",
     "update": "Perbarui",
     "upload": "Unggah",
@@ -184,11 +186,6 @@
     "welcome": "Selamat datang di Shinkai",
     "welcomeDescription": "Bangun, jalankan, dan otomatisasi agen AI langsung di perangkat Anda — cepat, pribadi, dan aman."
   },
-  "disconnect": {
-    "exportConnection": "Sebelum melanjutkan, harap<Link>ekspor koneksi Anda</Link>untuk memulihkan koneksi Anda kapan saja.",
-    "modalDescription": "Apakah Anda yakin ingin memutuskan koneksi? Ini akan menghapus data Anda secara permanen",
-    "modalTitle": "Putuskan Koneksi Shinkai"
-  },
   "errors": {
     "nodeUnavailable": {
       "description": "Kami mengalami masalah dalam menghubungkan ke Node Shinkai Anda. Node Anda mungkin offline, atau koneksi internet Anda mungkin terputus.",
@@ -207,6 +204,9 @@
   },
   "extension": {
     "welcome": "Transformasikan pengalaman menjelajah web Anda menggunakan kecerdasan buatan dengan Shinkai Visor ✨"
+  },
+  "feedback": {
+    "button": "Umpan Balik"
   },
   "galxe": {
     "errors": {
@@ -555,6 +555,11 @@
   "tools": {
     "create": "Buat Alat",
     "description": "Kelola, sesuaikan, dan kembangkan alat AI Anda.",
+    "disconnect": {
+      "exportConnection": "Sebelum melanjutkan, silakan <Link>ekspor koneksi Anda</Link> untuk memulihkan koneksi Anda kapan saja.",
+      "modalDescription": "Apakah Anda yakin ingin memutuskan koneksi? Ini akan menghapus data Anda secara permanen.",
+      "modalTitle": "Putuskan Koneksi Shinkai"
+    },
     "emptyState": {
       "search": {
         "text": "Tidak ada alat ditemukan untuk kueri pencarian"
@@ -565,6 +570,20 @@
     "installFromStore": "Instal dari Toko",
     "label": "Alat-alat Shinkai",
     "lookingForMoreTools": "Mencari lebih banyak alat?",
+    "notifications": {
+      "codeGenerationComplete": {
+        "description": "Kode telah berhasil dihasilkan.",
+        "title": "Pembuatan Kode Selesai"
+      },
+      "feedbackRequired": {
+        "description": "Silakan berikan umpan balik tentang kode yang dihasilkan.",
+        "title": "Umpan Balik Diperlukan"
+      },
+      "metadataGenerationComplete": {
+        "description": "Metadata telah berhasil dihasilkan.",
+        "title": "Pembuatan Metadata Selesai"
+      }
+    },
     "store": {
       "label": "Jelajahi Toko AI"
     },
