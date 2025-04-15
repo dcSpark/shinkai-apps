@@ -584,6 +584,9 @@
         "title": "元数据生成完成"
       }
     },
+    "setupDescription": "要使用此功能，我们需要先配置一些设置。这只需一分钟，有助于确保一切顺利运行。",
+    "setupNow": "立即设置",
+    "setupRequired": "工具设置必需",
     "store": {
       "label": "探索人工智能商店"
     },

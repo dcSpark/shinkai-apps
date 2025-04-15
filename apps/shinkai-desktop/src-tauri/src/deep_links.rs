@@ -15,6 +15,11 @@ pub struct StoreDeepLinkPayload {
     pub tool_url: String,
 }
 
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct ConfigDeepLinkPayload {
+    pub tool_router_key: String,
+}
+
 pub fn setup_deep_links(app: &tauri::AppHandle) -> tauri::Result<()> {
     #[cfg(any(windows, target_os = "linux"))]
     {
@@ -107,6 +112,53 @@ pub fn setup_deep_links(app: &tauri::AppHandle) -> tauri::Result<()> {
                         "oauth-deep-link",
                         payload,
                     );
+                }
+
+                if host.to_string() == "config" {
+                    log::debug!("config deep link: {:?}", url);
+                    let query_pairs = url.query_pairs().collect::<Vec<_>>();
+                    let tool_router_key = query_pairs
+                        .iter()
+                        .find(|(key, _)| key == "tool")
+                        .map(|(_, value)| value.to_string())
+                        .unwrap_or_default();
+                    
+                    let payload = ConfigDeepLinkPayload {
+                        tool_router_key,
+                    };
+                    let app_handle_clone = app_handle.clone();
+
+                    match get_window(app_handle_clone.clone(), Window::Main, true) {
+                        Ok(_) => {
+                            log::info!("Successfully got main window");
+                            let _ = app_handle_clone.emit_to(
+                                Window::Main.as_str(),
+                                "config-deep-link",
+                                payload,
+                            );
+                        }
+                        Err(e) => {
+                            log::error!("Failed to get main window: {}", e);
+                            // Spawn window recreation in a separate task
+                            tauri::async_runtime::spawn(async move {
+                                match recreate_window(app_handle_clone.clone(), Window::Main, true) {
+                                    Ok(window) => {
+                                        window.once("shinkai-app-ready", move |_| {
+                                            log::info!("shinkai-app-ready event received, emitting config-deep-link");
+                                            let _ = app_handle_clone.emit_to(
+                                                Window::Main.as_str(),
+                                                "config-deep-link",
+                                                payload,
+                                            );
+                                        });
+                                    }
+                                    Err(e) => {
+                                        log::error!("Failed to recreate main window: {}", e);
+                                    }
+                                }
+                            });
+                        }
+                    }
                 }
             }
         }
