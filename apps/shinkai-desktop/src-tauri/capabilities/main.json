@@ -16,6 +16,7 @@
     "process:allow-restart",
     "log:default",
     "dialog:allow-open",
+    "notification:default",
     {
       "identifier": "opener:allow-open-path",
       "allow": [

@@ -95,6 +95,7 @@
     "copy": "Kopyala",
     "create": "Oluştur",
     "delete": "Sil",
+    "deleteTool": "Aracı Sil",
     "disconnect": "Bağlantıyı Kes",
     "done": "Tamam",
     "edit": "Düzenle",
@@ -139,6 +140,7 @@
     "signUpShinkaiHosting": "Shinkai Hosting'e Kaydol",
     "soon": "yakında",
     "termsAndConditionsText": "<a>Hizmet Şartları</a> ve <b>Gizlilik Politikası</b>nı kabul ediyorum",
+    "tryItOut": "Deneyin",
     "unselectAll": "Hepsini Seçme",
     "update": "Güncelle",
     "upload": "Yükle",
@@ -184,11 +186,6 @@
     "welcome": "Shinkai'ya Hoş Geldiniz",
     "welcomeDescription": "Cihazınızda doğrudan AI ajanları oluşturun, çalıştırın ve otomatikleştirin — hızlı, özel ve güvenli."
   },
-  "disconnect": {
-    "exportConnection": "Devam etmeden önce, lütfen<Link>bağlantınızı dışa aktarın</Link> böylece istediğiniz zaman bağlantınızı geri yükleyebilirsiniz.",
-    "modalDescription": "Bağlantıyı kesmek istediğinize emin misiniz? Bu, verilerinizi kalıcı olarak silecektir.",
-    "modalTitle": "Shinkai'yi Bağlantıyı Kes"
-  },
   "errors": {
     "nodeUnavailable": {
       "description": "Shinkai Düğümünüze bağlanmakta zorluk yaşıyoruz. Düğümünüz çevrimdışı olabilir veya internet bağlantınızda bir sorun olabilir.",
@@ -207,6 +204,9 @@
   },
   "extension": {
     "welcome": "Shinkai Visor ile web tarayıcı deneyiminizi AI ile dönüştürün ✨"
+  },
+  "feedback": {
+    "button": "Geri Bildirim"
   },
   "galxe": {
     "errors": {
@@ -555,6 +555,11 @@
   "tools": {
     "create": "Araç Oluştur",
     "description": "Yapay zeka araçlarınızı yönetin, özelleştirin ve genişletin.",
+    "disconnect": {
+      "exportConnection": "Devam etmeden önce, lütfen <Link>bağlantınızı dışa aktarın</Link> böylece bağlantınızı istediğiniz zaman geri yükleyebilirsiniz.",
+      "modalDescription": "Bağlantıyı kesmek istediğinizden emin misiniz? Bu, verilerinizi kalıcı olarak silecektir.",
+      "modalTitle": "Shinkai'den Bağlantıyı Kes"
+    },
     "emptyState": {
       "search": {
         "text": "Arama sorgusu için hiçbir araç bulunamadı"
@@ -565,6 +570,20 @@
     "installFromStore": "Mağazadan Yükle",
     "label": "Shinkai Araçları",
     "lookingForMoreTools": "Daha fazla araç mı arıyorsunuz?",
+    "notifications": {
+      "codeGenerationComplete": {
+        "description": "Kod başarıyla üretildi.",
+        "title": "Kod Üretimi Tamamlandı"
+      },
+      "feedbackRequired": {
+        "description": "Lütfen üretilen kod hakkında geri bildirimde bulunun.",
+        "title": "Geri Bildirim Gerekli"
+      },
+      "metadataGenerationComplete": {
+        "description": "Meta veriler başarıyla üretildi.",
+        "title": "Meta Veriler Üretimi Tamamlandı"
+      }
+    },
     "store": {
       "label": "Yapay Zeka Mağazasını Keşfet"
     },

@@ -88,7 +88,7 @@ export default {
   quickAsk: {
     emptyStateTitle: 'Ask Shinkai AI',
     emptyStateDescription:
-      'Try “How to make a HTTP request in JavaScript” , “Give me the top 10 rock music in the 80s”, “Explain me how internet works”',
+      'Try "How to make a HTTP request in JavaScript" , "Give me the top 10 rock music in the 80s", "Explain me how internet works"',
   },
   chat: {
     chats: 'Chats',
@@ -509,6 +509,8 @@ export default {
     resetFilters: 'Reset Filters',
     folderLocation: 'Folder Location:',
     installed: 'Installed',
+    deleteTool: 'Delete Tool',
+    tryItOut: 'Try It Out',
   },
   quickConnection: {
     label: 'Quick Connection',
@@ -640,15 +642,28 @@ export default {
     lookingForMoreTools: 'Looking for more tools?',
     visitStore:
       'Visit the Shinkai Store to discover and install additional tools to enhance your workflow',
+    notifications: {
+      feedbackRequired: {
+        title: 'Feedback Required',
+        description: 'Please provide feedback on the generated code.',
+      },
+      codeGenerationComplete: {
+        title: 'Code Generation Complete',
+        description: 'The code has been generated successfully.',
+      },
+      metadataGenerationComplete: {
+        title: 'Metadata Generation Complete',
+        description: 'The metadata has been generated successfully.',
+      },
+    },
+    disconnect: {
+      modalTitle: 'Disconnect Shinkai',
+      modalDescription:
+        'Are you sure you want to disconnect? This will permanently delete your data',
+      exportConnection:
+        'Before continuing, please<Link>export your connection</Link>to restore your connection at any time.',
+    },
   },
-  disconnect: {
-    modalTitle: 'Disconnect Shinkai',
-    modalDescription:
-      'Are you sure you want to disconnect? This will permanently delete your data',
-    exportConnection:
-      'Before continuing, please<Link>export your connection</Link>to restore your connection at any time.',
-  },
-
   errors: {
     nodeUnavailable: {
       title: 'Node Unavailable',
@@ -688,23 +703,31 @@ export default {
   },
   mcpClients: {
     configFailTitle: 'Automatic {{clientName}} Configuration Failed',
-    configFailDescription: '{{errorMessage}} Please follow the instructions below for manual setup:',
+    configFailDescription:
+      '{{errorMessage}} Please follow the instructions below for manual setup:',
     copyJsonSuccess: 'JSON configuration copied to clipboard',
     copyJsonButton: 'Copy JSON Config',
     claudeLoading: 'Attempting automatic Claude Desktop configuration...',
     claudeSuccessTitle: 'Claude Desktop configured successfully!',
-    claudeSuccessDescription: 'Please restart Claude for the changes to take effect.',
+    claudeSuccessDescription:
+      'Please restart Claude for the changes to take effect.',
     claudeFailMessageBase: 'Automatic Claude configuration failed.',
     cursorLoading: 'Attempting automatic Cursor configuration...',
     cursorSuccessTitle: 'Cursor configured successfully!',
-    cursorSuccessDescription: 'Please restart Cursor for the changes to take effect.',
+    cursorSuccessDescription:
+      'Please restart Cursor for the changes to take effect.',
     cursorFailMessageBase: 'Automatic Cursor configuration failed.',
     customTitle: 'Custom External Client Configuration',
-    customDescriptionPrimary: 'The recommended way to connect your external client is via Server-Sent Events (SSE).',
-    customDescriptionSecondary: 'If your client does not support SSE, you can run the Shinkai MCP server as a separate process using this command:',
+    customDescriptionPrimary:
+      'The recommended way to connect your external client is via Server-Sent Events (SSE).',
+    customDescriptionSecondary:
+      'If your client does not support SSE, you can run the Shinkai MCP server as a separate process using this command:',
     customCopySseUrlButton: 'Copy SSE URL',
     customCopyCommandButton: 'Copy Command',
     copySuccessUrl: 'SSE URL copied to clipboard',
     copySuccessCommand: 'Command copied to clipboard',
+  },
+  feedback: {
+    button: 'Feedback',
   },
 };

@@ -1,4 +1,5 @@
 import { FormProps } from '@rjsf/core';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   buildInboxIdFromJobId,
@@ -8,10 +9,12 @@ import { useCreateToolCode } from '@shinkai_network/shinkai-node-state/v2/mutati
 import { useCreateToolMetadata } from '@shinkai_network/shinkai-node-state/v2/mutations/createToolMetadata/useCreateToolMetadata';
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import { useUpdateToolCodeImplementation } from '@shinkai_network/shinkai-node-state/v2/mutations/updateToolCodeImplementation/useUpdateToolCodeImplementation';
+import { debug } from '@tauri-apps/plugin-log';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { handleSendNotification } from '../../../lib/notifications';
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
 import { useWebSocketMessage } from '../../chat/websocket-message';
@@ -54,6 +57,7 @@ export const useToolFlow = ({
   isPlaygroundMode = false,
   tools,
 }: ToolFlowOptions) => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
 
@@ -124,6 +128,49 @@ export const useToolFlow = ({
   const xShinkaiToolId = usePlaygroundStore((state) => state.xShinkaiToolId);
 
   const mountTimestamp = useRef(new Date());
+  const notificationSentRef = useRef(false);
+  const feedbackNotificationSentRef = useRef(false);
+
+  // Helper function to send notification for feedback
+  const sendFeedbackNotification = useCallback(() => {
+    if (feedbackNotificationSentRef.current) {
+      debug('feedback notification already sent');
+      return;
+    }
+    debug('sending feedback notification');
+    feedbackNotificationSentRef.current = true;
+    handleSendNotification(
+      t('tools.notifications.feedbackRequired.title'),
+      t('tools.notifications.feedbackRequired.description'),
+    );
+  }, [t]);
+
+  // Send notifications for generation completion
+  const sendCodeGenerationCompleteNotification = useCallback(() => {
+    if (notificationSentRef.current) {
+      debug('code generation complete notification already sent');
+      return;
+    }
+    debug('sending code generation complete notification');
+    notificationSentRef.current = true;
+    handleSendNotification(
+      t('tools.notifications.codeGenerationComplete.title'),
+      t('tools.notifications.codeGenerationComplete.description'),
+    );
+  }, [t]);
+
+  const sendMetadataGenerationCompleteNotification = useCallback(() => {
+    if (notificationSentRef.current) {
+      debug('metadata generation complete notification already sent');
+      return;
+    }
+    debug('sending metadata generation complete notification');
+    notificationSentRef.current = true;
+    handleSendNotification(
+      t('tools.notifications.metadataGenerationComplete.title'),
+      t('tools.notifications.metadataGenerationComplete.description'),
+    );
+  }, [t]);
 
   useEffect(() => {
     if (initialState?.code) {
@@ -251,7 +298,7 @@ export const useToolFlow = ({
           navigate(`/tools/tool-feedback/${data.inbox}`, {
             state: {
               form: form.getValues(),
-            }
+            },
           });
           setCurrentStep(ToolCreationState.PLAN_REVIEW);
         }
@@ -319,9 +366,11 @@ export const useToolFlow = ({
 
         setToolCode(generatedCode);
         setToolCodeStatus('success');
-        if (!isPlaygroundMode) {
-          setCurrentStep(ToolCreationState.CREATING_METADATA);
-        }
+        sendCodeGenerationCompleteNotification();
+
+        // if (!isPlaygroundMode) {
+        setCurrentStep(ToolCreationState.CREATING_METADATA);
+        // }
       } else {
         setToolCodeError('Failed to extract code from response');
         setToolCodeStatus('error');
@@ -338,6 +387,7 @@ export const useToolFlow = ({
     isFeedbackPage,
     forceGenerateMetadata,
     setToolCodeStatus,
+    sendCodeGenerationCompleteNotification,
   ]);
 
   useEffect(() => {
@@ -365,9 +415,14 @@ export const useToolFlow = ({
           const parsedMetadata = ToolMetadataSchema.parse(
             extractedMetadata,
           ) as ToolMetadataSchemaType;
+
+          if (toolMetadataStatus === 'pending') {
+            sendMetadataGenerationCompleteNotification();
+          }
           setToolMetadata(parsedMetadata as ToolMetadata);
           setToolMetadataStatus('success');
           setToolMetadataError(null);
+
           if (!isPlaygroundMode) {
             setCurrentStep(ToolCreationState.SAVING_TOOL);
             forceAutoSave.current = true;
@@ -400,6 +455,41 @@ export const useToolFlow = ({
     isPlaygroundMode,
     toolMetadataStatus,
   ]);
+
+  useEffect(() => {
+    const lastMessage = conversationData?.pages.flat().at(-1);
+    if (
+      (lastMessage &&
+        isFeedbackPage &&
+        currentStep === ToolCreationState.PLAN_REVIEW &&
+        lastMessage.role === 'assistant' &&
+        lastMessage.status.type === 'complete' &&
+        lastMessage.content.toLowerCase().includes('provide feedback')) ||
+      lastMessage?.content.toLowerCase().includes('please confirm')
+    ) {
+      sendFeedbackNotification();
+    }
+  }, [
+    isFeedbackPage,
+    currentStep,
+    sendFeedbackNotification,
+    conversationData?.pages,
+  ]);
+
+  // Reset notification sent flag when step changes
+  useEffect(() => {
+    if (
+      currentStep === ToolCreationState.CREATING_CODE ||
+      currentStep === ToolCreationState.CREATING_METADATA
+    ) {
+      debug(`resetting notification sent flag, new state ${currentStep}`);
+      notificationSentRef.current = false;
+    }
+  }, [currentStep]);
+
+  useEffect(() => {
+    feedbackNotificationSentRef.current = false;
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!toolCode || !forceGenerateMetadata.current || !chatInboxId) return;
@@ -450,6 +540,7 @@ export const useToolFlow = ({
   const handleContinueConversation = async (message: string) => {
     if (!chatInboxId || !auth) return;
 
+    setCurrentStep(ToolCreationState.CREATING_CODE);
     await createToolCode({
       nodeAddress: auth.node_address,
       token: auth.api_v2_key,
@@ -465,10 +556,10 @@ export const useToolFlow = ({
 
   const generateMetadata = async () => {
     if (!auth || !chatInboxId) return;
-    
+
     try {
       const currentTools = tools || form.watch('tools');
-      
+
       await createToolMetadata({
         nodeAddress: auth.node_address,
         token: auth.api_v2_key,
@@ -478,7 +569,9 @@ export const useToolFlow = ({
       });
     } catch (error) {
       console.error('Error generating metadata:', error);
-      setToolMetadataError(`Failed to regenerate metadata: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setToolMetadataError(
+        `Failed to regenerate metadata: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   };
 

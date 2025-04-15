@@ -1,4 +1,5 @@
 import {} from '@tauri-apps/api';
+import { debug } from '@tauri-apps/plugin-log';
 import * as notification from '@tauri-apps/plugin-notification';
 import { platform } from '@tauri-apps/plugin-os';
 
@@ -25,10 +26,12 @@ export const handleSendNotification = async (title?: string, body?: string) => {
   //ask for permission for notification
   let permissionGranted = await isPermissionGranted();
   if (!permissionGranted) {
+    debug('asking for permission');
     const permission = await requestPermission();
     permissionGranted = permission === 'granted';
   }
   if (permissionGranted) {
+    debug('permission granted, sending notification');
     const icon = getPlatformIcon(await platform());
 
     const options: notification.Options = {

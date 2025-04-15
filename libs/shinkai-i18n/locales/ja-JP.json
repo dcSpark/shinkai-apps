@@ -95,6 +95,7 @@
     "copy": "コピー",
     "create": "作成する",
     "delete": "削除",
+    "deleteTool": "ツールを削除",
     "disconnect": "切断",
     "done": "完了",
     "edit": "編集",
@@ -139,6 +140,7 @@
     "signUpShinkaiHosting": "Shinkai Hostingにサインアップ",
     "soon": "近日公開",
     "termsAndConditionsText": "<a>利用規約</a>に同意し、<b>プライバシーポリシー</b>に同意します",
+    "tryItOut": "試してみる",
     "unselectAll": "すべて選択解除",
     "update": "更新",
     "upload": "アップロード",
@@ -184,11 +186,6 @@
     "welcome": "新海へようこそ",
     "welcomeDescription": "デバイス上で直接AIエージェントを構築、実行、そして自動化します — 高速でプライベート、かつ安全です。"
   },
-  "disconnect": {
-    "exportConnection": "続行する前に、接続をいつでも復元するために<Link>接続をエクスポート</Link>してください",
-    "modalDescription": "本当に切断しますか？これによりデータが永久に削除されます",
-    "modalTitle": "Shinkaiを切断"
-  },
   "errors": {
     "nodeUnavailable": {
       "description": "Shinkaiノードに接続できません。ノードがオフラインになっているか、インターネット接続が切断されている可能性があります",
@@ -207,6 +204,9 @@
   },
   "extension": {
     "welcome": "Shinkai Visorを使用してAIでWebブラウジング体験を変えましょう ✨"
+  },
+  "feedback": {
+    "button": "フィードバック"
   },
   "galxe": {
     "errors": {
@@ -555,6 +555,11 @@
   "tools": {
     "create": "ツールを作成",
     "description": "AIツールを管理、カスタマイズ、拡張します。",
+    "disconnect": {
+      "exportConnection": "続行する前に、<Link>接続をエクスポート</Link>して、いつでも接続を復元できるようにしてください。",
+      "modalDescription": "本当に接続を切断してもよろしいですか？これによりデータが永久に削除されます。",
+      "modalTitle": "新海との接続を切断"
+    },
     "emptyState": {
       "search": {
         "text": "検索クエリに一致するツールは見つかりませんでした"
@@ -565,6 +570,20 @@
     "installFromStore": "ストアからインストール",
     "label": "深海ツール",
     "lookingForMoreTools": "さらにツールを探していますか？",
+    "notifications": {
+      "codeGenerationComplete": {
+        "description": "コードが正常に生成されました。",
+        "title": "コード生成完了"
+      },
+      "feedbackRequired": {
+        "description": "生成されたコードについてフィードバックを提供してください。",
+        "title": "フィードバックが必要です"
+      },
+      "metadataGenerationComplete": {
+        "description": "メタデータが正常に生成されました。",
+        "title": "メタデータ生成完了"
+      }
+    },
     "store": {
       "label": "AIストアを探る"
     },

@@ -97,6 +97,7 @@
     "copy": "Copiar",
     "create": "Crear",
     "delete": "Eliminar",
+    "deleteTool": "Eliminar herramienta",
     "disconnect": "Desconectar",
     "done": "Hecho",
     "edit": "Editar",
@@ -141,6 +142,7 @@
     "signUpShinkaiHosting": "Registrarse en Shinkai Hosting",
     "soon": "pronto",
     "termsAndConditionsText": "Acepto los <a>Términos de Servicio</a> y la <b>Política de Privacidad</b>",
+    "tryItOut": "Pruébalo",
     "unselectAll": "Deseleccionar todo",
     "update": "Actualizar",
     "upload": "Subir",
@@ -186,11 +188,6 @@
     "welcome": "Bienvenido a Shinkai",
     "welcomeDescription": "Crea, ejecuta y automatiza agentes de IA directamente en tu dispositivo: rápido, privado y seguro."
   },
-  "disconnect": {
-    "exportConnection": "Antes de continuar, por favor <Link>exporta tu conexión</Link> para restaurarla en cualquier momento.",
-    "modalDescription": "¿Estás seguro de que deseas desconectar? Esto eliminará permanentemente tus datos",
-    "modalTitle": "Desconectar Shinkai"
-  },
   "errors": {
     "nodeUnavailable": {
       "description": "Estamos teniendo problemas para conectar con tu Nodo Shinkai. Tu nodo puede estar desconectado o tu conexión a internet puede estar caída.",
@@ -209,6 +206,9 @@
   },
   "extension": {
     "welcome": "Transforma tu experiencia de navegación web utilizando IA con Shinkai Visor ✨"
+  },
+  "feedback": {
+    "button": "Comentarios"
   },
   "galxe": {
     "errors": {
@@ -557,6 +557,11 @@
   "tools": {
     "create": "Crear herramienta",
     "description": "Gestiona, personaliza y amplía tus herramientas de IA.",
+    "disconnect": {
+      "exportConnection": "Antes de continuar, por favor<Link>exporte su conexión</Link>para restaurar su conexión en cualquier momento.",
+      "modalDescription": "¿Está seguro de que desea desconectar? Esto eliminará permanentemente sus datos.",
+      "modalTitle": "Desconectar Shinkai"
+    },
     "emptyState": {
       "search": {
         "text": "No se encontraron herramientas para la consulta de búsqueda"
@@ -567,6 +572,20 @@
     "installFromStore": "Instalar desde la tienda",
     "label": "Herramientas Shinkai",
     "lookingForMoreTools": "¿Buscas más herramientas?",
+    "notifications": {
+      "codeGenerationComplete": {
+        "description": "El código se ha generado con éxito.",
+        "title": "Generación de código completa"
+      },
+      "feedbackRequired": {
+        "description": "Por favor, proporcione retroalimentación sobre el código generado.",
+        "title": "Se requiere retroalimentación"
+      },
+      "metadataGenerationComplete": {
+        "description": "Los metadatos se han generado con éxito.",
+        "title": "Generación de metadatos completa"
+      }
+    },
     "store": {
       "label": "Explorar la Tienda de IA"
     },
