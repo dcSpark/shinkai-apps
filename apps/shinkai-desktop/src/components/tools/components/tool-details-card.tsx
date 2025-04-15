@@ -252,7 +252,17 @@ export default function ToolDetailsCard({
       tool?.configFormData &&
       Object.keys(tool.configFormData).length > 0
     ) {
-      setFormData(tool.configFormData);
+      setFormData(
+        Object.entries(tool.configFormData).reduce(
+          (acc, [key, value]) => {
+            if (value !== null) {
+              acc[key] = value;
+            }
+            return acc;
+          },
+          {} as Record<string, any>,
+        ),
+      );
     }
   }, [tool]);
 
