@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusIcon } from '@radix-ui/react-icons';
+import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   buildInboxIdFromJobId,
@@ -87,7 +88,189 @@ import { Link, To, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
-import validator from '@rjsf/validator-ajv8';
+
+function ToolConfigOverrideField({ 
+  field, 
+  toolsList 
+}: { 
+  field: any; 
+  toolsList: any[]; 
+}) {
+  const [selectedTool, setSelectedTool] = useState<string | null>(null);
+  const [toolConfigFormData, setToolConfigFormData] = useState<Record<string, any> | null>(null);
+  
+  const selectedToolData = selectedTool 
+    ? toolsList.find(t => t.tool_router_key === selectedTool) 
+    : null;
+  
+  useEffect(() => {
+    if (selectedTool && field.value && field.value[selectedTool]) {
+      setToolConfigFormData(field.value[selectedTool]);
+    } else {
+      setToolConfigFormData({});
+    }
+  }, [selectedTool, field.value]);
+  
+  const handleSaveToolConfig = (data: any) => {
+    if (!selectedTool) return;
+    
+    const updatedConfig = {
+      ...field.value,
+      [selectedTool]: data.formData
+    };
+    
+    field.onChange(updatedConfig);
+    toast.success(`Configuration for ${selectedToolData?.name || selectedTool} updated`);
+  };
+  
+  const handleRemoveToolConfig = (toolKey: string) => {
+    const updatedConfig = { ...field.value };
+    delete updatedConfig[toolKey];
+    field.onChange(updatedConfig);
+    
+    if (selectedTool === toolKey) {
+      setSelectedTool(null);
+      setToolConfigFormData(null);
+    }
+    
+    toast.success(`Configuration for ${toolsList.find(t => t.tool_router_key === toolKey)?.name || toolKey} removed`);
+  };
+  
+  return (
+    <FormItem>
+      <div className="space-y-6">
+        {/* Tool configurations list */}
+        {Object.keys(field.value || {}).length > 0 && (
+          <div className="space-y-2">
+            <h4 className="text-sm font-medium">Configured Tools</h4>
+            <div className="flex flex-wrap gap-2">
+              {Object.keys(field.value || {}).map((toolKey) => (
+                <div 
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-2 rounded-md border",
+                    selectedTool === toolKey 
+                      ? "border-blue-500 bg-blue-500/10" 
+                      : "border-gray-700 hover:border-gray-600"
+                  )}
+                  key={toolKey}
+                >
+                  <Button
+                    className="p-0 h-auto"
+                    onClick={() => setSelectedTool(toolKey)}
+                    size="sm"
+                    variant="ghost"
+                  >
+                    <span className="text-sm">
+                      {toolsList.find(t => t.tool_router_key === toolKey)?.name || toolKey}
+                    </span>
+                  </Button>
+                  <Button
+                    className="p-1 h-auto ml-2"
+                    onClick={() => handleRemoveToolConfig(toolKey)}
+                    size="sm"
+                    variant="ghost"
+                  >
+                    <XIcon className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Tool selector */}
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium">Select Tool to Configure</label>
+          <div className="flex gap-2">
+            <Select
+              onValueChange={(value) => {
+                setSelectedTool(value);
+              }}
+              value={selectedTool || ""}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a tool to configure" />
+              </SelectTrigger>
+              <SelectContent>
+                {toolsList.map((tool) => (
+                  <SelectItem key={tool.tool_router_key} value={tool.tool_router_key}>
+                    {tool.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        
+        {/* Tool configuration form */}
+        {selectedTool && selectedToolData && (
+          <div className="border border-gray-700 rounded-md p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-sm font-medium">
+                {selectedToolData.name} Configuration
+              </h4>
+            </div>
+            
+            {selectedToolData.configurations && 
+             selectedToolData.configurations.properties && 
+             Object.keys(selectedToolData.configurations.properties).length > 0 ? (
+              <div className="space-y-4">
+                <JsonForm
+                  className="py-1"
+                  formData={toolConfigFormData}
+                  id={`tool-config-form-${selectedTool}`}
+                  noHtml5Validate={true}
+                  onChange={(e) => {
+                    setToolConfigFormData(e.formData);
+                  }}
+                  onSubmit={(data) => handleSaveToolConfig(data)}
+                  schema={selectedToolData.configurations}
+                  uiSchema={{ 'ui:submitButtonOptions': { norender: true } }}
+                  validator={validator}
+                />
+                <div className="flex justify-between">
+                  <Button
+                    onClick={() => {
+                      setSelectedTool(null);
+                      setToolConfigFormData(null);
+                    }}
+                    size="sm"
+                    type="button"
+                    variant="outline"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    form={`tool-config-form-${selectedTool}`}
+                    size="sm"
+                    type="submit"
+                  >
+                    Save Configuration
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center p-4">
+                <p className="text-official-gray-400 text-sm">
+                  This tool doesn&apos;t have any configurable options
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {!selectedTool && Object.keys(field.value || {}).length === 0 && (
+          <div className="text-center p-4 border border-dashed border-gray-700 rounded-md">
+            <p className="text-official-gray-400 text-sm">
+              Select a tool to add configuration overrides
+            </p>
+          </div>
+        )}
+      </div>
+      <FormMessage />
+    </FormItem>
+  );
+}
 
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
 import { useChatConversationWithOptimisticUpdates } from '../../pages/chat/chat-conversation';
@@ -1491,183 +1674,12 @@ function AgentForm({ mode }: AgentFormProps) {
                                 <FormField
                                   control={form.control}
                                   name="tools_config_override"
-                                  render={({ field }) => {
-                                    const [selectedTool, setSelectedTool] = useState<string | null>(null);
-                                    const [toolConfigFormData, setToolConfigFormData] = useState<Record<string, any> | null>(null);
-                                    const availableTools = toolsList?.tools || [];
-                                    
-                                    const selectedToolData = selectedTool 
-                                      ? availableTools.find(t => t.tool_router_key === selectedTool) 
-                                      : null;
-                                    
-                                    useEffect(() => {
-                                      if (selectedTool && field.value && field.value[selectedTool]) {
-                                        setToolConfigFormData(field.value[selectedTool]);
-                                      } else {
-                                        setToolConfigFormData({});
-                                      }
-                                    }, [selectedTool, field.value]);
-                                    
-                                    const handleSaveToolConfig = (data: any) => {
-                                      if (!selectedTool) return;
-                                      
-                                      const updatedConfig = {
-                                        ...field.value,
-                                        [selectedTool]: data.formData
-                                      };
-                                      
-                                      field.onChange(updatedConfig);
-                                      toast.success(`Configuration for ${selectedToolData?.name || selectedTool} updated`);
-                                    };
-                                    
-                                    const handleRemoveToolConfig = (toolKey: string) => {
-                                      const updatedConfig = { ...field.value };
-                                      delete updatedConfig[toolKey];
-                                      field.onChange(updatedConfig);
-                                      
-                                      if (selectedTool === toolKey) {
-                                        setSelectedTool(null);
-                                        setToolConfigFormData(null);
-                                      }
-                                      
-                                      toast.success(`Configuration for ${availableTools.find(t => t.tool_router_key === toolKey)?.name || toolKey} removed`);
-                                    };
-                                    
-                                    return (
-                                      <FormItem>
-                                        <div className="space-y-6">
-                                          {/* Tool configurations list */}
-                                          {Object.keys(field.value || {}).length > 0 && (
-                                            <div className="space-y-2">
-                                              <h4 className="text-sm font-medium">Configured Tools</h4>
-                                              <div className="flex flex-wrap gap-2">
-                                                {Object.keys(field.value || {}).map((toolKey) => (
-                                                  <div 
-                                                    key={toolKey}
-                                                    className={cn(
-                                                      "flex items-center gap-2 px-3 py-2 rounded-md border",
-                                                      selectedTool === toolKey 
-                                                        ? "border-blue-500 bg-blue-500/10" 
-                                                        : "border-gray-700 hover:border-gray-600"
-                                                    )}
-                                                  >
-                                                    <Button
-                                                      variant="ghost"
-                                                      size="sm"
-                                                      className="p-0 h-auto"
-                                                      onClick={() => setSelectedTool(toolKey)}
-                                                    >
-                                                      <span className="text-sm">
-                                                        {availableTools.find(t => t.tool_router_key === toolKey)?.name || toolKey}
-                                                      </span>
-                                                    </Button>
-                                                    <Button
-                                                      variant="ghost"
-                                                      size="sm"
-                                                      className="p-1 h-auto ml-2"
-                                                      onClick={() => handleRemoveToolConfig(toolKey)}
-                                                    >
-                                                      <XIcon className="h-3 w-3" />
-                                                    </Button>
-                                                  </div>
-                                                ))}
-                                              </div>
-                                            </div>
-                                          )}
-                                          
-                                          {/* Tool selector */}
-                                          <div className="flex flex-col gap-2">
-                                            <label className="text-sm font-medium">Select Tool to Configure</label>
-                                            <div className="flex gap-2">
-                                              <Select
-                                                value={selectedTool || ""}
-                                                onValueChange={(value) => {
-                                                  setSelectedTool(value);
-                                                }}
-                                              >
-                                                <SelectTrigger className="w-full">
-                                                  <SelectValue placeholder="Select a tool to configure" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                  {availableTools.map((tool) => (
-                                                    <SelectItem key={tool.tool_router_key} value={tool.tool_router_key}>
-                                                      {tool.name}
-                                                    </SelectItem>
-                                                  ))}
-                                                </SelectContent>
-                                              </Select>
-                                            </div>
-                                          </div>
-                                          
-                                          {/* Tool configuration form */}
-                                          {selectedTool && selectedToolData && (
-                                            <div className="border border-gray-700 rounded-md p-4">
-                                              <div className="flex items-center justify-between mb-4">
-                                                <h4 className="text-sm font-medium">
-                                                  {selectedToolData.name} Configuration
-                                                </h4>
-                                              </div>
-                                              
-                                              {selectedToolData.configurations && 
-                                               selectedToolData.configurations.properties && 
-                                               Object.keys(selectedToolData.configurations.properties).length > 0 ? (
-                                                <div className="space-y-4">
-                                                  <JsonForm
-                                                    className="py-1"
-                                                    formData={toolConfigFormData}
-                                                    id={`tool-config-form-${selectedTool}`}
-                                                    noHtml5Validate={true}
-                                                    onChange={(e) => {
-                                                      setToolConfigFormData(e.formData);
-                                                    }}
-                                                    onSubmit={(data) => handleSaveToolConfig(data)}
-                                                    schema={selectedToolData.configurations}
-                                                    uiSchema={{ 'ui:submitButtonOptions': { norender: true } }}
-                                                    validator={validator}
-                                                  />
-                                                  <div className="flex justify-between">
-                                                    <Button
-                                                      type="button"
-                                                      size="sm"
-                                                      variant="outline"
-                                                      onClick={() => {
-                                                        setSelectedTool(null);
-                                                        setToolConfigFormData(null);
-                                                      }}
-                                                    >
-                                                      Cancel
-                                                    </Button>
-                                                    <Button
-                                                      type="submit"
-                                                      size="sm"
-                                                      form={`tool-config-form-${selectedTool}`}
-                                                    >
-                                                      Save Configuration
-                                                    </Button>
-                                                  </div>
-                                                </div>
-                                              ) : (
-                                                <div className="text-center p-4">
-                                                  <p className="text-official-gray-400 text-sm">
-                                                    This tool doesn't have any configurable options
-                                                  </p>
-                                                </div>
-                                              )}
-                                            </div>
-                                          )}
-                                          
-                                          {!selectedTool && Object.keys(field.value || {}).length === 0 && (
-                                            <div className="text-center p-4 border border-dashed border-gray-700 rounded-md">
-                                              <p className="text-official-gray-400 text-sm">
-                                                Select a tool to add configuration overrides
-                                              </p>
-                                            </div>
-                                          )}
-                                        </div>
-                                        <FormMessage />
-                                      </FormItem>
-                                    );
-                                  }}
+                                  render={({ field }) => (
+                                    <ToolConfigOverrideField 
+                                      field={field} 
+                                      toolsList={toolsList?.tools || []} 
+                                    />
+                                  )}
                                 />
                               </div>
                             </CollapsibleContent>
