@@ -118,6 +118,7 @@ const agentFormSchema = z.object({
     })
     .optional(),
   cronExpression: z.string().optional(),
+  aiPrompt: z.string().optional(),
 });
 
 type AgentFormValues = z.infer<typeof agentFormSchema>;
@@ -406,6 +407,7 @@ function AgentForm({ mode }: AgentFormProps) {
         vector_search_mode: 'FillUpTo25k',
       },
       cronExpression: '',
+      aiPrompt: '',
     },
   });
 
@@ -467,9 +469,14 @@ function AgentForm({ mode }: AgentFormProps) {
         setScheduleType('scheduled');
         // Assuming only one cron task per agent for this form
         form.setValue('cronExpression', agent.cron_tasks[0]?.cron ?? ''); 
+        
+        if (agent.cron_tasks[0]?.action && 'CreateJobWithConfigAndMessage' in agent.cron_tasks[0].action) {
+          form.setValue('aiPrompt', agent.cron_tasks[0].action.CreateJobWithConfigAndMessage.message.content ?? '');
+        }
       } else {
         setScheduleType('normal');
         form.setValue('cronExpression', '');
+        form.setValue('aiPrompt', '');
       }
 
       // Set selected files and folders
@@ -633,9 +640,11 @@ function AgentForm({ mode }: AgentFormProps) {
                 temperature: values.config?.temperature,
                 top_p: values.config?.top_p,
                 top_k: values.config?.top_k,
+                use_tools: values.tools.length > 0,
+                stream: true,
             },
-            message: values.uiDescription || 'Scheduled run',
-            toolKey: values.tools.length > 0 ? values.tools[0] : '',
+            message: values.aiPrompt || values.uiDescription || 'Scheduled run',
+            toolKey: '',
           });
         } else if (existingTask.cron !== desiredCron) {
            // Use correct parameters for removeTask
@@ -656,9 +665,11 @@ function AgentForm({ mode }: AgentFormProps) {
                 temperature: values.config?.temperature,
                 top_p: values.config?.top_p,
                 top_k: values.config?.top_k,
+                use_tools: values.tools.length > 0,
+                stream: true,
             },
-            message: values.uiDescription || 'Scheduled run',
-            toolKey: values.tools.length > 0 ? values.tools[0] : '',
+            message: values.aiPrompt || values.uiDescription || 'Scheduled run',
+            toolKey: '',
            });
         }
       } else if (!desiredCron && existingTask) {
@@ -800,9 +811,11 @@ function AgentForm({ mode }: AgentFormProps) {
                    temperature: values.config?.temperature,
                    top_p: values.config?.top_p,
                    top_k: values.config?.top_k,
+                   use_tools: values.tools.length > 0,
+                   stream: true,
                },
-               message: values.uiDescription || 'Scheduled run',
-               toolKey: values.tools.length > 0 ? values.tools[0] : '',
+               message: values.aiPrompt || values.uiDescription || 'Scheduled run',
+               toolKey: '',
              });
           } else if (existingTask.cron !== desiredCron) { // Existing task, cron changed -> Remove + Create
              await removeTask({ 
@@ -822,9 +835,11 @@ function AgentForm({ mode }: AgentFormProps) {
                    temperature: values.config?.temperature,
                    top_p: values.config?.top_p,
                    top_k: values.config?.top_k,
+                   use_tools: values.tools.length > 0,
+                   stream: true,
                },
-               message: values.uiDescription || 'Scheduled run',
-               toolKey: values.tools.length > 0 ? values.tools[0] : '',
+               message: values.aiPrompt || values.uiDescription || 'Scheduled run',
+               toolKey: '',
              });
           }
           // If desiredCron and existingTask.cron are the same, do nothing to the task
@@ -1686,6 +1701,23 @@ function AgentForm({ mode }: AgentFormProps) {
 
                               {scheduleType === 'scheduled' && (
                                 <div className="space-y-4 py-5">
+                                  <FormField
+                                    control={form.control}
+                                    name="aiPrompt"
+                                    render={({ field }) => (
+                                      <Textarea
+                                        {...field}
+                                        className="min-h-[120px]"
+                                        id="aiPrompt"
+                                        placeholder="Enter AI instructions for the scheduled execution..."
+                                        resize="vertical"
+                                      />
+                                    )}
+                                  />
+                                  <p className="text-sm text-official-gray-400">
+                                    Write the prompt that will be used for the scheduled execution.
+                                  </p>
+                                  
                                   <FormField
                                     control={form.control}
                                     name="cronExpression"
