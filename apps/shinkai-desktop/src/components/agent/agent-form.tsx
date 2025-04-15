@@ -21,6 +21,7 @@ import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/querie
 import {
   Badge,
   Button,
+  ChatInputArea,
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -56,7 +57,6 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import {
   FilesIcon,
-  SaveIcon,
   ScheduledTasksIcon,
   SendIcon,
 } from '@shinkai_network/shinkai-ui/assets';
@@ -266,23 +266,36 @@ function AgentSideChat({
           <div className="flex items-center justify-between p-4">
             <h2 className="text-base font-medium">Preview</h2>
             <div className="flex items-center gap-2">
-              <Button
-                className="text-official-gray-300 p-2"
-                onClick={() => setChatInboxId(null)}
-                size="auto"
-                title="Reset Chat"
-                variant="tertiary"
-              >
-                <RefreshCwIcon className="size-4" />
-              </Button>
-              <Button
-                className="text-official-gray-300 p-2"
-                onClick={onClose}
-                size="auto"
-                variant="tertiary"
-              >
-                <XIcon className="size-4" />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="text-official-gray-300 p-2"
+                    onClick={() => setChatInboxId(null)}
+                    size="auto"
+                    variant="tertiary"
+                  >
+                    <RefreshCwIcon className="size-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Clear Chat</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="text-official-gray-300 p-2"
+                    onClick={onClose}
+                    size="auto"
+                    variant="tertiary"
+                  >
+                    <XIcon className="size-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Close Chat</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
 
@@ -314,31 +327,33 @@ function AgentSideChat({
           </div>
 
           <div className="p-4">
-            <div className="flex items-center gap-2">
-              <Input
-                className="placeholder-gray-80 bg-official-gray-900 !h-[50px] flex-1 px-3 py-2"
-                disabled={isLoadingMessage}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }
-                }}
-                placeholder="Ask your agent..."
-                value={message}
-              />
-              <Button
-                className="aspect-square h-[90%] shrink-0 rounded-lg p-2"
-                disabled={isLoadingMessage || !message.trim()}
-                onClick={handleSendMessage}
-                size="auto"
-                type="button"
-                variant="default"
-              >
-                <SendIcon className="h-4.5 w-4.5" />
-              </Button>
-            </div>
+            <ChatInputArea
+              autoFocus
+              bottomAddons={
+                <div className="relative z-50 flex items-end gap-3 self-end p-2">
+                  <span className="pb-1 text-xs font-light text-gray-100">
+                    <span className="font-medium">Enter</span> to send
+                  </span>
+
+                  <Button
+                    className={cn('size-[36px] p-2')}
+                    disabled={isLoadingMessage || !message.trim()}
+                    isLoading={isLoadingMessage}
+                    onClick={handleSendMessage}
+                    size="icon"
+                    type="submit"
+                  >
+                    <SendIcon className="h-full w-full" />
+                    <span className="sr-only">{t('chat.sendMessage')}</span>
+                  </Button>
+                </div>
+              }
+              disabled={isLoadingMessage}
+              onChange={(value) => setMessage(value)}
+              onSubmit={handleSendMessage}
+              placeholder="Send message..."
+              value={message}
+            />
           </div>
         </div>
       </div>
@@ -487,8 +502,15 @@ function AgentForm({ mode }: AgentFormProps) {
         // Assuming only one cron task per agent for this form
         form.setValue('cronExpression', agent.cron_tasks[0]?.cron ?? '');
 
-        if (agent.cron_tasks[0]?.action && 'CreateJobWithConfigAndMessage' in agent.cron_tasks[0].action) {
-          form.setValue('aiPrompt', agent.cron_tasks[0].action.CreateJobWithConfigAndMessage.message.content ?? '');
+        if (
+          agent.cron_tasks[0]?.action &&
+          'CreateJobWithConfigAndMessage' in agent.cron_tasks[0].action
+        ) {
+          form.setValue(
+            'aiPrompt',
+            agent.cron_tasks[0].action.CreateJobWithConfigAndMessage.message
+              .content ?? '',
+          );
         }
       } else {
         setScheduleType('normal');
@@ -657,12 +679,12 @@ function AgentForm({ mode }: AgentFormProps) {
             llmProvider: agent.agent_id,
             cronExpression: desiredCron,
             chatConfig: {
-                custom_prompt: values.config?.custom_prompt ?? '',
-                temperature: values.config?.temperature,
-                top_p: values.config?.top_p,
-                top_k: values.config?.top_k,
-                use_tools: values.tools.length > 0,
-                stream: true,
+              custom_prompt: values.config?.custom_prompt ?? '',
+              temperature: values.config?.temperature,
+              top_p: values.config?.top_p,
+              top_k: values.config?.top_k,
+              use_tools: values.tools.length > 0,
+              stream: true,
             },
             message: values.aiPrompt || values.uiDescription || 'Scheduled run',
             toolKey: '',
@@ -682,16 +704,16 @@ function AgentForm({ mode }: AgentFormProps) {
             llmProvider: agent.agent_id,
             cronExpression: desiredCron,
             chatConfig: {
-                custom_prompt: values.config?.custom_prompt ?? '',
-                temperature: values.config?.temperature,
-                top_p: values.config?.top_p,
-                top_k: values.config?.top_k,
-                use_tools: values.tools.length > 0,
-                stream: true,
+              custom_prompt: values.config?.custom_prompt ?? '',
+              temperature: values.config?.temperature,
+              top_p: values.config?.top_p,
+              top_k: values.config?.top_k,
+              use_tools: values.tools.length > 0,
+              stream: true,
             },
             message: values.aiPrompt || values.uiDescription || 'Scheduled run',
             toolKey: '',
-           });
+          });
         }
       } else if (!desiredCron && existingTask) {
         // Use correct parameters for removeTask
@@ -832,50 +854,55 @@ function AgentForm({ mode }: AgentFormProps) {
         const desiredCron =
           scheduleType === 'scheduled' ? values.cronExpression : undefined;
 
-        if (desiredCron) { // User wants a schedule
-          if (!existingTask) { // No existing task -> Create
-             await createTask({
-               nodeAddress: auth.node_address,
-               token: auth.api_v2_key,
-               name: agent.agent_id,
-               description: values.uiDescription || agent.agent_id,
-               llmProvider: agent.agent_id,
-               cronExpression: desiredCron,
-               chatConfig: {
-                   custom_prompt: values.config?.custom_prompt ?? '',
-                   temperature: values.config?.temperature,
-                   top_p: values.config?.top_p,
-                   top_k: values.config?.top_k,
-                   use_tools: values.tools.length > 0,
-                   stream: true,
-               },
-               message: values.aiPrompt || values.uiDescription || 'Scheduled run',
-               toolKey: '',
-             });
-          } else if (existingTask.cron !== desiredCron) { // Existing task, cron changed -> Remove + Create
-             await removeTask({
-               nodeAddress: auth.node_address,
-               token: auth.api_v2_key,
-               recurringTaskId: existingTask.task_id.toString()
-             });
-             await createTask({
-               nodeAddress: auth.node_address,
-               token: auth.api_v2_key,
-               name: agent.agent_id,
-               description: values.uiDescription || agent.agent_id,
-               llmProvider: agent.agent_id,
-               cronExpression: desiredCron,
-               chatConfig: {
-                   custom_prompt: values.config?.custom_prompt ?? '',
-                   temperature: values.config?.temperature,
-                   top_p: values.config?.top_p,
-                   top_k: values.config?.top_k,
-                   use_tools: values.tools.length > 0,
-                   stream: true,
-               },
-               message: values.aiPrompt || values.uiDescription || 'Scheduled run',
-               toolKey: '',
-             });
+        if (desiredCron) {
+          // User wants a schedule
+          if (!existingTask) {
+            // No existing task -> Create
+            await createTask({
+              nodeAddress: auth.node_address,
+              token: auth.api_v2_key,
+              name: agent.agent_id,
+              description: values.uiDescription || agent.agent_id,
+              llmProvider: agent.agent_id,
+              cronExpression: desiredCron,
+              chatConfig: {
+                custom_prompt: values.config?.custom_prompt ?? '',
+                temperature: values.config?.temperature,
+                top_p: values.config?.top_p,
+                top_k: values.config?.top_k,
+                use_tools: values.tools.length > 0,
+                stream: true,
+              },
+              message:
+                values.aiPrompt || values.uiDescription || 'Scheduled run',
+              toolKey: '',
+            });
+          } else if (existingTask.cron !== desiredCron) {
+            // Existing task, cron changed -> Remove + Create
+            await removeTask({
+              nodeAddress: auth.node_address,
+              token: auth.api_v2_key,
+              recurringTaskId: existingTask.task_id.toString(),
+            });
+            await createTask({
+              nodeAddress: auth.node_address,
+              token: auth.api_v2_key,
+              name: agent.agent_id,
+              description: values.uiDescription || agent.agent_id,
+              llmProvider: agent.agent_id,
+              cronExpression: desiredCron,
+              chatConfig: {
+                custom_prompt: values.config?.custom_prompt ?? '',
+                temperature: values.config?.temperature,
+                top_p: values.config?.top_p,
+                top_k: values.config?.top_k,
+                use_tools: values.tools.length > 0,
+                stream: true,
+              },
+              message:
+                values.aiPrompt || values.uiDescription || 'Scheduled run',
+              toolKey: '',
+            });
           }
           // If desiredCron and existingTask.cron are the same, do nothing to the task
         } else if (!desiredCron && existingTask) {
@@ -981,7 +1008,20 @@ function AgentForm({ mode }: AgentFormProps) {
                   size="sm"
                   variant="outline"
                 >
-                  <SaveIcon className="h-4 w-4" />
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                   Save
                 </Button>
                 <Button
@@ -1047,7 +1087,7 @@ function AgentForm({ mode }: AgentFormProps) {
                           name="uiDescription"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel> Description</FormLabel>
+                              <FormLabel>Description</FormLabel>
 
                               <FormControl>
                                 <Textarea
@@ -1365,168 +1405,173 @@ function AgentForm({ mode }: AgentFormProps) {
                       </div>
                     </TabsContent>
 
-                  <TabsContent className="flex-1 min-h-0 overflow-y-auto" value="tools">
-                    <div className="h-full min-h-0 space-y-6 overflow-y-auto">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="space-y-1">
-                          <h2 className="text-base font-medium">Tools</h2>
-                          <p className="text-official-gray-400 text-sm">
-                            Select which tools &amp; skills your agent can use to
-                            complete tasks.
-                          </p>
-                        </div>
-                        <Button
-                          onClick={() => {
-                            navigate('/tools');
-                          }}
-                          size="xs"
-                          variant="outline"
-                        >
-                          <PlusIcon className="mr-1 size-3.5" />
-                          Create New
-                        </Button>
-                      </div>
-                      <div className="relative flex h-10 w-full items-center">
-                        <Input
-                          className="placeholder-gray-80 !h-full rounded-lg bg-transparent py-2 pl-10"
-                          onChange={(e) => {
-                            setSearchQuery(e.target.value);
-                          }}
-                          placeholder={t('common.searchPlaceholder')}
-                          value={searchQuery}
-                        />
-                        <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
-                        {searchQuery && (
-                          <Button
-                            className="hover:bg-official-gray-800 absolute right-1 h-8 w-8 bg-transparent p-2"
-                            onClick={() => {
-                              setSearchQuery('');
-                            }}
-                            size="auto"
-                            type="button"
-                            variant="ghost"
-                          >
-                            <XIcon />
-                            <span className="sr-only">
-                              {t('common.clearSearch')}
-                            </span>
-                          </Button>
-                        )}
-                      </div>
-                      <div className="flex flex-col gap-5 overflow-auto">
-                        {(isPending ||
-                          !isSearchQuerySynced ||
-                          isSearchToolListPending) && (
-                          <div className="grid grid-cols-1">
-                            {Array.from({ length: 4 }).map((_, idx) => (
-                              <div
-                                className={cn(
-                                  'grid animate-pulse grid-cols-[1fr_40px] items-center justify-between gap-5 rounded-sm py-3 text-left text-sm',
-                                )}
-                                key={idx}
-                              >
-                                <div className="flex w-full flex-1 flex-col gap-3">
-                                  <span className="h-4 w-36 rounded-sm bg-gray-300" />
-                                  <div className="flex flex-col gap-1">
-                                    <span className="h-3 w-full rounded-sm bg-gray-300" />
-                                    <span className="h-3 w-2/4 rounded-sm bg-gray-300" />
-                                  </div>
-                                </div>
-                                <span className="h-5 w-[36px] rounded-full bg-gray-300" />
-                              </div>
-                            ))}
+                    <TabsContent
+                      className="min-h-0 flex-1 overflow-y-auto"
+                      value="tools"
+                    >
+                      <div className="h-full min-h-0 space-y-6 overflow-y-auto">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="space-y-1">
+                            <h2 className="text-base font-medium">Tools</h2>
+                            <p className="text-official-gray-400 text-sm">
+                              Select which tools &amp; skills your agent can use
+                              to complete tasks.
+                            </p>
                           </div>
-                        )}
-                        {searchQuery &&
-                          isSearchQuerySynced &&
-                          searchToolList?.map((tool) => (
-                            <FormField
-                              control={form.control}
-                              key={tool.tool_router_key}
-                              name="tools"
-                              render={({ field }) => (
-                                <FormItem className="flex w-full flex-col gap-3">
-                                  <div className="flex items-center gap-3">
-                                    <FormControl>
-                                      <div className="flex w-full items-start gap-3">
-                                        <div className="inline-flex flex-1 items-center gap-2 leading-none">
-                                          <label
-                                            className="flex flex-col gap-2 text-xs text-gray-50"
-                                            htmlFor={tool.tool_router_key}
-                                          >
-                                            <span className="inline-flex items-center gap-1 text-sm text-white">
-                                              {formatText(tool.name)}
-                                              {(tool.config ?? []).length > 0 && (
-                                                <Tooltip>
-                                                  <TooltipTrigger
-                                                    asChild
-                                                    className="flex shrink-0 items-center gap-1"
-                                                  >
-                                                    <Link
-                                                      className="text-gray-80 size-3.5 rounded-lg hover:text-white"
-                                                      to={`/tools/${tool.tool_router_key}`}
+                          <Button
+                            onClick={() => {
+                              navigate('/tools');
+                            }}
+                            size="xs"
+                            variant="outline"
+                          >
+                            <PlusIcon className="mr-1 size-3.5" />
+                            Create New
+                          </Button>
+                        </div>
+                        <div className="relative flex h-10 w-full items-center">
+                          <Input
+                            className="placeholder-gray-80 !h-full rounded-lg bg-transparent py-2 pl-10"
+                            onChange={(e) => {
+                              setSearchQuery(e.target.value);
+                            }}
+                            placeholder={t('common.searchPlaceholder')}
+                            value={searchQuery}
+                          />
+                          <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
+                          {searchQuery && (
+                            <Button
+                              className="hover:bg-official-gray-800 absolute right-1 h-8 w-8 bg-transparent p-2"
+                              onClick={() => {
+                                setSearchQuery('');
+                              }}
+                              size="auto"
+                              type="button"
+                              variant="ghost"
+                            >
+                              <XIcon />
+                              <span className="sr-only">
+                                {t('common.clearSearch')}
+                              </span>
+                            </Button>
+                          )}
+                        </div>
+                        <div className="flex flex-col gap-5 overflow-auto">
+                          {(isPending ||
+                            !isSearchQuerySynced ||
+                            isSearchToolListPending) && (
+                            <div className="grid grid-cols-1">
+                              {Array.from({ length: 4 }).map((_, idx) => (
+                                <div
+                                  className={cn(
+                                    'grid animate-pulse grid-cols-[1fr_40px] items-center justify-between gap-5 rounded-sm py-3 text-left text-sm',
+                                  )}
+                                  key={idx}
+                                >
+                                  <div className="flex w-full flex-1 flex-col gap-3">
+                                    <span className="h-4 w-36 rounded-sm bg-gray-300" />
+                                    <div className="flex flex-col gap-1">
+                                      <span className="h-3 w-full rounded-sm bg-gray-300" />
+                                      <span className="h-3 w-2/4 rounded-sm bg-gray-300" />
+                                    </div>
+                                  </div>
+                                  <span className="h-5 w-[36px] rounded-full bg-gray-300" />
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {searchQuery &&
+                            isSearchQuerySynced &&
+                            searchToolList?.map((tool) => (
+                              <FormField
+                                control={form.control}
+                                key={tool.tool_router_key}
+                                name="tools"
+                                render={({ field }) => (
+                                  <FormItem className="flex w-full flex-col gap-3">
+                                    <div className="flex items-center gap-3">
+                                      <FormControl>
+                                        <div className="flex w-full items-start gap-3">
+                                          <div className="inline-flex flex-1 items-center gap-2 leading-none">
+                                            <label
+                                              className="flex flex-col gap-2 text-xs text-gray-50"
+                                              htmlFor={tool.tool_router_key}
+                                            >
+                                              <span className="inline-flex items-center gap-1 text-sm text-white">
+                                                {formatText(tool.name)}
+                                                {(tool.config ?? []).length >
+                                                  0 && (
+                                                  <Tooltip>
+                                                    <TooltipTrigger
+                                                      asChild
+                                                      className="flex shrink-0 items-center gap-1"
                                                     >
-                                                      <BoltIcon className="size-full" />
-                                                    </Link>
-                                                  </TooltipTrigger>
-                                                  <TooltipPortal>
-                                                    <TooltipContent
-                                                      align="center"
-                                                      alignOffset={-10}
-                                                      className="max-w-md"
-                                                      side="top"
-                                                    >
-                                                      <p>Configure tool</p>
-                                                    </TooltipContent>
-                                                  </TooltipPortal>
-                                                </Tooltip>
-                                              )}
-                                            </span>
-                                            <span className="text-official-gray-400 text-sm">
-                                              {tool.description}
-                                            </span>
-                                          </label>
-                                        </div>
-                                        <Switch
-                                          checked={field.value.includes(
-                                            tool.tool_router_key,
-                                          )}
-                                          className="shrink-0"
-                                          id={tool.tool_router_key}
-                                          onCheckedChange={() => {
-                                            const configs = tool?.config ?? [];
-                                            if (
-                                              configs
-                                                .map((conf) => ({
-                                                  key_name:
-                                                    conf.BasicConfig.key_name,
-                                                  key_value:
-                                                    conf.BasicConfig.key_value ??
-                                                    '',
-                                                  required:
-                                                    conf.BasicConfig.required,
-                                                }))
-                                                .every(
-                                                  (conf) =>
-                                                    !conf.required ||
-                                                    (conf.required &&
-                                                      conf.key_value !== ''),
-                                                )
-                                            ) {
-                                              field.onChange(
-                                                field.value.includes(
-                                                  tool.tool_router_key,
-                                                )
-                                                  ? field.value.filter(
-                                                      (value) =>
-                                                        value !==
+                                                      <Link
+                                                        className="text-gray-80 size-3.5 rounded-lg hover:text-white"
+                                                        to={`/tools/${tool.tool_router_key}`}
+                                                      >
+                                                        <BoltIcon className="size-full" />
+                                                      </Link>
+                                                    </TooltipTrigger>
+                                                    <TooltipPortal>
+                                                      <TooltipContent
+                                                        align="center"
+                                                        alignOffset={-10}
+                                                        className="max-w-md"
+                                                        side="top"
+                                                      >
+                                                        <p>Configure tool</p>
+                                                      </TooltipContent>
+                                                    </TooltipPortal>
+                                                  </Tooltip>
+                                                )}
+                                              </span>
+                                              <span className="text-official-gray-400 text-sm">
+                                                {tool.description}
+                                              </span>
+                                            </label>
+                                          </div>
+                                          <Switch
+                                            checked={field.value.includes(
+                                              tool.tool_router_key,
+                                            )}
+                                            className="shrink-0"
+                                            id={tool.tool_router_key}
+                                            onCheckedChange={() => {
+                                              const configs =
+                                                tool?.config ?? [];
+                                              if (
+                                                configs
+                                                  .map((conf) => ({
+                                                    key_name:
+                                                      conf.BasicConfig.key_name,
+                                                    key_value:
+                                                      conf.BasicConfig
+                                                        .key_value ?? '',
+                                                    required:
+                                                      conf.BasicConfig.required,
+                                                  }))
+                                                  .every(
+                                                    (conf) =>
+                                                      !conf.required ||
+                                                      (conf.required &&
+                                                        conf.key_value !== ''),
+                                                  )
+                                              ) {
+                                                field.onChange(
+                                                  field.value.includes(
+                                                    tool.tool_router_key,
+                                                  )
+                                                    ? field.value.filter(
+                                                        (value) =>
+                                                          value !==
+                                                          tool.tool_router_key,
+                                                      )
+                                                    : [
+                                                        ...field.value,
                                                         tool.tool_router_key,
-                                                    )
-                                                  : [
-                                                      ...field.value,
-                                                      tool.tool_router_key,
-                                                    ],
-                                              );
+                                                      ],
+                                                );
 
                                                 return;
                                               }
@@ -1786,6 +1831,32 @@ function AgentForm({ mode }: AgentFormProps) {
                                   <div className="space-y-4 py-5">
                                     <FormField
                                       control={form.control}
+                                      name="aiPrompt"
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>AI instructions</FormLabel>
+
+                                          <FormControl>
+                                            <Textarea
+                                              {...field}
+                                              className="min-h-[220px]"
+                                              id="aiPrompt"
+                                              placeholder="Enter AI instructions for the scheduled execution..."
+                                              resize="vertical"
+                                            />
+                                          </FormControl>
+
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                    <p className="text-official-gray-400 text-sm">
+                                      Write the prompt that will be used for the
+                                      scheduled execution.
+                                    </p>
+
+                                    <FormField
+                                      control={form.control}
                                       name="cronExpression"
                                       render={({ field }) => (
                                         <TextField
@@ -1887,123 +1958,6 @@ function AgentForm({ mode }: AgentFormProps) {
                                         ({task.cron})
                                       </span>
                                     </div>
-                              {scheduleType === 'scheduled' && (
-                                <div className="space-y-4 py-5">
-                                  <FormField
-                                    control={form.control}
-                                    name="aiPrompt"
-                                    render={({ field }) => (
-                                      <Textarea
-                                        {...field}
-                                        className="min-h-[120px]"
-                                        id="aiPrompt"
-                                        placeholder="Enter AI instructions for the scheduled execution..."
-                                        resize="vertical"
-                                      />
-                                    )}
-                                  />
-                                  <p className="text-sm text-official-gray-400">
-                                    Write the prompt that will be used for the scheduled execution.
-                                  </p>
-
-                                  <FormField
-                                    control={form.control}
-                                    name="cronExpression"
-                                    render={({ field }) => (
-                                      <TextField
-                                        field={field}
-                                        helperMessage="Enter a cron expression eg: */30 * * * * (every 30 min) "
-                                        label="Cron Expression"
-                                      />
-                                    )}
-                                  />
-                                  {readableCronExpression && (
-                                    <div className="flex items-center gap-2 text-xs">
-                                      <ScheduledTasksIcon className="size-4" />
-                                      <span>
-                                        This cron will run{' '}
-                                        {readableCronExpression.toLowerCase()}{' '}
-                                        <span className="text-gray-80 font-mono">
-                                          ({form.watch('cronExpression')})
-                                        </span>
-                                      </span>
-                                    </div>
-                                  )}
-                                  {!readableCronExpression && form.watch('cronExpression') && (
-                                    <p className="text-xs text-red-500">Invalid Cron Expression</p>
-                                  )}
-                                  <div className="flex flex-wrap gap-2">
-                                    {[
-                                      {
-                                        label: 'every 5 min',
-                                        cron: '*/5 * * * *',
-                                      },
-                                      {
-                                        label: 'every 5 hours',
-                                        cron: '0 */5 * * *',
-                                      },
-                                      {
-                                        label: 'every monday at 8am',
-                                        cron: '0 8 * * 1',
-                                      },
-                                      {
-                                        label: 'every january 1st at 12am',
-                                        cron: '0 0 1 1 *',
-                                      },
-                                      {
-                                        label: 'every 1st of the month at 12pm',
-                                        cron: '0 12 1 * *',
-                                      },
-                                    ].map((item) => (
-                                      <Badge
-                                        className="bg-official-gray-850 hover:bg-official-gray-900 cursor-pointer font-normal"
-                                        key={item.cron}
-                                        onClick={() => {
-                                          form.setValue(
-                                            'cronExpression',
-                                            item.cron,
-                                          );
-                                        }}
-                                        variant="outline"
-                                      >
-                                        <span className="text-xs">
-                                          {item.label}
-                                        </span>
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </RadioGroup>
-                      )}
-                      {/* Show current tasks only in edit mode if they exist */}
-                      {mode === 'edit' &&
-                        agent?.cron_tasks &&
-                        agent?.cron_tasks?.length > 0 && (
-                          <div className="mt-2 space-y-4">
-                            <div className="mb-2 flex items-center gap-2">
-                              <ScheduledTasksIcon className="size-4 text-white" />
-                              <h4 className="text-sm font-medium">
-                                Current Scheduled Task
-                              </h4>
-                            </div>
-                            <div className="mt-2 space-y-3">
-                              {/* Assuming only one task is manageable via this form */}
-                              {agent?.cron_tasks?.slice(0, 1).map((task) => (
-                                <div
-                                  className="bg-official-gray-900 flex items-center justify-between rounded-md border p-2"
-                                  key={task.task_id}
-                                >
-                                  <div className="flex items-center gap-2 pl-1">
-                                    <div className="bg-brand/70 h-2 w-2 rounded-full" />
-                                    <span className="text-sm">
-                                      {cronstrue.toString(task.cron, {
-                                        throwExceptionOnParseError: false,
-                                      })} ({task.cron})
-                                    </span>
-                                  </div>
 
                                     <Button
                                       className="text-official-gray-400 p-2 hover:bg-red-900/10 hover:text-red-400/90"
@@ -2065,7 +2019,6 @@ function AgentForm({ mode }: AgentFormProps) {
                       : t('common.back')}
                   </Button>
                   <Button
-                    className="min-w-[120px]"
                     isLoading={isPending}
                     onClick={(e) => {
                       // Check validity before navigating or submitting
@@ -2103,6 +2056,7 @@ function AgentForm({ mode }: AgentFormProps) {
                         : ''
                     }
                     type={currentTab === 'schedule' ? 'submit' : 'button'}
+                    className="min-w-[120px]"
                     // Disable Next/Save if scheduleType is 'scheduled' but cron expression is invalid or empty
                     disabled={
                       isPending ||
