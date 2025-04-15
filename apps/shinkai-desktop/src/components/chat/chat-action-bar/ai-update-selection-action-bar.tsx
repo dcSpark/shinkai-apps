@@ -362,7 +362,7 @@ export function AiUpdateSelectionActionBarBase({
   const { data: provider } = useGetProviderFromJob({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
-    jobId: extractJobIdFromInbox(inboxId ?? ''),
+    jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
   });
 
   const { mutateAsync: updateAgentInJob, isPending } = useUpdateAgentInJob({

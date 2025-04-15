@@ -84,7 +84,7 @@ export const getTool = async (
     urlJoin(nodeAddress, '/v2/get_shinkai_tool'),
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
-      params: { tool_name: toolKey },
+      params: { tool_name: toolKey, serialize_config: true },
       responseType: 'json',
     },
   );
@@ -348,7 +348,7 @@ export const getPlaygroundTool = async (
   const response = await httpClient.get(
     urlJoin(nodeAddress, '/v2/get_playground_tool'),
     {
-      headers: { 
+      headers: {
         Authorization: `Bearer ${bearerToken}`,
         ...(xShinkaiOriginalToolRouterKey && {
           'x-shinkai-original-tool-router-key': xShinkaiOriginalToolRouterKey,

@@ -42,7 +42,13 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-shell';
 import { motion } from 'framer-motion';
-import { ArrowRight, ArrowUpRight, EllipsisIcon, MessageSquare, Plus } from 'lucide-react';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  EllipsisIcon,
+  MessageSquare,
+  Plus,
+} from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
@@ -413,7 +419,7 @@ const EmptyMessage = () => {
   return (
     <motion.div
       animate={{ opacity: 1 }}
-      className="container-fluid flex w-full flex-col items-stretch gap-28 text-center px-4 md:px-8 lg:px-12"
+      className="container-fluid flex w-full flex-col items-stretch gap-28 px-4 text-center md:px-8 lg:px-12"
       exit={{ opacity: 0 }}
       initial={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
@@ -437,15 +443,15 @@ const EmptyMessage = () => {
                   How can I help you today?
                 </h1>
               </div>
-              <div className="absolute top-4 right-4">
-                <Link 
+              <div className="absolute right-4 top-4">
+                <Link
                   className={cn(
-                    buttonVariants({ 
+                    buttonVariants({
                       size: 'xs',
                       variant: 'outline',
-                      rounded: 'lg'
+                      rounded: 'lg',
                     }),
-                    'gap-1'
+                    'gap-1',
                   )}
                   to="/settings/feedback"
                 >
@@ -458,7 +464,8 @@ const EmptyMessage = () => {
         </div>
         <div
           {...getRootFileProps({
-            className: 'relative shrink-0 pb-[40px] max-w-[1152px] mx-auto w-full',
+            className:
+              'relative shrink-0 pb-[40px] max-w-[1152px] mx-auto w-full',
           })}
         >
           <div className="relative z-[1]">
@@ -489,12 +496,15 @@ const EmptyMessage = () => {
                         <AIModelSelector
                           onValueChange={(value) => {
                             chatForm.setValue('agent', value);
-                            
-                            const selectedAgent = agents?.find((agent) => agent.agent_id === value);
-                            if (selectedAgent && selectedAgent.tools?.length > 0) {
+                            const selectedAgent = agents?.find(
+                              (agent) => agent.agent_id === value,
+                            );
+                            if (
+                              selectedAgent &&
+                              selectedAgent.tools?.length > 0
+                            ) {
                               chatConfigForm.setValue('useTools', true);
-                            }
-                            else if (selectedAgent && selectedAgent.tools?.length === 0) {
+                            } else {
                               chatConfigForm.setValue('useTools', false);
                             }
                           }}
@@ -616,7 +626,7 @@ const EmptyMessage = () => {
                   onSubmit={chatForm.handleSubmit(onSubmit)}
                   ref={textareaRef}
                   textareaClassName={cn(
-                    'max-h-[60vh] min-h-[220px] h-full rounded-xl p-4 text-base',
+                    'h-full max-h-[60vh] min-h-[220px] rounded-xl p-4 text-base',
                   )}
                   topAddons={
                     <>
@@ -830,7 +840,7 @@ const EmptyMessage = () => {
           </Badge>
         </div>
       </div>
-      <div className="mx-auto w-full max-w-5xl flex flex-col gap-12 pb-10">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-12 pb-10">
         <div className="flex flex-col gap-4">
           <SectionHeading
             action={{
@@ -851,6 +861,11 @@ const EmptyMessage = () => {
                   label: 'Use Agent',
                   onClick: () => {
                     chatForm.setValue('agent', agent.agent_id);
+                    if (agent.tools?.length > 0) {
+                      chatConfigForm.setValue('useTools', true);
+                    } else {
+                      chatConfigForm.setValue('useTools', false);
+                    }
                     mainLayoutContainerRef?.current?.scrollTo({
                       top: 0,
                       behavior: 'smooth',
