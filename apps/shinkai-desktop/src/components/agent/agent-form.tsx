@@ -642,7 +642,7 @@ function AgentForm({ mode }: AgentFormProps) {
                 top_k: values.config?.top_k,
             },
             message: values.aiPrompt || values.uiDescription || 'Scheduled run',
-            toolKey: values.tools.length > 0 ? values.tools[0] : '',
+            toolKey: '',
           });
         } else if (existingTask.cron !== desiredCron) {
            // Use correct parameters for removeTask
@@ -665,7 +665,7 @@ function AgentForm({ mode }: AgentFormProps) {
                 top_k: values.config?.top_k,
             },
             message: values.aiPrompt || values.uiDescription || 'Scheduled run',
-            toolKey: values.tools.length > 0 ? values.tools[0] : '',
+            toolKey: '',
            });
         }
       } else if (!desiredCron && existingTask) {
@@ -809,7 +809,7 @@ function AgentForm({ mode }: AgentFormProps) {
                    top_k: values.config?.top_k,
                },
                message: values.aiPrompt || values.uiDescription || 'Scheduled run',
-               toolKey: values.tools.length > 0 ? values.tools[0] : '',
+               toolKey: '',
              });
           } else if (existingTask.cron !== desiredCron) { // Existing task, cron changed -> Remove + Create
              await removeTask({ 
@@ -831,7 +831,7 @@ function AgentForm({ mode }: AgentFormProps) {
                    top_k: values.config?.top_k,
                },
                message: values.aiPrompt || values.uiDescription || 'Scheduled run',
-               toolKey: values.tools.length > 0 ? values.tools[0] : '',
+               toolKey: '',
              });
           }
           // If desiredCron and existingTask.cron are the same, do nothing to the task
