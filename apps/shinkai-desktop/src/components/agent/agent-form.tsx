@@ -1625,7 +1625,18 @@ function AgentForm({ mode }: AgentFormProps) {
                                                     uiSchema={{ 'ui:submitButtonOptions': { norender: true } }}
                                                     validator={validator}
                                                   />
-                                                  <div className="flex justify-end">
+                                                  <div className="flex justify-between">
+                                                    <Button
+                                                      type="button"
+                                                      size="sm"
+                                                      variant="outline"
+                                                      onClick={() => {
+                                                        setSelectedTool(null);
+                                                        setToolConfigFormData(null);
+                                                      }}
+                                                    >
+                                                      Cancel
+                                                    </Button>
                                                     <Button
                                                       type="submit"
                                                       size="sm"
