@@ -96,6 +96,7 @@
     "create": "创建",
     "delete": "删除",
     "deleteTool": "删除工具",
+    "disabled": "已禁用",
     "disconnect": "断开连接",
     "done": "完成",
     "edit": "编辑",
@@ -553,6 +554,7 @@
     "runNow": "立即运行"
   },
   "tools": {
+    "canNowEditToolInPlayground": "您现在可以在游乐场中编辑该工具",
     "create": "创建工具",
     "description": "管理、定制和扩展您的人工智能工具。",
     "disconnect": {
@@ -566,7 +568,12 @@
       }
     },
     "errorDuplicateTool": "工具复制失败",
+    "errorExecuteTool": "工具执行失败",
+    "errorExportTool": "导出工具失败",
     "errorOpenToolInCodeEditor": "无法在代码编辑器中打开工具",
+    "errorPublishTool": "发布工具失败",
+    "errorUpdateTool": "更新工具失败",
+    "fileSavingCancelled": "文件保存已取消",
     "installFromStore": "从商店安装",
     "label": "深海工具",
     "lookingForMoreTools": "寻找更多工具？",
@@ -584,14 +591,20 @@
         "title": "元数据生成完成"
       }
     },
+    "oauthSetSuccess": "OAuth 设置成功更新",
     "setupDescription": "要使用此功能，我们需要先配置一些设置。这只需一分钟，有助于确保一切顺利运行。",
     "setupNow": "立即设置",
     "setupRequired": "工具设置必需",
+    "showFullExecutionError": "显示完整错误信息",
+    "showSimplifiedExecutionError": "显示简化错误",
     "store": {
       "label": "探索人工智能商店"
     },
     "successDuplicateTool": "工具复制成功",
+    "successExecuteTool": "工具执行成功",
+    "successExportTool": "工具成功导出",
     "successOpenToolInCodeEditor": "工具已在代码编辑器中打开",
+    "successUpdateToolConfig": "工具配置成功更新",
     "visitStore": "访问深海商店，发现并安装更多工具以增强您的工作流程"
   },
   "vectorFs": {

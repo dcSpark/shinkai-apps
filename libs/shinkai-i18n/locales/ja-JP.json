@@ -96,6 +96,7 @@
     "create": "作成する",
     "delete": "削除",
     "deleteTool": "ツールを削除",
+    "disabled": "無効",
     "disconnect": "切断",
     "done": "完了",
     "edit": "編集",
@@ -553,6 +554,7 @@
     "runNow": "今すぐ実行"
   },
   "tools": {
+    "canNowEditToolInPlayground": "プレイグラウンドでツールを編集できるようになりました",
     "create": "ツールを作成",
     "description": "AIツールを管理、カスタマイズ、拡張します。",
     "disconnect": {
@@ -566,7 +568,12 @@
       }
     },
     "errorDuplicateTool": "ツールの複製に失敗しました",
+    "errorExecuteTool": "ツールの実行に失敗しました",
+    "errorExportTool": "ツールのエクスポートに失敗しました",
     "errorOpenToolInCodeEditor": "コードエディタでツールを開くことに失敗しました",
+    "errorPublishTool": "ツールの公開に失敗しました",
+    "errorUpdateTool": "ツールの更新に失敗しました",
+    "fileSavingCancelled": "ファイルの保存がキャンセルされました",
     "installFromStore": "ストアからインストール",
     "label": "深海ツール",
     "lookingForMoreTools": "さらにツールを探していますか？",
@@ -584,14 +591,20 @@
         "title": "メタデータ生成完了"
       }
     },
+    "oauthSetSuccess": "OAuth設定が正常に更新されました",
     "setupDescription": "この機能を使用するには、まずいくつかの設定を構成する必要があります。これには1分ほどしかかからず、すべてがスムーズに動作することを保証します。",
     "setupNow": "今すぐセットアップ",
     "setupRequired": "ツールのセットアップが必要です",
+    "showFullExecutionError": "完全なエラーメッセージを表示",
+    "showSimplifiedExecutionError": "簡易エラーを表示",
     "store": {
       "label": "AIストアを探る"
     },
     "successDuplicateTool": "ツールが正常に複製されました",
+    "successExecuteTool": "ツールが正常に実行されました",
+    "successExportTool": "ツールが正常にエクスポートされました",
     "successOpenToolInCodeEditor": "ツールがコードエディタで開かれました",
+    "successUpdateToolConfig": "ツールの設定が正常に更新されました",
     "visitStore": "作業を向上させるための追加ツールを発見し、インストールするには新海ストアを訪れてください"
   },
   "vectorFs": {

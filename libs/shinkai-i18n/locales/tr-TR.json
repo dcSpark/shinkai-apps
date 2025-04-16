@@ -96,6 +96,7 @@
     "create": "Oluştur",
     "delete": "Sil",
     "deleteTool": "Aracı Sil",
+    "disabled": "Devre Dışı",
     "disconnect": "Bağlantıyı Kes",
     "done": "Tamam",
     "edit": "Düzenle",
@@ -553,6 +554,7 @@
     "runNow": "Şimdi Çalıştır"
   },
   "tools": {
+    "canNowEditToolInPlayground": "Artık aracı oyun alanında düzenleyebilirsiniz",
     "create": "Araç Oluştur",
     "description": "Yapay zeka araçlarınızı yönetin, özelleştirin ve genişletin.",
     "disconnect": {
@@ -566,7 +568,12 @@
       }
     },
     "errorDuplicateTool": "Aracı çoğaltma işlemi başarısız oldu",
+    "errorExecuteTool": "Araç çalıştırma başarısız oldu",
+    "errorExportTool": "Aracı dışa aktarma başarısız oldu",
     "errorOpenToolInCodeEditor": "Kod editöründe aracı açma başarısız oldu",
+    "errorPublishTool": "Aracı yayımlama başarısız oldu",
+    "errorUpdateTool": "Aracı güncelleme başarısız oldu",
+    "fileSavingCancelled": "Dosya kaydetme iptal edildi",
     "installFromStore": "Mağazadan Yükle",
     "label": "Shinkai Araçları",
     "lookingForMoreTools": "Daha fazla araç mı arıyorsunuz?",
@@ -584,14 +591,20 @@
         "title": "Meta Veriler Üretimi Tamamlandı"
       }
     },
+    "oauthSetSuccess": "OAuth ayarları başarıyla güncellendi",
     "setupDescription": "Bu özelliği kullanmak için önce bazı ayarları yapılandırmamız gerekiyor. Bu sadece bir dakikanızı alacak ve her şeyin sorunsuz çalışmasını sağlamaya yardımcı olacaktır.",
     "setupNow": "Şimdi Kur",
     "setupRequired": "Araç Kurulumu Gerekli",
+    "showFullExecutionError": "Tam hata mesajını göster",
+    "showSimplifiedExecutionError": "Basitleştirilmiş hatayı göster",
     "store": {
       "label": "Yapay Zeka Mağazasını Keşfet"
     },
     "successDuplicateTool": "Araç başarıyla kopyalandı",
+    "successExecuteTool": "Araç başarıyla çalıştırıldı",
+    "successExportTool": "Araç başarıyla dışa aktarıldı",
     "successOpenToolInCodeEditor": "Araç kod editöründe açıldı",
+    "successUpdateToolConfig": "Araç yapılandırması başarıyla güncellendi",
     "visitStore": "İş akışınızı geliştirmek için ek araçlar keşfetmek ve yüklemek üzere Shinkai Mağazası'nı ziyaret edin"
   },
   "vectorFs": {

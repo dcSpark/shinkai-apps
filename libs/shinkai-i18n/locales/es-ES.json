@@ -1,4 +1,6 @@
 {
+  "": {
+  },
   "aiFilesSearch": {
     "description": "Busca para encontrar contenido en todos los archivos de tus archivos AI fácilmente",
     "filesSelected": "Seleccionados {{count}} archivos",
@@ -96,6 +98,7 @@
     "create": "Crear",
     "delete": "Eliminar",
     "deleteTool": "Eliminar herramienta",
+    "disabled": "Deshabilitado",
     "disconnect": "Desconectar",
     "done": "Hecho",
     "edit": "Editar",
@@ -553,6 +556,7 @@
     "runNow": "Ejecutar ahora"
   },
   "tools": {
+    "canNowEditToolInPlayground": "Ahora puedes editar la herramienta en el entorno de pruebas",
     "create": "Crear herramienta",
     "description": "Gestiona, personaliza y amplía tus herramientas de IA.",
     "disconnect": {
@@ -566,7 +570,12 @@
       }
     },
     "errorDuplicateTool": "Error al duplicar la herramienta",
+    "errorExecuteTool": "Error en la ejecución de la herramienta",
+    "errorExportTool": "Error al exportar la herramienta",
     "errorOpenToolInCodeEditor": "Error al abrir la herramienta en el editor de código",
+    "errorPublishTool": "Error al publicar la herramienta",
+    "errorUpdateTool": "Error al actualizar la herramienta",
+    "fileSavingCancelled": "Guardado de archivo cancelado",
     "installFromStore": "Instalar desde la tienda",
     "label": "Herramientas Shinkai",
     "lookingForMoreTools": "¿Buscas más herramientas?",
@@ -584,14 +593,20 @@
         "title": "Generación de metadatos completa"
       }
     },
+    "oauthSetSuccess": "Configuraciones de OAuth actualizadas con éxito",
     "setupDescription": "Para utilizar esta función, necesitamos configurar algunos ajustes primero. Esto solo tomará un minuto y ayuda a garantizar que todo funcione sin problemas.",
     "setupNow": "Configurar Ahora",
     "setupRequired": "Configuración de Herramientas Requerida",
+    "showFullExecutionError": "Mostrar mensaje de error completo",
+    "showSimplifiedExecutionError": "Mostrar error simplificado",
     "store": {
       "label": "Explorar la Tienda de IA"
     },
     "successDuplicateTool": "Herramienta duplicada con éxito",
+    "successExecuteTool": "Herramienta ejecutada con éxito",
+    "successExportTool": "Herramienta exportada con éxito",
     "successOpenToolInCodeEditor": "Herramienta abierta en el editor de código",
+    "successUpdateToolConfig": "Configuración de la herramienta actualizada con éxito",
     "visitStore": "Visita la tienda Shinkai para descubrir e instalar herramientas adicionales que mejoren tu flujo de trabajo"
   },
   "vectorFs": {

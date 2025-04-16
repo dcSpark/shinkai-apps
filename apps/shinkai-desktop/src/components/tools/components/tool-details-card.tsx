@@ -142,7 +142,7 @@ export default function ToolDetailsCard({
       );
     },
     onError: (error) => {
-      toast.error('Failed to publish tool', {
+      toast.error(t('tools.errorPublishTool'), {
         description: error.response?.data?.message ?? error.message,
       });
     },
@@ -155,14 +155,14 @@ export default function ToolDetailsCard({
         // @ts-expect-error - TODO: fix this, update the tool config format when updating the tool in backend
         variables.toolPayload.config?.length > 0
       ) {
-        toast.success('Tool configuration updated successfully');
+        toast.success(t('tools.successUpdateToolConfig'));
       }
       if ('oauth' in variables.toolPayload && variables.toolPayload.oauth) {
-        toast.success('OAuth settings updated successfully');
+        toast.success(t('tools.oauthSetSuccess'));
       }
     },
     onError: (error) => {
-      toast.error('Failed to update tool', {
+      toast.error(t('tools.errorUpdateTool'), {
         description: error.response?.data?.message ?? error.message,
       });
     },
@@ -175,9 +175,9 @@ export default function ToolDetailsCard({
     useDuplicateTool({
       onSuccess: (response) => {
         toast.success(t('tools.successDuplicateTool'), {
-          description: 'You can now edit the tool in the playground',
+          description: t('tools.canNowEditToolInPlayground'),
           action: {
-            label: 'Edit',
+            label: t('vectorFs.actions.edit'),
             onClick: () => {
               navigate(`/tools/edit/${response.tool_router_key}`);
             },
@@ -202,7 +202,7 @@ export default function ToolDetailsCard({
       setToolExecutionResult(response);
       setSimplifiedError("");
       setShowFullError(false);
-      toast.success('Tool executed successfully');
+      toast.success(t('tools.successExecuteTool'));
     },
     onError: (error) => {
       const pythonErrorCaptureRegex = /^(?!.*(?:Traceback|^\s*File\s+"|DEBUG|INFO|Installed)).*(?:Exception|Error|[A-Za-z]+Error):\s*(.+)$/gm;
@@ -242,7 +242,7 @@ export default function ToolDetailsCard({
         });
 
         if (!savePath) {
-          toast.info('File saving cancelled');
+          toast.info(t('tools.fileSavingCancelled'));
           return;
         }
 
@@ -250,10 +250,10 @@ export default function ToolDetailsCard({
           baseDir: BaseDirectory.Download,
         });
 
-        toast.success('Tool exported successfully');
+        toast.success(t('tools.successExportTool'));
       },
       onError: (error) => {
-        toast.error('Failed to export tool', {
+        toast.error(t('tools.errorExportTool'), {
           description: error.response?.data?.message ?? error.message,
         });
       },
@@ -417,7 +417,7 @@ export default function ToolDetailsCard({
                 )}
                 htmlFor="tool-switch"
               >
-                {isEnabled ? 'Enabled' : 'Disabled'}
+                {isEnabled ? t('common.enabled') : t('common.disabled')}
               </label>
               <Switch
                 checked={isEnabled}
@@ -1003,7 +1003,7 @@ export default function ToolDetailsCard({
 
                 {isExecutionError && executionError && (
                   <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
-                    <p>Tool execution failed.</p>
+                    <p>{t('tools.errorExecuteTool')}</p>
                     <pre className="whitespace-break-spaces break-words px-4 text-center">
                       {showFullError 
                         ? executionError.response?.data?.message ?? executionError.message 
@@ -1020,7 +1020,7 @@ export default function ToolDetailsCard({
                         size="sm" 
                         variant="outline"
                       >
-                        {showFullError ? "Show simplified error" : "Show full error message"}
+                        {showFullError ? t('tools.showSimplifiedExecutionError') : t('tools.showFullExecutionError')}
                       </Button>
                     )}
                   </div>
