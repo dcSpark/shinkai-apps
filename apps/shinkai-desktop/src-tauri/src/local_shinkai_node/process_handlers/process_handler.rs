@@ -54,10 +54,12 @@ impl ProcessHandler {
     fn command_event_to_message_log(process_name: &str, event: CommandEvent) {
         match event {
             CommandEvent::Stdout(message) => {
-                log::info!(target: process_name, "{}", String::from_utf8_lossy(&message));
+                let message_str = String::from_utf8_lossy(&message);
+                log::info!(target: process_name, "{}", message_str);
             }
             CommandEvent::Stderr(message) => {
-                log::error!(target: process_name, "{}", String::from_utf8_lossy(&message));
+                let message_str = String::from_utf8_lossy(&message);
+                log::error!(target: process_name, "{}", message_str);
             }
             CommandEvent::Error(message) => {
                 log::error!("[{}] error: {}", process_name, message);
