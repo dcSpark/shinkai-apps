@@ -495,9 +495,8 @@ export default function ToolDetailsCard({
 
       <Tabs
         className="w-full py-8"
-        defaultValue="description"
-        value={
-          window.location.hash === '#try-it-out' ? 'try-it-out' : undefined
+        defaultValue={
+          window.location.hash === '#try-it-out' ? 'try-it-out' : 'description'
         }
       >
         <TabsList className="mb-4 flex w-full justify-start gap-6 rounded-none border-b border-gray-200 bg-transparent pb-0">
