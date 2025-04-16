@@ -18,6 +18,7 @@ export type Agent = {
     vector_search_mode: string;
   };
   cron_tasks?: RecurringTask[];
+  tools_config_override?: Record<string, Record<string, any>>;
 };
 
 export type CreateAgentRequest = Agent;
