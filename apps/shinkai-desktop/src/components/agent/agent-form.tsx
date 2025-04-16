@@ -89,7 +89,11 @@ import { useSettings } from '../../store/settings';
 import { AIModelSelector } from '../chat/chat-action-bar/ai-update-selection-action-bar';
 import { MessageList } from '../chat/components/message-list';
 import { ChatProvider } from '../chat/context/chat-context';
-import { useWebSocketMessage } from '../chat/websocket-message';
+import { ToolsProvider } from '../chat/context/tools-context';
+import {
+  useWebSocketMessage,
+  useWebSocketTools,
+} from '../chat/websocket-message';
 
 const agentFormSchema = z.object({
   name: z.string(),
@@ -197,6 +201,7 @@ function AgentSideChat({
     inboxId: chatInboxId ?? '',
     enabled: !!chatInboxId,
   });
+  useWebSocketTools({ inboxId: chatInboxId ?? '', enabled: !!chatInboxId });
 
   const { mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
@@ -215,7 +220,6 @@ function AgentSideChat({
     isChatConversationSuccess,
   } = useChatConversationWithOptimisticUpdates({
     inboxId: chatInboxId ?? '',
-    forceRefetchInterval: true,
   });
 
   const isLoadingMessage = useMemo(() => {
@@ -2119,10 +2123,12 @@ function AgentForm({ mode }: AgentFormProps) {
             minSize={20}
           >
             <div className="h-full min-h-0 overflow-hidden">
-              <AgentSideChat
-                agentId={agent.agent_id}
-                onClose={() => setIsSideChatOpen(false)}
-              />
+              <ToolsProvider>
+                <AgentSideChat
+                  agentId={agent.agent_id}
+                  onClose={() => setIsSideChatOpen(false)}
+                />
+              </ToolsProvider>
             </div>
           </ResizablePanel>
         </>

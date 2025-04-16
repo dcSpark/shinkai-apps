@@ -405,7 +405,10 @@ export const useWebSocketMessage = ({
   };
 };
 
-export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
+export const useWebSocketTools = ({
+  enabled,
+  inboxId: defaultInboxId,
+}: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
   const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
@@ -415,7 +418,7 @@ export const useWebSocketTools = ({ enabled }: UseWebSocketMessage) => {
     enabled,
   );
   const { inboxId: encodedInboxId = '' } = useParams();
-  const inboxId = decodeURIComponent(encodedInboxId);
+  const inboxId = defaultInboxId || decodeURIComponent(encodedInboxId);
   const queryClient = useQueryClient();
   const isToolReceived = useRef(false);
 
