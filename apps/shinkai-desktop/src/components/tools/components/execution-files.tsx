@@ -1,16 +1,14 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useGetShinkaiFileProtocol } from '@shinkai_network/shinkai-node-state/v2/queries/getShinkaiFileProtocol/useGetShinkaiFileProtocol';
+import { Button,Dialog, DialogContent, DialogTrigger } from '@shinkai_network/shinkai-ui';
+import { fileIconMap } from '@shinkai_network/shinkai-ui/assets';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
-import { FileTypeIcon, LoaderIcon, Paperclip, XIcon } from 'lucide-react';
+import { LoaderIcon, Paperclip, XIcon } from 'lucide-react';
 import { useEffect,useState } from 'react';
 import { toast } from 'sonner';
-
-import { fileIconMap } from '../assets/icons/file';
-import { cn } from '../utils';
-import { Button } from './button';
-import { Dialog, DialogContent, DialogTrigger } from './dialog';
 
 // TODO: Find a better way to inject auth details without prop drilling or depending on a specific store structure
 // This is a temporary workaround. Ideally, context or a shared service should provide auth.

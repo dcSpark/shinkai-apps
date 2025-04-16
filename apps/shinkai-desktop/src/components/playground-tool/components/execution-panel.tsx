@@ -4,7 +4,6 @@ import { useGetShinkaiFileProtocol } from '@shinkai_network/shinkai-node-state/v
 import {
   Button,
   CommandShortcut,
-  ExecutionFiles,
   JsonForm,
   Skeleton,
   Tabs,
@@ -19,11 +18,11 @@ import { AppWindow, LoaderIcon, TerminalIcon } from 'lucide-react';
 import { memo, MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import { useAuth } from '../../../store/auth';
+import { ExecutionFiles } from '../../tools/components/execution-files';
 import { usePlaygroundStore } from '../context/playground-context';
 import { ToolErrorFallback } from '../error-boundary';
 import ToolCodeEditor from '../tool-code-editor';
 import { tabTriggerClassnames } from './tool-playground';
-
 function ExecutionPanelBase({
   isExecutionToolCodeSuccess,
   isExecutionToolCodeError,

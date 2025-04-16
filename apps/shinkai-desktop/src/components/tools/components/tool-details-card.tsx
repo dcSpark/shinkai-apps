@@ -28,7 +28,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  ExecutionFiles,
   JsonForm,
   Switch,
   Tabs,
@@ -64,6 +63,7 @@ import { SHINKAI_STORE_URL } from '../../../utils/store';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import EditToolDetailsDialog from './edit-tool-details-dialog';
+import { ExecutionFiles } from './execution-files';
 
 /**
  * Removes embedding-related fields from a tool object to prevent displaying large embedding arrays
@@ -1179,76 +1179,5 @@ export function ToolIcon() {
         />
       </svg>
     </div>
-  );
-}
-
-function ToolResultFileCard({ filePath }: { filePath: string }) {
-  const auth = useAuth((state) => state.auth);
-  const { refetch } = useGetShinkaiFileProtocol(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      file: filePath,
-    },
-    {
-      enabled: false,
-    },
-  );
-
-  const fileNameBase =
-    filePath.split('/')?.at(-1)?.split('.')?.at(0) ?? 'untitled_tool';
-  const fileExtension = filePath.split('/')?.at(-1)?.split('.')?.at(-1) ?? '';
-
-  return (
-    <Button
-      className="flex justify-start gap-2"
-      onClick={async () => {
-        const response = await refetch();
-        const file = new Blob([response.data ?? ''], {
-          type: 'application/octet-stream',
-        });
-
-        const arrayBuffer = await file.arrayBuffer();
-        const content = new Uint8Array(arrayBuffer);
-
-        const savePath = await save({
-          defaultPath: `${fileNameBase}.${fileExtension}`,
-          filters: [
-            {
-              name: 'File',
-              extensions: [fileExtension],
-            },
-          ],
-        });
-
-        if (!savePath) {
-          toast.info('File saving cancelled');
-          return;
-        }
-
-        await fs.writeFile(savePath, content, {
-          baseDir: BaseDirectory.Download,
-        });
-
-        toast.success(`${fileNameBase} downloaded successfully`);
-      }}
-      rounded="lg"
-      size="xs"
-      variant="outline"
-    >
-      <div className="flex shrink-0 items-center">
-        {fileExtension && fileIconMap[fileExtension] ? (
-          <FileTypeIcon
-            className="text-gray-80 h-[18px] w-[18px] shrink-0"
-            type={fileExtension}
-          />
-        ) : (
-          <Paperclip className="text-gray-80 h-3.5 w-3.5 shrink-0" />
-        )}
-      </div>
-      <div className="truncate text-left text-xs">
-        {filePath.split('/')?.at(-1)}
-      </div>
-    </Button>
   );
 }
