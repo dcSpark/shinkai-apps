@@ -255,7 +255,7 @@ export function AIModelSelectorBase({
                       >
                         <Link
                           className="text-gray-80 size-3.5 rounded-lg hover:text-white"
-                          to={`/agents/edit/${agent.name}`}
+                          to={`/agents/edit/${agent.agent_id}`}
                         >
                           <BoltIcon className="size-full" />
                         </Link>
