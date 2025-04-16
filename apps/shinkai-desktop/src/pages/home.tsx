@@ -91,6 +91,14 @@ export const showSpotlightWindow = async () => {
 const EmptyMessage = () => {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
+  const toolListRef = useRef<HTMLDivElement>(null);
+
+  const scrollUpWhenSearchingTools = useCallback(() => {
+    requestAnimationFrame(() => {
+      toolListRef.current?.scrollTo({ top: 0 });
+    });
+  }, []);
+
   const setSetJobScopeOpen = useSetJobScope(
     (state) => state.setSetJobScopeOpen,
   );
@@ -655,11 +663,14 @@ const EmptyMessage = () => {
                 align="start"
                 className="w-[500px] p-0"
                 side="bottom"
-                sideOffset={-120}
+                sideOffset={-200}
               >
                 <Command>
-                  <CommandInput placeholder="Search tools..." />
-                  <CommandList>
+                  <CommandInput
+                    onValueChange={scrollUpWhenSearchingTools}
+                    placeholder="Search tools..."
+                  />
+                  <CommandList ref={toolListRef}>
                     <CommandEmpty>No tools found.</CommandEmpty>
                     <CommandGroup heading="Your Active Tools">
                       {isToolsListSuccess &&

@@ -165,6 +165,14 @@ function ConversationChatFooter({
   const { t } = useTranslation();
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const toolListRef = useRef<HTMLDivElement>(null);
+
+  const scrollUpWhenSearchingTools = useCallback(() => {
+    requestAnimationFrame(() => {
+      toolListRef.current?.scrollTo({ top: 0 });
+    });
+  }, []);
+
   const auth = useAuth((state) => state.auth);
   const { captureAnalyticEvent } = useAnalytics();
 
@@ -558,8 +566,11 @@ function ConversationChatFooter({
               sideOffset={10}
             >
               <Command>
-                <CommandInput placeholder="Search tools..." />
-                <CommandList>
+                <CommandInput
+                  onValueChange={scrollUpWhenSearchingTools}
+                  placeholder="Search tools..."
+                />
+                <CommandList ref={toolListRef}>
                   <CommandEmpty>No tools found.</CommandEmpty>
                   <CommandGroup heading="Your Active Tools">
                     {isToolsListSuccess &&
@@ -584,7 +595,7 @@ function ConversationChatFooter({
                             <span className="line-clamp-1 text-white">
                               {formatText(tool.name)}
                             </span>
-                            <span className="text-gray-80 whitespace-pre-wrap line-clamp-3 text-xs">
+                            <span className="text-gray-80 line-clamp-3 whitespace-pre-wrap text-xs">
                               {tool.description}
                             </span>
                           </div>
@@ -647,7 +658,9 @@ function ConversationChatFooter({
                         className="max-w-[500px]"
                         side="top"
                       >
-                        <span className="whitespace-pre-wrap">{tool.description}</span>
+                        <span className="whitespace-pre-wrap">
+                          {tool.description}
+                        </span>
 
                         <br />
                         <div className="flex items-center justify-end gap-2 text-xs text-gray-100">
@@ -846,31 +859,35 @@ export const SelectedToolChat = ({
     properties: {
       ...(args.properties || {}),
       thenDoAdditionalUserRequest: {
-        type: "string",
-        title: "Additional Request",
-        description: "Optional text that will be added to the prompt sent to the AI"
-      }
-    }
+        type: 'string',
+        title: 'Additional Request',
+        description:
+          'Optional text that will be added to the prompt sent to the AI',
+      },
+    },
   };
-  
+
   // Create a custom UI schema to properly order and format fields
   const uiSchema = {
-    ...Object.keys(args.properties || {}).reduce((acc: Record<string, any>, key) => {
-      acc[key] = { "ui:order": 1 }; // Put regular parameters first
-      return acc;
-    }, {}),
-    'thenDoAdditionalUserRequest': {
+    ...Object.keys(args.properties || {}).reduce(
+      (acc: Record<string, any>, key) => {
+        acc[key] = { 'ui:order': 1 }; // Put regular parameters first
+        return acc;
+      },
+      {},
+    ),
+    thenDoAdditionalUserRequest: {
       'ui:widget': 'textarea',
       'ui:options': {
-        rows: 3
+        rows: 3,
       },
       'ui:order': 2, // Put additional request last
       'ui:placeholder': 'Add additional instructions or context for the AI',
-      'ui:classNames': 'custom-placeholder'
+      'ui:classNames': 'custom-placeholder',
     },
-    'ui:submitButtonOptions': { norender: true }
+    'ui:submitButtonOptions': { norender: true },
   };
-  
+
   return (
     <motion.div
       animate={{ opacity: 1 }}

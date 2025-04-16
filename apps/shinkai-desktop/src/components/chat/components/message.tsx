@@ -41,6 +41,7 @@ import {
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { format } from 'date-fns';
+import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Edit3,
@@ -344,7 +345,7 @@ export const MessageBase = ({
                   message.toolCalls &&
                   message.toolCalls.length > 0 && (
                     <Accordion
-                      className="space-y-1.5 self-baseline pb-3 overflow-x-auto max-w-full"
+                      className="max-w-full space-y-1.5 self-baseline overflow-x-auto pb-3"
                       type="multiple"
                     >
                       {message.toolCalls.map((tool, index) => {
@@ -443,8 +444,20 @@ export const MessageBase = ({
                   ) &&
                   message.content === '' && (
                     <div className="whitespace-pre-line pt-1.5">
-                      <span className="text-gray-80 text-xs">
+                      <span className="text-official-gray-400 text-xs">
                         Executing tools
+                      </span>
+                    </div>
+                  )}
+                {message.role === 'assistant' &&
+                  message.toolCalls?.length > 0 &&
+                  message.toolCalls?.every(
+                    (tool) => tool.status === 'Complete',
+                  ) &&
+                  message.content === '' && (
+                    <div className="whitespace-pre-line pt-1.5">
+                      <span className="text-official-gray-400 text-xs">
+                        Getting AI response
                       </span>
                     </div>
                   )}
@@ -637,15 +650,10 @@ export const Message = memo(MessageBase, (prev, next) => {
     prev.messageId === next.messageId &&
     prev.message.content === next.message.content &&
     prev.minimalistMode === next.minimalistMode &&
-    (prev.message as AssistantMessage).toolCalls?.length ===
-      (next.message as AssistantMessage).toolCalls?.length &&
-    (prev.message as AssistantMessage)?.toolCalls?.every((prevTool, index) => {
-      const nextToolCalls = next.message as AssistantMessage;
-      return (
-        prevTool.name === nextToolCalls.toolCalls?.[index]?.name &&
-        prevTool?.status === nextToolCalls.toolCalls?.[index]?.status
-      );
-    })
+    equal(
+      (prev.message as AssistantMessage).toolCalls,
+      (next.message as AssistantMessage).toolCalls,
+    )
   );
 });
 

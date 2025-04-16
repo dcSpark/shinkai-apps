@@ -13,6 +13,7 @@ import { useCreateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useCreateRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/createRecurringTask/useCreateRecurringTask';
 import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
+import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
 import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
@@ -89,7 +90,11 @@ import { useSettings } from '../../store/settings';
 import { AIModelSelector } from '../chat/chat-action-bar/ai-update-selection-action-bar';
 import { MessageList } from '../chat/components/message-list';
 import { ChatProvider } from '../chat/context/chat-context';
-import { useWebSocketMessage } from '../chat/websocket-message';
+import { ToolsProvider } from '../chat/context/tools-context';
+import {
+  useWebSocketMessage,
+  useWebSocketTools,
+} from '../chat/websocket-message';
 
 const agentFormSchema = z.object({
   name: z.string(),
@@ -197,6 +202,7 @@ function AgentSideChat({
     inboxId: chatInboxId ?? '',
     enabled: !!chatInboxId,
   });
+  useWebSocketTools({ inboxId: chatInboxId ?? '', enabled: !!chatInboxId });
 
   const { mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
@@ -205,6 +211,7 @@ function AgentSideChat({
   });
 
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({});
+  const { mutateAsync: retryMessage } = useRetryMessage();
 
   const {
     data,
@@ -215,7 +222,6 @@ function AgentSideChat({
     isChatConversationSuccess,
   } = useChatConversationWithOptimisticUpdates({
     inboxId: chatInboxId ?? '',
-    forceRefetchInterval: true,
   });
 
   const isLoadingMessage = useMemo(() => {
@@ -257,6 +263,35 @@ function AgentSideChat({
     }
 
     setMessage('');
+  };
+
+  const editAndRegenerateMessage = async (
+    content: string,
+    parentHash: string,
+  ) => {
+    if (!auth) return;
+    const decodedInboxId = decodeURIComponent(chatInboxId ?? '');
+    const jobId = extractJobIdFromInbox(decodedInboxId);
+
+    await sendMessageToJob({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      jobId,
+      message: content,
+      parent: parentHash,
+    });
+  };
+
+  const regenerateMessage = async (messageId: string) => {
+    if (!auth) return;
+    const decodedInboxId = decodeURIComponent(chatInboxId ?? '');
+
+    await retryMessage({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      inboxId: decodedInboxId,
+      messageId: messageId,
+    });
   };
 
   return (
@@ -313,15 +348,15 @@ function AgentSideChat({
             ) : (
               <MessageList
                 containerClassName="px-2"
-                disabledRetryAndEdit={true}
+                editAndRegenerateMessage={editAndRegenerateMessage}
                 fetchPreviousPage={fetchPreviousPage}
                 hasPreviousPage={hasPreviousPage}
                 isFetchingPreviousPage={isFetchingPreviousPage}
                 isLoading={isChatConversationLoading}
                 isSuccess={isChatConversationSuccess}
-                minimalistMode
                 noMoreMessageLabel={t('chat.allMessagesLoaded')}
                 paginatedMessages={data}
+                regenerateMessage={regenerateMessage}
               />
             )}
           </div>
@@ -2119,10 +2154,12 @@ function AgentForm({ mode }: AgentFormProps) {
             minSize={20}
           >
             <div className="h-full min-h-0 overflow-hidden">
-              <AgentSideChat
-                agentId={agent.agent_id}
-                onClose={() => setIsSideChatOpen(false)}
-              />
+              <ToolsProvider>
+                <AgentSideChat
+                  agentId={agent.agent_id}
+                  onClose={() => setIsSideChatOpen(false)}
+                />
+              </ToolsProvider>
             </div>
           </ResizablePanel>
         </>
