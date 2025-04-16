@@ -73,13 +73,6 @@ const FilePreviewRenderer = ({
   const isVideoPreviewable = fileType.startsWith('video/') || ['mp4', 'webm', 'ogg', 'avi', 'mov', 'wmv', 'flv', 'mkv'].includes(extension);
   const isAudioPreviewable = fileType.startsWith('audio/') || ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac', 'wma', 'm4b', 'm4p', 'm4b', 'm4p'].includes(extension);
   
-  console.log('fileType', fileType);
-  console.log('extension', extension);
-  console.log('isTextPreviewable', isTextPreviewable);
-  console.log('isImagePreviewable', isImagePreviewable);
-  console.log('isVideoPreviewable', isVideoPreviewable);
-  console.log('isAudioPreviewable', isAudioPreviewable);  
-  
   useEffect(() => {
     if (blob && (isImagePreviewable || isVideoPreviewable || isAudioPreviewable)) {
       const url = URL.createObjectURL(blob);
