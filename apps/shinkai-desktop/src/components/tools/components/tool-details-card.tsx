@@ -267,17 +267,17 @@ export default function ToolDetailsCard({
       tool?.configFormData &&
       Object.keys(tool.configFormData).length > 0
     ) {
-      setFormData(
-        Object.entries(tool.configFormData).reduce(
-          (acc, [key, value]) => {
-            if (value !== null) {
-              acc[key] = value;
-            }
-            return acc;
-          },
-          {} as Record<string, any>,
-        ),
+      const processedConfig = Object.entries(tool.configFormData).reduce(
+        (acc, [key, value]) => {
+          if (value !== null && value !== undefined) {
+            acc[key] = value;
+          }
+          return acc;
+        },
+        {} as Record<string, any>,
       );
+      setFormData(processedConfig);
+      setTryItOutFormData({ configs: processedConfig });
     }
   }, [tool]);
 
