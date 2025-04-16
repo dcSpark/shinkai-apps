@@ -4,6 +4,7 @@ import { useGetShinkaiFileProtocol } from '@shinkai_network/shinkai-node-state/v
 import {
   Button,
   CommandShortcut,
+  ExecutionFiles,
   JsonForm,
   Skeleton,
   Tabs,
@@ -11,16 +12,11 @@ import {
   TabsList,
   TabsTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { fileIconMap, FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { save } from '@tauri-apps/plugin-dialog';
-import * as fs from '@tauri-apps/plugin-fs';
-import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AppWindow, LoaderIcon, Paperclip, TerminalIcon } from 'lucide-react';
+import { AppWindow, LoaderIcon, TerminalIcon } from 'lucide-react';
 import { memo, MutableRefObject, useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
@@ -367,23 +363,11 @@ const ToolResultBase = ({
   toolResultFiles: string[];
   toolResult: string;
 }) => {
+  const auth = useAuth((state) => state.auth);
+
   return (
     <div className="flex flex-col gap-4 pb-6">
-      {toolResultFiles.length > 0 && (
-        <>
-          <h5 className="text-xs uppercase text-gray-50">Output</h5>
-          <div className="flex items-center gap-4">
-            <h1 className="text-gray-80 shrink-0 text-xs font-medium">
-              Generated Files
-            </h1>
-            <div className="flex w-full gap-2">
-              {toolResultFiles?.map((file) => (
-                <ToolResultFileCard filePath={file} key={file} />
-              ))}
-            </div>
-          </div>
-        </>
-      )}
+      <ExecutionFiles auth={auth ?? {}} files={toolResultFiles} />
       <ToolCodeEditor language="json" readOnly value={toolResult} />
     </div>
   );
@@ -490,74 +474,3 @@ const ToolLogs = memo(ToolLogsBase, (prevProps, nextProps) => {
   if (prevProps.mountTimestamp !== nextProps.mountTimestamp) return false;
   return true;
 });
-
-function ToolResultFileCard({ filePath }: { filePath: string }) {
-  const auth = useAuth((state) => state.auth);
-  const { refetch } = useGetShinkaiFileProtocol(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      file: filePath,
-    },
-    {
-      enabled: false,
-    },
-  );
-
-  const fileNameBase =
-    filePath.split('/')?.at(-1)?.split('.')?.at(0) ?? 'untitled_tool';
-  const fileExtension = filePath.split('/')?.at(-1)?.split('.')?.at(-1) ?? '';
-
-  return (
-    <Button
-      className="flex justify-start gap-2"
-      onClick={async () => {
-        const response = await refetch();
-        const file = new Blob([response.data ?? ''], {
-          type: 'application/octet-stream',
-        });
-
-        const arrayBuffer = await file.arrayBuffer();
-        const content = new Uint8Array(arrayBuffer);
-
-        const savePath = await save({
-          defaultPath: `${fileNameBase}.${fileExtension}`,
-          filters: [
-            {
-              name: 'File',
-              extensions: [fileExtension],
-            },
-          ],
-        });
-
-        if (!savePath) {
-          toast.info('File saving cancelled');
-          return;
-        }
-
-        await fs.writeFile(savePath, content, {
-          baseDir: BaseDirectory.Download,
-        });
-
-        toast.success(`${fileNameBase} downloaded successfully`);
-      }}
-      rounded="lg"
-      size="xs"
-      variant="outline"
-    >
-      <div className="flex shrink-0 items-center">
-        {fileExtension && fileIconMap[fileExtension] ? (
-          <FileTypeIcon
-            className="text-gray-80 h-[18px] w-[18px] shrink-0"
-            type={fileExtension}
-          />
-        ) : (
-          <Paperclip className="text-gray-80 h-3.5 w-3.5 shrink-0" />
-        )}
-      </div>
-      <div className="truncate text-left text-xs">
-        {filePath.split('/')?.at(-1)}
-      </div>
-    </Button>
-  );
-}

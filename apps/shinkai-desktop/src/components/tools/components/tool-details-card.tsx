@@ -28,6 +28,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  ExecutionFiles,
   JsonForm,
   Switch,
   Tabs,
@@ -1041,25 +1042,13 @@ export default function ToolDetailsCard({
                       value={JSON.stringify(toolExecutionResult, null, 2)}
                     />
 
-                    {/* Extract and display generated files if present */}
-                    {toolExecutionResult.__created_files__ &&
-                      toolExecutionResult.__created_files__.length > 0 && (
-                        <div className="mt-4 flex flex-col items-start gap-1 rounded-md py-4 pt-1.5">
-                          <span className="text-gray-80 text-xs">
-                            Generated Files
-                          </span>
-                          <div className="mt-2 flex w-full flex-wrap gap-2">
-                            {toolExecutionResult.__created_files__.map(
-                              (filePath: string) => (
-                                <ToolResultFileCard
-                                  filePath={filePath}
-                                  key={filePath}
-                                />
-                              ),
-                            )}
-                          </div>
-                        </div>
-                      )}
+                    <ExecutionFiles
+                      auth={auth ?? {}}
+                      files={
+                        (toolExecutionResult.__created_files__ as string[]) ??
+                        []
+                      }
+                    />
                   </>
                 )}
               </div>
