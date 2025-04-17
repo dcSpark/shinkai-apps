@@ -1,4 +1,5 @@
 import {
+  AgentShinkaiTool,
   DenoShinkaiTool,
   NetworkShinkaiTool,
   PythonShinkaiTool,
@@ -13,6 +14,7 @@ import { useParams } from 'react-router-dom';
 
 import { SubpageLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
+import AgentTool from './agent-tool';
 import DenoTool from './deno-tool';
 import NetworkTool from './network-tool';
 import PythonTool from './python-tool';
@@ -142,6 +144,19 @@ export default function ToolDetails() {
         <NetworkTool
           isEnabled={isEnabled}
           tool={tool as NetworkShinkaiTool}
+          toolRouterKey={toolKey ?? ''}
+        />
+      </SubpageLayout>
+    );
+  } else if (isSuccess && toolType === 'Agent') {
+    return (
+      <SubpageLayout className="container" title="">
+        <AgentTool
+          isEnabled={isEnabled}
+          isPlaygroundTool={playgroundTools?.some(
+            (playgroundTool) => playgroundTool.tool_router_key === toolKey,
+          )}
+          tool={tool as AgentShinkaiTool}
           toolRouterKey={toolKey ?? ''}
         />
       </SubpageLayout>
