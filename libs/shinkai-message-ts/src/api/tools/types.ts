@@ -280,7 +280,7 @@ export type CreateToolMetadataResponse = {
 export enum DynamicToolType {
   DenoDynamic = 'denodynamic',
   PythonDynamic = 'pythondynamic',
-  AgentDynamic = 'agent_dynamic',
+  AgentDynamic = 'agentdynamic',
 }
 
 export type ExecuteToolCodeRequest = {

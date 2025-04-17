@@ -288,7 +288,20 @@ export default function ToolDetailsCard({
         {} as Record<string, any>,
       );
       setFormData(processedConfig);
-      setTryItOutFormData({ configs: processedConfig });
+      setTryItOutFormData({
+        configs: processedConfig,
+      });
+      console.log('tryItOutFormData', tryItOutFormData);
+      console.log('tool', tool);
+    }
+    if (toolType === CodeLanguage.Agent) {
+      setTryItOutFormData({
+        ...tryItOutFormData,
+        params: {
+          ...tryItOutFormData?.params,
+          agent_id: (tool as any).agent_id,
+        },
+      });
     }
   }, [tool]);
 
@@ -360,7 +373,9 @@ export default function ToolDetailsCard({
           {} as Record<string, any>,
         )
       : {};
-
+    if (toolType === CodeLanguage.Agent) {
+      sanitizedParams.agent_id = (tool as any).agent_id;
+    }
     const sanitizedConfigs = formData?.configs
       ? Object.entries(formData.configs).reduce(
           (acc, [key, value]) => {
@@ -381,9 +396,11 @@ export default function ToolDetailsCard({
             ? tool.js_code
             : '',
       language:
-        toolType === CodeLanguage.Python
-          ? CodeLanguage.Python
-          : CodeLanguage.Typescript,
+        toolType === CodeLanguage.Agent
+          ? CodeLanguage.Agent
+          : toolType === 'Deno'
+            ? CodeLanguage.Typescript
+            : CodeLanguage.Python,
       params: sanitizedParams,
       llmProviderId: defaultAgentId ?? '',
       tools: [],
@@ -951,6 +968,9 @@ export default function ToolDetailsCard({
               id="try-it-out-form"
               noHtml5Validate={true}
               onChange={(e) => {
+                if (toolType === CodeLanguage.Agent) {
+                  e.formData.agent_id = (tool as any).agent_id;
+                }
                 setTryItOutFormData(e.formData);
               }}
               onSubmit={handleExecuteTool}
@@ -966,7 +986,13 @@ export default function ToolDetailsCard({
                   tool?.input_args?.properties &&
                   Object.keys(tool.input_args.properties).length > 0
                     ? {
-                        params: tool.input_args,
+                        params: toolType === CodeLanguage.Agent ? {
+                          properties: {
+                            ...tool.input_args.properties,
+                            agent_id: { type: 'string', description: 'The ID of the agent to use for this tool (read only)' },
+                          },
+                          required: ['agent_id', ...tool.input_args.required],
+                        } : tool.input_args,
                       }
                     : {}),
                 },
@@ -978,6 +1004,10 @@ export default function ToolDetailsCard({
                 },
                 params: {
                   'ui:title': 'Input Parameters',
+                  agent_id: {
+                    //'ui:readonly': toolType === CodeLanguage.Agent,
+                    'ui:readonly': true,
+                  },
                 },
               }}
               validator={validator}
