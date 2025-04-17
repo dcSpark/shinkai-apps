@@ -5,9 +5,18 @@ import ToolDetailsCard from './components/tool-details-card';
 export default function RustTool({
   tool,
   isEnabled,
+  toolRouterKey,
 }: {
   tool: RustShinkaiTool;
   isEnabled: boolean;
+  toolRouterKey: string;
 }) {
-  return <ToolDetailsCard isEnabled={isEnabled} tool={tool} toolType="Rust" />;
+  return (
+    <ToolDetailsCard
+      isEnabled={isEnabled}
+      tool={tool}
+      toolKey={toolRouterKey}
+      toolType="Rust"
+    />
+  );
 }

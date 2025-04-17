@@ -6,16 +6,19 @@ export default function DenoTool({
   tool,
   isEnabled,
   isPlaygroundTool,
+  toolRouterKey,
 }: {
   tool: DenoShinkaiTool;
   isEnabled: boolean;
   isPlaygroundTool?: boolean;
+  toolRouterKey: string;
 }) {
   return (
     <ToolDetailsCard
       isEnabled={isEnabled}
       isPlaygroundTool={isPlaygroundTool}
       tool={tool}
+      toolKey={toolRouterKey}
       toolType="Deno"
     />
   );

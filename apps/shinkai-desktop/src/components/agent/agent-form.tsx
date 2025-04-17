@@ -1,6 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DialogClose } from '@radix-ui/react-dialog';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import {
+  ShinkaiTool,
+  ShinkaiToolType,
+} from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   buildInboxIdFromJobId,
   extractJobIdFromInbox,
@@ -17,15 +22,23 @@ import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutation
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
 import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
+import { useGetTool } from '@shinkai_network/shinkai-node-state/v2/queries/getTool/useGetTool';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
 import {
   Badge,
   Button,
+  buttonVariants,
   ChatInputArea,
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
   Form,
   FormControl,
   FormDescription,
@@ -43,6 +56,7 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
+  Skeleton,
   Slider,
   Switch,
   Tabs,
@@ -67,6 +81,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import cronstrue from 'cronstrue';
 import {
+  AlertCircle,
   BoltIcon,
   ChevronRight,
   LucideArrowLeft,
@@ -74,6 +89,7 @@ import {
   RefreshCwIcon,
   SearchIcon,
   Trash2,
+  TrashIcon,
   XIcon,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -95,6 +111,7 @@ import {
   useWebSocketMessage,
   useWebSocketTools,
 } from '../chat/websocket-message';
+import ToolDetailsCard from '../tools/components/tool-details-card';
 
 const agentFormSchema = z.object({
   name: z.string(),
@@ -408,6 +425,9 @@ function AgentForm({ mode }: AgentFormProps) {
   >('persona');
 
   const [isSideChatOpen, setIsSideChatOpen] = useState(false);
+  const [selectedToolConfig, setSelectedToolConfig] = useState<null | string>(
+    null,
+  );
 
   const [scheduleType, setScheduleType] = useState<'normal' | 'scheduled'>(
     'normal',
@@ -1464,6 +1484,90 @@ function AgentForm({ mode }: AgentFormProps) {
                             Create New
                           </Button>
                         </div>
+
+                        {form.watch('tools')?.length > 0 && (
+                          <div className="bg-official-gray-850 mr-2 rounded-lg p-3">
+                            <div className="flex items-center justify-between">
+                              <h3 className="text-official-gray-200 mb-2 text-xs font-medium uppercase tracking-wide">
+                                Selected Tools
+                              </h3>
+                              <Button
+                                className="text-official-gray-400 hover:text-official-gray-100 text-xs"
+                                onClick={() => {
+                                  form.setValue('tools', []);
+                                }}
+                                size="xs"
+                                variant="ghost"
+                              >
+                                Clear
+                              </Button>
+                            </div>
+                            <div className="divide-official-gray-700 divide-y">
+                              {form.watch('tools').map((toolKey) => {
+                                const tool = toolsList?.find(
+                                  (t) => t.tool_router_key === toolKey,
+                                );
+                                if (!tool) return null;
+                                return (
+                                  <div
+                                    className="flex w-full items-center gap-3 py-2"
+                                    key={toolKey}
+                                  >
+                                    <div className="inline-flex flex-1 items-center gap-2 leading-none">
+                                      <div className="flex flex-col gap-1 text-xs text-gray-50">
+                                        <span className="inline-flex items-center gap-1 text-sm text-white">
+                                          {formatText(tool.name)}
+                                        </span>
+                                        <span className="text-official-gray-400 line-clamp-2 text-sm">
+                                          {tool.description}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    {(tool.config ?? []).length > 0 && (
+                                      <Button
+                                        className={cn(
+                                          buttonVariants({
+                                            variant: 'outline',
+                                            size: 'xs',
+                                          }),
+                                        )}
+                                        onClick={() => {
+                                          setSelectedToolConfig(
+                                            tool.tool_router_key,
+                                          );
+                                          window.location.hash =
+                                            '#configuration';
+                                        }}
+                                        type="button"
+                                      >
+                                        <BoltIcon className="size-4" />
+                                        Configure
+                                      </Button>
+                                    )}
+                                    <Switch
+                                      checked={form
+                                        .watch('tools')
+                                        .includes(tool.tool_router_key)}
+                                      className="shrink-0"
+                                      id={tool.tool_router_key}
+                                      onCheckedChange={() => {
+                                        form.setValue(
+                                          'tools',
+                                          form
+                                            .watch('tools')
+                                            .filter(
+                                              (t) => t !== tool.tool_router_key,
+                                            ),
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
                         <div className="relative flex h-10 w-full items-center">
                           <Input
                             className="placeholder-gray-80 !h-full rounded-lg bg-transparent py-2 pl-10"
@@ -1526,46 +1630,41 @@ function AgentForm({ mode }: AgentFormProps) {
                                   <FormItem className="flex w-full flex-col gap-3">
                                     <div className="flex items-center gap-3">
                                       <FormControl>
-                                        <div className="flex w-full items-start gap-3">
+                                        <div className="flex w-full items-center gap-3">
                                           <div className="inline-flex flex-1 items-center gap-2 leading-none">
                                             <label
-                                              className="flex flex-col gap-2 text-xs text-gray-50"
+                                              className="flex flex-col gap-1 text-xs text-gray-50"
                                               htmlFor={tool.tool_router_key}
                                             >
                                               <span className="inline-flex items-center gap-1 text-sm text-white">
                                                 {formatText(tool.name)}
-                                                {(tool.config ?? []).length >
-                                                  0 && (
-                                                  <Tooltip>
-                                                    <TooltipTrigger
-                                                      asChild
-                                                      className="flex shrink-0 items-center gap-1"
-                                                    >
-                                                      <Link
-                                                        className="text-gray-80 size-3.5 rounded-lg hover:text-white"
-                                                        to={`/tools/${tool.tool_router_key}`}
-                                                      >
-                                                        <BoltIcon className="size-full" />
-                                                      </Link>
-                                                    </TooltipTrigger>
-                                                    <TooltipPortal>
-                                                      <TooltipContent
-                                                        align="center"
-                                                        alignOffset={-10}
-                                                        className="max-w-md"
-                                                        side="top"
-                                                      >
-                                                        <p>Configure tool</p>
-                                                      </TooltipContent>
-                                                    </TooltipPortal>
-                                                  </Tooltip>
-                                                )}
                                               </span>
-                                              <span className="text-official-gray-400 text-sm">
+                                              <span className="text-official-gray-400 line-clamp-2 text-sm">
                                                 {tool.description}
                                               </span>
                                             </label>
                                           </div>
+                                          {(tool.config ?? []).length > 0 && (
+                                            <Button
+                                              className={cn(
+                                                buttonVariants({
+                                                  variant: 'outline',
+                                                  size: 'xs',
+                                                }),
+                                              )}
+                                              onClick={() => {
+                                                setSelectedToolConfig(
+                                                  tool.tool_router_key,
+                                                );
+                                                window.location.hash =
+                                                  '#configuration';
+                                              }}
+                                              type="button"
+                                            >
+                                              <BoltIcon className="size-4" />
+                                              Configure
+                                            </Button>
+                                          )}
                                           <Switch
                                             checked={field.value.includes(
                                               tool.tool_router_key,
@@ -1681,115 +1780,120 @@ function AgentForm({ mode }: AgentFormProps) {
                             </div>
                           )}
                           {!searchQuery &&
-                            toolsList?.map((tool) => (
-                              <FormField
-                                control={form.control}
-                                key={tool.tool_router_key}
-                                name="tools"
-                                render={({ field }) => (
-                                  <FormItem className="flex w-full flex-col gap-3">
-                                    <div className="flex items-center gap-3">
-                                      <FormControl>
-                                        <div className="flex w-full items-start gap-3">
-                                          <div className="inline-flex flex-1 items-center gap-2 leading-none">
-                                            <label
-                                              className="flex flex-col gap-2 text-xs text-gray-50"
-                                              htmlFor={tool.tool_router_key}
-                                            >
-                                              <span className="inline-flex items-center gap-1 text-sm text-white">
-                                                {formatText(tool.name)}
-                                                {(tool.config ?? []).length >
-                                                  0 && (
-                                                  <Tooltip>
-                                                    <TooltipTrigger
-                                                      asChild
-                                                      className="flex shrink-0 items-center gap-1"
-                                                    >
-                                                      <Link
-                                                        className="text-gray-80 size-3.5 rounded-lg hover:text-white"
-                                                        to={`/tools/${tool.tool_router_key}`}
-                                                      >
-                                                        <BoltIcon className="size-full" />
-                                                      </Link>
-                                                    </TooltipTrigger>
-                                                    <TooltipPortal>
-                                                      <TooltipContent
-                                                        align="center"
-                                                        alignOffset={-10}
-                                                        className="max-w-md"
-                                                        side="top"
-                                                      >
-                                                        <p>Configure tool</p>
-                                                      </TooltipContent>
-                                                    </TooltipPortal>
-                                                  </Tooltip>
+                            toolsList
+                              ?.filter(
+                                (tool) =>
+                                  !form
+                                    .watch('tools')
+                                    .includes(tool.tool_router_key),
+                              )
+                              .map((tool) => (
+                                <FormField
+                                  control={form.control}
+                                  key={tool.tool_router_key}
+                                  name="tools"
+                                  render={({ field }) => (
+                                    <FormItem className="flex w-full flex-col gap-3">
+                                      <div className="flex items-center gap-3">
+                                        <FormControl>
+                                          <div className="flex w-full items-center gap-3">
+                                            <div className="inline-flex flex-1 items-center gap-2 leading-none">
+                                              <label
+                                                className="flex flex-col gap-1 text-xs text-gray-50"
+                                                htmlFor={tool.tool_router_key}
+                                              >
+                                                <span className="inline-flex items-center gap-1 text-sm text-white">
+                                                  {formatText(tool.name)}
+                                                </span>
+                                                <span className="text-official-gray-400 line-clamp-2 text-sm">
+                                                  {tool.description}
+                                                </span>
+                                              </label>
+                                            </div>
+                                            {(tool.config ?? []).length > 0 && (
+                                              <Button
+                                                className={cn(
+                                                  buttonVariants({
+                                                    variant: 'outline',
+                                                    size: 'xs',
+                                                  }),
                                                 )}
-                                              </span>
-                                              <span className="text-official-gray-400 text-sm">
-                                                {tool.description}
-                                              </span>
-                                            </label>
-                                          </div>
-                                          <Switch
-                                            checked={field.value.includes(
-                                              tool.tool_router_key,
-                                            )}
-                                            className="shrink-0"
-                                            id={tool.tool_router_key}
-                                            onCheckedChange={() => {
-                                              const configs =
-                                                tool?.config ?? [];
-                                              if (
-                                                configs
-                                                  .map((conf) => ({
-                                                    key_name:
-                                                      conf.BasicConfig.key_name,
-                                                    key_value:
-                                                      conf.BasicConfig
-                                                        .key_value ?? '',
-                                                    required:
-                                                      conf.BasicConfig.required,
-                                                  }))
-                                                  .every(
-                                                    (conf) =>
-                                                      !conf.required ||
-                                                      (conf.required &&
-                                                        conf.key_value !== ''),
-                                                  )
-                                              ) {
-                                                field.onChange(
-                                                  field.value.includes(
+                                                onClick={() => {
+                                                  setSelectedToolConfig(
                                                     tool.tool_router_key,
-                                                  )
-                                                    ? field.value.filter(
-                                                        (value) =>
-                                                          value !==
+                                                  );
+                                                  window.location.hash =
+                                                    '#configuration';
+                                                }}
+                                                type="button"
+                                              >
+                                                <BoltIcon className="size-4" />
+                                                Configure
+                                              </Button>
+                                            )}
+                                            <Switch
+                                              checked={field.value.includes(
+                                                tool.tool_router_key,
+                                              )}
+                                              className="shrink-0"
+                                              id={tool.tool_router_key}
+                                              onCheckedChange={() => {
+                                                const configs =
+                                                  tool?.config ?? [];
+                                                if (
+                                                  configs
+                                                    .map((conf) => ({
+                                                      key_name:
+                                                        conf.BasicConfig
+                                                          .key_name,
+                                                      key_value:
+                                                        conf.BasicConfig
+                                                          .key_value ?? '',
+                                                      required:
+                                                        conf.BasicConfig
+                                                          .required,
+                                                    }))
+                                                    .every(
+                                                      (conf) =>
+                                                        !conf.required ||
+                                                        (conf.required &&
+                                                          conf.key_value !==
+                                                            ''),
+                                                    )
+                                                ) {
+                                                  field.onChange(
+                                                    field.value.includes(
+                                                      tool.tool_router_key,
+                                                    )
+                                                      ? field.value.filter(
+                                                          (value) =>
+                                                            value !==
+                                                            tool.tool_router_key,
+                                                        )
+                                                      : [
+                                                          ...field.value,
                                                           tool.tool_router_key,
-                                                      )
-                                                    : [
-                                                        ...field.value,
-                                                        tool.tool_router_key,
-                                                      ],
-                                                );
+                                                        ],
+                                                  );
 
-                                                return;
-                                              }
-                                              toast.error(
-                                                'Tool configuration is required',
-                                                {
-                                                  description:
-                                                    'Please fill in the config required in tool details',
-                                                },
-                                              );
-                                            }}
-                                          />
-                                        </div>
-                                      </FormControl>
-                                    </div>
-                                  </FormItem>
-                                )}
-                              />
-                            ))}
+                                                  return;
+                                                }
+                                                toast.error(
+                                                  'Tool configuration is required',
+                                                  {
+                                                    description:
+                                                      'Please fill in the config required in tool details',
+                                                  },
+                                                );
+                                              }}
+                                            />
+                                          </div>
+                                        </FormControl>
+                                      </div>
+                                    </FormItem>
+                                  )}
+                                />
+                              ))}
                         </div>
                       </div>
                     </TabsContent>
@@ -2142,6 +2246,25 @@ function AgentForm({ mode }: AgentFormProps) {
         </div>
       </ResizablePanel>
 
+      {selectedToolConfig && (
+        <ToolConfigModal
+          isOpen={!!selectedToolConfig}
+          onConfirm={() => {
+            form.setValue('tools', [
+              ...form.watch('tools'),
+              selectedToolConfig,
+            ]);
+            setSelectedToolConfig(null);
+          }}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedToolConfig(null);
+            }
+          }}
+          toolRouterKey={selectedToolConfig}
+        />
+      )}
+
       {/* Side Chat Panel */}
       {isSideChatOpen && mode === 'edit' && agent && (
         <>
@@ -2169,3 +2292,111 @@ function AgentForm({ mode }: AgentFormProps) {
 }
 
 export default AgentForm;
+
+const ToolConfigModal = ({
+  toolRouterKey,
+  isOpen,
+  onOpenChange,
+  onConfirm,
+}: {
+  toolRouterKey: string;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => void;
+}) => {
+  const auth = useAuth((state) => state.auth);
+  const { data, isSuccess, isPending } = useGetTool({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    toolKey: toolRouterKey ?? '',
+  });
+
+  const tool = data?.content[0] as ShinkaiTool;
+  const isEnabled = data?.content[1] as boolean;
+  const toolType = data?.type as ShinkaiToolType;
+
+  const hasAllRequiredFields = useMemo(() => {
+    if (isSuccess && 'config' in tool && tool.configurations.properties) {
+      const requiredFields = tool.configurations.required || [];
+      const configFormData = tool.configFormData || {};
+
+      const hasAllRequiredFields = requiredFields.every(
+        (field) =>
+          field in configFormData &&
+          configFormData[field] !== undefined &&
+          configFormData[field] !== null &&
+          configFormData[field] !== '',
+      );
+      return hasAllRequiredFields;
+    }
+    return false;
+  }, [isSuccess, tool]);
+
+  return (
+    <Dialog onOpenChange={onOpenChange} open={isOpen}>
+      <DialogContent
+        className="flex max-h-[80vh] min-h-[600px] max-w-screen-md flex-col overflow-y-auto"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
+        <DialogClose asChild>
+          <Button
+            className="absolute right-4 top-4"
+            size="icon"
+            variant="tertiary"
+          >
+            <XIcon className="text-gray-80 h-5 w-5" />
+          </Button>
+        </DialogClose>
+        <DialogHeader>
+          <DialogTitle className="text-center">
+            {isSuccess ? tool.name : 'Getting tool details...'}
+          </DialogTitle>
+        </DialogHeader>
+        {isPending && (
+          <Skeleton className="bg-official-gray-900 flex-1 animate-pulse rounded" />
+        )}
+        {isSuccess && (
+          <ToolDetailsCard
+            hideToolHeaderDetails
+            isEnabled={isEnabled}
+            tool={tool}
+            toolKey={toolRouterKey}
+            toolType={toolType}
+          />
+        )}
+        <DialogFooter className="bg-official-gray-950 sticky -bottom-6 bg-gradient-to-t to-transparent p-2">
+          <div className="flex w-full items-center justify-between gap-2">
+            <span>
+              {!hasAllRequiredFields && (
+                <div className="flex items-center gap-2 text-xs text-amber-400">
+                  <AlertCircle className="h-4 w-4" />
+                  <span>
+                    Please configure all required tool configurations before
+                    enabling
+                  </span>
+                </div>
+              )}
+            </span>
+            <div className="flex items-center gap-2">
+              <DialogClose asChild>
+                <Button size="sm" variant="outline">
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button
+                disabled={!hasAllRequiredFields}
+                onClick={onConfirm}
+                size="sm"
+                type="button"
+              >
+                Enable Tool
+              </Button>
+            </div>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};

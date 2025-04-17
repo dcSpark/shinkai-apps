@@ -102,29 +102,49 @@ export default function ToolDetails() {
 
   if (isSuccess && toolType === 'Deno') {
     return (
-      <DenoTool
-        isEnabled={isEnabled}
-        isPlaygroundTool={playgroundTools?.some(
-          (playgroundTool) => playgroundTool.tool_router_key === toolKey,
-        )}
-        tool={tool as DenoShinkaiTool}
-      />
+      <SubpageLayout className="container" title="">
+        <DenoTool
+          isEnabled={isEnabled}
+          isPlaygroundTool={playgroundTools?.some(
+            (playgroundTool) => playgroundTool.tool_router_key === toolKey,
+          )}
+          tool={tool as DenoShinkaiTool}
+          toolRouterKey={toolKey ?? ''}
+        />
+      </SubpageLayout>
     );
   } else if (isSuccess && toolType === 'Python') {
     return (
-      <PythonTool
-        isEnabled={isEnabled}
-        isPlaygroundTool={playgroundTools?.some(
-          (playgroundTool) => playgroundTool.tool_router_key === toolKey,
-        )}
-        tool={tool as PythonShinkaiTool}
-      />
+      <SubpageLayout className="container" title="">
+        <PythonTool
+          isEnabled={isEnabled}
+          isPlaygroundTool={playgroundTools?.some(
+            (playgroundTool) => playgroundTool.tool_router_key === toolKey,
+          )}
+          tool={tool as PythonShinkaiTool}
+          toolRouterKey={toolKey ?? ''}
+        />
+      </SubpageLayout>
     );
   } else if (isSuccess && toolType === 'Rust') {
-    return <RustTool isEnabled={isEnabled} tool={tool as RustShinkaiTool} />;
+    return (
+      <SubpageLayout className="container" title="">
+        <RustTool
+          isEnabled={isEnabled}
+          tool={tool as RustShinkaiTool}
+          toolRouterKey={toolKey ?? ''}
+        />
+      </SubpageLayout>
+    );
   } else if (isSuccess && toolType === 'Network') {
     return (
-      <NetworkTool isEnabled={isEnabled} tool={tool as NetworkShinkaiTool} />
+      <SubpageLayout className="container" title="">
+        <NetworkTool
+          isEnabled={isEnabled}
+          tool={tool as NetworkShinkaiTool}
+          toolRouterKey={toolKey ?? ''}
+        />
+      </SubpageLayout>
     );
   } else {
     return <div>Tool not found</div>;
