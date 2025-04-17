@@ -22,6 +22,7 @@ import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/querie
 import {
   Button,
   buttonVariants,
+  ChatInput,
   ChatInputArea,
   Command,
   CommandEmpty,
@@ -34,6 +35,8 @@ import {
   Popover,
   PopoverAnchor,
   PopoverContent,
+  ToggleGroup,
+  ToggleGroupItem,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -74,6 +77,7 @@ import { OpenChatFolderActionBar } from './chat-action-bar/open-chat-folder-acti
 import PromptSelectionActionBar from './chat-action-bar/prompt-selection-action-bar';
 import { UpdateToolsSwitchActionBar } from './chat-action-bar/tools-switch-action-bar';
 import { UpdateVectorFsActionBar } from './chat-action-bar/vector-fs-action-bar';
+import { useChatStore } from './context/chat-context';
 import { useSetJobScope } from './context/set-job-scope-context';
 
 export const actionButtonClassnames =
@@ -270,6 +274,9 @@ function ConversationChatFooter({
       },
     );
 
+  const toolRawInput = useChatStore((state) => state.toolRawInput);
+  const chatToolView = useChatStore((state) => state.chatToolView);
+
   // for suggested tools
   useHotkeys(
     ['mod+1', 'ctrl+1', 'mod+2', 'ctrl+2', 'mod+3', 'ctrl+3'],
@@ -355,6 +362,14 @@ function ConversationChatFooter({
           return `${key}: ${toolFormData?.[key]}`;
         })
         .join('\n');
+      let content = data.message;
+
+      if (selectedTool) {
+        content = `${selectedTool.name} \n ${formattedToolMessage}`;
+      }
+      if (toolRawInput && chatToolView === 'raw') {
+        content = `${toolRawInput}`;
+      }
 
       const jobId = extractJobIdFromInbox(inboxId);
       await sendMessageToJob({
@@ -405,7 +420,9 @@ function ConversationChatFooter({
                       args={selectedTool.args}
                       description={selectedTool.description}
                       name={formatText(selectedTool.name)}
-                      onSubmit={chatForm.handleSubmit(onSubmit)}
+                      onSubmit={() => {
+                        chatForm.handleSubmit(onSubmit)();
+                      }}
                       onToolFormChange={setToolFormData}
                       remove={() => {
                         chatForm.setValue('tool', undefined);
@@ -835,6 +852,7 @@ export const DropFileActive = () => (
     </div>
   </motion.div>
 );
+export type ToolView = 'form' | 'raw';
 
 export const SelectedToolChat = ({
   name,
@@ -851,14 +869,21 @@ export const SelectedToolChat = ({
   remove: () => void;
   toolFormData: Record<string, any> | null;
   onToolFormChange: (formData: Record<string, any> | null) => void;
-  onSubmit: (formData: any) => void;
+  onSubmit: () => void;
 }) => {
+  const chatToolView = useChatStore((state) => state.chatToolView);
+  const setChatToolView = useChatStore((state) => state.setChatToolView);
+  const toolRawInput = useChatStore((state) => state.toolRawInput);
+  const setToolRawInput = useChatStore((state) => state.setToolRawInput);
+
+  const toolInputRef = useRef<HTMLTextAreaElement>(null);
+
   // Create an enhanced schema that includes the additional request field
   const enhancedSchema = {
     ...args,
     properties: {
       ...(args.properties || {}),
-      thenDoAdditionalUserRequest: {
+      additionalRequest: {
         type: 'string',
         title: 'Additional Request',
         description:
@@ -876,17 +901,26 @@ export const SelectedToolChat = ({
       },
       {},
     ),
-    thenDoAdditionalUserRequest: {
+    additionalRequest: {
       'ui:widget': 'textarea',
       'ui:options': {
         rows: 3,
       },
       'ui:order': 2, // Put additional request last
       'ui:placeholder': 'Add additional instructions or context for the AI',
-      'ui:classNames': 'custom-placeholder',
     },
     'ui:submitButtonOptions': { norender: true },
   };
+
+  useEffect(() => {
+    if (chatToolView === 'raw') {
+      toolInputRef.current?.focus();
+      toolInputRef.current?.setSelectionRange(
+        toolInputRef.current?.value.length,
+        toolInputRef.current?.value.length,
+      );
+    }
+  }, [chatToolView]);
 
   return (
     <motion.div
@@ -896,37 +930,29 @@ export const SelectedToolChat = ({
       initial={{ opacity: 0 }}
       transition={{ duration: 0.2, ease: 'easeInOut' }}
     >
-      <style>
-        {`
-          .custom-placeholder::placeholder {
-            color: rgb(176, 176, 176) !important;
-          }
-        `}
-      </style>
-      <div className="flex items-center gap-2">
-        <div className="flex flex-1 flex-col gap-2 text-sm text-gray-100">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-2">
-                <ToolsIcon className="size-3.5" />
-                <span className="line-clamp-1 text-left font-medium text-white">
-                  {name}
-                </span>
-              </div>
-            </TooltipTrigger>
-            <TooltipPortal>
-              <TooltipContent
-                align="start"
-                alignOffset={-10}
-                className="max-w-[400px]"
-                side="top"
-                sideOffset={10}
-              >
-                <span className="text-xs text-white">{description}</span>
-              </TooltipContent>
-            </TooltipPortal>
-          </Tooltip>
-
+      <div className="flex flex-1 flex-col gap-2 text-sm text-gray-100">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center gap-2">
+              <ToolsIcon className="size-3.5" />
+              <span className="line-clamp-1 text-left font-medium text-white">
+                {name}
+              </span>
+            </div>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent
+              align="start"
+              alignOffset={-10}
+              className="max-w-[400px]"
+              side="top"
+              sideOffset={10}
+            >
+              <span className="text-xs text-white">{description}</span>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+        {chatToolView === 'form' && (
           <JsonForm
             className="py-1"
             formData={toolFormData}
@@ -938,16 +964,77 @@ export const SelectedToolChat = ({
             uiSchema={uiSchema}
             validator={validator}
           />
-        </div>
+        )}
+        {chatToolView === 'raw' && (
+          <div className="flex items-center gap-2">
+            <ChatInput
+              className="h-full w-full text-white"
+              onChange={(e) => setToolRawInput(e.target.value)}
+              onSend={() => {
+                onSubmit();
+                setToolRawInput('');
+                setTimeout(() => {
+                  setChatToolView('form');
+                }, 1000);
+              }}
+              placeholder="Enter your prompt..."
+              ref={toolInputRef}
+              value={toolRawInput}
+            />
+          </div>
+        )}
       </div>
+      <div className="absolute right-3 top-3 flex items-center gap-6 text-gray-100 hover:text-white">
+        <ToggleGroup
+          className="bg-background inline-flex gap-0 -space-x-px rounded-lg shadow-sm shadow-black/5 rtl:space-x-reverse"
+          onValueChange={(value) => {
+            if (value) {
+              let text = '';
+              if (Object.keys(toolFormData || {}).length === 0) {
+                text = `${Object.keys(enhancedSchema.properties || {})
+                  .map((key) => `${key}:  [insert value]`)
+                  .join('\n')}`;
+              } else {
+                text = `${Object.entries(toolFormData || {})
+                  .map(([key, value]) => `${key}: ${value}`)
+                  .join('\n')}`;
+              }
+              setToolRawInput(text);
+              setChatToolView(value as ToolView);
+            }
+          }}
+          type="single"
+          value={chatToolView}
+          variant="outline"
+        >
+          <ToggleGroupItem
+            className="rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10"
+            size="sm"
+            value="form"
+          >
+            Form
+          </ToggleGroupItem>
 
-      <button
-        className="absolute right-3 top-3 text-gray-100 hover:text-white"
-        onClick={remove}
-        type="button"
-      >
-        <XIcon className="h-4 w-4" />
-      </button>
+          <ToggleGroupItem
+            className="rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10"
+            size="sm"
+            value="raw"
+          >
+            Raw Input
+          </ToggleGroupItem>
+        </ToggleGroup>
+        <button
+          className="text-gray-100 hover:text-white"
+          onClick={() => {
+            remove();
+            setToolRawInput('');
+            setChatToolView('form');
+          }}
+          type="button"
+        >
+          <XIcon className="h-4 w-4" />
+        </button>
+      </div>
     </motion.div>
   );
 };

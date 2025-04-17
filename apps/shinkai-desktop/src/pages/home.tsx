@@ -66,6 +66,7 @@ import { FileSelectionActionBar } from '../components/chat/chat-action-bar/file-
 import PromptSelectionActionBar from '../components/chat/chat-action-bar/prompt-selection-action-bar';
 import { ToolsSwitchActionBar } from '../components/chat/chat-action-bar/tools-switch-action-bar';
 import { VectorFsActionBar } from '../components/chat/chat-action-bar/vector-fs-action-bar';
+import { useChatStore } from '../components/chat/context/chat-context';
 // import { WebSearchActionBar } from '../components/chat/chat-action-bar/web-search-action-bar';
 import { useSetJobScope } from '../components/chat/context/set-job-scope-context';
 import {
@@ -299,6 +300,9 @@ const EmptyMessage = () => {
       inboxId: '',
     });
 
+  const toolRawInput = useChatStore((state) => state.toolRawInput);
+  const chatToolView = useChatStore((state) => state.chatToolView);
+
   // for suggested tools
   useHotkeys(
     ['mod+1', 'ctrl+1', 'mod+2', 'ctrl+2', 'mod+3', 'ctrl+3'],
@@ -371,13 +375,20 @@ const EmptyMessage = () => {
       })
       .join('\n');
 
+    let content = data.message;
+
+    if (selectedTool) {
+      content = `${selectedTool.name} \n ${formattedToolMessage}`;
+    }
+    if (toolRawInput && chatToolView === 'raw') {
+      content = `${toolRawInput}`;
+    }
+
     await createJob({
       nodeAddress: auth.node_address,
       token: auth.api_v2_key,
       llmProvider: data.agent,
-      content: selectedTool
-        ? `${selectedTool.name} \n ${formattedToolMessage}`
-        : data.message,
+      content: content,
       files: currentFiles,
       isHidden: false,
       toolKey: data.tool?.key,
@@ -486,7 +497,9 @@ const EmptyMessage = () => {
                         args={selectedTool.args}
                         description={selectedTool.description}
                         name={formatText(selectedTool.name)}
-                        onSubmit={chatForm.handleSubmit(onSubmit)}
+                        onSubmit={() => {
+                          chatForm.handleSubmit(onSubmit)();
+                        }}
                         onToolFormChange={setToolFormData}
                         remove={() => {
                           chatForm.setValue('tool', undefined);

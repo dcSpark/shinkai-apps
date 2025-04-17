@@ -3,9 +3,16 @@ import { createContext, useContext, useState } from 'react';
 import { createStore } from 'zustand';
 import { useStore } from 'zustand/index';
 
+export type ToolView = 'form' | 'raw';
+
 type ChatStore = {
   selectedArtifact: Artifact | null;
   setSelectedArtifact: (selectedArtifact: Artifact | null) => void;
+  // tool preview (form or raw)
+  chatToolView: ToolView;
+  setChatToolView: (chatToolView: ToolView) => void;
+  toolRawInput: string;
+  setToolRawInput: (toolRawInput: string) => void;
 };
 
 const createChatStore = () =>
@@ -13,6 +20,12 @@ const createChatStore = () =>
     selectedArtifact: null,
     setSelectedArtifact: (selectedArtifact: Artifact | null) =>
       set({ selectedArtifact }),
+
+    chatToolView: 'form',
+    setChatToolView: (chatToolView: ToolView) => set({ chatToolView }),
+
+    toolRawInput: '',
+    setToolRawInput: (toolRawInput: string) => set({ toolRawInput }),
   }));
 
 const ChatContext = createContext<ReturnType<typeof createChatStore> | null>(
