@@ -34,7 +34,7 @@ use globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
 use tauri::{Emitter, WindowEvent};
 use tauri::{Manager, RunEvent};
-use tokio::sync::{Mutex, RwLock};
+use tokio::sync::{RwLock};
 use tray::create_tray;
 use windows::{recreate_window, Window};
 mod audio;
