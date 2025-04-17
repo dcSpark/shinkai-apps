@@ -96,19 +96,23 @@ function sanitizeFileName(name: string): string {
 
 interface ToolDetailsProps {
   tool: ShinkaiTool;
+  toolKey: string;
   isEnabled: boolean;
   isPlaygroundTool?: boolean;
   toolType: ShinkaiToolType;
+  hideToolHeaderDetails?: boolean;
 }
 
 export default function ToolDetailsCard({
   tool,
+  toolKey,
   isEnabled,
   isPlaygroundTool,
   toolType,
+  hideToolHeaderDetails,
 }: ToolDetailsProps) {
   const auth = useAuth((state) => state.auth);
-  const { toolKey } = useParams();
+
   const navigate = useNavigate();
   const { data: toolStoreDetails } = useGetToolStoreDetails({
     nodeAddress: auth?.node_address ?? '',
@@ -190,7 +194,7 @@ export default function ToolDetailsCard({
         });
       },
     });
-  const [simplifiedError, setSimplifiedError] = useState<string>("");
+  const [simplifiedError, setSimplifiedError] = useState<string>('');
   const [showFullError, setShowFullError] = useState<boolean>(false);
   const {
     mutateAsync: executeToolCode,
@@ -200,27 +204,34 @@ export default function ToolDetailsCard({
   } = useExecuteToolCode({
     onSuccess: (response) => {
       setToolExecutionResult(response);
-      setSimplifiedError("");
+      setSimplifiedError('');
       setShowFullError(false);
       toast.success('Tool executed successfully');
     },
     onError: (error) => {
-      const pythonErrorCaptureRegex = /^(?!.*(?:Traceback|^\s*File\s+"|DEBUG|INFO|Installed)).*(?:Exception|Error|[A-Za-z]+Error):\s*(.+)$/gm;
-      const denoErrorCaptureRegex = /^(?!.*(?:\s+at\s+file|\s+\^\s*$|throw\s+new\s+Error)).*(?:[a-zA-Z]*Error|Exception).*$/gm
+      const pythonErrorCaptureRegex =
+        /^(?!.*(?:Traceback|^\s*File\s+"|DEBUG|INFO|Installed)).*(?:Exception|Error|[A-Za-z]+Error):\s*(.+)$/gm;
+      const denoErrorCaptureRegex =
+        /^(?!.*(?:\s+at\s+file|\s+\^\s*$|throw\s+new\s+Error)).*(?:[a-zA-Z]*Error|Exception).*$/gm;
       if (toolType === CodeLanguage.Python) {
-        const pythonErrorMatch = error.response?.data?.message.match(pythonErrorCaptureRegex);
+        const pythonErrorMatch = error.response?.data?.message.match(
+          pythonErrorCaptureRegex,
+        );
         if (pythonErrorMatch) {
           setSimplifiedError(pythonErrorMatch[0]);
         }
       } else {
-        const denoErrorMatch = error.response?.data?.message.match(denoErrorCaptureRegex);
+        const denoErrorMatch = error.response?.data?.message.match(
+          denoErrorCaptureRegex,
+        );
         if (denoErrorMatch) {
           setSimplifiedError(denoErrorMatch[0]);
         }
       }
       setShowFullError(false);
       toast.error('Failed to execute tool', {
-        description: simplifiedError ?? error.response?.data?.message ?? error.message,
+        description:
+          simplifiedError ?? error.response?.data?.message ?? error.message,
       });
     },
   });
@@ -389,114 +400,120 @@ export default function ToolDetailsCard({
   const hasToolCode = 'js_code' in tool || 'py_code' in tool;
 
   return (
-    <SubpageLayout className="container" title="">
-      <div className="flex w-full flex-col gap-6 md:flex-row">
-        <div className="size-12 overflow-hidden rounded-2xl border bg-gray-500 object-cover">
-          <img
-            alt=""
-            className="size-full"
-            src={toolStoreDetails?.assets?.iconUrl ?? ''}
-          />
-        </div>
+    <>
+      {hideToolHeaderDetails ? null : (
+        <div className="flex w-full flex-col gap-6 md:flex-row">
+          <div className="size-12 overflow-hidden rounded-2xl border bg-gray-500 object-cover">
+            <img
+              alt=""
+              className="size-full"
+              src={toolStoreDetails?.assets?.iconUrl ?? ''}
+            />
+          </div>
 
-        <div className="flex-1">
-          <h1 className="mb-2 text-lg font-bold">
-            {formatText(tool.name ?? '')}
-          </h1>
-          <p className="text-gray-80 mb-4 line-clamp-2 whitespace-pre-wrap text-sm">
-            {tool.description}
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="mb-4 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <label
-                className={cn(
-                  'text-sm',
-                  isEnabled ? 'text-gray-50' : 'text-gray-80',
-                )}
-                htmlFor="tool-switch"
-              >
-                {isEnabled ? 'Enabled' : 'Disabled'}
-              </label>
-              <Switch
-                checked={isEnabled}
-                disabled={isTogglingEnableTool}
-                id="tool-switch"
-                onCheckedChange={async () => {
-                  await toggleEnableTool({
-                    toolKey: toolKey ?? '',
-                    isToolEnabled: !isEnabled,
-                    nodeAddress: auth?.node_address ?? '',
-                    token: auth?.api_v2_key ?? '',
-                  });
-                }}
-              />
-            </div>
-            {isPlaygroundTool &&
-              'author' in tool &&
-              tool.author === auth?.shinkai_identity && (
-                <Link
+          <div className="flex-1">
+            <h1 className="mb-2 text-lg font-bold">
+              {formatText(tool.name ?? '')}
+            </h1>
+            <p className="text-gray-80 mb-4 line-clamp-2 whitespace-pre-wrap text-sm">
+              {tool.description}
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <label
                   className={cn(
-                    buttonVariants({
-                      size: 'sm',
-                      variant: 'outline',
-                    }),
-                    'rounded-lg',
+                    'text-sm',
+                    isEnabled ? 'text-gray-50' : 'text-gray-80',
                   )}
-                  to={`/tools/edit/${toolKey}`}
+                  htmlFor="tool-switch"
                 >
-                  <PlayCircle className="h-4 w-4" />
-                  Open in Playground
-                </Link>
-              )}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button rounded="lg" size="sm" variant="outline">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
-                <DropdownMenuItem
-                  className="text-xs"
-                  disabled={isExportingTool}
-                  onClick={() => {
-                    exportTool({
+                  {isEnabled ? 'Enabled' : 'Disabled'}
+                </label>
+                <Switch
+                  checked={isEnabled}
+                  disabled={isTogglingEnableTool}
+                  id="tool-switch"
+                  onCheckedChange={async () => {
+                    await toggleEnableTool({
                       toolKey: toolKey ?? '',
+                      isToolEnabled: !isEnabled,
                       nodeAddress: auth?.node_address ?? '',
                       token: auth?.api_v2_key ?? '',
                     });
                   }}
-                >
-                  <DownloadIcon className="mr-2 h-4 w-4" />
-                  Export
-                </DropdownMenuItem>
-                {hasToolCode && (
+                />
+              </div>
+              {isPlaygroundTool &&
+                'author' in tool &&
+                tool.author === auth?.shinkai_identity && (
+                  <Link
+                    className={cn(
+                      buttonVariants({
+                        size: 'sm',
+                        variant: 'outline',
+                      }),
+                      'rounded-lg',
+                    )}
+                    to={`/tools/edit/${toolKey}`}
+                  >
+                    <PlayCircle className="h-4 w-4" />
+                    Open in Playground
+                  </Link>
+                )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button rounded="lg" size="sm" variant="outline">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
                   <DropdownMenuItem
                     className="text-xs"
-                    disabled={isDuplicatingTool}
+                    disabled={isExportingTool}
                     onClick={() => {
-                      duplicateTool({
+                      exportTool({
                         toolKey: toolKey ?? '',
                         nodeAddress: auth?.node_address ?? '',
                         token: auth?.api_v2_key ?? '',
                       });
                     }}
                   >
-                    <CopyIcon className="mr-2 h-4 w-4" />
-                    Duplicate
+                    <DownloadIcon className="mr-2 h-4 w-4" />
+                    Export
                   </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  {hasToolCode && (
+                    <DropdownMenuItem
+                      className="text-xs"
+                      disabled={isDuplicatingTool}
+                      onClick={() => {
+                        duplicateTool({
+                          toolKey: toolKey ?? '',
+                          nodeAddress: auth?.node_address ?? '',
+                          token: auth?.api_v2_key ?? '',
+                        });
+                      }}
+                    >
+                      <CopyIcon className="mr-2 h-4 w-4" />
+                      Duplicate
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <Tabs
-        className="w-full py-8"
+        className={cn('w-full py-8', hideToolHeaderDetails && 'pt-0')}
         defaultValue={
-          window.location.hash === '#try-it-out' ? 'try-it-out' : 'description'
+          window.location.hash === '#try-it-out'
+            ? 'try-it-out'
+            : window.location.hash === '#configuration'
+              ? 'configuration'
+              : 'description'
         }
       >
         <TabsList className="mb-4 flex w-full justify-start gap-6 rounded-none border-b border-gray-200 bg-transparent pb-0">
@@ -1004,22 +1021,25 @@ export default function ToolDetailsCard({
                   <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
                     <p>Tool execution failed.</p>
                     <pre className="whitespace-break-spaces break-words px-4 text-center">
-                      {showFullError 
-                        ? executionError.response?.data?.message ?? executionError.message 
+                      {showFullError
+                        ? executionError.response?.data?.message ??
+                          executionError.message
                         : simplifiedError}
                     </pre>
                     {simplifiedError && (
-                      <Button 
+                      <Button
                         onClick={() => {
                           setShowFullError(!showFullError);
                           if (showFullError) {
                             setShowFullError(false);
                           }
-                        }} 
-                        size="sm" 
+                        }}
+                        size="sm"
                         variant="outline"
                       >
-                        {showFullError ? "Show simplified error" : "Show full error message"}
+                        {showFullError
+                          ? 'Show simplified error'
+                          : 'Show full error message'}
                       </Button>
                     )}
                   </div>
@@ -1142,7 +1162,7 @@ export default function ToolDetailsCard({
             </TabsContent>
           )}
       </Tabs>
-    </SubpageLayout>
+    </>
   );
 }
 

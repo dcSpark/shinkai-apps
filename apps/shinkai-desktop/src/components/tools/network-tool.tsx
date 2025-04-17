@@ -5,11 +5,18 @@ import ToolDetailsCard from './components/tool-details-card';
 export default function NetworkTool({
   tool,
   isEnabled,
+  toolRouterKey,
 }: {
   tool: NetworkShinkaiTool;
   isEnabled: boolean;
+  toolRouterKey: string;
 }) {
   return (
-    <ToolDetailsCard isEnabled={isEnabled} tool={tool} toolType="Network" />
+    <ToolDetailsCard
+      isEnabled={isEnabled}
+      tool={tool}
+      toolKey={toolRouterKey}
+      toolType="Network"
+    />
   );
 }
