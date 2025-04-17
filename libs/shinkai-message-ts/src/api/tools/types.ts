@@ -128,12 +128,26 @@ export type NetworkShinkaiTool = {
   version: string;
 };
 
-export type ShinkaiToolType = 'Deno' | 'Python' | 'Rust' | 'Network';
+export type AgentShinkaiTool = {
+  agent_id: string;
+  name: string;
+  full_identity_name: string;
+  ui_description: string;
+  description: string; // Alias for ui_description to match other tool types
+  knowledge: string[];
+  tools: string[];
+  debug_mode: boolean;
+  llm_provider_id: string;
+  author?: string;
+};
+
+export type ShinkaiToolType = 'Deno' | 'Python' | 'Rust' | 'Network' | 'Agent';
 export type ShinkaiTool =
   | DenoShinkaiTool
   | PythonShinkaiTool
   | RustShinkaiTool
-  | NetworkShinkaiTool;
+  | NetworkShinkaiTool
+  | AgentShinkaiTool;
 
 export type GetToolResponse = {
   content: [ShinkaiTool, boolean];
