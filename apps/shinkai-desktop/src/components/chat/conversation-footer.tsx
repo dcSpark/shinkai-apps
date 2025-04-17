@@ -274,6 +274,9 @@ function ConversationChatFooter({
       },
     );
 
+  const toolRawInput = useChatStore((state) => state.toolRawInput);
+  const chatToolView = useChatStore((state) => state.chatToolView);
+
   // for suggested tools
   useHotkeys(
     ['mod+1', 'ctrl+1', 'mod+2', 'ctrl+2', 'mod+3', 'ctrl+3'],
@@ -359,6 +362,14 @@ function ConversationChatFooter({
           return `${key}: ${toolFormData?.[key]}`;
         })
         .join('\n');
+      let content = data.message;
+
+      if (selectedTool) {
+        content = `${selectedTool.name} \n ${formattedToolMessage}`;
+      }
+      if (toolRawInput && chatToolView === 'raw') {
+        content = `${toolRawInput}`;
+      }
 
       const jobId = extractJobIdFromInbox(inboxId);
       await sendMessageToJob({
@@ -409,7 +420,9 @@ function ConversationChatFooter({
                       args={selectedTool.args}
                       description={selectedTool.description}
                       name={formatText(selectedTool.name)}
-                      onSubmit={chatForm.handleSubmit(onSubmit)}
+                      onSubmit={() => {
+                        chatForm.handleSubmit(onSubmit)();
+                      }}
                       onToolFormChange={setToolFormData}
                       remove={() => {
                         chatForm.setValue('tool', undefined);
@@ -856,19 +869,21 @@ export const SelectedToolChat = ({
   remove: () => void;
   toolFormData: Record<string, any> | null;
   onToolFormChange: (formData: Record<string, any> | null) => void;
-  onSubmit: (formData: any) => void;
+  onSubmit: () => void;
 }) => {
   const chatToolView = useChatStore((state) => state.chatToolView);
   const setChatToolView = useChatStore((state) => state.setChatToolView);
+  const toolRawInput = useChatStore((state) => state.toolRawInput);
+  const setToolRawInput = useChatStore((state) => state.setToolRawInput);
 
-  const [toolInput, setToolInput] = useState('');
+  const toolInputRef = useRef<HTMLTextAreaElement>(null);
 
   // Create an enhanced schema that includes the additional request field
   const enhancedSchema = {
     ...args,
     properties: {
       ...(args.properties || {}),
-      thenDoAdditionalUserRequest: {
+      additionalRequest: {
         type: 'string',
         title: 'Additional Request',
         description:
@@ -886,17 +901,26 @@ export const SelectedToolChat = ({
       },
       {},
     ),
-    thenDoAdditionalUserRequest: {
+    additionalRequest: {
       'ui:widget': 'textarea',
       'ui:options': {
         rows: 3,
       },
       'ui:order': 2, // Put additional request last
       'ui:placeholder': 'Add additional instructions or context for the AI',
-      'ui:classNames': 'custom-placeholder',
     },
     'ui:submitButtonOptions': { norender: true },
   };
+
+  useEffect(() => {
+    if (chatToolView === 'raw') {
+      toolInputRef.current?.focus();
+      toolInputRef.current?.setSelectionRange(
+        toolInputRef.current?.value.length,
+        toolInputRef.current?.value.length,
+      );
+    }
+  }, [chatToolView]);
 
   return (
     <motion.div
@@ -945,9 +969,15 @@ export const SelectedToolChat = ({
           <div className="flex items-center gap-2">
             <ChatInput
               className="h-full w-full text-white"
-              onChange={(e) => setToolInput(e.target.value)}
-              placeholder="E"
-              value={toolInput}
+              onChange={(e) => setToolRawInput(e.target.value)}
+              onSend={() => {
+                onSubmit();
+                setToolRawInput('');
+                setChatToolView('form');
+              }}
+              placeholder="Enter your prompt..."
+              ref={toolInputRef}
+              value={toolRawInput}
             />
           </div>
         )}
@@ -967,8 +997,7 @@ export const SelectedToolChat = ({
                   .map(([key, value]) => `${key}: ${value}`)
                   .join('\n')}`;
               }
-              console.log(enhancedSchema.properties, 'enhancedSchema', text);
-              setToolInput(text);
+              setToolRawInput(text);
               setChatToolView(value as ToolView);
             }
           }}
@@ -994,7 +1023,11 @@ export const SelectedToolChat = ({
         </ToggleGroup>
         <button
           className="text-gray-100 hover:text-white"
-          onClick={remove}
+          onClick={() => {
+            remove();
+            setToolRawInput('');
+            setChatToolView('form');
+          }}
           type="button"
         >
           <XIcon className="h-4 w-4" />
