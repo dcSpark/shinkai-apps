@@ -249,6 +249,7 @@ export type DeletePromptRequest = {
 export enum CodeLanguage {
   Typescript = 'Typescript',
   Python = 'Python',
+  Agent = 'Agent',
 }
 
 export type CreateToolCodeRequest = {
