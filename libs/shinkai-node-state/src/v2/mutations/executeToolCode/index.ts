@@ -21,6 +21,7 @@ export const executeToolCode = async ({
   const toolTypeLanguageMap = {
     [CodeLanguage.Python]: DynamicToolType.PythonDynamic,
     [CodeLanguage.Typescript]: DynamicToolType.DenoDynamic,
+    'Agent': DynamicToolType.AgentDynamic,
   };
 
   return await executeToolCodeApi(nodeAddress, token, {
