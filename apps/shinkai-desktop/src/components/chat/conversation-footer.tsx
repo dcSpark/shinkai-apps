@@ -973,7 +973,9 @@ export const SelectedToolChat = ({
               onSend={() => {
                 onSubmit();
                 setToolRawInput('');
-                setChatToolView('form');
+                setTimeout(() => {
+                  setChatToolView('form');
+                }, 1000);
               }}
               placeholder="Enter your prompt..."
               ref={toolInputRef}
