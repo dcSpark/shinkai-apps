@@ -138,6 +138,7 @@ impl ShinkaiNodeManager {
                     });
                 }
                 Err(e) => {
+                    error!("failed to create model from gguf: {}", e);
                     self.kill().await;
                     self.emit_event(ShinkaiNodeManagerEvent::CreatingModelError {
                         model: default_embedding_model.to_string(),

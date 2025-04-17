@@ -1,3 +1,5 @@
+use log::error;
+
 use crate::globals::SHINKAI_NODE_MANAGER_INSTANCE;
 use crate::local_shinkai_node::shinkai_node_manager::ShinkaiNodeManager;
 use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
@@ -38,7 +40,10 @@ pub async fn shinkai_node_spawn() -> Result<(), String> {
     let mut shinkai_node_manager_guard = SHINKAI_NODE_MANAGER_INSTANCE.get().unwrap().write().await;
     match shinkai_node_manager_guard.spawn().await {
         Ok(_) => Ok(()),
-        Err(message) => Err(message),
+        Err(message) => {
+            error!("error spawning shinkai node: {}", message);
+            Err(message)
+        }
     }
 }
 
