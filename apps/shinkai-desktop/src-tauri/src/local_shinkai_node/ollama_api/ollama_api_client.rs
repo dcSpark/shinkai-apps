@@ -1,4 +1,5 @@
 use futures_util::{Stream, StreamExt};
+use log::{error, info};
 use reqwest;
 use sha2::{Sha256, Digest};
 use std::collections::HashMap;
@@ -161,24 +162,39 @@ impl OllamaApiClient {
     }
 
     pub async fn create_model_from_gguf(&self, model_name: &str, gguf_data: &[u8]) -> Result<(), String> {
+        info!("creating model {} from GGUF data", model_name);
         // Check if ollama version is 0.5.7 or higher
         let version = self.get_ollama_version().await?;
         let parsed_version = Version::parse(&version)
-            .map_err(|e| format!("Failed to parse Ollama version: {}", e))?;
+            .map_err(|e| {
+                let message = format!("failed to parse Ollama version: {}", e);
+                error!("{}", message);
+                message
+            })?;
         let requirement = VersionReq::parse(">=0.5.7")
-            .map_err(|e| format!("Failed to parse version requirement: {}", e))?;
+            .map_err(|e| {
+                let message = format!("failed to parse version requirement: {}", e);
+                error!("{}", message);
+                message
+            })?;
 
         if !requirement.matches(&parsed_version) {
-            return Err(format!("Ollama version must be 0.5.7 or higher (found {})", version));
+            let message = format!("ollama version must be 0.5.7 or higher (found {})", version);
+            error!("{}", message);
+            return Err(message);
         }
         // Check GGUF magic number (first 4 bytes should spell "GGUF" in ASCII)
         if gguf_data.len() < 4 {
-            return Err("GGUF data too short".to_string());
+            let message = format!("GGUF data too short {}", gguf_data.len());
+            error!("{}", message);
+            return Err(message);
         }
         
         let magic = &gguf_data[0..4];
         if magic != b"GGUF" {
-            return Err("Invalid GGUF magic number".to_string());
+            let message = "Invalid GGUF magic number";
+            error!("{}", message);
+            return Err(message.to_string());
         }
         // First upload the GGUF file as a blob
         let digest = self.upload_blob(gguf_data).await?;
@@ -193,7 +209,9 @@ impl OllamaApiClient {
             .map_err(|e| e.to_string())?;
 
         if !head_response.status().is_success() {
-            return Err(format!("Blob {} not found on server", digest));
+            let message = format!("blob {} not found on server", digest);
+            error!("{}", message);
+            return Err(message);
         }
 
         // Create a map for the files parameter
@@ -219,10 +237,17 @@ impl OllamaApiClient {
         if !response.status().is_success() {
             let status = response.status();
             let text = response.text().await.unwrap_or_default();
-            return Err(format!("Failed to create model: {} - {}", status, text));
+            let message = format!("failed to create model: {} - {}", status, text);
+            error!("{}", message);
+            return Err(message);
         }
 
-        let response_text = response.text().await.map_err(|e| e.to_string())?;
+        let response_text = response.text().await.map_err(|e| {
+            let message = format!("failed to get response text: {}", e);
+            error!("{}", message);
+            message
+        })?;
+
         let mut final_status = String::new();
         
         // Split the response text by newlines and parse each line as a JSON object
@@ -239,7 +264,9 @@ impl OllamaApiClient {
         }
         
         if final_status != "success" {
-            return Err(format!("Failed to create model: {}", final_status));
+            let message = format!("failed to create model: {}", final_status);
+            error!("{}", message);
+            return Err(message);
         }
         
         Ok(())

@@ -9,6 +9,7 @@ use crate::local_shinkai_node::shinkai_node_options::ShinkaiNodeOptions;
 use crate::models::embedding_model;
 use anyhow::Result;
 use futures_util::StreamExt;
+use log::error;
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use tauri::path::BaseDirectory;
@@ -138,6 +139,7 @@ impl ShinkaiNodeManager {
                     });
                 }
                 Err(e) => {
+                    error!("failed to create model from gguf: {}", e);
                     self.kill().await;
                     self.emit_event(ShinkaiNodeManagerEvent::CreatingModelError {
                         model: default_embedding_model.to_string(),
