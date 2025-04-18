@@ -1173,6 +1173,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                   className="placeholder-official-gray-500 !min-h-[300px] text-sm"
                                   placeholder="e.g., You are a professional UX expert. Answer questions about UI/UX best practices."
                                   spellCheck={false}
+                                  resize="vertical"
                                   {...field}
                                 />
                               </FormControl>
