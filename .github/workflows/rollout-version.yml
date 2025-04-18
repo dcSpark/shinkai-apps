@@ -2,21 +2,20 @@ name: Rollout new version
 
 on:
   workflow_dispatch:
-    inputs:
-      ref:
-        description: 'Select the tag to rollout'
-        required: true
-        type: string
 
 jobs:
   check-tag:
     runs-on: ubuntu-latest
     steps:
-      - name: Check if ref is a tag
+      - name: Validate version tag
         id: check-tag
         run: |
-          if [[ ! "${{ github.event.inputs.ref }}" =~ ^refs/tags/ ]]; then
-            echo "Selected ref is not a tag: ${{ github.event.inputs.ref }}"
+          # Extract version from ref (refs/heads/main or refs/tags/0.9.21)
+          REF_NAME=$(echo "${{ github.ref }}" | sed 's/refs\/[^\/]*\///')
+          
+          # Check if input matches version pattern (e.g., 0.9.21)
+          if ! [[ "$REF_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Selected ref '$REF_NAME' is not a valid version tag (e.g., 0.9.21)"
             exit 1
           fi
 
@@ -27,20 +26,18 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.ref }}
 
       - name: Get latest release-prod workflow run
         id: get-workflow-run
         run: |
-          # Get the version from tag (removing refs/tags/)
-          VERSION=$(echo "${{ github.event.inputs.ref }}" | sed 's/refs\/tags\///')
+          # Get the version from ref
+          VERSION=$(echo "${{ github.ref }}" | sed 's/refs\/[^\/]*\///')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
           # Get the latest successful run number for the version tag
           RUN_NUMBER=$(gh api -H "Accept: application/vnd.github+json" \
             /repos/${{ github.repository }}/actions/workflows/release-prod.yml/runs \
-            --jq ".workflow_runs[] | select(.head_branch == \"refs/tags/$VERSION\" and .conclusion == \"success\") | .run_number" \
+            --jq ".workflow_runs[] | select(.head_branch == \"${{ github.ref }}\" and .conclusion == \"success\") | .run_number" \
             | head -n1)
           
           if [ -z "$RUN_NUMBER" ]; then
