@@ -49,7 +49,7 @@ jobs:
           # Get the latest successful run number for the version tag
           RUN_NUMBER=$(gh api -H "Accept: application/vnd.github+json" \
             /repos/${{ github.repository }}/actions/workflows/release-prod.yml/runs \
-            --jq ".workflow_runs[] | select(.head_branch == \"refs/tags/$VERSION\" and .conclusion == \"success\") | .run_number" \
+            --jq ".workflow_runs[] | select(.head_branch == \"$VERSION\" and .conclusion == \"success\") | .run_number" \
             | head -n1)
           
           if [ -z "$RUN_NUMBER" ]; then
