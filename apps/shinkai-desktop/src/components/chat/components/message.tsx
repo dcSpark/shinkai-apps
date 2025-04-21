@@ -358,7 +358,7 @@ export const MessageBase = ({
                           >
                             <AccordionTrigger
                               className={cn(
-                                'min-w-[10rem] py-0 pr-2 no-underline hover:no-underline',
+                                'min-w-[10rem] gap-3 py-0 pr-2 no-underline hover:no-underline',
                                 'transition-colors hover:bg-gray-500 [&[data-state=open]]:bg-gray-500',
                                 tool.status !== ToolStatusType.Complete &&
                                   '[&>svg]:hidden',
