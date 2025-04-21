@@ -1170,8 +1170,9 @@ function AgentForm({ mode }: AgentFormProps) {
                               <FormLabel>Instructions</FormLabel>
                               <FormControl>
                                 <Textarea
-                                  className="placeholder-official-gray-500 !min-h-[300px] text-sm"
+                                  className="placeholder-official-gray-500 !max-h-[auto] !min-h-[300px] text-sm"
                                   placeholder="e.g., You are a professional UX expert. Answer questions about UI/UX best practices."
+                                  resize="vertical"
                                   spellCheck={false}
                                   {...field}
                                 />
