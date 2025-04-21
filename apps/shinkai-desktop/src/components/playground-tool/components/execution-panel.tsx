@@ -362,11 +362,9 @@ const ToolResultBase = ({
   toolResultFiles: string[];
   toolResult: string;
 }) => {
-  const auth = useAuth((state) => state.auth);
-
   return (
     <div className="flex flex-col gap-4 pb-6">
-      <ExecutionFiles auth={auth ?? {}} files={toolResultFiles} />
+      <ExecutionFiles files={toolResultFiles} />
       <ToolCodeEditor language="json" readOnly value={toolResult} />
     </div>
   );

@@ -193,7 +193,7 @@ export default function ToolDetailsCard({
         });
       },
     });
-  const [simplifiedError, setSimplifiedError] = useState<string>("");
+  const [simplifiedError, setSimplifiedError] = useState<string>('');
   const [showFullError, setShowFullError] = useState<boolean>(false);
   const {
     mutateAsync: executeToolCode,
@@ -203,27 +203,34 @@ export default function ToolDetailsCard({
   } = useExecuteToolCode({
     onSuccess: (response) => {
       setToolExecutionResult(response);
-      setSimplifiedError("");
+      setSimplifiedError('');
       setShowFullError(false);
       toast.success('Tool executed successfully');
     },
     onError: (error) => {
-      const pythonErrorCaptureRegex = /^(?!.*(?:Traceback|^\s*File\s+"|DEBUG|INFO|Installed)).*(?:Exception|Error|[A-Za-z]+Error):\s*(.+)$/gm;
-      const denoErrorCaptureRegex = /^(?!.*(?:\s+at\s+file|\s+\^\s*$|throw\s+new\s+Error)).*(?:[a-zA-Z]*Error|Exception).*$/gm
+      const pythonErrorCaptureRegex =
+        /^(?!.*(?:Traceback|^\s*File\s+"|DEBUG|INFO|Installed)).*(?:Exception|Error|[A-Za-z]+Error):\s*(.+)$/gm;
+      const denoErrorCaptureRegex =
+        /^(?!.*(?:\s+at\s+file|\s+\^\s*$|throw\s+new\s+Error)).*(?:[a-zA-Z]*Error|Exception).*$/gm;
       if (toolType === CodeLanguage.Python) {
-        const pythonErrorMatch = error.response?.data?.message.match(pythonErrorCaptureRegex);
+        const pythonErrorMatch = error.response?.data?.message.match(
+          pythonErrorCaptureRegex,
+        );
         if (pythonErrorMatch) {
           setSimplifiedError(pythonErrorMatch[0]);
         }
       } else {
-        const denoErrorMatch = error.response?.data?.message.match(denoErrorCaptureRegex);
+        const denoErrorMatch = error.response?.data?.message.match(
+          denoErrorCaptureRegex,
+        );
         if (denoErrorMatch) {
           setSimplifiedError(denoErrorMatch[0]);
         }
       }
       setShowFullError(false);
       toast.error('Failed to execute tool', {
-        description: simplifiedError ?? error.response?.data?.message ?? error.message,
+        description:
+          simplifiedError ?? error.response?.data?.message ?? error.message,
       });
     },
   });
@@ -1008,22 +1015,25 @@ export default function ToolDetailsCard({
                   <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
                     <p>Tool execution failed.</p>
                     <pre className="whitespace-break-spaces break-words px-4 text-center">
-                      {showFullError 
-                        ? executionError.response?.data?.message ?? executionError.message 
+                      {showFullError
+                        ? executionError.response?.data?.message ??
+                          executionError.message
                         : simplifiedError}
                     </pre>
                     {simplifiedError && (
-                      <Button 
+                      <Button
                         onClick={() => {
                           setShowFullError(!showFullError);
                           if (showFullError) {
                             setShowFullError(false);
                           }
-                        }} 
-                        size="sm" 
+                        }}
+                        size="sm"
                         variant="outline"
                       >
-                        {showFullError ? "Show simplified error" : "Show full error message"}
+                        {showFullError
+                          ? 'Show simplified error'
+                          : 'Show full error message'}
                       </Button>
                     )}
                   </div>
@@ -1043,7 +1053,6 @@ export default function ToolDetailsCard({
                     />
 
                     <ExecutionFiles
-                      auth={auth ?? {}}
                       files={
                         (toolExecutionResult.__created_files__ as string[]) ??
                         []

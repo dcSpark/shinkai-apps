@@ -107,9 +107,7 @@ const createAssistantMessage = async (
           const response = JSON.parse(tool.response);
           if ('data' in response && '__created_files__' in response.data) {
             const files: string[] = response.data.__created_files__;
-            const filteredFiles = files.filter((file) => {
-              return !file.match(/log_jobid_[^/]+\.log$/);
-            });
+            const filteredFiles = files;
 
             const fileResults = await Promise.all(
               filteredFiles.map(async (file) => {
