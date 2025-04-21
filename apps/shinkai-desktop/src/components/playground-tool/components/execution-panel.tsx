@@ -464,8 +464,7 @@ const ToolLogsBase = ({
     
     // Extract lines from the current execution (non-wrapped logs + the last result)
     const relevantLines = lines.slice(currentExecutionStartIndex);
-    
-    console.log('formattedLogs', relevantLines.join('\n'));
+
     return processLogLines(relevantLines);
   }
   
