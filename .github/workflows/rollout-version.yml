@@ -3,22 +3,32 @@ name: Rollout new version
 on:
   workflow_dispatch:
     inputs:
-      ref:
-        description: 'Select the tag to rollout'
-        required: true
+      manual_ref:
+        description: 'Optional: Override selected ref (e.g., 0.9.21)'
+        required: false
         type: string
 
 jobs:
   check-tag:
     runs-on: ubuntu-latest
     steps:
-      - name: Check if ref is a tag
+      - name: Validate version tag
         id: check-tag
         run: |
-          if [[ ! "${{ github.event.inputs.ref }}" =~ ^refs/tags/ ]]; then
-            echo "Selected ref is not a tag: ${{ github.event.inputs.ref }}"
+          # Use manual ref if provided, otherwise extract from github.ref
+          if [ -n "${{ inputs.manual_ref }}" ]; then
+            REF_NAME="${{ inputs.manual_ref }}"
+          else
+            REF_NAME=$(echo "${{ github.ref }}" | sed 's/refs\/[^\/]*\///')
+          fi
+          
+          # Check if input matches version pattern (e.g., 0.9.21)
+          if ! [[ "$REF_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Selected ref $REF_NAME is not a valid version tag (e.g., 0.9.21)"
             exit 1
           fi
+          
+          echo "version=$REF_NAME" >> $GITHUB_OUTPUT
 
   rollout:
     needs: check-tag
@@ -28,30 +38,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.ref }}
-
-      - name: Get latest release-prod workflow run
-        id: get-workflow-run
-        run: |
-          # Get the version from tag (removing refs/tags/)
-          VERSION=$(echo "${{ github.event.inputs.ref }}" | sed 's/refs\/tags\///')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-          # Get the latest successful run number for the version tag
-          RUN_NUMBER=$(gh api -H "Accept: application/vnd.github+json" \
-            /repos/${{ github.repository }}/actions/workflows/release-prod.yml/runs \
-            --jq ".workflow_runs[] | select(.head_branch == \"refs/tags/$VERSION\" and .conclusion == \"success\") | .run_number" \
-            | head -n1)
-          
-          if [ -z "$RUN_NUMBER" ]; then
-            echo "No successful workflow run found for tag $VERSION"
-            exit 1
-          fi
-          
-          echo "run_number=$RUN_NUMBER" >> $GITHUB_OUTPUT
-          echo "full_version=${VERSION}.${RUN_NUMBER}" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ github.token }}
+          ref: ${{ inputs.manual_ref || github.ref }}
 
       - name: Install AWS CLI v2 (R2 compatible version)
         id: install_aws_cli
@@ -60,34 +47,21 @@ jobs:
           unzip -q /tmp/awscliv2.zip -d /tmp
           rm /tmp/awscliv2.zip
           sudo /tmp/aws/install --update
-          rm -rf /tmp/aws/          
+          rm -rf /tmp/aws/
 
-      - name: Update updates.json on R2
+      - name: Execute rollout script
+        run: |
+          chmod +x ./scripts/rollout-version.sh
+          ./scripts/rollout-version.sh
         env:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          export AWS_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
-          export AWS_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
-          export AWS_ENDPOINT_URL=https://${CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com
-          aws s3 rm s3://shinkai-download/shinkai-desktop/binaries/production/updates.json --endpoint-url https://${CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com
-          aws s3 mv s3://shinkai-download/shinkai-desktop/binaries/production/updates-next.json s3://shinkai-download/shinkai-desktop/binaries/production/updates.json --endpoint-url https://${CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com
-
-      - name: Update Cloudflare Ruleset
-        run: |
-          # Load rules from secret and replace version
-          RULES=$(echo '${{ secrets.CLOUDFLARE_RULES }}' | sed "s/SHINKAI_RELEASE_VERSION/${{ steps.get-workflow-run.outputs.full_version }}/g")
-          
-          curl -L -X PUT "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/rulesets/${{ secrets.CLOUDFLARE_RULESET_ID }}" \
-            -H "Content-Type: application/json" \
-            -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_AUTH_EMAIL }}" \
-            -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_AUTH_KEY }}" \
-            --data "{
-              \"description\": \"\",
-              \"id\": \"${{ secrets.CLOUDFLARE_RULESET_ID }}\",
-              \"kind\": \"zone\",
-              \"name\": \"default\",
-              \"phase\": \"http_request_dynamic_redirect\",
-              \"rules\": ${RULES}
-            }" 
+          CLOUDFLARE_RULES: ${{ secrets.CLOUDFLARE_RULES }}
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CLOUDFLARE_RULESET_ID: ${{ secrets.CLOUDFLARE_RULESET_ID }}
+          CLOUDFLARE_AUTH_EMAIL: ${{ secrets.CLOUDFLARE_AUTH_EMAIL }}
+          CLOUDFLARE_AUTH_KEY: ${{ secrets.CLOUDFLARE_AUTH_KEY }}
+          VERSION: ${{ steps.check-tag.outputs.version }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }} 
