@@ -8,6 +8,7 @@ import { ChatMessage } from '@shinkai_network/shinkai-message-ts/api/jobs/types'
 import { getShinkaiFileProtocol } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 
+import { generateFilePreview } from '../../utils/file-preview';
 import {
   Artifact,
   AssistantMessage,
@@ -107,113 +108,16 @@ const createAssistantMessage = async (
           const response = JSON.parse(tool.response);
           if ('data' in response && '__created_files__' in response.data) {
             const files: string[] = response.data.__created_files__;
-            const filteredFiles = files.filter((file) => {
-              return !file.match(/log_jobid_[^/]+\.log$/);
-            });
+            const filteredFiles = files;
 
             const fileResults = await Promise.all(
               filteredFiles.map(async (file) => {
-                try {
-                  const response = await getShinkaiFileProtocol(
-                    nodeAddress,
-                    token,
-                    { file: file.replace('/main/', '/') }, // todo: remove this once we fix it in the node
-                  );
-                  const fileNameBase = file.split('/')?.at(-1) ?? 'untitled';
-                  const fileExtension = fileNameBase.split('.')?.at(-1) ?? '';
-                  const blob = new Blob([response]);
-
-                  const fileInfo = {
-                    id: file,
-                    name: fileNameBase,
-                    extension: fileExtension,
-                    path: file,
-                    size: blob.size,
-                    blob,
-                    type: FileTypeSupported.Unknown,
-                    mimeType: 'application/octet-stream',
-                  };
-
-                  if (file.match(/\.(jpg|jpeg|png|gif)$/i)) {
-                    return {
-                      ...fileInfo,
-                      type: FileTypeSupported.Image,
-                      mimeType: `image/${fileExtension}`,
-                      url: URL.createObjectURL(
-                        new Blob([response], {
-                          type: `image/${fileExtension}`,
-                        }),
-                      ),
-                    };
-                  }
-
-                  if (file.match(/\.(mp4|webm|mov)$/i)) {
-                    return {
-                      ...fileInfo,
-                      type: FileTypeSupported.Video,
-                      mimeType: `video/${fileExtension}`,
-                      url: URL.createObjectURL(
-                        new Blob([response], {
-                          type: `video/${fileExtension}`,
-                        }),
-                      ),
-                    };
-                  }
-
-                  if (file.match(/\.(mp3|wav|aac)$/i)) {
-                    return {
-                      ...fileInfo,
-                      type: FileTypeSupported.Audio,
-                      mimeType: `audio/${fileExtension}`,
-                      url: URL.createObjectURL(
-                        new Blob([response], {
-                          type: `audio/${fileExtension}`,
-                        }),
-                      ),
-                    };
-                  }
-
-                  if (file.match(/\.(md|markdown|txt|log|tsx|json|js|jsx)$/i)) {
-                    const textContent = await response.text();
-                    return {
-                      ...fileInfo,
-                      type: FileTypeSupported.Text,
-                      mimeType: 'text/plain',
-                      content: textContent,
-                    };
-                  }
-
-                  if (file.match(/\.(htm|html)$/i)) {
-                    return {
-                      ...fileInfo,
-                      type: FileTypeSupported.Html,
-                      mimeType: 'text/html',
-                      url: URL.createObjectURL(
-                        new Blob([response], {
-                          type: 'text/html',
-                        }),
-                      ),
-                    };
-                  }
-
-                  return {
-                    ...fileInfo,
-                    mimeType: 'application/octet-stream',
-                  };
-                } catch (error) {
-                  console.error(`Failed to fetch preview for ${file}:`, error);
-                  return {
-                    id: 'error',
-                    name: file.split('/').at(-1) ?? 'unknown',
-                    extension: 'txt',
-                    path: file,
-                    size: 0,
-                    type: FileTypeSupported.Error,
-                    mimeType: 'text/plain',
-                    error:
-                      error instanceof Error ? error.message : 'Unknown error',
-                  };
-                }
+                const response = await getShinkaiFileProtocol(
+                  nodeAddress,
+                  token,
+                  { file: file.replace('/main/', '/') }, // todo: remove this once we fix it in the node
+                );
+                return generateFilePreview(file, response);
               }),
             );
             generatedFiles = fileResults;
