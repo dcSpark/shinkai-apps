@@ -406,7 +406,6 @@ const ToolLogsBase = ({
   const auth = useAuth((state) => state.auth);
 
   const logsFilePath = toolResultFiles.find((file) => logFileRegex.test(file));
-
   const [logsFile, setLogsFile] = useState<string | null>(null);
 
   const { data: logsFileBlob } = useGetShinkaiFileProtocol(
@@ -434,30 +433,65 @@ const ToolLogsBase = ({
   }, [logsFileBlob]);
 
   function formatLogs(logString: string) {
-    return logString
-      .split('\n')
-      .filter((line) => {
+    // Split the logs by line
+    const lines = logString.split('\n').filter(line => line.trim());
+    
+    // Find the start and end index of the last shinkai-code-result block
+    let lastResultStartIndex = -1;
+    let lastResultEndIndex = -1;
+    let previousResultEndIndex = -1;
+    
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].includes('<shinkai-code-result>')) {
+        if (lastResultStartIndex !== -1) {
+          previousResultEndIndex = lastResultEndIndex;
+        }
+        lastResultStartIndex = i;
+      } else if (lines[i].includes('</shinkai-code-result>')) {
+        lastResultEndIndex = i;
+      }
+    }
+    
+    if (lastResultStartIndex === -1 || lastResultEndIndex === -1) {
+      // No result blocks found, just display all logs
+      return processLogLines(lines);
+    }
+    
+    // Determine the starting index for the current execution's logs
+    // This is either after the previous result block or the beginning of the log
+    const currentExecutionStartIndex = previousResultEndIndex !== -1 ? 
+      previousResultEndIndex + 1 : 0;
+    
+    // Extract lines from the current execution (non-wrapped logs + the last result)
+    const relevantLines = lines.slice(currentExecutionStartIndex);
+
+    return processLogLines(relevantLines);
+  }
+  
+  // Helper function to process and format log lines
+  function processLogLines(lines: string[]) {
+    return lines
+      .filter(line => {
+        // Skip tag lines, but keep actual content
         if (/<\/?shinkai-code-result>/.test(line)) return false;
-
+        
         const parts = line.split(',');
+        // Need at least timestamp and content
         if (parts.length < 5) return false;
-
-        const timestamp = parts[0];
-        const year = parseInt(timestamp.substring(0, 4));
-        const month = parseInt(timestamp.substring(4, 6)) - 1;
-        const day = parseInt(timestamp.substring(6, 8));
-        const hour = parseInt(timestamp.substring(9, 11));
-        const minute = parseInt(timestamp.substring(11, 13));
-        const second = parseInt(timestamp.substring(13, 15));
-
-        const logDate = new Date(year, month, day, hour, minute, second);
-        return logDate >= mountTimestamp;
+        
+        return true;
       })
       .map((line, i) => {
         const parts = line.split(',');
         const timestamp = parts[0];
         const logContent = parts.slice(4).join(',');
-        const readableDate = formatTimestamp(timestamp);
+        let readableDate;
+        
+        try {
+          readableDate = formatTimestamp(timestamp);
+        } catch (e) {
+          readableDate = timestamp; // Fallback if timestamp formatting fails
+        }
 
         return (
           <div
@@ -485,10 +519,8 @@ const ToolLogsBase = ({
 };
 
 const ToolLogs = memo(ToolLogsBase, (prevProps, nextProps) => {
-  if (!equal(prevProps.toolResultFiles, nextProps.toolResultFiles))
-    return false;
-  if (prevProps.mountTimestamp !== nextProps.mountTimestamp) return false;
-  return true;
+  return equal(prevProps.toolResultFiles, nextProps.toolResultFiles) && 
+         prevProps.mountTimestamp === nextProps.mountTimestamp;
 });
 
 function ToolResultFileCard({ filePath }: { filePath: string }) {
