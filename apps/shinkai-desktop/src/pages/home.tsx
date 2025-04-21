@@ -578,33 +578,29 @@ const EmptyMessage = () => {
                       <div className="flex items-center gap-2">
                         <CreateChatConfigActionBar form={chatConfigForm} />
 
-                        {selectedTool ? (
-                          <Button
-                            className={cn('size-[36px] p-2')}
-                            disabled={isPending}
-                            form="tools-form"
-                            isLoading={isPending}
-                            size="icon"
-                          >
-                            <SendIcon className="h-full w-full" />
-                            <span className="sr-only">
-                              {t('chat.sendMessage')}
-                            </span>
-                          </Button>
-                        ) : (
-                          <Button
-                            className={cn('size-[36px] p-2')}
-                            disabled={isPending || !currentMessage}
-                            isLoading={isPending}
-                            onClick={chatForm.handleSubmit(onSubmit)}
-                            size="icon"
-                          >
-                            <SendIcon className="h-full w-full" />
-                            <span className="sr-only">
-                              {t('chat.sendMessage')}
-                            </span>
-                          </Button>
-                        )}
+                        <Button
+                          className={cn('size-[36px] p-2')}
+                          disabled={
+                            isPending || (!selectedTool && !currentMessage)
+                          }
+                          form={
+                            selectedTool && chatToolView === 'form'
+                              ? 'tools-form'
+                              : undefined
+                          }
+                          isLoading={isPending}
+                          onClick={
+                            selectedTool && chatToolView === 'form'
+                              ? undefined
+                              : chatForm.handleSubmit(onSubmit)
+                          }
+                          size="icon"
+                        >
+                          <SendIcon className="h-full w-full" />
+                          <span className="sr-only">
+                            {t('chat.sendMessage')}
+                          </span>
+                        </Button>
                       </div>
                     </div>
                   }
