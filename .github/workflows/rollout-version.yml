@@ -39,8 +39,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.manual_ref || github.ref }}
 
       - name: Install AWS CLI v2 (R2 compatible version)
         id: install_aws_cli
