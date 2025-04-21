@@ -1584,12 +1584,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                               )}
                                             >
                                               <span>
-                                                Config Overrides{' '}
-                                                {JSON.stringify(
-                                                  form.getValues(
-                                                    'tools_config_override',
-                                                  )?.[tool.tool_router_key],
-                                                )}
+                                                Override configurations
                                               </span>
                                               <ChevronDownIcon className="h-4 w-4" />
                                             </Button>
