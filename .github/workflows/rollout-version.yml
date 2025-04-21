@@ -11,6 +11,8 @@ on:
 jobs:
   check-tag:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check-tag.outputs.version }}
     steps:
       - name: Validate version tag
         id: check-tag
@@ -62,6 +64,6 @@ jobs:
           CLOUDFLARE_RULESET_ID: ${{ secrets.CLOUDFLARE_RULESET_ID }}
           CLOUDFLARE_AUTH_EMAIL: ${{ secrets.CLOUDFLARE_AUTH_EMAIL }}
           CLOUDFLARE_AUTH_KEY: ${{ secrets.CLOUDFLARE_AUTH_KEY }}
-          VERSION: ${{ steps.check-tag.outputs.version }}
+          VERSION: ${{ needs.check-tag.outputs.version }}
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }} 
