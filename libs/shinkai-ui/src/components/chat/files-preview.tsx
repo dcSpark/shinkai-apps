@@ -19,7 +19,6 @@ import { cn } from '../../utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../avatar';
 import { Button } from '../button';
 import { Dialog, DialogContent } from '../dialog';
-// import { MarkdownText } from '../markdown-preview';
 import {
   Tooltip,
   TooltipContent,
@@ -83,6 +82,75 @@ const FileInfo = ({
   </div>
 );
 
+type FileContentViewerProps = Pick<
+  Attachment,
+  'name' | 'url' | 'content' | 'type'
+>;
+
+export const FileContentViewer: React.FC<FileContentViewerProps> = ({
+  name,
+  content,
+  url,
+  type,
+}) => {
+  switch (type) {
+    case FileTypeSupported.Text: {
+      return (
+        <pre className="h-full overflow-auto whitespace-pre-wrap break-words bg-gray-600 p-4 pt-10 font-mono text-xs">
+          {content}
+        </pre>
+      );
+    }
+    case FileTypeSupported.Image: {
+      return (
+        <div className="flex h-full w-full items-center justify-center">
+          <img
+            alt={name}
+            className="max-h-full max-w-full object-contain"
+            src={url}
+          />
+        </div>
+      );
+    }
+    case FileTypeSupported.Video: {
+      return (
+        <div className="flex h-full w-full items-center justify-center">
+          <video className="max-h-full max-w-full" controls src={url}>
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      );
+    }
+    case FileTypeSupported.Audio: {
+      return (
+        <div className="flex h-full w-full items-center justify-center">
+          <audio className="w-full" controls src={url}>
+            Your browser does not support the audio tag.
+          </audio>
+        </div>
+      );
+    }
+    case FileTypeSupported.Html: {
+      return (
+        <div className="flex h-full w-full items-center justify-center">
+          <iframe
+            className="h-full w-full bg-gray-50"
+            sandbox="allow-same-origin"
+            src={url}
+            title={name}
+          />
+        </div>
+      );
+    }
+    default:
+      return (
+        <div className="flex h-full flex-col items-center justify-center gap-6 text-gray-50">
+          <span>Preview not available for this file type</span>
+        </div>
+      );
+  }
+};
+
 const FullscreenDialog = ({
   open,
   name,
@@ -113,7 +181,7 @@ const FullscreenDialog = ({
         </div>
       </div>
       <div className="flex size-full flex-col overflow-hidden rounded-l-xl p-10 text-white">
-        <FilePreviewAlternate
+        <FileContentViewer
           content={content}
           name={name}
           type={type}
@@ -147,86 +215,6 @@ const FileButton = ({
     <FileInfo fileName={name} fileSize={size} />
   </button>
 );
-
-type FilePreviewPropsA = Pick<Attachment, 'name' | 'url' | 'content' | 'type'>;
-
-export const FilePreviewAlternate: React.FC<FilePreviewPropsA> = ({
-  name,
-  content,
-  url,
-  type,
-}) => {
-  switch (type) {
-    case FileTypeSupported.Text: {
-      return (
-        <pre className="h-full overflow-auto whitespace-pre-wrap break-words bg-gray-600 p-4 pt-10 font-mono text-xs">
-          {content}
-        </pre>
-      );
-    }
-    // case 'md': {
-    //   return (
-    //     <div className="h-full overflow-auto p-4 pt-10">
-    //       <MarkdownText content={content ?? ''} />
-    //     </div>
-    //   );
-    // }
-    case FileTypeSupported.Image: {
-      return (
-        <div className="flex h-full w-full items-center justify-center">
-          <img
-            alt={name}
-            className="max-h-full max-w-full object-contain"
-            src={url}
-          />
-        </div>
-      );
-    }
-    case FileTypeSupported.Video: {
-      return (
-        <div className="flex h-full w-full items-center justify-center">
-          <video className="max-h-full max-w-full" controls src={url}>
-            Your browser does not support the video tag.
-          </video>
-        </div>
-      );
-    }
-    case FileTypeSupported.Audio: {
-      return (
-        <div className="flex h-full w-full items-center justify-center">
-          <audio className="w-full" controls src={url}>
-            Your browser does not support the audio tag.
-          </audio>
-        </div>
-      );
-    }
-    // case FileTypeSupported.Pdf: {
-    //   return (
-    //     <div className="flex h-full w-full items-center justify-center">
-    //       <iframe className="h-full w-full bg-gray-50" src={url} title={name} />
-    //     </div>
-    //   );
-    // }
-    case FileTypeSupported.Html: {
-      return (
-        <div className="flex h-full w-full items-center justify-center">
-          <iframe
-            className="h-full w-full bg-gray-50"
-            sandbox="allow-same-origin"
-            src={url}
-            title={name}
-          />
-        </div>
-      );
-    }
-    default:
-      return (
-        <div className="flex h-full flex-col items-center justify-center gap-6 text-gray-50">
-          <span>Preview not available for this file type</span>
-        </div>
-      );
-  }
-};
 
 export const FilePreview = ({
   name,
