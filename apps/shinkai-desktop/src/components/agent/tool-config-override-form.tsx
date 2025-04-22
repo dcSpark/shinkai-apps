@@ -38,7 +38,8 @@ export const TooConfigOverrideForm = ({
   const properties = useMemo(() => {
     const properties = (tool as any)?.configurations?.properties || {};
     return Object.entries(properties).map(([key, value]: [string, any]) => ({
-      name: key,
+      key: key,
+      name: value.title,
       description: value.description,
     }));
   }, [tool]);
@@ -112,12 +113,12 @@ export const TooConfigOverrideForm = ({
               }}
               value="default"
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full p-4">
                 <SelectValue>Select configuration to override</SelectValue>
               </SelectTrigger>
               <SelectContent className="min-w-[180px] max-w-[720px] overflow-y-auto">
                 {properties.map((property, index) => (
-                  <SelectItem key={index} value={property.name}>
+                  <SelectItem key={index} value={property.key}>
                     <div className="flex flex-col gap-1">
                       <span className="text-sm font-medium">
                         {property.name}
@@ -149,23 +150,27 @@ export const TooConfigOverrideForm = ({
                 FieldTemplate: (props) => {
                   if (templates.FieldTemplate && props.id !== 'root') {
                     return (
-                      <div className="flex w-full items-center gap-2">
-                        <templates.FieldTemplate
-                          classNames="w-full"
-                          {...props}
-                        />
-                        <Button
-                          className="h-6 w-6 transition-colors hover:bg-red-500/10 hover:text-red-500"
-                          onClick={() => {
-                            console.log('delete', props);
-                            onDeleteConfigurationOverride(props.label);
-                          }}
-                          size="icon"
-                          type="button"
-                          variant="ghost"
-                        >
-                          <Trash className="h-4 w-4" />
-                        </Button>
+                      <div className="border-official-gray-750 flex w-full items-center gap-2 rounded-lg border p-2">
+                        <div className="flex-grow">
+                          <templates.FieldTemplate
+                            classNames="w-full"
+                            {...props}
+                          />
+                        </div>
+                        <div className="flex-shrink-0 items-center justify-center px-2">
+                          <Button
+                            className="h-6 w-6 bg-red-500/10 text-red-500 transition-colors"
+                            onClick={() => {
+                              console.log('delete', props);
+                              onDeleteConfigurationOverride(props.label);
+                            }}
+                            size="icon"
+                            type="button"
+                            variant="ghost"
+                          >
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     );
                   } else if (templates.FieldTemplate) {
