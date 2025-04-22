@@ -9,6 +9,7 @@ import {
   CreateFilesInboxResponse,
   CreateJobRequest,
   CreateJobResponse,
+  GetAllAgentInboxesRequest,
   GetAllInboxesResponse,
   GetAllInboxesWithPaginationRequest,
   GetAllInboxesWithPaginationResponse,
@@ -359,6 +360,21 @@ export const getAllInboxes = async (
 ) => {
   const response = await httpClient.get(
     urlJoin(nodeAddress, '/v2/all_inboxes'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetAllInboxesResponse;
+};
+
+export const getAllAgentInboxes = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetAllAgentInboxesRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/all_inboxes?agent_id=' + payload.agent_id),
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',

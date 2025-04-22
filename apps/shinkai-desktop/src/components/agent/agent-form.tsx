@@ -22,6 +22,7 @@ import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutation
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
 import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
+import { useGetAgentInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetAgentInboxes';
 import { useGetTool } from '@shinkai_network/shinkai-node-state/v2/queries/getTool/useGetTool';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
@@ -56,6 +57,11 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Skeleton,
   Slider,
   Switch,
@@ -311,12 +317,52 @@ function AgentSideChat({
     });
   };
 
+  const { data: agentInboxes } = useGetAgentInboxes({
+    agentId,
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const [selectedInboxId, setSelectedInboxId] = useState<string>(
+    agentInboxes?.[0]?.inbox_id ?? '',
+  );
+
+  // Effect to sync selectedInboxId with chatInboxId
+  useEffect(() => {
+    if (selectedInboxId) {
+      setChatInboxId(selectedInboxId);
+    }
+  }, [selectedInboxId]);
+
+  // Reset selectedInboxId if agentInboxes change and the current selection is gone
+  useEffect(() => {
+    if (agentInboxes && !agentInboxes.find(inbox => inbox.inbox_id === selectedInboxId)) {
+      setSelectedInboxId(agentInboxes[0]?.inbox_id ?? '');
+    }
+  }, [agentInboxes, selectedInboxId]);
+
   return (
     <ChatProvider>
       <div className="bg-official-gray-950 h-full shadow-lg">
         <div className="flex h-full flex-col">
-          <div className="flex items-center justify-between p-4">
-            <h2 className="text-base font-medium">Preview</h2>
+          <div className="flex items-center justify-between p-2">
+            <Select
+              onValueChange={(value) => {
+                setSelectedInboxId(value);
+              }}
+              value={selectedInboxId}
+            >
+              <SelectTrigger className="h-8 w-[280px] text-base font-medium [&_svg]:top-1/2 [&_svg]:-translate-y-1/2">
+                <SelectValue placeholder="Preview" />
+              </SelectTrigger>
+              <SelectContent>
+                {agentInboxes?.map((inbox) => (
+                  <SelectItem key={inbox.inbox_id} value={inbox.inbox_id}>
+                    {inbox.custom_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <div className="flex items-center gap-2">
               <Tooltip>
                 <TooltipTrigger asChild>
