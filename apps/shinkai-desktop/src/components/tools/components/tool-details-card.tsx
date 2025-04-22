@@ -177,7 +177,7 @@ export default function ToolDetailsCard({
 
   const { mutateAsync: toggleEnableTool, isPending: isTogglingEnableTool } =
     useToggleEnableTool();
-
+  const [configsOkToEnable, setConfigsOkToEnable] = useState<boolean>(false);
   const { mutateAsync: duplicateTool, isPending: isDuplicatingTool } =
     useDuplicateTool({
       onSuccess: (response) => {
@@ -305,6 +305,25 @@ export default function ToolDetailsCard({
           agent_id: (tool as any).agent_id,
         },
       });
+    }
+    if ('configurations' in tool) {
+      if (isEnabled) {
+        setConfigsOkToEnable(true);
+        return;
+      }
+      const configsOkToEnable = tool.configurations.required.every(
+        (requiredConfigKey) => {
+          const requiredConfig = tool.configurations.properties[requiredConfigKey]
+          const configValue = formData?.[requiredConfigKey]
+          if (configValue === null || configValue === undefined) return false
+          if (requiredConfig.type === 'string') return configValue.length > 0
+          if (requiredConfig.type === 'number') return typeof configValue === 'number' && !isNaN(configValue)
+          if (requiredConfig.type === 'boolean') return typeof configValue === 'boolean'
+          if (requiredConfig.type === 'array') return Array.isArray(configValue)
+          return false
+        }
+      );
+      setConfigsOkToEnable(configsOkToEnable);
     }
   }, [tool]);
 
@@ -453,7 +472,7 @@ export default function ToolDetailsCard({
                 </label>
                 <Switch
                   checked={isEnabled}
-                  disabled={isTogglingEnableTool}
+                  disabled={isTogglingEnableTool || !configsOkToEnable}
                   id="tool-switch"
                   onCheckedChange={async () => {
                     await toggleEnableTool({
@@ -570,7 +589,15 @@ export default function ToolDetailsCard({
                 className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
                 value="configuration"
               >
-                Configuration
+                <span className="flex items-center gap-1.5">
+                  Configuration
+                  {!configsOkToEnable && (
+                    <span
+                      className="h-2 w-2 rounded-full bg-red-500"
+                      title="Configuration required"
+                    />
+                  )}
+                </span>
               </TabsTrigger>
             )}
           {'oauth' in tool && tool.oauth && tool.oauth.length > 0 && (
