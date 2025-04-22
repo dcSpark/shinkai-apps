@@ -1320,7 +1320,7 @@ export const retrieveFilesForJob = async (
 export const setPreferences = async (
   nodeAddress: string,
   bearerToken: string,
-  payload: { default_llm_provider: string },
+  payload: { default_llm_provider?: string, max_iterations?: number },
 ): Promise<any> => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/set_preferences'),

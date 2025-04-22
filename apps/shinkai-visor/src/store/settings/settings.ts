@@ -27,6 +27,8 @@ type SettingsStore = {
   setLastPage: (lastPageOpen: string | null) => void;
   userLanguage: LocaleMode;
   setUserLanguage: (userLanguage: LocaleMode) => void;
+  maxChatIterations: number;
+  setMaxChatIterations: (maxChatIterations: number) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -98,6 +100,10 @@ export const useSettings = create<SettingsStore>()(
         setUserLanguage: (userLanguage) => {
           set({ userLanguage });
           switchLanguage(userLanguage);
+        },
+        maxChatIterations: 10,
+        setMaxChatIterations: (maxChatIterations) => {
+          set({ maxChatIterations });
         },
       }),
       {

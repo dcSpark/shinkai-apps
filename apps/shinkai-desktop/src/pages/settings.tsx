@@ -6,6 +6,7 @@ import {
 } from '@shinkai_network/shinkai-i18n';
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
+import { useSetMaxChatIterations } from '@shinkai_network/shinkai-node-state/v2/mutations/setMaxChatIterations/useSetMaxChatIterations';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetShinkaiFreeModelQuota } from '@shinkai_network/shinkai-node-state/v2/queries/getShinkaiFreeModelQuota/useGetShinkaiFreeModelQuota';
@@ -34,6 +35,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { getVersion } from '@tauri-apps/api/app';
 import { formatDuration, intervalToDuration } from 'date-fns';
@@ -66,6 +68,7 @@ const formSchema = z.object({
   optInAnalytics: z.boolean(),
   optInExperimental: z.boolean(),
   language: z.string(),
+  maxChatIterations: z.number(),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -96,8 +99,30 @@ const SettingsPage = () => {
   const setDefaultAgentId = useSettings(
     (settingsStore) => settingsStore.setDefaultAgentId,
   );
+
+  const maxChatIterations = useSettings(
+    (settingsStore) => settingsStore.maxChatIterations,
+  );
+  const setMaxChatIterations = useSettings(
+    (settingsStore) => settingsStore.setMaxChatIterations,
+  );
+
   const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth({
     nodeAddress: auth?.node_address ?? '',
+  });
+
+  const { mutateAsync: setMaxChatIterationsMutation } = useSetMaxChatIterations({
+    onSuccess: (_data, variables) => {
+      setMaxChatIterations(variables.maxIterations);
+      toast.success(t('settings.maxChatIterations.success'));
+    },
+    onError: (error) => {
+      toast.error(t('settings.maxChatIterations.error'), {
+        description: error?.message,
+      });
+      // Revert form value to the last known good value from the store
+      form.setValue('maxChatIterations', maxChatIterations);
+    },
   });
 
   const [appVersion, setAppVersion] = useState('');
@@ -112,6 +137,7 @@ const SettingsPage = () => {
       optInAnalytics: !!optInAnalytics,
       optInExperimental,
       language: userLanguage,
+      maxChatIterations: maxChatIterations,
     },
   });
 
@@ -128,6 +154,11 @@ const SettingsPage = () => {
     control: form.control,
     name: 'language',
   });
+  const currentMaxChatIterations = useWatch({
+    control: form.control,
+    name: 'maxChatIterations',
+  });
+  const debouncedMaxChatIterations = useDebounce(currentMaxChatIterations.toString(), 1000); // Debounce for 1 second
 
   useEffect(() => {
     (async () => {
@@ -138,6 +169,23 @@ const SettingsPage = () => {
   useEffect(() => {
     setUserLanguage(currentLanguage as LocaleMode);
   }, [currentLanguage, setUserLanguage]);
+
+  useEffect(() => {
+    // Update the setting in the backend when the debounced value changes
+    const newMaxIterations = parseInt(debouncedMaxChatIterations, 10);
+    if (
+      !isNaN(newMaxIterations) &&
+      newMaxIterations !== maxChatIterations && // Only call if the value actually changed
+      auth?.node_address &&
+      auth?.api_v2_key
+    ) {
+      setMaxChatIterationsMutation({
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
+        maxIterations: newMaxIterations,
+      });
+    }
+  }, [debouncedMaxChatIterations, maxChatIterations, setMaxChatIterationsMutation, auth]);
 
   useEffect(() => {
     setOptInExperimental(currentOptInExperimental);
@@ -546,6 +594,26 @@ const SettingsPage = () => {
                 name="ollamaVersion"
                 render={({ field }) => (
                   <TextField field={field} label={t('ollama.version')} />
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="maxChatIterations"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('settings.maxChatIterations.label')}</FormLabel>
+                    <FormControl>
+                      <TextField
+                        field={field}
+                        helperMessage={t('settings.maxChatIterations.description')}
+                        label={t('settings.maxChatIterations.label')}
+                        max={100}
+                        min={1}
+                        type="number"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
               />
               <FormField
