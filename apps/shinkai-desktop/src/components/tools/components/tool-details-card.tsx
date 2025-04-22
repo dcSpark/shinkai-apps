@@ -13,6 +13,7 @@ import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
+import { useGetShinkaiFileProtocol } from '@shinkai_network/shinkai-node-state/v2/queries/getShinkaiFileProtocol/useGetShinkaiFileProtocol';
 import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
 import {
   Alert,
@@ -27,7 +28,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  FileList,
   JsonForm,
   Switch,
   Tabs,
@@ -35,6 +35,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { fileIconMap, FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { save } from '@tauri-apps/plugin-dialog';
@@ -47,6 +48,7 @@ import {
   ExternalLinkIcon,
   LoaderIcon,
   MoreVertical,
+  Paperclip,
   PlayCircle,
   Rocket,
 } from 'lucide-react';
@@ -61,6 +63,7 @@ import { SHINKAI_STORE_URL } from '../../../utils/store';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import EditToolDetailsDialog from './edit-tool-details-dialog';
+import { ExecutionFiles } from './execution-files';
 
 /**
  * Removes embedding-related fields from a tool object to prevent displaying large embedding arrays
@@ -1088,33 +1091,12 @@ export default function ToolDetailsCard({
                       value={JSON.stringify(toolExecutionResult, null, 2)}
                     />
 
-                    {/* Extract and display generated files if present */}
-                    {toolExecutionResult.__created_files__ &&
-                      toolExecutionResult.__created_files__.length > 0 && (
-                        <div className="mt-4 flex flex-col items-start gap-1 rounded-md py-4 pt-1.5">
-                          <span className="text-gray-80 text-xs">
-                            Generated Files
-                          </span>
-                          <FileList
-                            className="mt-2"
-                            files={toolExecutionResult.__created_files__.map(
-                              (filePath: string) => {
-                                const fileName =
-                                  filePath.split('/').pop() || '';
-                                const fileExtension =
-                                  fileName.split('.').pop() || '';
-                                return {
-                                  name: fileName,
-                                  path: filePath,
-                                  type: 'text',
-                                  id: filePath,
-                                  extension: fileExtension,
-                                };
-                              },
-                            )}
-                          />
-                        </div>
-                      )}
+                    <ExecutionFiles
+                      files={
+                        (toolExecutionResult.__created_files__ as string[]) ??
+                        []
+                      }
+                    />
                   </>
                 )}
               </div>

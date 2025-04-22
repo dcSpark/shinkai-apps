@@ -1,6 +1,10 @@
 import { getShinkaiFileProtocol as getShinkaiFileProtocolApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import type { GetShinkaiFileProtocolInput } from './types';
+import { generateFilePreview } from '../../utils/file-preview';
+import type {
+  GetShinkaiFileProtocolInput,
+  GetShinkaiFilesProtocolInput,
+} from './types';
 
 export const getShinkaiFileProtocol = async ({
   nodeAddress,
@@ -11,4 +15,21 @@ export const getShinkaiFileProtocol = async ({
     file,
   });
   return result;
+};
+
+export const getShinkaiFilesProtocol = async ({
+  nodeAddress,
+  token,
+  files,
+}: GetShinkaiFilesProtocolInput) => {
+  const results = await Promise.all(
+    files.map(async (file) => {
+      const result = await getShinkaiFileProtocolApi(nodeAddress, token, {
+        file,
+      });
+      return generateFilePreview(file, result);
+    }),
+  );
+
+  return results;
 };
