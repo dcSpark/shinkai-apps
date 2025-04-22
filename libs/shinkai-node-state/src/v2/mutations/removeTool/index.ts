@@ -10,6 +10,7 @@ export const removeTool = async ({
   token,
   toolKey,
 }: RemoveToolInput) => {
+  // Endpoint attempts to remove tool from playground, but does not fail if it does not exist so it works even if the tool is not in the playground
   return await removeToolApi(nodeAddress, token, {
     tool_key: toolKey,
   });
