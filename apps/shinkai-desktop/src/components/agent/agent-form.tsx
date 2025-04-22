@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { PlusIcon } from '@radix-ui/react-icons';
-import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   ShinkaiTool,
@@ -39,7 +38,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   Form,
   FormControl,
   FormDescription,
@@ -51,7 +49,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
   Input,
-  JsonForm,
   Label,
   RadioGroup,
   RadioGroupItem,
@@ -69,7 +66,6 @@ import {
   TextField,
   Tooltip,
   TooltipContent,
-  TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
@@ -92,7 +88,6 @@ import {
   RefreshCwIcon,
   SearchIcon,
   Trash2,
-  TrashIcon,
   XIcon,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -115,6 +110,7 @@ import {
   useWebSocketTools,
 } from '../chat/websocket-message';
 import ToolDetailsCard from '../tools/components/tool-details-card';
+import { TooConfigOverrideForm } from './tool-config-override-form';
 
 const agentFormSchema = z.object({
   name: z.string(),
@@ -1501,6 +1497,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                 className="text-official-gray-400 hover:text-official-gray-100 text-xs"
                                 onClick={() => {
                                   form.setValue('tools', []);
+                                  form.setValue('tools_config_override', {});
                                 }}
                                 size="xs"
                                 variant="ghost"
@@ -1566,6 +1563,19 @@ function AgentForm({ mode }: AgentFormProps) {
                                                 (t) =>
                                                   t !== tool.tool_router_key,
                                               ),
+                                          );
+
+                                          const currentToolOverrideValue =
+                                            form.getValues(
+                                              'tools_config_override',
+                                            )?.[tool.tool_router_key] ?? {};
+
+                                          delete currentToolOverrideValue[
+                                            tool.tool_router_key
+                                          ];
+                                          form.setValue(
+                                            'tools_config_override',
+                                            currentToolOverrideValue,
                                           );
                                         }}
                                       />
@@ -2452,51 +2462,5 @@ const ToolConfigModal = ({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-};
-
-const TooConfigOverrideForm = ({
-  toolRouterKey,
-  value,
-  onChange,
-}: {
-  toolRouterKey: string;
-  value: any;
-  onChange: (e: any) => void;
-}) => {
-  const auth = useAuth((state) => state.auth);
-  const { data, isSuccess, isPending } = useGetTool({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    toolKey: toolRouterKey ?? '',
-  });
-
-  const tool = data?.content[0] as ShinkaiTool;
-
-  return (
-    <div className="flex flex-col gap-2">
-      {isPending && (
-        <Skeleton className="bg-official-gray-900 flex-1 animate-pulse rounded" />
-      )}
-      {isSuccess && (
-        <JsonForm
-          className="py-1"
-          formData={value}
-          noHtml5Validate={true}
-          onChange={(e) => {
-            if (onChange && e.errors.length === 0) {
-              onChange(e.formData);
-            }
-          }}
-          schema={(tool as any)?.configurations}
-          uiSchema={{
-            'ui:submitButtonOptions': {
-              norender: true,
-            },
-          }}
-          validator={validator}
-        />
-      )}
-    </div>
   );
 };
