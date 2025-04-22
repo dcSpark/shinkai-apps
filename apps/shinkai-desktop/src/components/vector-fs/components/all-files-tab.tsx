@@ -183,7 +183,6 @@ const AllFiles = () => {
     {
       name: t('vectorFs.actions.uploadFile'),
       icon: <GenerateDocIcon className="mr-2 h-4 w-4" />,
-      disabled: currentGlobalPath === '/',
       onClick: () => {
         setActiveDrawerMenuOption(VectorFsGlobalAction.GenerateFromDocument);
       },
@@ -192,7 +191,6 @@ const AllFiles = () => {
     {
       name: t('vectorFs.actions.createTextFile'),
       icon: <FileType2Icon className="mr-2 h-3.5 w-3.5" />,
-      disabled: currentGlobalPath === '/',
       onClick: () => {
         setActiveDrawerMenuOption(VectorFsGlobalAction.CreateTextFile);
       },
