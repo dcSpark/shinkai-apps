@@ -736,7 +736,6 @@ export default function ToolDetailsCard({
                 </p>
               </div>
               <RemoveToolButton
-                isPlaygroundTool={!!isPlaygroundTool}
                 toolKey={toolKey as string}
               />
             </div>

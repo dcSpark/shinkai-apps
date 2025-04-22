@@ -9,11 +9,7 @@ export const removeTool = async ({
   nodeAddress,
   token,
   toolKey,
-  isPlaygroundTool,
 }: RemoveToolInput) => {
-  if (isPlaygroundTool) {
-    return await removePlaygroundTool({ nodeAddress, token, toolKey });
-  }
   return await removeToolApi(nodeAddress, token, {
     tool_key: toolKey,
   });
