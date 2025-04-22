@@ -10,6 +10,7 @@ import {
   buildInboxIdFromJobId,
   extractJobIdFromInbox,
 } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
+import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
 import {
   DEFAULT_CHAT_CONFIG,
   FunctionKeyV2,
@@ -22,6 +23,8 @@ import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutation
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
 import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
+import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
+import { useGetSearchDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getSearchDirectoryContents/useGetSearchDirectoryContents';
 import { useGetTool } from '@shinkai_network/shinkai-node-state/v2/queries/getTool/useGetTool';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
@@ -30,6 +33,7 @@ import {
   Button,
   buttonVariants,
   ChatInputArea,
+  Checkbox,
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -56,6 +60,7 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
+  ScrollArea,
   Skeleton,
   Slider,
   Switch,
@@ -84,6 +89,8 @@ import {
   AlertCircle,
   BoltIcon,
   ChevronRight,
+  FileIcon,
+  FolderIcon,
   LucideArrowLeft,
   MessageSquare,
   RefreshCwIcon,
@@ -92,6 +99,8 @@ import {
   TrashIcon,
   XIcon,
 } from 'lucide-react';
+import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
+import { TreeNode } from 'primereact/treenode';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, To, useNavigate, useParams } from 'react-router-dom';
@@ -100,6 +109,7 @@ import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
 
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
+import { treeOptions } from '../../lib/constants';
 import { useChatConversationWithOptimisticUpdates } from '../../pages/chat/chat-conversation';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -437,6 +447,27 @@ function AgentForm({ mode }: AgentFormProps) {
     (state) => state.setSetJobScopeOpen,
   );
 
+  const [searchQueryKnowledge, setSearchQueryKnowledge] = useState('');
+  const debouncedSearchQueryKnowledge = useDebounce(searchQueryKnowledge, 600);
+  const isSearchQueryKnowledgeSynced =
+    searchQueryKnowledge === debouncedSearchQueryKnowledge;
+
+  const {
+    data: searchKnowledgeList,
+    isLoading: isSearchKnowledgeListLoading,
+    isPending: isSearchKnowledgeListPending,
+    isSuccess: isSearchKnowledgeListSuccess,
+  } = useGetSearchDirectoryContents(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      name: debouncedSearchQueryKnowledge,
+    },
+    {
+      enabled: !!debouncedSearchQueryKnowledge,
+    },
+  );
+
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
@@ -450,6 +481,14 @@ function AgentForm({ mode }: AgentFormProps) {
       },
       { enabled: isSearchQuerySynced && !!searchQuery },
     );
+
+  const { data: fileInfoArray, isSuccess: isVRFilesSuccess } =
+    useGetListDirectoryContents({
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      path: '/',
+      depth: 6,
+    });
 
   const selectedKeys = useSetJobScope((state) => state.selectedKeys);
   const selectedFileKeysRef = useSetJobScope(
@@ -1458,6 +1497,123 @@ function AgentForm({ mode }: AgentFormProps) {
                             </p>
                           </div>
                         </Button>
+                        <div className="relative flex h-10 w-full items-center">
+                          <Input
+                            className="placeholder-gray-80 !h-full rounded-lg bg-transparent py-2 pl-10"
+                            onChange={(e) => {
+                              setSearchQueryKnowledge(e.target.value);
+                            }}
+                            placeholder={'Search folders and files ...'}
+                            value={searchQueryKnowledge}
+                          />
+                          <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
+                          {searchQueryKnowledge && (
+                            <Button
+                              className="hover:bg-official-gray-800 absolute right-1 h-8 w-8 bg-transparent p-2"
+                              onClick={() => {
+                                setSearchQueryKnowledge('');
+                              }}
+                              size="auto"
+                              type="button"
+                              variant="ghost"
+                            >
+                              <XIcon />
+                              <span className="sr-only">
+                                {t('common.clearSearch')}
+                              </span>
+                            </Button>
+                          )}
+                        </div>
+                        <ScrollArea className="h-[calc(100vh-200px)] flex-1">
+                          {searchQueryKnowledge &&
+                            isSearchQueryKnowledgeSynced &&
+                            searchKnowledgeList?.length === 0 && (
+                              <div className="flex h-20 items-center justify-center text-gray-100">
+                                {t('vectorFs.emptyState.noFiles')}
+                              </div>
+                            )}
+                          {searchQueryKnowledge &&
+                            isSearchQueryKnowledgeSynced &&
+                            searchKnowledgeList?.map((file) => (
+                              <div
+                                className="flex items-center gap-2"
+                                key={file.path}
+                              >
+                                <Checkbox />
+                                {file.is_directory ? (
+                                  <FolderIcon className="size-4" />
+                                ) : (
+                                  <FileIcon className="size-4" />
+                                )}
+                                <span className="text-sm text-white">
+                                  {file.path}
+                                </span>
+                              </div>
+                            ))}
+                          {/* <Tree
+                            onSelect={(e) => {
+                              if (e.node.icon === 'icon-folder') {
+                                selectedFolderKeysRef.set(
+                                  String(e.node.key),
+                                  e.node.data.path,
+                                );
+                                return;
+                              }
+                              selectedFileKeysRef.set(
+                                String(e.node.key),
+                                e.node.data.path,
+                              );
+                            }}
+                            onSelectionChange={(e) => {
+                              onSelectedKeysChange(
+                                e.value as TreeCheckboxSelectionKeys,
+                              );
+                            }}
+                            onUnselect={(e) => {
+                              if (e.node.icon === 'icon-folder') {
+                                selectedFolderKeysRef.delete(
+                                  String(e.node.key),
+                                );
+                                return;
+                              }
+                              selectedFileKeysRef.delete(String(e.node.key));
+                            }}
+                            propagateSelectionDown={true}
+                            propagateSelectionUp={false}
+                            pt={treeOptions}
+                            selectionKeys={selectedKeys}
+                            selectionMode="checkbox"
+                            value={nodes}
+                          /> */}
+                          {(isSearchKnowledgeListPending ||
+                            isSearchKnowledgeListLoading ||
+                            (searchQueryKnowledge &&
+                              searchQueryKnowledge !==
+                                debouncedSearchQueryKnowledge)) &&
+                            Array.from({ length: 4 }).map((_, idx) => (
+                              <Skeleton
+                                className="bg-official-gray-900 h-[30px] animate-pulse rounded"
+                                key={idx}
+                              />
+                            ))}
+                          {!searchQueryKnowledge &&
+                            fileInfoArray?.map((file) => (
+                              <div
+                                className="flex items-center gap-2"
+                                key={file.path}
+                              >
+                                <Checkbox />
+                                {file.is_directory ? (
+                                  <FolderIcon className="size-4" />
+                                ) : (
+                                  <FileIcon className="size-4" />
+                                )}
+                                <span className="text-sm text-white">
+                                  {file.path}
+                                </span>
+                              </div>
+                            ))}
+                        </ScrollArea>
                       </div>
                     </TabsContent>
 
