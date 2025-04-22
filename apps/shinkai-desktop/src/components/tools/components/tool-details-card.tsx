@@ -34,6 +34,9 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { fileIconMap, FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
@@ -591,11 +594,17 @@ export default function ToolDetailsCard({
               >
                 <span className="flex items-center gap-1.5">
                   Configuration
-                  {!configsOkToEnable && (
-                    <span
-                      className="h-2 w-2 rounded-full bg-red-500"
-                      title="Configuration required"
-                    />
+                  {configsOkToEnable === false && (
+                    <div className="relative flex items-center">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="h-2 w-2 rounded-full bg-red-500" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{t('tools.configurationRequired')}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
                   )}
                 </span>
               </TabsTrigger>
