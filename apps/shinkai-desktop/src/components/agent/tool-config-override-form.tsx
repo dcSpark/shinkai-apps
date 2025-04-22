@@ -114,7 +114,7 @@ export const TooConfigOverrideForm = ({
               value="default"
             >
               <SelectTrigger className="w-full p-4">
-                <SelectValue>Select configuration to override</SelectValue>
+                <SelectValue>Select a configuration to override</SelectValue>
               </SelectTrigger>
               <SelectContent className="min-w-[180px] max-w-[720px] overflow-y-auto">
                 {properties.map((property, index) => (
