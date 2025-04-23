@@ -231,11 +231,7 @@ const AllFiles = () => {
           sideOffset={10}
         >
           {actionList.map((item, index) => (
-            <DropdownMenuItem
-              disabled={item.disabled}
-              key={index}
-              onClick={item.onClick}
-            >
+            <DropdownMenuItem key={index} onClick={item.onClick}>
               {item.icon}
               <span>{item.name}</span>
             </DropdownMenuItem>
@@ -442,11 +438,7 @@ const AllFiles = () => {
         </ContextMenuTrigger>
         <ContextMenuContent className="p-2">
           {actionList.map((item, index) => (
-            <ContextMenuItem
-              disabled={item.disabled}
-              key={index}
-              onClick={item.onClick}
-            >
+            <ContextMenuItem key={index} onClick={item.onClick}>
               {item.icon}
               <span>{item.name}</span>
             </ContextMenuItem>

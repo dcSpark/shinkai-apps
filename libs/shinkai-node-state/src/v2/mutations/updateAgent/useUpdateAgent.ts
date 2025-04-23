@@ -25,6 +25,16 @@ export const useUpdateAgent = (options?: Options) => {
         queryKey: [FunctionKeyV2.GET_AGENTS],
       });
 
+      queryClient.invalidateQueries({
+        queryKey: [
+          FunctionKeyV2.GET_AGENT,
+          {
+            agentId: variables.agent.agent_id,
+            nodeAddress: variables.nodeAddress,
+          },
+        ],
+      });
+
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);
       }
