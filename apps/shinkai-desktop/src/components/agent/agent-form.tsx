@@ -76,7 +76,6 @@ import {
   TextField,
   Tooltip,
   TooltipContent,
-  TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
@@ -93,13 +92,13 @@ import cronstrue from 'cronstrue';
 import {
   AlertCircle,
   BoltIcon,
+  ChevronDownIcon,
   ChevronRight,
   LucideArrowLeft,
   MessageSquare,
   RefreshCwIcon,
   SearchIcon,
   Trash2,
-  TrashIcon,
   XIcon,
 } from 'lucide-react';
 import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
@@ -124,6 +123,7 @@ import {
   useWebSocketTools,
 } from '../chat/websocket-message';
 import ToolDetailsCard from '../tools/components/tool-details-card';
+import { TooConfigOverrideForm } from './tool-config-override-form';
 
 const agentFormSchema = z.object({
   name: z.string(),
@@ -132,6 +132,7 @@ const agentFormSchema = z.object({
   storage_path: z.string(),
   knowledge: z.array(z.string()),
   tools: z.array(z.string()),
+  tools_config_override: z.record(z.record(z.any())).optional(),
   debugMode: z.boolean(),
   config: z
     .object({
@@ -516,6 +517,7 @@ function AgentForm({ mode }: AgentFormProps) {
       storage_path: '',
       knowledge: [],
       tools: [],
+      tools_config_override: {},
       debugMode: false,
       config: {
         stream: DEFAULT_CHAT_CONFIG.stream,
@@ -542,6 +544,7 @@ function AgentForm({ mode }: AgentFormProps) {
       form.setValue('storage_path', agent.storage_path);
       form.setValue('knowledge', agent.knowledge);
       form.setValue('tools', agent.tools);
+      form.setValue('tools_config_override', agent.tools_config_override ?? {});
       form.setValue('debugMode', agent.debug_mode);
       form.setValue('config', {
         custom_prompt: agent.config?.custom_prompt ?? '',
@@ -683,6 +686,7 @@ function AgentForm({ mode }: AgentFormProps) {
         tools: values.tools,
         debug_mode: values.debugMode,
         config: values.config,
+        tools_config_override: values.tools_config_override || {},
         name: values.name,
         scope: {
           vector_fs_items: Array.from(selectedFileKeysRef.values()),
@@ -690,7 +694,6 @@ function AgentForm({ mode }: AgentFormProps) {
           vector_search_mode: 'FillUpTo25k',
         },
       };
-
       // Call the update mutation WITHOUT cronExpression
       await quickSaveAgentMutation({
         nodeAddress: auth.node_address,
@@ -860,6 +863,7 @@ function AgentForm({ mode }: AgentFormProps) {
       storage_path: values.storage_path,
       knowledge: values.knowledge,
       tools: values.tools,
+      tools_config_override: values.tools_config_override || {},
       debug_mode: values.debugMode,
       config: values.config,
       name: values.name,
@@ -869,7 +873,6 @@ function AgentForm({ mode }: AgentFormProps) {
         vector_search_mode: 'FillUpTo25k',
       },
     };
-
     try {
       if (mode === 'edit' && agent) {
         // Step 1: Update Agent Core Data
@@ -1622,6 +1625,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                 className="text-official-gray-400 hover:text-official-gray-100 text-xs"
                                 onClick={() => {
                                   form.setValue('tools', []);
+                                  form.setValue('tools_config_override', {});
                                 }}
                                 size="xs"
                                 variant="ghost"
@@ -1637,57 +1641,119 @@ function AgentForm({ mode }: AgentFormProps) {
                                 if (!tool) return null;
                                 return (
                                   <div
-                                    className="flex w-full items-center gap-3 py-2"
+                                    className="flex flex-col gap-2"
                                     key={toolKey}
                                   >
-                                    <div className="inline-flex flex-1 items-center gap-2 leading-none">
-                                      <div className="flex flex-col gap-1 text-xs text-gray-50">
-                                        <span className="inline-flex items-center gap-1 text-sm text-white">
-                                          {formatText(tool.name)}
-                                        </span>
-                                        <span className="text-official-gray-400 line-clamp-2 text-sm">
-                                          {tool.description}
-                                        </span>
+                                    <div className="flex w-full items-center gap-3 py-2">
+                                      <div className="inline-flex flex-1 items-center gap-2 leading-none">
+                                        <div className="flex flex-col gap-1 text-xs text-gray-50">
+                                          <span className="inline-flex items-center gap-1 text-sm text-white">
+                                            {formatText(tool.name)}
+                                          </span>
+                                          <span className="text-official-gray-400 line-clamp-2 text-sm">
+                                            {tool.description}
+                                          </span>
+                                        </div>
                                       </div>
-                                    </div>
-                                    {(tool.config ?? []).length > 0 && (
-                                      <Button
-                                        className={cn(
-                                          buttonVariants({
-                                            variant: 'outline',
-                                            size: 'xs',
-                                          }),
-                                        )}
-                                        onClick={() => {
-                                          setSelectedToolConfig(
-                                            tool.tool_router_key,
+                                      {(tool.config ?? []).length > 0 && (
+                                        <Button
+                                          className={cn(
+                                            buttonVariants({
+                                              variant: 'outline',
+                                              size: 'xs',
+                                            }),
+                                          )}
+                                          onClick={() => {
+                                            setSelectedToolConfig(
+                                              tool.tool_router_key,
+                                            );
+                                            window.location.hash =
+                                              '#configuration';
+                                          }}
+                                          type="button"
+                                        >
+                                          <BoltIcon className="size-4" />
+                                          Configure
+                                        </Button>
+                                      )}
+                                      <Switch
+                                        checked={form
+                                          .watch('tools')
+                                          .includes(tool.tool_router_key)}
+                                        className="shrink-0"
+                                        id={tool.tool_router_key}
+                                        onCheckedChange={() => {
+                                          form.setValue(
+                                            'tools',
+                                            form
+                                              .watch('tools')
+                                              .filter(
+                                                (t) =>
+                                                  t !== tool.tool_router_key,
+                                              ),
                                           );
-                                          window.location.hash =
-                                            '#configuration';
+
+                                          const currentToolOverrideValue =
+                                            form.getValues(
+                                              'tools_config_override',
+                                            )?.[tool.tool_router_key] ?? {};
+
+                                          delete currentToolOverrideValue[
+                                            tool.tool_router_key
+                                          ];
+                                          form.setValue(
+                                            'tools_config_override',
+                                            currentToolOverrideValue,
+                                          );
                                         }}
-                                        type="button"
-                                      >
-                                        <BoltIcon className="size-4" />
-                                        Configure
-                                      </Button>
+                                      />
+                                    </div>
+                                    {tool.config?.length && (
+                                      <div className="flex flex-col">
+                                        <Collapsible>
+                                          <CollapsibleTrigger asChild>
+                                            <Button
+                                              className={cn(
+                                                buttonVariants({
+                                                  variant: 'ghost',
+                                                  size: 'sm',
+                                                }),
+                                                'w-full justify-between',
+                                              )}
+                                            >
+                                              <span>
+                                                Override configurations
+                                              </span>
+                                              <ChevronDownIcon className="h-4 w-4" />
+                                            </Button>
+                                          </CollapsibleTrigger>
+                                          <CollapsibleContent className="space-y-2">
+                                            <TooConfigOverrideForm
+                                              onChange={(value) => {
+                                                form.setValue(
+                                                  'tools_config_override',
+                                                  {
+                                                    ...form.getValues(
+                                                      'tools_config_override',
+                                                    ),
+                                                    [tool.tool_router_key]:
+                                                      value,
+                                                  },
+                                                );
+                                              }}
+                                              toolRouterKey={
+                                                tool.tool_router_key
+                                              }
+                                              value={
+                                                form.getValues(
+                                                  'tools_config_override',
+                                                )?.[tool.tool_router_key] ?? {}
+                                              }
+                                            />
+                                          </CollapsibleContent>
+                                        </Collapsible>
+                                      </div>
                                     )}
-                                    <Switch
-                                      checked={form
-                                        .watch('tools')
-                                        .includes(tool.tool_router_key)}
-                                      className="shrink-0"
-                                      id={tool.tool_router_key}
-                                      onCheckedChange={() => {
-                                        form.setValue(
-                                          'tools',
-                                          form
-                                            .watch('tools')
-                                            .filter(
-                                              (t) => t !== tool.tool_router_key,
-                                            ),
-                                        );
-                                      }}
-                                    />
                                   </div>
                                 );
                               })}
@@ -2445,10 +2511,9 @@ const ToolConfigModal = ({
   const toolType = data?.type as ShinkaiToolType;
 
   const hasAllRequiredFields = useMemo(() => {
-    if (isSuccess && 'config' in tool && tool.configurations.properties) {
+    if (isSuccess && 'config' in tool && tool.configurations?.properties) {
       const requiredFields = tool.configurations.required || [];
       const configFormData = tool.configFormData || {};
-
       const hasAllRequiredFields = requiredFields.every(
         (field) =>
           field in configFormData &&
