@@ -18,6 +18,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { BoltIcon, PlayCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../../../store/auth';
@@ -29,7 +30,30 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
   const queryClient = useQueryClient();
 
   const { mutateAsync: toggleEnableTool, isPending } = useToggleEnableTool();
-
+  const [isConfigOKToEnableTool, setIsConfigOKToEnableTool] = useState(false);
+  useEffect(() => {
+    // Check if the tool is able to be enabled
+    if (tool.enabled) {
+      setIsConfigOKToEnableTool(true);
+      return;
+    }
+    if ('config' in tool) {
+      const requiredConfigs = tool.config?.filter((config) => config.BasicConfig.required);
+      if (!requiredConfigs?.length) {
+        setIsConfigOKToEnableTool(true);
+        return;
+      }
+      const isOkToBeEnabled = requiredConfigs
+        .every((config) => {
+          if (config.BasicConfig.type === 'string') return !!(config.BasicConfig.key_value?.length);
+          if (config.BasicConfig.type === 'number') return typeof config.BasicConfig.key_value === 'number';
+          if (config.BasicConfig.type === 'boolean') return typeof config.BasicConfig.key_value === 'boolean';
+          if (config.BasicConfig.type === 'array') return Array.isArray(config.BasicConfig.key_value);
+          return false;
+        });
+      setIsConfigOKToEnableTool(isOkToBeEnabled);
+    }
+  }, [tool]);
   return (
     <div
       className={cn(
@@ -100,7 +124,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
           <div>
             <Switch
               checked={tool.enabled}
-              disabled={isPending}
+              disabled={isPending || !isConfigOKToEnableTool}
               onCheckedChange={async () => {
                 const newEnabledState = !tool.enabled;
                 
