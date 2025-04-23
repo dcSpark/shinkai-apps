@@ -135,7 +135,7 @@ export const MessageList = memo(
         const currentHeight = chatContainerElement.scrollHeight;
         const currentScrollTop = chatContainerElement.scrollTop;
         previousChatHeightRef.current = currentHeight;
-        const scrollThreshold = 100;
+        const scrollThreshold = 20;
         const isNearBottom =
           currentScrollTop + chatContainerElement.clientHeight >=
           currentHeight - scrollThreshold;
@@ -275,7 +275,7 @@ export const MessageList = memo(
                           const previousMessage = messages[messageIndex - 1];
 
                           const disabledRetryAndEditValue =
-                          disabledRetryAndEdit ?? messageIndex === 0;
+                            disabledRetryAndEdit ?? messageIndex === 0;
 
                           const handleRetryMessage = () => {
                             regenerateMessage?.(message?.messageId ?? '');
