@@ -415,13 +415,13 @@ const ToolLogsBase = ({
 
   function formatLogs(logString: string) {
     // Split the logs by line
-    const lines = logString.split('\n').filter(line => line.trim());
-    
+    const lines = logString.split('\n').filter((line) => line.trim());
+
     // Find the start and end index of the last shinkai-code-result block
     let lastResultStartIndex = -1;
     let lastResultEndIndex = -1;
     let previousResultEndIndex = -1;
-    
+
     for (let i = 0; i < lines.length; i++) {
       if (lines[i].includes('<shinkai-code-result>')) {
         if (lastResultStartIndex !== -1) {
@@ -432,34 +432,34 @@ const ToolLogsBase = ({
         lastResultEndIndex = i;
       }
     }
-    
+
     if (lastResultStartIndex === -1 || lastResultEndIndex === -1) {
       // No result blocks found, just display all logs
       return processLogLines(lines);
     }
-    
+
     // Determine the starting index for the current execution's logs
     // This is either after the previous result block or the beginning of the log
-    const currentExecutionStartIndex = previousResultEndIndex !== -1 ? 
-      previousResultEndIndex + 1 : 0;
-    
+    const currentExecutionStartIndex =
+      previousResultEndIndex !== -1 ? previousResultEndIndex + 1 : 0;
+
     // Extract lines from the current execution (non-wrapped logs + the last result)
     const relevantLines = lines.slice(currentExecutionStartIndex);
 
     return processLogLines(relevantLines);
   }
-  
+
   // Helper function to process and format log lines
   function processLogLines(lines: string[]) {
     return lines
-      .filter(line => {
+      .filter((line) => {
         // Skip tag lines, but keep actual content
         if (/<\/?shinkai-code-result>/.test(line)) return false;
-        
+
         const parts = line.split(',');
         // Need at least timestamp and content
         if (parts.length < 5) return false;
-        
+
         return true;
       })
       .map((line, i) => {
@@ -467,7 +467,7 @@ const ToolLogsBase = ({
         const timestamp = parts[0];
         const logContent = parts.slice(4).join(',');
         let readableDate;
-        
+
         try {
           readableDate = formatTimestamp(timestamp);
         } catch (e) {
@@ -500,6 +500,8 @@ const ToolLogsBase = ({
 };
 
 const ToolLogs = memo(ToolLogsBase, (prevProps, nextProps) => {
-  return equal(prevProps.toolResultFiles, nextProps.toolResultFiles) && 
-         prevProps.mountTimestamp === nextProps.mountTimestamp;
+  return (
+    equal(prevProps.toolResultFiles, nextProps.toolResultFiles) &&
+    prevProps.mountTimestamp === nextProps.mountTimestamp
+  );
 });

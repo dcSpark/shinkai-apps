@@ -17,6 +17,7 @@ type ChatInputAreaProps = {
   topAddons?: React.ReactNode;
   bottomAddons?: React.ReactNode;
   textareaClassName?: string;
+  className?: string;
 };
 export const ChatInputArea = React.forwardRef<
   HTMLTextAreaElement,
@@ -37,6 +38,7 @@ export const ChatInputArea = React.forwardRef<
       bottomAddons,
       textareaClassName,
       alternateElement,
+      className,
     },
     ref,
   ) => {
@@ -47,6 +49,7 @@ export const ChatInputArea = React.forwardRef<
         className={cn(
           'bg-official-gray-900 flex w-full max-w-full flex-col rounded-xl text-sm aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
           'shadow-official-gray-750 focus-within:shadow-official-gray-700 overflow-hidden shadow-[0_0_0_1px_currentColor] transition-shadow',
+          className,
         )}
       >
         {topAddons}

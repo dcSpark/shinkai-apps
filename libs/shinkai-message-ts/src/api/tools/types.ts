@@ -523,3 +523,12 @@ export type CopyToolAssetsRequest = {
 export type CopyToolAssetsResponse = {
   message: string;
 };
+
+export type GetToolProtocolsResponse = {
+  created: string;
+  supported: {
+    name: string;
+    icon: string;
+    documentationURL: string;
+  }[];
+};
