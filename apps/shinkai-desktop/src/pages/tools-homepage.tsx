@@ -544,14 +544,14 @@ const ProtocolsBannerBase = () => {
                     key={protocol.name}
                     rel="noopener noreferrer"
                     target="_blank"
-                    to={protocol.officialURL}
+                    to={protocol.documentationURL}
                   >
                     <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-gray-900 p-1.5">
                       <img
                         alt=""
                         className="size-full overflow-hidden rounded-full object-cover"
                         height={40}
-                        src={`https://favicon.is/${protocol.officialURL}`}
+                        src={protocol.icon}
                         width={40}
                       />
                     </div>

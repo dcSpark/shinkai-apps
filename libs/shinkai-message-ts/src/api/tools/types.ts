@@ -528,7 +528,7 @@ export type GetToolProtocolsResponse = {
   created: string;
   supported: {
     name: string;
-    officialURL: string;
-    logoSVG: string;
+    icon: string;
+    documentationURL: string;
   }[];
 };
