@@ -25,10 +25,8 @@ import { toast } from 'sonner';
 import { useAuth } from '../../../store/auth';
 
 export default function RemoveToolButton({
-  isPlaygroundTool,
   toolKey,
 }: {
-  isPlaygroundTool: boolean;
   toolKey: string;
 }) {
   const { t } = useTranslation();
@@ -63,7 +61,6 @@ export default function RemoveToolButton({
       toolKey: toolKey ?? '',
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
-      isPlaygroundTool,
     });
   };
 

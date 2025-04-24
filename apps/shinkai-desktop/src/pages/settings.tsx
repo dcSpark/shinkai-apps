@@ -38,13 +38,13 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { getVersion } from '@tauri-apps/api/app';
 import { formatDuration, intervalToDuration } from 'date-fns';
 import { motion } from 'framer-motion';
-import { ExternalLinkIcon, InfoIcon, MessageSquare, ShieldCheck } from 'lucide-react';
+import { ExternalLinkIcon, InfoIcon, ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { FeedbackModal } from '../components/feedback/feedback-modal';
 import { OnboardingStep } from '../components/onboarding/constants';
 import {
   useShinkaiNodeGetOllamaVersionQuery,
@@ -220,22 +220,9 @@ const SettingsPage = () => {
   );
   return (
     <SimpleLayout classname="max-w-xl" title={t('settings.layout.general')}>
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <p>{t('settings.description')}</p>
-        <Link 
-          className={cn(
-            buttonVariants({ 
-              size: 'xs',
-              variant: 'outline',
-              rounded: 'lg'
-            }),
-            'gap-1'
-          )}
-          to="/settings/feedback"
-        >
-          <MessageSquare className="h-4 w-4" />
-          {t('feedback.button', 'Feedback')}
-        </Link>
+        <FeedbackModal />
       </div>
       <div className="flex flex-col space-y-8 pr-2.5">
         <div className="flex flex-col space-y-8">

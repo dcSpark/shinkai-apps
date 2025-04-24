@@ -26,6 +26,7 @@ import {
   GetPlaygroundToolsResponse,
   GetShinkaiFileProtocolRequest,
   GetShinkaiFileProtocolResponse,
+  GetToolProtocolsResponse,
   GetToolResponse,
   GetToolsRequest,
   GetToolsResponse,
@@ -736,4 +737,14 @@ export const setToolMcpEnabled = async (
     },
   );
   return response.data;
+};
+
+export const getToolProtocols = async () => {
+  const response = await httpClient.get(
+    'https://api.shinkai.com/kb/index.json',
+    {
+      responseType: 'json',
+    },
+  );
+  return response.data as GetToolProtocolsResponse;
 };

@@ -183,7 +183,6 @@ const AllFiles = () => {
     {
       name: t('vectorFs.actions.uploadFile'),
       icon: <GenerateDocIcon className="mr-2 h-4 w-4" />,
-      disabled: currentGlobalPath === '/',
       onClick: () => {
         setActiveDrawerMenuOption(VectorFsGlobalAction.GenerateFromDocument);
       },
@@ -192,7 +191,6 @@ const AllFiles = () => {
     {
       name: t('vectorFs.actions.createTextFile'),
       icon: <FileType2Icon className="mr-2 h-3.5 w-3.5" />,
-      disabled: currentGlobalPath === '/',
       onClick: () => {
         setActiveDrawerMenuOption(VectorFsGlobalAction.CreateTextFile);
       },
@@ -233,11 +231,7 @@ const AllFiles = () => {
           sideOffset={10}
         >
           {actionList.map((item, index) => (
-            <DropdownMenuItem
-              disabled={item.disabled}
-              key={index}
-              onClick={item.onClick}
-            >
+            <DropdownMenuItem key={index} onClick={item.onClick}>
               {item.icon}
               <span>{item.name}</span>
             </DropdownMenuItem>
@@ -444,11 +438,7 @@ const AllFiles = () => {
         </ContextMenuTrigger>
         <ContextMenuContent className="p-2">
           {actionList.map((item, index) => (
-            <ContextMenuItem
-              disabled={item.disabled}
-              key={index}
-              onClick={item.onClick}
-            >
+            <ContextMenuItem key={index} onClick={item.onClick}>
               {item.icon}
               <span>{item.name}</span>
             </ContextMenuItem>

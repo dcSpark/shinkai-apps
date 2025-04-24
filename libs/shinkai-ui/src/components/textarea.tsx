@@ -50,7 +50,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         ref={ref || textareaRef}
         style={{
           minHeight: `${minHeight}px`,
-          maxHeight: `${maxHeight}px`,
+          maxHeight: resize === 'vertical' ? undefined : `${maxHeight}px`,
           resize: resize,
         }}
         {...props}

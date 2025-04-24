@@ -76,7 +76,6 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
       
       <div className="flex justify-center">
         <RemoveToolButton
-          isPlaygroundTool={tool.author === auth?.shinkai_identity}
           toolKey={tool.tool_router_key}
         />
       </div>

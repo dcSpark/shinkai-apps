@@ -11,6 +11,11 @@ import {
   extractJobIdFromInbox,
 } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
+  UploadVRFilesFormSchema,
+  uploadVRFilesFormSchema,
+} from '@shinkai_network/shinkai-node-state/forms/vector-fs/folder';
+import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
+import {
   DEFAULT_CHAT_CONFIG,
   FunctionKeyV2,
 } from '@shinkai_network/shinkai-node-state/v2/constants';
@@ -21,8 +26,11 @@ import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/m
 import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
+import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadVRFiles/useUploadVRFiles';
 import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
 import { useGetAgentInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetAgentInboxes';
+import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
+import { useGetSearchDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getSearchDirectoryContents/useGetSearchDirectoryContents';
 import { useGetTool } from '@shinkai_network/shinkai-node-state/v2/queries/getTool/useGetTool';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
@@ -31,6 +39,7 @@ import {
   Button,
   buttonVariants,
   ChatInputArea,
+  Checkbox,
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -39,7 +48,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  FileUploader,
   Form,
   FormControl,
   FormDescription,
@@ -73,15 +82,15 @@ import {
   TextField,
   Tooltip,
   TooltipContent,
-  TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
-  FilesIcon,
+  DirectoryTypeIcon,
+  FileTypeIcon,
   ScheduledTasksIcon,
   SendIcon,
 } from '@shinkai_network/shinkai-ui/assets';
-import { formatText } from '@shinkai_network/shinkai-ui/helpers';
+import { formatText, getFileExt } from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
@@ -89,15 +98,17 @@ import cronstrue from 'cronstrue';
 import {
   AlertCircle,
   BoltIcon,
+  ChevronDownIcon,
   ChevronRight,
   LucideArrowLeft,
   MessageSquare,
   RefreshCwIcon,
   SearchIcon,
   Trash2,
-  TrashIcon,
   XIcon,
 } from 'lucide-react';
+
+import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, To, useNavigate, useParams } from 'react-router-dom';
@@ -106,6 +117,7 @@ import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
 
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
+import { treeOptions } from '../../lib/constants';
 import { useChatConversationWithOptimisticUpdates } from '../../pages/chat/chat-conversation';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -118,6 +130,7 @@ import {
   useWebSocketTools,
 } from '../chat/websocket-message';
 import ToolDetailsCard from '../tools/components/tool-details-card';
+import { TooConfigOverrideForm } from './tool-config-override-form';
 
 const agentFormSchema = z.object({
   name: z.string(),
@@ -126,6 +139,7 @@ const agentFormSchema = z.object({
   storage_path: z.string(),
   knowledge: z.array(z.string()),
   tools: z.array(z.string()),
+  tools_config_override: z.record(z.record(z.any())).optional(),
   debugMode: z.boolean(),
   config: z
     .object({
@@ -139,13 +153,6 @@ const agentFormSchema = z.object({
       other_model_params: z.record(z.string()),
     })
     .nullable(),
-  scope: z
-    .object({
-      vector_fs_items: z.array(z.string()),
-      vector_fs_folders: z.array(z.string()),
-      vector_search_mode: z.string(),
-    })
-    .optional(),
   cronExpression: z.string().optional(),
   aiPrompt: z.string().optional(),
 });
@@ -585,6 +592,27 @@ function AgentForm({ mode }: AgentFormProps) {
     (state) => state.setSetJobScopeOpen,
   );
 
+  const [searchQueryKnowledge, setSearchQueryKnowledge] = useState('');
+  const debouncedSearchQueryKnowledge = useDebounce(searchQueryKnowledge, 600);
+  const isSearchQueryKnowledgeSynced =
+    searchQueryKnowledge === debouncedSearchQueryKnowledge;
+
+  const {
+    data: searchKnowledgeList,
+    isLoading: isSearchKnowledgeListLoading,
+    isPending: isSearchKnowledgeListPending,
+    isSuccess: isSearchKnowledgeListSuccess,
+  } = useGetSearchDirectoryContents(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      name: debouncedSearchQueryKnowledge,
+    },
+    {
+      enabled: !!debouncedSearchQueryKnowledge,
+    },
+  );
+
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
@@ -598,6 +626,20 @@ function AgentForm({ mode }: AgentFormProps) {
       },
       { enabled: isSearchQuerySynced && !!searchQuery },
     );
+
+  const { data: fileInfoArray, isSuccess: isVRFilesSuccess } =
+    useGetListDirectoryContents({
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      path: '/',
+      depth: 6,
+    });
+
+  const nodes = useMemo(() => {
+    return transformDataToTreeNodes(fileInfoArray ?? [], undefined, []);
+  }, [fileInfoArray]);
+
+  const [isAddFilesDialogOpen, setIsAddFilesDialogOpen] = useState(false);
 
   const selectedKeys = useSetJobScope((state) => state.selectedKeys);
   const selectedFileKeysRef = useSetJobScope(
@@ -624,6 +666,7 @@ function AgentForm({ mode }: AgentFormProps) {
       storage_path: '',
       knowledge: [],
       tools: [],
+      tools_config_override: {},
       debugMode: false,
       config: {
         stream: DEFAULT_CHAT_CONFIG.stream,
@@ -636,46 +679,11 @@ function AgentForm({ mode }: AgentFormProps) {
         use_tools: true,
       },
       llmProviderId: defaultAgentId,
-      scope: {
-        vector_fs_items: [],
-        vector_fs_folders: [],
-        vector_search_mode: 'FillUpTo25k',
-      },
+
       cronExpression: '',
       aiPrompt: '',
     },
   });
-
-  // Effect to update form when selected items change
-  useEffect(() => {
-    if (
-      selectedKeys ||
-      selectedFileKeysRef.size > 0 ||
-      selectedFolderKeysRef.size > 0
-    ) {
-      const agentData = {
-        ...form.getValues(),
-        scope: {
-          vector_fs_items: Array.from(selectedFileKeysRef.values()),
-          vector_fs_folders: Array.from(selectedFolderKeysRef.values()),
-          vector_search_mode: 'FillUpTo25k',
-        },
-      };
-      form.setValue('scope', agentData.scope);
-    }
-  }, [selectedKeys, selectedFileKeysRef, selectedFolderKeysRef, form]);
-
-  // Effect to handle drawer close
-  useEffect(() => {
-    if (!setSetJobScopeOpen) {
-      const scope = {
-        vector_fs_items: Array.from(selectedFileKeysRef.values()),
-        vector_fs_folders: Array.from(selectedFolderKeysRef.values()),
-        vector_search_mode: 'FillUpTo25k',
-      };
-      form.setValue('scope', scope);
-    }
-  }, [setSetJobScopeOpen, selectedFileKeysRef, selectedFolderKeysRef, form]);
 
   // Effect to handle initial agent data and schedule type
   useEffect(() => {
@@ -685,6 +693,7 @@ function AgentForm({ mode }: AgentFormProps) {
       form.setValue('storage_path', agent.storage_path);
       form.setValue('knowledge', agent.knowledge);
       form.setValue('tools', agent.tools);
+      form.setValue('tools_config_override', agent.tools_config_override ?? {});
       form.setValue('debugMode', agent.debug_mode);
       form.setValue('config', {
         custom_prompt: agent.config?.custom_prompt ?? '',
@@ -748,12 +757,6 @@ function AgentForm({ mode }: AgentFormProps) {
           ...selectedVRFilesPathMap,
           ...selectedVRFoldersPathMap,
         });
-
-        form.setValue('scope', {
-          vector_fs_items: agent.scope.vector_fs_items,
-          vector_fs_folders: agent.scope.vector_fs_folders,
-          vector_search_mode: agent.scope.vector_search_mode || 'FillUpTo25k',
-        });
       }
     }
   }, [agent, form, mode, onSelectedKeysChange]);
@@ -766,18 +769,6 @@ function AgentForm({ mode }: AgentFormProps) {
       }
     }
   }, [mode]);
-
-  // Effect to handle drawer open/close
-  useEffect(() => {
-    const scope = form.getValues('scope');
-    if (scope) {
-      form.setValue('scope', {
-        ...scope,
-        vector_fs_items: Array.from(selectedFileKeysRef.values()),
-        vector_fs_folders: Array.from(selectedFolderKeysRef.values()),
-      });
-    }
-  }, [form, selectedFileKeysRef, selectedFolderKeysRef]);
 
   const { data: toolsList } = useGetTools({
     nodeAddress: auth?.node_address ?? '',
@@ -809,15 +800,6 @@ function AgentForm({ mode }: AgentFormProps) {
         });
       },
       onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [
-            FunctionKeyV2.GET_AGENT,
-            {
-              agentId: agent?.agent_id,
-              nodeAddress: auth?.node_address ?? '',
-            },
-          ],
-        });
         toast.success('Agent updated successfully');
       },
     });
@@ -853,6 +835,7 @@ function AgentForm({ mode }: AgentFormProps) {
         tools: values.tools,
         debug_mode: values.debugMode,
         config: values.config,
+        tools_config_override: values.tools_config_override || {},
         name: values.name,
         scope: {
           vector_fs_items: Array.from(selectedFileKeysRef.values()),
@@ -860,7 +843,6 @@ function AgentForm({ mode }: AgentFormProps) {
           vector_search_mode: 'FillUpTo25k',
         },
       };
-
       // Call the update mutation WITHOUT cronExpression
       await quickSaveAgentMutation({
         nodeAddress: auth.node_address,
@@ -1030,6 +1012,7 @@ function AgentForm({ mode }: AgentFormProps) {
       storage_path: values.storage_path,
       knowledge: values.knowledge,
       tools: values.tools,
+      tools_config_override: values.tools_config_override || {},
       debug_mode: values.debugMode,
       config: values.config,
       name: values.name,
@@ -1039,7 +1022,6 @@ function AgentForm({ mode }: AgentFormProps) {
         vector_search_mode: 'FillUpTo25k',
       },
     };
-
     try {
       if (mode === 'edit' && agent) {
         // Step 1: Update Agent Core Data
@@ -1318,8 +1300,9 @@ function AgentForm({ mode }: AgentFormProps) {
                               <FormLabel>Instructions</FormLabel>
                               <FormControl>
                                 <Textarea
-                                  className="placeholder-official-gray-500 !min-h-[300px] text-sm"
+                                  className="placeholder-official-gray-500 !max-h-[auto] !min-h-[300px] text-sm"
                                   placeholder="e.g., You are a professional UX expert. Answer questions about UI/UX best practices."
+                                  resize="vertical"
                                   spellCheck={false}
                                   {...field}
                                 />
@@ -1571,8 +1554,13 @@ function AgentForm({ mode }: AgentFormProps) {
                     >
                       <div className="space-y-4">
                         <div className="space-y-1">
-                          <h2 className="text-base font-medium">
+                          <h2 className="inline-flex items-center gap-2 text-base font-medium">
                             Knowledge Base
+                            {Object.keys(selectedKeys ?? {}).length > 0 && (
+                              <Badge className="bg-official-gray-1000 inline-flex size-6 items-center justify-center rounded-full border-gray-200 p-0 text-center text-sm text-gray-50">
+                                {Object.keys(selectedKeys ?? {}).length}
+                              </Badge>
+                            )}
                           </h2>
                           <p className="text-official-gray-400 text-sm">
                             Provide your agent with local AI files to enhance
@@ -1580,7 +1568,7 @@ function AgentForm({ mode }: AgentFormProps) {
                           </p>
                         </div>
 
-                        <Button
+                        {/* <Button
                           className={cn(
                             'flex h-auto w-auto items-center gap-2 rounded-lg px-2.5 py-1.5',
                           )}
@@ -1604,7 +1592,150 @@ function AgentForm({ mode }: AgentFormProps) {
                               {t('vectorFs.localFiles')}
                             </p>
                           </div>
-                        </Button>
+                        </Button> */}
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="relative flex h-10 w-full items-center">
+                            <Input
+                              className="placeholder-gray-80 !h-full rounded-full bg-transparent py-2 pl-10"
+                              onChange={(e) => {
+                                setSearchQueryKnowledge(e.target.value);
+                              }}
+                              placeholder={'Search folders and files ...'}
+                              value={searchQueryKnowledge}
+                            />
+                            <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
+                            {searchQueryKnowledge && (
+                              <Button
+                                className="hover:bg-official-gray-800 absolute right-1 h-8 w-8 bg-transparent p-2"
+                                onClick={() => {
+                                  setSearchQueryKnowledge('');
+                                }}
+                                size="auto"
+                                type="button"
+                                variant="ghost"
+                              >
+                                <XIcon />
+                                <span className="sr-only">
+                                  {t('common.clearSearch')}
+                                </span>
+                              </Button>
+                            )}
+                          </div>
+                          <Button
+                            className="shrink-0"
+                            onClick={() => {
+                              setIsAddFilesDialogOpen(true);
+                            }}
+                            size="sm"
+                            type="button"
+                            variant="outline"
+                          >
+                            <PlusIcon className="mr-1 size-4" />
+                            Add New Files
+                          </Button>
+                        </div>
+                        <div className="flex max-h-[calc(100vh-200px)] flex-1 flex-col gap-2">
+                          {searchQueryKnowledge &&
+                            isSearchQueryKnowledgeSynced &&
+                            searchKnowledgeList?.length === 0 && (
+                              <div className="flex h-20 items-center justify-center text-gray-100">
+                                {t('vectorFs.emptyState.noFiles')}
+                              </div>
+                            )}
+                          {searchQueryKnowledge &&
+                            isSearchQueryKnowledgeSynced &&
+                            searchKnowledgeList?.map((file) => (
+                              <div
+                                className="flex items-center gap-2"
+                                key={file.path}
+                              >
+                                <Checkbox
+                                  checked={
+                                    selectedKeys?.[file.path]?.checked ?? false
+                                  }
+                                  onCheckedChange={(checked) => {
+                                    const newKeys = { ...selectedKeys };
+                                    if (checked) {
+                                      newKeys[file.path] = { checked: true };
+                                      selectedFileKeysRef.set(
+                                        String(file.path),
+                                        file.path,
+                                      );
+                                    } else {
+                                      delete newKeys[file.path];
+                                      selectedFileKeysRef.delete(
+                                        String(file.path),
+                                      );
+                                    }
+                                    onSelectedKeysChange(newKeys);
+                                  }}
+                                />
+                                <label
+                                  className="flex flex-1 items-center gap-3"
+                                  htmlFor={`item-${file.path}`}
+                                >
+                                  {file.is_directory ? (
+                                    <DirectoryTypeIcon className="size-4" />
+                                  ) : (
+                                    <FileTypeIcon
+                                      type={getFileExt(file.name)}
+                                    />
+                                  )}
+                                  <span className="text-sm text-white">
+                                    {file.path}
+                                  </span>
+                                </label>
+                              </div>
+                            ))}
+
+                          {isSearchKnowledgeListPending &&
+                            searchQueryKnowledge &&
+                            searchQueryKnowledge !==
+                              debouncedSearchQueryKnowledge &&
+                            Array.from({ length: 4 }).map((_, idx) => (
+                              <Skeleton
+                                className="bg-official-gray-900 h-[30px] animate-pulse rounded"
+                                key={idx}
+                              />
+                            ))}
+                          {!searchQueryKnowledge && (
+                            <Tree
+                              onSelect={(e) => {
+                                if (e.node.icon === 'icon-folder') {
+                                  selectedFolderKeysRef.set(
+                                    String(e.node.key),
+                                    e.node.data.path,
+                                  );
+                                  return;
+                                }
+                                selectedFileKeysRef.set(
+                                  String(e.node.key),
+                                  e.node.data.path,
+                                );
+                              }}
+                              onSelectionChange={(e) => {
+                                onSelectedKeysChange(
+                                  e.value as TreeCheckboxSelectionKeys,
+                                );
+                              }}
+                              onUnselect={(e) => {
+                                if (e.node.icon === 'icon-folder') {
+                                  selectedFolderKeysRef.delete(
+                                    String(e.node.key),
+                                  );
+                                  return;
+                                }
+                                selectedFileKeysRef.delete(String(e.node.key));
+                              }}
+                              propagateSelectionDown={true}
+                              propagateSelectionUp={false}
+                              pt={treeOptions}
+                              selectionKeys={selectedKeys}
+                              selectionMode="checkbox"
+                              value={nodes}
+                            />
+                          )}
+                        </div>
                       </div>
                     </TabsContent>
 
@@ -1643,6 +1774,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                 className="text-official-gray-400 hover:text-official-gray-100 text-xs"
                                 onClick={() => {
                                   form.setValue('tools', []);
+                                  form.setValue('tools_config_override', {});
                                 }}
                                 size="xs"
                                 variant="ghost"
@@ -1658,57 +1790,119 @@ function AgentForm({ mode }: AgentFormProps) {
                                 if (!tool) return null;
                                 return (
                                   <div
-                                    className="flex w-full items-center gap-3 py-2"
+                                    className="flex flex-col gap-2"
                                     key={toolKey}
                                   >
-                                    <div className="inline-flex flex-1 items-center gap-2 leading-none">
-                                      <div className="flex flex-col gap-1 text-xs text-gray-50">
-                                        <span className="inline-flex items-center gap-1 text-sm text-white">
-                                          {formatText(tool.name)}
-                                        </span>
-                                        <span className="text-official-gray-400 line-clamp-2 text-sm">
-                                          {tool.description}
-                                        </span>
+                                    <div className="flex w-full items-center gap-3 py-2">
+                                      <div className="inline-flex flex-1 items-center gap-2 leading-none">
+                                        <div className="flex flex-col gap-1 text-xs text-gray-50">
+                                          <span className="inline-flex items-center gap-1 text-sm text-white">
+                                            {formatText(tool.name)}
+                                          </span>
+                                          <span className="text-official-gray-400 line-clamp-2 text-sm">
+                                            {tool.description}
+                                          </span>
+                                        </div>
                                       </div>
-                                    </div>
-                                    {(tool.config ?? []).length > 0 && (
-                                      <Button
-                                        className={cn(
-                                          buttonVariants({
-                                            variant: 'outline',
-                                            size: 'xs',
-                                          }),
-                                        )}
-                                        onClick={() => {
-                                          setSelectedToolConfig(
-                                            tool.tool_router_key,
+                                      {(tool.config ?? []).length > 0 && (
+                                        <Button
+                                          className={cn(
+                                            buttonVariants({
+                                              variant: 'outline',
+                                              size: 'xs',
+                                            }),
+                                          )}
+                                          onClick={() => {
+                                            setSelectedToolConfig(
+                                              tool.tool_router_key,
+                                            );
+                                            window.location.hash =
+                                              '#configuration';
+                                          }}
+                                          type="button"
+                                        >
+                                          <BoltIcon className="size-4" />
+                                          Configure
+                                        </Button>
+                                      )}
+                                      <Switch
+                                        checked={form
+                                          .watch('tools')
+                                          .includes(tool.tool_router_key)}
+                                        className="shrink-0"
+                                        id={tool.tool_router_key}
+                                        onCheckedChange={() => {
+                                          form.setValue(
+                                            'tools',
+                                            form
+                                              .watch('tools')
+                                              .filter(
+                                                (t) =>
+                                                  t !== tool.tool_router_key,
+                                              ),
                                           );
-                                          window.location.hash =
-                                            '#configuration';
+
+                                          const currentToolOverrideValue =
+                                            form.getValues(
+                                              'tools_config_override',
+                                            )?.[tool.tool_router_key] ?? {};
+
+                                          delete currentToolOverrideValue[
+                                            tool.tool_router_key
+                                          ];
+                                          form.setValue(
+                                            'tools_config_override',
+                                            currentToolOverrideValue,
+                                          );
                                         }}
-                                        type="button"
-                                      >
-                                        <BoltIcon className="size-4" />
-                                        Configure
-                                      </Button>
+                                      />
+                                    </div>
+                                    {(tool.config ?? [])?.length > 0 && (
+                                      <div className="flex flex-col">
+                                        <Collapsible>
+                                          <CollapsibleTrigger asChild>
+                                            <Button
+                                              className={cn(
+                                                buttonVariants({
+                                                  variant: 'ghost',
+                                                  size: 'sm',
+                                                }),
+                                                'w-full justify-between',
+                                              )}
+                                            >
+                                              <span>
+                                                Override configurations
+                                              </span>
+                                              <ChevronDownIcon className="h-4 w-4" />
+                                            </Button>
+                                          </CollapsibleTrigger>
+                                          <CollapsibleContent className="space-y-2">
+                                            <TooConfigOverrideForm
+                                              onChange={(value) => {
+                                                form.setValue(
+                                                  'tools_config_override',
+                                                  {
+                                                    ...form.getValues(
+                                                      'tools_config_override',
+                                                    ),
+                                                    [tool.tool_router_key]:
+                                                      value,
+                                                  },
+                                                );
+                                              }}
+                                              toolRouterKey={
+                                                tool.tool_router_key
+                                              }
+                                              value={
+                                                form.getValues(
+                                                  'tools_config_override',
+                                                )?.[tool.tool_router_key] ?? {}
+                                              }
+                                            />
+                                          </CollapsibleContent>
+                                        </Collapsible>
+                                      </div>
                                     )}
-                                    <Switch
-                                      checked={form
-                                        .watch('tools')
-                                        .includes(tool.tool_router_key)}
-                                      className="shrink-0"
-                                      id={tool.tool_router_key}
-                                      onCheckedChange={() => {
-                                        form.setValue(
-                                          'tools',
-                                          form
-                                            .watch('tools')
-                                            .filter(
-                                              (t) => t !== tool.tool_router_key,
-                                            ),
-                                        );
-                                      }}
-                                    />
                                   </div>
                                 );
                               })}
@@ -2393,11 +2587,15 @@ function AgentForm({ mode }: AgentFormProps) {
           </Form>
         </div>
       </ResizablePanel>
-
       {selectedToolConfig && (
         <ToolConfigModal
           isOpen={!!selectedToolConfig}
           onConfirm={() => {
+            if (form.watch('tools').includes(selectedToolConfig)) {
+              setSelectedToolConfig(null);
+              return;
+            }
+
             form.setValue('tools', [
               ...form.watch('tools'),
               selectedToolConfig,
@@ -2412,7 +2610,10 @@ function AgentForm({ mode }: AgentFormProps) {
           toolRouterKey={selectedToolConfig}
         />
       )}
-
+      <UploadFileDialog
+        isOpen={!!isAddFilesDialogOpen}
+        onOpenChange={setIsAddFilesDialogOpen}
+      />
       {/* Side Chat Panel */}
       {isSideChatOpen && mode === 'edit' && agent && (
         <>
@@ -2464,10 +2665,9 @@ const ToolConfigModal = ({
   const toolType = data?.type as ShinkaiToolType;
 
   const hasAllRequiredFields = useMemo(() => {
-    if (isSuccess && 'config' in tool && tool.configurations.properties) {
+    if (isSuccess && 'config' in tool && tool.configurations?.properties) {
       const requiredFields = tool.configurations.required || [];
       const configFormData = tool.configFormData || {};
-
       const hasAllRequiredFields = requiredFields.every(
         (field) =>
           field in configFormData &&
@@ -2544,6 +2744,130 @@ const ToolConfigModal = ({
             </div>
           </div>
         </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const UploadFileDialog = ({
+  isOpen,
+  onOpenChange,
+}: {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+}) => {
+  const { t } = useTranslation();
+
+  const auth = useAuth((state) => state.auth);
+
+  const uploadFileForm = useForm<UploadVRFilesFormSchema>({
+    resolver: zodResolver(uploadVRFilesFormSchema),
+  });
+  const { isPending: isUploadingFile, mutateAsync: uploadVRFiles } =
+    useUploadVRFiles({
+      onSuccess: (_, variables) => {
+        toast.success(t('vectorFs.success.filesUploaded'), {
+          id: 'uploading-VR-files',
+          description: '',
+        });
+        uploadFileForm.reset();
+      },
+      onError: (error) => {
+        toast.error(t('vectorFs.errors.filesUploaded'), {
+          id: 'uploading-VR-files',
+          description: error.message,
+        });
+      },
+    });
+
+  const onSubmit = async (values: UploadVRFilesFormSchema) => {
+    if (!auth) return;
+    toast.loading(t('vectorFs.pending.filesUploading'), {
+      id: 'uploading-VR-files',
+      description: 'This process might take from 1-2 minutes per file.',
+      position: 'bottom-left',
+    });
+    onOpenChange(false);
+    await uploadVRFiles({
+      nodeAddress: auth?.node_address ?? '',
+      destinationPath: '/',
+      files: values.files,
+      token: auth?.api_v2_key ?? '',
+    });
+  };
+
+  return (
+    <Dialog
+      onOpenChange={(open) => {
+        if (!open) {
+          onOpenChange(false);
+          uploadFileForm.reset();
+        }
+      }}
+      open={!!isOpen}
+    >
+      <DialogContent className={cn('flex max-w-lg flex-col')}>
+        <DialogClose
+          className={cn(
+            buttonVariants({
+              variant: 'tertiary',
+              size: 'icon',
+            }),
+            'absolute right-3 top-3 p-1',
+          )}
+          onClick={() => {
+            onOpenChange(false);
+            uploadFileForm.reset();
+          }}
+        >
+          <XIcon className="size-4" />
+        </DialogClose>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <FileTypeIcon className="h-6 w-6" />
+            {t('vectorFs.actions.uploadFile')}
+          </DialogTitle>
+        </DialogHeader>
+        <Form {...uploadFileForm}>
+          <form
+            className="space-y-8"
+            onSubmit={uploadFileForm.handleSubmit(onSubmit)}
+          >
+            <FormField
+              control={uploadFileForm.control}
+              name="files"
+              render={({ field }) => (
+                <FormItem className="mt-3">
+                  <FormLabel className="sr-only">File</FormLabel>
+                  <FormControl>
+                    <div className="flex flex-col space-y-1">
+                      <div className="flex items-center justify-center">
+                        <FileUploader
+                          allowMultiple
+                          descriptionText={t('common.uploadAFileDescription')}
+                          onChange={(acceptedFiles) => {
+                            field.onChange(acceptedFiles);
+                          }}
+                          value={field.value}
+                        />
+                      </div>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              className="w-full"
+              disabled={isUploadingFile}
+              isLoading={isUploadingFile}
+              size="sm"
+              type="submit"
+            >
+              {t('common.upload')}
+            </Button>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
