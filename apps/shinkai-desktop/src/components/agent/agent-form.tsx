@@ -1708,7 +1708,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                         }}
                                       />
                                     </div>
-                                    {tool.config?.length && (
+                                    {(tool.config ?? [])?.length > 0 && (
                                       <div className="flex flex-col">
                                         <Collapsible>
                                           <CollapsibleTrigger asChild>
@@ -2442,6 +2442,11 @@ function AgentForm({ mode }: AgentFormProps) {
         <ToolConfigModal
           isOpen={!!selectedToolConfig}
           onConfirm={() => {
+            if (form.watch('tools').includes(selectedToolConfig)) {
+              setSelectedToolConfig(null);
+              return;
+            }
+
             form.setValue('tools', [
               ...form.watch('tools'),
               selectedToolConfig,
