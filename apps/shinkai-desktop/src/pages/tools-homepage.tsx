@@ -485,7 +485,7 @@ function ToolsHome({
 }
 
 const ProtocolsBannerBase = () => {
-  const { data: toolProtocols, isPending, isError } = useGetToolProtocols();
+  const { data: toolProtocols, isPending } = useGetToolProtocols();
 
   return (
     <div
@@ -512,7 +512,7 @@ const ProtocolsBannerBase = () => {
             <ArrowRight className="ml-0.5 h-3 w-3" />
           </DialogTrigger>
 
-          <DialogContent className="sm:max-w-xl">
+          <DialogContent className="max-w-xl">
             <DialogClose asChild>
               <Button
                 className="absolute right-4 top-4"
@@ -526,69 +526,67 @@ const ProtocolsBannerBase = () => {
               <DialogTitle className="text-xl">Verified Protocols</DialogTitle>
             </DialogHeader>
 
-            <div className="mt-2">
-              {isPending ? (
-                <div className="flex flex-col gap-3">
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <Skeleton
-                      className="bg-official-gray-900/30 h-[72px] animate-pulse rounded-lg"
-                      key={i}
-                    />
-                  ))}
-                </div>
-              ) : toolProtocols?.supported &&
-                toolProtocols?.supported.length > 0 ? (
-                <div className="flex flex-col gap-3">
-                  {toolProtocols?.supported.map((protocol) => (
-                    <Link
-                      className="group flex items-center gap-3 rounded-lg border border-transparent bg-gray-800/20 p-3 transition-all duration-200 hover:border-gray-700 hover:bg-gray-700/30 hover:shadow-sm"
-                      key={protocol.name}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                      to={protocol.officialURL}
-                    >
-                      <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-gray-900 p-1.5">
-                        <img
-                          alt=""
-                          className="object-contain"
-                          height={40}
-                          src={protocol.logoSVG}
-                          width={40}
-                        />
-                      </div>
-                      <div className="min-w-0 flex-grow">
-                        <div className="flex items-center gap-1">
-                          <p className="truncate text-sm font-medium text-white">
-                            {protocol.name}
-                          </p>
-                          <ExternalLink className="h-3 w-3 text-gray-500 opacity-0 transition-opacity group-hover:opacity-100" />
-                        </div>
-                        <div className="mt-0.5 flex items-center text-xs text-gray-400">
-                          <CheckCircle className="mr-1 h-3 w-3 text-green-400" />
-                          <span className="truncate">Verified</span>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <div className="py-8 text-center">
-                  <p className="text-official-gray-400 text-sm">
-                    No protocols found .
-                  </p>
-                </div>
-              )}
-
-              <div className="border-official-gray-780 flex flex-col items-start justify-between gap-3 border-t pt-4 sm:flex-row sm:items-center">
-                <p className="text-official-gray-400 text-xs">
-                  Other protocols may also work but haven&apos;t been officially
-                  verified.
-                </p>
-                <FeedbackModal
-                  buttonLabel="Request Protocol"
-                  buttonProps={{ className: 'shrink-0' }}
-                />
+            {isPending ? (
+              <div className="flex flex-col gap-3">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <Skeleton
+                    className="bg-official-gray-900/30 h-[72px] animate-pulse rounded-lg"
+                    key={i}
+                  />
+                ))}
               </div>
+            ) : toolProtocols?.supported &&
+              toolProtocols?.supported.length > 0 ? (
+              <div className="divide-official-gray-780 max-h-[500px] divide-y overflow-y-auto">
+                {toolProtocols?.supported.map((protocol) => (
+                  <Link
+                    className="group flex items-center gap-3 px-3 py-2.5 transition-all duration-200"
+                    key={protocol.name}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    to={protocol.officialURL}
+                  >
+                    <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-gray-900 p-1.5">
+                      <img
+                        alt=""
+                        className="size-full overflow-hidden rounded-full object-cover"
+                        height={40}
+                        src={`https://favicon.is/${protocol.officialURL}`}
+                        width={40}
+                      />
+                    </div>
+                    <div className="min-w-0 flex-grow">
+                      <div className="flex items-center gap-1">
+                        <p className="truncate text-sm font-medium text-white">
+                          {protocol.name}
+                        </p>
+                        <ExternalLink className="text-official-gray-500 h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
+                      </div>
+                      <div className="text-official-gray-400 mt-0.5 flex items-center text-xs">
+                        <CheckCircle className="mr-1 h-3 w-3 text-green-400" />
+                        <span className="truncate">Verified</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="py-8 text-center">
+                <p className="text-official-gray-400 text-sm">
+                  No protocols found .
+                </p>
+              </div>
+            )}
+
+            <div className="border-official-gray-780 flex flex-col items-start justify-between gap-3 border-t pt-4 sm:flex-row sm:items-center">
+              <p className="text-official-gray-400 text-xs">
+                Other protocols may also work but haven&apos;t been officially
+                verified.
+              </p>
+              <FeedbackModal
+                buttonLabel="Request Protocol"
+                buttonProps={{ className: 'shrink-0' }}
+              />
             </div>
           </DialogContent>
         </Dialog>
