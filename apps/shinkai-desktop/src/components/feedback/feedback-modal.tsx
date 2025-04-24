@@ -35,8 +35,10 @@ type FeedbackFormSchema = z.infer<typeof feedbackFormSchema>;
 
 export const FeedbackModal = ({
   buttonProps,
+  buttonLabel,
 }: {
   buttonProps?: ButtonProps;
+  buttonLabel?: string;
 }) => {
   const { t } = useTranslation();
   const form = useForm<FeedbackFormSchema>({
@@ -76,7 +78,7 @@ export const FeedbackModal = ({
       <DialogTrigger asChild>
         <Button rounded="lg" size="sm" variant="outline" {...buttonProps}>
           <MessageSquare className="h-4 w-4" />
-          {t('feedback.button')}
+          {buttonLabel || t('feedback.button')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-xl">

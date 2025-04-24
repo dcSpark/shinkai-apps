@@ -8,6 +8,5 @@ export const submitFeedback = async (payload: SubmitFeedbackRequest) => {
     source: payload.source || 'shinkai-desktop-app',
   });
 
-  console.log(response.data);
   return response.data;
 };

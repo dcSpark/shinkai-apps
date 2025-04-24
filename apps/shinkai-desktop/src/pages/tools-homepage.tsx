@@ -1,3 +1,4 @@
+import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useOpenToolInCodeEditor } from '@shinkai_network/shinkai-node-state/v2/mutations/openToolnCodeEditor/useOpenToolInCodeEditor';
@@ -27,6 +28,7 @@ import {
   ExternalLink,
   LogOut,
   StoreIcon,
+  XIcon,
 } from 'lucide-react';
 import { memo, useEffect, useRef } from 'react';
 import { UseFormReturn } from 'react-hook-form';
@@ -511,6 +513,15 @@ const ProtocolsBannerBase = () => {
           </DialogTrigger>
 
           <DialogContent className="sm:max-w-xl">
+            <DialogClose asChild>
+              <Button
+                className="absolute right-4 top-4"
+                size="icon"
+                variant="tertiary"
+              >
+                <XIcon className="text-gray-80 h-5 w-5" />
+              </Button>
+            </DialogClose>
             <DialogHeader>
               <DialogTitle className="text-xl">Verified Protocols</DialogTitle>
             </DialogHeader>
@@ -573,9 +584,10 @@ const ProtocolsBannerBase = () => {
                   Other protocols may also work but haven&apos;t been officially
                   verified.
                 </p>
-                <Button size="sm" variant="outline">
-                  Request Protocol
-                </Button>
+                <FeedbackModal
+                  buttonLabel="Request Protocol"
+                  buttonProps={{ className: 'shrink-0' }}
+                />
               </div>
             </div>
           </DialogContent>
