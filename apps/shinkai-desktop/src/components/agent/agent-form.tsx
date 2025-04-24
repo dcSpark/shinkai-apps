@@ -417,19 +417,50 @@ function AgentSideChat({
         <div className="flex h-full flex-col">
           <div className="flex items-center justify-between p-2">
             <Select
-              key={selectedInboxId === 'new_chat' ? 'select-new' : 'select-existing'} // Add dynamic key
               onValueChange={(value) => {
                 setSelectedInboxId(value);
               }}
               value={selectedInboxId === 'new_chat' ? undefined : selectedInboxId}
             >
-              <SelectTrigger className="h-8 w-[280px] text-base font-medium [&_svg]:top-1/2 [&_svg]:-translate-y-1/2">
-                <SelectValue placeholder="Chat History" />
+              <SelectTrigger className="flex h-8 w-[280px] items-center justify-start truncate pt-2 pl-2 text-base font-medium [&_svg]:top-1/2 [&_svg]:-translate-y-1/2">
+                <SelectValue placeholder="Chat History">
+                  {/* Explicitly render selected name, rely on placeholder prop for placeholder */}
+                  {selectedInboxId === 'new_chat'
+                    ? 'Chat History'
+                    : agentInboxes?.find(
+                        (inbox) => inbox.inbox_id === selectedInboxId,
+                      )?.custom_name || selectedInboxId || ''}
+                </SelectValue>
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="w-[var(--radix-select-trigger-width)]">
                 {agentInboxes?.map((inbox) => (
                   <SelectItem key={inbox.inbox_id} value={inbox.inbox_id}>
-                    {inbox.custom_name || inbox.inbox_id} {/* Fallback display */}
+                    {/* Wrap content: flex, full width, min-width for shrink */}
+                    <div className="flex w-full flex-col min-w-0">
+                      {/* Name Span: Smaller font, truncate */}
+                      <span className="truncate text-sm">
+                        {inbox.custom_name || inbox.inbox_id}{/* Fallback display */}
+                      </span>
+                      {/* Date Span: Conditionally render, smaller, lighter, truncate */}
+                      {(() => {
+                        const date = new Date(inbox.datetime_created);
+                        if (!isNaN(date.getTime())) {
+                          return (
+                            <span className="truncate text-xs text-gray-100">
+                              {date.toLocaleDateString(undefined, {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                hour12: false,
+                                minute: '2-digit',
+                              })}
+                            </span>
+                          );
+                        }
+                        return null;
+                      })()}
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
