@@ -288,7 +288,15 @@ const EmptyMessage = () => {
       return;
     }
     chatForm.setValue('agent', locationState.agentName);
-  }, [chatForm, locationState]);
+    const selectedAgent = agents?.find(
+      (agent) => agent.agent_id === locationState.agentName,
+    );
+    if (selectedAgent && selectedAgent.tools?.length > 0) {
+      chatConfigForm.setValue('useTools', true);
+    } else {
+      chatConfigForm.setValue('useTools', false);
+    }
+  }, [agents, chatConfigForm, chatForm, locationState]);
 
   useEffect(() => {
     if (!textareaRef.current) return;
@@ -395,16 +403,14 @@ const EmptyMessage = () => {
       toolKey: data.tool?.key,
       selectedVRFiles,
       selectedVRFolders,
-      ...(!isAgentInbox && {
-        chatConfig: {
-          stream: chatConfigForm.getValues('stream'),
-          custom_prompt: chatConfigForm.getValues('customPrompt') ?? '',
-          temperature: chatConfigForm.getValues('temperature'),
-          top_p: chatConfigForm.getValues('topP'),
-          top_k: chatConfigForm.getValues('topK'),
-          use_tools: chatConfigForm.getValues('useTools'),
-        },
-      }),
+      chatConfig: {
+        stream: chatConfigForm.getValues('stream'),
+        custom_prompt: chatConfigForm.getValues('customPrompt') ?? '',
+        temperature: chatConfigForm.getValues('temperature'),
+        top_p: chatConfigForm.getValues('topP'),
+        top_k: chatConfigForm.getValues('topK'),
+        use_tools: chatConfigForm.getValues('useTools'),
+      },
     });
 
     chatForm.reset();
