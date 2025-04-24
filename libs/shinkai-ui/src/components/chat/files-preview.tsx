@@ -25,6 +25,7 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '../tooltip';
+import { SqlitePreview } from './sqlite-preview';
 
 export type FileListProps = {
   files: Attachment[];
@@ -141,6 +142,9 @@ export const FileContentViewer: React.FC<FileContentViewerProps> = ({
           />
         </div>
       );
+    }
+    case FileTypeSupported.SqliteDatabase: {
+      return <SqlitePreview url={url || ''} />;
     }
     default:
       return (
