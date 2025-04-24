@@ -77,6 +77,7 @@ import {
   SUGGESTED_TOOLS_COUNT,
   useSelectedFilesChat,
 } from '../components/chat/conversation-footer';
+import { FeedbackModal } from '../components/feedback/feedback-modal';
 import { usePromptSelectionStore } from '../components/prompt/context/prompt-selection-context';
 import { VideoBanner } from '../components/video-banner';
 import { useAnalytics } from '../lib/posthog-provider';
@@ -443,6 +444,7 @@ const EmptyMessage = () => {
       initial={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
+      <FeedbackModal buttonProps={{ className: 'absolute right-4 top-4' }} />
       <div className="from-brand/5 pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top_center,_var(--tw-gradient-stops))] via-transparent to-transparent" />
       <div className="mx-auto mt-[110px] flex w-full flex-col items-stretch gap-4">
         <div className="flex h-[52px] flex-col gap-2">
@@ -461,22 +463,6 @@ const EmptyMessage = () => {
                 <h1 className="font-clash text-4xl font-medium text-white">
                   How can I help you today?
                 </h1>
-              </div>
-              <div className="absolute right-4 top-4">
-                <Link
-                  className={cn(
-                    buttonVariants({
-                      size: 'xs',
-                      variant: 'outline',
-                      rounded: 'lg',
-                    }),
-                    'gap-1',
-                  )}
-                  to="/settings/feedback"
-                >
-                  <MessageSquare className="h-4 w-4" />
-                  {t('feedback.button', 'Feedback')}
-                </Link>
               </div>
             </>
           )}

@@ -57,7 +57,6 @@ import CryptoWalletPage from '../pages/crypto-wallet';
 import EditTaskPage from '../pages/edit-task';
 import EditToolPage from '../pages/edit-tool';
 import { ExportConnection } from '../pages/export-connection';
-import Feedback from '../pages/feedback';
 import { GalxeValidation } from '../pages/galxe-validation';
 import HomePage from '../pages/home';
 import MainLayout from '../pages/layout/main-layout';
@@ -259,225 +258,229 @@ const AppRoutes = () => {
   return (
     <>
       {/* Use the DefaultLlmProviderUpdater component to update the default LLM provider */}
-      {defaultAgentId && <DefaultLlmProviderUpdater defaultAgentId={defaultAgentId} />}
+      {defaultAgentId && (
+        <DefaultLlmProviderUpdater defaultAgentId={defaultAgentId} />
+      )}
       <Routes>
         <Route element={<MainLayout />}>
-        <Route
-          element={
-            <OnboardingGuard>
-              <Outlet />
-            </OnboardingGuard>
-          }
-        >
           <Route
-            element={<TermsAndConditionsPage />}
-            path={'terms-conditions'}
-          />
-          <Route element={<AnalyticsPage />} path={'analytics'} />
-          <Route element={<QuickConnectionPage />} path={'quick-connection'} />
-          <Route element={<RestoreConnectionPage />} path={'restore'} />
-          <Route element={<ConnectMethodQrCodePage />} path={'connect-qr'} />
-        </Route>
-        <Route
-          element={
-            <ProtectedRoute>
-              <TooltipProvider delayDuration={0}>
-                <ChatProvider>
-                  <SetJobScopeProvider>
-                    <PromptSelectionProvider>
-                      <ToolsProvider>
-                        <Outlet />
-                      </ToolsProvider>
-                    </PromptSelectionProvider>
-                  </SetJobScopeProvider>
-                </ChatProvider>
-              </TooltipProvider>
-            </ProtectedRoute>
-          }
-        >
-          <Route element={<HomePage />} path={'home'} />
-        </Route>
-        <Route
-          element={
-            <ProtectedRoute>
-              <TooltipProvider delayDuration={0}>
-                <ChatProvider>
-                  <SetJobScopeProvider>
-                    <PromptSelectionProvider>
-                      <ToolsProvider>
-                        <ChatLayout />
-                      </ToolsProvider>
-                    </PromptSelectionProvider>
-                  </SetJobScopeProvider>
-                </ChatProvider>
-              </TooltipProvider>
-            </ProtectedRoute>
-          }
-          path="inboxes"
-        >
-          {/* <Route element={<ChatConversation />} index /> */}
-          <Route element={<ChatConversation />} path=":inboxId" />
-        </Route>
-        <Route
-          element={
-            <ProtectedRoute>
-              <VectorFsProvider>
+            element={
+              <OnboardingGuard>
                 <Outlet />
-              </VectorFsProvider>
-            </ProtectedRoute>
-          }
-        >
-          <Route element={<VectorFs />} path="vector-fs" />
+              </OnboardingGuard>
+            }
+          >
+            <Route
+              element={<TermsAndConditionsPage />}
+              path={'terms-conditions'}
+            />
+            <Route element={<AnalyticsPage />} path={'analytics'} />
+            <Route
+              element={<QuickConnectionPage />}
+              path={'quick-connection'}
+            />
+            <Route element={<RestoreConnectionPage />} path={'restore'} />
+            <Route element={<ConnectMethodQrCodePage />} path={'connect-qr'} />
+          </Route>
           <Route
             element={
-              <VectorFolderSelectionProvider>
-                <SearchNodeFiles />
-              </VectorFolderSelectionProvider>
-            }
-            path="vector-search"
-          />
-        </Route>
-        <Route
-          element={
-            <ProtectedRoute>
-              <VectorFsProvider>
-                <Outlet />
-              </VectorFsProvider>
-            </ProtectedRoute>
-          }
-        >
-          <Route element={<MySubscriptions />} path="my-subscriptions" />
-          <Route
-            element={<PublicSharedFolderSubscription />}
-            path="public-subscriptions"
-          />
-        </Route>
-        <Route
-          element={
-            <ProtectedRoute>
-              <Outlet />
-            </ProtectedRoute>
-          }
-        >
-          <Route element={<AIModelInstallation />} path="install-ai-models" />
-          <Route element={<AIsPage />} path="ais" />
-          <Route element={<AgentsPage />} path="agents" />
-          <Route element={<AddAIPage />} path="add-ai" />
-          <Route
-            element={
-              <VectorFsProvider>
-                <SetJobScopeProvider>
-                  <AddAgentPage />
-                </SetJobScopeProvider>
-              </VectorFsProvider>
-            }
-            path="add-agent"
-          />
-          <Route
-            element={
-              <VectorFsProvider>
-                <SetJobScopeProvider>
-                  <EditAgentPage />
-                </SetJobScopeProvider>
-              </VectorFsProvider>
-            }
-            path="/agents/edit/:agentId"
-          />
-        </Route>
-        <Route
-          element={
-            <ProtectedRoute>
-              <CreateChatPage />
-            </ProtectedRoute>
-          }
-          path={'/create-chat'}
-        />
-        <Route
-          element={
-            <ProtectedRoute>
-              <Outlet />
-            </ProtectedRoute>
-          }
-          path="sheets"
-        >
-          <Route element={<SheetDashboard />} index />
-          <Route
-            element={
-              <TableSheetProvider>
-                <SheetProject />
-              </TableSheetProvider>
-            }
-            path=":sheetId"
-          />
-        </Route>
-        <Route
-          element={
-            <ProtectedRoute>
-              <PlaygroundProvider>
+              <ProtectedRoute>
                 <TooltipProvider delayDuration={0}>
                   <ChatProvider>
-                    <Outlet />
+                    <SetJobScopeProvider>
+                      <PromptSelectionProvider>
+                        <ToolsProvider>
+                          <Outlet />
+                        </ToolsProvider>
+                      </PromptSelectionProvider>
+                    </SetJobScopeProvider>
                   </ChatProvider>
                 </TooltipProvider>
-              </PlaygroundProvider>
-            </ProtectedRoute>
-          }
-          path={'tools'}
-        >
-          <Route element={<ToolsHomepage />} index />
-          <Route element={<ToolDetails />} path={':toolKey'} />
-          <Route
-            element={<ToolFeedbackPrompt />}
-            path={'tool-feedback/:inboxId'}
-          />
-          <Route element={<EditToolPage />} path={'edit/:toolRouterKey'} />
-        </Route>
-        <Route
-          element={
-            <ProtectedRoute>
-              <Outlet />
-            </ProtectedRoute>
-          }
-          path={'tasks'}
-        >
-          <Route element={<Tasks />} index />
-          <Route element={<TaskLogs />} path={':taskId'} />
-          <Route element={<CreateTaskPage />} path={'create'} />
-          <Route element={<EditTaskPage />} path={'edit/:taskId'} />
-        </Route>
-        <Route
-          element={
-            <ProtectedRoute>
-              <SettingsLayout />
-            </ProtectedRoute>
-          }
-          path={'settings'}
-        >
-          <Route element={<SettingsPage />} index />
-          <Route element={<Feedback />} path={'feedback'} />
-          <Route element={<ExportConnection />} path={'export-connection'} />
-          <Route element={<PublicKeys />} path={'public-keys'} />
-          <Route
-            element={<AnalyticsSettingsPage />}
-            path={'analytics-settings'}
-          />
-          <Route element={<PromptLibrary />} path={'prompt-library'} />
-          <Route element={<GalxeValidation />} path={'galxe-validation'} />
+              </ProtectedRoute>
+            }
+          >
+            <Route element={<HomePage />} path={'home'} />
+          </Route>
           <Route
             element={
-              <WalletsProvider>
-                <CryptoWalletPage />
-              </WalletsProvider>
+              <ProtectedRoute>
+                <TooltipProvider delayDuration={0}>
+                  <ChatProvider>
+                    <SetJobScopeProvider>
+                      <PromptSelectionProvider>
+                        <ToolsProvider>
+                          <ChatLayout />
+                        </ToolsProvider>
+                      </PromptSelectionProvider>
+                    </SetJobScopeProvider>
+                  </ChatProvider>
+                </TooltipProvider>
+              </ProtectedRoute>
             }
-            path={'crypto-wallet'}
+            path="inboxes"
+          >
+            {/* <Route element={<ChatConversation />} index /> */}
+            <Route element={<ChatConversation />} path=":inboxId" />
+          </Route>
+          <Route
+            element={
+              <ProtectedRoute>
+                <VectorFsProvider>
+                  <Outlet />
+                </VectorFsProvider>
+              </ProtectedRoute>
+            }
+          >
+            <Route element={<VectorFs />} path="vector-fs" />
+            <Route
+              element={
+                <VectorFolderSelectionProvider>
+                  <SearchNodeFiles />
+                </VectorFolderSelectionProvider>
+              }
+              path="vector-search"
+            />
+          </Route>
+          <Route
+            element={
+              <ProtectedRoute>
+                <VectorFsProvider>
+                  <Outlet />
+                </VectorFsProvider>
+              </ProtectedRoute>
+            }
+          >
+            <Route element={<MySubscriptions />} path="my-subscriptions" />
+            <Route
+              element={<PublicSharedFolderSubscription />}
+              path="public-subscriptions"
+            />
+          </Route>
+          <Route
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route element={<AIModelInstallation />} path="install-ai-models" />
+            <Route element={<AIsPage />} path="ais" />
+            <Route element={<AgentsPage />} path="agents" />
+            <Route element={<AddAIPage />} path="add-ai" />
+            <Route
+              element={
+                <VectorFsProvider>
+                  <SetJobScopeProvider>
+                    <AddAgentPage />
+                  </SetJobScopeProvider>
+                </VectorFsProvider>
+              }
+              path="add-agent"
+            />
+            <Route
+              element={
+                <VectorFsProvider>
+                  <SetJobScopeProvider>
+                    <EditAgentPage />
+                  </SetJobScopeProvider>
+                </VectorFsProvider>
+              }
+              path="/agents/edit/:agentId"
+            />
+          </Route>
+          <Route
+            element={
+              <ProtectedRoute>
+                <CreateChatPage />
+              </ProtectedRoute>
+            }
+            path={'/create-chat'}
           />
+          <Route
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+            path="sheets"
+          >
+            <Route element={<SheetDashboard />} index />
+            <Route
+              element={
+                <TableSheetProvider>
+                  <SheetProject />
+                </TableSheetProvider>
+              }
+              path=":sheetId"
+            />
+          </Route>
+          <Route
+            element={
+              <ProtectedRoute>
+                <PlaygroundProvider>
+                  <TooltipProvider delayDuration={0}>
+                    <ChatProvider>
+                      <Outlet />
+                    </ChatProvider>
+                  </TooltipProvider>
+                </PlaygroundProvider>
+              </ProtectedRoute>
+            }
+            path={'tools'}
+          >
+            <Route element={<ToolsHomepage />} index />
+            <Route element={<ToolDetails />} path={':toolKey'} />
+            <Route
+              element={<ToolFeedbackPrompt />}
+              path={'tool-feedback/:inboxId'}
+            />
+            <Route element={<EditToolPage />} path={'edit/:toolRouterKey'} />
+          </Route>
+          <Route
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+            path={'tasks'}
+          >
+            <Route element={<Tasks />} index />
+            <Route element={<TaskLogs />} path={':taskId'} />
+            <Route element={<CreateTaskPage />} path={'create'} />
+            <Route element={<EditTaskPage />} path={'edit/:taskId'} />
+          </Route>
+          <Route
+            element={
+              <ProtectedRoute>
+                <SettingsLayout />
+              </ProtectedRoute>
+            }
+            path={'settings'}
+          >
+            <Route element={<SettingsPage />} index />
+            <Route element={<ExportConnection />} path={'export-connection'} />
+            <Route element={<PublicKeys />} path={'public-keys'} />
+            <Route
+              element={<AnalyticsSettingsPage />}
+              path={'analytics-settings'}
+            />
+            <Route element={<PromptLibrary />} path={'prompt-library'} />
+            <Route element={<GalxeValidation />} path={'galxe-validation'} />
+            <Route
+              element={
+                <WalletsProvider>
+                  <CryptoWalletPage />
+                </WalletsProvider>
+              }
+              path={'crypto-wallet'}
+            />
+          </Route>
         </Route>
-      </Route>
-      <Route
-        element={<Navigate replace to={ONBOARDING_STEPS[0].path} />}
-        path="*"
-      />
-    </Routes>
+        <Route
+          element={<Navigate replace to={ONBOARDING_STEPS[0].path} />}
+          path="*"
+        />
+      </Routes>
     </>
   );
 };

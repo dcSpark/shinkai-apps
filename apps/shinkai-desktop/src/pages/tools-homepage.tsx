@@ -26,7 +26,6 @@ import {
   CircleAlert,
   ExternalLink,
   LogOut,
-  MessageSquare,
   StoreIcon,
 } from 'lucide-react';
 import { memo, useEffect, useRef } from 'react';
@@ -36,6 +35,7 @@ import { toast } from 'sonner';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import { MessageList } from '../components/chat/components/message-list';
+import { FeedbackModal } from '../components/feedback/feedback-modal';
 import { LanguageToolSelector } from '../components/playground-tool/components/language-tool-selector';
 import { ToolsSelection } from '../components/playground-tool/components/tools-selection';
 import {
@@ -302,20 +302,7 @@ function ToolsHome({
             <StoreIcon className="size-4" />
             {t('tools.store.label')}
           </Link>
-          <Link
-            className={cn(
-              buttonVariants({
-                size: 'xs',
-                variant: 'outline',
-                rounded: 'lg',
-              }),
-              'gap-1',
-            )}
-            to="/settings/feedback"
-          >
-            <MessageSquare className="h-4 w-4" />
-            {t('feedback.button', 'Feedback')}
-          </Link>
+          <FeedbackModal />
         </div>
       </div>
       <div className="flex max-w-[1152px] flex-col gap-4">
@@ -463,7 +450,7 @@ function ToolsHome({
           <ToolCollection />
 
           <div className="bg-official-gray-1100 relative rounded-lg">
-            <div className="mx-auto flex max-w-[1400px] flex-col items-center gap-8 p-10 text-center">
+            <div className="relative z-[1] mx-auto flex max-w-[1400px] flex-col items-center gap-8 p-10 text-center">
               <div className="flex flex-col gap-2">
                 <h3 className="font-clash max-w-xl text-2xl font-semibold tracking-normal">
                   Discover More Tools
@@ -483,20 +470,7 @@ function ToolsHome({
                   >
                     Visit App Store <ArrowRight className="h-4 w-4" />
                   </a>
-                  <Link
-                    className={cn(
-                      buttonVariants({
-                        size: 'xs',
-                        variant: 'outline',
-                        rounded: 'lg',
-                      }),
-                      'gap-1',
-                    )}
-                    to="/settings/feedback"
-                  >
-                    <MessageSquare className="h-4 w-4" />
-                    {t('feedback.button', 'Feedback')}
-                  </Link>
+                  <FeedbackModal buttonProps={{ rounded: 'full' }} />
                 </div>
               </div>
             </div>
