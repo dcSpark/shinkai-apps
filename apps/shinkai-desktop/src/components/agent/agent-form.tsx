@@ -323,21 +323,26 @@ function AgentSideChat({
     token: auth?.api_v2_key ?? '',
   });
 
-  const [selectedInboxId, setSelectedInboxId] = useState<string>(
-    agentInboxes?.[0]?.inbox_id ?? '',
-  );
+  // State for the currently selected value in the dropdown
+  const [selectedInboxId, setSelectedInboxId] = useState<string>('new_chat');
 
   // Effect to sync selectedInboxId with chatInboxId
   useEffect(() => {
-    if (selectedInboxId) {
+    if (selectedInboxId === 'new_chat') {
+      setChatInboxId(null);
+    } else {
       setChatInboxId(selectedInboxId);
     }
   }, [selectedInboxId]);
 
   // Reset selectedInboxId if agentInboxes change and the current selection is gone
   useEffect(() => {
-    if (agentInboxes && !agentInboxes.find(inbox => inbox.inbox_id === selectedInboxId)) {
-      setSelectedInboxId(agentInboxes[0]?.inbox_id ?? '');
+    if (
+      agentInboxes &&
+      selectedInboxId !== 'new_chat' && // Only reset if a real inbox was selected
+      !agentInboxes.find((inbox) => inbox.inbox_id === selectedInboxId)
+    ) {
+      setSelectedInboxId('new_chat'); // Default back to new chat
     }
   }, [agentInboxes, selectedInboxId]);
 
@@ -350,15 +355,15 @@ function AgentSideChat({
               onValueChange={(value) => {
                 setSelectedInboxId(value);
               }}
-              value={selectedInboxId}
+              value={selectedInboxId === 'new_chat' ? undefined : selectedInboxId}
             >
               <SelectTrigger className="h-8 w-[280px] text-base font-medium [&_svg]:top-1/2 [&_svg]:-translate-y-1/2">
-                <SelectValue placeholder="Preview" />
+                <SelectValue placeholder="Chat History" />
               </SelectTrigger>
               <SelectContent>
                 {agentInboxes?.map((inbox) => (
                   <SelectItem key={inbox.inbox_id} value={inbox.inbox_id}>
-                    {inbox.custom_name}
+                    {inbox.custom_name || inbox.inbox_id} {/* Fallback display */}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -368,7 +373,7 @@ function AgentSideChat({
                 <TooltipTrigger asChild>
                   <Button
                     className="text-official-gray-300 p-2"
-                    onClick={() => setChatInboxId(null)}
+                    onClick={() => setSelectedInboxId('new_chat')} // Set state to trigger effect
                     size="auto"
                     variant="tertiary"
                   >
