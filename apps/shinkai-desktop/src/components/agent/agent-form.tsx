@@ -98,7 +98,7 @@ import {
   TrashIcon,
   XIcon,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, To, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -210,6 +210,7 @@ function AgentSideChat({
   const auth = useAuth((state) => state.auth);
   const [chatInboxId, setChatInboxId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
+  const queryClient = useQueryClient();
 
   const { data: sideAgentData } = useGetAgent({
     agentId,
@@ -229,7 +230,8 @@ function AgentSideChat({
 
   const { mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
-      setChatInboxId(buildInboxIdFromJobId(data.jobId));
+      const newInboxId = buildInboxIdFromJobId(data.jobId);
+      setChatInboxId(newInboxId);
     },
   });
 
@@ -259,33 +261,70 @@ function AgentSideChat({
   const handleSendMessage = async () => {
     if (!auth || !message.trim()) return;
 
-    if (!chatInboxId) {
-      await createJob({
-        nodeAddress: auth.node_address,
-        token: auth.api_v2_key,
-        llmProvider: agentId,
-        content: message,
-        isHidden: false,
-        chatConfig: {
-          stream: DEFAULT_CHAT_CONFIG.stream,
-          custom_prompt: '',
-          temperature: DEFAULT_CHAT_CONFIG.temperature,
-          top_p: DEFAULT_CHAT_CONFIG.top_p,
-          top_k: DEFAULT_CHAT_CONFIG.top_k,
-          use_tools: hasTools,
-        },
-      });
-    } else {
-      await sendMessageToJob({
-        nodeAddress: auth.node_address,
-        token: auth.api_v2_key,
-        jobId: extractJobIdFromInbox(chatInboxId),
-        message: message,
-        parent: '',
-      });
-    }
+    const messageToSend = message;
+    setMessage(''); // Clear input immediately
 
-    setMessage('');
+    try {
+      if (!chatInboxId) {
+        // Create Job first
+        const createJobResponse = await createJob({
+          nodeAddress: auth.node_address,
+          token: auth.api_v2_key,
+          llmProvider: agentId,
+          content: messageToSend, // Use the captured message
+          isHidden: false,
+          chatConfig: {
+            stream: DEFAULT_CHAT_CONFIG.stream,
+            custom_prompt: '',
+            temperature: DEFAULT_CHAT_CONFIG.temperature,
+            top_p: DEFAULT_CHAT_CONFIG.top_p,
+            top_k: DEFAULT_CHAT_CONFIG.top_k,
+            use_tools: hasTools,
+          },
+        });
+
+        const newJobId = createJobResponse.jobId;
+        const newInboxId = buildInboxIdFromJobId(newJobId);
+        // Set chatInboxId immediately so message list can update optimistically
+        setChatInboxId(newInboxId);
+
+        // Then send the message
+        await sendMessageToJob({
+          nodeAddress: auth.node_address,
+          token: auth.api_v2_key,
+          jobId: newJobId,
+          message: messageToSend, // Use the captured message
+          parent: '',
+        });
+
+        // Invalidate the inboxes query AFTER the first message is sent
+        queryClient.invalidateQueries({
+          queryKey: [
+            FunctionKeyV2.GET_AGENT_INBOXES,
+            {
+              agentId: agentId,
+              nodeAddress: auth?.node_address ?? '',
+            },
+          ],
+        });
+      } else {
+        // Send message to existing job
+        await sendMessageToJob({
+          nodeAddress: auth.node_address,
+          token: auth.api_v2_key,
+          jobId: extractJobIdFromInbox(chatInboxId),
+          message: messageToSend, // Use the captured message
+          parent: '',
+        });
+        // No need to invalidate here
+      }
+    } catch (error) {
+      console.error("Error sending message or creating job:", error);
+      // Optional: Add user feedback (toast notification)
+      setMessage(messageToSend); // Restore message input on error
+    } finally {
+      setMessage('');
+    }
   };
 
   const editAndRegenerateMessage = async (
@@ -335,16 +374,42 @@ function AgentSideChat({
     }
   }, [selectedInboxId]);
 
-  // Reset selectedInboxId if agentInboxes change and the current selection is gone
+  // Ref to track the previous agentInboxes value
+  const prevAgentInboxesRef = useRef(agentInboxes);
+
+  // Reset selectedInboxId only if the list genuinely changes and the selection is gone
   useEffect(() => {
+    const hasInboxListChanged = prevAgentInboxesRef.current !== agentInboxes;
+
     if (
+      hasInboxListChanged && // Only run if the list object reference changed
       agentInboxes &&
-      selectedInboxId !== 'new_chat' && // Only reset if a real inbox was selected
+      selectedInboxId !== 'new_chat' &&
       !agentInboxes.find((inbox) => inbox.inbox_id === selectedInboxId)
     ) {
-      setSelectedInboxId('new_chat'); // Default back to new chat
+      setSelectedInboxId('new_chat'); // Reset to new chat state
     }
+
+    // Update the ref for the next render
+    prevAgentInboxesRef.current = agentInboxes;
   }, [agentInboxes, selectedInboxId]);
+
+  // Effect to sync the dropdown selection AFTER the inbox list is updated
+  useEffect(() => {
+    if (chatInboxId && agentInboxes?.length) {
+      const activeChatExistsInList = agentInboxes.some(
+        (inbox) => inbox.inbox_id === chatInboxId,
+      );
+
+      if (activeChatExistsInList) setSelectedInboxId(chatInboxId);
+      else {
+        console.warn(
+          `Chat inbox ${chatInboxId} not found in agent inboxes`,
+          agentInboxes,
+        );
+      }
+    }
+  }, [agentInboxes, chatInboxId]); // Depend on both the list and the active chat ID
 
   return (
     <ChatProvider>
@@ -352,6 +417,7 @@ function AgentSideChat({
         <div className="flex h-full flex-col">
           <div className="flex items-center justify-between p-2">
             <Select
+              key={selectedInboxId === 'new_chat' ? 'select-new' : 'select-existing'} // Add dynamic key
               onValueChange={(value) => {
                 setSelectedInboxId(value);
               }}
@@ -373,7 +439,7 @@ function AgentSideChat({
                 <TooltipTrigger asChild>
                   <Button
                     className="text-official-gray-300 p-2"
-                    onClick={() => setSelectedInboxId('new_chat')} // Set state to trigger effect
+                    onClick={() => setSelectedInboxId('new_chat')}
                     size="auto"
                     variant="tertiary"
                   >
