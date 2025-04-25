@@ -50,10 +50,10 @@ import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import ArtifactPreview from '../../components/chat/artifact-preview';
+import { ScheduledTasksFolder } from '../../components/chat/components/scheduled-tasks-folder';
 import { useChatStore } from '../../components/chat/context/chat-context';
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
 import { usePromptSelectionStore } from '../../components/prompt/context/prompt-selection-context';
-import { ScheduledTasksFolder } from '../../components/chat/components/scheduled-tasks-folder';
 import { handleSendNotification } from '../../lib/notifications';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
