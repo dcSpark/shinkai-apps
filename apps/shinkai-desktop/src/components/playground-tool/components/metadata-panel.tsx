@@ -23,6 +23,7 @@ import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 import { useToolSave } from '../hooks/use-tool-save';
 import { ToolMetadataRawSchema } from '../schemas';
 import ToolCodeEditor from '../tool-code-editor';
+import { stringifyWithPreservedOrder } from '../utils/json';
 
 function MetadataPanelBase({
   regenerateToolMetadata,
@@ -78,7 +79,7 @@ function MetadataPanelBase({
       );
 
       if (
-        value === JSON.stringify(formattedMetadataWithoutBasicInfo, null, 2)
+        value === stringifyWithPreservedOrder(formattedMetadataWithoutBasicInfo, 2)
       ) {
         setValidateMetadataEditorValue(null);
         return;
@@ -120,11 +121,11 @@ function MetadataPanelBase({
     if (!toolMetadata) return '';
     try {
       const parsedToolMetadata = ToolMetadataRawSchema.parse(toolMetadata);
-      return JSON.stringify(parsedToolMetadata, null, 2);
+      return stringifyWithPreservedOrder(parsedToolMetadata, 2);
     } catch (err) {
       console.error('Error formatting tool metadata:', err, toolMetadata);
       setValidateMetadataEditorValue(`Error parsing metadata: ${(err as Error).message}`);
-      return JSON.stringify(toolMetadata, null, 2); // Return raw metadata even if schema validation fails
+      return stringifyWithPreservedOrder(toolMetadata, 2); // Return raw metadata even if schema validation fails
     }
   }, [toolMetadata]);
 
