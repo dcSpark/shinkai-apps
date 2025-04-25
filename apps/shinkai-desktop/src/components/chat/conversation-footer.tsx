@@ -464,7 +464,10 @@ function ConversationChatFooter({
                           }}
                         />
                       )}
-                      {selectedTool ? null : <UpdateToolsSwitchActionBar />}
+                      {isAgentInbox || selectedTool ? null : (
+                        <UpdateToolsSwitchActionBar />
+                      )}
+
                       {isAgentInbox || selectedTool ? null : (
                         <UpdateVectorFsActionBar />
                       )}

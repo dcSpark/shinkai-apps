@@ -534,7 +534,7 @@ const EmptyMessage = () => {
                           />
                         )}
                         {!selectedTool && <PromptSelectionActionBar />}
-                        {!selectedTool && (
+                        {!selectedTool && !currentAI && (
                           <ToolsSwitchActionBar
                             checked={chatConfigForm.watch('useTools')}
                             onClick={() => {
