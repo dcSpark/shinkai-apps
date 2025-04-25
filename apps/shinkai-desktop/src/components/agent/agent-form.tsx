@@ -271,7 +271,6 @@ function AgentSideChat({
     if (!auth || !message.trim()) return;
 
     const messageToSend = message;
-    setMessage(''); // Clear input immediately
 
     try {
       if (!chatInboxId) {
@@ -294,30 +293,15 @@ function AgentSideChat({
 
         const newJobId = createJobResponse.jobId;
         const newInboxId = buildInboxIdFromJobId(newJobId);
-        // Set chatInboxId immediately so message list can update optimistically
-        setChatInboxId(newInboxId);
-
-        // Then send the message
-        await sendMessageToJob({
-          nodeAddress: auth.node_address,
-          token: auth.api_v2_key,
-          jobId: newJobId,
-          message: messageToSend, // Use the captured message
-          parent: '',
-        });
-
         // Invalidate the inboxes query AFTER the first message is sent
         queryClient.invalidateQueries({
           queryKey: [
             FunctionKeyV2.GET_AGENT_INBOXES,
-            {
-              agentId: agentId,
-              nodeAddress: auth?.node_address ?? '',
-            },
+            agentId,
           ],
         });
+        setChatInboxId(newInboxId);
       } else {
-        // Send message to existing job
         await sendMessageToJob({
           nodeAddress: auth.node_address,
           token: auth.api_v2_key,
@@ -325,12 +309,9 @@ function AgentSideChat({
           message: messageToSend, // Use the captured message
           parent: '',
         });
-        // No need to invalidate here
       }
     } catch (error) {
       console.error("Error sending message or creating job:", error);
-      // Optional: Add user feedback (toast notification)
-      setMessage(messageToSend); // Restore message input on error
     } finally {
       setMessage('');
     }
