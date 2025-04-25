@@ -1,6 +1,6 @@
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
-import { useGetRecurringTasks } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTasks/useGetRecurringTasks';
 import { useGetRecurringTaskLogs } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTaskLogs/useGetRecurringTaskLogs';
+import { useGetRecurringTasks } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTasks/useGetRecurringTasks';
 import {
   Accordion,
   AccordionContent,
@@ -30,8 +30,8 @@ export const ScheduledTasksFolder = () => {
 
   return (
     <div className="mb-2">
-      <Accordion type="single" collapsible className="border-none">
-        <AccordionItem value="scheduledTasks" className="border-none">
+      <Accordion className="border-none" collapsible type="single">
+        <AccordionItem className="border-none" value="scheduledTasks">
           <AccordionTrigger
             className={cn(
               'text-gray-80 group flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-white/10',
@@ -47,8 +47,8 @@ export const ScheduledTasksFolder = () => {
               <div className="space-y-1 px-4 py-1">
                 {[...Array(3)].map((_, idx) => (
                   <Skeleton
-                    key={idx}
                     className="h-8 w-full rounded-md bg-gray-300"
+                    key={idx}
                   />
                 ))}
               </div>
@@ -104,8 +104,8 @@ const TaskExecutions = ({
       <div className="space-y-1 px-4 py-1">
         {[...Array(3)].map((_, idx) => (
           <Skeleton
-            key={idx}
             className="h-8 w-full rounded-md bg-gray-300"
+            key={idx}
           />
         ))}
       </div>
@@ -127,9 +127,9 @@ const TaskExecutions = ({
       <div className="space-y-1">
         {lastExecutions.map((log) => (
           <Link
+            className="flex h-8 items-center justify-between gap-2 px-6 py-1 text-xs text-gray-80 hover:bg-white/5"
             key={log.execution_time}
             to={`/inboxes/${encodeURIComponent(buildInboxIdFromJobId(log.job_id))}`}
-            className="flex h-8 items-center justify-between gap-2 px-6 py-1 text-xs text-gray-80 hover:bg-white/5"
           >
             <div className="flex items-center gap-2">
               <Clock className="h-3 w-3" />
@@ -150,8 +150,8 @@ const TaskExecutions = ({
         
         {/* Add link to task detail page as the 6th item */}
         <Link
-          to={`/tasks/${taskId}`}
           className="flex h-8 items-center gap-2 px-6 py-1 text-xs text-blue-400 hover:bg-white/5"
+          to={`/tasks/${taskId}`}
         >
           <Link2 className="h-3 w-3" />
           <span>View all executions</span>
