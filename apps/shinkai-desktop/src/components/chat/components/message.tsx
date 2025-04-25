@@ -59,6 +59,7 @@ import { z } from 'zod';
 import { useAuth } from '../../../store/auth';
 import { useOAuth } from '../../../store/oauth';
 import { oauthUrlMatcherFromErrorMessage } from '../../../utils/oauth';
+import { useChatFontSize } from '../../../utils/font-size';
 import { useChatStore } from '../context/chat-context';
 import { PythonCodeRunner } from '../python-code-runner/python-code-runner';
 
@@ -184,6 +185,10 @@ export const MessageBase = ({
 
   const selectedArtifact = useChatStore((state) => state.selectedArtifact);
   const setArtifact = useChatStore((state) => state.setSelectedArtifact);
+  
+  const { getMessageFontClass, getSecondaryFontClass } = useChatFontSize();
+  const messageFontClass = getMessageFontClass();
+  const secondaryFontClass = getSecondaryFontClass();
 
   const [editing, setEditing] = useState(false);
 
@@ -329,7 +334,8 @@ export const MessageBase = ({
             <Fragment>
               <div
                 className={cn(
-                  'relative mt-1 flex flex-col rounded-lg px-3.5 pt-3 text-sm text-white',
+                  'relative mt-1 flex flex-col rounded-lg px-3.5 pt-3 text-white',
+                  messageFontClass,
                   message.role === 'user'
                     ? 'bg-official-gray-850 rounded-tr-none'
                     : 'bg-official-gray-780 rounded-bl-none border-none',
@@ -618,7 +624,8 @@ export const MessageBase = ({
                   </div>
                   <div
                     className={cn(
-                      'flex items-center gap-1.5 text-xs text-gray-100',
+                      'flex items-center gap-1.5 text-gray-100',
+                      secondaryFontClass,
                     )}
                   >
                     <span>

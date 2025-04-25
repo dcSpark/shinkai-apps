@@ -127,6 +127,7 @@ import { treeOptions } from '../../lib/constants';
 import { useChatConversationWithOptimisticUpdates } from '../../pages/chat/chat-conversation';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import { useChatFontSize } from '../../utils/font-size';
 import { AIModelSelector } from '../chat/chat-action-bar/ai-update-selection-action-bar';
 import { MessageList } from '../chat/components/message-list';
 import { ChatProvider } from '../chat/context/chat-context';
@@ -221,6 +222,9 @@ function AgentSideChat({
 }) {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
+  const { getMessageFontClass, getSecondaryFontClass } = useChatFontSize();
+  const messageFontClass = getMessageFontClass();
+  const secondaryFontClass = getSecondaryFontClass();
   const [chatInboxId, setChatInboxId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const queryClient = useQueryClient();
@@ -437,8 +441,8 @@ function AgentSideChat({
                 <span aria-hidden className="text-4xl">
                   🤖
                 </span>
-                <h2 className="text-base font-medium">Chat with your Agent</h2>
-                <p className="text-official-gray-400 text-xs">
+                <h2 className={cn("text-base font-medium", messageFontClass)}>Chat with your Agent</h2>
+                <p className={cn("text-official-gray-400", secondaryFontClass)}>
                   Send a message to start chatting with this agent
                 </p>
               </div>
@@ -461,9 +465,10 @@ function AgentSideChat({
           <div className="p-4">
             <ChatInputArea
               autoFocus
+              className={messageFontClass}
               bottomAddons={
                 <div className="relative z-50 flex items-end gap-3 self-end p-2">
-                  <span className="pb-1 text-xs font-light text-gray-100">
+                  <span className={cn("pb-1 font-light text-gray-100", secondaryFontClass)}>
                     <span className="font-medium">Enter</span> to send
                   </span>
 
