@@ -43,46 +43,31 @@ export const useSendMessageToJob = (options?: Options) => {
 
       queryClient.setQueryData(
         queryKey,
-        (old: ChatConversationInfiniteData | undefined): ChatConversationInfiniteData => {
-          const newOptimisticMessage = generateOptimisticUserMessage(
-            variables.message,
-            (variables.files ?? []).map((file) => ({
-              name: file.name,
-              id: file.name,
-              size: file.size,
-              type: FileTypeSupported.Unknown,
-              preview: URL.createObjectURL(file),
-              file,
-              path: file.name,
-              extension: file.name.split('.').pop() ?? '',
-              mimeType: file.type,
-            })),
-          );
+        (old: ChatConversationInfiniteData) => {
+          const newMessages = [
+            generateOptimisticUserMessage(
+              variables.message,
+              (variables.files ?? []).map((file) => ({
+                name: file.name,
+                id: file.name,
+                size: file.size,
+                type: FileTypeSupported.Unknown,
+                preview: URL.createObjectURL(file),
+                file,
+                path: file.name,
+                extension: file.name.split('.').pop() ?? '',
+                mimeType: file.type,
+              })),
+            ),
+          ];
 
-          if (!old || !old.pages || old.pages.length === 0) {
-            // If no previous data or pages, start fresh
-            return {
-              content: [], // Assuming an empty content array is needed
-              pages: [[newOptimisticMessage]], // Start with a single page containing the new message
-              pageParams: [undefined], // Adjust pageParams structure as needed for your infinite query
-            };
-          } else {
-            // If previous data exists, append to the last page
-            const lastPageIndex = old.pages.length - 1;
-            const updatedLastPage = [
-              ...old.pages[lastPageIndex],
-              newOptimisticMessage,
-            ];
-            const updatedPages = [
-              ...old.pages.slice(0, lastPageIndex),
-              updatedLastPage,
-            ];
-
-            return {
-              ...old,
-              pages: updatedPages,
-            };
-          }
+          return {
+            ...old,
+            pages: [
+              ...old.pages.slice(0, -1),
+              [...(old.pages.at(-1) || []), ...newMessages],
+            ],
+          };
         },
       );
 

@@ -91,7 +91,11 @@ import {
   ScheduledTasksIcon,
   SendIcon,
 } from '@shinkai_network/shinkai-ui/assets';
-import { formatText, getFileExt } from '@shinkai_network/shinkai-ui/helpers';
+import {
+  formatDateToLocaleStringWithTime,
+  formatText,
+  getFileExt,
+} from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
@@ -270,51 +274,32 @@ function AgentSideChat({
   const handleSendMessage = async () => {
     if (!auth || !message.trim()) return;
 
-    const messageToSend = message;
-
-    try {
-      if (!chatInboxId) {
-        // Create Job first
-        const createJobResponse = await createJob({
-          nodeAddress: auth.node_address,
-          token: auth.api_v2_key,
-          llmProvider: agentId,
-          content: messageToSend, // Use the captured message
-          isHidden: false,
-          chatConfig: {
-            stream: DEFAULT_CHAT_CONFIG.stream,
-            custom_prompt: '',
-            temperature: DEFAULT_CHAT_CONFIG.temperature,
-            top_p: DEFAULT_CHAT_CONFIG.top_p,
-            top_k: DEFAULT_CHAT_CONFIG.top_k,
-            use_tools: hasTools,
-          },
-        });
-
-        const newJobId = createJobResponse.jobId;
-        const newInboxId = buildInboxIdFromJobId(newJobId);
-        // Invalidate the inboxes query AFTER the first message is sent
-        queryClient.invalidateQueries({
-          queryKey: [
-            FunctionKeyV2.GET_AGENT_INBOXES,
-            agentId,
-          ],
-        });
-        setChatInboxId(newInboxId);
-      } else {
-        await sendMessageToJob({
-          nodeAddress: auth.node_address,
-          token: auth.api_v2_key,
-          jobId: extractJobIdFromInbox(chatInboxId),
-          message: messageToSend, // Use the captured message
-          parent: '',
-        });
-      }
-    } catch (error) {
-      console.error("Error sending message or creating job:", error);
-    } finally {
-      setMessage('');
+    if (!chatInboxId) {
+      await createJob({
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
+        llmProvider: agentId,
+        content: message,
+        isHidden: false,
+        chatConfig: {
+          stream: DEFAULT_CHAT_CONFIG.stream,
+          custom_prompt: '',
+          temperature: DEFAULT_CHAT_CONFIG.temperature,
+          top_p: DEFAULT_CHAT_CONFIG.top_p,
+          top_k: DEFAULT_CHAT_CONFIG.top_k,
+          use_tools: hasTools,
+        },
+      });
+    } else {
+      await sendMessageToJob({
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
+        jobId: extractJobIdFromInbox(chatInboxId),
+        message: message,
+        parent: '',
+      });
     }
+    setMessage('');
   };
 
   const editAndRegenerateMessage = async (
@@ -363,7 +348,9 @@ function AgentSideChat({
               {chatInboxId === null
                 ? 'New Chat'
                 : agentInboxes?.find((inbox) => inbox.inbox_id === chatInboxId)
-                    ?.custom_name || chatInboxId || 'New Chat'} 
+                    ?.custom_name ||
+                  chatInboxId ||
+                  'New Chat'}
             </h2>
 
             {/* Buttons Group */}
@@ -385,7 +372,6 @@ function AgentSideChat({
                 </TooltipContent>
               </Tooltip>
 
-              {/* History Dropdown Trigger Button */}
               <Select
                 onValueChange={(value) => {
                   if (value) setChatInboxId(value);
@@ -409,40 +395,24 @@ function AgentSideChat({
                     <p>Chat History</p>
                   </TooltipContent>
                 </Tooltip>
-
-                {/* Dropdown Content */}
-                <SelectContent className="w-[280px]">
+                <SelectContent className="w-[300px]">
                   {agentInboxes?.map((inbox) => (
                     <SelectItem key={inbox.inbox_id} value={inbox.inbox_id}>
-                      <div className="flex w-full flex-col min-w-0">
-                        <span className="truncate text-sm">
+                      <div className="flex w-full flex-col">
+                        <span className="max-w-[255px] truncate text-sm text-white">
                           {inbox.custom_name || inbox.inbox_id}
                         </span>
-                        {(() => {
-                          const date = new Date(inbox.datetime_created);
-                          if (!isNaN(date.getTime())) {
-                            return (
-                              <span className="truncate text-xs text-gray-100">
-                                {date.toLocaleDateString(undefined, {
-                                  year: 'numeric',
-                                  month: 'short',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  hour12: false,
-                                  minute: '2-digit',
-                                })}
-                              </span>
-                            );
-                          }
-                          return null;
-                        })()}
+                        <span className="text-official-gray-400 truncate text-xs">
+                          {formatDateToLocaleStringWithTime(
+                            new Date(inbox.datetime_created),
+                          )}
+                        </span>
                       </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
 
-              {/* Close Button */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -2827,4 +2797,3 @@ const UploadFileDialog = ({
     </Dialog>
   );
 };
-
