@@ -21,6 +21,7 @@ type Options = UseMutationOptions<
   SendMessageToJobInput
 >;
 
+// only use this for sending message to existing job. For creating a new job, use useCreateJob
 export const useSendMessageToJob = (options?: Options) => {
   const queryClient = useQueryClient();
   return useMutation({

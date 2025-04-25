@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { PlusIcon } from '@radix-ui/react-icons';
+import * as SelectPrimitive from '@radix-ui/react-select'; // <-- Import SelectPrimitive
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   ShinkaiTool,
@@ -29,6 +30,7 @@ import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations
 import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadVRFiles/useUploadVRFiles';
 import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
 import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
+import { useGetAgentInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetAgentInboxes';
 import { useGetSearchDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getSearchDirectoryContents/useGetSearchDirectoryContents';
 import { useGetTool } from '@shinkai_network/shinkai-node-state/v2/queries/getTool/useGetTool';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
@@ -65,6 +67,11 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Skeleton,
   Slider,
   Switch,
@@ -84,7 +91,11 @@ import {
   ScheduledTasksIcon,
   SendIcon,
 } from '@shinkai_network/shinkai-ui/assets';
-import { formatText, getFileExt } from '@shinkai_network/shinkai-ui/helpers';
+import {
+  formatDateToLocaleStringWithTime,
+  formatText,
+  getFileExt,
+} from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
@@ -94,15 +105,17 @@ import {
   BoltIcon,
   ChevronDownIcon,
   ChevronRight,
+  HistoryIcon,
   LucideArrowLeft,
   MessageSquare,
+  Plus,
   RefreshCwIcon,
   SearchIcon,
   Trash2,
   XIcon,
 } from 'lucide-react';
 import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, To, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -210,6 +223,7 @@ function AgentSideChat({
   const auth = useAuth((state) => state.auth);
   const [chatInboxId, setChatInboxId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
+  const queryClient = useQueryClient();
 
   const { data: sideAgentData } = useGetAgent({
     agentId,
@@ -229,7 +243,8 @@ function AgentSideChat({
 
   const { mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
-      setChatInboxId(buildInboxIdFromJobId(data.jobId));
+      const newInboxId = buildInboxIdFromJobId(data.jobId);
+      setChatInboxId(newInboxId);
     },
   });
 
@@ -284,7 +299,6 @@ function AgentSideChat({
         parent: '',
       });
     }
-
     setMessage('');
   };
 
@@ -317,13 +331,31 @@ function AgentSideChat({
     });
   };
 
+  const { data: agentInboxes } = useGetAgentInboxes({
+    agentId,
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
   return (
     <ChatProvider>
       <div className="bg-official-gray-950 h-full shadow-lg">
         <div className="flex h-full flex-col">
+          {/* Header Area */}
           <div className="flex items-center justify-between p-4">
-            <h2 className="text-base font-medium">Preview</h2>
+            {/* Title */}
+            <h2 className="truncate text-base font-medium">
+              {chatInboxId === null
+                ? 'New Chat'
+                : agentInboxes?.find((inbox) => inbox.inbox_id === chatInboxId)
+                    ?.custom_name ||
+                  chatInboxId ||
+                  'New Chat'}
+            </h2>
+
+            {/* Buttons Group */}
             <div className="flex items-center gap-2">
+              {/* New Chat Button*/}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -332,13 +364,55 @@ function AgentSideChat({
                     size="auto"
                     variant="tertiary"
                   >
-                    <RefreshCwIcon className="size-4" />
+                    <PlusIcon className="size-4" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Clear Chat</p>
+                  <p>New Chat</p>
                 </TooltipContent>
               </Tooltip>
+
+              <Select
+                onValueChange={(value) => {
+                  if (value) setChatInboxId(value);
+                }}
+                value={chatInboxId === null ? undefined : chatInboxId}
+              >
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SelectPrimitive.Trigger asChild>
+                      <Button
+                        className="text-official-gray-300 p-2"
+                        disabled={!agentInboxes || agentInboxes.length === 0}
+                        size="auto"
+                        variant="tertiary"
+                      >
+                        <HistoryIcon className="size-4" />
+                      </Button>
+                    </SelectPrimitive.Trigger>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Chat History</p>
+                  </TooltipContent>
+                </Tooltip>
+                <SelectContent className="w-[300px]">
+                  {agentInboxes?.map((inbox) => (
+                    <SelectItem key={inbox.inbox_id} value={inbox.inbox_id}>
+                      <div className="flex w-full flex-col">
+                        <span className="max-w-[255px] truncate text-sm text-white">
+                          {inbox.custom_name || inbox.inbox_id}
+                        </span>
+                        <span className="text-official-gray-400 truncate text-xs">
+                          {formatDateToLocaleStringWithTime(
+                            new Date(inbox.datetime_created),
+                          )}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button

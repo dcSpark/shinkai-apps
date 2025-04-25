@@ -212,6 +212,10 @@ export type Inbox = {
 
 export type GetAllInboxesResponse = Inbox[];
 
+export type GetAllAgentInboxesRequest = {
+  agent_id: string;
+};
+
 export type GetAllInboxesWithPaginationRequest = {
   limit?: number;
   offset?: string;
