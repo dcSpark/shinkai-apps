@@ -53,6 +53,7 @@ import ArtifactPreview from '../../components/chat/artifact-preview';
 import { useChatStore } from '../../components/chat/context/chat-context';
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
 import { usePromptSelectionStore } from '../../components/prompt/context/prompt-selection-context';
+import { ScheduledTasksFolder } from '../../components/chat/components/scheduled-tasks-folder';
 import { handleSendNotification } from '../../lib/notifications';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -519,6 +520,8 @@ const ChatSidebar = () => {
         </Tooltip>
       </div>
       <ScrollArea className="px-2 pr-3">
+        {/* Add the ScheduledTasksFolder component here */}
+        <ScheduledTasksFolder />
         <div className="w-full space-y-1 bg-transparent">
           {isPending &&
             Array.from({ length: 5 }).map((_, index) => (
