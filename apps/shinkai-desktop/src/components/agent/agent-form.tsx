@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { PlusIcon } from '@radix-ui/react-icons';
+import * as SelectPrimitive from '@radix-ui/react-select'; // <-- Import SelectPrimitive
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   ShinkaiTool,
@@ -100,8 +101,10 @@ import {
   BoltIcon,
   ChevronDownIcon,
   ChevronRight,
+  HistoryIcon,
   LucideArrowLeft,
   MessageSquare,
+  Plus,
   RefreshCwIcon,
   SearchIcon,
   Trash2,
@@ -421,57 +424,19 @@ function AgentSideChat({
     <ChatProvider>
       <div className="bg-official-gray-950 h-full shadow-lg">
         <div className="flex h-full flex-col">
-          <div className="flex items-center justify-between p-2">
-            <Select
-              onValueChange={(value) => {
-                setSelectedInboxId(value);
-              }}
-              value={selectedInboxId === 'new_chat' ? undefined : selectedInboxId}
-            >
-              <SelectTrigger className="flex h-8 w-[280px] items-center justify-start truncate pt-2 pl-2 text-base font-medium [&_svg]:top-1/2 [&_svg]:-translate-y-1/2">
-                <SelectValue placeholder="Chat History">
-                  {/* Explicitly render selected name, rely on placeholder prop for placeholder */}
-                  {selectedInboxId === 'new_chat'
-                    ? 'Chat History'
-                    : agentInboxes?.find(
-                        (inbox) => inbox.inbox_id === selectedInboxId,
-                      )?.custom_name || selectedInboxId || ''}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent className="w-[var(--radix-select-trigger-width)]">
-                {agentInboxes?.map((inbox) => (
-                  <SelectItem key={inbox.inbox_id} value={inbox.inbox_id}>
-                    {/* Wrap content: flex, full width, min-width for shrink */}
-                    <div className="flex w-full flex-col min-w-0">
-                      {/* Name Span: Smaller font, truncate */}
-                      <span className="truncate text-sm">
-                        {inbox.custom_name || inbox.inbox_id}{/* Fallback display */}
-                      </span>
-                      {/* Date Span: Conditionally render, smaller, lighter, truncate */}
-                      {(() => {
-                        const date = new Date(inbox.datetime_created);
-                        if (!isNaN(date.getTime())) {
-                          return (
-                            <span className="truncate text-xs text-gray-100">
-                              {date.toLocaleDateString(undefined, {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                hour12: false,
-                                minute: '2-digit',
-                              })}
-                            </span>
-                          );
-                        }
-                        return null;
-                      })()}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {/* Header Area */}
+          <div className="flex items-center justify-between p-4">
+            {/* Title */}
+            <h2 className="truncate text-base font-medium">
+              {selectedInboxId === 'new_chat'
+                ? 'New Chat'
+                : agentInboxes?.find((inbox) => inbox.inbox_id === selectedInboxId)
+                    ?.custom_name || selectedInboxId || 'Chat'} 
+            </h2>
+
+            {/* Buttons Group */}
             <div className="flex items-center gap-2">
+              {/* New Chat Button*/}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -480,13 +445,75 @@ function AgentSideChat({
                     size="auto"
                     variant="tertiary"
                   >
-                    <RefreshCwIcon className="size-4" />
+                    <PlusIcon className="size-4" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Clear Chat</p>
+                  <p>New Chat</p>
                 </TooltipContent>
               </Tooltip>
+
+              {/* History Dropdown Trigger Button */}
+              <Select
+                onValueChange={(value) => {
+                  // Prevent selecting 'new_chat' explicitly from history
+                  if (value && value !== 'new_chat') {
+                    setSelectedInboxId(value);
+                  }
+                }}
+                value={selectedInboxId === 'new_chat' ? undefined : selectedInboxId}
+              >
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SelectPrimitive.Trigger asChild>
+                      <Button
+                        className="text-official-gray-300 p-2"
+                        disabled={!agentInboxes || agentInboxes.length === 0}
+                        size="auto"
+                        variant="tertiary"
+                      >
+                        <HistoryIcon className="size-4" />
+                      </Button>
+                    </SelectPrimitive.Trigger>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Chat History</p>
+                  </TooltipContent>
+                </Tooltip>
+
+                {/* Dropdown Content */}
+                <SelectContent className="w-[280px]">
+                  {agentInboxes?.map((inbox) => (
+                    <SelectItem key={inbox.inbox_id} value={inbox.inbox_id}>
+                      <div className="flex w-full flex-col min-w-0">
+                        <span className="truncate text-sm">
+                          {inbox.custom_name || inbox.inbox_id}
+                        </span>
+                        {(() => {
+                          const date = new Date(inbox.datetime_created);
+                          if (!isNaN(date.getTime())) {
+                            return (
+                              <span className="truncate text-xs text-gray-100">
+                                {date.toLocaleDateString(undefined, {
+                                  year: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  hour12: false,
+                                  minute: '2-digit',
+                                })}
+                              </span>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Close Button */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -2871,3 +2898,4 @@ const UploadFileDialog = ({
     </Dialog>
   );
 };
+
