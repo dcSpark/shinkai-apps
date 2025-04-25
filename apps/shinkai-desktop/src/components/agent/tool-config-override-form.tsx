@@ -37,11 +37,20 @@ export const TooConfigOverrideForm = ({
   const tool: ShinkaiTool | undefined = data?.content?.[0] as ShinkaiTool;
   const properties = useMemo(() => {
     const properties = (tool as any)?.configurations?.properties || {};
-    return Object.entries(properties).map(([key, value]: [string, any]) => ({
-      key: key,
-      name: value.title,
-      description: value.description,
-    }));
+    return Object.entries(properties).map(([key, value]: [string, any]) => {
+      const name = key
+        ?.split(/(?=[A-Z])|_/)
+        .map(
+          (word: string) =>
+            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+        )
+        .join(' ');
+      return {
+        key,
+        name,
+        description: value.description,
+      };
+    });
   }, [tool]);
 
   const internalValue = useRef<any>(value);
@@ -56,15 +65,12 @@ export const TooConfigOverrideForm = ({
       (tool as any)?.configurations?.required?.filter((property: string) => {
         return propertiesToShow[property] !== undefined;
       }) || [];
-    if (!requiredProperties.length) {
-      setDynamicSchema(null);
-    } else {
-      setDynamicSchema({
-        ...(tool as any)?.configurations,
-        properties: propertiesToShow,
-        required: requiredProperties,
-      } as unknown as RJSFSchema);
-    }
+    const newSchema = {
+      ...(tool as any)?.configurations,
+      properties: propertiesToShow,
+      required: requiredProperties,
+    } as unknown as RJSFSchema;
+    setDynamicSchema(newSchema);
   }, [tool]);
 
   const [dynamicSchema, setDynamicSchema] = useState<RJSFSchema | null>(null);
@@ -98,7 +104,7 @@ export const TooConfigOverrideForm = ({
   };
 
   const templates = generateTemplates();
-  console.log('schema', dynamicSchema);
+
   return (
     <div className="flex flex-col gap-2">
       {isPending && (
