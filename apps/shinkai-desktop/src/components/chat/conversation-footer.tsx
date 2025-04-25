@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusCircledIcon, StopIcon } from '@radix-ui/react-icons';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { useChatFontSize } from '../../utils/font-size';
 import {
   extractJobIdFromInbox,
   isJobInbox,
@@ -179,6 +180,9 @@ function ConversationChatFooter({
 
   const auth = useAuth((state) => state.auth);
   const { captureAnalyticEvent } = useAnalytics();
+  
+  const { getSecondaryFontClass } = useChatFontSize();
+  const secondaryFontClass = getSecondaryFontClass();
 
   const [toolFormData, setToolFormData] = useState<Record<string, any> | null>(
     null,
@@ -485,7 +489,7 @@ function ConversationChatFooter({
                           size="icon"
                         >
                           <SendIcon className="h-full w-full" />
-                          <span className="sr-only">
+                          <span className={cn("sr-only", secondaryFontClass)}>
                             {t('chat.sendMessage')}
                           </span>
                         </Button>
@@ -497,7 +501,7 @@ function ConversationChatFooter({
                           size="icon"
                         >
                           <SendIcon className="h-full w-full" />
-                          <span className="sr-only">
+                          <span className={cn("sr-only", secondaryFontClass)}>
                             {t('chat.sendMessage')}
                           </span>
                         </Button>

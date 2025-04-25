@@ -66,6 +66,7 @@ const formSchema = z.object({
   optInAnalytics: z.boolean(),
   optInExperimental: z.boolean(),
   language: z.string(),
+  chatFontSize: z.enum(['xs', 'sm', 'base', 'lg']),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -87,6 +88,8 @@ const SettingsPage = () => {
   const setOptInExperimental = useSettings(
     (state) => state.setOptInExperimental,
   );
+  const chatFontSize = useSettings((state) => state.chatFontSize);
+  const setChatFontSize = useSettings((state) => state.setChatFontSize);
 
   const setAuth = useAuth((authStore) => authStore.setAuth);
 
@@ -112,6 +115,7 @@ const SettingsPage = () => {
       optInAnalytics: !!optInAnalytics,
       optInExperimental,
       language: userLanguage,
+      chatFontSize: chatFontSize,
     },
   });
 
@@ -128,6 +132,11 @@ const SettingsPage = () => {
     control: form.control,
     name: 'language',
   });
+  
+  const currentChatFontSize = useWatch({
+    control: form.control,
+    name: 'chatFontSize',
+  });
 
   useEffect(() => {
     (async () => {
@@ -142,6 +151,10 @@ const SettingsPage = () => {
   useEffect(() => {
     setOptInExperimental(currentOptInExperimental);
   }, [currentOptInExperimental, setOptInExperimental]);
+  
+  useEffect(() => {
+    setChatFontSize(currentChatFontSize);
+  }, [currentChatFontSize, setChatFontSize]);
 
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
@@ -552,6 +565,35 @@ const SettingsPage = () => {
                         {t('settings.experimentalFeature.label')}
                       </FormLabel>
                     </div>
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="chatFontSize"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('settings.chatFontSize.label')}</FormLabel>
+                    <Select
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t('settings.chatFontSize.select')}
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="xs">{t('settings.chatFontSize.small')}</SelectItem>
+                        <SelectItem value="sm">{t('settings.chatFontSize.medium')}</SelectItem>
+                        <SelectItem value="base">{t('settings.chatFontSize.large')}</SelectItem>
+                        <SelectItem value="lg">{t('settings.chatFontSize.extraLarge')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

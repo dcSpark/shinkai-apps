@@ -58,6 +58,8 @@ type SettingsStore = {
   setCompatibilityBannerDismissed: (dismissed: boolean) => void;
   isChatSidebarCollapsed: boolean;
   setChatSidebarCollapsed: (isChatSidebarCollapsed: boolean) => void;
+  chatFontSize: 'xs' | 'sm' | 'base' | 'lg';
+  setChatFontSize: (size: 'xs' | 'sm' | 'base' | 'lg') => void;
   resetSettings: () => void;
   dismissedTutorialBanners: TutorialBanner[];
   dismissTutorialBanner: (bannerId: TutorialBanner) => void;
@@ -209,6 +211,11 @@ export const useSettings = create<SettingsStore>()(
         setChatSidebarCollapsed: (isChatSidebarCollapsed) => {
           set({ isChatSidebarCollapsed });
         },
+        
+        chatFontSize: 'xs',
+        setChatFontSize: (size) => {
+          set({ chatFontSize: size });
+        },
         dismissedTutorialBanners: [] as TutorialBanner[],
         dismissTutorialBanner: (bannerId: TutorialBanner) => {
           set((state) => ({
@@ -251,6 +258,7 @@ export const useSettings = create<SettingsStore>()(
             heightRow: 'large',
             compatibilityBannerDismissed: false,
             isChatSidebarCollapsed: false,
+            chatFontSize: 'xs',
 
             termsAndConditionsAccepted: undefined,
           });
