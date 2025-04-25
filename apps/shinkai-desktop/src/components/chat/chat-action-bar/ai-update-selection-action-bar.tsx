@@ -1,7 +1,9 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/lib/mutations/updateAgentInJob/useUpdateAgentInJob';
+import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
+import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
 import {
@@ -373,6 +375,44 @@ export function AiUpdateSelectionActionBarBase({
     },
   });
 
+  const { data: agents } = useGetAgents({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const { data: chatConfig } = useGetChatConfig(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+    },
+    { enabled: !!inboxId },
+  );
+
+  const { mutateAsync: updateChatConfig } = useUpdateChatConfig({
+    onError: (error) => {
+      toast.error('Use tools update failed', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
+
+  const handleUpdateToolUsage = async (enabled?: boolean) => {
+    await updateChatConfig({
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      jobId: extractJobIdFromInbox(inboxId),
+      jobConfig: {
+        stream: chatConfig?.stream,
+        custom_prompt: chatConfig?.custom_prompt ?? '',
+        temperature: chatConfig?.temperature,
+        top_p: chatConfig?.top_p,
+        top_k: chatConfig?.top_k,
+        use_tools: enabled,
+      },
+    });
+  };
+
   return (
     <AIModelSelector
       onValueChange={async (value) => {
@@ -382,7 +422,7 @@ export function AiUpdateSelectionActionBarBase({
           nodeAddress: auth?.node_address ?? '',
           shinkaiIdentity: auth?.shinkai_identity ?? '',
           profile: auth?.profile ?? '',
-          jobId: jobId,
+          jobId,
           newAgentId: value,
           my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
           my_device_identity_sk: auth?.profile_identity_sk ?? '',
@@ -390,6 +430,9 @@ export function AiUpdateSelectionActionBarBase({
           profile_encryption_sk: auth?.profile_encryption_sk ?? '',
           profile_identity_sk: auth?.profile_identity_sk ?? '',
         });
+        const selectedAgent = agents?.find((agent) => agent.agent_id === value);
+        const hasTools = (selectedAgent?.tools ?? [])?.length > 0;
+        await handleUpdateToolUsage(hasTools);
       }}
       value={provider?.agent?.id ?? ''}
     />
