@@ -14,6 +14,7 @@ export type ExecuteToolCodeInput = Token & {
   language: CodeLanguage;
   xShinkaiAppId: string;
   xShinkaiToolId: string;
+  mounts?: string[];
 };
 
 export type ExecuteToolCodeOutput = ExecuteToolCodeResponse;
