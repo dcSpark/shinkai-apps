@@ -34,6 +34,7 @@ export enum FileTypeSupported {
   Error = 'error',
   Unknown = 'unknown',
   Html = 'html',
+  SqliteDatabase = 'sqlite-database',
 }
 
 export type ToolCall = {

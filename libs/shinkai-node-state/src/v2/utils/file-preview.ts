@@ -119,6 +119,15 @@ export const generateFilePreview = async (
       };
     }
 
+    if (file.match(/\.(sqlite)$/i)) {
+      return {
+        ...baseFileInfo,
+        type: FileTypeSupported.SqliteDatabase,
+        mimeType: 'application/octet-stream',
+        url: URL.createObjectURL(data),
+      };
+    }
+
     return baseFileInfo;
   } catch (error) {
     console.error(`Failed to generate preview for ${file}:`, error);
