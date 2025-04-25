@@ -2,11 +2,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusCircledIcon, StopIcon } from '@radix-ui/react-icons';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { useChatFontSize } from '../../utils/font-size';
 import {
   extractJobIdFromInbox,
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
+import { useChatFontSize } from '../../utils/font-size';
 import {
   ChatMessageFormSchema,
   chatMessageFormSchema,
@@ -366,13 +366,7 @@ function ConversationChatFooter({
           return `${key}: ${toolFormData?.[key]}`;
         })
         .join('\n');
-      let content = data.message;
-
-      if (selectedTool) {
-        content = `${selectedTool.name} \n ${formattedToolMessage}`;
-      }
       if (toolRawInput && chatToolView === 'raw') {
-        content = `${toolRawInput}`;
       }
 
       const jobId = extractJobIdFromInbox(inboxId);
