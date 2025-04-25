@@ -57,10 +57,10 @@ import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
-import { useOAuth } from '../../../store/oauth';
-import { oauthUrlMatcherFromErrorMessage } from '../../../utils/oauth';
-import { useChatFontSize } from '../../../utils/font-size';
 import { useChatStore } from '../context/chat-context';
+import { useOAuth } from '../../../store/oauth';
+import { useChatFontSize } from '../../../utils/font-size';
+import { oauthUrlMatcherFromErrorMessage } from '../../../utils/oauth';
 import { PythonCodeRunner } from '../python-code-runner/python-code-runner';
 
 export const extractErrorPropertyOrContent = (
