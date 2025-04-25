@@ -1332,3 +1332,17 @@ export const setPreferences = async (
   );
   return response.data;
 };
+
+export const getPreferences = async (
+  nodeAddress: string,
+  bearerToken: string,
+): Promise<{ default_llm_provider?: string, max_iterations?: number }> => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/get_preferences'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
+};

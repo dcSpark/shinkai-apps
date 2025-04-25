@@ -6,9 +6,11 @@ import {
 } from '@shinkai_network/shinkai-i18n';
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
+import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useSetMaxChatIterations } from '@shinkai_network/shinkai-node-state/v2/mutations/setMaxChatIterations/useSetMaxChatIterations';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
+import { useGetPreferences } from '@shinkai_network/shinkai-node-state/v2/queries/getPreferences/useGetPreferences';
 import { useGetShinkaiFreeModelQuota } from '@shinkai_network/shinkai-node-state/v2/queries/getShinkaiFreeModelQuota/useGetShinkaiFreeModelQuota';
 import {
   Button,
@@ -37,6 +39,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { useQueryClient } from '@tanstack/react-query';
 import { getVersion } from '@tauri-apps/api/app';
 import { formatDuration, intervalToDuration } from 'date-fns';
 import { motion } from 'framer-motion';
@@ -76,6 +79,7 @@ type FormSchemaType = z.infer<typeof formSchema>;
 const MotionButton = motion(Button);
 
 const SettingsPage = () => {
+  const queryClient = useQueryClient();
   const { t } = useTranslation();
   const auth = useAuth((authStore) => authStore.auth);
   const isLocalShinkaiNodeInUse = useShinkaiNodeManager(
@@ -100,31 +104,26 @@ const SettingsPage = () => {
     (settingsStore) => settingsStore.setDefaultAgentId,
   );
 
-  const maxChatIterations = useSettings(
-    (settingsStore) => settingsStore.maxChatIterations,
-  );
-  const setMaxChatIterations = useSettings(
-    (settingsStore) => settingsStore.setMaxChatIterations,
-  );
-
   const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth({
     nodeAddress: auth?.node_address ?? '',
   });
 
   const { mutateAsync: setMaxChatIterationsMutation } = useSetMaxChatIterations({
     onSuccess: (_data, variables) => {
-      setMaxChatIterations(variables.maxIterations);
+      queryClient.invalidateQueries({ queryKey: [FunctionKeyV2.GET_PREFERENCES] });
       toast.success(t('settings.maxChatIterations.success'));
     },
     onError: (error) => {
       toast.error(t('settings.maxChatIterations.error'), {
         description: error?.message,
       });
-      // Revert form value to the last known good value from the store
-      form.setValue('maxChatIterations', maxChatIterations);
+      form.setValue('maxChatIterations', preferences?.max_iterations ?? 10);
     },
   });
-
+  const { data: preferences } = useGetPreferences({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
   const [appVersion, setAppVersion] = useState('');
 
   const form = useForm<FormSchemaType>({
@@ -137,7 +136,6 @@ const SettingsPage = () => {
       optInAnalytics: !!optInAnalytics,
       optInExperimental,
       language: userLanguage,
-      maxChatIterations: maxChatIterations,
     },
   });
 
@@ -154,11 +152,13 @@ const SettingsPage = () => {
     control: form.control,
     name: 'language',
   });
+
   const currentMaxChatIterations = useWatch({
     control: form.control,
     name: 'maxChatIterations',
   });
-  const debouncedMaxChatIterations = useDebounce(currentMaxChatIterations.toString(), 1000); // Debounce for 1 second
+
+  const debouncedMaxChatIterations = useDebounce(currentMaxChatIterations?.toString() ?? '', 1000);
 
   useEffect(() => {
     (async () => {
@@ -171,25 +171,34 @@ const SettingsPage = () => {
   }, [currentLanguage, setUserLanguage]);
 
   useEffect(() => {
-    // Update the setting in the backend when the debounced value changes
+    setOptInExperimental(currentOptInExperimental);
+  }, [currentOptInExperimental, setOptInExperimental]);
+
+  useEffect(() => {
+    if (preferences) {
+      form.reset({
+        ...form.getValues(),
+        maxChatIterations: preferences.max_iterations ?? 10,
+      });
+    }
+  }, [preferences, form]);
+
+  useEffect(() => {
+    if (!preferences) return;
+    const currentFormValue = form.getValues('maxChatIterations');
+    const currentBackendValue = preferences.max_iterations ?? 10;
+    if (currentFormValue === currentBackendValue) return; // Avoid unnecessary update at startup
     const newMaxIterations = parseInt(debouncedMaxChatIterations, 10);
-    if (
-      !isNaN(newMaxIterations) &&
-      newMaxIterations !== maxChatIterations && // Only call if the value actually changed
-      auth?.node_address &&
-      auth?.api_v2_key
-    ) {
+    if (!debouncedMaxChatIterations || isNaN(newMaxIterations)) return;
+
+    if (newMaxIterations !== currentBackendValue) {
       setMaxChatIterationsMutation({
-        nodeAddress: auth.node_address,
-        token: auth.api_v2_key,
+        nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
         maxIterations: newMaxIterations,
       });
     }
-  }, [debouncedMaxChatIterations, maxChatIterations, setMaxChatIterationsMutation, auth]);
-
-  useEffect(() => {
-    setOptInExperimental(currentOptInExperimental);
-  }, [currentOptInExperimental, setOptInExperimental]);
+  }, [debouncedMaxChatIterations, preferences, auth, setMaxChatIterationsMutation, form]);
 
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
@@ -266,6 +275,7 @@ const SettingsPage = () => {
   const isIdentityLocalhost = isShinkaiIdentityLocalhost(
     auth?.shinkai_identity ?? '',
   );
+
   return (
     <SimpleLayout classname="max-w-xl" title={t('settings.layout.general')}>
       <div className="flex items-center justify-between mb-6">
@@ -604,7 +614,7 @@ const SettingsPage = () => {
                     <FormLabel>{t('settings.maxChatIterations.label')}</FormLabel>
                     <FormControl>
                       <TextField
-                        field={field}
+                        field={{ ...field, value: field.value ?? '' }}
                         helperMessage={t('settings.maxChatIterations.description')}
                         label={t('settings.maxChatIterations.label')}
                         max={100}
