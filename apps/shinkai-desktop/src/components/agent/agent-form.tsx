@@ -352,55 +352,6 @@ function AgentSideChat({
     token: auth?.api_v2_key ?? '',
   });
 
-  // State for the currently selected value in the dropdown
-  const [selectedInboxId, setSelectedInboxId] = useState<string>('new_chat');
-
-  // Effect to sync selectedInboxId with chatInboxId
-  useEffect(() => {
-    if (selectedInboxId === 'new_chat') {
-      setChatInboxId(null);
-    } else {
-      setChatInboxId(selectedInboxId);
-    }
-  }, [selectedInboxId]);
-
-  // Ref to track the previous agentInboxes value
-  const prevAgentInboxesRef = useRef(agentInboxes);
-
-  // Reset selectedInboxId only if the list genuinely changes and the selection is gone
-  useEffect(() => {
-    const hasInboxListChanged = prevAgentInboxesRef.current !== agentInboxes;
-
-    if (
-      hasInboxListChanged && // Only run if the list object reference changed
-      agentInboxes &&
-      selectedInboxId !== 'new_chat' &&
-      !agentInboxes.find((inbox) => inbox.inbox_id === selectedInboxId)
-    ) {
-      setSelectedInboxId('new_chat'); // Reset to new chat state
-    }
-
-    // Update the ref for the next render
-    prevAgentInboxesRef.current = agentInboxes;
-  }, [agentInboxes, selectedInboxId]);
-
-  // Effect to sync the dropdown selection AFTER the inbox list is updated
-  useEffect(() => {
-    if (chatInboxId && agentInboxes?.length) {
-      const activeChatExistsInList = agentInboxes.some(
-        (inbox) => inbox.inbox_id === chatInboxId,
-      );
-
-      if (activeChatExistsInList) setSelectedInboxId(chatInboxId);
-      else {
-        console.warn(
-          `Chat inbox ${chatInboxId} not found in agent inboxes`,
-          agentInboxes,
-        );
-      }
-    }
-  }, [agentInboxes, chatInboxId]); // Depend on both the list and the active chat ID
-
   return (
     <ChatProvider>
       <div className="bg-official-gray-950 h-full shadow-lg">
@@ -409,10 +360,10 @@ function AgentSideChat({
           <div className="flex items-center justify-between p-4">
             {/* Title */}
             <h2 className="truncate text-base font-medium">
-              {selectedInboxId === 'new_chat'
+              {chatInboxId === null
                 ? 'New Chat'
-                : agentInboxes?.find((inbox) => inbox.inbox_id === selectedInboxId)
-                    ?.custom_name || selectedInboxId || 'Chat'} 
+                : agentInboxes?.find((inbox) => inbox.inbox_id === chatInboxId)
+                    ?.custom_name || chatInboxId || 'New Chat'} 
             </h2>
 
             {/* Buttons Group */}
@@ -422,7 +373,7 @@ function AgentSideChat({
                 <TooltipTrigger asChild>
                   <Button
                     className="text-official-gray-300 p-2"
-                    onClick={() => setSelectedInboxId('new_chat')}
+                    onClick={() => setChatInboxId(null)}
                     size="auto"
                     variant="tertiary"
                   >
@@ -437,12 +388,9 @@ function AgentSideChat({
               {/* History Dropdown Trigger Button */}
               <Select
                 onValueChange={(value) => {
-                  // Prevent selecting 'new_chat' explicitly from history
-                  if (value && value !== 'new_chat') {
-                    setSelectedInboxId(value);
-                  }
+                  if (value) setChatInboxId(value);
                 }}
-                value={selectedInboxId === 'new_chat' ? undefined : selectedInboxId}
+                value={chatInboxId === null ? undefined : chatInboxId}
               >
                 <Tooltip>
                   <TooltipTrigger asChild>
