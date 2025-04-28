@@ -61,6 +61,22 @@ export const SetJobScopeDrawer = () => {
   const auth = useAuth((state) => state.auth);
   const [nodes, setNodes] = useState<TreeNode[]>([]);
 
+  // Helper function to find a TreeNode by its key (path) in the tree
+  const findNodeByKey = (key: string, searchNodes: TreeNode[]): TreeNode | null => {
+    for (const node of searchNodes) {
+      if (String(node.key) === key) {
+        return node;
+      }
+      if (node.children) {
+        const found = findNodeByKey(key, node.children);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
+  };
+
   const { data: fileInfoArray, isSuccess: isVRFilesSuccess } =
     useGetListDirectoryContents({
       nodeAddress: auth?.node_address ?? '',
@@ -140,14 +156,58 @@ export const SetJobScopeDrawer = () => {
               onSelectedKeysChange(e.value as TreeCheckboxSelectionKeys);
             }}
             onUnselect={(e) => {
+              const nodeKey = String(e.node.key);
+
               if (e.node.icon === 'icon-folder') {
-                selectedFolderKeysRef.delete(String(e.node.key));
-                return;
+                // --- Folder Deselected --- 
+                selectedFolderKeysRef.delete(nodeKey);
+
+                // Robustly remove all descendant keys (files and folders) from both refs
+                const clearDescendants = (node: TreeNode) => {
+                  node.children?.forEach(child => {
+                    const childKey = String(child.key);
+                    selectedFileKeysRef.delete(childKey); // Remove if it exists as a file key
+                    selectedFolderKeysRef.delete(childKey); // Remove if it exists as a folder key
+                    if (child.children && child.children.length > 0) {
+                      clearDescendants(child);
+                    }
+                  });
+                };
+                clearDescendants(e.node);
+
+              } else {
+                // --- File Deselected --- 
+                const lastSlashIndex = nodeKey.lastIndexOf('/');
+                const parentFolderPath = lastSlashIndex > 0 ? nodeKey.substring(0, lastSlashIndex) : '/';
+                const isParentFolderSelected = selectedFolderKeysRef.has(parentFolderPath);
+
+                if (isParentFolderSelected) {
+                  // Parent folder *was* selected. Transition to selecting individual siblings.
+                  
+                  // 1. Remove the parent folder from selection.
+                  selectedFolderKeysRef.delete(parentFolderPath);
+
+                  // 2. Find the parent node to access its children.
+                  const parentNode = findNodeByKey(parentFolderPath, nodes);
+
+                  // 3. Add all *other* sibling *files* to the individual file selection.
+                  (parentNode?.children ?? [])
+                    .filter((childNode: TreeNode) => String(childNode.key) !== nodeKey && childNode.data?.path) // Only other files
+                    .forEach((childNode: TreeNode) => {
+                       if (childNode.icon !== 'icon-folder') { // Ensure path exists and is a file
+                         selectedFileKeysRef.set(String(childNode.key), childNode.data.path);
+                       } else {
+                        selectedFolderKeysRef.set(String(childNode.key), childNode.data.path);
+                       }
+                    });
+                } else {
+                  // Parent folder was NOT selected, so this file was individually selected.
+                  selectedFileKeysRef.delete(nodeKey);
+                }
               }
-              selectedFileKeysRef.delete(String(e.node.key));
             }}
             propagateSelectionDown={true}
-            propagateSelectionUp={false}
+            propagateSelectionUp={true}
             pt={treeOptions}
             selectionKeys={selectedKeys}
             selectionMode="checkbox"
