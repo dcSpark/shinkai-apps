@@ -579,6 +579,34 @@ export const uploadAssetTool = async (
   return response.data as AddToolRequestResponse;
 };
 
+export const uploadPlaygroundToolFile = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: AddToolRequestRequest,
+  xShinkaiAppId: string,
+  xShinkaiToolId: string,
+) => {
+  const fileData = await payload.file.arrayBuffer();
+
+  const formData = new FormData();
+  formData.append('file_name', payload.filename);
+  formData.append('file', new Blob([fileData]));
+
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/playground_file'),
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+        'x-shinkai-app-id': xShinkaiAppId,
+        'x-shinkai-tool-id': xShinkaiToolId,
+      },
+      responseType: 'json',
+    },
+  );
+  return response.data as AddToolRequestResponse;
+};
+
 export const uploadAssetsToTool = async (
   nodeAddress: string,
   bearerToken: string,
@@ -599,6 +627,30 @@ export const uploadAssetsToTool = async (
     );
   }
   return { success: true };
+};
+
+export const uploadPlaygroundToolFiles = async (
+  nodeAddress: string,
+  bearerToken: string,
+  xShinkaiAppId: string,
+  xShinkaiToolId: string,
+  files: File[],
+) => {
+  const fileContent: Record<string, string> = {};
+  for (const file of files) {
+    const response = await uploadPlaygroundToolFile(
+      nodeAddress,
+      bearerToken,
+      {
+        filename: encodeURIComponent(file.name),
+        file,
+      },
+      xShinkaiAppId,
+      xShinkaiToolId,
+    );
+    fileContent[file.name] = response.file_path;
+  }
+  return { success: true, fileContent };
 };
 
 export const removeToolAsset = async (

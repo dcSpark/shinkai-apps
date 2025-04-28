@@ -1,15 +1,21 @@
 import { FormProps } from '@rjsf/core';
+import { FieldProps } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
+import { useUploadPlaygroundToolFiles } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadPlaygroundToolFiles/useUploadPlaygroundToolFiles';
 import { useGetShinkaiFileProtocol } from '@shinkai_network/shinkai-node-state/v2/queries/getShinkaiFileProtocol/useGetShinkaiFileProtocol';
 import {
   Button,
   CommandShortcut,
+  FileUploader,
   JsonForm,
   Skeleton,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import equal from 'fast-deep-equal';
@@ -23,6 +29,7 @@ import { usePlaygroundStore } from '../context/playground-context';
 import { ToolErrorFallback } from '../error-boundary';
 import ToolCodeEditor from '../tool-code-editor';
 import { tabTriggerClassnames } from './tool-playground';
+
 function ExecutionPanelBase({
   isExecutionToolCodeSuccess,
   isExecutionToolCodeError,
@@ -242,6 +249,23 @@ function ExecutionPanelBase({
                       },
                       params: {
                         'ui:title': 'Inputs',
+                        ...(toolMetadata?.parameters?.properties
+                          ? Object.keys(
+                              toolMetadata.parameters.properties,
+                            ).reduce<
+                              Record<
+                                string,
+                                { 'ui:widget': typeof FileInputField }
+                              >
+                            >((acc, key) => {
+                              if (key.toLowerCase().includes('file_path')) {
+                                acc[key] = {
+                                  'ui:widget': FileInputField,
+                                };
+                              }
+                              return acc;
+                            }, {})
+                          : {}),
                       },
                     }}
                     validator={validator}
@@ -505,3 +529,56 @@ const ToolLogs = memo(ToolLogsBase, (prevProps, nextProps) => {
     prevProps.mountTimestamp === nextProps.mountTimestamp
   );
 });
+
+export const FileInputField = ({ value, onChange }: FieldProps) => {
+  const auth = useAuth((state) => state.auth);
+
+  const xShinkaiAppId = usePlaygroundStore((state) => state.xShinkaiAppId);
+  const xShinkaiToolId = usePlaygroundStore((state) => state.xShinkaiToolId);
+
+  const { mutateAsync: uploadPlaygroundToolFiles } =
+    useUploadPlaygroundToolFiles();
+
+  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
+
+  const handleFileChange = async (files: File[]) => {
+    if (files.length === 0) {
+      onChange('');
+      setAcceptedFiles([]);
+      return;
+    }
+
+    const { fileContent } = await uploadPlaygroundToolFiles({
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      files,
+      xShinkaiAppId,
+      xShinkaiToolId,
+    });
+    setAcceptedFiles(files);
+    onChange(fileContent[files[0].name]);
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <FileUploader
+        maxFiles={1}
+        onChange={handleFileChange}
+        value={acceptedFiles}
+      />
+      {value && (
+        <div className="inline-flex items-center gap-2">
+          <span className="text-official-gray-400">File Path:</span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-white">{value?.split('/')?.at(-1)}</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{value}</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      )}
+    </div>
+  );
+};

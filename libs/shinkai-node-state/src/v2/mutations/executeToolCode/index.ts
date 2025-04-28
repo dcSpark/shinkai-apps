@@ -17,21 +17,26 @@ export const executeToolCode = async ({
   configs,
   xShinkaiAppId,
   xShinkaiToolId,
+  mounts,
 }: ExecuteToolCodeInput) => {
   const toolTypeLanguageMap = {
     [CodeLanguage.Python]: DynamicToolType.PythonDynamic,
     [CodeLanguage.Typescript]: DynamicToolType.DenoDynamic,
-    'Agent': DynamicToolType.AgentDynamic,
+    Agent: DynamicToolType.AgentDynamic,
   };
 
-  return await executeToolCodeApi(nodeAddress, token, {
-    tool_type: toolTypeLanguageMap[language],
-    code,
-    parameters: params ?? {},
-    llm_provider: llmProviderId,
-    tools,
-    extra_config: configs,
-  }, 
+  return await executeToolCodeApi(
+    nodeAddress,
+    token,
+    {
+      tool_type: toolTypeLanguageMap[language],
+      code,
+      parameters: params ?? {},
+      llm_provider: llmProviderId,
+      tools,
+      extra_config: configs,
+      mounts,
+    },
     xShinkaiAppId,
     xShinkaiToolId,
   );

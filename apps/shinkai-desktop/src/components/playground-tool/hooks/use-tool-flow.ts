@@ -663,6 +663,10 @@ export const useToolFlow = ({
       mountTimestamp.current = new Date();
       const { configs, params } = data.formData;
 
+      const selectedFilePathsInParams = Object.keys(params || {}).filter(
+        (key) => key.toLowerCase().includes('file_path'),
+      );
+
       const currentCode = codeEditorRef?.current?.value ?? toolCode ?? '';
 
       await executeToolCodeQuery.mutateAsync({
@@ -676,6 +680,9 @@ export const useToolFlow = ({
         configs,
         xShinkaiAppId,
         xShinkaiToolId,
+        ...(selectedFilePathsInParams.length > 0 && {
+          mounts: selectedFilePathsInParams.map((key) => params[key]),
+        }),
       });
     },
     [executeToolCodeQuery, form, auth, toolCode, xShinkaiAppId, xShinkaiToolId],
