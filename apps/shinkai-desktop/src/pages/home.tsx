@@ -192,9 +192,10 @@ const EmptyMessage = () => {
   const location = useLocation();
 
   const locationState = location.state as ChatConversationLocationState;
-  const isAgentInbox = locationState?.agentName;
 
   const debounceMessage = useDebounce(currentMessage, 500);
+
+  const selectedAgent = agents?.find((agent) => agent.agent_id === currentAI);
 
   const { data: searchToolList, isSuccess: isSearchToolListSuccess } =
     useGetSearchTools(
@@ -208,7 +209,7 @@ const EmptyMessage = () => {
           !!debounceMessage &&
           !!currentMessage &&
           !selectedTool &&
-          !isAgentInbox,
+          !selectedAgent,
         select: (data) => data.slice(0, 3).filter((item) => item.enabled),
       },
     );
@@ -440,8 +441,6 @@ const EmptyMessage = () => {
     });
   };
 
-  const selectedAgent = agents?.find((agent) => agent.agent_id === currentAI);
-
   const mainLayoutContainerRef = useViewportStore(
     (state) => state.mainLayoutContainerRef,
   );
@@ -559,7 +558,7 @@ const EmptyMessage = () => {
                           />
                         )}
                         {!selectedTool && <PromptSelectionActionBar />}
-                        {!selectedTool && !currentAI && (
+                        {!selectedTool && !selectedAgent && (
                           <ToolsSwitchActionBar
                             checked={chatConfigForm.watch('useTools')}
                             onClick={() => {
@@ -746,6 +745,7 @@ const EmptyMessage = () => {
           >
             {!!debounceMessage &&
               !selectedTool &&
+              !selectedAgent &&
               isSearchToolListSuccess &&
               searchToolList?.length > 0 && (
                 <div className="flex items-center gap-2 px-2">
@@ -806,7 +806,7 @@ const EmptyMessage = () => {
                   </Link>
                 </div>
               )}
-            {(!debounceMessage || selectedTool) && (
+            {(!debounceMessage || selectedTool || selectedAgent) && (
               <div className="flex w-full items-center justify-between gap-2 px-2">
                 <span className="text-official-gray-400 text-xs font-light">
                   <span className="font-medium">Shift + Enter</span> for a new
