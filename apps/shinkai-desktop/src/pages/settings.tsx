@@ -66,6 +66,7 @@ const formSchema = z.object({
   optInAnalytics: z.boolean(),
   optInExperimental: z.boolean(),
   language: z.string(),
+  chatFontSize: z.enum(['xs', 'sm', 'base', 'lg']),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;

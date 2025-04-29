@@ -48,6 +48,7 @@ import AIModelInstallation from '../pages/ai-model-installation';
 import AIsPage from '../pages/ais';
 import AnalyticsPage from '../pages/analytics';
 import AnalyticsSettingsPage from '../pages/analytics-settings';
+import AppearancePage from '../pages/appearance';
 import ChatConversation from '../pages/chat/chat-conversation';
 import ChatLayout from '../pages/chat/layout';
 import { ConnectMethodQrCodePage } from '../pages/connect-method-qr-code';
@@ -464,6 +465,7 @@ const AppRoutes = () => {
               element={<AnalyticsSettingsPage />}
               path={'analytics-settings'}
             />
+            <Route element={<AppearancePage />} path={'appearance'} />
             <Route element={<PromptLibrary />} path={'prompt-library'} />
             <Route element={<GalxeValidation />} path={'galxe-validation'} />
             <Route

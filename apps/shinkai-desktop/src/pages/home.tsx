@@ -26,6 +26,7 @@ import {
   Popover,
   PopoverAnchor,
   PopoverContent,
+  PopoverTrigger,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -45,7 +46,9 @@ import { motion } from 'framer-motion';
 import {
   ArrowRight,
   ArrowUpRight,
+  ChevronDownIcon,
   EllipsisIcon,
+  InfoIcon,
   MessageSquare,
   Plus,
 } from 'lucide-react';
@@ -189,9 +192,10 @@ const EmptyMessage = () => {
   const location = useLocation();
 
   const locationState = location.state as ChatConversationLocationState;
-  const isAgentInbox = locationState?.agentName;
 
   const debounceMessage = useDebounce(currentMessage, 500);
+
+  const selectedAgent = agents?.find((agent) => agent.agent_id === currentAI);
 
   const { data: searchToolList, isSuccess: isSearchToolListSuccess } =
     useGetSearchTools(
@@ -205,7 +209,7 @@ const EmptyMessage = () => {
           !!debounceMessage &&
           !!currentMessage &&
           !selectedTool &&
-          !isAgentInbox,
+          !selectedAgent,
         select: (data) => data.slice(0, 3).filter((item) => item.enabled),
       },
     );
@@ -437,8 +441,6 @@ const EmptyMessage = () => {
     });
   };
 
-  const selectedAgent = agents?.find((agent) => agent.agent_id === currentAI);
-
   const mainLayoutContainerRef = useViewportStore(
     (state) => state.mainLayoutContainerRef,
   );
@@ -460,7 +462,29 @@ const EmptyMessage = () => {
                 {formatText(selectedAgent.name)}
               </p>
               <p className="text-official-gray-400 text-sm">
-                {selectedAgent.ui_description}
+                {selectedAgent.ui_description ?? 'No description'}
+                {selectedAgent.tools.length > 0 && (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <span className="text-official-gray-400 inline-flex cursor-pointer items-center gap-1 capitalize hover:text-white">
+                        - {selectedAgent.tools.length} Active{' '}
+                        {selectedAgent.tools.length === 1 ? 'tool' : 'tools'}
+                        <ChevronDownIcon className="ml-1 size-4" />
+                      </span>
+                    </PopoverTrigger>
+                    <PopoverContent className="text-xs">
+                      <p className="text-official-gray-400 mb-2 font-medium">
+                        Active Tools
+                      </p>
+                      {selectedAgent.tools.map((tool) => (
+                        <div className="flex items-center gap-2" key={tool}>
+                          <ToolsIcon className="size-4" />
+                          <p>{formatText(tool?.split(':').at(-1) ?? '')}</p>
+                        </div>
+                      ))}
+                    </PopoverContent>
+                  </Popover>
+                )}
               </p>
             </div>
           ) : (
@@ -534,7 +558,7 @@ const EmptyMessage = () => {
                           />
                         )}
                         {!selectedTool && <PromptSelectionActionBar />}
-                        {!selectedTool && (
+                        {!selectedTool && !selectedAgent && (
                           <ToolsSwitchActionBar
                             checked={chatConfigForm.watch('useTools')}
                             onClick={() => {
@@ -568,7 +592,9 @@ const EmptyMessage = () => {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <CreateChatConfigActionBar form={chatConfigForm} />
+                        {!selectedAgent && (
+                          <CreateChatConfigActionBar form={chatConfigForm} />
+                        )}
 
                         <Button
                           className={cn('size-[36px] p-2')}
@@ -719,6 +745,7 @@ const EmptyMessage = () => {
           >
             {!!debounceMessage &&
               !selectedTool &&
+              !selectedAgent &&
               isSearchToolListSuccess &&
               searchToolList?.length > 0 && (
                 <div className="flex items-center gap-2 px-2">
@@ -779,7 +806,7 @@ const EmptyMessage = () => {
                   </Link>
                 </div>
               )}
-            {(!debounceMessage || selectedTool) && (
+            {(!debounceMessage || selectedTool || selectedAgent) && (
               <div className="flex w-full items-center justify-between gap-2 px-2">
                 <span className="text-official-gray-400 text-xs font-light">
                   <span className="font-medium">Shift + Enter</span> for a new

@@ -58,6 +58,7 @@ import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
 import { useOAuth } from '../../../store/oauth';
+import { useSettings } from '../../../store/settings';
 import { oauthUrlMatcherFromErrorMessage } from '../../../utils/oauth';
 import { useChatStore } from '../context/chat-context';
 import { PythonCodeRunner } from '../python-code-runner/python-code-runner';
@@ -152,7 +153,7 @@ const ArtifactCard = ({
         )}
       </div>
       <div className="flex flex-1 flex-col gap-0.5">
-        <p className="!mb-0 line-clamp-1 text-sm font-medium text-gray-50">
+        <p className="text-em-sm text-official-gray-50 !mb-0 line-clamp-1 font-medium">
           {title}
         </p>
         <p className="text-gray-80 !mb-0 text-xs">
@@ -184,6 +185,10 @@ export const MessageBase = ({
 
   const selectedArtifact = useChatStore((state) => state.selectedArtifact);
   const setArtifact = useChatStore((state) => state.setSelectedArtifact);
+
+  const getChatFontSizeInPts = useSettings(
+    (state) => state.getChatFontSizeInPts,
+  );
 
   const [editing, setEditing] = useState(false);
 
@@ -244,6 +249,7 @@ export const MessageBase = ({
       }-${message.messageId}`}
       id={message.messageId}
       initial="rest"
+      style={{ fontSize: `${getChatFontSizeInPts()}px` }}
       whileHover="hover"
     >
       <div
@@ -262,8 +268,8 @@ export const MessageBase = ({
           ) : (
             <AvatarFallback
               className={cn(
-                'h-8 w-8 border bg-[#313336] text-xs text-gray-100',
-                minimalistMode && 'h-5 w-5 text-xs',
+                'text-em-xs text-official-gray-300 h-8 w-8 border bg-[#313336]',
+                minimalistMode && 'text-em-xs h-5 w-5',
               )}
             >
               U
@@ -272,7 +278,7 @@ export const MessageBase = ({
         </Avatar>
         <div
           className={cn(
-            'flex flex-col overflow-hidden bg-transparent text-sm text-white',
+            'text-em-base flex flex-col overflow-hidden bg-transparent text-white',
             editing && 'w-full py-1',
           )}
         >
@@ -290,8 +296,8 @@ export const MessageBase = ({
                       <ChatInputArea
                         bottomAddons={
                           <div className="flex w-full items-center justify-between px-1">
-                            <div className="flex items-center gap-1 text-xs text-gray-100">
-                              <InfoIcon className="h-3 w-3 text-gray-100" />
+                            <div className="text-em-xs text-official-gray-400 flex items-center gap-1">
+                              <InfoIcon className="text-official-gray-400 h-3 w-3" />
                               <span>{t('chat.editMessage.warning')}</span>
                             </div>
                             <div className="flex items-center gap-2">
@@ -329,7 +335,7 @@ export const MessageBase = ({
             <Fragment>
               <div
                 className={cn(
-                  'relative mt-1 flex flex-col rounded-lg px-3.5 pt-3 text-sm text-white',
+                  'relative mt-1 flex flex-col rounded-lg px-3.5 pt-3 text-white',
                   message.role === 'user'
                     ? 'bg-official-gray-850 rounded-tr-none'
                     : 'bg-official-gray-780 rounded-bl-none border-none',
@@ -351,7 +357,7 @@ export const MessageBase = ({
                       {message.toolCalls.map((tool, index) => {
                         return (
                           <AccordionItem
-                            className="bg-app-gradient overflow-hidden rounded-lg"
+                            className="bg-official-gray-900 overflow-hidden rounded-lg"
                             disabled={tool.status !== ToolStatusType.Complete}
                             key={`${tool.name}-${index}`}
                             value={`${tool.name}-${index}`}
@@ -359,7 +365,7 @@ export const MessageBase = ({
                             <AccordionTrigger
                               className={cn(
                                 'min-w-[10rem] gap-3 py-0 pr-2 no-underline hover:no-underline',
-                                'transition-colors hover:bg-gray-500 [&[data-state=open]]:bg-gray-500',
+                                'hover:bg-official-gray-950 [&[data-state=open]]:bg-official-gray-950 transition-colors',
                                 tool.status !== ToolStatusType.Complete &&
                                   '[&>svg]:hidden',
                               )}
@@ -371,12 +377,12 @@ export const MessageBase = ({
                                 toolRouterKey={tool.toolRouterKey}
                               />
                             </AccordionTrigger>
-                            <AccordionContent className="bg-gray-450 flex flex-col gap-1 rounded-b-lg px-3 pb-3 pt-2 text-xs">
+                            <AccordionContent className="bg-official-gray-950 flex flex-col gap-1 rounded-b-lg px-3 pb-3 pt-2 text-xs">
                               {Object.keys(tool.args).length > 0 && (
                                 <span className="font-medium text-white">
                                   {tool.name}(
                                   {Object.keys(tool.args).length > 0 && (
-                                    <span className="text-gray-80 font-mono font-medium">
+                                    <span className="text-official-gray-400 font-mono font-medium">
                                       <PrettyJsonPrint json={tool.args} />
                                     </span>
                                   )}
@@ -386,7 +392,7 @@ export const MessageBase = ({
                               {tool.result && (
                                 <div>
                                   <span>Response:</span>
-                                  <span className="text-gray-80 break-all font-mono">
+                                  <span className="text-official-gray-400 break-all font-mono">
                                     <PrettyJsonPrint json={tool.result} />
                                   </span>
                                 </div>
@@ -480,14 +486,14 @@ export const MessageBase = ({
                   )}
 
                 {oauthUrl && (
-                  <div className="mt-4 flex flex-col items-start rounded-lg bg-gray-900 p-4 shadow-md">
-                    <p className="mb-2 text-lg font-semibold text-white">
+                  <div className="bg-official-gray-900 mt-4 flex flex-col items-start rounded-lg p-4">
+                    <p className="text-em-lg mb-2 font-semibold text-white">
                       <div className="flex items-center">
                         <Unplug className="mr-2 h-5 w-5" />
                         {t('oauth.connectionRequired')}
                       </div>
                     </p>
-                    <p className="mb-4 text-sm text-white">
+                    <p className="text-em-sm mb-4 text-white">
                       {t('oauth.connectionRequiredDescription', {
                         provider: new URL(oauthUrl).hostname,
                       })}
@@ -506,13 +512,13 @@ export const MessageBase = ({
 
                 {configDeepLinkToolRouterKey && (
                   <div className="mt-4 flex flex-col items-start rounded-lg bg-gray-950 p-6 shadow-lg">
-                    <p className="mb-3 text-lg font-semibold text-white">
+                    <p className="text-em-base mb-3 font-semibold text-white">
                       <div className="flex items-center">
                         <ToolsIcon className="mr-3 h-6 w-6 text-blue-400" />
                         {t('tools.setupRequired')}
                       </div>
                     </p>
-                    <p className="mb-5 text-sm leading-relaxed text-white">
+                    <p className="text-em-sm mb-5 leading-relaxed text-white">
                       {t('tools.setupDescription')}
                     </p>
                     <Link to={`/tools/${configDeepLinkToolRouterKey}`}>
@@ -530,14 +536,7 @@ export const MessageBase = ({
                 {message.role === 'user' && !!message.attachments.length && (
                   <FileList className="mt-2" files={message.attachments} />
                 )}
-                {message.role === 'user' && message.workflowName && (
-                  <div className="mt-2 flex items-center gap-1.5 border-t pt-1.5">
-                    <span className="text-gray-80 text-xs">Workflow:</span>
-                    <span className="text-gray-80 text-xs">
-                      {message.workflowName}
-                    </span>
-                  </div>
-                )}
+
                 {message.role === 'assistant' &&
                   message.toolCalls?.some((tool) => !!tool.generatedFiles) && (
                     <GeneratedFiles toolCalls={message.toolCalls} />
@@ -580,7 +579,7 @@ export const MessageBase = ({
                         <TooltipTrigger asChild>
                           <button
                             className={cn(
-                              'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                              'text-official-gray-400 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                             )}
                             onClick={handleRetryMessage}
                           >
@@ -617,9 +616,7 @@ export const MessageBase = ({
                     </Tooltip>
                   </div>
                   <div
-                    className={cn(
-                      'flex items-center gap-1.5 text-xs text-gray-100',
-                    )}
+                    className={cn('flex items-center gap-1.5 text-gray-100')}
                   >
                     <span>
                       {format(new Date(message?.createdAt ?? ''), 'p')}
@@ -679,10 +676,10 @@ export function ToolCard({
       return <ToolsIcon className="text-brand size-full" />;
     }
     if (status === ToolStatusType.Incomplete) {
-      return <XCircle className="text-gray-80 size-full" />;
+      return <XCircle className="text-official-gray-400 size-full" />;
     }
     if (status === ToolStatusType.RequiresAction) {
-      return <InfoIcon className="text-gray-80 size-full" />;
+      return <InfoIcon className="text-official-gray-400 size-full" />;
     }
     return <Loader2 className="text-brand size-full animate-spin" />;
   };
@@ -712,9 +709,9 @@ export function ToolCard({
         <div className="flex items-center gap-1 p-[5px]">
           <div className="size-7 shrink-0 px-1.5">{renderStatus()}</div>
           <div className="flex items-center gap-1">
-            <span className="text-gray-80 text-xs">{renderLabelText()}</span>
+            <span className="text-gray-80 text-em-sm">{renderLabelText()}</span>
             <Link
-              className="text-gray-white text-xs font-semibold hover:underline"
+              className="text-em-xs font-semibold text-white hover:underline"
               to={`/tools/${toolRouterKey}`}
             >
               {formatText(name)}
@@ -733,7 +730,9 @@ export const GeneratedFiles = ({ toolCalls }: { toolCalls: ToolCall[] }) => {
       (tool) => !!tool.generatedFiles && tool.generatedFiles.length > 0,
     ) && (
       <div className="mt-4 flex flex-col items-start gap-1 rounded-md py-4 pt-1.5">
-        <span className="text-gray-80 text-xs">Generated Files</span>
+        <span className="text-official-gray-400 text-em-sm">
+          Generated Files
+        </span>
         {toolCalls.map((tool) => {
           if (!tool.generatedFiles || !tool.generatedFiles.length) return null;
           return (

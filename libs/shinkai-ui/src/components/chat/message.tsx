@@ -325,7 +325,7 @@ const MessageBase = ({
                                 toolRouterKey={tool.toolRouterKey}
                               />
                             </AccordionTrigger>
-                            <AccordionContent className="bg-gray-450 flex flex-col gap-1 rounded-b-lg px-3 pb-3 pt-2 text-xs overflow-x-scroll">
+                            <AccordionContent className="bg-gray-450 flex flex-col gap-1 overflow-x-scroll rounded-b-lg px-3 pb-3 pt-2 text-xs">
                               {Object.keys(tool.args).length > 0 && (
                                 <span className="font-medium text-white">
                                   {tool.name}(
@@ -555,7 +555,7 @@ export function ToolCard({
         <div className="flex items-center gap-1 p-[5px]">
           <div className="size-7 shrink-0 px-1.5">{renderStatus()}</div>
           <div className="flex items-center gap-1">
-            <span className="text-gray-80 text-xs">{renderLabelText()}</span>
+            <span className="text-gray-80 text-em-sm">{renderLabelText()}</span>
             <Link
               className="text-gray-white text-xs font-semibold hover:underline"
               to={`/tools/${toolRouterKey}`}

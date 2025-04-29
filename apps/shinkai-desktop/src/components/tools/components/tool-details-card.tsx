@@ -58,6 +58,7 @@ import { toast } from 'sonner';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
+import { FileInputField } from '../../playground-tool/components/execution-panel';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import EditToolDetailsDialog from './edit-tool-details-dialog';
@@ -387,6 +388,10 @@ export default function ToolDetailsCard({
         )
       : {};
 
+    const selectedFilePathsInParams = Object.keys(sanitizedParams || {}).filter(
+      (key) => key.toLowerCase().includes('file_path'),
+    );
+
     await executeToolCode({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
@@ -408,6 +413,9 @@ export default function ToolDetailsCard({
       configs: sanitizedConfigs,
       xShinkaiAppId: 'shinkai-desktop',
       xShinkaiToolId: toolKey ?? '',
+      ...(selectedFilePathsInParams.length > 0 && {
+        mounts: selectedFilePathsInParams.map((key) => sanitizedParams[key]),
+      }),
     });
   };
 
@@ -745,9 +753,7 @@ export default function ToolDetailsCard({
                   and all of your workflows
                 </p>
               </div>
-              <RemoveToolButton
-                toolKey={toolKey as string}
-              />
+              <RemoveToolButton toolKey={toolKey as string} />
             </div>
           </div>
         </TabsContent>
@@ -1030,6 +1036,18 @@ export default function ToolDetailsCard({
                     //'ui:readonly': toolType === CodeLanguage.Agent,
                     'ui:readonly': true,
                   },
+                  ...('input_args' in tool && tool?.input_args?.properties
+                    ? Object.keys(tool.input_args.properties).reduce<
+                        Record<string, { 'ui:widget': typeof FileInputField }>
+                      >((acc, key) => {
+                        if (key.toLowerCase().includes('file_path')) {
+                          acc[key] = {
+                            'ui:widget': FileInputField,
+                          };
+                        }
+                        return acc;
+                      }, {})
+                    : {}),
                 },
               }}
               validator={validator}
