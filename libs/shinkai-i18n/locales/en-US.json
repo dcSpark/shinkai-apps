@@ -348,15 +348,6 @@
       "label": "Language",
       "selectLanguage": "Select Language"
     },
-    "chatFontSize": {
-      "label": "Chat Font Size",
-      "select": "Select font size",
-      "description": "Adjust the font size used in chat interfaces",
-      "small": "Small",
-      "medium": "Medium",
-      "large": "Large",
-      "extraLarge": "Extra Large"
-    },
     "shinkaiVersion": "Shinkai Desktop Version:",
     "shortcutKey": {
       "label": "Shortcut Key",

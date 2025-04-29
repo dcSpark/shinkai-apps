@@ -18,6 +18,8 @@ export enum TutorialBanner {
   AIS_AND_AGENTS = 'ais-and-agents',
 }
 
+export type ChatFontSize = 'xs' | 'sm' | 'base' | 'lg';
+
 type SettingsStore = {
   onboarding: OnboardingState;
   completeStep: <T extends OnboardingStep>(
@@ -58,8 +60,9 @@ type SettingsStore = {
   setCompatibilityBannerDismissed: (dismissed: boolean) => void;
   isChatSidebarCollapsed: boolean;
   setChatSidebarCollapsed: (isChatSidebarCollapsed: boolean) => void;
-  chatFontSize: 'xs' | 'sm' | 'base' | 'lg';
-  setChatFontSize: (size: 'xs' | 'sm' | 'base' | 'lg') => void;
+  chatFontSize: ChatFontSize;
+  getChatFontSizeInPts: () => number;
+  setChatFontSize: (size: ChatFontSize) => void;
   resetSettings: () => void;
   dismissedTutorialBanners: TutorialBanner[];
   dismissTutorialBanner: (bannerId: TutorialBanner) => void;
@@ -211,8 +214,23 @@ export const useSettings = create<SettingsStore>()(
         setChatSidebarCollapsed: (isChatSidebarCollapsed) => {
           set({ isChatSidebarCollapsed });
         },
-        
-        chatFontSize: 'xs',
+
+        chatFontSize: 'sm',
+        getChatFontSizeInPts: () => {
+          const { chatFontSize } = get();
+          switch (chatFontSize) {
+            case 'xs':
+              return 12;
+            case 'sm':
+              return 14;
+            case 'base':
+              return 16;
+            case 'lg':
+              return 18;
+            default:
+              return 14;
+          }
+        },
         setChatFontSize: (size) => {
           set({ chatFontSize: size });
         },
@@ -258,7 +276,7 @@ export const useSettings = create<SettingsStore>()(
             heightRow: 'large',
             compatibilityBannerDismissed: false,
             isChatSidebarCollapsed: false,
-            chatFontSize: 'xs',
+            chatFontSize: 'sm',
 
             termsAndConditionsAccepted: undefined,
           });
