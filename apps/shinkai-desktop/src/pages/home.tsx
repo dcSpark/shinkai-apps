@@ -462,7 +462,7 @@ const EmptyMessage = () => {
                 {formatText(selectedAgent.name)}
               </p>
               <p className="text-official-gray-400 text-sm">
-                {selectedAgent.ui_description}{' '}
+                {selectedAgent.ui_description ?? 'No description'}
                 {selectedAgent.tools.length > 0 && (
                   <Popover>
                     <PopoverTrigger asChild>
