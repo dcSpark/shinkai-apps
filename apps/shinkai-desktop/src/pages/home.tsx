@@ -26,6 +26,7 @@ import {
   Popover,
   PopoverAnchor,
   PopoverContent,
+  PopoverTrigger,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -45,7 +46,9 @@ import { motion } from 'framer-motion';
 import {
   ArrowRight,
   ArrowUpRight,
+  ChevronDownIcon,
   EllipsisIcon,
+  InfoIcon,
   MessageSquare,
   Plus,
 } from 'lucide-react';
@@ -460,7 +463,29 @@ const EmptyMessage = () => {
                 {formatText(selectedAgent.name)}
               </p>
               <p className="text-official-gray-400 text-sm">
-                {selectedAgent.ui_description}
+                {selectedAgent.ui_description}{' '}
+                {selectedAgent.tools.length > 0 && (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <span className="text-official-gray-400 inline-flex cursor-pointer items-center gap-1 capitalize hover:text-white">
+                        - {selectedAgent.tools.length} Active{' '}
+                        {selectedAgent.tools.length === 1 ? 'tool' : 'tools'}
+                        <ChevronDownIcon className="ml-1 size-4" />
+                      </span>
+                    </PopoverTrigger>
+                    <PopoverContent className="text-xs">
+                      <p className="text-official-gray-400 mb-2 font-medium">
+                        Active Tools
+                      </p>
+                      {selectedAgent.tools.map((tool) => (
+                        <div className="flex items-center gap-2" key={tool}>
+                          <ToolsIcon className="size-4" />
+                          <p>{formatText(tool?.split(':').at(-1) ?? '')}</p>
+                        </div>
+                      ))}
+                    </PopoverContent>
+                  </Popover>
+                )}
               </p>
             </div>
           ) : (
@@ -568,7 +593,9 @@ const EmptyMessage = () => {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <CreateChatConfigActionBar form={chatConfigForm} />
+                        {!selectedAgent && (
+                          <CreateChatConfigActionBar form={chatConfigForm} />
+                        )}
 
                         <Button
                           className={cn('size-[36px] p-2')}
