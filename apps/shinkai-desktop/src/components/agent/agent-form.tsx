@@ -115,7 +115,7 @@ import {
   XIcon,
 } from 'lucide-react';
 import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, To, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
