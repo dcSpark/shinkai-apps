@@ -6,7 +6,6 @@ import {
   extractJobIdFromInbox,
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
-import { useChatFontSize } from '../../utils/font-size';
 import {
   ChatMessageFormSchema,
   chatMessageFormSchema,
@@ -66,6 +65,7 @@ import { toast } from 'sonner';
 
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
+import { useChatFontSize } from '../../utils/font-size';
 import { usePromptSelectionStore } from '../prompt/context/prompt-selection-context';
 import { AiUpdateSelectionActionBar } from './chat-action-bar/ai-update-selection-action-bar';
 import {
@@ -180,7 +180,7 @@ function ConversationChatFooter({
 
   const auth = useAuth((state) => state.auth);
   const { captureAnalyticEvent } = useAnalytics();
-  
+
   const { getSecondaryFontClass } = useChatFontSize();
   const secondaryFontClass = getSecondaryFontClass();
 
@@ -366,7 +366,14 @@ function ConversationChatFooter({
           return `${key}: ${toolFormData?.[key]}`;
         })
         .join('\n');
+
+      let content = data.message;
+
+      if (selectedTool) {
+        content = `${selectedTool.name} \n ${formattedToolMessage}`;
+      }
       if (toolRawInput && chatToolView === 'raw') {
+        content = `${toolRawInput}`;
       }
 
       const jobId = extractJobIdFromInbox(inboxId);
@@ -374,9 +381,7 @@ function ConversationChatFooter({
         token: auth.api_v2_key,
         nodeAddress: auth.node_address,
         jobId: jobId,
-        message: selectedTool
-          ? `${selectedTool.name} \n ${formattedToolMessage}`
-          : data.message,
+        message: content,
         parent: '', // Note: we should set the parent if we want to retry or branch out
         files: currentFiles,
         toolKey: selectedTool?.key,
@@ -462,7 +467,10 @@ function ConversationChatFooter({
                           }}
                         />
                       )}
-                      {selectedTool ? null : <UpdateToolsSwitchActionBar />}
+                      {isAgentInbox || selectedTool ? null : (
+                        <UpdateToolsSwitchActionBar />
+                      )}
+
                       {isAgentInbox || selectedTool ? null : (
                         <UpdateVectorFsActionBar />
                       )}
@@ -481,7 +489,7 @@ function ConversationChatFooter({
                           size="icon"
                         >
                           <SendIcon className="h-full w-full" />
-                          <span className={cn("sr-only", secondaryFontClass)}>
+                          <span className={cn('sr-only', secondaryFontClass)}>
                             {t('chat.sendMessage')}
                           </span>
                         </Button>
@@ -493,7 +501,7 @@ function ConversationChatFooter({
                           size="icon"
                         >
                           <SendIcon className="h-full w-full" />
-                          <span className={cn("sr-only", secondaryFontClass)}>
+                          <span className={cn('sr-only', secondaryFontClass)}>
                             {t('chat.sendMessage')}
                           </span>
                         </Button>
