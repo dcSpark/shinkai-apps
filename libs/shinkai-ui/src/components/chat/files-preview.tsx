@@ -71,12 +71,12 @@ const FileInfo = ({
   fileSize?: number;
   fileName: string;
 }) => (
-  <div className="text-gray-80 grid flex-1 -translate-x-px gap-1 py-0.5 text-xs leading-none">
-    <div className="overflow-hidden truncate font-medium text-gray-50">
+  <div className="text-official-gray-400 text-em-sm grid flex-1 -translate-x-px gap-1 py-0.5 leading-none">
+    <div className="text-official-gray-100 overflow-hidden truncate font-medium">
       {decodeURIComponent(fileName.split('/').at(-1) ?? '')}
     </div>
     {fileSize && (
-      <div className="text-gray-80 line-clamp-1 aspect-auto font-normal">
+      <div className="text-official-gray-400 line-clamp-1 aspect-auto font-normal">
         {size(fileSize)}
       </div>
     )}
@@ -209,11 +209,11 @@ const FileButton = ({
     <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-gray-300 text-gray-100 transition-colors">
       {fileIconMap[getFileExt(name)] ? (
         <FileTypeIcon
-          className="text-gray-80 h-5 w-5"
+          className="text-official-gray-400 h-5 w-5"
           type={getFileExt(name)}
         />
       ) : (
-        <PaperClipIcon className="text-gray-80 h-4 w-4" />
+        <PaperClipIcon className="text-official-gray-400 h-4 w-4" />
       )}
     </span>
     <FileInfo fileName={name} fileSize={size} />

@@ -15,6 +15,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   BarChart2,
   CodesandboxIcon,
+  PaintbrushIcon,
   SettingsIcon,
   WalletMinimal,
 } from 'lucide-react';
@@ -107,6 +108,11 @@ export function MainNav() {
       title: t('settings.layout.general'),
       href: '/settings',
       icon: <SettingsIcon className="text-gray-80 h-4 w-4" />,
+    },
+    {
+      title: t('settings.layout.appearance'),
+      href: '/settings/appearance',
+      icon: <PaintbrushIcon className="text-gray-80 h-4 w-4" />,
     },
     isLocalShinkaiNodeInUse && {
       title: t('settings.layout.shinkaiNode'),

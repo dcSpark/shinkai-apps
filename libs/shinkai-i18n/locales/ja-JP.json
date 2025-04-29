@@ -206,7 +206,19 @@
     "welcome": "Shinkai Visorを使用してAIでWebブラウジング体験を変えましょう ✨"
   },
   "feedback": {
-    "button": "フィードバック"
+    "button": "フィードバック",
+    "description": "ご意見をお聞かせください！新海についてのご感想や、あなたの体験を向上させるためのご提案をお知らせください。",
+    "form": {
+      "contactHelp": "質問がある場合、どのようにご連絡すればよいですか？",
+      "contactLabel": "メールアドレスまたは電話番号",
+      "contactPlaceholder": "メールアドレスまたは電話番号",
+      "error": "フィードバックの送信に失敗しました。もう一度お試しください。",
+      "feedbackLabel": "あなたのフィードバック",
+      "feedbackPlaceholder": "ご意見、ご提案、または質問をお聞かせください...",
+      "submit": "フィードバックを送信",
+      "success": "フィードバックをありがとうございます！すぐにご連絡いたします。"
+    },
+    "title": "フィードバックを共有"
   },
   "galxe": {
     "errors": {
@@ -380,6 +392,17 @@
     "restore": "復元"
   },
   "settings": {
+    "appearance": {
+      "chatFontSize": {
+        "description": "好みのフォントサイズを選択してください",
+        "extraLarge": "特大",
+        "large": "大",
+        "medium": "中",
+        "small": "小",
+        "title": "チャットフォントサイズ"
+      },
+      "label": "外観"
+    },
     "cryptoWallet": {
       "addCoinbaseCDPWallet": "Coinbase CDPウォレットを追加",
       "addLocalWallet": "ローカルウォレットを追加",
@@ -416,6 +439,7 @@
     },
     "layout": {
       "analytics": "分析",
+      "appearance": "外観",
       "createRegistrationCode": "登録コードの作成",
       "cryptoWallet": "暗号通貨ウォレット",
       "exportConnection": "接続のエクスポート",

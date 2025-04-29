@@ -324,6 +324,7 @@ export default {
     defaultAgent: 'Default AI',
     layout: {
       general: 'General',
+      appearance: 'Appearance',
       shinkaiNode: 'Shinkai Node Manager',
       exportConnection: 'Export Connection',
       createRegistrationCode: 'Create Registration Code',
@@ -419,6 +420,17 @@ export default {
     },
     promptLibrary: {
       label: 'Prompt Library',
+    },
+    appearance: {
+      label: 'Appearance',
+      chatFontSize: {
+        title: 'Chat Font Size',
+        description: 'Select your preferred font size',
+        small: 'Small',
+        medium: 'Medium',
+        large: 'Large',
+        extraLarge: 'Extra Large',
+      },
     },
   },
   exportConnection: {

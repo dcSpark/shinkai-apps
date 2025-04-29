@@ -115,7 +115,7 @@ import {
   XIcon,
 } from 'lucide-react';
 import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, To, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -438,7 +438,7 @@ function AgentSideChat({
                   🤖
                 </span>
                 <h2 className="text-base font-medium">Chat with your Agent</h2>
-                <p className="text-official-gray-400 text-xs">
+                <p className="text-official-gray-400">
                   Send a message to start chatting with this agent
                 </p>
               </div>
@@ -463,7 +463,7 @@ function AgentSideChat({
               autoFocus
               bottomAddons={
                 <div className="relative z-50 flex items-end gap-3 self-end p-2">
-                  <span className="pb-1 text-xs font-light text-gray-100">
+                  <span className="pb-1 font-light text-gray-100">
                     <span className="font-medium">Enter</span> to send
                   </span>
 
