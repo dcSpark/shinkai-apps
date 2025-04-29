@@ -362,6 +362,7 @@ function ConversationChatFooter({
           return `${key}: ${toolFormData?.[key]}`;
         })
         .join('\n');
+
       let content = data.message;
 
       if (selectedTool) {
@@ -376,9 +377,7 @@ function ConversationChatFooter({
         token: auth.api_v2_key,
         nodeAddress: auth.node_address,
         jobId: jobId,
-        message: selectedTool
-          ? `${selectedTool.name} \n ${formattedToolMessage}`
-          : data.message,
+        message: content,
         parent: '', // Note: we should set the parent if we want to retry or branch out
         files: currentFiles,
         toolKey: selectedTool?.key,
@@ -464,7 +463,10 @@ function ConversationChatFooter({
                           }}
                         />
                       )}
-                      {selectedTool ? null : <UpdateToolsSwitchActionBar />}
+                      {isAgentInbox || selectedTool ? null : (
+                        <UpdateToolsSwitchActionBar />
+                      )}
+
                       {isAgentInbox || selectedTool ? null : (
                         <UpdateVectorFsActionBar />
                       )}
