@@ -21,7 +21,6 @@ import React, {
 } from 'react';
 import { useInView } from 'react-intersection-observer';
 
-import { useChatFontSize } from '../../../utils/font-size';
 import { Message } from './message';
 
 function useScrollToBottom(
@@ -95,9 +94,6 @@ export const MessageList = memo(
     const previousChatHeightRef = useRef<number>(0);
     const { ref, inView } = useInView();
     const messageList = paginatedMessages?.pages.flat() ?? [];
-    
-    const { getSecondaryFontClass } = useChatFontSize();
-    const secondaryFontClass = getSecondaryFontClass();
 
     const { autoScroll, setAutoScroll, scrollDomToBottom } =
       useScrollToBottom(chatContainerRef);
@@ -263,11 +259,11 @@ export const MessageList = memo(
                       {!minimalistMode && (
                         <div
                           className={cn(
-                            'relative z-10 m-auto my-2 flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5 capitalize',
+                            'bg-official-gray-900 relative z-10 m-auto my-2 flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl px-2.5 capitalize',
                             'sticky top-5',
                           )}
                         >
-                          <span className={cn("text-gray-80 font-medium", secondaryFontClass)}>
+                          <span className="text-official-gray-200 text-sm font-medium">
                             {getRelativeDateLabel(
                               new Date(messages[0].createdAt || ''),
                             )}

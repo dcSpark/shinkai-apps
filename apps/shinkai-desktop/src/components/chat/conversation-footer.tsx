@@ -65,7 +65,6 @@ import { toast } from 'sonner';
 
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
-import { useChatFontSize } from '../../utils/font-size';
 import { usePromptSelectionStore } from '../prompt/context/prompt-selection-context';
 import { AiUpdateSelectionActionBar } from './chat-action-bar/ai-update-selection-action-bar';
 import {
@@ -180,9 +179,6 @@ function ConversationChatFooter({
 
   const auth = useAuth((state) => state.auth);
   const { captureAnalyticEvent } = useAnalytics();
-
-  const { getSecondaryFontClass } = useChatFontSize();
-  const secondaryFontClass = getSecondaryFontClass();
 
   const [toolFormData, setToolFormData] = useState<Record<string, any> | null>(
     null,
@@ -489,7 +485,7 @@ function ConversationChatFooter({
                           size="icon"
                         >
                           <SendIcon className="h-full w-full" />
-                          <span className={cn('sr-only', secondaryFontClass)}>
+                          <span className="sr-only">
                             {t('chat.sendMessage')}
                           </span>
                         </Button>
@@ -501,7 +497,7 @@ function ConversationChatFooter({
                           size="icon"
                         >
                           <SendIcon className="h-full w-full" />
-                          <span className={cn('sr-only', secondaryFontClass)}>
+                          <span className="sr-only">
                             {t('chat.sendMessage')}
                           </span>
                         </Button>
