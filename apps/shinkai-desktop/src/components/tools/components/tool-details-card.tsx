@@ -178,7 +178,6 @@ export default function ToolDetailsCard({
 
   const { mutateAsync: toggleEnableTool, isPending: isTogglingEnableTool } =
     useToggleEnableTool();
-  // const [configsOkToEnable, setConfigsOkToEnable] = useState<boolean>(false);
   const { mutateAsync: duplicateTool, isPending: isDuplicatingTool } =
     useDuplicateTool({
       onSuccess: (response) => {
