@@ -92,6 +92,7 @@ export default {
   },
   chat: {
     chats: 'Chats',
+    agents: 'Agents',
     emptyStateTitle: 'Ask Shinkai AI',
     emptyStateDescription:
       'For quick questions, press ⌘ + Shift + J to use Shinkai Spotlight',

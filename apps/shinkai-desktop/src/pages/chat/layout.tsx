@@ -11,6 +11,9 @@ import {
 } from '@shinkai_network/shinkai-node-state/forms/chat/inbox';
 import { useRemoveJob } from '@shinkai_network/shinkai-node-state/v2/mutations/removeJob/useRemoveJob';
 import { useUpdateInboxName } from '@shinkai_network/shinkai-node-state/v2/mutations/updateInboxName/useUpdateInboxName';
+import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
+import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
+import { useGetAgentInboxes } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetAgentInboxes';
 import { useGetInboxesWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxesWithPagination';
 import {
   Button,
@@ -29,6 +32,12 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
   ScrollArea,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
   Skeleton,
   Tooltip,
   TooltipContent,
@@ -36,10 +45,12 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
+  AgentIcon,
   ChatBubbleIcon,
   CreateAIIcon,
   JobBubbleIcon,
 } from '@shinkai_network/shinkai-ui/assets';
+import { formatDateToLocaleStringWithTime } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Edit3, Trash2Icon } from 'lucide-react';
@@ -56,6 +67,7 @@ import { usePromptSelectionStore } from '../../components/prompt/context/prompt-
 import { handleSendNotification } from '../../lib/notifications';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import { useViewportStore } from '../../store/viewport';
 
 const InboxNameInput = ({
   closeEditable,
@@ -220,11 +232,11 @@ const InboxMessageButtonBase = ({
               }}
               to={to}
             >
-              {isJobInbox(inboxId) ? (
-                <JobBubbleIcon className="mr-2 h-4 w-4 shrink-0 text-inherit" />
+              {/* {isJobInbox(inboxId) ? (
+                <JobBubbleIcon className="h-4 w-4 shrink-0 text-inherit" />
               ) : (
-                <ChatBubbleIcon className="mr-2 h-4 w-4 shrink-0 text-inherit" />
-              )}
+                <ChatBubbleIcon className="h-4 w-4 shrink-0 text-inherit" />
+              )} */}
               <span className="line-clamp-1 flex-1 break-all pr-2 text-left text-xs">
                 {inboxName}
               </span>
@@ -370,6 +382,9 @@ const ChatLayout = () => {
 
   const selectedArtifact = useChatStore((state) => state.selectedArtifact);
   const showArtifactPanel = selectedArtifact != null;
+  const chatPanelContainerRef = useViewportStore(
+    (state) => state.chatPanelContainerRef,
+  );
 
   return (
     <div className={cn('flex h-screen')}>
@@ -386,7 +401,8 @@ const ChatLayout = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      <ResizablePanelGroup direction="horizontal">
+      <ResizablePanelGroup className="relative" direction="horizontal">
+        <div className="absolute inset-0" ref={chatPanelContainerRef} />
         <ResizablePanel className="flex h-full flex-col">
           <Outlet />
         </ResizablePanel>
@@ -417,18 +433,9 @@ const ChatLayout = () => {
   );
 };
 
-const ChatSidebar = () => {
-  const navigate = useNavigate();
+const ChatList = () => {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
-
-  const resetJobScope = useSetJobScope((state) => state.resetJobScope);
-  const setSelectedArtifact = useChatStore(
-    (state) => state.setSelectedArtifact,
-  );
-  const setPromptSelected = usePromptSelectionStore(
-    (state) => state.setPromptSelected,
-  );
 
   const { ref, inView } = useInView();
 
@@ -439,31 +446,10 @@ const ChatSidebar = () => {
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-  } = useGetInboxesWithPagination(
-    { nodeAddress: auth?.node_address ?? '', token: auth?.api_v2_key ?? '' },
-    // {
-    //   refetchIntervalInBackground: true,
-    //   refetchInterval: (query) => {
-    //     const queryState = query?.state?.data?.filter(
-    //       (item) => !!item.last_message,
-    //     );
-    //     if (!queryState || !auth) return 0;
-
-    //     const allInboxesAreCompleted = queryState.every((inbox) => {
-    //       return (
-    //         inbox.last_message &&
-    //         inbox.last_message.sender &&
-    //         !(
-    //           inbox.last_message.sender === auth?.shinkai_identity &&
-    //           inbox.last_message.sender_subidentity === auth?.profile
-    //         )
-    //       );
-    //     });
-
-    //     return allInboxesAreCompleted ? 0 : 5000;
-    //   },
-    // },
-  );
+  } = useGetInboxesWithPagination({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
@@ -473,104 +459,201 @@ const ChatSidebar = () => {
 
   const hasInboxes =
     (inboxesPagination?.pages?.at(-1)?.inboxes ?? []).length > 0;
-
   return (
-    <div className="flex h-full w-[240px] flex-col py-4 pt-6">
+    <div className="">
       <div className="mb-3 flex items-center justify-between gap-2 px-3">
         <h2 className="font-clash text-base font-medium">{t('chat.chats')}</h2>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              className="h-8 w-8"
-              onClick={() => {
-                resetJobScope();
-                setPromptSelected(undefined);
-                setSelectedArtifact(null);
-
-                const element = document.querySelector(
-                  '#chat-input',
-                ) as HTMLDivElement;
-                if (element) {
-                  element?.focus?.();
-                }
-
-                navigate('/home');
-              }}
-              size="icon"
-              variant="tertiary"
-            >
-              <CreateAIIcon className="text-gray-80 h-[18px] w-[18px]" />
-              <span className="sr-only">{t('chat.create')}</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipPortal>
-            <TooltipContent
-              align="center"
-              className="flex flex-col items-center gap-1"
-              side="bottom"
-            >
-              <span>{t('chat.create')}</span>
-              <div className="text-gray-80 flex items-center justify-center gap-2 text-center">
-                <span>⌘</span>
-                <span>N</span>
-              </div>
-            </TooltipContent>
-          </TooltipPortal>
-        </Tooltip>
       </div>
-      <ScrollArea className="px-2 pr-3">
-        <div className="w-full space-y-1 bg-transparent">
-          {isPending &&
-            Array.from({ length: 5 }).map((_, index) => (
-              <Skeleton
-                className="h-11 w-full shrink-0 rounded-md bg-gray-300"
-                key={index}
-              />
-            ))}
+      <div className="w-full space-y-1 bg-transparent">
+        {isPending &&
+          Array.from({ length: 5 }).map((_, index) => (
+            <Skeleton
+              className="h-11 w-full shrink-0 rounded-md bg-gray-300"
+              key={index}
+            />
+          ))}
 
-          {isSuccess &&
-            inboxesPagination?.pages.map((page) =>
-              page.inboxes.map((inbox) => (
-                <InboxMessageButton
-                  inboxId={inbox.inbox_id}
-                  inboxName={
-                    inbox.last_message && inbox.custom_name === inbox.inbox_id
-                      ? inbox.last_message.job_message.content?.slice(0, 40)
-                      : inbox.custom_name?.slice(0, 40)
-                  }
-                  isJobLastMessage={
-                    inbox.last_message
-                      ? !(
-                          inbox.last_message.sender ===
-                            auth?.shinkai_identity &&
-                          inbox.last_message.sender_subidentity === auth.profile
-                        )
-                      : false
-                  }
-                  key={inbox.inbox_id}
-                  lastMessageTimestamp={
-                    inbox.last_message?.node_api_data.node_timestamp ?? ''
-                  }
-                  to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-                />
-              )),
-            )}
-          {isSuccess && !hasInboxes && (
-            <p className="text-gray-80 py-3 text-center text-xs">
-              {t('chat.actives.notFound')}{' '}
-            </p>
+        {isSuccess &&
+          inboxesPagination?.pages.map((page) =>
+            page.inboxes.map((inbox) => (
+              <InboxMessageButton
+                inboxId={inbox.inbox_id}
+                inboxName={
+                  inbox.last_message && inbox.custom_name === inbox.inbox_id
+                    ? inbox.last_message.job_message.content?.slice(0, 40)
+                    : inbox.custom_name?.slice(0, 40)
+                }
+                isJobLastMessage={
+                  inbox.last_message
+                    ? !(
+                        inbox.last_message.sender === auth?.shinkai_identity &&
+                        inbox.last_message.sender_subidentity === auth.profile
+                      )
+                    : false
+                }
+                key={inbox.inbox_id}
+                lastMessageTimestamp={
+                  inbox.last_message?.node_api_data.node_timestamp ?? ''
+                }
+                to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+              />
+            )),
           )}
-          {hasNextPage && (
-            <button
-              className="mx-auto mb-4 w-full"
-              onClick={() => fetchNextPage()}
-              ref={ref}
+        {isSuccess && !hasInboxes && (
+          <p className="text-gray-80 py-3 text-center text-xs">
+            {t('chat.actives.notFound')}{' '}
+          </p>
+        )}
+        {hasNextPage && (
+          <button
+            className="mx-auto mb-4 w-full"
+            onClick={() => fetchNextPage()}
+            ref={ref}
+          >
+            {isFetchingNextPage ? 'Loading more...' : 'Load more'}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const AgentInboxList = ({
+  agentId,
+  onSelectedAgentChange,
+}: {
+  agentId?: string;
+  onSelectedAgentChange: (agentId: string | null) => void;
+}) => {
+  const chatPanelContainerRef = useViewportStore(
+    (state) => state.chatPanelContainerRef,
+  );
+
+  const auth = useAuth((state) => state.auth);
+  const { data: agentInboxes } = useGetAgentInboxes({
+    agentId: agentId ?? '',
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const { data: agent } = useGetAgent({
+    agentId: agentId ?? '',
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  return (
+    <Sheet
+      onOpenChange={(open) => {
+        if (!open) {
+          onSelectedAgentChange(null);
+        }
+      }}
+      open={!!agentId}
+    >
+      <SheetContent
+        className="absolute w-[350px] px-3"
+        container={chatPanelContainerRef.current as HTMLElement}
+        hideCloseButton
+        overlayClassName="absolute"
+        side="left"
+      >
+        <SheetHeader>
+          <SheetTitle className="px-2 text-sm font-normal capitalize">
+            {agent?.name} - Chat History
+          </SheetTitle>
+        </SheetHeader>
+        <div className="flex flex-col gap-2 py-4">
+          {agentInboxes?.map((inbox) => (
+            <Link
+              className="hover:bg-official-gray-850 flex flex-col items-start gap-2 rounded-lg p-3 text-left"
+              key={inbox.inbox_id}
+              onClick={() => {
+                onSelectedAgentChange(null);
+              }}
+              to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
             >
-              {isFetchingNextPage ? 'Loading more...' : 'Load more'}
-            </button>
-          )}
+              <span className="text-official-gray-100 line-clamp-2 text-sm">
+                {inbox.custom_name || inbox.inbox_id}
+              </span>
+              <span className="text-official-gray-500 text-xs">
+                {formatDateToLocaleStringWithTime(
+                  new Date(inbox.datetime_created),
+                )}
+              </span>
+            </Link>
+          ))}
         </div>
-      </ScrollArea>
+      </SheetContent>
+    </Sheet>
+  );
+};
+const AgentList = () => {
+  const navigate = useNavigate();
+  const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
+
+  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+
+  const {
+    data: agents,
+    isPending,
+    isSuccess,
+  } = useGetAgents({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  return (
+    <div className="">
+      <div className="mb-3 flex items-center justify-between gap-2 px-3">
+        <h2 className="font-clash text-base font-medium">{t('chat.agents')}</h2>
+      </div>
+      <div className="w-full space-y-1 bg-transparent">
+        {isPending &&
+          Array.from({ length: 5 }).map((_, index) => (
+            <Skeleton
+              className="h-11 w-full shrink-0 rounded-md bg-gray-300"
+              key={index}
+            />
+          ))}
+
+        {isSuccess &&
+          agents?.map((agent) => (
+            <button
+              className={cn(
+                'text-official-gray-400 group relative flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-white/10',
+                selectedAgent === agent.agent_id && 'bg-white/10 text-white',
+              )}
+              key={agent.agent_id}
+              onClick={() => setSelectedAgent(agent.agent_id)}
+              type="button"
+            >
+              {/* <AgentIcon className="h-4 w-4 shrink-0 text-inherit" /> */}
+              <span className="line-clamp-1 flex-1 break-all pr-2 text-left text-xs capitalize">
+                {agent.name}
+              </span>
+            </button>
+          ))}
+        {isSuccess && !agents && (
+          <p className="text-official-gray-400 py-3 text-center text-xs">
+            {t('chat.actives.notFound')}{' '}
+          </p>
+        )}
+      </div>
+      <AgentInboxList
+        agentId={selectedAgent ?? undefined}
+        onSelectedAgentChange={setSelectedAgent}
+      />
+    </div>
+  );
+};
+
+const ChatSidebar = () => {
+  return (
+    <div className="flex h-full w-[240px] flex-col gap-6 px-2 py-4 pt-6">
+      <AgentList />
+      <ChatList />
     </div>
   );
 };

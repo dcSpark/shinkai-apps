@@ -14,6 +14,7 @@ export const useGetAgentInboxes = (input: GetAgentInboxesInput) => {
         (inbox) =>
           inbox?.inbox_id?.startsWith('job_inbox::')
       ),
+    enabled: !!input.agentId,
   });
   return {
     ...response,
