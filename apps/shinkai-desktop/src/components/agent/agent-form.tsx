@@ -1298,7 +1298,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                       />
                                     </FormControl>
                                     <FormDescription>
-                                      (Optional) You can control the message context here by forcing a static message with the user message e.g. {"{{user_message}}"}. And then say: Chao amigo!. This will add "And then say: Chao amigo!" to every message sent.
+                                      (Optional) You can control the message context here by forcing a static message with the user message e.g. {"{{user_message}}"}. And then say: Chao amigo!. This will add &quot;And then say: Chao amigo!&quot; to every message sent.
                                     </FormDescription>
                                   </FormItem>
                                 )}
