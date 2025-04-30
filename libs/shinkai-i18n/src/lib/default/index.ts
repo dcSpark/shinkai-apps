@@ -524,6 +524,8 @@ export default {
     installed: 'Installed',
     deleteTool: 'Delete Tool',
     tryItOut: 'Try It Out',
+    showMore: 'More',
+    showLess: 'Show Less',
   },
   quickConnection: {
     label: 'Quick Connection',

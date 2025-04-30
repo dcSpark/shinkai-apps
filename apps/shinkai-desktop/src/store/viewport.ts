@@ -3,10 +3,8 @@ import { create } from 'zustand';
 
 type ViewportStore = {
   mainLayoutContainerRef: React.RefObject<HTMLDivElement>;
-  chatPanelContainerRef: React.RefObject<HTMLDivElement>;
 };
 
 export const useViewportStore = create<ViewportStore>()(() => ({
   mainLayoutContainerRef: createRef<HTMLDivElement>(),
-  chatPanelContainerRef: createRef<HTMLDivElement>(),
 }));

@@ -44,17 +44,19 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import {
-  AgentIcon,
-  ChatBubbleIcon,
-  CreateAIIcon,
-  JobBubbleIcon,
-} from '@shinkai_network/shinkai-ui/assets';
+import { AgentIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatDateToLocaleStringWithTime } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Edit3, Trash2Icon } from 'lucide-react';
-import { memo, useEffect, useRef, useState } from 'react';
+import {
+  ArrowLeftIcon,
+  ChevronLeft,
+  Edit3,
+  EllipsisIcon,
+  PlusIcon,
+  Trash2Icon,
+} from 'lucide-react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useInView } from 'react-intersection-observer';
 import {
@@ -229,7 +231,7 @@ const InboxMessageButtonBase = ({
           ) : (
             <Link
               className={cn(
-                'text-official-gray-300 group relative flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 hover:bg-white/10',
+                'text-official-gray-300 group relative flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white',
                 location.pathname === to && 'bg-white/10 text-white',
               )}
               key={inboxId}
@@ -384,9 +386,6 @@ const ChatLayout = () => {
 
   const selectedArtifact = useChatStore((state) => state.selectedArtifact);
   const showArtifactPanel = selectedArtifact != null;
-  const chatPanelContainerRef = useViewportStore(
-    (state) => state.chatPanelContainerRef,
-  );
 
   return (
     <div className={cn('flex h-screen')}>
@@ -404,7 +403,6 @@ const ChatLayout = () => {
         )}
       </AnimatePresence>
       <ResizablePanelGroup className="relative" direction="horizontal">
-        <div className="absolute inset-0" ref={chatPanelContainerRef} />
         <ResizablePanel className="flex h-full flex-col">
           <Outlet />
         </ResizablePanel>
@@ -453,6 +451,8 @@ const ChatList = () => {
     token: auth?.api_v2_key ?? '',
   });
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
@@ -463,8 +463,27 @@ const ChatList = () => {
     (inboxesPagination?.pages?.at(-1)?.inboxes ?? []).length > 0;
   return (
     <div className="">
-      <div className="mb-3 flex items-center justify-between gap-2 px-3">
-        <h2 className="font-clash text-base font-medium">{t('chat.chats')}</h2>
+      <div className="mb-3 flex h-8 items-center justify-between gap-2 pl-3">
+        <h2 className="font-clash text-base font-medium tracking-wide">
+          {t('chat.chats')}
+        </h2>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              className="text-official-gray-300 hidden size-8 items-center justify-center rounded-full hover:text-white group-hover/actions:flex"
+              onClick={() => {
+                navigate(`/home`);
+              }}
+            >
+              <PlusIcon className="h-4 w-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent>
+              <p>New Chat</p>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
       </div>
       <div className="w-full space-y-1 bg-transparent">
         {isPending &&
@@ -520,22 +539,13 @@ const ChatList = () => {
   );
 };
 
-const AgentInboxList = ({
-  agentId,
-  onSelectedAgentChange,
-}: {
-  agentId?: string;
-  onSelectedAgentChange: (agentId: string | null) => void;
-}) => {
-  const chatPanelContainerRef = useViewportStore(
-    (state) => state.chatPanelContainerRef,
-  );
-
+const AgentInboxList = ({ agentId }: { agentId?: string }) => {
   const auth = useAuth((state) => state.auth);
   const { data: agentInboxes, isSuccess } = useGetAgentInboxes({
     agentId: agentId ?? '',
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
+    showHidden: true,
   });
 
   const { data: agent } = useGetAgent({
@@ -544,65 +554,80 @@ const AgentInboxList = ({
     token: auth?.api_v2_key ?? '',
   });
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
   return (
-    <Sheet
-      onOpenChange={(open) => {
-        if (!open) {
-          onSelectedAgentChange(null);
-        }
-      }}
-      open={!!agentId}
-    >
-      <SheetContent
-        className="absolute w-[350px] px-3"
-        container={chatPanelContainerRef.current as HTMLElement}
-        hideCloseButton
-        overlayClassName="absolute"
-        side="left"
-      >
-        <SheetHeader>
-          <SheetTitle className="px-2 text-sm font-normal capitalize">
-            {agent?.name} Chats
-          </SheetTitle>
-        </SheetHeader>
-        <div className="flex flex-col gap-2 py-4">
-          {isSuccess && agentInboxes.length === 0 && (
-            <p className="text-official-gray-400 py-3 text-center text-xs">
-              {t('chat.actives.notFound')}
-            </p>
-          )}
-          {isSuccess &&
-            agentInboxes.length > 0 &&
-            agentInboxes?.map((inbox) => (
-              <Link
-                className="hover:bg-official-gray-850 flex flex-col items-start gap-2 rounded-lg p-3 text-left"
-                key={inbox.inbox_id}
-                onClick={() => {
-                  onSelectedAgentChange(null);
-                }}
-                to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-              >
-                <span className="text-official-gray-100 line-clamp-2 text-sm">
-                  {inbox.custom_name || inbox.inbox_id}
-                </span>
-                <span className="text-official-gray-500 text-xs">
-                  {formatDateToLocaleStringWithTime(
-                    new Date(inbox.datetime_created),
-                  )}
-                </span>
-              </Link>
-            ))}
-        </div>
-      </SheetContent>
-    </Sheet>
+    <div className=" ">
+      <div className="flex h-8 items-center justify-between gap-1">
+        <h2 className="font-clash px-2 text-sm font-normal capitalize tracking-wide">
+          {agent?.name}
+        </h2>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              className="text-official-gray-300 hidden size-8 items-center justify-center rounded-full hover:text-white group-hover/actions:flex"
+              onClick={() => {
+                navigate(`/home`, {
+                  state: { agentName: agentId },
+                });
+              }}
+            >
+              <PlusIcon className="h-4 w-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent>
+              <p>New Chat</p>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+      </div>
+      <div className="flex flex-col gap-2 py-4">
+        {isSuccess && agentInboxes.length === 0 && (
+          <p className="text-official-gray-400 py-3 text-center text-xs">
+            {t('chat.actives.notFound')}
+          </p>
+        )}
+        {isSuccess &&
+          agentInboxes.length > 0 &&
+          agentInboxes?.map((inbox) => (
+            <Link
+              className={cn(
+                'hover:bg-official-gray-850 flex flex-col items-start gap-2 rounded-lg p-3 py-2 text-left',
+                location.pathname ===
+                  `/inboxes/${encodeURIComponent(inbox.inbox_id)}` &&
+                  'bg-official-gray-850',
+              )}
+              key={inbox.inbox_id}
+              to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+            >
+              <span className="text-official-gray-100 line-clamp-2 text-sm">
+                {inbox.custom_name || inbox.inbox_id}
+              </span>
+              <span className="text-official-gray-500 text-xs">
+                {formatDateToLocaleStringWithTime(
+                  new Date(inbox.datetime_created),
+                )}
+              </span>
+            </Link>
+          ))}
+      </div>
+    </div>
   );
 };
-const AgentList = () => {
-  const navigate = useNavigate();
+
+const AGENTS_DISPLAY_LIMIT = 8;
+const AgentList = ({
+  onSelectedAgentChange,
+  selectedAgent,
+}: {
+  onSelectedAgentChange: (agentId: string | null) => void;
+  selectedAgent: string | null;
+}) => {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
-
-  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
   const {
     data: agents,
@@ -613,10 +638,36 @@ const AgentList = () => {
     token: auth?.api_v2_key ?? '',
   });
 
+  const displayedAgents = useMemo(() => {
+    if (!agents) return [];
+    return showAll ? agents : agents.slice(0, AGENTS_DISPLAY_LIMIT);
+  }, [agents, showAll]);
+
+  const navigate = useNavigate();
+
   return (
     <div className="">
-      <div className="mb-3 flex items-center justify-between gap-2 px-3">
-        <h2 className="font-clash text-base font-medium">{t('chat.agents')}</h2>
+      <div className="mb-3 flex h-8 items-center justify-between gap-2 pl-3">
+        <h2 className="font-clash text-base font-medium tracking-wide">
+          {t('chat.agents')}
+        </h2>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              className="text-official-gray-300 hidden size-8 items-center justify-center rounded-full hover:text-white group-hover/actions:flex"
+              onClick={() => {
+                navigate(`/agents/create`);
+              }}
+            >
+              <PlusIcon className="h-4 w-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent>
+              <p>New Agent</p>
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
       </div>
       <div className="w-full space-y-1 bg-transparent">
         {isPending &&
@@ -628,16 +679,17 @@ const AgentList = () => {
           ))}
 
         {isSuccess &&
-          agents?.map((agent) => (
+          displayedAgents.map((agent) => (
             <button
               className={cn(
-                'text-official-gray-300 group relative flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 hover:bg-white/10',
+                'text-official-gray-300 flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white',
                 selectedAgent === agent.agent_id && 'bg-white/10 text-white',
               )}
               key={agent.agent_id}
-              onClick={() => setSelectedAgent(agent.agent_id)}
+              onClick={() => onSelectedAgentChange(agent.agent_id)}
               type="button"
             >
+              <AgentIcon className="h-4 w-4" />
               <span className="line-clamp-1 flex-1 break-all pr-2 text-left text-xs capitalize">
                 {agent.name}
               </span>
@@ -648,20 +700,89 @@ const AgentList = () => {
             {t('chat.actives.notFound')}{' '}
           </p>
         )}
+        {isSuccess && agents && agents.length > AGENTS_DISPLAY_LIMIT && (
+          <button
+            className="text-official-gray-300 flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white"
+            onClick={() => setShowAll(!showAll)}
+            type="button"
+          >
+            <EllipsisIcon className="h-4 w-4" />
+            {showAll ? t('common.showLess') : t('common.showMore')}
+          </button>
+        )}
       </div>
-      <AgentInboxList
-        agentId={selectedAgent ?? undefined}
-        onSelectedAgentChange={setSelectedAgent}
-      />
     </div>
   );
 };
 
+const variants = {
+  initial: (direction: number) => {
+    return { x: `${110 * direction}%`, opacity: 0 };
+  },
+  active: { x: '0%', opacity: 1 },
+  exit: (direction: number) => {
+    return { x: `${-110 * direction}%`, opacity: 0 };
+  },
+};
+
 const ChatSidebar = () => {
+  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+  const [direction, setDirection] = useState(0);
+
+  const content = useMemo(() => {
+    if (selectedAgent) {
+      return (
+        <div>
+          <Button
+            className="mb-2.5 cursor-pointer"
+            disabled={selectedAgent === null}
+            onClick={() => {
+              if (selectedAgent === null) {
+                return;
+              }
+              setDirection(-1);
+              setSelectedAgent(null);
+            }}
+            size="icon"
+            variant="tertiary"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            <span className="sr-only">Back</span>
+          </Button>
+          <AgentInboxList agentId={selectedAgent} />
+        </div>
+      );
+    }
+    return (
+      <>
+        <AgentList
+          onSelectedAgentChange={(agentId) => {
+            setDirection(1);
+            setSelectedAgent(agentId);
+          }}
+          selectedAgent={selectedAgent}
+        />
+        <ChatList />
+      </>
+    );
+  }, [selectedAgent]);
+
   return (
-    <div className="flex h-full w-[240px] flex-col gap-6 px-2 py-4 pt-6">
-      <AgentList />
-      <ChatList />
+    <div className="group/actions flex size-full flex-col px-2 py-4 pt-6">
+      <AnimatePresence custom={direction} initial={false} mode="popLayout">
+        <motion.div
+          animate="active"
+          className="flex flex-col gap-8"
+          custom={direction}
+          exit="exit"
+          initial="initial"
+          key={selectedAgent ?? 'chat-list'}
+          transition={{ duration: 0.5, type: 'spring', bounce: 0 }}
+          variants={variants}
+        >
+          {content}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };

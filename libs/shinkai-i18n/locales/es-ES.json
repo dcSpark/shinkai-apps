@@ -28,6 +28,7 @@
       "label": "Activos",
       "notFound": "No se encontraron conversaciones activas."
     },
+    "agents": "Agentes",
     "allMessagesLoaded": "Todos los mensajes anteriores han sido cargados ✅",
     "archives": {
       "archive": "Archivo",
@@ -137,6 +138,8 @@
     "seeOptions": "Ver Opciones",
     "send": "Enviar",
     "shinkaiPrivate": "Shinkai Privado (Local)",
+    "showLess": "Mostrar menos",
+    "showMore": "Más",
     "signUpShinkaiHosting": "Registrarse en Shinkai Hosting",
     "soon": "pronto",
     "termsAndConditionsText": "Acepto los <a>Términos de Servicio</a> y la <b>Política de Privacidad</b>",

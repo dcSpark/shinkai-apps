@@ -28,6 +28,7 @@
       "label": "Aktif",
       "notFound": "Tidak ditemukan percakapan aktif."
     },
+    "agents": "Agen",
     "allMessagesLoaded": "Semua pesan sebelumnya telah dimuat ✅",
     "archives": {
       "archive": "Arsip",
@@ -137,6 +138,8 @@
     "seeOptions": "Lihat Opsi",
     "send": "Kirim",
     "shinkaiPrivate": "Shinkai Pribadi (Lokal)",
+    "showLess": "Tampilkan Lebih Sedikit",
+    "showMore": "Lebih Banyak",
     "signUpShinkaiHosting": "Daftar untuk Hosting Shinkai",
     "soon": "segera",
     "termsAndConditionsText": "Saya setuju dengan <a>Syarat Layanan</a> dan <b>Kebijakan Privasi</b>",

@@ -28,6 +28,7 @@
       "label": "Aktifler",
       "notFound": "Aktif sohbet bulunamadı."
     },
+    "agents": "Ajanlar",
     "allMessagesLoaded": "Tüm önceki mesajlar yüklendi ✅",
     "archives": {
       "archive": "Arşivle",
@@ -137,6 +138,8 @@
     "seeOptions": "Seçenekleri Gör",
     "send": "Gönder",
     "shinkaiPrivate": "Yerel AI'nizi Kurun",
+    "showLess": "Daha Az Göster",
+    "showMore": "Daha Fazla",
     "signUpShinkaiHosting": "Shinkai Hosting'e Kaydol",
     "soon": "yakında",
     "termsAndConditionsText": "<a>Hizmet Şartları</a> ve <b>Gizlilik Politikası</b>nı kabul ediyorum",
