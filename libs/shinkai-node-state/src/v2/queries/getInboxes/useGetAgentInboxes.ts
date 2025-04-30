@@ -12,8 +12,7 @@ export const useGetAgentInboxes = (input: GetAgentInboxesInput) => {
       // display only job inboxes
       data.filter(
         (inbox) =>
-          inbox?.inbox_id?.split('::')?.[0] === 'job_inbox' &&
-          inbox.is_finished === false,
+          inbox?.inbox_id?.startsWith('job_inbox::')
       ),
   });
   return {

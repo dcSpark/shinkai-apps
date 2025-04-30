@@ -30,9 +30,11 @@ export const getAgentInboxes = async ({
   nodeAddress,
   token,
   agentId,
+  showHidden,
 }: GetAgentInboxesInput) => {
   const inboxes = await getAllAgentInboxesApi(nodeAddress, token, {
     agent_id: agentId,
+    show_hidden: showHidden,
   });
   return inboxes;
 };

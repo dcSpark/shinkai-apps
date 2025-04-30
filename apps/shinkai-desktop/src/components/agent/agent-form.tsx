@@ -70,8 +70,6 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectTrigger,
-  SelectValue,
   Skeleton,
   Slider,
   Switch,
@@ -108,8 +106,6 @@ import {
   HistoryIcon,
   LucideArrowLeft,
   MessageSquare,
-  Plus,
-  RefreshCwIcon,
   SearchIcon,
   Trash2,
   XIcon,
@@ -224,7 +220,6 @@ function AgentSideChat({
   const auth = useAuth((state) => state.auth);
   const [chatInboxId, setChatInboxId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
-  const queryClient = useQueryClient();
 
   const { data: sideAgentData } = useGetAgent({
     agentId,
@@ -281,7 +276,7 @@ function AgentSideChat({
         token: auth.api_v2_key,
         llmProvider: agentId,
         content: message,
-        isHidden: false,
+        isHidden: true,
         chatConfig: {
           stream: DEFAULT_CHAT_CONFIG.stream,
           custom_prompt: '',
@@ -336,6 +331,7 @@ function AgentSideChat({
     agentId,
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
+    showHidden: true,
   });
 
   return (
