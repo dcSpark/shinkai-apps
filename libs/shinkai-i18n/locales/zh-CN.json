@@ -28,6 +28,7 @@
       "label": "活跃",
       "notFound": "未找到活跃的对话。"
     },
+    "agents": "代理人",
     "allMessagesLoaded": "所有先前的消息都已加载 ✅",
     "archives": {
       "archive": "存档",
@@ -137,6 +138,8 @@
     "seeOptions": "查看选项",
     "send": "发送",
     "shinkaiPrivate": "Shinkai私有（本地）",
+    "showLess": "显示更少",
+    "showMore": "更多",
     "signUpShinkaiHosting": "注册Shinkai Hosting",
     "soon": "即将",
     "termsAndConditionsText": "我同意<a>服务条款</a>和<b>隐私政策</b>",

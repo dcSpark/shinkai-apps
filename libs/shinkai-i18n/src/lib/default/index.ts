@@ -92,6 +92,7 @@ export default {
   },
   chat: {
     chats: 'Chats',
+    agents: 'Agents',
     emptyStateTitle: 'Ask Shinkai AI',
     emptyStateDescription:
       'For quick questions, press ⌘ + Shift + J to use Shinkai Spotlight',
@@ -523,6 +524,8 @@ export default {
     installed: 'Installed',
     deleteTool: 'Delete Tool',
     tryItOut: 'Try It Out',
+    showMore: 'More',
+    showLess: 'Show Less',
   },
   quickConnection: {
     label: 'Quick Connection',

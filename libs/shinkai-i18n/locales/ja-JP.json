@@ -28,6 +28,7 @@
       "label": "アクティブ",
       "notFound": "アクティブな会話は見つかりませんでした"
     },
+    "agents": "エージェント",
     "allMessagesLoaded": "すべての以前のメッセージが読み込まれました ✅",
     "archives": {
       "archive": "アーカイブ",
@@ -137,6 +138,8 @@
     "seeOptions": "オプションを表示",
     "send": "送信",
     "shinkaiPrivate": "Shinkaiプライベート（ローカル）",
+    "showLess": "表示を減らす",
+    "showMore": "もっと見る",
     "signUpShinkaiHosting": "Shinkai Hostingにサインアップ",
     "soon": "近日公開",
     "termsAndConditionsText": "<a>利用規約</a>に同意し、<b>プライバシーポリシー</b>に同意します",

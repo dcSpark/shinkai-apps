@@ -71,6 +71,7 @@ function MetadataPanelBase({
     try {
       const parsedValue = JSON.parse(value);
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { author, name, description, ...metadataWithoutBasicInfo } =
         toolMetadata ?? {};
       const formattedMetadataWithoutBasicInfo = ToolMetadataRawSchema.parse(
@@ -123,7 +124,9 @@ function MetadataPanelBase({
       return JSON.stringify(parsedToolMetadata, null, 2);
     } catch (err) {
       console.error('Error formatting tool metadata:', err, toolMetadata);
-      setValidateMetadataEditorValue(`Error parsing metadata: ${(err as Error).message}`);
+      setValidateMetadataEditorValue(
+        `Error parsing metadata: ${(err as Error).message}`,
+      );
       return JSON.stringify(toolMetadata, null, 2); // Return raw metadata even if schema validation fails
     }
   }, [toolMetadata]);

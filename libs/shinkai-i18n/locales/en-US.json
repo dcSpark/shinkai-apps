@@ -73,6 +73,7 @@
   },
   "chat": {
     "chats": "Chats",
+    "agents": "Agents",
     "emptyStateTitle": "Ask Shinkai AI",
     "emptyStateDescription": "For quick questions, press ⌘ + Shift + J to use Shinkai Spotlight",
     "create": "Create AI Chat",
@@ -474,7 +475,9 @@
     "folderLocation": "Folder Location:",
     "installed": "Installed",
     "deleteTool": "Delete Tool",
-    "tryItOut": "Try It Out"
+    "tryItOut": "Try It Out",
+    "showMore": "More",
+    "showLess": "Show Less"
   },
   "quickConnection": {
     "label": "Quick Connection",

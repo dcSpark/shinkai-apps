@@ -367,22 +367,20 @@ export const getAllInboxes = async (
   );
   return response.data as GetAllInboxesResponse;
 };
-
 export const getAllAgentInboxes = async (
   nodeAddress: string,
   bearerToken: string,
   payload: GetAllAgentInboxesRequest,
 ) => {
-  const queryParams = new URLSearchParams();
-  queryParams.set('agent_id', payload.agent_id);
-  if (typeof payload.show_hidden === 'boolean') {
-    queryParams.set('show_hidden', payload.show_hidden.toString());
-  }
   const response = await httpClient.get(
-    urlJoin(nodeAddress, '/v2/all_inboxes?' + queryParams.toString()),
+    urlJoin(nodeAddress, '/v2/all_inboxes'),
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
+      params: {
+        agent_id: payload.agent_id,
+        show_hidden: payload.show_hidden,
+      },
     },
   );
   return response.data as GetAllInboxesResponse;
