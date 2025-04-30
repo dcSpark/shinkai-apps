@@ -115,6 +115,7 @@ import {
   XIcon,
 } from 'lucide-react';
 import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
+import { TreeNode } from 'primereact/treenode';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, To, useNavigate, useParams } from 'react-router-dom';
@@ -1088,6 +1089,18 @@ function AgentForm({ mode }: AgentFormProps) {
     }
   }, [currentCronExpression]);
 
+  // --- Helper function to find a TreeNode by its key (path) in the tree ---
+  const findNodeByKey = (key: string, searchNodes: TreeNode[]): TreeNode | null => {
+    for (const node of searchNodes) {
+      if (String(node.key) === key) return node;
+      if (node.children) {
+        const found = findNodeByKey(key, node.children);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
   return (
     <ResizablePanelGroup
       className="relative h-full min-h-0"
@@ -1644,16 +1657,42 @@ function AgentForm({ mode }: AgentFormProps) {
                                 );
                               }}
                               onUnselect={(e) => {
-                                if (e.node.icon === 'icon-folder') {
-                                  selectedFolderKeysRef.delete(
-                                    String(e.node.key),
-                                  );
-                                  return;
-                                }
-                                selectedFileKeysRef.delete(String(e.node.key));
+                                 const nodeKey = String(e.node.key);
+                                 if (e.node.icon === 'icon-folder') {
+                                   selectedFolderKeysRef.delete(nodeKey);
+                                   const clearDescendants = (node: TreeNode) => {
+                                     node.children?.forEach((child: TreeNode) => {
+                                       const childKey = String(child.key);
+                                       selectedFileKeysRef.delete(childKey);
+                                       selectedFolderKeysRef.delete(childKey); // Remove if it exists as a folder key
+                                       if (child.children && child.children.length > 0) {
+                                         clearDescendants(child);
+                                       }
+                                     });
+                                   };
+                                   clearDescendants(e.node);
+                                 } else {
+                                   // --- File Deselected --- 
+                                   const lastSlashIndex = nodeKey.lastIndexOf('/');
+                                   const parentFolderPath = lastSlashIndex > 0 ? nodeKey.substring(0, lastSlashIndex) : '/';
+                                   const isParentFolderSelected = selectedFolderKeysRef.has(parentFolderPath);
+                                   if (isParentFolderSelected) {
+                                     selectedFolderKeysRef.delete(parentFolderPath);
+                                     const parentNode = findNodeByKey(parentFolderPath, nodes);
+                                     (parentNode?.children ?? [])
+                                       .filter((childNode: TreeNode) => String(childNode.key) !== nodeKey && childNode.icon !== 'icon-folder')
+                                       .forEach((childNode: TreeNode) => {
+                                          if (childNode.data?.path) {
+                                            selectedFileKeysRef.set(String(childNode.key), childNode.data.path);
+                                          }
+                                       });
+                                   } else {
+                                     selectedFileKeysRef.delete(nodeKey);
+                                   }
+                                 }
                               }}
                               propagateSelectionDown={true}
-                              propagateSelectionUp={false}
+                              propagateSelectionUp={true}
                               pt={treeOptions}
                               selectionKeys={selectedKeys}
                               selectionMode="checkbox"
