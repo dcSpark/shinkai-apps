@@ -1,18 +1,15 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  Badge,
   Tooltip,
   TooltipContent,
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
-  FilesIcon,
   WebSearchDisabledIcon,
   WebSearchIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Folder } from 'lucide-react';
 
 import { actionButtonClassnames } from '../conversation-footer';
 
@@ -40,6 +37,7 @@ export function WebSearchActionBar({
               'w-auto gap-2',
               checked && 'bg-cyan-950 hover:bg-cyan-950',
             )}
+            disabled={disabled}
             onClick={onClick}
             type="button"
           >

@@ -28,6 +28,7 @@
       "label": "Aktifler",
       "notFound": "Aktif sohbet bulunamadı."
     },
+    "agents": "Ajanlar",
     "allMessagesLoaded": "Tüm önceki mesajlar yüklendi ✅",
     "archives": {
       "archive": "Arşivle",
@@ -137,6 +138,8 @@
     "seeOptions": "Seçenekleri Gör",
     "send": "Gönder",
     "shinkaiPrivate": "Yerel AI'nizi Kurun",
+    "showLess": "Daha Az Göster",
+    "showMore": "Daha Fazla",
     "signUpShinkaiHosting": "Shinkai Hosting'e Kaydol",
     "soon": "yakında",
     "termsAndConditionsText": "<a>Hizmet Şartları</a> ve <b>Gizlilik Politikası</b>nı kabul ediyorum",
@@ -206,7 +209,19 @@
     "welcome": "Shinkai Visor ile web tarayıcı deneyiminizi AI ile dönüştürün ✨"
   },
   "feedback": {
-    "button": "Geri Bildirim"
+    "button": "Geri Bildirim",
+    "description": "Geri bildiriminizi önemsiyoruz! Shinkai hakkındaki düşüncelerinizi ve deneyiminizi nasıl geliştirebileceğimiz konusunda bize bilgi verin.",
+    "form": {
+      "contactHelp": "Sorularımız olursa size nasıl ulaşabiliriz?",
+      "contactLabel": "E-posta veya telefon numarası",
+      "contactPlaceholder": "E-posta veya telefon numarası",
+      "error": "Geri bildirim gönderimi başarısız oldu. Lütfen tekrar deneyin.",
+      "feedbackLabel": "Geri Bildiriminiz",
+      "feedbackPlaceholder": "Düşüncelerinizi, önerilerinizi veya sorularınızı paylaşın...",
+      "submit": "Geri Bildirim Gönder",
+      "success": "Geri bildiriminiz için teşekkür ederiz! Yakında sizinle iletişime geçeceğiz."
+    },
+    "title": "Geri Bildirim Paylaş"
   },
   "galxe": {
     "errors": {
@@ -380,6 +395,17 @@
     "restore": "Yenile"
   },
   "settings": {
+    "appearance": {
+      "chatFontSize": {
+        "description": "Tercih ettiğiniz yazı tipi boyutunu seçin",
+        "extraLarge": "Çok Büyük",
+        "large": "Büyük",
+        "medium": "Orta",
+        "small": "Küçük",
+        "title": "Sohbet Yazı Tipi Boyutu"
+      },
+      "label": "Görünüm"
+    },
     "cryptoWallet": {
       "addCoinbaseCDPWallet": "Coinbase CDP Cüzdanı Ekle",
       "addLocalWallet": "Yerel Cüzdan Ekle",
@@ -416,6 +442,7 @@
     },
     "layout": {
       "analytics": "Analitik",
+      "appearance": "Görünüm",
       "createRegistrationCode": "Kayıt Kodu Oluştur",
       "cryptoWallet": "Kripto Cüzdanı",
       "exportConnection": "Bağlantıyı Dışa Aktar",
@@ -424,6 +451,13 @@
       "promptLibrary": "İpucu Kütüphanesi",
       "publicKeys": "Açık Anahtarlar",
       "shinkaiNode": "Shinkai Düğüm Yöneticisi"
+    },
+    "maxChatIterations": {
+      "description": "Bir sohbet mesajının işlenmesi için maksimum iterasyon sayısı",
+      "error": "Maksimum Sohbet İterasyonu güncellenirken hata oluştu",
+      "label": "Maksimum Sohbet İterasyonu",
+      "placeholder": "1 ile 100 arasında bir sayı girin",
+      "success": "Maksimum Sohbet İterasyonu başarıyla güncellendi"
     },
     "promptLibrary": {
       "label": "İpucu Kütüphanesi"

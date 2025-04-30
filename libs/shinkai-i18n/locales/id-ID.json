@@ -28,6 +28,7 @@
       "label": "Aktif",
       "notFound": "Tidak ditemukan percakapan aktif."
     },
+    "agents": "Agen",
     "allMessagesLoaded": "Semua pesan sebelumnya telah dimuat ✅",
     "archives": {
       "archive": "Arsip",
@@ -137,6 +138,8 @@
     "seeOptions": "Lihat Opsi",
     "send": "Kirim",
     "shinkaiPrivate": "Shinkai Pribadi (Lokal)",
+    "showLess": "Tampilkan Lebih Sedikit",
+    "showMore": "Lebih Banyak",
     "signUpShinkaiHosting": "Daftar untuk Hosting Shinkai",
     "soon": "segera",
     "termsAndConditionsText": "Saya setuju dengan <a>Syarat Layanan</a> dan <b>Kebijakan Privasi</b>",
@@ -206,7 +209,19 @@
     "welcome": "Transformasikan pengalaman menjelajah web Anda menggunakan kecerdasan buatan dengan Shinkai Visor ✨"
   },
   "feedback": {
-    "button": "Umpan Balik"
+    "button": "Umpan Balik",
+    "description": "Kami menghargai umpan balik Anda! Silakan beri tahu kami pendapat Anda tentang Shinkai dan bagaimana kami dapat meningkatkan pengalaman Anda.",
+    "form": {
+      "contactHelp": "Bagaimana kami dapat menghubungi Anda jika kami memiliki pertanyaan?",
+      "contactLabel": "Email atau nomor telepon",
+      "contactPlaceholder": "Email atau nomor telepon",
+      "error": "Gagal mengirim umpan balik. Silakan coba lagi.",
+      "feedbackLabel": "Umpan Balik Anda",
+      "feedbackPlaceholder": "Silakan bagikan pemikiran, saran, atau pertanyaan Anda...",
+      "submit": "Kirim Umpan Balik",
+      "success": "Terima kasih atas umpan balik Anda! Kami akan menghubungi Anda segera."
+    },
+    "title": "Bagikan Umpan Balik"
   },
   "galxe": {
     "errors": {
@@ -380,6 +395,17 @@
     "restore": "Pulihkan"
   },
   "settings": {
+    "appearance": {
+      "chatFontSize": {
+        "description": "Pilih ukuran font yang Anda inginkan",
+        "extraLarge": "Sangat Besar",
+        "large": "Besar",
+        "medium": "Sedang",
+        "small": "Kecil",
+        "title": "Ukuran Font Obrolan"
+      },
+      "label": "Tampilan"
+    },
     "cryptoWallet": {
       "addCoinbaseCDPWallet": "Tambahkan Dompet Coinbase CDP",
       "addLocalWallet": "Tambahkan Dompet Lokal",
@@ -416,6 +442,7 @@
     },
     "layout": {
       "analytics": "Analitika",
+      "appearance": "Tampilan",
       "createRegistrationCode": "Buat Kode Registrasi",
       "cryptoWallet": "Dompet Kripto",
       "exportConnection": "Ekspor Koneksi",
@@ -424,6 +451,13 @@
       "promptLibrary": "Perpustakaan Prompt",
       "publicKeys": "Kunci Publik",
       "shinkaiNode": "Manajer Node Shinkai"
+    },
+    "maxChatIterations": {
+      "description": "Jumlah maksimum iterasi untuk memproses pesan obrolan",
+      "error": "Kesalahan saat memperbarui Iterasi Obrolan Maksimal",
+      "label": "Iterasi Obrolan Maksimal",
+      "placeholder": "Masukkan angka antara 1 dan 100",
+      "success": "Iterasi Obrolan Maksimal berhasil diperbarui"
     },
     "promptLibrary": {
       "label": "Perpustakaan Prompt"

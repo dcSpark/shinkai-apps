@@ -10,6 +10,13 @@ import { FunctionKeyV2 } from '../../constants';
 export type GetInboxesInput = Token & {
   nodeAddress: string;
 } & GetAllInboxesWithPaginationRequest;
+
+export type GetAgentInboxesInput = Token & {
+  nodeAddress: string;
+  agentId: string;
+  showHidden?: boolean;
+};
+
 export type GetInboxesOutput = GetAllInboxesWithPaginationResponse;
 
 export type UseGetInboxes = [

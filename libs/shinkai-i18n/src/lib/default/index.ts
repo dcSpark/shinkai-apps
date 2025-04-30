@@ -92,6 +92,7 @@ export default {
   },
   chat: {
     chats: 'Chats',
+    agents: 'Agents',
     emptyStateTitle: 'Ask Shinkai AI',
     emptyStateDescription:
       'For quick questions, press ⌘ + Shift + J to use Shinkai Spotlight',
@@ -324,6 +325,7 @@ export default {
     defaultAgent: 'Default AI',
     layout: {
       general: 'General',
+      appearance: 'Appearance',
       shinkaiNode: 'Shinkai Node Manager',
       exportConnection: 'Export Connection',
       createRegistrationCode: 'Create Registration Code',
@@ -389,6 +391,13 @@ export default {
     experimentalFeature: {
       label: 'Enable Experimental Features',
     },
+    maxChatIterations: {
+      label: 'Max Chat Iterations',
+      description: 'The maximum number of iterations for a chat message to process',
+      placeholder: 'Enter a number between 1 and 100',
+      success: 'Max Chat Iterations updated successfully',
+      error: 'Error updating Max Chat Iterations',
+    },
     language: {
       label: 'Language',
       selectLanguage: 'Select Language',
@@ -419,6 +428,17 @@ export default {
     },
     promptLibrary: {
       label: 'Prompt Library',
+    },
+    appearance: {
+      label: 'Appearance',
+      chatFontSize: {
+        title: 'Chat Font Size',
+        description: 'Select your preferred font size',
+        small: 'Small',
+        medium: 'Medium',
+        large: 'Large',
+        extraLarge: 'Extra Large',
+      },
     },
   },
   exportConnection: {
@@ -511,6 +531,8 @@ export default {
     installed: 'Installed',
     deleteTool: 'Delete Tool',
     tryItOut: 'Try It Out',
+    showMore: 'More',
+    showLess: 'Show Less',
   },
   quickConnection: {
     label: 'Quick Connection',
@@ -734,5 +756,19 @@ export default {
   },
   feedback: {
     button: 'Feedback',
+    description:
+      'We value your feedback! Please let us know your thoughts about Shinkai and how we can improve your experience.',
+    title: 'Share Feedback',
+    form: {
+      contactLabel: 'Email or phone number',
+      contactPlaceholder: 'Email or phone number',
+      contactHelp: 'How can we reach you if we have questions?',
+      feedbackLabel: 'Your Feedback',
+      feedbackPlaceholder:
+        'Please share your thoughts, suggestions, or questions...',
+      submit: 'Send Feedback',
+      success: 'Thank you for your feedback! We will get back to you soon.',
+      error: 'Failed to submit feedback. Please try again.',
+    },
   },
 };

@@ -60,6 +60,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           )}
           placeholder=" "
           ref={inputRef}
+          spellCheck={false}
           style={style}
           type={inputType}
           {...props}

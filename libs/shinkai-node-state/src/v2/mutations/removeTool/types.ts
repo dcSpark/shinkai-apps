@@ -7,5 +7,4 @@ export type RemoveToolOutput = {
 export type RemoveToolInput = Token & {
   nodeAddress: string;
   toolKey: string;
-  isPlaygroundTool?: boolean;
 };

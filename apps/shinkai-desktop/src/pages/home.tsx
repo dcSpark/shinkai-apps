@@ -26,6 +26,7 @@ import {
   Popover,
   PopoverAnchor,
   PopoverContent,
+  PopoverTrigger,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -45,7 +46,9 @@ import { motion } from 'framer-motion';
 import {
   ArrowRight,
   ArrowUpRight,
+  ChevronDownIcon,
   EllipsisIcon,
+  InfoIcon,
   MessageSquare,
   Plus,
 } from 'lucide-react';
@@ -77,6 +80,7 @@ import {
   SUGGESTED_TOOLS_COUNT,
   useSelectedFilesChat,
 } from '../components/chat/conversation-footer';
+import { FeedbackModal } from '../components/feedback/feedback-modal';
 import { usePromptSelectionStore } from '../components/prompt/context/prompt-selection-context';
 import { VideoBanner } from '../components/video-banner';
 import { useAnalytics } from '../lib/posthog-provider';
@@ -188,9 +192,10 @@ const EmptyMessage = () => {
   const location = useLocation();
 
   const locationState = location.state as ChatConversationLocationState;
-  const isAgentInbox = locationState?.agentName;
 
   const debounceMessage = useDebounce(currentMessage, 500);
+
+  const selectedAgent = agents?.find((agent) => agent.agent_id === currentAI);
 
   const { data: searchToolList, isSuccess: isSearchToolListSuccess } =
     useGetSearchTools(
@@ -204,7 +209,7 @@ const EmptyMessage = () => {
           !!debounceMessage &&
           !!currentMessage &&
           !selectedTool &&
-          !isAgentInbox,
+          !selectedAgent,
         select: (data) => data.slice(0, 3).filter((item) => item.enabled),
       },
     );
@@ -287,7 +292,15 @@ const EmptyMessage = () => {
       return;
     }
     chatForm.setValue('agent', locationState.agentName);
-  }, [chatForm, locationState]);
+    const selectedAgent = agents?.find(
+      (agent) => agent.agent_id === locationState.agentName,
+    );
+    if (selectedAgent && selectedAgent.tools?.length > 0) {
+      chatConfigForm.setValue('useTools', true);
+    } else {
+      chatConfigForm.setValue('useTools', false);
+    }
+  }, [agents, chatConfigForm, chatForm, locationState]);
 
   useEffect(() => {
     if (!textareaRef.current) return;
@@ -394,16 +407,14 @@ const EmptyMessage = () => {
       toolKey: data.tool?.key,
       selectedVRFiles,
       selectedVRFolders,
-      ...(!isAgentInbox && {
-        chatConfig: {
-          stream: chatConfigForm.getValues('stream'),
-          custom_prompt: chatConfigForm.getValues('customPrompt') ?? '',
-          temperature: chatConfigForm.getValues('temperature'),
-          top_p: chatConfigForm.getValues('topP'),
-          top_k: chatConfigForm.getValues('topK'),
-          use_tools: chatConfigForm.getValues('useTools'),
-        },
-      }),
+      chatConfig: {
+        stream: chatConfigForm.getValues('stream'),
+        custom_prompt: chatConfigForm.getValues('customPrompt') ?? '',
+        temperature: chatConfigForm.getValues('temperature'),
+        top_p: chatConfigForm.getValues('topP'),
+        top_k: chatConfigForm.getValues('topK'),
+        use_tools: chatConfigForm.getValues('useTools'),
+      },
     });
 
     chatForm.reset();
@@ -430,8 +441,6 @@ const EmptyMessage = () => {
     });
   };
 
-  const selectedAgent = agents?.find((agent) => agent.agent_id === currentAI);
-
   const mainLayoutContainerRef = useViewportStore(
     (state) => state.mainLayoutContainerRef,
   );
@@ -443,6 +452,7 @@ const EmptyMessage = () => {
       initial={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
+      <FeedbackModal buttonProps={{ className: 'absolute right-4 top-4' }} />
       <div className="from-brand/5 pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top_center,_var(--tw-gradient-stops))] via-transparent to-transparent" />
       <div className="mx-auto mt-[110px] flex w-full flex-col items-stretch gap-4">
         <div className="flex h-[52px] flex-col gap-2">
@@ -452,7 +462,29 @@ const EmptyMessage = () => {
                 {formatText(selectedAgent.name)}
               </p>
               <p className="text-official-gray-400 text-sm">
-                {selectedAgent.ui_description}
+                {selectedAgent.ui_description ?? 'No description'}
+                {selectedAgent.tools.length > 0 && (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <span className="text-official-gray-400 inline-flex cursor-pointer items-center gap-1 capitalize hover:text-white">
+                        - {selectedAgent.tools.length} Active{' '}
+                        {selectedAgent.tools.length === 1 ? 'tool' : 'tools'}
+                        <ChevronDownIcon className="ml-1 size-4" />
+                      </span>
+                    </PopoverTrigger>
+                    <PopoverContent className="text-xs">
+                      <p className="text-official-gray-400 mb-2 font-medium">
+                        Active Tools
+                      </p>
+                      {selectedAgent.tools.map((tool) => (
+                        <div className="flex items-center gap-2" key={tool}>
+                          <ToolsIcon className="size-4" />
+                          <p>{formatText(tool?.split(':').at(-1) ?? '')}</p>
+                        </div>
+                      ))}
+                    </PopoverContent>
+                  </Popover>
+                )}
               </p>
             </div>
           ) : (
@@ -461,22 +493,6 @@ const EmptyMessage = () => {
                 <h1 className="font-clash text-4xl font-medium text-white">
                   How can I help you today?
                 </h1>
-              </div>
-              <div className="absolute right-4 top-4">
-                <Link
-                  className={cn(
-                    buttonVariants({
-                      size: 'xs',
-                      variant: 'outline',
-                      rounded: 'lg',
-                    }),
-                    'gap-1',
-                  )}
-                  to="/settings/feedback"
-                >
-                  <MessageSquare className="h-4 w-4" />
-                  {t('feedback.button', 'Feedback')}
-                </Link>
               </div>
             </>
           )}
@@ -542,7 +558,7 @@ const EmptyMessage = () => {
                           />
                         )}
                         {!selectedTool && <PromptSelectionActionBar />}
-                        {!selectedTool && (
+                        {!selectedTool && !selectedAgent && (
                           <ToolsSwitchActionBar
                             checked={chatConfigForm.watch('useTools')}
                             onClick={() => {
@@ -576,35 +592,33 @@ const EmptyMessage = () => {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <CreateChatConfigActionBar form={chatConfigForm} />
-
-                        {selectedTool ? (
-                          <Button
-                            className={cn('size-[36px] p-2')}
-                            disabled={isPending}
-                            form="tools-form"
-                            isLoading={isPending}
-                            size="icon"
-                          >
-                            <SendIcon className="h-full w-full" />
-                            <span className="sr-only">
-                              {t('chat.sendMessage')}
-                            </span>
-                          </Button>
-                        ) : (
-                          <Button
-                            className={cn('size-[36px] p-2')}
-                            disabled={isPending || !currentMessage}
-                            isLoading={isPending}
-                            onClick={chatForm.handleSubmit(onSubmit)}
-                            size="icon"
-                          >
-                            <SendIcon className="h-full w-full" />
-                            <span className="sr-only">
-                              {t('chat.sendMessage')}
-                            </span>
-                          </Button>
+                        {!selectedAgent && (
+                          <CreateChatConfigActionBar form={chatConfigForm} />
                         )}
+
+                        <Button
+                          className={cn('size-[36px] p-2')}
+                          disabled={
+                            isPending || (!selectedTool && !currentMessage)
+                          }
+                          form={
+                            selectedTool && chatToolView === 'form'
+                              ? 'tools-form'
+                              : undefined
+                          }
+                          isLoading={isPending}
+                          onClick={
+                            selectedTool && chatToolView === 'form'
+                              ? undefined
+                              : chatForm.handleSubmit(onSubmit)
+                          }
+                          size="icon"
+                        >
+                          <SendIcon className="h-full w-full" />
+                          <span className="sr-only">
+                            {t('chat.sendMessage')}
+                          </span>
+                        </Button>
                       </div>
                     </div>
                   }
@@ -731,6 +745,7 @@ const EmptyMessage = () => {
           >
             {!!debounceMessage &&
               !selectedTool &&
+              !selectedAgent &&
               isSearchToolListSuccess &&
               searchToolList?.length > 0 && (
                 <div className="flex items-center gap-2 px-2">
@@ -791,7 +806,7 @@ const EmptyMessage = () => {
                   </Link>
                 </div>
               )}
-            {(!debounceMessage || selectedTool) && (
+            {(!debounceMessage || selectedTool || selectedAgent) && (
               <div className="flex w-full items-center justify-between gap-2 px-2">
                 <span className="text-official-gray-400 text-xs font-light">
                   <span className="font-medium">Shift + Enter</span> for a new

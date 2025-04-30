@@ -5,10 +5,8 @@
 <p align="center">Shinkai apps unlock the full capabilities/automation of first-class LLM (AI) support in the web browser. It enables creating multiple agents, each connected to either local or 3rd-party LLMs (ex. OpenAI GPT), which have permissioned (meaning secure) access to act in every webpage you visit.
 <br/>
 <br/>
-There is a companion repo called Shinkai Node, that allows you to set up the node anywhere as the central unit of the Shinkai Network, handling tasks such as agent management, job processing, and secure communications. 
+There is a companion repo called Shinkai Node, that allows you to set up the node anywhere as the central unit of the Shinkai Network, handling tasks such as agent management, job processing, and secure communications.
 You can find it <a href="https://github.com/dcSpark/shinkai-node">here</a>.</p><br/>
-
-[![Mutable.ai Auto Wiki](https://img.shields.io/badge/Auto_Wiki-Mutable.ai-blue)](https://wiki.mutable.ai/dcSpark/shinkai-apps)
 
 ## Demo
 
@@ -18,8 +16,6 @@ https://github.com/user-attachments/assets/bc5bb7da-7ca5-477d-838a-8239951b6c01
 ## Documentation
 
 General Documentation: [https://docs.shinkai.com](https://docs.shinkai.com)
-
-More In Depth Codebase Documentation (Mutable.ai): [https://wiki.mutable.ai/dcSpark/shinkai-apps](https://wiki.mutable.ai/dcSpark/shinkai-apps)
 
 ## Projects
 
@@ -47,23 +43,23 @@ $ git clone https://github.com/dcSpark/shinkai-apps
 #### Macos
 ```
 ARCH="aarch64-apple-darwin" \
-OLLAMA_VERSION="v0.6.3" \
-SHINKAI_NODE_VERSION="v0.9.19" \
+OLLAMA_VERSION="v0.6.6" \
+SHINKAI_NODE_VERSION="v0.9.21" \
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
 #### Linux
 ```
 ARCH="x86_64-unknown-linux-gnu" \
-OLLAMA_VERSION="v0.6.3" \
-SHINKAI_NODE_VERSION="v0.9.19" \
+OLLAMA_VERSION="v0.6.6" \
+SHINKAI_NODE_VERSION="v0.9.21" \
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
 #### Windows
 ```
-$ENV:OLLAMA_VERSION="v0.6.3";
-$ENV:SHINKAI_NODE_VERSION="v0.9.19";
+$ENV:OLLAMA_VERSION="v0.6.6";
+$ENV:SHINKAI_NODE_VERSION="v0.9.21";
 $ENV:ARCH="x86_64-pc-windows-msvc";
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```

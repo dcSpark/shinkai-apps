@@ -34,6 +34,7 @@ export enum FileTypeSupported {
   Error = 'error',
   Unknown = 'unknown',
   Html = 'html',
+  SqliteDatabase = 'sqlite-database',
 }
 
 export type ToolCall = {
@@ -109,7 +110,6 @@ export type UserMessage = BaseMessage & {
   role: 'user';
   content: string; // UserContentPart
   attachments: Attachment[];
-  workflowName?: string;
 };
 
 export type AssistantMessage = BaseMessage & {

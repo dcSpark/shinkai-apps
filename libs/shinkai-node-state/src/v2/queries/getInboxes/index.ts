@@ -1,9 +1,10 @@
 import {
+  getAllAgentInboxes as getAllAgentInboxesApi,
   getAllInboxes as getAllInboxesApi,
   getAllInboxesWithPagination as getAllInboxesWithPaginationApi,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import type { GetInboxesInput } from './types';
+import type { GetAgentInboxesInput, GetInboxesInput } from './types';
 
 export const getInboxes = async ({ nodeAddress, token }: GetInboxesInput) => {
   const inboxes = await getAllInboxesApi(nodeAddress, token);
@@ -21,6 +22,19 @@ export const getInboxesWithPagination = async ({
     limit,
     offset,
     show_hidden,
+  });
+  return inboxes;
+};
+
+export const getAgentInboxes = async ({
+  nodeAddress,
+  token,
+  agentId,
+  showHidden,
+}: GetAgentInboxesInput) => {
+  const inboxes = await getAllAgentInboxesApi(nodeAddress, token, {
+    agent_id: agentId,
+    show_hidden: showHidden,
   });
   return inboxes;
 };

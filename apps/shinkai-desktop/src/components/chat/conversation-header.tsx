@@ -3,12 +3,19 @@ import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/get
 import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
 import {
   Button,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Tooltip,
+  TooltipChevronDownIcon,
   TooltipContent,
   TooltipPortal,
   TooltipTrigger,
+  Trigger,
 } from '@shinkai_network/shinkai-ui';
-import { PanelRightClose, PanelRightOpen } from 'lucide-react';
+import { ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
+import { ChevronDownIcon, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { memo } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -84,7 +91,29 @@ const ConversationHeaderWithInboxId = () => {
                 {selectedAgent?.name}
               </span>
               <span className="text-official-gray-400 text-xs">
-                {selectedAgent?.ui_description}
+                {selectedAgent?.ui_description ?? 'No description'}
+                {(selectedAgent?.tools ?? []).length > 0 && (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <span className="text-official-gray-400 inline-flex cursor-pointer items-center gap-1 capitalize hover:text-white">
+                        - {selectedAgent?.tools.length} Active{' '}
+                        {selectedAgent?.tools.length === 1 ? 'tool' : 'tools'}
+                        <ChevronDownIcon className="ml-1 size-4" />
+                      </span>
+                    </PopoverTrigger>
+                    <PopoverContent className="text-xs">
+                      <p className="text-official-gray-400 mb-2 font-medium">
+                        Active Tools
+                      </p>
+                      {(selectedAgent?.tools ?? []).map((tool) => (
+                        <div className="flex items-center gap-2" key={tool}>
+                          <ToolsIcon className="size-4" />
+                          <p>{formatText(tool?.split(':').at(-1) ?? '')}</p>
+                        </div>
+                      ))}
+                    </PopoverContent>
+                  </Popover>
+                )}
               </span>
             </div>
           ) : (

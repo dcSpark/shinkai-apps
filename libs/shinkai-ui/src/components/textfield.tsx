@@ -20,6 +20,8 @@ const TextField = ({
   startAdornment,
   endAdornment,
   autoFocus,
+  min,
+  max,
 }: {
   classes?: {
     formItem?: string;
@@ -42,9 +44,11 @@ const TextField = ({
   autoFocus?: boolean;
   label: React.ReactNode;
   helperMessage?: React.ReactNode;
-  type?: 'text' | 'password';
+  type?: 'text' | 'password' | 'number';
   startAdornment?: React.ReactNode;
   endAdornment?: React.ReactNode;
+  min?: number;
+  max?: number;
 }) => {
   return (
     <FormItem className={cn(classes?.formItem)}>
@@ -53,6 +57,8 @@ const TextField = ({
           autoFocus={autoFocus}
           className={cn(classes?.input)}
           endAdornment={endAdornment}
+          max={max}
+          min={min}
           spellCheck={false}
           startAdornment={startAdornment}
           type={type}

@@ -6,8 +6,10 @@ import {
 } from '@shinkai_network/shinkai-i18n';
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
+import { useSetMaxChatIterations } from '@shinkai_network/shinkai-node-state/v2/mutations/setMaxChatIterations/useSetMaxChatIterations';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
+import { useGetPreferences } from '@shinkai_network/shinkai-node-state/v2/queries/getPreferences/useGetPreferences';
 import { useGetShinkaiFreeModelQuota } from '@shinkai_network/shinkai-node-state/v2/queries/getShinkaiFreeModelQuota/useGetShinkaiFreeModelQuota';
 import {
   Button,
@@ -34,17 +36,18 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { getVersion } from '@tauri-apps/api/app';
 import { formatDuration, intervalToDuration } from 'date-fns';
 import { motion } from 'framer-motion';
-import { ExternalLinkIcon, InfoIcon, MessageSquare, ShieldCheck } from 'lucide-react';
+import { ExternalLinkIcon, InfoIcon, ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { FeedbackModal } from '../components/feedback/feedback-modal';
 import { OnboardingStep } from '../components/onboarding/constants';
 import {
   useShinkaiNodeGetOllamaVersionQuery,
@@ -66,6 +69,8 @@ const formSchema = z.object({
   optInAnalytics: z.boolean(),
   optInExperimental: z.boolean(),
   language: z.string(),
+  maxChatIterations: z.number(),
+  chatFontSize: z.enum(['xs', 'sm', 'base', 'lg']),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -96,10 +101,26 @@ const SettingsPage = () => {
   const setDefaultAgentId = useSettings(
     (settingsStore) => settingsStore.setDefaultAgentId,
   );
+
   const { nodeInfo, isSuccess: isNodeInfoSuccess } = useGetHealth({
     nodeAddress: auth?.node_address ?? '',
   });
 
+  const { mutateAsync: setMaxChatIterationsMutation } = useSetMaxChatIterations({
+    onSuccess: (_data, variables) => {
+      toast.success(t('settings.maxChatIterations.success'));
+    },
+    onError: (error) => {
+      toast.error(t('settings.maxChatIterations.error'), {
+        description: error?.message,
+      });
+      form.setValue('maxChatIterations', preferences?.max_iterations ?? 10);
+    },
+  });
+  const { data: preferences } = useGetPreferences({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
   const [appVersion, setAppVersion] = useState('');
 
   const form = useForm<FormSchemaType>({
@@ -129,6 +150,13 @@ const SettingsPage = () => {
     name: 'language',
   });
 
+  const currentMaxChatIterations = useWatch({
+    control: form.control,
+    name: 'maxChatIterations',
+  });
+
+  const debouncedMaxChatIterations = useDebounce(currentMaxChatIterations?.toString() ?? '', 1000);
+
   useEffect(() => {
     (async () => {
       setAppVersion(await getVersion());
@@ -142,6 +170,32 @@ const SettingsPage = () => {
   useEffect(() => {
     setOptInExperimental(currentOptInExperimental);
   }, [currentOptInExperimental, setOptInExperimental]);
+
+  useEffect(() => {
+    if (preferences) {
+      form.reset({
+        ...form.getValues(),
+        maxChatIterations: preferences.max_iterations ?? 10,
+      });
+    }
+  }, [preferences, form]);
+
+  useEffect(() => {
+    if (!preferences) return;
+    const currentFormValue = form.getValues('maxChatIterations');
+    const currentBackendValue = preferences.max_iterations ?? 10;
+    if (currentFormValue === currentBackendValue) return; // Avoid unnecessary update at startup
+    const newMaxIterations = parseInt(debouncedMaxChatIterations, 10);
+    if (!debouncedMaxChatIterations || isNaN(newMaxIterations)) return;
+
+    if (newMaxIterations !== currentBackendValue) {
+      setMaxChatIterationsMutation({
+        nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
+        maxIterations: newMaxIterations,
+      });
+    }
+  }, [debouncedMaxChatIterations, preferences, auth, setMaxChatIterationsMutation, form]);
 
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
@@ -218,24 +272,12 @@ const SettingsPage = () => {
   const isIdentityLocalhost = isShinkaiIdentityLocalhost(
     auth?.shinkai_identity ?? '',
   );
+
   return (
     <SimpleLayout classname="max-w-xl" title={t('settings.layout.general')}>
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <p>{t('settings.description')}</p>
-        <Link 
-          className={cn(
-            buttonVariants({ 
-              size: 'xs',
-              variant: 'outline',
-              rounded: 'lg'
-            }),
-            'gap-1'
-          )}
-          to="/settings/feedback"
-        >
-          <MessageSquare className="h-4 w-4" />
-          {t('feedback.button', 'Feedback')}
-        </Link>
+        <FeedbackModal />
       </div>
       <div className="flex flex-col space-y-8 pr-2.5">
         <div className="flex flex-col space-y-8">
@@ -546,6 +588,26 @@ const SettingsPage = () => {
                 name="ollamaVersion"
                 render={({ field }) => (
                   <TextField field={field} label={t('ollama.version')} />
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="maxChatIterations"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('settings.maxChatIterations.label')}</FormLabel>
+                    <FormControl>
+                      <TextField
+                        field={{ ...field, value: field.value ?? '' }}
+                        helperMessage={t('settings.maxChatIterations.description')}
+                        label={t('settings.maxChatIterations.label')}
+                        max={100}
+                        min={1}
+                        type="number"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
               />
               <FormField

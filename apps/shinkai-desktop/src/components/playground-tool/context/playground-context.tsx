@@ -3,14 +3,7 @@ import {
   ToolMetadata,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { PrismEditor } from 'prism-react-editor';
-import {
-  createContext,
-  createRef,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
-import { useLocation } from 'react-router-dom';
+import { createContext, createRef, useContext, useState } from 'react';
 import { createStore } from 'zustand';
 import { useStore } from 'zustand/index';
 

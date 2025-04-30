@@ -91,7 +91,7 @@ export const SyntaxHighlighterBase = makePrismAsyncLightSyntaxHighlighter({
     width: '100%',
     background: '#0d1117',
     padding: '1.5rem 1rem',
-    fontSize: '0.75rem',
+    fontSize: '0.75em',
   },
 });
 
@@ -99,7 +99,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h1: ({ node, className, ...props }) => (
     <h1
       className={cn(
-        'mb-3.5 scroll-m-20 text-[1.203125rem] font-extrabold leading-[1.5] last:mb-0',
+        'mb-3.5 scroll-m-20 text-[1.203125em] font-extrabold leading-[1.5] last:mb-0',
         className,
       )}
       {...props}
@@ -108,7 +108,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h2: ({ node, className, ...props }) => (
     <h2
       className={cn(
-        'mb-3.5 mt-5 scroll-m-20 text-[1.09375rem] font-semibold leading-[1.25] first:mt-0 last:mb-0',
+        'mb-3.5 mt-5 scroll-m-20 text-[1.09375em] font-semibold leading-[1.25] first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -117,7 +117,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h3: ({ node, className, ...props }) => (
     <h3
       className={cn(
-        'mb-2 mt-4 scroll-m-20 text-base font-semibold leading-[1.25] first:mt-0 last:mb-0',
+        'text-em-lg mb-2 mt-4 scroll-m-20 font-semibold leading-[1.25] first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -126,7 +126,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h4: ({ node, className, ...props }) => (
     <h4
       className={cn(
-        'mb-2 mt-4 scroll-m-20 text-base font-semibold leading-[1.25] first:mt-0 last:mb-0',
+        'text-em-base mb-2 mt-4 scroll-m-20 font-semibold leading-[1.25] first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -135,7 +135,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h5: ({ node, className, ...props }) => (
     <h5
       className={cn(
-        'my-2 text-base font-semibold first:mt-0 last:mb-0',
+        'text-em-base my-2 font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -143,13 +143,16 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   ),
   h6: ({ node, className, ...props }) => (
     <h6
-      className={cn('my-2 font-semibold first:mt-0 last:mb-0', className)}
+      className={cn(
+        'text-em-base my-2 font-semibold first:mt-0 last:mb-0',
+        className,
+      )}
       {...props}
     />
   ),
   p: ({ node, className, ...props }) => (
     <p
-      className={cn('mb-5 mt-5 text-sm first:mt-0 last:mb-0', className)}
+      className={cn('text-em-base mb-5 mt-5 first:mt-0 last:mb-0', className)}
       {...props}
     />
   ),
@@ -171,13 +174,16 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   ),
   ul: ({ node, className, ...props }) => (
     <ul
-      className={cn('my-4 ml-6 list-disc [&>li]:mt-2', className)}
+      className={cn('text-em-base my-4 ml-6 list-disc [&>li]:mt-2', className)}
       {...props}
     />
   ),
   ol: ({ node, className, ...props }) => (
     <ol
-      className={cn('my-4 ml-6 list-decimal [&>li]:mt-2', className)}
+      className={cn(
+        'text-em-base my-4 ml-6 list-decimal [&>li]:mt-2',
+        className,
+      )}
       {...props}
     />
   ),
@@ -195,7 +201,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   th: ({ node, className, ...props }) => (
     <th
       className={cn(
-        'bg-[#161b22] px-4 py-2 text-left text-xs font-bold first:rounded-tl-lg last:rounded-tr-lg [&[align=center]]:text-center [&[align=right]]:text-right',
+        'text-em-xs bg-[#161b22] px-4 py-2 text-left font-bold first:rounded-tl-lg last:rounded-tr-lg [&[align=center]]:text-center [&[align=right]]:text-right',
         className,
       )}
       {...props}
@@ -221,7 +227,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   ),
   sup: ({ node, className, ...props }) => (
     <sup
-      className={cn('[&>a]:text-xs [&>a]:no-underline', className)}
+      className={cn('[&>a]:text-em-xs [&>a]:no-underline', className)}
       {...props}
     />
   ),
