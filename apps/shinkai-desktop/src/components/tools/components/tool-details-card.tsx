@@ -33,6 +33,9 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
@@ -47,12 +50,11 @@ import {
   ExternalLinkIcon,
   LoaderIcon,
   MoreVertical,
-  Paperclip,
   PlayCircle,
   Rocket,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
@@ -176,7 +178,6 @@ export default function ToolDetailsCard({
 
   const { mutateAsync: toggleEnableTool, isPending: isTogglingEnableTool } =
     useToggleEnableTool();
-
   const { mutateAsync: duplicateTool, isPending: isDuplicatingTool } =
     useDuplicateTool({
       onSuccess: (response) => {
@@ -293,8 +294,6 @@ export default function ToolDetailsCard({
       setTryItOutFormData({
         configs: processedConfig,
       });
-      console.log('tryItOutFormData', tryItOutFormData);
-      console.log('tool', tool);
     }
     if (toolType === CodeLanguage.Agent) {
       setTryItOutFormData({
@@ -306,6 +305,30 @@ export default function ToolDetailsCard({
       });
     }
   }, [tool]);
+
+  const isConfigOKToEnableTool = useMemo(() => {
+    if ('configurations' in tool) {
+      if (isEnabled) return true;
+      const configsOkToEnable = tool.configurations.required.every(
+        (requiredConfigKey) => {
+          const requiredConfig =
+            tool.configurations.properties[requiredConfigKey];
+          const configValue = formData?.[requiredConfigKey];
+          if (configValue === null || configValue === undefined) return false;
+          if (requiredConfig.type === 'string') return configValue.length > 0;
+          if (requiredConfig.type === 'number')
+            return typeof configValue === 'number' && !isNaN(configValue);
+          if (requiredConfig.type === 'boolean')
+            return typeof configValue === 'boolean';
+          if (requiredConfig.type === 'array')
+            return Array.isArray(configValue);
+          return false;
+        },
+      );
+      return configsOkToEnable;
+    }
+    return false;
+  }, [tool, isEnabled, formData]);
 
   useEffect(() => {
     if ('oauth' in tool && tool.oauth) {
@@ -463,7 +486,7 @@ export default function ToolDetailsCard({
                 </label>
                 <Switch
                   checked={isEnabled}
-                  disabled={isTogglingEnableTool}
+                  disabled={isTogglingEnableTool || !isConfigOKToEnableTool}
                   id="tool-switch"
                   onCheckedChange={async () => {
                     await toggleEnableTool({
@@ -580,7 +603,21 @@ export default function ToolDetailsCard({
                 className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
                 value="configuration"
               >
-                Configuration
+                <span className="flex items-center gap-1.5">
+                  Configuration
+                  {!isConfigOKToEnableTool && (
+                    <div className="relative flex items-center">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="h-2 w-2 rounded-full bg-red-500" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{t('tools.configurationRequired')}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  )}
+                </span>
               </TabsTrigger>
             )}
           {'oauth' in tool && tool.oauth && tool.oauth.length > 0 && (

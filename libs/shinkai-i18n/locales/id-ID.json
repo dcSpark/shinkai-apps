@@ -587,6 +587,7 @@
     "runNow": "Jalankan Sekarang"
   },
   "tools": {
+    "configurationRequired": "Konfigurasi Alat Diperlukan",
     "create": "Buat Alat",
     "description": "Kelola, sesuaikan, dan kembangkan alat AI Anda.",
     "disconnect": {

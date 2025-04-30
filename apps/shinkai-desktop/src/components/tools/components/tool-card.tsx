@@ -18,6 +18,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { BoltIcon, PlayCircle } from 'lucide-react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAuth } from '../../../store/auth';
@@ -29,6 +30,28 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
   const queryClient = useQueryClient();
 
   const { mutateAsync: toggleEnableTool, isPending } = useToggleEnableTool();
+
+  const isConfigOKToEnableTool = useMemo(() => {
+    if (tool.enabled) return true;
+    if ('config' in tool) {
+      const requiredConfigs = tool.config?.filter(
+        (config) => config.BasicConfig.required,
+      );
+      if (!requiredConfigs?.length) return true;
+      return requiredConfigs.every((config) => {
+        if (config.BasicConfig.type === 'string')
+          return !!config.BasicConfig.key_value?.length;
+        if (config.BasicConfig.type === 'number')
+          return typeof config.BasicConfig.key_value === 'number';
+        if (config.BasicConfig.type === 'boolean')
+          return typeof config.BasicConfig.key_value === 'boolean';
+        if (config.BasicConfig.type === 'array')
+          return Array.isArray(config.BasicConfig.key_value);
+        return false;
+      });
+    }
+    return false;
+  }, [tool]);
 
   return (
     <div
@@ -51,7 +74,9 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
             </Badge>
           )}
         </div>
-        <p className="text-gray-80 whitespace-pre-wrap line-clamp-2 text-xs">{tool.description}</p>
+        <p className="text-gray-80 line-clamp-2 whitespace-pre-wrap text-xs">
+          {tool.description}
+        </p>
       </div>
 
       <Tooltip>
@@ -62,7 +87,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
                 variant: 'outline',
                 size: 'sm',
               }),
-              'min-h-auto h-auto w-10 rounded-md py-2 flex justify-center',
+              'min-h-auto flex h-auto w-10 justify-center rounded-md py-2',
             )}
             to={`/tools/${tool.tool_router_key}#try-it-out`}
           >
@@ -73,13 +98,13 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
           {t('common.tryItOut', 'Try it out')}
         </TooltipContent>
       </Tooltip>
-      
+
       <div className="flex justify-center">
         <RemoveToolButton
           toolKey={tool.tool_router_key}
         />
       </div>
-      
+
       <Link
         className={cn(
           buttonVariants({
@@ -99,30 +124,32 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
           <div>
             <Switch
               checked={tool.enabled}
-              disabled={isPending}
+              disabled={isPending || !isConfigOKToEnableTool}
               onCheckedChange={async () => {
                 const newEnabledState = !tool.enabled;
-                
+
                 const updatedTool = {
                   ...tool,
                   enabled: newEnabledState,
                 };
-                
+
                 queryClient.setQueryData(
                   [FunctionKeyV2.GET_LIST_TOOLS],
                   (oldData: unknown) => {
                     if (!oldData || !Array.isArray(oldData)) return oldData;
                     return oldData.map((t) =>
-                      t.tool_router_key === tool.tool_router_key ? updatedTool : t
+                      t.tool_router_key === tool.tool_router_key
+                        ? updatedTool
+                        : t,
                     );
-                  }
+                  },
                 );
-                
+
                 queryClient.invalidateQueries({
                   queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
                   refetchType: 'none',
                 });
-                
+
                 await toggleEnableTool({
                   toolKey: tool.tool_router_key,
                   isToolEnabled: newEnabledState,

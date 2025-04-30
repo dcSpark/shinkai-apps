@@ -587,6 +587,7 @@
     "runNow": "Ejecutar ahora"
   },
   "tools": {
+    "configurationRequired": "Se requiere configuración de la herramienta",
     "create": "Crear herramienta",
     "description": "Gestiona, personaliza y amplía tus herramientas de IA.",
     "disconnect": {

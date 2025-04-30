@@ -587,6 +587,7 @@
     "runNow": "立即运行"
   },
   "tools": {
+    "configurationRequired": "工具配置必需",
     "create": "创建工具",
     "description": "管理、定制和扩展您的人工智能工具。",
     "disconnect": {

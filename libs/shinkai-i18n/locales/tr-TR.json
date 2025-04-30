@@ -587,6 +587,7 @@
     "runNow": "Şimdi Çalıştır"
   },
   "tools": {
+    "configurationRequired": "Araç Yapılandırması Gerekli",
     "create": "Araç Oluştur",
     "description": "Yapay zeka araçlarınızı yönetin, özelleştirin ve genişletin.",
     "disconnect": {
