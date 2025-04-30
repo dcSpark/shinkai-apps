@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
-import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { t, useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   extractJobIdFromInbox,
   isJobInbox,
@@ -57,7 +57,14 @@ import { Edit3, Trash2Icon } from 'lucide-react';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useInView } from 'react-intersection-observer';
-import { Link, Outlet, useMatch, useNavigate } from 'react-router-dom';
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useMatch,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 import { toast } from 'sonner';
 
 import ArtifactPreview from '../../components/chat/artifact-preview';
@@ -182,7 +189,7 @@ const InboxMessageButtonBase = ({
   );
   const jobId = extractJobIdFromInbox(inboxId);
 
-  const match = useMatch(to);
+  const location = useLocation();
   const previousDataRef = useRef<string>(lastMessageTimestamp);
   const previousLastMessageTime = previousDataRef.current;
 
@@ -222,8 +229,8 @@ const InboxMessageButtonBase = ({
           ) : (
             <Link
               className={cn(
-                'text-gray-80 group relative flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-white/10',
-                match && 'bg-white/10 text-white',
+                'text-official-gray-300 group relative flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 hover:bg-white/10',
+                location.pathname === to && 'bg-white/10 text-white',
               )}
               key={inboxId}
               onClick={() => {
@@ -232,11 +239,6 @@ const InboxMessageButtonBase = ({
               }}
               to={to}
             >
-              {/* {isJobInbox(inboxId) ? (
-                <JobBubbleIcon className="h-4 w-4 shrink-0 text-inherit" />
-              ) : (
-                <ChatBubbleIcon className="h-4 w-4 shrink-0 text-inherit" />
-              )} */}
               <span className="line-clamp-1 flex-1 break-all pr-2 text-left text-xs">
                 {inboxName}
               </span>
@@ -530,7 +532,7 @@ const AgentInboxList = ({
   );
 
   const auth = useAuth((state) => state.auth);
-  const { data: agentInboxes } = useGetAgentInboxes({
+  const { data: agentInboxes, isSuccess } = useGetAgentInboxes({
     agentId: agentId ?? '',
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
@@ -560,29 +562,36 @@ const AgentInboxList = ({
       >
         <SheetHeader>
           <SheetTitle className="px-2 text-sm font-normal capitalize">
-            {agent?.name} - Chat History
+            {agent?.name} Chats
           </SheetTitle>
         </SheetHeader>
         <div className="flex flex-col gap-2 py-4">
-          {agentInboxes?.map((inbox) => (
-            <Link
-              className="hover:bg-official-gray-850 flex flex-col items-start gap-2 rounded-lg p-3 text-left"
-              key={inbox.inbox_id}
-              onClick={() => {
-                onSelectedAgentChange(null);
-              }}
-              to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
-            >
-              <span className="text-official-gray-100 line-clamp-2 text-sm">
-                {inbox.custom_name || inbox.inbox_id}
-              </span>
-              <span className="text-official-gray-500 text-xs">
-                {formatDateToLocaleStringWithTime(
-                  new Date(inbox.datetime_created),
-                )}
-              </span>
-            </Link>
-          ))}
+          {isSuccess && agentInboxes.length === 0 && (
+            <p className="text-official-gray-400 py-3 text-center text-xs">
+              {t('chat.actives.notFound')}
+            </p>
+          )}
+          {isSuccess &&
+            agentInboxes.length > 0 &&
+            agentInboxes?.map((inbox) => (
+              <Link
+                className="hover:bg-official-gray-850 flex flex-col items-start gap-2 rounded-lg p-3 text-left"
+                key={inbox.inbox_id}
+                onClick={() => {
+                  onSelectedAgentChange(null);
+                }}
+                to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
+              >
+                <span className="text-official-gray-100 line-clamp-2 text-sm">
+                  {inbox.custom_name || inbox.inbox_id}
+                </span>
+                <span className="text-official-gray-500 text-xs">
+                  {formatDateToLocaleStringWithTime(
+                    new Date(inbox.datetime_created),
+                  )}
+                </span>
+              </Link>
+            ))}
         </div>
       </SheetContent>
     </Sheet>
@@ -622,7 +631,7 @@ const AgentList = () => {
           agents?.map((agent) => (
             <button
               className={cn(
-                'text-official-gray-400 group relative flex h-[46px] w-full items-center gap-2 rounded-lg px-2 py-2 hover:bg-white/10',
+                'text-official-gray-300 group relative flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 hover:bg-white/10',
                 selectedAgent === agent.agent_id && 'bg-white/10 text-white',
               )}
               key={agent.agent_id}
