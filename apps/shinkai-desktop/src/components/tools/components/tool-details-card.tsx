@@ -13,7 +13,6 @@ import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
-import { useGetShinkaiFileProtocol } from '@shinkai_network/shinkai-node-state/v2/queries/getShinkaiFileProtocol/useGetShinkaiFileProtocol';
 import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
 import {
   Alert,
@@ -35,7 +34,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { fileIconMap, FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
+import { ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { save } from '@tauri-apps/plugin-dialog';
@@ -56,10 +55,10 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { SubpageLayout } from '../../../pages/layout/simple-layout';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
+import { FileInputField } from '../../playground-tool/components/execution-panel';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 import EditToolDetailsDialog from './edit-tool-details-dialog';
@@ -389,6 +388,10 @@ export default function ToolDetailsCard({
         )
       : {};
 
+    const selectedFilePathsInParams = Object.keys(sanitizedParams || {}).filter(
+      (key) => key.toLowerCase().includes('file_path'),
+    );
+
     await executeToolCode({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
@@ -410,6 +413,9 @@ export default function ToolDetailsCard({
       configs: sanitizedConfigs,
       xShinkaiAppId: 'shinkai-desktop',
       xShinkaiToolId: toolKey ?? '',
+      ...(selectedFilePathsInParams.length > 0 && {
+        mounts: selectedFilePathsInParams.map((key) => sanitizedParams[key]),
+      }),
     });
   };
 
@@ -423,12 +429,16 @@ export default function ToolDetailsCard({
     <>
       {hideToolHeaderDetails ? null : (
         <div className="flex w-full flex-col gap-6 md:flex-row">
-          <div className="size-12 overflow-hidden rounded-2xl border bg-gray-500 object-cover">
-            <img
-              alt=""
-              className="size-full"
-              src={toolStoreDetails?.assets?.iconUrl ?? ''}
-            />
+          <div className="flex size-12 items-center justify-center overflow-hidden rounded-2xl border bg-gray-500">
+            {toolStoreDetails?.assets?.iconUrl ? (
+              <img
+                alt=""
+                className="size-full object-cover"
+                src={toolStoreDetails?.assets?.iconUrl ?? '/placeholder.svg'}
+              />
+            ) : (
+              <ToolsIcon className="size-5" />
+            )}
           </div>
 
           <div className="flex-1">
@@ -697,8 +707,10 @@ export default function ToolDetailsCard({
               <div className="aspect-video overflow-hidden rounded-lg border border-zinc-800 bg-gray-500 object-cover object-top">
                 <img
                   alt=""
-                  className="size-full"
-                  src={toolStoreDetails?.assets?.bannerUrl ?? ''}
+                  className="size-full object-contain"
+                  src={
+                    toolStoreDetails?.assets?.bannerUrl ?? '/placeholder.svg'
+                  }
                 />
               </div>
             </div>
@@ -715,12 +727,18 @@ export default function ToolDetailsCard({
                   toolType={toolType}
                 />
               </div>
-              <div className="h-16 w-16 overflow-hidden rounded-lg border border-zinc-800 bg-gray-500 object-cover object-center">
-                <img
-                  alt=""
-                  className="size-full"
-                  src={toolStoreDetails?.assets?.iconUrl ?? ''}
-                />
+              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-zinc-800 bg-gray-500 object-cover object-center">
+                {toolStoreDetails?.assets?.iconUrl ? (
+                  <img
+                    alt=""
+                    className="size-full"
+                    src={
+                      toolStoreDetails?.assets?.iconUrl ?? '/placeholder.svg'
+                    }
+                  />
+                ) : (
+                  <ToolsIcon className="size-5" />
+                )}
               </div>
             </div>
           </div>
@@ -735,10 +753,7 @@ export default function ToolDetailsCard({
                   and all of your workflows
                 </p>
               </div>
-              <RemoveToolButton
-                isPlaygroundTool={!!isPlaygroundTool}
-                toolKey={toolKey as string}
-              />
+              <RemoveToolButton toolKey={toolKey as string} />
             </div>
           </div>
         </TabsContent>
@@ -989,13 +1004,23 @@ export default function ToolDetailsCard({
                   tool?.input_args?.properties &&
                   Object.keys(tool.input_args.properties).length > 0
                     ? {
-                        params: toolType === CodeLanguage.Agent ? {
-                          properties: {
-                            ...tool.input_args.properties,
-                            agent_id: { type: 'string', description: 'The ID of the agent to use for this tool (read only)' },
-                          },
-                          required: ['agent_id', ...tool.input_args.required],
-                        } : tool.input_args,
+                        params:
+                          toolType === CodeLanguage.Agent
+                            ? {
+                                properties: {
+                                  ...tool.input_args.properties,
+                                  agent_id: {
+                                    type: 'string',
+                                    description:
+                                      'The ID of the agent to use for this tool (read only)',
+                                  },
+                                },
+                                required: [
+                                  'agent_id',
+                                  ...tool.input_args.required,
+                                ],
+                              }
+                            : tool.input_args,
                       }
                     : {}),
                 },
@@ -1011,6 +1036,18 @@ export default function ToolDetailsCard({
                     //'ui:readonly': toolType === CodeLanguage.Agent,
                     'ui:readonly': true,
                   },
+                  ...('input_args' in tool && tool?.input_args?.properties
+                    ? Object.keys(tool.input_args.properties).reduce<
+                        Record<string, { 'ui:widget': typeof FileInputField }>
+                      >((acc, key) => {
+                        if (key.toLowerCase().includes('file_path')) {
+                          acc[key] = {
+                            'ui:widget': FileInputField,
+                          };
+                        }
+                        return acc;
+                      }, {})
+                    : {}),
                 },
               }}
               validator={validator}

@@ -16,6 +16,14 @@ module.exports = {
       },
     },
     extend: {
+      fontSize: {
+        'em-xs': '0.75em',
+        'em-sm': '0.875em',
+        'em-base': '1em',
+        'em-lg': '1.125em',
+        'em-xl': '1.25em',
+        'em-2xl': '1.5em',
+      },
       height: {
         input: '59px',
       },

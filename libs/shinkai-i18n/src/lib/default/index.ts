@@ -324,6 +324,7 @@ export default {
     defaultAgent: 'Default AI',
     layout: {
       general: 'General',
+      appearance: 'Appearance',
       shinkaiNode: 'Shinkai Node Manager',
       exportConnection: 'Export Connection',
       createRegistrationCode: 'Create Registration Code',
@@ -426,6 +427,17 @@ export default {
     },
     promptLibrary: {
       label: 'Prompt Library',
+    },
+    appearance: {
+      label: 'Appearance',
+      chatFontSize: {
+        title: 'Chat Font Size',
+        description: 'Select your preferred font size',
+        small: 'Small',
+        medium: 'Medium',
+        large: 'Large',
+        extraLarge: 'Extra Large',
+      },
     },
   },
   exportConnection: {
@@ -740,5 +752,19 @@ export default {
   },
   feedback: {
     button: 'Feedback',
+    description:
+      'We value your feedback! Please let us know your thoughts about Shinkai and how we can improve your experience.',
+    title: 'Share Feedback',
+    form: {
+      contactLabel: 'Email or phone number',
+      contactPlaceholder: 'Email or phone number',
+      contactHelp: 'How can we reach you if we have questions?',
+      feedbackLabel: 'Your Feedback',
+      feedbackPlaceholder:
+        'Please share your thoughts, suggestions, or questions...',
+      submit: 'Send Feedback',
+      success: 'Thank you for your feedback! We will get back to you soon.',
+      error: 'Failed to submit feedback. Please try again.',
+    },
   },
 };

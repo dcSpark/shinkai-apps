@@ -10,6 +10,7 @@ export type Agent = {
   knowledge: string[];
   storage_path: string;
   tools: string[];
+  tools_config_override: Record<string, Record<string, any>>;
   debug_mode: boolean;
   config?: JobConfig | null;
   scope?: {

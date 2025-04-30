@@ -20,7 +20,7 @@ export const TOOL_HOMEPAGE_SUGGESTIONS = [
   },
   {
     text: 'Download YouTube Video Transcript',
-    prompt: 'Create a TypeScript tool that downloads transcripts from YouTube videos without using an API. The tool should accept a YouTube video URL as input, use web scraping techniques to extract the available closed captions/subtitles, and return the transcript in a structured format. Include error handling for videos without captions, invalid URLs, and network issues. The tool should support multiple languages if available and allow saving the transcript to a file.',
+    prompt: 'Create a TypeScript tool that downloads transcripts from YouTube videos without using an API key. The tool should accept a YouTube video URL as input and return the transcript in a structured format. Include error handling for videos without captions, invalid URLs, and network issues. The tool should support multiple languages if available and allow saving the transcript to a file.',
     language: CodeLanguage.Typescript,
   },
   {

@@ -206,7 +206,19 @@
     "welcome": "Transforma tu experiencia de navegación web utilizando IA con Shinkai Visor ✨"
   },
   "feedback": {
-    "button": "Comentarios"
+    "button": "Comentarios",
+    "description": "¡Valoramos tus comentarios! Por favor, háznos saber tus pensamientos sobre Shinkai y cómo podemos mejorar tu experiencia.",
+    "form": {
+      "contactHelp": "¿Cómo podemos contactarte si tenemos preguntas?",
+      "contactLabel": "Correo electrónico o número de teléfono",
+      "contactPlaceholder": "Correo electrónico o número de teléfono",
+      "error": "Error al enviar los comentarios. Por favor, inténtalo de nuevo.",
+      "feedbackLabel": "Tus Comentarios",
+      "feedbackPlaceholder": "Por favor, comparte tus pensamientos, sugerencias o preguntas...",
+      "submit": "Enviar Comentarios",
+      "success": "¡Gracias por tus comentarios! Nos pondremos en contacto contigo pronto."
+    },
+    "title": "Compartir Comentarios"
   },
   "galxe": {
     "errors": {
@@ -380,6 +392,17 @@
     "restore": "Restaurar"
   },
   "settings": {
+    "appearance": {
+      "chatFontSize": {
+        "description": "Selecciona tu tamaño de fuente preferido",
+        "extraLarge": "Extra Grande",
+        "large": "Grande",
+        "medium": "Mediano",
+        "small": "Pequeño",
+        "title": "Tamaño de Fuente del Chat"
+      },
+      "label": "Apariencia"
+    },
     "cryptoWallet": {
       "addCoinbaseCDPWallet": "Agregar Billetera Coinbase CDP",
       "addLocalWallet": "Agregar Billetera Local",
@@ -416,6 +439,7 @@
     },
     "layout": {
       "analytics": "Analíticas",
+      "appearance": "Apariencia",
       "createRegistrationCode": "Crear Código de Registro",
       "cryptoWallet": "Billetera Cripto",
       "exportConnection": "Exportar Conexión",

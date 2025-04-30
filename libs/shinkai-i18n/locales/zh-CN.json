@@ -206,7 +206,19 @@
     "welcome": "使用 Shinkai Visor ✨ 变革您的网页浏览体验"
   },
   "feedback": {
-    "button": "反馈"
+    "button": "反馈",
+    "description": "我们重视您的反馈！请告诉我们您对新海的看法，以及我们如何改善您的体验。",
+    "form": {
+      "contactHelp": "如果我们有问题，如何联系您？",
+      "contactLabel": "电子邮件或电话号码",
+      "contactPlaceholder": "电子邮件或电话号码",
+      "error": "提交反馈失败。请再试一次。",
+      "feedbackLabel": "您的反馈",
+      "feedbackPlaceholder": "请分享您的想法、建议或问题...",
+      "submit": "发送反馈",
+      "success": "感谢您的反馈！我们会尽快与您联系。"
+    },
+    "title": "分享反馈"
   },
   "galxe": {
     "errors": {
@@ -380,6 +392,17 @@
     "restore": "恢复"
   },
   "settings": {
+    "appearance": {
+      "chatFontSize": {
+        "description": "选择您喜欢的字体大小",
+        "extraLarge": "超大",
+        "large": "大",
+        "medium": "中",
+        "small": "小",
+        "title": "聊天字体大小"
+      },
+      "label": "外观"
+    },
     "cryptoWallet": {
       "addCoinbaseCDPWallet": "添加 Coinbase CDP 钱包",
       "addLocalWallet": "添加本地钱包",
@@ -416,6 +439,7 @@
     },
     "layout": {
       "analytics": "分析",
+      "appearance": "外观",
       "createRegistrationCode": "创建注册码",
       "cryptoWallet": "加密钱包",
       "exportConnection": "导出连接",

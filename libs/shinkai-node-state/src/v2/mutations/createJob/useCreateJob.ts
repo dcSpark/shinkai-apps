@@ -24,6 +24,9 @@ export const useCreateJob = (options?: Options) => {
       queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_VR_FILES],
       });
+      queryClient.invalidateQueries({
+        queryKey: [FunctionKeyV2.GET_AGENT_INBOXES, variables.llmProvider],
+      });
 
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);

@@ -290,6 +290,7 @@ export type ExecuteToolCodeRequest = {
   extra_config?: Record<string, any>;
   llm_provider: string;
   tools: string[];
+  mounts?: string[];
 };
 
 export type ExecuteToolCodeResponse = Record<string, any>;
@@ -420,6 +421,7 @@ export type AddToolRequestRequest = {
 export type AddToolRequestResponse = {
   file: number;
   file_name: string;
+  file_path: string;
   message: string;
   status: string;
 };
@@ -522,4 +524,13 @@ export type CopyToolAssetsRequest = {
 };
 export type CopyToolAssetsResponse = {
   message: string;
+};
+
+export type GetToolProtocolsResponse = {
+  created: string;
+  supported: {
+    name: string;
+    icon: string;
+    documentationURL: string;
+  }[];
 };

@@ -1,12 +1,19 @@
+import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useOpenToolInCodeEditor } from '@shinkai_network/shinkai-node-state/v2/mutations/openToolnCodeEditor/useOpenToolInCodeEditor';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
+import { useGetToolProtocols } from '@shinkai_network/shinkai-node-state/v2/queries/getToolProtocols/useGetToolProtocols';
 import {
   BackgroundBeams,
   Button,
   buttonVariants,
   ChatInputArea,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
   Form,
   Skeleton,
 } from '@shinkai_network/shinkai-ui';
@@ -16,18 +23,21 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   ArrowRight,
   ArrowUpRight,
+  CheckCircle,
   CircleAlert,
+  ExternalLink,
   LogOut,
-  MessageSquare,
   StoreIcon,
+  XIcon,
 } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import { MessageList } from '../components/chat/components/message-list';
+import { FeedbackModal } from '../components/feedback/feedback-modal';
 import { LanguageToolSelector } from '../components/playground-tool/components/language-tool-selector';
 import { ToolsSelection } from '../components/playground-tool/components/tools-selection';
 import {
@@ -274,7 +284,7 @@ function ToolsHome({
   });
 
   return (
-    <div className="container pb-[80px] max-w-[1152px]">
+    <div className="container max-w-[1152px] pb-[80px]">
       <div className="mb-[80px] flex items-center justify-end gap-3 px-0 py-4">
         <div className="flex items-center gap-3">
           <DockerStatus />
@@ -294,23 +304,10 @@ function ToolsHome({
             <StoreIcon className="size-4" />
             {t('tools.store.label')}
           </Link>
-          <Link 
-            className={cn(
-              buttonVariants({ 
-                size: 'xs',
-                variant: 'outline',
-                rounded: 'lg'
-              }),
-              'gap-1'
-            )}
-            to="/settings/feedback"
-          >
-            <MessageSquare className="h-4 w-4" />
-            {t('feedback.button', 'Feedback')}
-          </Link>
+          <FeedbackModal />
         </div>
       </div>
-      <div className="flex flex-col gap-4 max-w-[1152px]">
+      <div className="flex max-w-[1152px] flex-col gap-4">
         <div className="flex flex-col gap-20">
           <div className="flex min-h-[300px] w-full flex-col items-center justify-between gap-10 pt-2">
             <div className="flex flex-col gap-2">
@@ -328,83 +325,92 @@ function ToolsHome({
             <div className="w-full max-w-[1152px]">
               <Form {...form}>
                 <form>
-                  <ChatInputArea
-                    autoFocus
-                    bottomAddons={
-                      <div className="flex items-end justify-between gap-3 px-3 pb-2">
-                        <div className="flex items-center gap-3">
-                          <AIModelSelector
-                            onValueChange={(value) => {
-                              form.setValue('llmProviderId', value);
-                            }}
-                            value={form.watch('llmProviderId')}
-                          />
-                          <LanguageToolSelector
-                            onValueChange={(value) => {
-                              form.setValue('language', value as CodeLanguage);
-                            }}
-                            value={form.watch('language')}
-                          />
-                          {!isCodeGeneratorModel && (
-                            <ToolsSelection
-                              onChange={(value) => {
-                                form.setValue('tools', value);
+                  <div className="relative pb-10">
+                    <ChatInputArea
+                      autoFocus
+                      bottomAddons={
+                        <div className="flex items-end justify-between gap-3 px-3 pb-2">
+                          <div className="flex items-center gap-3">
+                            <AIModelSelector
+                              onValueChange={(value) => {
+                                form.setValue('llmProviderId', value);
                               }}
-                              value={form.watch('tools')}
+                              value={form.watch('llmProviderId')}
                             />
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {!isCodeGeneratorModel && (
-                            <Button
-                              className="flex items-center gap-2 border-none"
-                              isLoading={isOpeningToolInCodeEditor}
-                              onClick={() => {
-                                if (!auth) return;
-                                openToolInCodeEditor({
-                                  token: auth?.api_v2_key,
-                                  language: form.watch('language'),
-                                  nodeAddress: auth?.node_address,
-                                  xShinkaiAppId,
-                                  xShinkaiToolId,
-                                  xShinkaiLLMProvider: defaulAgentId,
-                                });
+                            <LanguageToolSelector
+                              onValueChange={(value) => {
+                                form.setValue(
+                                  'language',
+                                  value as CodeLanguage,
+                                );
                               }}
-                              rounded="lg"
-                              size="xs"
+                              value={form.watch('language')}
+                            />
+                            {!isCodeGeneratorModel && (
+                              <ToolsSelection
+                                onChange={(value) => {
+                                  form.setValue('tools', value);
+                                }}
+                                value={form.watch('tools')}
+                              />
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {!isCodeGeneratorModel && (
+                              <Button
+                                className="flex items-center gap-2 border-none"
+                                isLoading={isOpeningToolInCodeEditor}
+                                onClick={() => {
+                                  if (!auth) return;
+                                  openToolInCodeEditor({
+                                    token: auth?.api_v2_key,
+                                    language: form.watch('language'),
+                                    nodeAddress: auth?.node_address,
+                                    xShinkaiAppId,
+                                    xShinkaiToolId,
+                                    xShinkaiLLMProvider: defaulAgentId,
+                                  });
+                                }}
+                                rounded="lg"
+                                size="xs"
+                                type="button"
+                                variant="link"
+                              >
+                                Create in VSCode/Cursor
+                              </Button>
+                            )}
+                            <Button
+                              className={cn('size-[36px] p-2')}
+                              disabled={form.watch('message') === ''}
+                              isLoading={isProcessing}
+                              onClick={() =>
+                                startToolCreation(form.getValues())
+                              }
+                              size="icon"
                               type="button"
-                              variant="link"
                             >
-                              Create in VSCode/Cursor
+                              <SendIcon className="h-full w-full" />
+                              <span className="sr-only">
+                                {t('chat.sendMessage')}
+                              </span>
                             </Button>
-                          )}
-                          <Button
-                            className={cn('size-[36px] p-2')}
-                            disabled={form.watch('message') === ''}
-                            isLoading={isProcessing}
-                            onClick={() => startToolCreation(form.getValues())}
-                            size="icon"
-                            type="button"
-                          >
-                            <SendIcon className="h-full w-full" />
-                            <span className="sr-only">
-                              {t('chat.sendMessage')}
-                            </span>
-                          </Button>
+                          </div>
                         </div>
-                      </div>
-                    }
-                    disabled={isProcessing}
-                    onChange={(value) => {
-                      form.setValue('message', value);
-                    }}
-                    onSubmit={() => {
-                      startToolCreation(form.getValues());
-                    }}
-                    placeholder={'Describe the tool you want to create...'}
-                    textareaClassName="max-h-[200px] min-h-[200px] p-4 text-sm"
-                    value={form.watch('message')}
-                  />
+                      }
+                      className="relative z-[1]"
+                      disabled={isProcessing}
+                      onChange={(value) => {
+                        form.setValue('message', value);
+                      }}
+                      onSubmit={() => {
+                        startToolCreation(form.getValues());
+                      }}
+                      placeholder={'Describe the tool you want to create...'}
+                      textareaClassName="max-h-[200px] min-h-[200px] p-4 text-sm"
+                      value={form.watch('message')}
+                    />
+                    <ProtocolsBanner />
+                  </div>
                   {error && (
                     <div className="mt-3 flex max-w-full items-start gap-2 rounded-md bg-[#2d0607]/40 px-3 py-2.5 text-xs font-medium text-[#ff9ea1]">
                       <CircleAlert className="mt-1 size-4 shrink-0" />
@@ -446,7 +452,7 @@ function ToolsHome({
           <ToolCollection />
 
           <div className="bg-official-gray-1100 relative rounded-lg">
-            <div className="mx-auto flex max-w-[1400px] flex-col items-center gap-8 p-10 text-center">
+            <div className="relative z-[1] mx-auto flex max-w-[1400px] flex-col items-center gap-8 p-10 text-center">
               <div className="flex flex-col gap-2">
                 <h3 className="font-clash max-w-xl text-2xl font-semibold tracking-normal">
                   Discover More Tools
@@ -466,20 +472,7 @@ function ToolsHome({
                   >
                     Visit App Store <ArrowRight className="h-4 w-4" />
                   </a>
-                  <Link 
-                    className={cn(
-                      buttonVariants({ 
-                        size: 'xs',
-                        variant: 'outline',
-                        rounded: 'lg'
-                      }),
-                      'gap-1'
-                    )}
-                    to="/settings/feedback"
-                  >
-                    <MessageSquare className="h-4 w-4" />
-                    {t('feedback.button', 'Feedback')}
-                  </Link>
+                  <FeedbackModal buttonProps={{ rounded: 'full' }} />
                 </div>
               </div>
             </div>
@@ -490,3 +483,115 @@ function ToolsHome({
     </div>
   );
 }
+
+const ProtocolsBannerBase = () => {
+  const { data: toolProtocols, isPending } = useGetToolProtocols();
+
+  return (
+    <div
+      className={cn(
+        'bg-official-gray-850 absolute inset-x-2 bottom-1 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pb-1 pt-2.5 shadow-white',
+      )}
+    >
+      <div className="flex w-full items-center justify-between gap-2 px-2">
+        <span className="text-official-gray-400 inline-flex items-center gap-2">
+          <span className="text-xs font-light">
+            <span className="font-medium">Shift + Enter</span> for a new line
+          </span>
+          <span className="text-official-gray-600 text-xs font-light">|</span>
+          <span className="text-xs font-light">
+            <span className="font-medium">Enter</span> to send
+          </span>
+        </span>
+
+        <Dialog>
+          <DialogTrigger className="text-official-gray-300 hover:text-official-gray-200 flex items-center gap-1 text-xs transition-colors">
+            <div className="border-official-gray-300 border-b">
+              View Supported Protocols
+            </div>
+            <ArrowRight className="ml-0.5 h-3 w-3" />
+          </DialogTrigger>
+
+          <DialogContent className="max-w-xl">
+            <DialogClose asChild>
+              <Button
+                className="absolute right-4 top-4"
+                size="icon"
+                variant="tertiary"
+              >
+                <XIcon className="text-gray-80 h-5 w-5" />
+              </Button>
+            </DialogClose>
+            <DialogHeader>
+              <DialogTitle className="text-xl">Verified Protocols</DialogTitle>
+            </DialogHeader>
+
+            {isPending ? (
+              <div className="flex flex-col gap-3">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <Skeleton
+                    className="bg-official-gray-900/30 h-[72px] animate-pulse rounded-lg"
+                    key={i}
+                  />
+                ))}
+              </div>
+            ) : toolProtocols?.supported &&
+              toolProtocols?.supported.length > 0 ? (
+              <div className="divide-official-gray-780 max-h-[500px] divide-y overflow-y-auto">
+                {toolProtocols?.supported.map((protocol) => (
+                  <Link
+                    className="group flex items-center gap-3 px-3 py-2.5 transition-all duration-200"
+                    key={protocol.name}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    to={protocol.documentationURL}
+                  >
+                    <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-gray-900 p-1.5">
+                      <img
+                        alt=""
+                        className="size-full overflow-hidden rounded-full object-cover"
+                        height={40}
+                        src={protocol.icon}
+                        width={40}
+                      />
+                    </div>
+                    <div className="min-w-0 flex-grow">
+                      <div className="flex items-center gap-1">
+                        <p className="truncate text-sm font-medium text-white">
+                          {protocol.name}
+                        </p>
+                        <ExternalLink className="text-official-gray-500 h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
+                      </div>
+                      <div className="text-official-gray-400 mt-0.5 flex items-center text-xs">
+                        <CheckCircle className="mr-1 h-3 w-3 text-green-400" />
+                        <span className="truncate">Verified</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="py-8 text-center">
+                <p className="text-official-gray-400 text-sm">
+                  No protocols found .
+                </p>
+              </div>
+            )}
+
+            <div className="border-official-gray-780 flex flex-col items-start justify-between gap-3 border-t pt-4 sm:flex-row sm:items-center">
+              <p className="text-official-gray-400 text-xs">
+                Other protocols may also work but haven&apos;t been officially
+                verified.
+              </p>
+              <FeedbackModal
+                buttonLabel="Request Protocol"
+                buttonProps={{ className: 'shrink-0' }}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </div>
+  );
+};
+const ProtocolsBanner = memo(ProtocolsBannerBase);

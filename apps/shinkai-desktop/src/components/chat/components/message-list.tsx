@@ -135,7 +135,7 @@ export const MessageList = memo(
         const currentHeight = chatContainerElement.scrollHeight;
         const currentScrollTop = chatContainerElement.scrollTop;
         previousChatHeightRef.current = currentHeight;
-        const scrollThreshold = 100;
+        const scrollThreshold = 20;
         const isNearBottom =
           currentScrollTop + chatContainerElement.clientHeight >=
           currentHeight - scrollThreshold;
@@ -259,11 +259,11 @@ export const MessageList = memo(
                       {!minimalistMode && (
                         <div
                           className={cn(
-                            'relative z-10 m-auto my-2 flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5 capitalize',
+                            'bg-official-gray-900 relative z-10 m-auto my-2 flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl px-2.5 capitalize',
                             'sticky top-5',
                           )}
                         >
-                          <span className="text-gray-80 text-xs font-medium">
+                          <span className="text-official-gray-200 text-sm font-medium">
                             {getRelativeDateLabel(
                               new Date(messages[0].createdAt || ''),
                             )}
@@ -275,7 +275,7 @@ export const MessageList = memo(
                           const previousMessage = messages[messageIndex - 1];
 
                           const disabledRetryAndEditValue =
-                          disabledRetryAndEdit ?? messageIndex === 0;
+                            disabledRetryAndEdit ?? messageIndex === 0;
 
                           const handleRetryMessage = () => {
                             regenerateMessage?.(message?.messageId ?? '');

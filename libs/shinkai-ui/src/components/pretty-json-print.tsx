@@ -15,5 +15,5 @@ export const PrettyJsonPrint = ({ json }: { json: string | object }) => {
     }
     return formattedValue;
   }, [json]);
-  return <pre className='overflow-x-scroll'>{formattedJson}</pre>;
+  return <pre className="overflow-x-scroll">{formattedJson}</pre>;
 };
