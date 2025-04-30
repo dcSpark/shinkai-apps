@@ -638,7 +638,6 @@ const AgentList = () => {
               onClick={() => setSelectedAgent(agent.agent_id)}
               type="button"
             >
-              {/* <AgentIcon className="h-4 w-4 shrink-0 text-inherit" /> */}
               <span className="line-clamp-1 flex-1 break-all pr-2 text-left text-xs capitalize">
                 {agent.name}
               </span>
