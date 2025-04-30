@@ -13,7 +13,6 @@ import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
-import { useGetShinkaiFileProtocol } from '@shinkai_network/shinkai-node-state/v2/queries/getShinkaiFileProtocol/useGetShinkaiFileProtocol';
 import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
 import {
   Alert,
@@ -38,7 +37,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { fileIconMap, FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { save } from '@tauri-apps/plugin-dialog';
@@ -51,15 +49,13 @@ import {
   ExternalLinkIcon,
   LoaderIcon,
   MoreVertical,
-  Paperclip,
   PlayCircle,
   Rocket,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { SubpageLayout } from '../../../pages/layout/simple-layout';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
@@ -180,7 +176,7 @@ export default function ToolDetailsCard({
 
   const { mutateAsync: toggleEnableTool, isPending: isTogglingEnableTool } =
     useToggleEnableTool();
-  const [configsOkToEnable, setConfigsOkToEnable] = useState<boolean>(false);
+  // const [configsOkToEnable, setConfigsOkToEnable] = useState<boolean>(false);
   const { mutateAsync: duplicateTool, isPending: isDuplicatingTool } =
     useDuplicateTool({
       onSuccess: (response) => {
@@ -297,8 +293,6 @@ export default function ToolDetailsCard({
       setTryItOutFormData({
         configs: processedConfig,
       });
-      console.log('tryItOutFormData', tryItOutFormData);
-      console.log('tool', tool);
     }
     if (toolType === CodeLanguage.Agent) {
       setTryItOutFormData({
@@ -309,26 +303,31 @@ export default function ToolDetailsCard({
         },
       });
     }
+  }, [tool]);
+
+  const isConfigOKToEnableTool = useMemo(() => {
     if ('configurations' in tool) {
-      if (isEnabled) {
-        setConfigsOkToEnable(true);
-        return;
-      }
+      if (isEnabled) return true;
       const configsOkToEnable = tool.configurations.required.every(
         (requiredConfigKey) => {
-          const requiredConfig = tool.configurations.properties[requiredConfigKey]
-          const configValue = formData?.[requiredConfigKey]
-          if (configValue === null || configValue === undefined) return false
-          if (requiredConfig.type === 'string') return configValue.length > 0
-          if (requiredConfig.type === 'number') return typeof configValue === 'number' && !isNaN(configValue)
-          if (requiredConfig.type === 'boolean') return typeof configValue === 'boolean'
-          if (requiredConfig.type === 'array') return Array.isArray(configValue)
-          return false
-        }
+          const requiredConfig =
+            tool.configurations.properties[requiredConfigKey];
+          const configValue = formData?.[requiredConfigKey];
+          if (configValue === null || configValue === undefined) return false;
+          if (requiredConfig.type === 'string') return configValue.length > 0;
+          if (requiredConfig.type === 'number')
+            return typeof configValue === 'number' && !isNaN(configValue);
+          if (requiredConfig.type === 'boolean')
+            return typeof configValue === 'boolean';
+          if (requiredConfig.type === 'array')
+            return Array.isArray(configValue);
+          return false;
+        },
       );
-      setConfigsOkToEnable(configsOkToEnable);
+      return configsOkToEnable;
     }
-  }, [tool]);
+    return false;
+  }, [tool, isEnabled, formData]);
 
   useEffect(() => {
     if ('oauth' in tool && tool.oauth) {
@@ -475,7 +474,7 @@ export default function ToolDetailsCard({
                 </label>
                 <Switch
                   checked={isEnabled}
-                  disabled={isTogglingEnableTool || !configsOkToEnable}
+                  disabled={isTogglingEnableTool || !isConfigOKToEnableTool}
                   id="tool-switch"
                   onCheckedChange={async () => {
                     await toggleEnableTool({
@@ -594,7 +593,7 @@ export default function ToolDetailsCard({
               >
                 <span className="flex items-center gap-1.5">
                   Configuration
-                  {configsOkToEnable === false && (
+                  {!isConfigOKToEnableTool && (
                     <div className="relative flex items-center">
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -1025,13 +1024,23 @@ export default function ToolDetailsCard({
                   tool?.input_args?.properties &&
                   Object.keys(tool.input_args.properties).length > 0
                     ? {
-                        params: toolType === CodeLanguage.Agent ? {
-                          properties: {
-                            ...tool.input_args.properties,
-                            agent_id: { type: 'string', description: 'The ID of the agent to use for this tool (read only)' },
-                          },
-                          required: ['agent_id', ...tool.input_args.required],
-                        } : tool.input_args,
+                        params:
+                          toolType === CodeLanguage.Agent
+                            ? {
+                                properties: {
+                                  ...tool.input_args.properties,
+                                  agent_id: {
+                                    type: 'string',
+                                    description:
+                                      'The ID of the agent to use for this tool (read only)',
+                                  },
+                                },
+                                required: [
+                                  'agent_id',
+                                  ...tool.input_args.required,
+                                ],
+                              }
+                            : tool.input_args,
                       }
                     : {}),
                 },
