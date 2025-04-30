@@ -69,8 +69,6 @@ type SettingsStore = {
   // legacy state
   termsAndConditionsAccepted?: boolean;
   getTermsAndConditionsAccepted: () => boolean | undefined;
-  maxChatIterations: number;
-  setMaxChatIterations: (maxChatIterations: number) => void;
 };
 
 export const useSettings = create<SettingsStore>()(
@@ -229,11 +227,6 @@ export const useSettings = create<SettingsStore>()(
           set({ playgroundCodePanelSize: size });
         },
 
-        maxChatIterations: 10,
-        setMaxChatIterations: (maxChatIterations) => {
-          set({ maxChatIterations });
-        },
-
         resetSettings: () => {
           set({
             onboarding: {
@@ -258,8 +251,6 @@ export const useSettings = create<SettingsStore>()(
             heightRow: 'large',
             compatibilityBannerDismissed: false,
             isChatSidebarCollapsed: false,
-            maxChatIterations: 10,
-
             termsAndConditionsAccepted: undefined,
           });
         },

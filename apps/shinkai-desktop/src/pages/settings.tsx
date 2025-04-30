@@ -6,7 +6,6 @@ import {
 } from '@shinkai_network/shinkai-i18n';
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
-import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useSetMaxChatIterations } from '@shinkai_network/shinkai-node-state/v2/mutations/setMaxChatIterations/useSetMaxChatIterations';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
@@ -39,7 +38,6 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { useQueryClient } from '@tanstack/react-query';
 import { getVersion } from '@tauri-apps/api/app';
 import { formatDuration, intervalToDuration } from 'date-fns';
 import { motion } from 'framer-motion';
@@ -79,7 +77,6 @@ type FormSchemaType = z.infer<typeof formSchema>;
 const MotionButton = motion(Button);
 
 const SettingsPage = () => {
-  const queryClient = useQueryClient();
   const { t } = useTranslation();
   const auth = useAuth((authStore) => authStore.auth);
   const isLocalShinkaiNodeInUse = useShinkaiNodeManager(
@@ -110,7 +107,6 @@ const SettingsPage = () => {
 
   const { mutateAsync: setMaxChatIterationsMutation } = useSetMaxChatIterations({
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: [FunctionKeyV2.GET_PREFERENCES] });
       toast.success(t('settings.maxChatIterations.success'));
     },
     onError: (error) => {

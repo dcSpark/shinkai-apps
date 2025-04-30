@@ -1330,6 +1330,7 @@ export const setPreferences = async (
       responseType: 'json',
     },
   );
+  console.log('set preferences response', response.status);
   return response.data;
 };
 
