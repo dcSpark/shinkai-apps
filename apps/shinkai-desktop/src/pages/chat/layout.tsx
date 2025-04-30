@@ -753,7 +753,7 @@ const ChatSidebar = () => {
   }, [selectedAgent]);
 
   return (
-    <div className="group/actions flex size-full flex-col px-2 py-4 pt-6">
+    <div className="group/actions flex size-full flex-col overflow-auto px-2 py-4 pt-6">
       <AnimatePresence custom={direction} initial={false} mode="popLayout">
         <motion.div
           animate="active"
