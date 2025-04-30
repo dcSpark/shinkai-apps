@@ -392,7 +392,7 @@ const ChatLayout = () => {
       <AnimatePresence initial={false}>
         {!isChatSidebarCollapsed && (
           <motion.div
-            animate={{ width: 240, opacity: 1 }}
+            animate={{ width: 260, opacity: 1 }}
             className="border-official-gray-780 flex h-full shrink-0 flex-col overflow-hidden border-r"
             exit={{ width: 0, opacity: 0 }}
             initial={{ width: 0, opacity: 0 }}
@@ -463,7 +463,7 @@ const ChatList = () => {
     (inboxesPagination?.pages?.at(-1)?.inboxes ?? []).length > 0;
   return (
     <div className="">
-      <div className="mb-3 flex h-8 items-center justify-between gap-2 pl-3">
+      <div className="mb-1 flex h-8 items-center justify-between gap-2 pl-3">
         <h2 className="font-clash text-base font-medium tracking-wide">
           {t('chat.chats')}
         </h2>
@@ -647,7 +647,7 @@ const AgentList = ({
 
   return (
     <div className="">
-      <div className="mb-3 flex h-8 items-center justify-between gap-2 pl-3">
+      <div className="mb-1 flex h-8 items-center justify-between gap-2 pl-3">
         <h2 className="font-clash text-base font-medium tracking-wide">
           {t('chat.agents')}
         </h2>
