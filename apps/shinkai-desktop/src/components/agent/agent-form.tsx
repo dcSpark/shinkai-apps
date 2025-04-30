@@ -1278,6 +1278,44 @@ function AgentForm({ mode }: AgentFormProps) {
                               '[&[data-state=open]>span.content]:hidden',
                             )}
                           >
+                            Context Settings
+                            <ChevronRight className="ml-1 size-4" />
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <div className="space-y-4 py-6">
+                              <FormField
+                                control={form.control}
+                                name="config.custom_prompt"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Message Context</FormLabel>
+                                    <FormControl>
+                                      <Textarea
+                                        className="placeholder-official-gray-500 !min-h-[100px] text-sm"
+                                        placeholder="e.g., {{user_message}}. And then say: Chao amigo!"
+                                        spellCheck={false}
+                                        {...field}
+                                      />
+                                    </FormControl>
+                                    <FormDescription>
+                                      (Optional) You can control the message context here by forcing a static message with the user message e.g. {"{{user_message}}"}. And then say: Chao amigo!. This will add "And then say: Chao amigo!" to every message sent.
+                                    </FormDescription>
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
+
+                        <Collapsible>
+                          <CollapsibleTrigger
+                            className={cn(
+                              'text-official-gray-400 hover:text-official-gray-300 flex items-center gap-1 text-sm',
+                              '[&[data-state=open]>svg]:rotate-90',
+                              '[&[data-state=open]>span.input]:block',
+                              '[&[data-state=open]>span.content]:hidden',
+                            )}
+                          >
                             Advanced Options
                             <ChevronRight className="ml-1 size-4" />
                           </CollapsibleTrigger>
