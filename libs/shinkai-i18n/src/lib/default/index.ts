@@ -391,6 +391,13 @@ export default {
     experimentalFeature: {
       label: 'Enable Experimental Features',
     },
+    maxChatIterations: {
+      label: 'Max Chat Iterations',
+      description: 'The maximum number of iterations for a chat message to process',
+      placeholder: 'Enter a number between 1 and 100',
+      success: 'Max Chat Iterations updated successfully',
+      error: 'Error updating Max Chat Iterations',
+    },
     language: {
       label: 'Language',
       selectLanguage: 'Select Language',

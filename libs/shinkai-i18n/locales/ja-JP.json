@@ -1,4 +1,6 @@
 {
+  "": {
+  },
   "aiFilesSearch": {
     "description": "AIファイル全体を簡単に検索してコンテンツを見つける",
     "filesSelected": "{{count}} 個のファイルが選択されました",
@@ -451,6 +453,13 @@
       "promptLibrary": "プロンプトライブラリ",
       "publicKeys": "公開鍵",
       "shinkaiNode": "シンカイ・ノード・マネージャー"
+    },
+    "maxChatIterations": {
+      "description": "チャットメッセージを処理するための最大反復回数",
+      "error": "最大チャット反復回数の更新中にエラーが発生しました",
+      "label": "最大チャット反復回数",
+      "placeholder": "1から100の間の数字を入力してください",
+      "success": "最大チャット反復回数が正常に更新されました"
     },
     "promptLibrary": {
       "label": "プロンプトライブラリ"

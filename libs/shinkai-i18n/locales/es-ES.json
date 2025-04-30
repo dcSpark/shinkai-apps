@@ -452,6 +452,13 @@
       "publicKeys": "Claves Públicas",
       "shinkaiNode": "Administrador de Nodo Shinkai"
     },
+    "maxChatIterations": {
+      "description": "El número máximo de iteraciones para procesar un mensaje de chat",
+      "error": "Error al actualizar las Máx. Iteraciones de Chat",
+      "label": "Máx. Iteraciones de Chat",
+      "placeholder": "Introduce un número entre 1 y 100",
+      "success": "Máx. Iteraciones de Chat actualizadas con éxito"
+    },
     "promptLibrary": {
       "label": "Biblioteca de Prompts"
     },

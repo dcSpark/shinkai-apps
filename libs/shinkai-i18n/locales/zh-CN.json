@@ -452,6 +452,13 @@
       "publicKeys": "公钥",
       "shinkaiNode": "深海节点管理器"
     },
+    "maxChatIterations": {
+      "description": "处理聊天消息的最大迭代次数",
+      "error": "更新最大聊天迭代次数时出错",
+      "label": "最大聊天迭代次数",
+      "placeholder": "请输入一个介于 1 和 100 之间的数字",
+      "success": "最大聊天迭代次数更新成功"
+    },
     "promptLibrary": {
       "label": "提示库"
     },

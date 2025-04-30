@@ -452,6 +452,13 @@
       "publicKeys": "Kunci Publik",
       "shinkaiNode": "Manajer Node Shinkai"
     },
+    "maxChatIterations": {
+      "description": "Jumlah maksimum iterasi untuk memproses pesan obrolan",
+      "error": "Kesalahan saat memperbarui Iterasi Obrolan Maksimal",
+      "label": "Iterasi Obrolan Maksimal",
+      "placeholder": "Masukkan angka antara 1 dan 100",
+      "success": "Iterasi Obrolan Maksimal berhasil diperbarui"
+    },
     "promptLibrary": {
       "label": "Perpustakaan Prompt"
     },

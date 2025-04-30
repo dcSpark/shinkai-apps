@@ -277,7 +277,6 @@ export const useSettings = create<SettingsStore>()(
             compatibilityBannerDismissed: false,
             isChatSidebarCollapsed: false,
             chatFontSize: 'sm',
-
             termsAndConditionsAccepted: undefined,
           });
         },

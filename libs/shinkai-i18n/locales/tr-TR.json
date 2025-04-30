@@ -452,6 +452,13 @@
       "publicKeys": "Açık Anahtarlar",
       "shinkaiNode": "Shinkai Düğüm Yöneticisi"
     },
+    "maxChatIterations": {
+      "description": "Bir sohbet mesajının işlenmesi için maksimum iterasyon sayısı",
+      "error": "Maksimum Sohbet İterasyonu güncellenirken hata oluştu",
+      "label": "Maksimum Sohbet İterasyonu",
+      "placeholder": "1 ile 100 arasında bir sayı girin",
+      "success": "Maksimum Sohbet İterasyonu başarıyla güncellendi"
+    },
     "promptLibrary": {
       "label": "İpucu Kütüphanesi"
     },
