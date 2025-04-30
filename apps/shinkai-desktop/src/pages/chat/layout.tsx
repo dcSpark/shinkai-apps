@@ -386,7 +386,7 @@ const ChatLayout = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      <ResizablePanelGroup className="relative" direction="horizontal">
+      <ResizablePanelGroup direction="horizontal">
         <ResizablePanel className="flex h-full flex-col">
           <Outlet />
         </ResizablePanel>
