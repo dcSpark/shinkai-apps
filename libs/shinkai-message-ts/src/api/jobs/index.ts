@@ -373,8 +373,13 @@ export const getAllAgentInboxes = async (
   bearerToken: string,
   payload: GetAllAgentInboxesRequest,
 ) => {
+  const queryParams = new URLSearchParams();
+  queryParams.set('agent_id', payload.agent_id);
+  if (typeof payload.show_hidden === 'boolean') {
+    queryParams.set('show_hidden', payload.show_hidden.toString());
+  }
   const response = await httpClient.get(
-    urlJoin(nodeAddress, '/v2/all_inboxes?agent_id=' + payload.agent_id),
+    urlJoin(nodeAddress, '/v2/all_inboxes?' + queryParams.toString()),
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',

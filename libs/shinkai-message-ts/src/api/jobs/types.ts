@@ -214,6 +214,7 @@ export type GetAllInboxesResponse = Inbox[];
 
 export type GetAllAgentInboxesRequest = {
   agent_id: string;
+  show_hidden?: boolean;
 };
 
 export type GetAllInboxesWithPaginationRequest = {

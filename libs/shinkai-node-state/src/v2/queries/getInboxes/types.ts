@@ -14,6 +14,7 @@ export type GetInboxesInput = Token & {
 export type GetAgentInboxesInput = Token & {
   nodeAddress: string;
   agentId: string;
+  showHidden?: boolean;
 };
 
 export type GetInboxesOutput = GetAllInboxesWithPaginationResponse;
