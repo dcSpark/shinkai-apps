@@ -772,4 +772,4 @@ const ChatSidebar = () => {
   );
 };
 
-export default ChatLayout;
+export default memo(ChatLayout);
