@@ -10,10 +10,7 @@ export const useGetAgentInboxes = (input: GetAgentInboxesInput) => {
     queryFn: async () => getAgentInboxes(input),
     select: (data) =>
       // display only job inboxes
-      data.filter(
-        (inbox) =>
-          inbox?.inbox_id?.startsWith('job_inbox::')
-      ),
+      data.filter((inbox) => inbox?.inbox_id?.startsWith('job_inbox::')),
     enabled: !!input.agentId,
   });
   return {

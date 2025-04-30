@@ -31,13 +31,6 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-  ScrollArea,
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
   Skeleton,
   Tooltip,
   TooltipContent,
@@ -49,8 +42,8 @@ import { formatDateToLocaleStringWithTime } from '@shinkai_network/shinkai-ui/he
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  ArrowLeftIcon,
   ChevronLeft,
+  ChevronRight,
   Edit3,
   EllipsisIcon,
   PlusIcon,
@@ -59,24 +52,15 @@ import {
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useInView } from 'react-intersection-observer';
-import {
-  Link,
-  Outlet,
-  useLocation,
-  useMatch,
-  useNavigate,
-  useParams,
-} from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import ArtifactPreview from '../../components/chat/artifact-preview';
 import { useChatStore } from '../../components/chat/context/chat-context';
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
-import { usePromptSelectionStore } from '../../components/prompt/context/prompt-selection-context';
 import { handleSendNotification } from '../../lib/notifications';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
-import { useViewportStore } from '../../store/viewport';
 
 const InboxNameInput = ({
   closeEditable,
@@ -656,7 +640,7 @@ const AgentList = ({
             <button
               className="text-official-gray-300 hidden size-8 items-center justify-center rounded-full hover:text-white group-hover/actions:flex"
               onClick={() => {
-                navigate(`/agents/create`);
+                navigate(`/add-agent`);
               }}
             >
               <PlusIcon className="h-4 w-4" />
@@ -693,6 +677,7 @@ const AgentList = ({
               <span className="line-clamp-1 flex-1 break-all pr-2 text-left text-xs capitalize">
                 {agent.name}
               </span>
+              <ChevronRight className="h-4 w-4" />
             </button>
           ))}
         {isSuccess && !agents && (
