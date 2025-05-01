@@ -48,16 +48,16 @@ export const OLLAMA_MODELS: OllamaModel[] = [
   ...(currentPlatform === 'windows' || currentPlatform === 'linux'
     ? [
         {
-          model: 'gemma2',
-          tag: '2b-instruct-q4_1',
-          name: 'Google Gemma 2',
+          model: 'gemma3',
+          tag: '27b-it-q4_K_M',
+          name: 'Google Gemma 3',
           description:
-            'Google Gemma 2 is a high-performing and efficient model available in three sizes: 2B, 9B, and 27B.',
-          contextLength: 8192,
-          quality: OllamaModelQuality.Low,
-          speed: OllamaModelSpeed.VeryFast,
-          capabilities: [OllamaModelCapability.TextGeneration],
-          size: 1.8,
+            'Gemma is a lightweight, family of models from Google built on Gemini technology. The Gemma 3 models are multimodal—processing text and images—and feature a 128K context window with support for over 140 languages.',
+          contextLength: 128000,
+          quality: OllamaModelQuality.Good,
+          speed: OllamaModelSpeed.Average,
+          capabilities: [OllamaModelCapability.TextGeneration, OllamaModelCapability.ImageToText],
+          size: 15.8,
           fullName: '',
           provider: ModelProvider.Google,
         },
@@ -80,18 +80,18 @@ export const OLLAMA_MODELS: OllamaModel[] = [
   ...(currentPlatform === 'macos'
     ? [
         {
-          model: 'command-r7b',
-          tag: '7b-12-2024-q4_K_M',
-          name: 'Command R 7B',
+          model: 'gemma3',
+          tag: '27b-it-q4_K_M',
+          name: 'Google Gemma 3',
           description:
-            "The smallest model in Cohere's R series delivers top-tier speed, efficiency, and quality to build powerful AI applications on commodity GPUs and edge devices.",
-          contextLength: 4096,
-          quality: OllamaModelQuality.Low,
-          speed: OllamaModelSpeed.VeryFast,
-          capabilities: [OllamaModelCapability.TextGeneration],
-          size: 5.1,
+            'Gemma is a lightweight, family of models from Google built on Gemini technology. The Gemma 3 models are multimodal—processing text and images—and feature a 128K context window with support for over 140 languages.',
+          contextLength: 128000,
+          quality: OllamaModelQuality.Good,
+          speed: OllamaModelSpeed.Average,
+          capabilities: [OllamaModelCapability.TextGeneration, OllamaModelCapability.ImageToText],
+          size: 15.8,
           fullName: '',
-          provider: ModelProvider.Aya,
+          provider: ModelProvider.Google,
           platforms: ['macos'],
         },
         {
@@ -112,18 +112,18 @@ export const OLLAMA_MODELS: OllamaModel[] = [
       ]
     : []),
   {
-    model: 'mistral-nemo',
-    tag: '12b-instruct-2407-q4_0',
-    name: 'Mistral Nemo 12b',
+    model: 'deepseek-r1',
+    tag: '70b',
+    name: 'DeepSeek R1 70B',
     description:
-      'Mistral NeMo is a 12B model built in collaboration with NVIDIA. It offers a large context window.',
+      'DeepSeek R1 70B is a powerful reasoning model achieving performance comparable to OpenAI-o1 across math, code, and reasoning tasks. It is derived from Llama3.3-70B-Instruct and optimized through distillation from larger models.',
     contextLength: 128000,
     quality: OllamaModelQuality.Good,
     speed: OllamaModelSpeed.Average,
     capabilities: [OllamaModelCapability.TextGeneration],
-    size: 7.1,
+    size: 40.2,
     fullName: '',
-    provider: ModelProvider.Mistral,
+    provider: ModelProvider.DeepSeek,
     platforms: ['windows', 'linux', 'macos'],
   },
   {
