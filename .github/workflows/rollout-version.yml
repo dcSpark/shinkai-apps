@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       manual_ref:
-        description: 'Optional: Override selected ref (e.g., 0.9.21)'
+        description: 'Optional: Override selected ref (e.g., 1.0.0)'
         required: false
         type: string
 
@@ -24,9 +24,9 @@ jobs:
             REF_NAME=$(echo "${{ github.ref }}" | sed 's/refs\/[^\/]*\///')
           fi
           
-          # Check if input matches version pattern (e.g., 0.9.21)
+          # Check if input matches version pattern (e.g., 1.0.0)
           if ! [[ "$REF_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Error: Selected ref $REF_NAME is not a valid version tag (e.g., 0.9.21)"
+            echo "Error: Selected ref $REF_NAME is not a valid version tag (e.g., 1.0.0)"
             exit 1
           fi
           
