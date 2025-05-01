@@ -1,27 +1,46 @@
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
+import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  Badge,
   Button,
   Popover,
   PopoverContent,
   PopoverTrigger,
+  ScrollArea,
+  Separator,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
   Tooltip,
-  TooltipChevronDownIcon,
   TooltipContent,
   TooltipPortal,
   TooltipTrigger,
-  Trigger,
 } from '@shinkai_network/shinkai-ui';
-import { ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
+import { AgentIcon, ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
-import { ChevronDownIcon, PanelRightClose, PanelRightOpen } from 'lucide-react';
+import {
+  Book,
+  ChevronRight,
+  PanelRightClose,
+  PanelRightOpen,
+  Sparkles,
+} from 'lucide-react';
 import { memo } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import ProviderIcon from '../ais/provider-icon';
 
 const ConversationHeaderWithInboxId = () => {
   const currentInbox = useGetCurrentInbox();
@@ -50,6 +69,15 @@ const ConversationHeaderWithInboxId = () => {
 
   const selectedAgent = agents?.find(
     (agent) => agent.agent_id === provider?.agent?.id,
+  );
+
+  const { data: llmProvider } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const selectedModel = llmProvider?.find(
+    (provider) => provider.id === selectedAgent?.llm_provider_id,
   );
 
   return (
@@ -85,35 +113,204 @@ const ConversationHeaderWithInboxId = () => {
         </Tooltip>
 
         <div className="inline w-full flex-1 truncate whitespace-nowrap text-sm font-medium capitalize text-white">
-          {isAgentInbox ? (
+          {isAgentInbox && selectedAgent ? (
             <div className="flex flex-col gap-0.5">
               <span className="text-sm font-medium capitalize text-white">
-                {selectedAgent?.name}
+                {selectedAgent?.name}{' '}
               </span>
               <span className="text-official-gray-400 text-xs">
-                {selectedAgent?.ui_description ?? 'No description'}
-                {(selectedAgent?.tools ?? []).length > 0 && (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <span className="text-official-gray-400 inline-flex cursor-pointer items-center gap-1 capitalize hover:text-white">
-                        - {selectedAgent?.tools.length} Active{' '}
-                        {selectedAgent?.tools.length === 1 ? 'tool' : 'tools'}
-                        <ChevronDownIcon className="ml-1 size-4" />
-                      </span>
-                    </PopoverTrigger>
-                    <PopoverContent className="text-xs">
-                      <p className="text-official-gray-400 mb-2 font-medium">
-                        Active Tools
-                      </p>
-                      {(selectedAgent?.tools ?? []).map((tool) => (
-                        <div className="flex items-center gap-2" key={tool}>
-                          <ToolsIcon className="size-4" />
-                          <p>{formatText(tool?.split(':').at(-1) ?? '')}</p>
+                {selectedAgent?.ui_description || 'No description'}
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <span className="text-official-gray-400 px-3 text-xs underline">
+                      View Details
+                    </span>
+                  </SheetTrigger>
+                  <SheetContent side="right">
+                    <SheetHeader className="">
+                      <div className="flex items-center gap-4">
+                        <AgentIcon className="size-5" />
+                        <SheetTitle className="font-clash text-xl font-medium tracking-wide">
+                          {selectedAgent.name}
+                        </SheetTitle>
+                      </div>
+                    </SheetHeader>
+
+                    <ScrollArea className="h-[calc(100vh-80px)]">
+                      <div className="py-6">
+                        <h3 className="text-official-gray-400 mb-2 flex items-center gap-2 text-sm font-medium">
+                          About
+                        </h3>
+                        <p className="text-sm leading-relaxed">
+                          {selectedAgent.ui_description}
+                        </p>
+
+                        <div className="mt-6">
+                          <h3 className="text-official-gray-400 mb-2 flex items-center gap-2 text-sm font-medium">
+                            AI Model
+                          </h3>
+                          <div className="flex items-center gap-2">
+                            <div className="flex size-4 items-center justify-center rounded-lg">
+                              <ProviderIcon
+                                className="size-full"
+                                provider={selectedModel?.id.split(':')[0]}
+                              />
+                            </div>
+                            <p className="text-sm">{selectedModel?.id}</p>
+                          </div>
                         </div>
-                      ))}
-                    </PopoverContent>
-                  </Popover>
-                )}
+
+                        <Accordion
+                          className="mt-6"
+                          defaultValue={['instructions', 'tools', 'knowledge']}
+                          type="multiple"
+                        >
+                          <AccordionItem
+                            className="border-b-0"
+                            value="instructions"
+                          >
+                            <AccordionTrigger className="py-3 hover:no-underline">
+                              <div className="flex items-center gap-2">
+                                <Sparkles className="text-primary h-4 w-4" />
+                                <span className="text-sm font-medium">
+                                  System Instructions
+                                </span>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <div className="bg-official-gray-850 rounded-lg border p-4">
+                                <p className="whitespace-pre-wrap text-sm">
+                                  {selectedAgent.config?.custom_system_prompt ||
+                                    'No system instructions found.'}
+                                </p>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+
+                          <AccordionItem className="border-b-0" value="tools">
+                            <AccordionTrigger className="py-3 hover:no-underline">
+                              <div className="flex items-center gap-2">
+                                <ToolsIcon className="text-primary h-4 w-4" />
+                                <span className="text-sm font-medium">
+                                  Available Tools{' '}
+                                  {selectedAgent.tools.length > 0 && (
+                                    <span className="text-official-gray-400 text-xs">
+                                      ({selectedAgent.tools.length})
+                                    </span>
+                                  )}
+                                </span>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-3">
+                                {selectedAgent.tools.length === 0 && (
+                                  <p className="text-official-gray-400 text-sm">
+                                    No tools found.
+                                  </p>
+                                )}
+                                {selectedAgent.tools.map((tool, index) => (
+                                  <div
+                                    className="bg-official-gray-850 cursor-default rounded-lg border p-3 transition-colors"
+                                    key={index}
+                                  >
+                                    <h4 className="flex items-center gap-2 text-sm font-medium">
+                                      {formatText(
+                                        tool.split(':::')?.at(-1) ?? '',
+                                      )}
+                                    </h4>
+                                  </div>
+                                ))}
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+
+                          <AccordionItem
+                            className="border-b-0"
+                            value="knowledge"
+                          >
+                            <AccordionTrigger className="py-3 hover:no-underline">
+                              <div className="flex items-center gap-2">
+                                <Book className="text-primary h-4 w-4" />
+                                <span className="text-sm font-medium">
+                                  Knowledge Sources{' '}
+                                  {(
+                                    selectedAgent.scope?.vector_fs_folders ?? []
+                                  ).length > 0 ||
+                                    ((
+                                      selectedAgent.scope?.vector_fs_items ?? []
+                                    )?.length > 0 && (
+                                      <span className="text-official-gray-400 text-xs">
+                                        (
+                                        {(
+                                          selectedAgent.scope
+                                            ?.vector_fs_folders ?? []
+                                        ).length +
+                                          (
+                                            selectedAgent.scope
+                                              ?.vector_fs_items ?? []
+                                          ).length}
+                                        )
+                                      </span>
+                                    ))}
+                                </span>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-2">
+                                {(selectedAgent.scope?.vector_fs_folders ?? [])
+                                  .length === 0 &&
+                                  (selectedAgent.scope?.vector_fs_items ?? [])
+                                    .length === 0 && (
+                                    <p className="text-official-gray-400 text-sm">
+                                      No knowledge sources found.
+                                    </p>
+                                  )}
+                                {selectedAgent.scope?.vector_fs_folders?.map(
+                                  (item, index) => (
+                                    <div
+                                      className="bg-official-gray-850 flex items-center justify-between rounded-lg border p-3"
+                                      key={index}
+                                    >
+                                      <span className="text-sm">
+                                        {item?.split('/').at(-1)}
+                                      </span>
+                                    </div>
+                                  ),
+                                )}
+                                {selectedAgent.scope?.vector_fs_items?.map(
+                                  (item, index) => (
+                                    <div
+                                      className="bg-official-gray-850 flex items-center justify-between rounded-lg border p-3"
+                                      key={index}
+                                    >
+                                      <span className="text-sm">
+                                        {item
+                                          ?.split('/')
+                                          .at(-1)
+                                          ?.split('.')
+                                          .at(0)}
+                                      </span>
+                                      <Badge
+                                        className="text-xs uppercase"
+                                        variant="outline"
+                                      >
+                                        {item
+                                          ?.split('/')
+                                          .at(-1)
+                                          ?.split('.')
+                                          .at(1)}
+                                      </Badge>
+                                    </div>
+                                  ),
+                                )}
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      </div>
+                    </ScrollArea>
+                  </SheetContent>
+                </Sheet>
               </span>
             </div>
           ) : (
