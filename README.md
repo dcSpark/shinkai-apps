@@ -142,6 +142,9 @@ Every command, if it's needed, build projects and it's dependencies according to
 - Create a dev build
   - `NODE_OPTIONS="--max_old_space_size=8192" npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json"`
 
+- Update ollama models repository
+  - `npx ts-node ./ci-scripts/generate-ollama-models-repository.ts`
+
 ## Dev conventions
 
 ### Monorepo

@@ -51,28 +51,26 @@ const modelHtmlToObject = async (
 
   const getTags = (): OllamaModelTag[] => {
     const tags: OllamaModelTag[] = modelTagsApi(
-      `main > div > section > div > div > div:nth-child(n+1) > div`,
+      `body > main > div > section > ul > li:nth-child(n+1) > div > div`,
     )
       .toArray()
       .map((el) => {
-        const name = modelTagsApi(el)
-          .find('div:nth-child(1) a div')
-          .text()
-          .trim();
+        const name = modelTagsApi(el).find('div:nth-child(1) a').text().trim();
         const hash = modelTagsApi(el)
-          .find('div:nth-child(2) span span')
+          .find('div:nth-child(2) > div div:nth-child(1)')
           .text()
           .trim();
-        const sizeElement = modelTagsApi(el).find('div:nth-child(2) > span');
-        const size = sizeElement.text().split('•').at(1)?.trim() || '';
-        return { name, hash, size, isDefault: false };
+        const size = modelTagsApi(el)
+          .find('div:nth-child(2) > div div:nth-child(2)')
+          .text()
+          .trim();
+        const defaultElementText = modelTagsApi(el)
+          .find('div:nth-child(1) span span')
+          .text()
+          .trim();
+        const isDefault = defaultElementText === 'Default';
+        return { name, hash, size, isDefault };
       });
-    const latestTag = tags.find((t) => t.name === 'latest');
-    if (latestTag) {
-      tags.forEach((t) => {
-        t.isDefault = t.hash === latestTag.hash;
-      });
-    }
     return tags.filter((tag) => tag.name !== 'latest');
   };
   const tags = getTags();
