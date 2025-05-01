@@ -99,7 +99,7 @@ export const OLLAMA_MODELS: OllamaModel[] = [
           tag: '24b-instruct-2501-q4_K_M',
           name: 'Mistral Small 3',
           description:
-            'Mistral Small 3 sets a new benchmark in the “small” Large Language Models category below 70B.',
+            'Mistral Small 3 sets a new benchmark in the "small" Large Language Models category below 70B.',
           contextLength: 32000,
           quality: OllamaModelQuality.Medium,
           speed: OllamaModelSpeed.Fast,
@@ -111,6 +111,21 @@ export const OLLAMA_MODELS: OllamaModel[] = [
         },
       ]
     : []),
+  {
+    model: 'qwen3',
+    tag: '30b-a3b',
+    name: 'Qwen 3 30B-A3B',
+    description:
+      'Qwen 3 30B-A3B is a mixture-of-experts (MoE) model with 30B total parameters and 3B active parameters. It features seamless switching between thinking and non-thinking modes, excelling at complex reasoning, math, coding, and general dialogue while being highly efficient.',
+    contextLength: 128000,
+    quality: OllamaModelQuality.Good,
+    speed: OllamaModelSpeed.Fast,
+    capabilities: [OllamaModelCapability.TextGeneration],
+    size: 15.6,
+    fullName: '',
+    provider: ModelProvider.Qwen,
+    platforms: ['windows', 'linux', 'macos'],
+  },
   {
     model: 'deepseek-r1',
     tag: '70b',
@@ -124,24 +139,6 @@ export const OLLAMA_MODELS: OllamaModel[] = [
     size: 40.2,
     fullName: '',
     provider: ModelProvider.DeepSeek,
-    platforms: ['windows', 'linux', 'macos'],
-  },
-  {
-    model: 'llama3.2-vision',
-    tag: 'latest',
-    name: 'Llama 3.2 Vision 11b',
-    description:
-      'Llama 3.2 Vision is an instruction-tuned image reasoning generative model optimized for visual recognition, image reasoning, captioning, and answering general questions about images.',
-    contextLength: 128000,
-    quality: OllamaModelQuality.Good,
-    speed: OllamaModelSpeed.Average,
-    capabilities: [
-      OllamaModelCapability.TextGeneration,
-      OllamaModelCapability.ImageToText,
-    ],
-    size: 7.9,
-    fullName: '',
-    provider: ModelProvider.Meta,
     platforms: ['windows', 'linux', 'macos'],
   },
 ].map((model) => {
