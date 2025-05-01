@@ -52,3 +52,4 @@ launch.json
 temp
 apps/shinkai-app/android/.gradle
 apps/shinkai-desktop/src-tauri/gen
+output.txt
