@@ -1,5 +1,6 @@
 {
-  "": {
+  "agents": {
+    "systemInstructions": "システムの指示"
   },
   "aiFilesSearch": {
     "description": "AIファイル全体を簡単に検索してコンテンツを見つける",
@@ -86,6 +87,7 @@
     "stdout": "標準出力"
   },
   "common": {
+    "about": "について",
     "alreadyHaveNode": "すでにノードをお持ちですか？",
     "back": "戻る",
     "cancel": "キャンセル",
@@ -150,7 +152,8 @@
     "update": "更新",
     "upload": "アップロード",
     "uploadAFileDescription": "画像、PDF、CSV、TXT、XLSXなどの形式をサポートしています",
-    "uploadFile": "ファイルをアップロード"
+    "uploadFile": "ファイルをアップロード",
+    "viewDetails": "詳細を見る"
   },
   "desktop": {
     "benefits": {

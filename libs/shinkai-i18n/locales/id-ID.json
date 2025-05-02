@@ -1,4 +1,7 @@
 {
+  "agents": {
+    "systemInstructions": "Instruksi Sistem"
+  },
   "aiFilesSearch": {
     "description": "Cari untuk menemukan konten di semua file AI Anda dengan mudah",
     "filesSelected": "Dipilih {{count}} file",
@@ -84,6 +87,7 @@
     "stdout": "Keluaran Standar"
   },
   "common": {
+    "about": "Tentang",
     "alreadyHaveNode": "Sudah memiliki Node?",
     "back": "Kembali",
     "cancel": "Batal",
@@ -148,7 +152,8 @@
     "update": "Perbarui",
     "upload": "Unggah",
     "uploadAFileDescription": "Mendukung gambar, PDF, CSV, TXT, XLSX, dan format lainnya",
-    "uploadFile": "Unggah Berkas"
+    "uploadFile": "Unggah Berkas",
+    "viewDetails": "Lihat Detail"
   },
   "desktop": {
     "benefits": {

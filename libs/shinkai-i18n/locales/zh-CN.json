@@ -1,4 +1,7 @@
 {
+  "agents": {
+    "systemInstructions": "系统说明"
+  },
   "aiFilesSearch": {
     "description": "搜索以轻松查找 AI 文件中的所有文件内容",
     "filesSelected": "已选择 {{count}} 个文件",
@@ -84,6 +87,7 @@
     "stdout": "标准输出"
   },
   "common": {
+    "about": "关于",
     "alreadyHaveNode": "已有节点？",
     "back": "返回",
     "cancel": "取消",
@@ -148,7 +152,8 @@
     "update": "更新",
     "upload": "上传",
     "uploadAFileDescription": "支持图像、PDF、CSV、TXT、XLSX等多种格式",
-    "uploadFile": "上传文件"
+    "uploadFile": "上传文件",
+    "viewDetails": "查看详情"
   },
   "desktop": {
     "benefits": {

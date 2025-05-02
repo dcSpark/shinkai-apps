@@ -393,7 +393,8 @@ export default {
     },
     maxChatIterations: {
       label: 'Max Chat Iterations',
-      description: 'The maximum number of iterations for a chat message to process',
+      description:
+        'The maximum number of iterations for a chat message to process',
       placeholder: 'Enter a number between 1 and 100',
       success: 'Max Chat Iterations updated successfully',
       error: 'Error updating Max Chat Iterations',
@@ -533,6 +534,8 @@ export default {
     tryItOut: 'Try It Out',
     showMore: 'More',
     showLess: 'Show Less',
+    viewDetails: 'View Details',
+    about: 'About',
   },
   quickConnection: {
     label: 'Quick Connection',
@@ -770,5 +773,8 @@ export default {
       success: 'Thank you for your feedback! We will get back to you soon.',
       error: 'Failed to submit feedback. Please try again.',
     },
+  },
+  agents: {
+    systemInstructions: 'System Instructions',
   },
 };
