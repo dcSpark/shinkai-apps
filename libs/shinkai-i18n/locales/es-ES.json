@@ -1,4 +1,7 @@
 {
+  "agents": {
+    "systemInstructions": "Instrucciones del sistema"
+  },
   "aiFilesSearch": {
     "description": "Busca para encontrar contenido en todos los archivos de tus archivos AI fácilmente",
     "filesSelected": "Seleccionados {{count}} archivos",
@@ -84,6 +87,7 @@
     "stdout": "Salida Estándar"
   },
   "common": {
+    "about": "Acerca de",
     "alreadyHaveNode": "¿Ya tienes un Nodo?",
     "back": "Atrás",
     "cancel": "Cancelar",
@@ -148,7 +152,8 @@
     "update": "Actualizar",
     "upload": "Subir",
     "uploadAFileDescription": "Admite imágenes, PDF, CSV, TXT, XLSX y más formatos",
-    "uploadFile": "Subir un Archivo"
+    "uploadFile": "Subir un Archivo",
+    "viewDetails": "Ver detalles"
   },
   "desktop": {
     "benefits": {

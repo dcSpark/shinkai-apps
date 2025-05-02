@@ -1,4 +1,7 @@
 {
+  "agents": {
+    "systemInstructions": "Sistem Talimatları"
+  },
   "aiFilesSearch": {
     "description": "Yapay Zeka Dosyalarınızda içerik bulmak için kolayca arama yapın",
     "filesSelected": "{{count}} dosya seçildi",
@@ -84,6 +87,7 @@
     "stdout": "Standart Çıktı"
   },
   "common": {
+    "about": "Hakkında",
     "alreadyHaveNode": "Zaten bir Düğümünüz mü var?",
     "back": "Geri",
     "cancel": "İptal",
@@ -148,7 +152,8 @@
     "update": "Güncelle",
     "upload": "Yükle",
     "uploadAFileDescription": "Görüntüler, PDF, CSV, TXT, XLSX ve daha fazla formatı destekler",
-    "uploadFile": "Bir Dosya Yükle"
+    "uploadFile": "Bir Dosya Yükle",
+    "viewDetails": "Detayları Görüntüle"
   },
   "desktop": {
     "benefits": {

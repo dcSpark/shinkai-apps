@@ -484,7 +484,9 @@
     "deleteTool": "Delete Tool",
     "tryItOut": "Try It Out",
     "showMore": "More",
-    "showLess": "Show Less"
+    "showLess": "Show Less",
+    "viewDetails": "View Details",
+    "about": "About"
   },
   "quickConnection": {
     "label": "Quick Connection",
@@ -698,5 +700,8 @@
       "success": "Thank you for your feedback! We will get back to you soon.",
       "error": "Failed to submit feedback. Please try again."
     }
+  },
+  "agents": {
+    "systemInstructions": "System Instructions"
   }
 }

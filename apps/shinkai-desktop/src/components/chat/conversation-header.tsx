@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
@@ -7,16 +8,12 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-  Badge,
   Button,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+  buttonVariants,
   ScrollArea,
-  Separator,
   Sheet,
   SheetContent,
-  SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -27,15 +24,15 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { AgentIcon, ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
-  Book,
-  ChevronRight,
+  FileIcon,
+  FolderIcon,
   PanelRightClose,
   PanelRightOpen,
-  Sparkles,
 } from 'lucide-react';
 import { memo } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth';
@@ -47,6 +44,8 @@ const ConversationHeaderWithInboxId = () => {
   const { inboxId: encodedInboxId = '' } = useParams();
   const inboxId = decodeURIComponent(encodedInboxId);
   const auth = useAuth((state) => state.auth);
+
+  const { t } = useTranslation();
 
   const { data: provider } = useGetProviderFromJob({
     nodeAddress: auth?.node_address ?? '',
@@ -120,10 +119,11 @@ const ConversationHeaderWithInboxId = () => {
               </span>
               <span className="text-official-gray-400 text-xs">
                 {selectedAgent?.ui_description || 'No description'}
+                <span className="px-2">⋅</span>
                 <Sheet>
                   <SheetTrigger asChild>
-                    <span className="text-official-gray-400 px-3 text-xs underline">
-                      View Details
+                    <span className="text-official-gray-400 text-xs hover:cursor-pointer hover:text-white hover:underline">
+                      {t('common.viewDetails')}
                     </span>
                   </SheetTrigger>
                   <SheetContent side="right">
@@ -136,10 +136,10 @@ const ConversationHeaderWithInboxId = () => {
                       </div>
                     </SheetHeader>
 
-                    <ScrollArea className="h-[calc(100vh-80px)]">
+                    <ScrollArea className="h-[calc(100vh-130px)]">
                       <div className="py-6">
                         <h3 className="text-official-gray-400 mb-2 flex items-center gap-2 text-sm font-medium">
-                          About
+                          {t('common.about')}
                         </h3>
                         <p className="text-sm leading-relaxed">
                           {selectedAgent.ui_description}
@@ -170,10 +170,10 @@ const ConversationHeaderWithInboxId = () => {
                             value="instructions"
                           >
                             <AccordionTrigger className="py-3 hover:no-underline">
-                              <div className="flex items-center gap-2">
-                                <Sparkles className="text-primary h-4 w-4" />
+                              <div className="text-official-gray-200 flex items-center gap-2">
+                                {/* <Sparkles className="h-4 w-4" /> */}
                                 <span className="text-sm font-medium">
-                                  System Instructions
+                                  {t('agents.systemInstructions')}
                                 </span>
                               </div>
                             </AccordionTrigger>
@@ -189,8 +189,8 @@ const ConversationHeaderWithInboxId = () => {
 
                           <AccordionItem className="border-b-0" value="tools">
                             <AccordionTrigger className="py-3 hover:no-underline">
-                              <div className="flex items-center gap-2">
-                                <ToolsIcon className="text-primary h-4 w-4" />
+                              <div className="text-official-gray-200 flex items-center gap-2">
+                                {/* <ToolsIcon className="h-4 w-4" /> */}
                                 <span className="text-sm font-medium">
                                   Available Tools{' '}
                                   {selectedAgent.tools.length > 0 && (
@@ -210,14 +210,13 @@ const ConversationHeaderWithInboxId = () => {
                                 )}
                                 {selectedAgent.tools.map((tool, index) => (
                                   <div
-                                    className="bg-official-gray-850 cursor-default rounded-lg border p-3 transition-colors"
+                                    className="bg-official-gray-850 flex cursor-default items-center gap-2 rounded-lg border p-2 text-sm transition-colors"
                                     key={index}
                                   >
-                                    <h4 className="flex items-center gap-2 text-sm font-medium">
-                                      {formatText(
-                                        tool.split(':::')?.at(-1) ?? '',
-                                      )}
-                                    </h4>
+                                    <ToolsIcon className="h-4 w-4" />
+                                    {formatText(
+                                      tool.split(':::')?.at(-1) ?? '',
+                                    )}
                                   </div>
                                 ))}
                               </div>
@@ -229,8 +228,7 @@ const ConversationHeaderWithInboxId = () => {
                             value="knowledge"
                           >
                             <AccordionTrigger className="py-3 hover:no-underline">
-                              <div className="flex items-center gap-2">
-                                <Book className="text-primary h-4 w-4" />
+                              <div className="text-official-gray-200 flex items-center gap-2">
                                 <span className="text-sm font-medium">
                                   Knowledge Sources{' '}
                                   {(
@@ -268,9 +266,10 @@ const ConversationHeaderWithInboxId = () => {
                                 {selectedAgent.scope?.vector_fs_folders?.map(
                                   (item, index) => (
                                     <div
-                                      className="bg-official-gray-850 flex items-center justify-between rounded-lg border p-3"
+                                      className="bg-official-gray-850 flex items-center justify-start gap-2 rounded-lg border p-2 capitalize"
                                       key={index}
                                     >
+                                      <FolderIcon className="h-4 w-4" />
                                       <span className="text-sm">
                                         {item?.split('/').at(-1)}
                                       </span>
@@ -280,26 +279,13 @@ const ConversationHeaderWithInboxId = () => {
                                 {selectedAgent.scope?.vector_fs_items?.map(
                                   (item, index) => (
                                     <div
-                                      className="bg-official-gray-850 flex items-center justify-between rounded-lg border p-3"
+                                      className="bg-official-gray-850 flex items-center justify-start gap-2 rounded-lg border p-2 capitalize"
                                       key={index}
                                     >
+                                      <FileIcon className="h-4 w-4" />
                                       <span className="text-sm">
-                                        {item
-                                          ?.split('/')
-                                          .at(-1)
-                                          ?.split('.')
-                                          .at(0)}
+                                        {item?.split('/').at(-1) ?? ''}
                                       </span>
-                                      <Badge
-                                        className="text-xs uppercase"
-                                        variant="outline"
-                                      >
-                                        {item
-                                          ?.split('/')
-                                          .at(-1)
-                                          ?.split('.')
-                                          .at(1)}
-                                      </Badge>
                                     </div>
                                   ),
                                 )}
@@ -309,6 +295,18 @@ const ConversationHeaderWithInboxId = () => {
                         </Accordion>
                       </div>
                     </ScrollArea>
+                    <SheetFooter>
+                      <Link
+                        className={cn(
+                          buttonVariants({
+                            variant: 'outline',
+                          }),
+                        )}
+                        to={`/agents/edit/${selectedAgent.agent_id}`}
+                      >
+                        Edit Agent
+                      </Link>
+                    </SheetFooter>
                   </SheetContent>
                 </Sheet>
               </span>
