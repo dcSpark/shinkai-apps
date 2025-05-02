@@ -26,6 +26,7 @@ import { AgentIcon, ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
+  ExternalLinkIcon,
   FileIcon,
   FolderIcon,
   PanelRightClose,
@@ -126,7 +127,7 @@ const ConversationHeaderWithInboxId = () => {
                       {t('common.viewDetails')}
                     </span>
                   </SheetTrigger>
-                  <SheetContent side="right">
+                  <SheetContent className="pr-1.5" side="right">
                     <SheetHeader className="">
                       <div className="flex items-center gap-4">
                         <AgentIcon className="size-5" />
@@ -136,7 +137,7 @@ const ConversationHeaderWithInboxId = () => {
                       </div>
                     </SheetHeader>
 
-                    <ScrollArea className="h-[calc(100vh-130px)]">
+                    <ScrollArea className="h-[calc(100vh-130px)] pr-3">
                       <div className="py-6">
                         <h3 className="text-official-gray-400 mb-2 flex items-center gap-2 text-sm font-medium">
                           {t('common.about')}
@@ -190,7 +191,6 @@ const ConversationHeaderWithInboxId = () => {
                           <AccordionItem className="border-b-0" value="tools">
                             <AccordionTrigger className="py-3 hover:no-underline">
                               <div className="text-official-gray-200 flex items-center gap-2">
-                                {/* <ToolsIcon className="h-4 w-4" /> */}
                                 <span className="text-sm font-medium">
                                   Available Tools{' '}
                                   {selectedAgent.tools.length > 0 && (
@@ -210,13 +210,21 @@ const ConversationHeaderWithInboxId = () => {
                                 )}
                                 {selectedAgent.tools.map((tool, index) => (
                                   <div
-                                    className="bg-official-gray-850 flex cursor-default items-center gap-2 rounded-lg border p-2 text-sm transition-colors"
+                                    className="bg-official-gray-850 relative flex cursor-default items-center gap-2 rounded-lg border p-2 pr-8 text-sm transition-colors"
                                     key={index}
                                   >
                                     <ToolsIcon className="h-4 w-4" />
-                                    {formatText(
-                                      tool.split(':::')?.at(-1) ?? '',
-                                    )}
+                                    <span className="flex-1 truncate">
+                                      {formatText(
+                                        tool.split(':::')?.at(-1) ?? '',
+                                      )}
+                                    </span>
+                                    <Link
+                                      className="text-official-gray-400 absolute right-2 hover:text-white"
+                                      to={`/tools/${tool}`}
+                                    >
+                                      <ExternalLinkIcon className="h-4 w-4" />
+                                    </Link>
                                   </div>
                                 ))}
                               </div>
