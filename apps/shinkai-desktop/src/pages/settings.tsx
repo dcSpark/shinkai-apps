@@ -173,10 +173,7 @@ const SettingsPage = () => {
 
   useEffect(() => {
     if (preferences) {
-      form.reset({
-        ...form.getValues(),
-        maxChatIterations: preferences.max_iterations ?? 10,
-      });
+      form.setValue('maxChatIterations', preferences.max_iterations ?? 10);
     }
   }, [preferences, form]);
 
@@ -238,11 +235,8 @@ const SettingsPage = () => {
 
   useEffect(() => {
     if (isNodeInfoSuccess) {
-      form.reset({
-        ...form.getValues(),
-        nodeVersion: nodeInfo?.version ?? '',
-        shinkaiIdentity: nodeInfo?.node_name ?? '',
-      });
+      form.setValue('nodeVersion', nodeInfo?.version ?? '');
+      form.setValue('shinkaiIdentity', nodeInfo?.node_name ?? '');
     }
   }, [form, isNodeInfoSuccess, nodeInfo?.node_name, nodeInfo?.version]);
 
