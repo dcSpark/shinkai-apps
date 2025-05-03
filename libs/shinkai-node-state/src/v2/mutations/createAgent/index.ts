@@ -26,6 +26,7 @@ export const createAgent = async ({
         temperature: agent.config?.temperature,
         top_p: agent.config?.top_p,
         top_k: agent.config?.top_k,
+        use_tools: agent.tools.length > 0,
       },
       message: agent.ui_description,
       toolKey: agent.tools.length > 0 ? agent.tools[0] : '',
