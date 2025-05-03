@@ -1189,17 +1189,32 @@ function AgentForm({ mode }: AgentFormProps) {
                               autoFocus
                               field={{
                                 ...field,
-                                disabled: mode === 'edit', // Prevent editing name/ID in edit mode
                               }}
                               helperMessage={
                                 mode === 'edit'
-                                  ? 'Agent name cannot be changed after creation.'
-                                  : 'Enter a unique name for your AI agent (used as ID).'
+                                  ? 'You can change the agent name, but the agent ID remains unchanged.'
+                                  : 'Enter a unique name for your AI agent. This will also be used as the agent ID.'
                               }
                               label="Agent Name"
                             />
                           )}
                         />
+                        
+                        {mode === 'edit' && agent ? (
+                          <div className="space-y-2">
+                            <div className="text-sm font-medium">Agent ID</div>
+                            <div className="flex items-center rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground">
+                              {agent.agent_id}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <div className="text-sm font-medium">Generated Agent ID</div>
+                            <div className="flex items-center rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground">
+                              {form.watch('name').replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase() || 'Enter a name to generate ID'}
+                            </div>
+                          </div>
+                        )}
 
                         <FormField
                           control={form.control}
