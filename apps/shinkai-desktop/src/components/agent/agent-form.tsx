@@ -1193,7 +1193,7 @@ function AgentForm({ mode }: AgentFormProps) {
                               helperMessage={
                                 mode === 'edit'
                                   ? 'You can change the agent name, but the agent ID remains unchanged.'
-                                  : 'Enter a unique name for your AI agent. This will also be used as the agent ID and updates in real-time as you type.'
+                                  : 'Enter a unique name for your AI agent. This will also be used as the agent ID.'
                               }
                               label="Agent Name"
                             />
