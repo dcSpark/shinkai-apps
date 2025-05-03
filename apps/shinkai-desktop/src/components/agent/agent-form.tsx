@@ -1200,11 +1200,18 @@ function AgentForm({ mode }: AgentFormProps) {
                           )}
                         />
                         
-                        {mode === 'edit' && agent && (
+                        {mode === 'edit' && agent ? (
                           <div className="space-y-2">
                             <div className="text-sm font-medium">Agent ID</div>
                             <div className="flex items-center rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground">
                               {agent.agent_id}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <div className="text-sm font-medium">Generated Agent ID</div>
+                            <div className="flex items-center rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground">
+                              {form.watch('name').replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase() || 'Enter a name to generate ID'}
                             </div>
                           </div>
                         )}
