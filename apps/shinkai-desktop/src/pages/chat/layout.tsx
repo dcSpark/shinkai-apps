@@ -37,7 +37,7 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { AgentIcon } from '@shinkai_network/shinkai-ui/assets';
+import { AgentIcon, ScheduledTasksIcon } from '@shinkai_network/shinkai-ui/assets';
 import { formatDateToLocaleStringWithTime } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -538,14 +538,18 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
     token: auth?.api_v2_key ?? '',
   });
 
+  const hasScheduledTasks = agent?.cron_tasks?.length && agent.cron_tasks.length > 0;
+
   const location = useLocation();
   const navigate = useNavigate();
 
   return (
     <div className=" ">
       <div className="flex h-8 items-center justify-between gap-1">
-        <h2 className="font-clash px-2 text-sm font-normal capitalize tracking-wide">
+        <h2 className="font-clash px-2 text-sm font-normal capitalize tracking-wide flex items-center gap-2">
+          <AgentIcon className="h-4 w-4" />
           {agent?.name}
+          {hasScheduledTasks && <ScheduledTasksIcon className="h-4 w-4" />}
         </h2>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -586,7 +590,8 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
               key={inbox.inbox_id}
               to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
             >
-              <span className="text-official-gray-100 line-clamp-2 text-sm">
+              <span className="text-official-gray-100 line-clamp-2 text-sm flex items-center gap-2">
+                <AgentIcon className="h-4 w-4 flex-shrink-0" />
                 {inbox.custom_name || inbox.inbox_id}
               </span>
               <span className="text-official-gray-500 text-xs">
