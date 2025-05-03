@@ -1189,11 +1189,10 @@ function AgentForm({ mode }: AgentFormProps) {
                               autoFocus
                               field={{
                                 ...field,
-                                disabled: mode === 'edit', // Prevent editing name/ID in edit mode
                               }}
                               helperMessage={
                                 mode === 'edit'
-                                  ? 'Agent name cannot be changed after creation.'
+                                  ? 'You can change the agent name, but the agent ID remains unchanged.'
                                   : 'Enter a unique name for your AI agent (used as ID).'
                               }
                               label="Agent Name"
