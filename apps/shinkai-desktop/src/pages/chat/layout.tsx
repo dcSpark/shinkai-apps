@@ -549,7 +549,27 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
         <h2 className="font-clash px-2 text-sm font-normal capitalize tracking-wide flex items-center gap-2">
           <AgentIcon className="h-4 w-4" />
           {agent?.name}
-          {hasScheduledTasks && <ScheduledTasksIcon className="h-4 w-4" />}
+          {hasScheduledTasks && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  className="inline-flex items-center"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigate(`/tasks`);
+                  }}
+                >
+                  <ScheduledTasksIcon className="h-4 w-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipPortal>
+                <TooltipContent>
+                  <p>View scheduled tasks</p>
+                </TooltipContent>
+              </TooltipPortal>
+            </Tooltip>
+          )}
         </h2>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -590,8 +610,7 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
               key={inbox.inbox_id}
               to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
             >
-              <span className="text-official-gray-100 line-clamp-2 text-sm flex items-center gap-2">
-                <AgentIcon className="h-4 w-4 flex-shrink-0" />
+              <span className="text-official-gray-100 line-clamp-2 text-sm">
                 {inbox.custom_name || inbox.inbox_id}
               </span>
               <span className="text-official-gray-500 text-xs">
@@ -682,6 +701,27 @@ const AgentList = ({
               <span className="line-clamp-1 flex-1 break-all pr-2 text-left text-xs capitalize">
                 {agent.name}
               </span>
+              {agent.cron_tasks?.length && agent.cron_tasks.length > 0 && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      className="inline-flex items-center"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        navigate(`/tasks`);
+                      }}
+                    >
+                      <ScheduledTasksIcon className="h-4 w-4 mr-2" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipPortal>
+                    <TooltipContent>
+                      <p>View scheduled tasks</p>
+                    </TooltipContent>
+                  </TooltipPortal>
+                </Tooltip>
+              )}
               <ChevronRight className="h-4 w-4" />
             </button>
           ))}
