@@ -181,7 +181,7 @@ export const OllamaModelsRepository = ({
             <div className="w-[150px]">
               <OllamaModelInstallButton
                 model={getFullName(
-                  model.name,
+                  '',
                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   selectedTagMap.get(model.name)!,
                 )}
@@ -243,6 +243,7 @@ export const OllamaModelsRepository = ({
   ]);
 
   const getFullName = (model: string, tag: string): string => {
+    if (!model) return tag;
     return `${model}:${tag}`;
   };
 
