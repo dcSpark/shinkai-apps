@@ -37,7 +37,10 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { AgentIcon, ScheduledTasksIcon } from '@shinkai_network/shinkai-ui/assets';
+import {
+  AgentIcon,
+  ScheduledTasksIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { formatDateToLocaleStringWithTime } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -538,7 +541,8 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
     token: auth?.api_v2_key ?? '',
   });
 
-  const hasScheduledTasks = agent?.cron_tasks?.length && agent.cron_tasks.length > 0;
+  const hasScheduledTasks =
+    agent?.cron_tasks?.length && agent.cron_tasks.length > 0;
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -546,7 +550,7 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
   return (
     <div className=" ">
       <div className="flex h-8 items-center justify-between gap-1">
-        <h2 className="font-clash px-2 text-sm font-normal capitalize tracking-wide flex items-center gap-2">
+        <h2 className="font-clash flex items-center gap-2 px-2 text-sm font-normal capitalize tracking-wide">
           <AgentIcon className="h-4 w-4" />
           {agent?.name}
           {hasScheduledTasks && (
@@ -555,8 +559,6 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
                 <button
                   className="inline-flex items-center"
                   onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
                     navigate(`/tasks`);
                   }}
                 >
@@ -712,7 +714,7 @@ const AgentList = ({
                         navigate(`/tasks`);
                       }}
                     >
-                      <ScheduledTasksIcon className="h-4 w-4 mr-2" />
+                      <ScheduledTasksIcon className="mr-2 h-4 w-4" />
                     </button>
                   </TooltipTrigger>
                   <TooltipPortal>
