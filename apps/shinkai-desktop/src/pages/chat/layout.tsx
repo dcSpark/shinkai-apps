@@ -541,9 +541,6 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
     token: auth?.api_v2_key ?? '',
   });
 
-  const hasScheduledTasks =
-    agent?.cron_tasks?.length && agent.cron_tasks.length > 0;
-
   const location = useLocation();
   const navigate = useNavigate();
 
