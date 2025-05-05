@@ -85,7 +85,7 @@ export const TaskLogs = () => {
           key={task.task_id}
           llmProvider={
             'CreateJobWithConfigAndMessage' in task.action
-              ? task.action.CreateJobWithConfigAndMessage.llm_provider
+              ? (task.action.CreateJobWithConfigAndMessage.llm_provider_name || task.action.CreateJobWithConfigAndMessage.llm_provider)
               : ''
           }
           name={task.name}
