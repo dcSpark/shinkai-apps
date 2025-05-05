@@ -37,7 +37,10 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { AgentIcon } from '@shinkai_network/shinkai-ui/assets';
+import {
+  AgentIcon,
+  ScheduledTasksIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { formatDateToLocaleStringWithTime } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -544,7 +547,8 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
   return (
     <div className=" ">
       <div className="flex h-8 items-center justify-between gap-1">
-        <h2 className="font-clash px-2 text-sm font-normal capitalize tracking-wide">
+        <h2 className="font-clash flex items-center gap-2 px-2 text-sm font-normal capitalize tracking-wide">
+          <AgentIcon className="h-4 w-4" />
           {agent?.name}
         </h2>
         <Tooltip>
@@ -677,6 +681,27 @@ const AgentList = ({
               <span className="line-clamp-1 flex-1 break-all pr-2 text-left text-xs capitalize">
                 {agent.name}
               </span>
+              {agent.cron_tasks?.length && agent.cron_tasks.length > 0 && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      className="inline-flex items-center"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        navigate(`/tasks`);
+                      }}
+                    >
+                      <ScheduledTasksIcon className="mr-2 h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipPortal>
+                    <TooltipContent>
+                      <p>View scheduled tasks</p>
+                    </TooltipContent>
+                  </TooltipPortal>
+                </Tooltip>
+              )}
               <ChevronRight className="h-4 w-4" />
             </button>
           ))}

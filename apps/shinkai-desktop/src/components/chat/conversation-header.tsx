@@ -8,6 +8,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  Badge,
   Button,
   buttonVariants,
   ScrollArea,
@@ -22,9 +23,14 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { AgentIcon, ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
+import {
+  AgentIcon,
+  ScheduledTasksIcon,
+  ToolsIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import cronstrue from 'cronstrue';
 import {
   ExternalLinkIcon,
   FileIcon,
@@ -115,8 +121,17 @@ const ConversationHeaderWithInboxId = () => {
         <div className="inline w-full flex-1 truncate whitespace-nowrap text-sm font-medium capitalize text-white">
           {isAgentInbox && selectedAgent ? (
             <div className="flex flex-col gap-0.5">
-              <span className="text-sm font-medium capitalize text-white">
+              <span className="inline-flex items-center gap-2 text-sm font-medium capitalize text-white">
                 {selectedAgent?.name}{' '}
+                {selectedAgent?.cron_tasks?.length &&
+                  selectedAgent?.cron_tasks?.length > 0 && (
+                    <Badge
+                      className="border bg-emerald-900/40 px-1 py-0 text-xs font-medium text-emerald-400"
+                      variant="secondary"
+                    >
+                      Scheduled
+                    </Badge>
+                  )}
               </span>
               <span className="text-official-gray-400 text-xs">
                 {selectedAgent?.ui_description || 'No description'}
@@ -131,8 +146,17 @@ const ConversationHeaderWithInboxId = () => {
                     <SheetHeader className="">
                       <div className="flex items-center gap-4">
                         <AgentIcon className="size-5" />
-                        <SheetTitle className="font-clash text-xl font-medium tracking-wide">
+                        <SheetTitle className="font-clash inline-flex items-center gap-2 text-xl font-medium capitalize tracking-wide">
                           {selectedAgent.name}
+                          {selectedAgent?.cron_tasks?.length &&
+                            selectedAgent?.cron_tasks?.length > 0 && (
+                              <Badge
+                                className="font-inter border bg-emerald-900/40 px-1 py-0 text-xs font-medium tracking-normal text-emerald-400"
+                                variant="secondary"
+                              >
+                                Scheduled
+                              </Badge>
+                            )}
                         </SheetTitle>
                       </div>
                     </SheetHeader>
@@ -165,7 +189,12 @@ const ConversationHeaderWithInboxId = () => {
 
                         <Accordion
                           className="mt-6"
-                          defaultValue={['instructions', 'tools', 'knowledge']}
+                          defaultValue={[
+                            'instructions',
+                            'tools',
+                            'knowledge',
+                            'tasks',
+                          ]}
                           type="multiple"
                         >
                           <AccordionItem
@@ -174,7 +203,6 @@ const ConversationHeaderWithInboxId = () => {
                           >
                             <AccordionTrigger className="py-3 hover:no-underline">
                               <div className="text-official-gray-200 flex items-center gap-2">
-                                {/* <Sparkles className="h-4 w-4" /> */}
                                 <span className="text-sm font-medium">
                                   {t('agents.systemInstructions')}
                                 </span>
@@ -226,6 +254,9 @@ const ConversationHeaderWithInboxId = () => {
                                       to={`/tools/${tool}`}
                                     >
                                       <ExternalLinkIcon className="h-4 w-4" />
+                                      <span className="sr-only">
+                                        View Tool Details
+                                      </span>
                                     </Link>
                                   </div>
                                 ))}
@@ -299,6 +330,52 @@ const ConversationHeaderWithInboxId = () => {
                                     </div>
                                   ),
                                 )}
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+
+                          <AccordionItem className="border-b-0" value="tasks">
+                            <AccordionTrigger className="py-3 hover:no-underline">
+                              <div className="text-official-gray-200 flex items-center gap-2">
+                                <span className="text-sm font-medium">
+                                  Scheduled Tasks
+                                </span>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-2">
+                                {(selectedAgent.cron_tasks ?? []).length ===
+                                  0 && (
+                                  <p className="text-official-gray-400 text-sm">
+                                    No scheduled tasks found.
+                                  </p>
+                                )}
+                                {selectedAgent.cron_tasks?.map((task) => (
+                                  <div
+                                    className="bg-official-gray-850 relative flex items-start gap-2 rounded-lg border p-2 pr-6 capitalize"
+                                    key={task.task_id}
+                                  >
+                                    <ScheduledTasksIcon className="mt-1 h-4 w-4" />
+                                    <div className="flex flex-col gap-1">
+                                      <p className="text-sm">{task.name}</p>
+                                      <p className="text-official-gray-400 text-xs">
+                                        {cronstrue.toString(task.cron, {
+                                          throwExceptionOnParseError: false,
+                                        })}{' '}
+                                        ({task.cron})
+                                      </p>
+                                    </div>
+                                    <Link
+                                      className="text-official-gray-400 absolute right-2 top-2 hover:text-white"
+                                      to={`/tasks/${task.task_id}`}
+                                    >
+                                      <ExternalLinkIcon className="h-4 w-4" />
+                                      <span className="sr-only">
+                                        View Task Details
+                                      </span>
+                                    </Link>
+                                  </div>
+                                ))}
                               </div>
                             </AccordionContent>
                           </AccordionItem>
