@@ -165,7 +165,7 @@ export const Tasks = () => {
       }
       title="Scheduled Tasks"
     >
-      <div className="divide-y divide-gray-300 pt-4">
+      <div className="flex flex-col gap-2.5 pt-4">
         {isPending &&
           Array.from({ length: 8 }).map((_, idx) => (
             <div
@@ -287,7 +287,7 @@ const TaskCard = ({
   return (
     <div
       className={cn(
-        'border-official-gray-850 bg-official-gray-900 grid grid-cols-[1fr_100px_120px_40px] items-start gap-5 rounded-lg border bg-gray-500 p-3.5 text-left text-sm',
+        'border-official-gray-850 bg-official-gray-900 grid grid-cols-[1fr_100px_120px_40px] items-start gap-5 rounded-lg border p-3.5 text-left text-sm',
       )}
     >
       <div className="flex flex-col gap-2.5">
