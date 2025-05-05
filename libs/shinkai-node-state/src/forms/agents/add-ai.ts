@@ -4,14 +4,9 @@ import { Models, modelsConfig } from '../../lib/utils/models';
 
 const modelsWithoutApiKey = [Models.Ollama, Models.Exo];
 
-export const addAgentSchema = z
+export const addAiModelSchema = z
   .object({
-    agentName: z
-      .string()
-      .regex(
-        /^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/,
-        'It just accepts alphanumeric characters and underscores',
-      ),
+    name: z.string(),
     externalUrl: z.string().url(),
     apikey: z.string(),
     model: z.nativeEnum(Models),
@@ -19,6 +14,7 @@ export const addAgentSchema = z
     isCustomModel: z.boolean().default(false).optional(),
     modelCustom: z.string().optional(),
     modelTypeCustom: z.string().optional(),
+    description: z.string().optional(),
   })
   .superRefine(
     (
@@ -66,13 +62,14 @@ export const addAgentSchema = z
     },
   );
 
-export type AddAgentFormSchema = z.infer<typeof addAgentSchema>;
+export type AddAiModelFormSchema = z.infer<typeof addAiModelSchema>;
 
-export const addAgentFormDefault: AddAgentFormSchema = {
-  agentName: '',
+export const addAiModelFormDefault: AddAiModelFormSchema = {
+  name: '',
   externalUrl: modelsConfig[Models.OpenAI].apiUrl,
   apikey: '',
   model: Models.OpenAI,
   modelType: '',
   isCustomModel: false,
+  description: '',
 };

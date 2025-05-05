@@ -157,7 +157,9 @@ const ConversationHeaderWithInboxId = () => {
                                 provider={selectedModel?.id.split(':')[0]}
                               />
                             </div>
-                            <p className="text-sm">{selectedModel?.id}</p>
+                            <p className="text-sm">
+                              {selectedModel?.name || selectedModel?.id}
+                            </p>
                           </div>
                         </div>
 

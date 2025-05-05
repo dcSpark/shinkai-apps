@@ -280,14 +280,17 @@
       "updateAgent": "Yapay Zeka güncellenirken hata oluştu"
     },
     "form": {
-      "agentName": "Yapay Zeka Adı",
       "apiKey": "API Anahtarı",
       "customModelType": "Özel Model Türü",
+      "description": "Açıklama",
+      "descriptionHelper": "Bu yapay zekayı daha sonra tanımlamaya yardımcı olacak kısa açıklama (isteğe bağlı)",
       "externalUrl": "Dış URL",
+      "generatedId": "Oluşturulan ID",
       "modelId": "Model Kimliği",
       "modelName": "Model Adı",
       "modelProvider": "Model Sağlayıcı",
       "modelType": "Model",
+      "name": "Yapay Zeka Adı",
       "selectModel": "Model Sağlayıcısını Seç",
       "toggleCustomModel": "Özel bir model ekle"
     },

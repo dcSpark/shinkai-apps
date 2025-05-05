@@ -3,9 +3,9 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  EditAgentFormSchema,
-  editAgentSchema,
-} from '@shinkai_network/shinkai-node-state/forms/agents/edit-agent';
+  EditAIModelFormSchema,
+  editAIModelSchema,
+} from '@shinkai_network/shinkai-node-state/forms/agents/edit-ai';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useRemoveLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/removeLLMProvider/useRemoveLLMProvider';
 import { useUpdateLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/updateLLMProvider/useUpdateLLMProvider';
@@ -46,7 +46,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import ProviderIcon from '../components/ais/provider-icon';
-import { useURLQueryParams } from '../hooks/use-url-query-params';
 import { useOllamaRemoveMutation } from '../lib/shinkai-node-manager/ollama-client';
 import { useAuth } from '../store/auth';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
@@ -64,8 +63,6 @@ const AIsPage = () => {
   const isLocalShinkaiNodeIsUse = useShinkaiNodeManager(
     (state) => state.isInUse,
   );
-  const query = useURLQueryParams();
-  const tabSelected = query.get('tab') ?? 'ais';
 
   const onAddAgentClick = () => {
     if (isLocalShinkaiNodeIsUse) {
@@ -129,10 +126,12 @@ const AIsPage = () => {
               {llmProviders?.map((llmProvider) => (
                 <LLMProviderCard
                   agentApiKey={llmProvider.api_key ?? ''}
+                  description={llmProvider.description}
                   externalUrl={llmProvider.external_url ?? ''}
                   key={llmProvider.id}
                   llmProviderId={llmProvider.id}
                   model={llmProvider.model}
+                  name={llmProvider.name ?? ''}
                 />
               ))}
             </div>
@@ -150,11 +149,15 @@ function LLMProviderCard({
   model,
   externalUrl,
   agentApiKey,
+  name,
+  description,
 }: {
   llmProviderId: string;
   model: string;
   externalUrl: string;
   agentApiKey: string;
+  name: string;
+  description?: string;
 }) {
   const { t } = useTranslation();
   const [isDeleteAgentDrawerOpen, setIsDeleteAgentDrawerOpen] =
@@ -176,11 +179,16 @@ function LLMProviderCard({
           </div>
           <div className="flex flex-col items-baseline gap-2">
             <span className="w-full truncate text-start text-sm">
-              {llmProviderId}
+              {name || llmProviderId}
             </span>
             <Badge className="text-official-gray-300 bg-official-gray-850 truncate text-start text-xs font-normal shadow-none">
               {model}
             </Badge>
+            {description && (
+              <span className="text-official-gray-400 truncate text-start text-xs">
+                {description}
+              </span>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -273,14 +281,16 @@ function LLMProviderCard({
       <EditLLMProviderDrawer
         agentApiKey={agentApiKey}
         agentExternalUrl={externalUrl}
-        agentId={llmProviderId}
         agentModelProvider={model.split(':')[0]}
         agentModelType={model.split(':')[1]}
+        description={description}
+        llmProviderId={llmProviderId}
+        name={name}
         onOpenChange={setIsEditAgentDrawerOpen}
         open={isEditAgentDrawerOpen}
       />
       <RemoveLLMProviderModal
-        agentId={llmProviderId}
+        llmProviderId={llmProviderId}
         onOpenChange={setIsDeleteAgentDrawerOpen}
         open={isDeleteAgentDrawerOpen}
       />
@@ -291,41 +301,48 @@ function LLMProviderCard({
 const EditLLMProviderDrawer = ({
   open,
   onOpenChange,
-  agentId,
+  llmProviderId,
   agentModelProvider,
   agentModelType,
   agentExternalUrl,
   agentApiKey,
+  description,
+  name,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  agentId: string;
+  llmProviderId: string;
   agentModelProvider: string;
   agentModelType: string;
   agentExternalUrl: string;
   agentApiKey: string;
+  description?: string;
+  name: string;
 }) => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
 
-  const form = useForm<EditAgentFormSchema>({
-    resolver: zodResolver(editAgentSchema),
+  const form = useForm<EditAIModelFormSchema>({
+    resolver: zodResolver(editAIModelSchema),
   });
 
   useEffect(() => {
     form.reset({
-      agentName: agentId,
       externalUrl: agentExternalUrl,
       apikey: agentApiKey,
       modelCustom: agentModelProvider,
       modelTypeCustom: agentModelType,
+      name: name || '',
+      description: description || '',
     });
   }, [
-    agentId,
     agentModelProvider,
     agentModelType,
     agentExternalUrl,
     agentApiKey,
+    description,
+    name,
+    form,
   ]);
 
   const { mutateAsync: updateLLMProvider, isPending } = useUpdateLLMProvider({
@@ -340,7 +357,7 @@ const EditLLMProviderDrawer = ({
     },
   });
 
-  const submit = async (values: EditAgentFormSchema) => {
+  const submit = async (values: EditAIModelFormSchema) => {
     if (!auth) return;
     const model = getModelObject(values.modelCustom, values.modelTypeCustom);
 
@@ -348,15 +365,13 @@ const EditLLMProviderDrawer = ({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       agent: {
-        allowed_message_senders: [],
         api_key: values.apikey,
         external_url: values.externalUrl,
-        full_identity_name: `${auth.shinkai_identity}/${auth.profile}/agent/${agentId}`,
-        id: agentId,
-        perform_locally: false,
-        storage_bucket_permissions: [],
-        toolkit_permissions: [],
+        full_identity_name: `${auth.shinkai_identity}/${auth.profile}/agent/${llmProviderId}`,
+        id: llmProviderId,
         model,
+        name: values.name,
+        description: values.description,
       },
     });
   };
@@ -366,7 +381,8 @@ const EditLLMProviderDrawer = ({
       <SheetContent>
         <SheetHeader className="mb-6">
           <SheetTitle className="font-normal">
-            {t('common.update')} <span className="font-medium">{agentId}</span>{' '}
+            {t('common.update')}{' '}
+            <span className="font-medium">{llmProviderId}</span>{' '}
           </SheetTitle>
         </SheetHeader>
         <Form {...form}>
@@ -375,14 +391,33 @@ const EditLLMProviderDrawer = ({
             onSubmit={form.handleSubmit(submit)}
           >
             <div className="flex grow flex-col space-y-3">
+              <TextField
+                field={{
+                  value: llmProviderId,
+                  disabled: true,
+                }}
+                label={t('llmProviders.form.generatedId')}
+              />
+
               <FormField
                 control={form.control}
-                disabled
-                name="agentName"
+                name="name"
                 render={({ field }) => (
                   <TextField
                     field={field}
-                    label={t('llmProviders.form.agentName')}
+                    label={t('llmProviders.form.name')}
+                  />
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <TextField
+                    field={field}
+                    helperMessage={t('llmProviders.form.descriptionHelper')}
+                    label={t('llmProviders.form.description')}
                   />
                 )}
               />
@@ -449,11 +484,11 @@ const EditLLMProviderDrawer = ({
 const RemoveLLMProviderModal = ({
   open,
   onOpenChange,
-  agentId,
+  llmProviderId,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  agentId: string;
+  llmProviderId: string;
 }) => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
@@ -473,7 +508,7 @@ const RemoveLLMProviderModal = ({
     ollamaConfig,
     {
       onSuccess: () => {
-        console.log('ollama model removed:', agentId);
+        console.log('ollama model removed:', llmProviderId);
       },
       onError: (error) => {
         toast.error(t('llmProviders.errors.deleteAgent'), {
@@ -495,7 +530,7 @@ const RemoveLLMProviderModal = ({
       <DialogContent className="sm:max-w-[425px]">
         <DialogTitle className="pb-0">
           {t('llmProviders.delete.label')}{' '}
-          <span className="font-mono font-medium">{agentId}</span>{' '}
+          <span className="font-mono font-medium">{llmProviderId}</span>{' '}
         </DialogTitle>
         <DialogDescription>
           {t('llmProviders.delete.description')}
@@ -520,11 +555,11 @@ const RemoveLLMProviderModal = ({
                 if (!auth) return;
                 await removeLLMProvider({
                   nodeAddress: auth?.node_address ?? '',
-                  llmProviderId: agentId,
+                  llmProviderId: llmProviderId,
                   token: auth?.api_v2_key ?? '',
                 });
                 let llmProviderModel = llmProviders.find(
-                  (provider) => provider.id === agentId,
+                  (provider) => provider.id === llmProviderId,
                 )?.model;
                 const isOllama =
                   llmProviderModel?.split(':')[0] === Models.Ollama;
@@ -535,8 +570,8 @@ const RemoveLLMProviderModal = ({
                   await removeOllamaModel({ model: llmProviderModel });
                 } else
                   console.warn(
-                    'llmProviderModel not found for agentId:',
-                    agentId,
+                    'llmProviderModel not found for llmProviderId:',
+                    llmProviderId,
                   );
               }}
               size="sm"

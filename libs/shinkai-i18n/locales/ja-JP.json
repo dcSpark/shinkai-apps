@@ -280,14 +280,17 @@
       "updateAgent": "AIの更新中にエラーが発生しました"
     },
     "form": {
-      "agentName": "AI名",
       "apiKey": "APIキー",
       "customModelType": "カスタムモデルタイプ",
+      "description": "説明",
+      "descriptionHelper": "後でこのAIを特定するのに役立つ簡単な説明（オプション）",
       "externalUrl": "外部URL",
+      "generatedId": "生成されたID",
       "modelId": "モデルID",
       "modelName": "モデル名",
       "modelProvider": "モデルプロバイダー",
       "modelType": "モデルタイプ",
+      "name": "AIの名前",
       "selectModel": "モデルを選択",
       "toggleCustomModel": "カスタムモデルを追加"
     },

@@ -324,7 +324,7 @@ export function AIModelSelectorBase({
                     </div>
                     <div className="flex flex-col gap-0.5">
                       <span className="text-sm font-medium">
-                        {formatText(llmProvider.id)}
+                        {llmProvider?.name || formatText(llmProvider.id)}
 
                         {location.pathname.includes('tools') &&
                           llmProvider.model.toLowerCase() ===

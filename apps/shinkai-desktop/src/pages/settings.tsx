@@ -106,17 +106,19 @@ const SettingsPage = () => {
     nodeAddress: auth?.node_address ?? '',
   });
 
-  const { mutateAsync: setMaxChatIterationsMutation } = useSetMaxChatIterations({
-    onSuccess: (_data, variables) => {
-      toast.success(t('settings.maxChatIterations.success'));
+  const { mutateAsync: setMaxChatIterationsMutation } = useSetMaxChatIterations(
+    {
+      onSuccess: (_data, variables) => {
+        toast.success(t('settings.maxChatIterations.success'));
+      },
+      onError: (error) => {
+        toast.error(t('settings.maxChatIterations.error'), {
+          description: error?.message,
+        });
+        form.setValue('maxChatIterations', preferences?.max_iterations ?? 10);
+      },
     },
-    onError: (error) => {
-      toast.error(t('settings.maxChatIterations.error'), {
-        description: error?.message,
-      });
-      form.setValue('maxChatIterations', preferences?.max_iterations ?? 10);
-    },
-  });
+  );
   const { data: preferences } = useGetPreferences({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
@@ -155,7 +157,10 @@ const SettingsPage = () => {
     name: 'maxChatIterations',
   });
 
-  const debouncedMaxChatIterations = useDebounce(currentMaxChatIterations?.toString() ?? '', 1000);
+  const debouncedMaxChatIterations = useDebounce(
+    currentMaxChatIterations?.toString() ?? '',
+    1000,
+  );
 
   useEffect(() => {
     (async () => {
@@ -192,7 +197,13 @@ const SettingsPage = () => {
         maxIterations: newMaxIterations,
       });
     }
-  }, [debouncedMaxChatIterations, preferences, auth, setMaxChatIterationsMutation, form]);
+  }, [
+    debouncedMaxChatIterations,
+    preferences,
+    auth,
+    setMaxChatIterationsMutation,
+    form,
+  ]);
 
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
@@ -400,9 +411,9 @@ const SettingsPage = () => {
                   </FormControl>
                   <FormLabel>{t('settings.defaultAgent')}</FormLabel>
                   <SelectContent>
-                    {llmProviders?.map((agent) => (
-                      <SelectItem key={agent.id} value={agent.id}>
-                        {agent.id}
+                    {llmProviders?.map((llmProvider) => (
+                      <SelectItem key={llmProvider.id} value={llmProvider.id}>
+                        {llmProvider.name || llmProvider.id}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -589,11 +600,15 @@ const SettingsPage = () => {
                 name="maxChatIterations"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('settings.maxChatIterations.label')}</FormLabel>
+                    <FormLabel>
+                      {t('settings.maxChatIterations.label')}
+                    </FormLabel>
                     <FormControl>
                       <TextField
                         field={{ ...field, value: field.value ?? '' }}
-                        helperMessage={t('settings.maxChatIterations.description')}
+                        helperMessage={t(
+                          'settings.maxChatIterations.description',
+                        )}
                         label={t('settings.maxChatIterations.label')}
                         max={100}
                         min={1}

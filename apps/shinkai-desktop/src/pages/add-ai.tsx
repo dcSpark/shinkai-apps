@@ -2,10 +2,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { LLMProviderInterface } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import {
-  addAgentFormDefault,
-  AddAgentFormSchema,
-  addAgentSchema,
-} from '@shinkai_network/shinkai-node-state/forms/agents/add-agent';
+  addAiModelFormDefault,
+  AddAiModelFormSchema,
+  addAiModelSchema,
+} from '@shinkai_network/shinkai-node-state/forms/agents/add-ai';
 import { useScanOllamaModels } from '@shinkai_network/shinkai-node-state/lib/queries/scanOllamaModels/useScanOllamaModels';
 import {
   Models,
@@ -14,6 +14,7 @@ import {
 import { useAddLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/addLLMProvider/useAddLLMProvider';
 import {
   Button,
+  buttonVariants,
   Form,
   FormControl,
   FormField,
@@ -29,7 +30,6 @@ import {
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { open } from '@tauri-apps/plugin-shell';
 import { HelpCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -79,6 +79,27 @@ const modelOptions: { value: Models; label: string }[] = [
   },
 ];
 
+const getGuideUrl = (model: Models) => {
+  if (!model) {
+    return 'https://docs.shinkai.com/advanced/models';
+  }
+
+  const urlMap = {
+    [Models.OpenAI]: 'https://docs.shinkai.com/advanced/models/gpt',
+    [Models.TogetherComputer]:
+      'https://docs.shinkai.com/advanced/models/together-ai',
+    [Models.Ollama]: 'https://docs.shinkai.com/advanced/models/ollama',
+    [Models.Gemini]: 'https://docs.shinkai.com/advanced/models/gemini',
+    [Models.Groq]: 'https://docs.shinkai.com/advanced/models/groq',
+    [Models.OpenRouter]: 'https://docs.shinkai.com/advanced/models/openrouter',
+    [Models.Exo]: 'https://docs.shinkai.com/advanced/models/exo',
+    [Models.Claude]: 'https://docs.shinkai.com/advanced/models/claude',
+    [Models.DeepSeek]: 'https://docs.shinkai.com/advanced/models/deepseek',
+  };
+
+  return urlMap[model] || 'https://docs.shinkai.com/advanced/models';
+};
+
 export const getModelObject = (
   model: Models | string,
   modelType: string,
@@ -109,9 +130,9 @@ const AddAIPage = () => {
   const navigate = useNavigate();
   const query = useURLQueryParams();
 
-  const addAgentForm = useForm<AddAgentFormSchema>({
-    resolver: zodResolver(addAgentSchema),
-    defaultValues: addAgentFormDefault,
+  const addAgentForm = useForm<AddAiModelFormSchema>({
+    resolver: zodResolver(addAiModelSchema),
+    defaultValues: addAiModelFormDefault,
   });
 
   const preSelectedAiProvider = query.get('aiProvider') as Models;
@@ -218,8 +239,8 @@ const AddAIPage = () => {
       return;
     }
     addAgentForm.setValue(
-      'agentName',
-      currentModelType.replace(/[^a-zA-Z0-9_]/g, '_'),
+      'name',
+      currentModelType.replace(/[^a-zA-Z0-9_]/g, ' '),
     );
   }, [addAgentForm, currentModelType, modelTypeOptions?.length]);
 
@@ -227,7 +248,7 @@ const AddAIPage = () => {
     setIsCustomModelType(currentModelType === 'custom');
   }, [currentModelType]);
 
-  const onSubmit = async (data: AddAgentFormSchema) => {
+  const onSubmit = async (data: AddAiModelFormSchema) => {
     if (!auth) return;
     let model = getModelObject(data.model, data.modelType);
     if (isCustomModelMode && data.modelCustom && data.modelTypeCustom) {
@@ -235,73 +256,36 @@ const AddAIPage = () => {
     } else if (isCustomModelType && data.modelTypeCustom) {
       model = getModelObject(data.model, data.modelTypeCustom);
     }
+    const generatedId = data.name.replace(/[^a-zA-Z0-9_]/g, '_');
+
     await addLLMProvider({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       agent: {
-        allowed_message_senders: [],
         api_key: data.apikey,
         external_url: data.externalUrl,
-        full_identity_name: `${auth.shinkai_identity}/${auth.profile}/agent/${data.agentName}`,
-        id: data.agentName,
-        perform_locally: false,
-        storage_bucket_permissions: [],
-        toolkit_permissions: [],
+        full_identity_name: `${auth.shinkai_identity}/${auth.profile}/agent/${generatedId}`,
+        id: generatedId,
         model,
+        name: data.name,
       },
     });
   };
 
-  const getHelpUrl = () => {
-    console.log('Current model:', currentModel);
-
-    if (!currentModel) {
-      return 'https://docs.shinkai.com/advanced/models';
-    }
-
-    const urlMap = {
-      [Models.OpenAI]: 'https://docs.shinkai.com/advanced/models/gpt',
-      [Models.TogetherComputer]:
-        'https://docs.shinkai.com/advanced/models/together-ai',
-      [Models.Ollama]: 'https://docs.shinkai.com/advanced/models/ollama',
-      [Models.Gemini]: 'https://docs.shinkai.com/advanced/models/gemini',
-      [Models.Groq]: 'https://docs.shinkai.com/advanced/models/groq',
-      [Models.OpenRouter]:
-        'https://docs.shinkai.com/advanced/models/openrouter',
-      [Models.Exo]: 'https://docs.shinkai.com/advanced/models/exo',
-      [Models.Claude]: 'https://docs.shinkai.com/advanced/models/claude',
-      [Models.DeepSeek]:
-        'https://docs.shinkai.com/advanced/models/deepseek',
-    };
-
-    return urlMap[currentModel] || 'https://docs.shinkai.com/advanced/models';
-  };
-
-  const handleHelpClick = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    const url = getHelpUrl();
-    console.log('Opening help URL:', url);
-
-    try {
-      await open(url);
-    } catch (error) {
-      console.error('Error opening URL in browser:', error);
-    }
-  };
-
   return (
     <SubpageLayout
+      alignLeft
       className="max-w-lg"
       rightElement={
-        <Button
-          className="gap-2"
-          onClick={handleHelpClick}
-          size="sm"
-          variant="ghost"
+        <a
+          className={cn(buttonVariants({ variant: 'ghost', size: 'xs' }))}
+          href={getGuideUrl(currentModel)}
+          rel="noreferrer"
+          target="_blank"
         >
           <HelpCircle className="h-4 w-4" />
           Help
-        </Button>
+        </a>
       }
       title={t('llmProviders.add')}
     >
@@ -440,30 +424,35 @@ const AddAIPage = () => {
 
             <FormField
               control={addAgentForm.control}
-              name="agentName"
+              name="name"
               render={({ field }) => (
                 <TextField
                   autoFocus
-                  field={{
-                    ...field,
-                    onChange: (e) => {
-                      const value = e.target.value;
-                      const alphanumericValue = value.replace(
-                        /[^a-zA-Z0-9_]/g,
-                        '_',
-                      );
-                      field.onChange({
-                        ...e,
-                        target: {
-                          value: alphanumericValue,
-                        },
-                      });
-                    },
-                  }}
-                  label={t('llmProviders.form.agentName')}
+                  field={field}
+                  helperMessage={
+                    <span>
+                      {t('llmProviders.form.generatedId')}:{' '}
+                      {addAgentForm
+                        .watch('name')
+                        .replace(/[^a-zA-Z0-9_]/g, '_')}
+                    </span>
+                  }
+                  label={t('llmProviders.form.name')}
                 />
               )}
             />
+            <FormField
+              control={addAgentForm.control}
+              name="description"
+              render={({ field }) => (
+                <TextField
+                  field={field}
+                  helperMessage={t('llmProviders.form.descriptionHelper')}
+                  label={t('llmProviders.form.description')}
+                />
+              )}
+            />
+
             <FormField
               control={addAgentForm.control}
               name="externalUrl"
