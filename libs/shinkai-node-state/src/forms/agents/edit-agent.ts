@@ -6,6 +6,8 @@ export const editAgentSchema = z.object({
   apikey: z.string(),
   modelCustom: z.string(),
   modelTypeCustom: z.string(),
+  name: z.string().optional(),
+  description: z.string().optional(),
 });
 
 export type EditAgentFormSchema = z.infer<typeof editAgentSchema>;

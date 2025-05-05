@@ -133,6 +133,8 @@ const AIsPage = () => {
                   key={llmProvider.id}
                   llmProviderId={llmProvider.id}
                   model={llmProvider.model}
+                  name={(llmProvider as any).name}
+                  description={llmProvider.description}
                 />
               ))}
             </div>
@@ -150,11 +152,15 @@ function LLMProviderCard({
   model,
   externalUrl,
   agentApiKey,
+  name,
+  description,
 }: {
   llmProviderId: string;
   model: string;
   externalUrl: string;
   agentApiKey: string;
+  name?: string;
+  description?: string;
 }) {
   const { t } = useTranslation();
   const [isDeleteAgentDrawerOpen, setIsDeleteAgentDrawerOpen] =
@@ -176,11 +182,16 @@ function LLMProviderCard({
           </div>
           <div className="flex flex-col items-baseline gap-2">
             <span className="w-full truncate text-start text-sm">
-              {llmProviderId}
+              {name || llmProviderId}
             </span>
             <Badge className="text-official-gray-300 bg-official-gray-850 truncate text-start text-xs font-normal shadow-none">
               {model}
             </Badge>
+            {description && (
+              <span className="text-official-gray-400 truncate text-start text-xs">
+                {description}
+              </span>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -319,6 +330,8 @@ const EditLLMProviderDrawer = ({
       apikey: agentApiKey,
       modelCustom: agentModelProvider,
       modelTypeCustom: agentModelType,
+      name: '', // Initialize with empty string
+      description: '', // Initialize with empty string
     });
   }, [
     agentId,
@@ -357,7 +370,9 @@ const EditLLMProviderDrawer = ({
         storage_bucket_permissions: [],
         toolkit_permissions: [],
         model,
-      },
+        ...(values.name ? { name: values.name } : {}),
+        ...(values.description ? { description: values.description } : {}),
+      } as any,
     });
   };
 
@@ -383,6 +398,28 @@ const EditLLMProviderDrawer = ({
                   <TextField
                     field={field}
                     label={t('llmProviders.form.agentName')}
+                  />
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <TextField
+                    field={field}
+                    label={t('llmProviders.form.name', 'Name')}
+                  />
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <TextField
+                    field={field}
+                    label={t('llmProviders.form.description', 'Description')}
                   />
                 )}
               />
