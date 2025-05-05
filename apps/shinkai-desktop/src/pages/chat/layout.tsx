@@ -553,25 +553,6 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
         <h2 className="font-clash flex items-center gap-2 px-2 text-sm font-normal capitalize tracking-wide">
           <AgentIcon className="h-4 w-4" />
           {agent?.name}
-          {hasScheduledTasks && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  className="inline-flex items-center"
-                  onClick={(e) => {
-                    navigate(`/tasks`);
-                  }}
-                >
-                  <ScheduledTasksIcon className="h-4 w-4" />
-                </button>
-              </TooltipTrigger>
-              <TooltipPortal>
-                <TooltipContent>
-                  <p>View scheduled tasks</p>
-                </TooltipContent>
-              </TooltipPortal>
-            </Tooltip>
-          )}
         </h2>
         <Tooltip>
           <TooltipTrigger asChild>
