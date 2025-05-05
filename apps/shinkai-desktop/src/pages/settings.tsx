@@ -402,7 +402,7 @@ const SettingsPage = () => {
                   <SelectContent>
                     {llmProviders?.map((agent) => (
                       <SelectItem key={agent.id} value={agent.id}>
-                        {agent.id}
+                        {(agent as any).name || agent.id}
                       </SelectItem>
                     ))}
                   </SelectContent>
