@@ -1,4 +1,6 @@
 {
+  "": {
+  },
   "agents": {
     "systemInstructions": "Instrucciones del sistema"
   },
@@ -280,14 +282,17 @@
       "updateAgent": "Error al actualizar IA"
     },
     "form": {
-      "agentName": "Nombre de la IA",
       "apiKey": "Clave API",
       "customModelType": "Tipo de Modelo Personalizado",
+      "description": "Descripción",
+      "descriptionHelper": "Descripción breve (opcional) para ayudar a identificar esta IA más tarde",
       "externalUrl": "URL Externa",
+      "generatedId": "ID Generado",
       "modelId": "ID del Modelo",
       "modelName": "Nombre del Modelo",
       "modelProvider": "Proveedor de Modelo",
       "modelType": "Tipo de Modelo",
+      "name": "Nombre de la IA",
       "selectModel": "Selecciona tu Modelo",
       "toggleCustomModel": "Añadir un modelo personalizado"
     },

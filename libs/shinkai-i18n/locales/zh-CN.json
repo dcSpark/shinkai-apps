@@ -280,14 +280,17 @@
       "updateAgent": "更新人工智能时出错"
     },
     "form": {
-      "agentName": "人工智能名称",
       "apiKey": "API密钥",
       "customModelType": "自定义模型类型",
+      "description": "描述",
+      "descriptionHelper": "简要描述（可选），以帮助稍后识别此 AI",
       "externalUrl": "外部URL",
+      "generatedId": "生成的 ID",
       "modelId": "模型ID",
       "modelName": "模型名称",
       "modelProvider": "模型提供者",
       "modelType": "模型类型",
+      "name": "AI 名称",
       "selectModel": "选择您的模型",
       "toggleCustomModel": "添加自定义模型"
     },

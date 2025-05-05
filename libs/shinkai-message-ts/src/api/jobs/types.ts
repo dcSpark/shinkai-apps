@@ -108,15 +108,11 @@ export type AddFileToInboxResponse = {
 export type LLMProvider = {
   id: string;
   full_identity_name: string;
-  perform_locally: boolean;
   external_url?: string;
   api_key?: string;
   model: string;
-  toolkit_permissions: string[];
-  storage_bucket_permissions: string[];
-  allowed_message_senders: string[];
-} & {
-  description?: string; // hardcoded in the frontend side
+  name: string;
+  description?: string;
 };
 
 export type GetDownloadFileRequest = {
@@ -181,14 +177,12 @@ export interface DeepSeek {
 
 export type SerializedLLMProvider = {
   id: string;
+  name: string;
+  description?: string;
   full_identity_name: string;
-  perform_locally: boolean;
   external_url?: string;
   api_key?: string;
   model: LLMProviderInterface;
-  toolkit_permissions: string[];
-  storage_bucket_permissions: string[];
-  allowed_message_senders: string[];
 };
 export type AddLLMProviderRequest = SerializedLLMProvider;
 export type AddLLMProviderResponse = string;

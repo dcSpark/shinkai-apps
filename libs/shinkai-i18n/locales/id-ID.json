@@ -280,14 +280,17 @@
       "updateAgent": "Kesalahan memperbarui AI"
     },
     "form": {
-      "agentName": "Nama AI",
       "apiKey": "Kunci API",
       "customModelType": "Tipe Model Kustom",
+      "description": "Deskripsi",
+      "descriptionHelper": "Deskripsi singkat (opsional) untuk membantu mengidentifikasi AI ini nanti",
       "externalUrl": "URL Eksternal",
+      "generatedId": "ID yang Dihasilkan",
       "modelId": "ID Model",
       "modelName": "Nama Model",
       "modelProvider": "Penyedia Model",
       "modelType": "Tipe Model",
+      "name": "Nama AI",
       "selectModel": "Pilih Model Anda",
       "toggleCustomModel": "Tambahkan model kustom"
     },

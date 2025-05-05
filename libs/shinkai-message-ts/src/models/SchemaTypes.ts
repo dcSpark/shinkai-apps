@@ -98,25 +98,19 @@ export interface APIReadUpToTimeRequest {
 export interface SerializedLLMProvider {
   id: string;
   full_identity_name: string; // ShinkaiName
-  perform_locally: boolean;
   external_url?: string;
   api_key?: string;
   model: AgentAPIModel;
-  toolkit_permissions: string[];
-  storage_bucket_permissions: string[];
-  allowed_message_senders: string[];
 }
 
 export type LLMProvider = {
   id: string;
   full_identity_name: string; // ShinkaiName
-  perform_locally: boolean;
   external_url?: string;
   api_key?: string;
   model: string;
-  toolkit_permissions: string[];
-  storage_bucket_permissions: string[];
-  allowed_message_senders: string[];
+  name?: string;
+  description?: string;
 };
 export type AgentAPIModel = {
   OpenAI?: OpenAI;

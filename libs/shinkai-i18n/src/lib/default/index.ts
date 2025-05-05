@@ -581,7 +581,8 @@ export default {
         'After installing AI models on your local machine, they will become available as AI',
     },
     form: {
-      agentName: 'AI Name',
+      generatedId: 'Generated ID',
+      name: 'AI Name',
       externalUrl: 'External URL',
       apiKey: 'API Key',
       modelName: 'Model Name',
@@ -591,6 +592,9 @@ export default {
       customModelType: 'Custom Model Type',
       toggleCustomModel: 'Add a custom model',
       selectModel: 'Select Model Provider',
+      description: 'Description',
+      descriptionHelper:
+        'Brief description (optional) to help identify this AI later',
     },
     success: {
       createAgent: 'AI created successfully',
