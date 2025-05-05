@@ -1,5 +1,5 @@
-import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
+import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { Skeleton } from '@shinkai_network/shinkai-ui';
 import {
   getRelativeDateLabel,
@@ -302,8 +302,8 @@ export const MessageList = memo(
                             <Message
                               disabledEdit={disabledRetryAndEditValue}
                               handleEditMessage={handleEditMessage}
-                              handleRetryMessage={handleRetryMessage}
                               handleForkMessage={handleForkMessage}
+                              handleRetryMessage={handleRetryMessage}
                               hidePythonExecution={hidePythonExecution}
                               key={`${message.messageId}::${messageIndex}`}
                               message={message}
