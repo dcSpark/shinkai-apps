@@ -9,6 +9,8 @@ import {
   CreateFilesInboxResponse,
   CreateJobRequest,
   CreateJobResponse,
+  ForkJobMessagesRequest,
+  ForkJobMessagesResponse,
   GetAllAgentInboxesRequest,
   GetAllInboxesResponse,
   GetAllInboxesWithPaginationRequest,
@@ -545,4 +547,20 @@ export const getProviderFromJob = async (
     },
   );
   return response.data as GetProviderFromJobResponse;
+};
+
+export const forkJobMessages = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: ForkJobMessagesRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/fork_job_messages'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as ForkJobMessagesResponse;
 };

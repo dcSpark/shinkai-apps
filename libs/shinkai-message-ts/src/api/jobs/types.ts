@@ -303,3 +303,12 @@ export type ProviderDetails = {
   provider_type: 'Agent' | 'LLMProvider';
 };
 export type GetProviderFromJobResponse = ProviderDetails;
+
+export type ForkJobMessagesRequest = {
+  message_id: string;
+  job_id: string;
+};
+
+export type ForkJobMessagesResponse = {
+  job_id: string;
+};

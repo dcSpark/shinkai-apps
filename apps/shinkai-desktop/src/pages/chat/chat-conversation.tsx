@@ -4,6 +4,7 @@ import {
   FunctionKeyV2,
   generateOptimisticAssistantMessage,
 } from '@shinkai_network/shinkai-node-state/v2/constants';
+import { useForkJobMessages } from '@shinkai_network/shinkai-node-state/v2/mutations/forkJobMessages/useForkJobMessages';
 import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
@@ -186,6 +187,8 @@ const ChatConversation = () => {
   }, [data?.pages, optInExperimental]);
 
   const { mutateAsync: retryMessage } = useRetryMessage();
+  
+  const { mutateAsync: forkMessage } = useForkJobMessages();
 
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
     onSuccess: () => {
@@ -204,6 +207,17 @@ const ChatConversation = () => {
       nodeAddress: auth.node_address,
       token: auth.api_v2_key,
       inboxId: decodedInboxId,
+      messageId: messageId,
+    });
+  };
+  
+  const handleForkMessage = async (messageId: string, jobId: string) => {
+    if (!auth) return;
+    
+    await forkMessage({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      jobId: jobId,
       messageId: messageId,
     });
   };
@@ -241,6 +255,7 @@ const ChatConversation = () => {
           noMoreMessageLabel={t('chat.allMessagesLoaded')}
           paginatedMessages={data}
           regenerateMessage={regenerateMessage}
+          forkMessage={handleForkMessage}
         />
       ) : (
         <EmptyMessage />

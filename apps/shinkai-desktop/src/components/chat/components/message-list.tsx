@@ -1,4 +1,5 @@
 import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { Skeleton } from '@shinkai_network/shinkai-ui';
 import {
   getRelativeDateLabel,
@@ -65,6 +66,7 @@ export const MessageList = memo(
     lastMessageContent,
     editAndRegenerateMessage,
     regenerateMessage,
+    forkMessage,
     disabledRetryAndEdit,
     messageExtra,
     hidePythonExecution,
@@ -82,6 +84,7 @@ export const MessageList = memo(
       InfiniteQueryObserverResult<ChatConversationInfiniteData, Error>
     >;
     regenerateMessage?: (messageId: string) => void;
+    forkMessage?: (messageId: string, jobId: string) => void;
     editAndRegenerateMessage?: (content: string, messageHash: string) => void;
     containerClassName?: string;
     lastMessageContent?: React.ReactNode;
@@ -281,6 +284,13 @@ export const MessageList = memo(
                             regenerateMessage?.(message?.messageId ?? '');
                           };
 
+                          const handleForkMessage = () => {
+                            forkMessage?.(
+                              message?.messageId ?? '',
+                              extractJobIdFromInbox(message?.messageId ?? '')
+                            );
+                          };
+
                           const handleEditMessage = (message: string) => {
                             editAndRegenerateMessage?.(
                               message,
@@ -293,6 +303,7 @@ export const MessageList = memo(
                               disabledEdit={disabledRetryAndEditValue}
                               handleEditMessage={handleEditMessage}
                               handleRetryMessage={handleRetryMessage}
+                              handleForkMessage={handleForkMessage}
                               hidePythonExecution={hidePythonExecution}
                               key={`${message.messageId}::${messageIndex}`}
                               message={message}
