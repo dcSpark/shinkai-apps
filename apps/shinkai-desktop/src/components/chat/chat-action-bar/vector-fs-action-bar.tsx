@@ -1,4 +1,5 @@
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
+import { useUpdateJobScope } from '@shinkai_network/shinkai-node-state/v2/mutations/updateJobScope/useUpdateJobScope';
 import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
 import { useGetJobFolderName } from '@shinkai_network/shinkai-node-state/v2/queries/getJobFolderName/useGetJobFolderName';
 import { useGetJobScope } from '@shinkai_network/shinkai-node-state/v2/queries/getJobScope/useGetJobScope';
@@ -9,9 +10,15 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { FilesIcon } from '@shinkai_network/shinkai-ui/assets';
+import {
+  DirectoryTypeIcon,
+  FilesIcon,
+  FileTypeIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { X } from 'lucide-react';
 import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import { useSetJobScope } from '../context/set-job-scope-context';
@@ -74,6 +81,11 @@ function VectorFsActionBarBase({
     >
       <FilesIcon className="size-4" />
       <span className="">Local AI Files</span>
+      {aiFilesCount > 0 ? (
+        <Badge className="bg-official-gray-1000 inline-flex size-4 items-center justify-center rounded-full border-gray-200 p-0 text-center text-[10px] text-gray-50">
+          {aiFilesCount}
+        </Badge>
+      ) : null}
     </button>
   );
 }
@@ -136,6 +148,106 @@ export function UpdateVectorFsActionBar() {
       aiFilesCount={filesAndFoldersCount}
       onClick={handleUpdateVectorFs}
     />
+  );
+}
+
+export function VectorFsActionBarPreview() {
+  const auth = useAuth((state) => state.auth);
+  const { inboxId: encodedInboxId = '' } = useParams();
+  const inboxId = decodeURIComponent(encodedInboxId);
+  const setSetJobScopeOpen = useSetJobScope(
+    (state) => state.setSetJobScopeOpen,
+  );
+
+  const { data: jobScope, isSuccess } = useGetJobScope(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+    },
+    { enabled: !!inboxId },
+  );
+
+  const allItems = isSuccess
+    ? [
+        ...(jobScope?.vector_fs_folders ?? []).map((folder) => ({
+          type: 'folder',
+          name: folder,
+        })),
+        ...(jobScope?.vector_fs_items ?? []).map((item) => ({
+          type: 'file',
+          name: item,
+        })),
+      ]
+    : [];
+
+  const { mutateAsync: updateJobScope, isPending: isUpdatingJobScope } =
+    useUpdateJobScope({
+      onSuccess: () => {
+        setSetJobScopeOpen(false);
+      },
+      onError: (error) => {
+        toast.error('Failed to update conversation context', {
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+    });
+
+  return (
+    <>
+      {allItems.length > 0 && (
+        <div className="no-scrollbar bg-official-gray-800/10 scroll border-official-gray-780 h-16 overflow-hidden border-b">
+          <div className="flex items-center gap-3 overflow-x-auto p-2.5">
+            {allItems.map((item) => (
+              <div
+                className="border-official-gray-780 relative flex h-10 w-[180px] shrink-0 items-center gap-1.5 rounded-lg border px-1 py-1.5 pr-2.5"
+                key={item.name}
+              >
+                <div className="flex w-6 shrink-0 items-center justify-center">
+                  {item.type === 'file' ? (
+                    <FileTypeIcon className="text-official-gray-400 size-4 shrink-0" />
+                  ) : (
+                    <DirectoryTypeIcon className="text-official-gray-400 size-4 shrink-0" />
+                  )}
+                </div>
+
+                <div className="text-left text-xs">
+                  <span className="line-clamp-1 break-all">{item.name}</span>
+                </div>
+                <button
+                  className={cn(
+                    'bg-official-gray-850 hover:bg-official-gray-800 text-gray-80 border-official-gray-780 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
+                    isUpdatingJobScope && 'opacity-50',
+                  )}
+                  disabled={isUpdatingJobScope}
+                  onClick={() => {
+                    const filteredFolders = (
+                      jobScope?.vector_fs_folders ?? []
+                    ).filter((folder) => folder !== item.name);
+                    const filteredFiles = (
+                      jobScope?.vector_fs_items ?? []
+                    ).filter((file) => file !== item.name);
+
+                    updateJobScope({
+                      jobId: extractJobIdFromInbox(inboxId),
+                      nodeAddress: auth?.node_address ?? '',
+                      token: auth?.api_v2_key ?? '',
+                      jobScope: {
+                        vector_fs_items: filteredFiles,
+                        vector_fs_folders: filteredFolders,
+                      },
+                    });
+                  }}
+                  type="button"
+                >
+                  <X className="h-full w-full" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 export const VectorFsActionBar = VectorFsActionBarBase;
