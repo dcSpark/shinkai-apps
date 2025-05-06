@@ -1086,7 +1086,10 @@ function AgentForm({ mode }: AgentFormProps) {
   }, [currentCronExpression]);
 
   // --- Helper function to find a TreeNode by its key (path) in the tree ---
-  const findNodeByKey = (key: string, searchNodes: TreeNode[]): TreeNode | null => {
+  const findNodeByKey = (
+    key: string,
+    searchNodes: TreeNode[],
+  ): TreeNode | null => {
     for (const node of searchNodes) {
       if (String(node.key) === key) return node;
       if (node.children) {
@@ -1187,34 +1190,23 @@ function AgentForm({ mode }: AgentFormProps) {
                           render={({ field }) => (
                             <TextField
                               autoFocus
-                              field={{
-                                ...field,
-                              }}
+                              field={field}
                               helperMessage={
                                 mode === 'edit'
-                                  ? 'You can change the agent name, but the agent ID remains unchanged.'
-                                  : 'Enter a unique name for your AI agent. This will also be used as the agent ID.'
+                                  ? `You can change the agent name, but the agent ID remains unchanged. Agent ID: ${agent?.agent_id}`
+                                  : `Enter a unique name for your AI agent. This will also be used as the agent ID ${
+                                      form.watch('name')
+                                        ? `: ${form
+                                            .watch('name')
+                                            .replace(/[^a-zA-Z0-9_]/g, '_')
+                                            .toLowerCase()}`
+                                        : ''
+                                    }`
                               }
                               label="Agent Name"
                             />
                           )}
                         />
-                        
-                        {mode === 'edit' && agent ? (
-                          <div className="space-y-2">
-                            <div className="text-sm font-medium">Agent ID</div>
-                            <div className="flex items-center rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground">
-                              {agent.agent_id}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="space-y-2">
-                            <div className="text-sm font-medium">Generated Agent ID</div>
-                            <div className="flex items-center rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground">
-                              {form.watch('name').replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase() || 'Enter a name to generate ID'}
-                            </div>
-                          </div>
-                        )}
 
                         <FormField
                           control={form.control}
@@ -1313,7 +1305,12 @@ function AgentForm({ mode }: AgentFormProps) {
                                       />
                                     </FormControl>
                                     <FormDescription>
-                                      (Optional) You can control the message context here by forcing a static message with the user message e.g. {"{{user_message}}"}. And then say: Chao amigo!. This will add &quot;And then say: Chao amigo!&quot; to every message sent.
+                                      (Optional) You can control the message
+                                      context here by forcing a static message
+                                      with the user message e.g.{' '}
+                                      {'{{user_message}}'}. And then say: Chao
+                                      amigo!. This will add &quot;And then say:
+                                      Chao amigo!&quot; to every message sent.
                                     </FormDescription>
                                   </FormItem>
                                 )}
@@ -1706,39 +1703,61 @@ function AgentForm({ mode }: AgentFormProps) {
                                 );
                               }}
                               onUnselect={(e) => {
-                                 const nodeKey = String(e.node.key);
-                                 if (e.node.icon === 'icon-folder') {
-                                   selectedFolderKeysRef.delete(nodeKey);
-                                   const clearDescendants = (node: TreeNode) => {
-                                     node.children?.forEach((child: TreeNode) => {
-                                       const childKey = String(child.key);
-                                       selectedFileKeysRef.delete(childKey);
-                                       selectedFolderKeysRef.delete(childKey); // Remove if it exists as a folder key
-                                       if (child.children && child.children.length > 0) {
-                                         clearDescendants(child);
-                                       }
-                                     });
-                                   };
-                                   clearDescendants(e.node);
-                                 } else {
-                                   // --- File Deselected --- 
-                                   const lastSlashIndex = nodeKey.lastIndexOf('/');
-                                   const parentFolderPath = lastSlashIndex > 0 ? nodeKey.substring(0, lastSlashIndex) : '/';
-                                   const isParentFolderSelected = selectedFolderKeysRef.has(parentFolderPath);
-                                   if (isParentFolderSelected) {
-                                     selectedFolderKeysRef.delete(parentFolderPath);
-                                     const parentNode = findNodeByKey(parentFolderPath, nodes);
-                                     (parentNode?.children ?? [])
-                                       .filter((childNode: TreeNode) => String(childNode.key) !== nodeKey && childNode.icon !== 'icon-folder')
-                                       .forEach((childNode: TreeNode) => {
-                                          if (childNode.data?.path) {
-                                            selectedFileKeysRef.set(String(childNode.key), childNode.data.path);
-                                          }
-                                       });
-                                   } else {
-                                     selectedFileKeysRef.delete(nodeKey);
-                                   }
-                                 }
+                                const nodeKey = String(e.node.key);
+                                if (e.node.icon === 'icon-folder') {
+                                  selectedFolderKeysRef.delete(nodeKey);
+                                  const clearDescendants = (node: TreeNode) => {
+                                    node.children?.forEach(
+                                      (child: TreeNode) => {
+                                        const childKey = String(child.key);
+                                        selectedFileKeysRef.delete(childKey);
+                                        selectedFolderKeysRef.delete(childKey); // Remove if it exists as a folder key
+                                        if (
+                                          child.children &&
+                                          child.children.length > 0
+                                        ) {
+                                          clearDescendants(child);
+                                        }
+                                      },
+                                    );
+                                  };
+                                  clearDescendants(e.node);
+                                } else {
+                                  // --- File Deselected ---
+                                  const lastSlashIndex =
+                                    nodeKey.lastIndexOf('/');
+                                  const parentFolderPath =
+                                    lastSlashIndex > 0
+                                      ? nodeKey.substring(0, lastSlashIndex)
+                                      : '/';
+                                  const isParentFolderSelected =
+                                    selectedFolderKeysRef.has(parentFolderPath);
+                                  if (isParentFolderSelected) {
+                                    selectedFolderKeysRef.delete(
+                                      parentFolderPath,
+                                    );
+                                    const parentNode = findNodeByKey(
+                                      parentFolderPath,
+                                      nodes,
+                                    );
+                                    (parentNode?.children ?? [])
+                                      .filter(
+                                        (childNode: TreeNode) =>
+                                          String(childNode.key) !== nodeKey &&
+                                          childNode.icon !== 'icon-folder',
+                                      )
+                                      .forEach((childNode: TreeNode) => {
+                                        if (childNode.data?.path) {
+                                          selectedFileKeysRef.set(
+                                            String(childNode.key),
+                                            childNode.data.path,
+                                          );
+                                        }
+                                      });
+                                  } else {
+                                    selectedFileKeysRef.delete(nodeKey);
+                                  }
+                                }
                               }}
                               propagateSelectionDown={true}
                               propagateSelectionUp={true}
