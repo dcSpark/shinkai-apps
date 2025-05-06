@@ -34,6 +34,9 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import {
   AIAgentIcon,
+  DirectoryTypeIcon,
+  FileTypeIcon,
+  PlusIcon,
   SendIcon,
   ToolsIcon,
 } from '@shinkai_network/shinkai-ui/assets';
@@ -50,7 +53,9 @@ import {
   EllipsisIcon,
   InfoIcon,
   MessageSquare,
+  Paperclip,
   Plus,
+  X,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
@@ -215,6 +220,9 @@ const EmptyMessage = () => {
     );
 
   const selectedKeys = useSetJobScope((state) => state.selectedKeys);
+  const onSelectedKeysChange = useSetJobScope(
+    (state) => state.onSelectedKeysChange,
+  );
 
   const { t } = useTranslation();
 
@@ -530,6 +538,57 @@ const EmptyMessage = () => {
                   bottomAddons={
                     <div className="flex items-center justify-between gap-4 px-3 pb-2">
                       <div className="flex items-center gap-2.5">
+                        <Popover>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  className="h-8 w-8 bg-transparent"
+                                  size="icon"
+                                  variant="ghost"
+                                >
+                                  <PlusIcon className="h-4 w-4 text-white" />
+                                  <span className="sr-only">Add</span>
+                                </Button>
+                              </PopoverTrigger>
+                            </TooltipTrigger>
+                            <TooltipPortal>
+                              <TooltipContent align="center" side="top">
+                                Add
+                              </TooltipContent>
+                            </TooltipPortal>
+                          </Tooltip>
+                          <PopoverContent align="start" className="w-48 p-2">
+                            <div className="flex flex-col items-start gap-1">
+                              {!selectedTool && (
+                                <FileSelectionActionBar
+                                  disabled={!!selectedTool}
+                                  inputProps={{
+                                    ...chatForm.register('files'),
+                                    ...getInputFileProps(),
+                                  }}
+                                  onClick={openFilePicker}
+                                  showLabel
+                                />
+                              )}
+                              {!selectedTool && (
+                                <VectorFsActionBar
+                                  aiFilesCount={
+                                    Object.keys(selectedKeys || {}).length ?? 0
+                                  }
+                                  disabled={!!selectedTool}
+                                  onClick={() => {
+                                    setSetJobScopeOpen(true);
+                                  }}
+                                  showLabel
+                                />
+                              )}
+                              {!selectedTool && (
+                                <PromptSelectionActionBar showLabel />
+                              )}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
                         <AIModelSelector
                           onValueChange={(value) => {
                             chatForm.setValue('agent', value);
@@ -547,17 +606,7 @@ const EmptyMessage = () => {
                           }}
                           value={currentAI ?? ''}
                         />
-                        {!selectedTool && (
-                          <FileSelectionActionBar
-                            disabled={!!selectedTool}
-                            inputProps={{
-                              ...chatForm.register('files'),
-                              ...getInputFileProps(),
-                            }}
-                            onClick={openFilePicker}
-                          />
-                        )}
-                        {!selectedTool && <PromptSelectionActionBar />}
+
                         {!selectedTool && !selectedAgent && (
                           <ToolsSwitchActionBar
                             checked={chatConfigForm.watch('useTools')}
@@ -578,17 +627,6 @@ const EmptyMessage = () => {
                                         );
                                       }}
                                     /> */}
-                        {!selectedTool && (
-                          <VectorFsActionBar
-                            aiFilesCount={
-                              Object.keys(selectedKeys || {}).length ?? 0
-                            }
-                            disabled={!!selectedTool}
-                            onClick={() => {
-                              setSetJobScopeOpen(true);
-                            }}
-                          />
-                        )}
                       </div>
 
                       <div className="flex items-center gap-2">
@@ -680,6 +718,46 @@ const EmptyMessage = () => {
                               });
                             }}
                           />
+                        )}
+                      {selectedKeys &&
+                        Object.keys(selectedKeys || {}).length > 0 && (
+                          <div className="no-scrollbar bg-official-gray-800/10 scroll border-official-gray-780 h-16 overflow-hidden border-b">
+                            <div className="flex items-center gap-3 overflow-x-auto p-2.5">
+                              {Object.keys(selectedKeys).map((file, index) => (
+                                <div
+                                  className="border-official-gray-780 relative flex h-10 w-[180px] shrink-0 items-center gap-1.5 rounded-lg border px-1 py-1.5 pr-2.5"
+                                  key={file + index}
+                                >
+                                  <div className="flex w-6 shrink-0 items-center justify-center">
+                                    {isFileOrFolder(file) === 'file' ? (
+                                      <FileTypeIcon className="text-official-gray-400 size-4 shrink-0" />
+                                    ) : (
+                                      <DirectoryTypeIcon className="text-official-gray-400 size-4 shrink-0" />
+                                    )}
+                                  </div>
+
+                                  <div className="text-left text-xs">
+                                    <span className="line-clamp-1 break-all">
+                                      {file}
+                                    </span>
+                                  </div>
+                                  <button
+                                    className={cn(
+                                      'bg-official-gray-850 hover:bg-official-gray-800 text-gray-80 border-official-gray-780 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
+                                    )}
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      const newKeys = { ...selectedKeys };
+                                      delete newKeys[file];
+                                      onSelectedKeysChange(newKeys);
+                                    }}
+                                  >
+                                    <X className="h-full w-full" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         )}
                     </>
                   }
@@ -1022,6 +1100,12 @@ const EmptyMessage = () => {
   );
 };
 export default EmptyMessage;
+
+function isFileOrFolder(path: string) {
+  const filePattern = /.*\.[^\\/]+$/;
+  const isFile = filePattern.test(path);
+  return isFile ? 'file' : 'folder';
+}
 
 interface CardProps {
   icon: React.ReactNode;

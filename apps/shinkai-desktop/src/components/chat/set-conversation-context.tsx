@@ -62,7 +62,10 @@ export const SetJobScopeDrawer = () => {
   const [nodes, setNodes] = useState<TreeNode[]>([]);
 
   // Helper function to find a TreeNode by its key (path) in the tree
-  const findNodeByKey = (key: string, searchNodes: TreeNode[]): TreeNode | null => {
+  const findNodeByKey = (
+    key: string,
+    searchNodes: TreeNode[],
+  ): TreeNode | null => {
     for (const node of searchNodes) {
       if (String(node.key) === key) {
         return node;
@@ -159,12 +162,12 @@ export const SetJobScopeDrawer = () => {
               const nodeKey = String(e.node.key);
 
               if (e.node.icon === 'icon-folder') {
-                // --- Folder Deselected --- 
+                // --- Folder Deselected ---
                 selectedFolderKeysRef.delete(nodeKey);
 
                 // Robustly remove all descendant keys (files and folders) from both refs
                 const clearDescendants = (node: TreeNode) => {
-                  node.children?.forEach(child => {
+                  node.children?.forEach((child) => {
                     const childKey = String(child.key);
                     selectedFileKeysRef.delete(childKey); // Remove if it exists as a file key
                     selectedFolderKeysRef.delete(childKey); // Remove if it exists as a folder key
@@ -174,16 +177,19 @@ export const SetJobScopeDrawer = () => {
                   });
                 };
                 clearDescendants(e.node);
-
               } else {
-                // --- File Deselected --- 
+                // --- File Deselected ---
                 const lastSlashIndex = nodeKey.lastIndexOf('/');
-                const parentFolderPath = lastSlashIndex > 0 ? nodeKey.substring(0, lastSlashIndex) : '/';
-                const isParentFolderSelected = selectedFolderKeysRef.has(parentFolderPath);
+                const parentFolderPath =
+                  lastSlashIndex > 0
+                    ? nodeKey.substring(0, lastSlashIndex)
+                    : '/';
+                const isParentFolderSelected =
+                  selectedFolderKeysRef.has(parentFolderPath);
 
                 if (isParentFolderSelected) {
                   // Parent folder *was* selected. Transition to selecting individual siblings.
-                  
+
                   // 1. Remove the parent folder from selection.
                   selectedFolderKeysRef.delete(parentFolderPath);
 
@@ -192,13 +198,24 @@ export const SetJobScopeDrawer = () => {
 
                   // 3. Add all *other* sibling *files* to the individual file selection.
                   (parentNode?.children ?? [])
-                    .filter((childNode: TreeNode) => String(childNode.key) !== nodeKey && childNode.data?.path) // Only other files
+                    .filter(
+                      (childNode: TreeNode) =>
+                        String(childNode.key) !== nodeKey &&
+                        childNode.data?.path,
+                    ) // Only other files
                     .forEach((childNode: TreeNode) => {
-                       if (childNode.icon !== 'icon-folder') { // Ensure path exists and is a file
-                         selectedFileKeysRef.set(String(childNode.key), childNode.data.path);
-                       } else {
-                        selectedFolderKeysRef.set(String(childNode.key), childNode.data.path);
-                       }
+                      if (childNode.icon !== 'icon-folder') {
+                        // Ensure path exists and is a file
+                        selectedFileKeysRef.set(
+                          String(childNode.key),
+                          childNode.data.path,
+                        );
+                      } else {
+                        selectedFolderKeysRef.set(
+                          String(childNode.key),
+                          childNode.data.path,
+                        );
+                      }
                     });
                 } else {
                   // Parent folder was NOT selected, so this file was individually selected.

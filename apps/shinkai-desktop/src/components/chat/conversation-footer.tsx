@@ -35,6 +35,7 @@ import {
   Popover,
   PopoverAnchor,
   PopoverContent,
+  PopoverTrigger,
   ToggleGroup,
   ToggleGroupItem,
   Tooltip,
@@ -45,6 +46,7 @@ import {
 import {
   fileIconMap,
   FileTypeIcon,
+  PlusIcon,
   SendIcon,
   ToolsIcon,
 } from '@shinkai_network/shinkai-ui/assets';
@@ -76,7 +78,10 @@ import { FileSelectionActionBar } from './chat-action-bar/file-selection-action-
 import { OpenChatFolderActionBar } from './chat-action-bar/open-chat-folder-action-bar';
 import PromptSelectionActionBar from './chat-action-bar/prompt-selection-action-bar';
 import { UpdateToolsSwitchActionBar } from './chat-action-bar/tools-switch-action-bar';
-import { UpdateVectorFsActionBar } from './chat-action-bar/vector-fs-action-bar';
+import {
+  UpdateVectorFsActionBar,
+  // VectorFsActionBarPreview,
+} from './chat-action-bar/vector-fs-action-bar';
 import { useChatStore } from './context/chat-context';
 import { useSetJobScope } from './context/set-job-scope-context';
 
@@ -436,33 +441,63 @@ function ConversationChatFooter({
                 bottomAddons={
                   <div className="flex items-center justify-between gap-4 px-3 pb-2">
                     <div className="flex items-center gap-2.5">
+                      <Popover>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <PopoverTrigger asChild>
+                              <Button
+                                className="h-8 w-8 bg-transparent"
+                                size="icon"
+                                variant="ghost"
+                              >
+                                <PlusIcon className="h-4 w-4 text-white" />
+                                <span className="sr-only">Add</span>
+                              </Button>
+                            </PopoverTrigger>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent align="center" side="top">
+                              Add
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+                        <PopoverContent align="start" className="w-48 p-2">
+                          <div className="flex flex-col items-start gap-1">
+                            {!selectedTool && (
+                              <FileSelectionActionBar
+                                inputProps={{
+                                  ...chatForm.register('files'),
+                                  ...getInputFileProps(),
+                                }}
+                                onClick={openFilePicker}
+                                showLabel
+                              />
+                            )}
+
+                            {!selectedTool && (
+                              <PromptSelectionActionBar showLabel />
+                            )}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
                       <AiUpdateSelectionActionBar inboxId={inboxId} />
-                      {!selectedTool && (
-                        <FileSelectionActionBar
-                          inputProps={{
-                            ...chatForm.register('files'),
-                            ...getInputFileProps(),
-                          }}
-                          onClick={openFilePicker}
-                        />
-                      )}
-                      {!selectedTool && <PromptSelectionActionBar />}
-                      {!selectedTool && (
-                        <OpenChatFolderActionBar
-                          onClick={async () => {
-                            if (!jobChatFolderName || !nodeStorageLocation)
-                              return;
-                            try {
-                              await invoke('shinkai_node_open_chat_folder', {
-                                storageLocation: nodeStorageLocation,
-                                chatFolderName: jobChatFolderName.folder_name,
-                              });
-                            } catch (error) {
-                              toast.warning(t('chat.failedToOpenChatFolder'));
-                            }
-                          }}
-                        />
-                      )}
+
+                      {!selectedTool &&
+                        jobChatFolderName &&
+                        nodeStorageLocation && (
+                          <OpenChatFolderActionBar
+                            onClick={async () => {
+                              try {
+                                await invoke('shinkai_node_open_chat_folder', {
+                                  storageLocation: nodeStorageLocation,
+                                  chatFolderName: jobChatFolderName.folder_name,
+                                });
+                              } catch (error) {
+                                toast.warning(t('chat.failedToOpenChatFolder'));
+                              }
+                            }}
+                          />
+                        )}
                       {isAgentInbox || selectedTool ? null : (
                         <UpdateToolsSwitchActionBar />
                       )}
@@ -571,6 +606,7 @@ function ConversationChatFooter({
                           }}
                         />
                       )}
+                    {/* <VectorFsActionBarPreview /> */}
                   </>
                 }
                 value={chatForm.watch('message')}
@@ -785,11 +821,11 @@ const FileListBase = ({
   const size = partial({ standard: 'jedec' });
 
   return (
-    <div className="no-scrollbar bg-official-gray-1000 scroll h-16 overflow-hidden">
+    <div className="no-scrollbar bg-official-gray-800/10 scroll border-official-gray-780 h-16 overflow-hidden border-b">
       <div className="flex items-center gap-3 overflow-x-auto p-2.5">
         {currentFiles.map((file, index) => (
           <div
-            className="relative flex h-10 w-[180px] shrink-0 items-center gap-1.5 rounded-lg border border-gray-200 px-1 py-1.5 pr-2"
+            className="border-official-gray-780 relative flex h-10 w-[180px] shrink-0 items-center gap-1.5 rounded-lg border px-1 py-1.5 pr-2.5"
             key={index}
           >
             <div className="flex w-6 shrink-0 items-center justify-center">
@@ -802,19 +838,19 @@ const FileListBase = ({
                   type={getFileExt(file.name)}
                 />
               ) : (
-                <Paperclip className="text-gray-80 h-4 w-4 shrink-0" />
+                <Paperclip className="text-official-gray-400 h-4 w-4 shrink-0" />
               )}
             </div>
 
             <div className="text-left text-xs">
               <span className="line-clamp-1 break-all">{file.name}</span>
-              <span className="line-clamp-1 break-all text-gray-100">
+              <span className="text-official-gray-500 line-clamp-1 break-all">
                 {size(file.size)}
               </span>
             </div>
             <button
               className={cn(
-                'hover:bg-gray-375 bg-gray-375 text-gray-80 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border border-gray-200 p-1 transition-colors hover:text-white',
+                'bg-official-gray-850 hover:bg-official-gray-800 text-gray-80 border-official-gray-780 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
               )}
               onClick={(event) => {
                 event.stopPropagation();
