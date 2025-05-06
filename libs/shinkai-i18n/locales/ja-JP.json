@@ -194,6 +194,11 @@
     "welcome": "新海へようこそ",
     "welcomeDescription": "デバイス上で直接AIエージェントを構築、実行、そして自動化します — 高速でプライベート、かつ安全です。"
   },
+  "disconnect": {
+    "exportConnection": "続行する前に、<Link>接続をエクスポート</Link>して、いつでも接続を復元できるようにしてください。",
+    "modalDescription": "本当に接続を切断してもよろしいですか？これにより、データが永久に削除されます。",
+    "modalTitle": "新界との接続を切断"
+  },
   "errors": {
     "nodeUnavailable": {
       "description": "Shinkaiノードに接続できません。ノードがオフラインになっているか、インターネット接続が切断されている可能性があります",
@@ -598,11 +603,6 @@
     "configurationRequired": "ツールの設定が必要です",
     "create": "ツールを作成",
     "description": "AIツールを管理、カスタマイズ、拡張します。",
-    "disconnect": {
-      "exportConnection": "続行する前に、<Link>接続をエクスポート</Link>して、いつでも接続を復元できるようにしてください。",
-      "modalDescription": "本当に接続を切断してもよろしいですか？これによりデータが永久に削除されます。",
-      "modalTitle": "新海との接続を切断"
-    },
     "emptyState": {
       "search": {
         "text": "検索クエリに一致するツールは見つかりませんでした"

@@ -194,6 +194,11 @@
     "welcome": "欢迎来到新海",
     "welcomeDescription": "直接在您的设备上构建、运行和自动化 AI 代理——快速、私密且安全。"
   },
+  "disconnect": {
+    "exportConnection": "在继续之前，请<Link>导出您的连接</Link>，以便随时恢复连接。",
+    "modalDescription": "您确定要断开连接吗？这将永久删除您的数据。",
+    "modalTitle": "断开 Shinkai"
+  },
   "errors": {
     "nodeUnavailable": {
       "description": "我们在连接您的 Shinkai 节点时遇到问题。您的节点可能离线，或者您的互联网连接可能已断开。",
@@ -598,11 +603,6 @@
     "configurationRequired": "工具配置必需",
     "create": "创建工具",
     "description": "管理、定制和扩展您的人工智能工具。",
-    "disconnect": {
-      "exportConnection": "在继续之前，请<Link>导出您的连接</Link>以便随时恢复连接。",
-      "modalDescription": "您确定要断开连接吗？这将永久删除您的数据。",
-      "modalTitle": "断开与 Shinkai 的连接"
-    },
     "emptyState": {
       "search": {
         "text": "未找到与搜索查询匹配的工具"

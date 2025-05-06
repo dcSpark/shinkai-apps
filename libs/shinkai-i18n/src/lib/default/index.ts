@@ -690,13 +690,13 @@ export default {
         description: 'The metadata has been generated successfully.',
       },
     },
-    disconnect: {
-      modalTitle: 'Disconnect Shinkai',
-      modalDescription:
-        'Are you sure you want to disconnect? This will permanently delete your data',
-      exportConnection:
-        'Before continuing, please<Link>export your connection</Link>to restore your connection at any time.',
-    },
+  },
+  disconnect: {
+    modalTitle: 'Disconnect Shinkai',
+    modalDescription:
+      'Are you sure you want to disconnect? This will permanently delete your data',
+    exportConnection:
+      'Before continuing, please<Link>export your connection</Link>to restore your connection at any time.',
   },
   errors: {
     nodeUnavailable: {

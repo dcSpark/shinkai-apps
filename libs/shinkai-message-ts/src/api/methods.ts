@@ -1320,7 +1320,7 @@ export const retrieveFilesForJob = async (
 export const setPreferences = async (
   nodeAddress: string,
   bearerToken: string,
-  payload: { default_llm_provider?: string, max_iterations?: number },
+  payload: { default_llm_provider?: string; max_iterations?: number },
 ): Promise<any> => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/set_preferences'),
@@ -1330,14 +1330,13 @@ export const setPreferences = async (
       responseType: 'json',
     },
   );
-  console.log('set preferences response', response.status);
   return response.data;
 };
 
 export const getPreferences = async (
   nodeAddress: string,
   bearerToken: string,
-): Promise<{ default_llm_provider?: string, max_iterations?: number }> => {
+): Promise<{ default_llm_provider?: string; max_iterations?: number }> => {
   const response = await httpClient.get(
     urlJoin(nodeAddress, '/v2/get_preferences'),
     {
