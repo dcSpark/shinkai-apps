@@ -194,6 +194,11 @@
     "welcome": "Selamat datang di Shinkai",
     "welcomeDescription": "Bangun, jalankan, dan otomatisasi agen AI langsung di perangkat Anda — cepat, pribadi, dan aman."
   },
+  "disconnect": {
+    "exportConnection": "Sebelum melanjutkan, silakan <Link>ekspor koneksi Anda</Link> untuk memulihkan koneksi Anda kapan saja.",
+    "modalDescription": "Apakah Anda yakin ingin memutuskan koneksi? Ini akan menghapus data Anda secara permanen.",
+    "modalTitle": "Putuskan Koneksi Shinkai"
+  },
   "errors": {
     "nodeUnavailable": {
       "description": "Kami mengalami masalah dalam menghubungkan ke Node Shinkai Anda. Node Anda mungkin offline, atau koneksi internet Anda mungkin terputus.",
@@ -598,11 +603,6 @@
     "configurationRequired": "Konfigurasi Alat Diperlukan",
     "create": "Buat Alat",
     "description": "Kelola, sesuaikan, dan kembangkan alat AI Anda.",
-    "disconnect": {
-      "exportConnection": "Sebelum melanjutkan, silakan <Link>ekspor koneksi Anda</Link> untuk memulihkan koneksi Anda kapan saja.",
-      "modalDescription": "Apakah Anda yakin ingin memutuskan koneksi? Ini akan menghapus data Anda secara permanen.",
-      "modalTitle": "Putuskan Koneksi Shinkai"
-    },
     "emptyState": {
       "search": {
         "text": "Tidak ada alat ditemukan untuk kueri pencarian"

@@ -1,6 +1,4 @@
 {
-  "": {
-  },
   "agents": {
     "systemInstructions": "Instrucciones del sistema"
   },
@@ -195,6 +193,11 @@
     },
     "welcome": "Bienvenido a Shinkai",
     "welcomeDescription": "Crea, ejecuta y automatiza agentes de IA directamente en tu dispositivo: rápido, privado y seguro."
+  },
+  "disconnect": {
+    "exportConnection": "Antes de continuar, por favor <Link>exporta tu conexión</Link> para restaurarla en cualquier momento.",
+    "modalDescription": "¿Estás seguro de que deseas desconectar? Esto eliminará permanentemente tus datos.",
+    "modalTitle": "Desconectar Shinkai"
   },
   "errors": {
     "nodeUnavailable": {
@@ -600,11 +603,6 @@
     "configurationRequired": "Se requiere configuración de la herramienta",
     "create": "Crear herramienta",
     "description": "Gestiona, personaliza y amplía tus herramientas de IA.",
-    "disconnect": {
-      "exportConnection": "Antes de continuar, por favor<Link>exporte su conexión</Link>para restaurar su conexión en cualquier momento.",
-      "modalDescription": "¿Está seguro de que desea desconectar? Esto eliminará permanentemente sus datos.",
-      "modalTitle": "Desconectar Shinkai"
-    },
     "emptyState": {
       "search": {
         "text": "No se encontraron herramientas para la consulta de búsqueda"

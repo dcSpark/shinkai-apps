@@ -194,6 +194,11 @@
     "welcome": "Shinkai'ya Hoş Geldiniz",
     "welcomeDescription": "Cihazınızda doğrudan AI ajanları oluşturun, çalıştırın ve otomatikleştirin — hızlı, özel ve güvenli."
   },
+  "disconnect": {
+    "exportConnection": "Devam etmeden önce, lütfen<Link>bağlantınızı dışa aktarın</Link> böylece istediğiniz zaman bağlantınızı geri yükleyebilirsiniz.",
+    "modalDescription": "Bağlantıyı kesmek istediğinize emin misiniz? Bu, verilerinizi kalıcı olarak silecektir.",
+    "modalTitle": "Shinkai'yi Bağlantıyı Kes"
+  },
   "errors": {
     "nodeUnavailable": {
       "description": "Shinkai Düğümünüze bağlanmakta zorluk yaşıyoruz. Düğümünüz çevrimdışı olabilir veya internet bağlantınızda bir sorun olabilir.",
@@ -598,11 +603,6 @@
     "configurationRequired": "Araç Yapılandırması Gerekli",
     "create": "Araç Oluştur",
     "description": "Yapay zeka araçlarınızı yönetin, özelleştirin ve genişletin.",
-    "disconnect": {
-      "exportConnection": "Devam etmeden önce, lütfen <Link>bağlantınızı dışa aktarın</Link> böylece bağlantınızı istediğiniz zaman geri yükleyebilirsiniz.",
-      "modalDescription": "Bağlantıyı kesmek istediğinizden emin misiniz? Bu, verilerinizi kalıcı olarak silecektir.",
-      "modalTitle": "Shinkai'den Bağlantıyı Kes"
-    },
     "emptyState": {
       "search": {
         "text": "Arama sorgusu için hiçbir araç bulunamadı"
