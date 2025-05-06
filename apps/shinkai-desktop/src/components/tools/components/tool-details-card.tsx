@@ -70,6 +70,7 @@ import { SHINKAI_STORE_URL } from '../../../utils/store';
 import { FileInputField } from '../../playground-tool/components/execution-panel';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
+import { ConfirmToolsetUpdateDialog } from './confirm-update-common-toolset-config';
 import EditToolDetailsDialog from './edit-tool-details-dialog';
 import { ExecutionFiles } from './execution-files';
 
@@ -144,6 +145,8 @@ export default function ToolDetailsCard({
     string,
     any
   > | null>(null);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [affectedNamesForDialog, setAffectedNamesForDialog] = useState<string[]>([]);
   const { t } = useTranslation();
   const {
     mutateAsync: publishTool,
@@ -356,11 +359,10 @@ export default function ToolDetailsCard({
       token: auth?.api_v2_key ?? '',
     });
   }
-  const handleSaveToolConfig: FormProps['onSubmit'] = async (data) => {
-    const formData = data.formData;
-    const toolKey = (tool as any).tool_router_key;
 
-    const sanitizedConfig = Object.entries(formData).map(
+  const performUpdateThisTool = () => {
+    const toolKeyToUpdate = (tool as any).tool_router_key;
+    const configToSave = Object.entries(formData ?? {}).map(
       ([key_name, key_value]) => {
         const sanitizedValue = key_value == null ? '' : key_value;
         return {
@@ -371,26 +373,45 @@ export default function ToolDetailsCard({
         };
       },
     );
-    const hasCommonToolsetConfig = (toolsFromToolSet ?? [])
-      .filter((tool) => (tool as any).tool_router_key !== toolKey)
-      .some((tool) => {
-        const toolConfig = (tool as any).content[0].config;
-        return toolConfig.some((config: any) => {
-          return config.BasicConfig.key_name in formData;
-        });
-      });
-    if (hasCommonToolsetConfig && 'tool_set' in tool) {
-      await handleSaveCommonToolsetConfig(tool.tool_set as string, formData);
-    } else await updateTool({
-      toolKey: toolKey ?? '',
+    updateTool({
+      toolKey: toolKeyToUpdate ?? '',
       toolType: toolType,
-      toolPayload: {
-        config: sanitizedConfig,
-      } as unknown as ShinkaiTool,
+      toolPayload: { config: configToSave } as unknown as ShinkaiTool,
       isToolEnabled: true,
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
     });
+  };
+
+  const performUpdateToolsetForAll = () => {
+    if ('tool_set' in tool && tool.tool_set && formData) {
+      handleSaveCommonToolsetConfig(tool.tool_set as string, formData);
+    }
+  };
+
+  const handleSaveToolConfig: FormProps['onSubmit'] = async (data) => {
+    const submittedFormData = data.formData;
+    setFormData(submittedFormData);
+
+    const toolKey = (tool as any).tool_router_key;
+    const calculatedCommonToolsetConfigNames = (toolsFromToolSet ?? [])
+      .filter((t) => (t as any).content[0].tool_router_key !== toolKey)
+      .filter((t) => {
+        const toolConfig = (t as any).content[0].config;
+        return toolConfig.some((config: any) => {
+          return config.BasicConfig.key_name in submittedFormData;
+        });
+      })
+      .map(t => (t as any).content[0].name as string);
+    
+    const hasCommonToolsetConfig = calculatedCommonToolsetConfigNames.length > 0;
+
+    if (hasCommonToolsetConfig && 'tool_set' in tool) {
+      setAffectedNamesForDialog(calculatedCommonToolsetConfigNames);
+      setIsConfirmDialogOpen(true);
+    } else {
+      performUpdateThisTool();
+    }
   };
 
   const handleSaveOAuthConfig: FormProps['onSubmit'] = async (data) => {
@@ -588,6 +609,15 @@ export default function ToolDetailsCard({
           </div>
         </div>
       )}
+
+      <ConfirmToolsetUpdateDialog
+        affectedToolNames={affectedNamesForDialog}
+        isOpen={isConfirmDialogOpen}
+        onConfirmUpdateTool={performUpdateThisTool}
+        onConfirmUpdateToolset={performUpdateToolsetForAll}
+        onOpenChange={setIsConfirmDialogOpen}
+        toolName={tool.name}
+      />
 
       <Tabs
         className={cn('w-full py-8', hideToolHeaderDetails && 'pt-0')}
