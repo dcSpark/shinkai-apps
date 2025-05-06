@@ -11,8 +11,10 @@ import { useDuplicateTool } from '@shinkai_network/shinkai-node-state/v2/mutatio
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
+import { useSetCommonToolsetConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/setCommonToolsetConfig/useSetCommonToolsetConfig';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
+import { useGetToolsFromToolset } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsFromToolset/useGetToolsFromToolset';
 import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
 import {
   Alert,
@@ -23,6 +25,11 @@ import {
   Button,
   buttonVariants,
   CopyToClipboardIcon,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -273,7 +280,12 @@ export default function ToolDetailsCard({
       },
     },
   );
-
+  const { mutateAsync: setCommonToolsetConfig } = useSetCommonToolsetConfig();
+  const { data: toolsFromToolSet } = useGetToolsFromToolset({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    tool_set_key: 'tool_set' in tool ? (tool.tool_set as string) : '',
+  });
   useEffect(() => {
     if (
       tool &&
@@ -336,8 +348,17 @@ export default function ToolDetailsCard({
     }
   }, [tool]);
 
+  const handleSaveCommonToolsetConfig = async (toolsetKey: string, formData: Record<string, any>) => {
+    await setCommonToolsetConfig({
+      tool_set_key: toolsetKey,
+      value: formData,
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    });
+  }
   const handleSaveToolConfig: FormProps['onSubmit'] = async (data) => {
     const formData = data.formData;
+    const toolKey = (tool as any).tool_router_key;
 
     const sanitizedConfig = Object.entries(formData).map(
       ([key_name, key_value]) => {
@@ -350,8 +371,17 @@ export default function ToolDetailsCard({
         };
       },
     );
-
-    await updateTool({
+    const hasCommonToolsetConfig = (toolsFromToolSet ?? [])
+      .filter((tool) => (tool as any).tool_router_key !== toolKey)
+      .some((tool) => {
+        const toolConfig = (tool as any).content[0].config;
+        return toolConfig.some((config: any) => {
+          return config.BasicConfig.key_name in formData;
+        });
+      });
+    if (hasCommonToolsetConfig && 'tool_set' in tool) {
+      await handleSaveCommonToolsetConfig(tool.tool_set as string, formData);
+    } else await updateTool({
       toolKey: toolKey ?? '',
       toolType: toolType,
       toolPayload: {

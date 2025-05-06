@@ -167,6 +167,14 @@ export type GetToolsRequest = {
 export type GetToolsResponse = ShinkaiToolHeader[];
 export type GetToolsSearchResponse = [ShinkaiToolHeader, number][];
 
+export type SetCommonToolsetConfigRequest = {
+  tool_set_key: string;
+  value: Record<string, unknown>;
+};
+
+export type SetCommonToolsetConfigResponse = {
+  updated_tool_keys: string[];
+};
 export type AddToolRequest = {
   type: ShinkaiToolType;
   content: [ShinkaiTool, boolean];
