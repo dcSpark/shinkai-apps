@@ -785,11 +785,11 @@ const FileListBase = ({
   const size = partial({ standard: 'jedec' });
 
   return (
-    <div className="no-scrollbar bg-official-gray-1000 scroll h-16 overflow-hidden">
+    <div className="no-scrollbar bg-official-gray-800/10 scroll border-official-gray-780 h-16 overflow-hidden border-b">
       <div className="flex items-center gap-3 overflow-x-auto p-2.5">
         {currentFiles.map((file, index) => (
           <div
-            className="relative flex h-10 w-[180px] shrink-0 items-center gap-1.5 rounded-lg border border-gray-200 px-1 py-1.5 pr-2"
+            className="border-official-gray-780 relative flex h-10 w-[180px] shrink-0 items-center gap-1.5 rounded-lg border px-1 py-1.5 pr-2.5"
             key={index}
           >
             <div className="flex w-6 shrink-0 items-center justify-center">
@@ -802,19 +802,19 @@ const FileListBase = ({
                   type={getFileExt(file.name)}
                 />
               ) : (
-                <Paperclip className="text-gray-80 h-4 w-4 shrink-0" />
+                <Paperclip className="text-official-gray-400 h-4 w-4 shrink-0" />
               )}
             </div>
 
             <div className="text-left text-xs">
               <span className="line-clamp-1 break-all">{file.name}</span>
-              <span className="line-clamp-1 break-all text-gray-100">
+              <span className="text-official-gray-500 line-clamp-1 break-all">
                 {size(file.size)}
               </span>
             </div>
             <button
               className={cn(
-                'hover:bg-gray-375 bg-gray-375 text-gray-80 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border border-gray-200 p-1 transition-colors hover:text-white',
+                'bg-official-gray-850 hover:bg-official-gray-800 text-gray-80 border-official-gray-780 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
               )}
               onClick={(event) => {
                 event.stopPropagation();

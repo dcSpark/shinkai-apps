@@ -21,45 +21,60 @@ type OpenChatFolderActionBarProps = {
   onClick: () => void;
   disabled?: boolean;
   aiFilesCount?: number;
+  showLabel?: boolean;
 };
 
 function VectorFsActionBarBase({
   onClick,
   aiFilesCount = 0,
   disabled,
+  showLabel,
 }: OpenChatFolderActionBarProps) {
+  if (!showLabel) {
+    return (
+      <>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              className={cn(
+                actionButtonClassnames,
+                'w-auto gap-2',
+                disabled && 'opacity-50',
+                aiFilesCount > 0 && 'bg-cyan-950 hover:bg-cyan-950',
+              )}
+              disabled={disabled}
+              onClick={onClick}
+              type="button"
+            >
+              {aiFilesCount > 0 ? (
+                <Badge className="bg-official-gray-1000 inline-flex size-4 items-center justify-center rounded-full border-gray-200 p-0 text-center text-[10px] text-gray-50">
+                  {aiFilesCount}
+                </Badge>
+              ) : (
+                <FilesIcon className="size-4" />
+              )}
+              Local AI Files
+            </button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent align="center" side="top">
+              Local AI Files
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+      </>
+    );
+  }
   return (
-    <>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            className={cn(
-              actionButtonClassnames,
-              'w-auto gap-2',
-              disabled && 'opacity-50',
-              aiFilesCount > 0 && 'bg-cyan-950 hover:bg-cyan-950',
-            )}
-            disabled={disabled}
-            onClick={onClick}
-            type="button"
-          >
-            {aiFilesCount > 0 ? (
-              <Badge className="bg-official-gray-1000 inline-flex size-4 items-center justify-center rounded-full border-gray-200 p-0 text-center text-[10px] text-gray-50">
-                {aiFilesCount}
-              </Badge>
-            ) : (
-              <FilesIcon className="size-4" />
-            )}
-            Local AI Files
-          </button>
-        </TooltipTrigger>
-        <TooltipPortal>
-          <TooltipContent align="center" side="top">
-            Local AI Files
-          </TooltipContent>
-        </TooltipPortal>
-      </Tooltip>
-    </>
+    <button
+      className={cn(actionButtonClassnames, 'w-full justify-start gap-2.5')}
+      disabled={disabled}
+      onClick={onClick}
+      type="button"
+    >
+      <FilesIcon className="size-4" />
+      <span className="">Local AI Files</span>
+    </button>
   );
 }
 
@@ -105,9 +120,6 @@ export function UpdateVectorFsActionBar() {
     );
 
   const hasFilesJobFolder = isVRFilesSuccess && fileInfoArray.length > 0;
-
-  // const hasFolders = isSuccess && jobScope.vector_fs_folders.length > 0;
-  // const hasFiles = isSuccess && jobScope.vector_fs_items.length > 0;
 
   const filesAndFoldersCount = isSuccess
     ? jobScope.vector_fs_folders.length +

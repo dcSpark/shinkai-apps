@@ -12,33 +12,54 @@ import { memo } from 'react';
 import { usePromptSelectionStore } from '../../prompt/context/prompt-selection-context';
 import { actionButtonClassnames } from '../conversation-footer';
 
-function PromptSelectionActionBarBase({ disabled }: { disabled?: boolean }) {
+function PromptSelectionActionBarBase({
+  disabled,
+  showLabel,
+}: {
+  disabled?: boolean;
+  showLabel?: boolean;
+}) {
   const setPromptSelectionDrawerOpen = usePromptSelectionStore(
     (state) => state.setPromptSelectionDrawerOpen,
   );
 
+  if (!showLabel) {
+    return (
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              className={cn(actionButtonClassnames)}
+              disabled={disabled}
+              onClick={() => {
+                setPromptSelectionDrawerOpen(true);
+              }}
+              type="button"
+            >
+              <PromptLibraryIcon className="h-full w-full" />
+            </button>
+          </TooltipTrigger>
+          <TooltipPortal>
+            <TooltipContent align="center" side="top">
+              Prompt Library
+            </TooltipContent>
+          </TooltipPortal>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
   return (
-    <TooltipProvider delayDuration={0}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            className={cn(actionButtonClassnames)}
-            disabled={disabled}
-            onClick={() => {
-              setPromptSelectionDrawerOpen(true);
-            }}
-            type="button"
-          >
-            <PromptLibraryIcon className="h-full w-full" />
-          </button>
-        </TooltipTrigger>
-        <TooltipPortal>
-          <TooltipContent align="center" side="top">
-            Prompt Library
-          </TooltipContent>
-        </TooltipPortal>
-      </Tooltip>
-    </TooltipProvider>
+    <button
+      className={cn(actionButtonClassnames, 'w-full justify-start gap-2.5')}
+      disabled={disabled}
+      onClick={() => {
+        setPromptSelectionDrawerOpen(true);
+      }}
+      type="button"
+    >
+      <PromptLibraryIcon className="size-4" />
+      <span className="">Prompt Library</span>
+    </button>
   );
 }
 

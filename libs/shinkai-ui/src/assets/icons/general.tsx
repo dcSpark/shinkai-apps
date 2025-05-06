@@ -1842,3 +1842,20 @@ export const ChatSettingsIcon = ({ className }: { className?: string }) => (
     />
   </svg>
 );
+export const PlusIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    fill="none"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+  >
+    <path
+      d="M12 4V20M20 12H4"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+  </svg>
+);
