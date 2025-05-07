@@ -28,6 +28,7 @@ import {
   GetShinkaiFileProtocolResponse,
   GetToolProtocolsResponse,
   GetToolResponse,
+  GetToolsFromToolsetResponse,
   GetToolsRequest,
   GetToolsResponse,
   GetToolStoreDetailsRequest,
@@ -139,7 +140,7 @@ export const getToolsFromToolset = async (
       responseType: 'json',
     },
   );
-  return response.data as GetToolsResponse;
+  return response.data as GetToolsFromToolsetResponse;
 };
 
 export const setCommonToolsetConfig = async (

@@ -25,11 +25,6 @@ import {
   Button,
   buttonVariants,
   CopyToClipboardIcon,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -395,15 +390,16 @@ export default function ToolDetailsCard({
 
     const toolKey = (tool as any).tool_router_key;
     const calculatedCommonToolsetConfigNames = (toolsFromToolSet ?? [])
-      .filter((t) => (t as any).content[0].tool_router_key !== toolKey)
+      .filter((t) => t.content[0].tool_router_key !== toolKey)
       .filter((t) => {
-        const toolConfig = (t as any).content[0].config;
+        const toolConfig = t.content[0].config;
+        if (!toolConfig) return false;
         return toolConfig.some((config: any) => {
           return config.BasicConfig.key_name in submittedFormData;
         });
       })
-      .map(t => (t as any).content[0].name as string);
-    
+      .map(t => t.content[0].name as string);
+
     const hasCommonToolsetConfig = calculatedCommonToolsetConfigNames.length > 0;
 
     if (hasCommonToolsetConfig && 'tool_set' in tool) {
