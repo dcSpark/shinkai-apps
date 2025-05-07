@@ -1,6 +1,4 @@
 {
-  "": {
-  },
   "agents": {
     "systemInstructions": "Instrucciones del sistema"
   },
@@ -117,6 +115,7 @@
     "folderWithCount_other": "{{count}} Carpetas",
     "folders": "Carpetas",
     "getStarted": "Comienza gratis",
+    "howWouldYouLikeToProceed": "¿Cómo te gustaría proceder?",
     "iAgree": "Estoy de Acuerdo",
     "install": "Instalar",
     "installed": "Instalado",
@@ -597,7 +596,10 @@
     "runNow": "Ejecutar ahora"
   },
   "tools": {
+    "commonToolsetAffectedTools": "Elegir actualizar todas las herramientas en el conjunto también afectará a:",
+    "commonToolsetUpdateDescription": "La clave de configuración que estás cambiando para {{toolName}} también es utilizada por otras herramientas en este conjunto.",
     "configurationRequired": "Se requiere configuración de la herramienta",
+    "confirmConfigurationUpdate": "Confirmar Actualización de Configuración",
     "create": "Crear herramienta",
     "description": "Gestiona, personaliza y amplía tus herramientas de IA.",
     "disconnect": {
@@ -637,6 +639,8 @@
     },
     "successDuplicateTool": "Herramienta duplicada con éxito",
     "successOpenToolInCodeEditor": "Herramienta abierta en el editor de código",
+    "updateAllToolsInSet": "Actualizar Todas las Herramientas en el Conjunto",
+    "updateOnlyThisTool": "Actualizar Solo Esta Herramienta",
     "visitStore": "Visita la tienda Shinkai para descubrir e instalar herramientas adicionales que mejoren tu flujo de trabajo"
   },
   "vectorFs": {

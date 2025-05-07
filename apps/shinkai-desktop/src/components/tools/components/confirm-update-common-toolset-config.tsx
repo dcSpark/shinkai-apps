@@ -32,14 +32,14 @@ export function ConfirmToolsetUpdateDialog({
     <Dialog onOpenChange={onOpenChange} open={isOpen}>
       <DialogContent showCloseButton={true}>
         <DialogHeader>
-          <DialogTitle>Confirm Configuration Update</DialogTitle>
+          <DialogTitle>{t('tools.confirmConfigurationUpdate')}</DialogTitle>
           <DialogDescription>
-            The configuration key you are changing for {toolName ? `"${toolName}"` : 'this tool'} is also used by other tools in this set.
+            {t('tools.commonToolsetUpdateDescription', { toolName: toolName ? `"${toolName}"` : 'this tool' })}
             <br />
-            How would you like to proceed?
+            {t('common.howWouldYouLikeToProceed')}
             {affectedToolNames && affectedToolNames.length > 0 && (
               <div className="mt-2 text-xs">
-                <p className="font-medium">Choosing to update all tools in the set will also affect:</p>
+                <p className="font-medium">{t('tools.commonToolsetAffectedTools')}:</p>
                 <ul className="list-disc pl-5">
                   {affectedToolNames.map(name => <li key={name}>{name}</li>)}
                 </ul>
@@ -55,7 +55,7 @@ export function ConfirmToolsetUpdateDialog({
             }}
             variant="outline"
           >
-            Update Only This Tool
+            {t('tools.updateOnlyThisTool')}
           </Button>
           <Button
             onClick={() => {
@@ -63,7 +63,7 @@ export function ConfirmToolsetUpdateDialog({
               onOpenChange(false);
             }}
           >
-            Update All Tools in Set
+            {t('tools.updateAllToolsInSet')}
           </Button>
         </DialogFooter>
       </DialogContent>

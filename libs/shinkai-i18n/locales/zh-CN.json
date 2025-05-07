@@ -115,6 +115,7 @@
     "folderWithCount_other": "{{count}} 文件夹",
     "folders": "文件夹",
     "getStarted": "免费开始",
+    "howWouldYouLikeToProceed": "您希望如何进行？",
     "iAgree": "我同意",
     "install": "安装",
     "installed": "已安装",
@@ -595,7 +596,10 @@
     "runNow": "立即运行"
   },
   "tools": {
+    "commonToolsetAffectedTools": "选择更新该工具集中的所有工具也将影响：",
+    "commonToolsetUpdateDescription": "您正在更改的配置键 {{toolName}} 也被该工具集中的其他工具使用。",
     "configurationRequired": "工具配置必需",
+    "confirmConfigurationUpdate": "确认配置更新",
     "create": "创建工具",
     "description": "管理、定制和扩展您的人工智能工具。",
     "disconnect": {
@@ -635,6 +639,8 @@
     },
     "successDuplicateTool": "工具复制成功",
     "successOpenToolInCodeEditor": "工具已在代码编辑器中打开",
+    "updateAllToolsInSet": "更新该工具集中的所有工具",
+    "updateOnlyThisTool": "仅更新此工具",
     "visitStore": "访问深海商店，发现并安装更多工具以增强您的工作流程"
   },
   "vectorFs": {

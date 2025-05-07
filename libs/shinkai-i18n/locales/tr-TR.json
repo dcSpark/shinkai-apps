@@ -115,6 +115,7 @@
     "folderWithCount_other": "{{count}} Klasörler",
     "folders": "Klasörler",
     "getStarted": "Ücretsiz Başlayın",
+    "howWouldYouLikeToProceed": "Nasıl devam etmek istersiniz?",
     "iAgree": "Kabul Ediyorum",
     "install": "Kur",
     "installed": "Yüklü",
@@ -595,7 +596,10 @@
     "runNow": "Şimdi Çalıştır"
   },
   "tools": {
+    "commonToolsetAffectedTools": "Setteki tüm araçları güncellemeyi seçmek, aynı zamanda şunları da etkileyecektir:",
+    "commonToolsetUpdateDescription": "{{toolName}} için değiştirdiğiniz yapılandırma anahtarı, bu setteki diğer araçlar tarafından da kullanılmaktadır.",
     "configurationRequired": "Araç Yapılandırması Gerekli",
+    "confirmConfigurationUpdate": "Yapılandırma Güncellemesini Onayla",
     "create": "Araç Oluştur",
     "description": "Yapay zeka araçlarınızı yönetin, özelleştirin ve genişletin.",
     "disconnect": {
@@ -635,6 +639,8 @@
     },
     "successDuplicateTool": "Araç başarıyla kopyalandı",
     "successOpenToolInCodeEditor": "Araç kod editöründe açıldı",
+    "updateAllToolsInSet": "Setteki Tüm Araçları Güncelle",
+    "updateOnlyThisTool": "Sadece Bu Aracı Güncelle",
     "visitStore": "İş akışınızı geliştirmek için ek araçlar keşfetmek ve yüklemek üzere Shinkai Mağazası'nı ziyaret edin"
   },
   "vectorFs": {

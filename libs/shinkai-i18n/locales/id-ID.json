@@ -115,6 +115,7 @@
     "folderWithCount_other": "{{count}} Folder",
     "folders": "Folder",
     "getStarted": "Mulai Gratis",
+    "howWouldYouLikeToProceed": "Bagaimana Anda ingin melanjutkan?",
     "iAgree": "Saya Setuju",
     "install": "Instal",
     "installed": "Terinstal",
@@ -595,7 +596,10 @@
     "runNow": "Jalankan Sekarang"
   },
   "tools": {
+    "commonToolsetAffectedTools": "Memilih untuk memperbarui semua alat dalam set juga akan mempengaruhi:",
+    "commonToolsetUpdateDescription": "Kunci konfigurasi yang Anda ubah untuk {{toolName}} juga digunakan oleh alat lain dalam set ini.",
     "configurationRequired": "Konfigurasi Alat Diperlukan",
+    "confirmConfigurationUpdate": "Konfirmasi Pembaruan Konfigurasi",
     "create": "Buat Alat",
     "description": "Kelola, sesuaikan, dan kembangkan alat AI Anda.",
     "disconnect": {
@@ -635,6 +639,8 @@
     },
     "successDuplicateTool": "Alat berhasil diduplikasi",
     "successOpenToolInCodeEditor": "Alat dibuka di editor kode",
+    "updateAllToolsInSet": "Perbarui Semua Alat dalam Set",
+    "updateOnlyThisTool": "Perbarui Hanya Alat Ini",
     "visitStore": "Kunjungi Toko Shinkai untuk menemukan dan menginstal alat tambahan yang dapat meningkatkan alur kerja Anda"
   },
   "vectorFs": {

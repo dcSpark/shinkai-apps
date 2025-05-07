@@ -481,6 +481,7 @@ export default {
     upload: 'Upload',
     clearSearch: 'Clear Search',
     searchPlaceholder: 'Search...',
+    howWouldYouLikeToProceed: 'How would you like to proceed?',
     uploadFile: 'Upload a File',
     uploadAFileDescription:
       'Supports Images, PDF, CSV, TXT, XLSX and more formats',
@@ -667,6 +668,11 @@ export default {
     errorDuplicateTool: 'Failed to duplicate tool',
     successOpenToolInCodeEditor: 'Tool opened in code editor successfully',
     errorOpenToolInCodeEditor: 'Failed to open tool in code editor',
+    commonToolsetAffectedTools: 'Choosing to update all tools in the set will also affect:',
+    commonToolsetUpdateDescription: 'The configuration key you are changing for {{toolName}} is also used by other tools in this set.',
+    confirmConfigurationUpdate: 'Confirm Configuration Update',
+    updateOnlyThisTool: 'Update Only This Tool',
+    updateAllToolsInSet: 'Update All Tools in Set',
     installFromStore: 'Install from Store',
     lookingForMoreTools: 'Looking for more tools?',
     visitStore:
