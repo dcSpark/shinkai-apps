@@ -211,8 +211,10 @@ const ChatConversation = () => {
     });
   };
   
-  const handleForkMessage = async (messageId: string, jobId: string) => {
+  const handleForkMessage = async (messageId: string) => {
     if (!auth) return;
+    const decodedInboxId = decodeURIComponent(inboxId);
+    const jobId = extractJobIdFromInbox(decodedInboxId);
     
     await forkMessage({
       nodeAddress: auth.node_address,

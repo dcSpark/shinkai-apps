@@ -1,4 +1,3 @@
-import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { Skeleton } from '@shinkai_network/shinkai-ui';
 import {
@@ -84,7 +83,7 @@ export const MessageList = memo(
       InfiniteQueryObserverResult<ChatConversationInfiniteData, Error>
     >;
     regenerateMessage?: (messageId: string) => void;
-    forkMessage?: (messageId: string, jobId: string) => void;
+    forkMessage?: (messageId: string) => void;
     editAndRegenerateMessage?: (content: string, messageHash: string) => void;
     containerClassName?: string;
     lastMessageContent?: React.ReactNode;
@@ -285,10 +284,7 @@ export const MessageList = memo(
                           };
 
                           const handleForkMessage = () => {
-                            forkMessage?.(
-                              message?.messageId ?? '',
-                              extractJobIdFromInbox(message?.messageId ?? '')
-                            );
+                            forkMessage?.(message?.messageId ?? '');
                           };
 
                           const handleEditMessage = (message: string) => {
