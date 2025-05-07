@@ -4,6 +4,8 @@ import {
   CreateAgentRequest,
   CreateAgentResponse,
   ExportAgentResponse,
+  GenerateAgentFromPromptRequest,
+  GenerateAgentFromPromptResponse,
   GetAgentRequest,
   GetAgentResponse,
   GetAgentsResponse,
@@ -123,4 +125,20 @@ export const importAgent = async (
     },
   );
   return response.data as ImportAgentResponse;
+};
+
+export const generateAgentFromPrompt = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GenerateAgentFromPromptRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/generate_agent_from_prompt'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GenerateAgentFromPromptResponse;
 };
