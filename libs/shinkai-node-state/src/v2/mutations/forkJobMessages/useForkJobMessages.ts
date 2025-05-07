@@ -31,7 +31,7 @@ export const useForkJobMessages = (options?: Options) => {
         ],
       });
       
-      navigate(`/chat/${encodeURIComponent(response.job_id)}`);
+      navigate(`/chat/${encodeURIComponent(response.job_id)}`, { replace: false });
 
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);
