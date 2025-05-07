@@ -30,7 +30,7 @@ export function ConfirmToolsetUpdateDialog({
 
   return (
     <Dialog onOpenChange={onOpenChange} open={isOpen}>
-      <DialogContent>
+      <DialogContent showCloseButton={true}>
         <DialogHeader>
           <DialogTitle>Confirm Configuration Update</DialogTitle>
           <DialogDescription>
