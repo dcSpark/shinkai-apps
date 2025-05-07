@@ -2,10 +2,10 @@
   <img width="36" height="36" src="assets/icon.png"/><br/>
   Shinkai apps
 </h1>
-<p align="center">Shinkai apps unlock the full capabilities/automation of first-class LLM (AI) support in the web browser. It enables creating multiple agents, each connected to either local or 3rd-party LLMs (ex. OpenAI GPT), which have permissioned (meaning secure) access to act in every webpage you visit.
+<p align="center">Shinkai allows you to create AI agents without touching code. Define tasks, schedule actions, and let Shinkai write custom code for you. Native crypto support included.
 <br/>
 <br/>
-There is a companion repo called Shinkai Node, that allows you to set up the node anywhere as the central unit of the Shinkai Network, handling tasks such as agent management, job processing, and secure communications.
+There is a companion repo called Shinkai Node, that allows has all of the logic related how to coordinate and manage AIs, tools, messages and other key infrastructure for the App.
 You can find it <a href="https://github.com/dcSpark/shinkai-node">here</a>.</p><br/>
 
 ## Demo
