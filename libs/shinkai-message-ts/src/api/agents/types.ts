@@ -47,3 +47,22 @@ export type ImportAgentRequest = {
 };
 
 export type ImportAgentResponse = Agent;
+
+export type GenerateAgentFromPromptRequest = {
+  llm_provider: string;
+  prompt: string;
+};
+
+export type GeneratedAgent = {
+  indications: string;
+  instructions: string;
+  name: string;
+  tools: Array<{
+    description: string;
+    name: string;
+  }>;
+};
+
+export type GenerateAgentFromPromptResponse = {
+  result: GeneratedAgent;
+};
