@@ -51,8 +51,8 @@
     "@nx/react": {
       "application": {
         "babel": true,
-        "linter": "eslint",
         "style": "css",
+        "linter": "eslint",
         "bundler": "vite"
       },
       "component": {

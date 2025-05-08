@@ -1,0 +1,64 @@
+{
+  "name": "shinkai-web-shinkai-web",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/shinkai-web/shinkai-web/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/shinkai-web/shinkai-web"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/vite:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "shinkai-web-shinkai-web:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "shinkai-web-shinkai-web:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "shinkai-web-shinkai-web:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "preview": {
+      "executor": "@nx/vite:preview-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "shinkai-web-shinkai-web:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "shinkai-web-shinkai-web:build:development"
+        },
+        "production": {
+          "buildTarget": "shinkai-web-shinkai-web:build:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/shinkai-web/shinkai-web/jest.config.ts"
+      }
+    }
+  }
+}
