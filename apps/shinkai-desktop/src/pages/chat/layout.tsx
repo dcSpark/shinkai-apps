@@ -39,6 +39,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import {
   AgentIcon,
+  AIAgentIcon,
   ScheduledTasksIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { formatDateToLocaleStringWithTime } from '@shinkai_network/shinkai-ui/helpers';
@@ -548,7 +549,7 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
     <div className=" ">
       <div className="flex h-8 items-center justify-between gap-1">
         <h2 className="font-clash flex items-center gap-2 px-2 text-sm font-normal capitalize tracking-wide">
-          <AgentIcon className="h-4 w-4" />
+          <AIAgentIcon name={agent?.name ?? ''} size="xs" />
           {agent?.name}
         </h2>
         <Tooltip>
@@ -677,7 +678,7 @@ const AgentList = ({
               onClick={() => onSelectedAgentChange(agent.agent_id)}
               type="button"
             >
-              <AgentIcon className="h-4 w-4" />
+              <AIAgentIcon name={agent.name} size="xs" />
               <span className="line-clamp-1 flex-1 break-all pr-2 text-left text-xs capitalize">
                 {agent.name}
               </span>

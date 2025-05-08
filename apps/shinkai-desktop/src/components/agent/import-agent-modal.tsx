@@ -38,9 +38,9 @@ export default function ImportAgentModal() {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
   const navigate = useNavigate();
-  
+
   const [isImportModalOpen, setImportModalOpen] = useState(false);
-  
+
   const importAgentForm = useForm<ImportAgentFormSchema>({
     resolver: zodResolver(importAgentFormSchema),
   });
@@ -89,11 +89,11 @@ export default function ImportAgentModal() {
             variant: 'outline',
             size: 'sm',
           }),
-          'gap-1',
+          'min-w-[100px] gap-1',
         )}
       >
         <ImportIcon className="size-4" />
-        <span>Import Agent</span>
+        <span>Import </span>
       </DialogTrigger>
       <DialogContent
         className="max-w-[500px]"

@@ -91,7 +91,7 @@ function AgentsPage() {
           {!agents?.length ? (
             <div className="flex grow flex-col items-center gap-3 pt-20">
               <div className="bg-official-gray-800 flex size-10 items-center justify-center rounded-lg p-2">
-                <AIAgentIcon className="size-full" />
+                <AIAgentIcon className="size-full" name={''} />
               </div>
               <div className="flex flex-col items-center gap-1">
                 <p className="font-medium">No available agents</p>
@@ -126,7 +126,7 @@ function sanitizeFileName(name: string): string {
   let sanitized = name.replace(/[^a-zA-Z0-9_]/g, '_');
   sanitized = sanitized.replace(/_+/g, '_');
   sanitized = sanitized.replace(/^_+|_+$/g, '');
-  
+
   return sanitized || 'untitled_agent';
 }
 
@@ -148,7 +148,7 @@ const AgentCard = ({
     React.useState(false);
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
-  
+
   const { mutateAsync: exportAgent } = useExportAgent({
     onSuccess: async (response) => {
       const sanitizedAgentName = sanitizeFileName(agentName);
@@ -190,7 +190,7 @@ const AgentCard = ({
       <div className="border-official-gray-850 bg-official-gray-900 flex items-center justify-between gap-1 rounded-lg border p-3.5">
         <div className="flex items-start gap-3">
           <div className="flex size-8 items-center justify-center rounded-lg">
-            <AIAgentIcon />
+            <AIAgentIcon name={agentName} size="sm" />
           </div>
           <div className="flex flex-col gap-1.5">
             <span className="inline-flex w-full items-center gap-3 truncate text-start text-sm capitalize">
