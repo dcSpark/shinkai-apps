@@ -132,7 +132,7 @@ export function AIModelSelectorBase({
       return (
         <AIAgentIcon
           name={selectedAgent.name}
-          size={variant === 'simple' ? 'xs' : 'sm'}
+          size={variant === 'simple' ? 'xs' : 'xs'}
         />
       );
     }
@@ -176,7 +176,9 @@ export function AIModelSelectorBase({
                 <>
                   <div className="flex items-center gap-1.5">
                     {selectedIcon}
-                    <span>{selectedAgentName ?? 'Select'}</span>
+                    <span className="capitalize">
+                      {selectedAgentName ?? 'Select'}
+                    </span>
                   </div>
                   <ChevronDownIcon className="icon h-3 w-3" />
                 </>
@@ -185,7 +187,7 @@ export function AIModelSelectorBase({
                 <>
                   {selectedIcon}
                   <div className="flex flex-col items-start justify-start text-left">
-                    <span className="font-clash text-base font-medium tracking-wider text-white">
+                    <span className="text-base font-medium capitalize text-white">
                       {selectedAgentName}
                     </span>
                   </div>
@@ -279,7 +281,7 @@ export function AIModelSelectorBase({
                     <div className="inline-flex items-center gap-3">
                       <AIAgentIcon name={agent.name} size="sm" />
                       <div className="flex flex-col gap-1">
-                        <span className="inline-flex items-center gap-1.5 text-base">
+                        <span className="inline-flex items-center gap-1.5 text-base capitalize">
                           {agent.name}
                         </span>
                         <span className="text-official-gray-400 line-clamp-1 text-xs">
@@ -357,7 +359,7 @@ export function AIModelSelectorBase({
                       />
                     </div>
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-base font-medium">
+                      <span className="text-base font-medium capitalize">
                         {formatText(llmProvider?.name ?? llmProvider.id ?? '')}
                         {location.pathname.includes('tools') &&
                           llmProvider.model.toLowerCase() ===

@@ -45,7 +45,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import { motion } from 'framer-motion';
 import { ArrowRight, ArrowUpRight, EllipsisIcon, Plus, X } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -161,15 +161,11 @@ const EmptyMessage = () => {
     onDrop,
   });
 
-  const { data: agents } = useGetAgents(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-    },
-    {
-      select: (data) => data.slice(0, 4),
-    },
-  );
+  const { data: agents } = useGetAgents({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    categoryFilter: 'recently_used',
+  });
 
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const { data: toolsList, isSuccess: isToolsListSuccess } = useGetTools(
@@ -418,32 +414,161 @@ const EmptyMessage = () => {
     setToolFormData(null);
   };
 
-  const onCreateJob = async (message: string) => {
-    if (!auth) return;
-    await createJob({
-      nodeAddress: auth.node_address,
-      token: auth.api_v2_key,
-      llmProvider: defaultAgentId,
-      content: message,
-      isHidden: false,
-      chatConfig: {
-        stream: DEFAULT_CHAT_CONFIG.stream,
-        custom_prompt: '',
-        temperature: DEFAULT_CHAT_CONFIG.temperature,
-        top_p: DEFAULT_CHAT_CONFIG.top_p,
-        top_k: DEFAULT_CHAT_CONFIG.top_k,
-        use_tools: DEFAULT_CHAT_CONFIG.use_tools,
-      },
-    });
-  };
+  const onCreateJob = useCallback(
+    async (message: string) => {
+      if (!auth) return;
+      await createJob({
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
+        llmProvider: defaultAgentId,
+        content: message,
+        isHidden: false,
+        chatConfig: {
+          stream: DEFAULT_CHAT_CONFIG.stream,
+          custom_prompt: '',
+          temperature: DEFAULT_CHAT_CONFIG.temperature,
+          top_p: DEFAULT_CHAT_CONFIG.top_p,
+          top_k: DEFAULT_CHAT_CONFIG.top_k,
+          use_tools: DEFAULT_CHAT_CONFIG.use_tools,
+        },
+      });
+    },
+    [auth, createJob, defaultAgentId],
+  );
 
   const mainLayoutContainerRef = useViewportStore(
     (state) => state.mainLayoutContainerRef,
   );
+  const promptSuggestions = useMemo(() => {
+    const toolSuggestions = [
+      {
+        text: 'Quick Ask Spotlight',
+        onClick: () => showSpotlightWindow(),
+      },
+      {
+        text: 'Summarize a Youtube video',
+        onClick: () => {
+          const tool = toolsList?.find(
+            (tool) =>
+              tool.tool_router_key ===
+              'local:::__official_shinkai:::youtube_transcript_summarizer',
+          );
+          if (!tool) return;
+
+          chatConfigForm.setValue('useTools', true);
+          chatForm.setValue('message', 'Tool Used');
+          chatForm.setValue('tool', {
+            key: tool.tool_router_key,
+            name: tool.name,
+            description: tool.description,
+            args: tool.input_args,
+          });
+        },
+      },
+      {
+        text: 'Search in DuckDuckGo',
+        onClick: () => {
+          const tool = toolsList?.find(
+            (tool) =>
+              tool.tool_router_key ===
+              'local:::__official_shinkai:::duckduckgo_search',
+          );
+          if (!tool) return;
+
+          chatConfigForm.setValue('useTools', true);
+          chatForm.setValue('message', 'Tool Used');
+          chatForm.setValue('tool', {
+            key: tool.tool_router_key,
+            name: tool.name,
+            description: tool.description,
+            args: tool.input_args,
+          });
+        },
+      },
+      {
+        text: 'Tell me about the Roman Empire',
+        onClick: () => onCreateJob('Tell me about the Roman Empire'),
+      },
+    ];
+
+    const agentSuggestions: Record<string, typeof toolSuggestions> = {
+      product_expert: [
+        {
+          text: 'Create a user journey map for a mobile banking app',
+          onClick: () =>
+            onCreateJob('Create a user journey map for a mobile banking app'),
+        },
+        {
+          text: 'Design a checkout flow for an e-commerce platform',
+          onClick: () =>
+            onCreateJob('Design a checkout flow for an e-commerce platform'),
+        },
+        {
+          text: 'Conduct a competitive analysis of food delivery apps',
+          onClick: () =>
+            onCreateJob('Conduct a competitive analysis of food delivery apps'),
+        },
+        {
+          text: 'Create wireframes for a fitness tracking dashboard',
+          onClick: () =>
+            onCreateJob('Create wireframes for a fitness tracking dashboard'),
+        },
+      ],
+      seo_strategist: [
+        {
+          text: 'Analyze website SEO and optimizations',
+          onClick: () =>
+            onCreateJob(
+              'Analyze my website SEO and provide optimization recommendations',
+            ),
+        },
+        {
+          text: 'Create a keyword research strategy for my e-commerce business',
+          onClick: () =>
+            onCreateJob(
+              'Create a keyword research strategy for my e-commerce business',
+            ),
+        },
+        {
+          text: 'Develop an SEO content calendar for the next quarter',
+          onClick: () =>
+            onCreateJob('Develop an SEO content calendar for the next quarter'),
+        },
+        {
+          text: 'Perform a technical SEO audit of my website',
+          onClick: () =>
+            onCreateJob('Perform a technical SEO audit of my website'),
+        },
+      ],
+      agent_id_3: [
+        {
+          text: 'Tell me about the Roman Empire',
+          onClick: () => onCreateJob('Tell me about the Roman Empire'),
+        },
+      ],
+      agent_id_4: [
+        {
+          text: 'Tell me about the Roman Empire',
+          onClick: () => onCreateJob('Tell me about the Roman Empire'),
+        },
+      ],
+      agent_id_5: [
+        {
+          text: 'Tell me about the Roman Empire',
+          onClick: () => onCreateJob('Tell me about the Roman Empire'),
+        },
+      ],
+    };
+
+    return selectedAgent?.agent_id
+      ? agentSuggestions[selectedAgent.agent_id] ?? []
+      : toolSuggestions;
+  }, [chatConfigForm, chatForm, onCreateJob, selectedAgent, toolsList]);
+
   return (
     <motion.div
       animate={{ opacity: 1 }}
-      className="container-fluid flex w-full flex-col items-stretch gap-24 px-4 text-center md:px-8 lg:px-12"
+      className="container-fluid flex w-full flex-col items-stretch gap-20 px-4 text-center md:px-8 lg:px-12"
       exit={{ opacity: 0 }}
       initial={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
@@ -844,64 +969,18 @@ const EmptyMessage = () => {
             )}
           </motion.div>
         </div>
-        <div className="mx-auto flex w-full flex-wrap justify-center gap-3">
-          <Badge
-            className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left text-sm font-medium normal-case text-gray-50 transition-colors"
-            onClick={() => showSpotlightWindow()}
-            variant="outline"
-          >
-            Quick Ask Spotlight
-            <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
-          </Badge>
-          {[
-            {
-              text: 'Summarize a Youtube video',
-              prompt: 'Summarize a Youtube video: ',
-              tool: toolsList?.find(
-                (tool) =>
-                  tool.tool_router_key ===
-                  'local:::__official_shinkai:::youtube_transcript_summarizer',
-              ),
-            },
-            {
-              text: 'Search in DuckDuckGo',
-              prompt: 'Search in DuckDuckGo for: ',
-              tool: toolsList?.find(
-                (tool) =>
-                  tool.tool_router_key ===
-                  'local:::__official_shinkai:::duckduckgo_search',
-              ),
-            },
-          ].map((suggestion) => (
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-4 justify-center gap-3">
+          {promptSuggestions.map((suggestion) => (
             <Badge
-              className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left text-sm font-medium normal-case text-gray-50 transition-colors"
+              className="hover:bg-official-gray-900 hover:text-official-gray-100 text-official-gray-200 cursor-pointer justify-between text-balance rounded-xl px-2 py-1.5 text-left text-sm font-normal normal-case transition-colors"
               key={suggestion.text}
-              onClick={() => {
-                chatConfigForm.setValue('useTools', true);
-                chatForm.setValue('message', 'Tool Used');
-                if (!suggestion.tool) return;
-
-                chatForm.setValue('tool', {
-                  key: suggestion.tool.tool_router_key,
-                  name: suggestion.tool.name,
-                  description: suggestion.tool.description,
-                  args: suggestion.tool.input_args,
-                });
-              }}
+              onClick={suggestion.onClick}
               variant="outline"
             >
               {suggestion.text}
-              <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
+              <ArrowUpRight className="ml-2 h-3.5 w-3.5 shrink-0" />
             </Badge>
           ))}
-          <Badge
-            className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left text-sm font-medium normal-case text-gray-50 transition-colors"
-            onClick={() => onCreateJob('Tell me about the Roman Empire')}
-            variant="outline"
-          >
-            Tell me about the Roman Empire
-            <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
-          </Badge>
         </div>
       </div>
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-12 pb-10">
@@ -911,14 +990,13 @@ const EmptyMessage = () => {
               label: 'New Agent',
               onClick: () => navigate('/add-agent'),
             }}
-            description="Build custom AI agents tailored to your specific needs"
-            title="Explore AI Agents"
+            title="Recently Used"
           />
           <div className="grid grid-cols-1 gap-4">
             {agents?.map((agent, idx) => (
               <Card
                 action={{
-                  label: 'View Agent',
+                  label: 'Chat with Agent',
                   onClick: () => {
                     chatForm.setValue('agent', agent.agent_id);
                     if (agent.tools?.length > 0) {
@@ -941,62 +1019,6 @@ const EmptyMessage = () => {
             ))}
           </div>
         </div>
-
-        {/* <div className="flex flex-col gap-4">
-          <SectionHeading
-            description="How to include AI in your workflow"
-            title="Watch & Learn"
-            viewAll={{
-              label: 'Explore Docs',
-              onClick: () => open(SHINKAI_DOCS_URL),
-            }}
-          />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {[
-              {
-                name: TutorialBanner.AIS_AND_AGENTS,
-                title: 'Agents',
-                description:
-                  'Learn to create custom AI agents with tailored instructions.',
-                videoUrl: SHINKAI_TUTORIALS['add-ai'],
-                duration: '00:22',
-              },
-              {
-                name: TutorialBanner.SHINKAI_TOOLS,
-                title: 'AI Tools',
-                description:
-                  'Learn to create custom AI tools with tailored instructions.',
-                videoUrl: SHINKAI_TUTORIALS['shinkai-tools'],
-                duration: '00:36',
-              },
-              {
-                name: TutorialBanner.FILES_EXPLORER,
-                title: 'AI File Explorer',
-                description:
-                  'Learn to create custom AI file explorer with tailored instructions.',
-                videoUrl: SHINKAI_TUTORIALS['file-explorer'],
-                duration: '00:32',
-              },
-              {
-                name: TutorialBanner.SCHEDULED_TASKS,
-                title: 'Scheduled Tasks',
-                description:
-                  'Learn to create custom AI scheduled tasks with tailored instructions.',
-                videoUrl: SHINKAI_TUTORIALS['scheduled-tasks'],
-                duration: '00:30',
-              },
-            ]
-              ?.slice(0, 4)
-              .map((tool) => (
-                <VideoBanner
-                  duration={tool.duration}
-                  key={tool.name}
-                  title={tool.title}
-                  videoUrl={tool.videoUrl}
-                />
-              ))}
-          </div>
-        </div> */}
       </div>
     </motion.div>
   );
@@ -1042,7 +1064,9 @@ const Card: React.FC<CardProps> = ({
       <div className="relative z-10 flex items-start gap-3">
         <div className="flex size-10 items-center justify-center">{icon}</div>
         <div className="flex flex-1 flex-col gap-1">
-          <h3 className="text-left text-base font-medium">{title}</h3>
+          <h3 className="text-left text-base font-medium capitalize">
+            {title}
+          </h3>
           <p className="text-official-gray-400 line-clamp-2 h-10 text-balance text-left text-sm">
             {description || 'No description available'}
           </p>
@@ -1063,7 +1087,7 @@ const Card: React.FC<CardProps> = ({
 
 interface SectionHeadingProps {
   title: string;
-  description: string;
+  description?: string;
   action?: {
     label: string;
     onClick: () => void;
@@ -1093,7 +1117,9 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
         <h2 className="text-balance text-lg font-medium tracking-normal">
           {title}
         </h2>
-        <p className="text-official-gray-400 text-sm">{description}</p>
+        {description && (
+          <p className="text-official-gray-400 text-sm">{description}</p>
+        )}
       </div>
       <div className="animate-fade-in animate-delay-200 mt-4 flex items-center space-x-3 md:mt-0">
         {viewAll && (
