@@ -86,6 +86,33 @@ export const showSpotlightWindow = async () => {
   return invoke('show_spotlight_window_app');
 };
 
+const PROMPT_SUGGESTIONS = [
+  {
+    agentId: 'product_expert',
+    text: 'Create a user journey map for a mobile banking app',
+    prompt:
+      'Create a detailed user journey map for a mobile banking app, including key touchpoints, user actions, emotions, and pain points. Consider the onboarding process, account management, transactions, and customer support interactions.',
+  },
+  {
+    agentId: 'product_expert',
+    text: 'Design a checkout flow for an e-commerce platform',
+    prompt:
+      'Design a checkout flow for an e-commerce platform, including the checkout process, payment methods, and user experience. Consider the user journey, payment security, and order confirmation.',
+  },
+  {
+    agentId: 'seo_strategist',
+    text: 'Analyze website SEO and optimizations',
+    prompt:
+      'Analyze website SEO and provide optimization recommendations, including keyword research, content strategy, and technical SEO improvements.',
+  },
+  {
+    agentId: 'product_expert',
+    text: 'Conduct a competitive analysis of food delivery apps',
+    prompt:
+      'Conduct a competitive analysis of food delivery apps, including key features, user experience, and pricing. Identify opportunities for improvement and recommend strategies for differentiation.',
+  },
+];
+
 const EmptyMessage = () => {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
@@ -161,10 +188,15 @@ const EmptyMessage = () => {
     onDrop,
   });
 
-  const { data: agents } = useGetAgents({
+  const { data: recentlyUsedAgents } = useGetAgents({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
     categoryFilter: 'recently_used',
+  });
+
+  const { data: agents } = useGetAgents({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
   });
 
   const [isCommandOpen, setIsCommandOpen] = useState(false);
@@ -414,156 +446,9 @@ const EmptyMessage = () => {
     setToolFormData(null);
   };
 
-  const onCreateJob = useCallback(
-    async (message: string) => {
-      if (!auth) return;
-      await createJob({
-        nodeAddress: auth.node_address,
-        token: auth.api_v2_key,
-        llmProvider: defaultAgentId,
-        content: message,
-        isHidden: false,
-        chatConfig: {
-          stream: DEFAULT_CHAT_CONFIG.stream,
-          custom_prompt: '',
-          temperature: DEFAULT_CHAT_CONFIG.temperature,
-          top_p: DEFAULT_CHAT_CONFIG.top_p,
-          top_k: DEFAULT_CHAT_CONFIG.top_k,
-          use_tools: DEFAULT_CHAT_CONFIG.use_tools,
-        },
-      });
-    },
-    [auth, createJob, defaultAgentId],
-  );
-
   const mainLayoutContainerRef = useViewportStore(
     (state) => state.mainLayoutContainerRef,
   );
-  const promptSuggestions = useMemo(() => {
-    const toolSuggestions = [
-      {
-        text: 'Quick Ask Spotlight',
-        onClick: () => showSpotlightWindow(),
-      },
-      {
-        text: 'Summarize a Youtube video',
-        onClick: () => {
-          const tool = toolsList?.find(
-            (tool) =>
-              tool.tool_router_key ===
-              'local:::__official_shinkai:::youtube_transcript_summarizer',
-          );
-          if (!tool) return;
-
-          chatConfigForm.setValue('useTools', true);
-          chatForm.setValue('message', 'Tool Used');
-          chatForm.setValue('tool', {
-            key: tool.tool_router_key,
-            name: tool.name,
-            description: tool.description,
-            args: tool.input_args,
-          });
-        },
-      },
-      {
-        text: 'Search in DuckDuckGo',
-        onClick: () => {
-          const tool = toolsList?.find(
-            (tool) =>
-              tool.tool_router_key ===
-              'local:::__official_shinkai:::duckduckgo_search',
-          );
-          if (!tool) return;
-
-          chatConfigForm.setValue('useTools', true);
-          chatForm.setValue('message', 'Tool Used');
-          chatForm.setValue('tool', {
-            key: tool.tool_router_key,
-            name: tool.name,
-            description: tool.description,
-            args: tool.input_args,
-          });
-        },
-      },
-      {
-        text: 'Tell me about the Roman Empire',
-        onClick: () => onCreateJob('Tell me about the Roman Empire'),
-      },
-    ];
-
-    const agentSuggestions: Record<string, typeof toolSuggestions> = {
-      product_expert: [
-        {
-          text: 'Create a user journey map for a mobile banking app',
-          onClick: () =>
-            onCreateJob('Create a user journey map for a mobile banking app'),
-        },
-        {
-          text: 'Design a checkout flow for an e-commerce platform',
-          onClick: () =>
-            onCreateJob('Design a checkout flow for an e-commerce platform'),
-        },
-        {
-          text: 'Conduct a competitive analysis of food delivery apps',
-          onClick: () =>
-            onCreateJob('Conduct a competitive analysis of food delivery apps'),
-        },
-        {
-          text: 'Create wireframes for a fitness tracking dashboard',
-          onClick: () =>
-            onCreateJob('Create wireframes for a fitness tracking dashboard'),
-        },
-      ],
-      seo_strategist: [
-        {
-          text: 'Analyze website SEO and optimizations',
-          onClick: () =>
-            onCreateJob(
-              'Analyze my website SEO and provide optimization recommendations',
-            ),
-        },
-        {
-          text: 'Create a keyword research strategy for my e-commerce business',
-          onClick: () =>
-            onCreateJob(
-              'Create a keyword research strategy for my e-commerce business',
-            ),
-        },
-        {
-          text: 'Develop an SEO content calendar for the next quarter',
-          onClick: () =>
-            onCreateJob('Develop an SEO content calendar for the next quarter'),
-        },
-        {
-          text: 'Perform a technical SEO audit of my website',
-          onClick: () =>
-            onCreateJob('Perform a technical SEO audit of my website'),
-        },
-      ],
-      agent_id_3: [
-        {
-          text: 'Tell me about the Roman Empire',
-          onClick: () => onCreateJob('Tell me about the Roman Empire'),
-        },
-      ],
-      agent_id_4: [
-        {
-          text: 'Tell me about the Roman Empire',
-          onClick: () => onCreateJob('Tell me about the Roman Empire'),
-        },
-      ],
-      agent_id_5: [
-        {
-          text: 'Tell me about the Roman Empire',
-          onClick: () => onCreateJob('Tell me about the Roman Empire'),
-        },
-      ],
-    };
-
-    return selectedAgent?.agent_id
-      ? agentSuggestions[selectedAgent.agent_id] ?? []
-      : toolSuggestions;
-  }, [chatConfigForm, chatForm, onCreateJob, selectedAgent, toolsList]);
 
   return (
     <motion.div
@@ -574,7 +459,7 @@ const EmptyMessage = () => {
       transition={{ duration: 0.3 }}
     >
       <FeedbackModal buttonProps={{ className: 'absolute right-4 top-4' }} />
-      <div className="mx-auto mt-[110px] flex w-full flex-col items-stretch gap-6">
+      <div className="mx-auto mt-[110px] flex w-full max-w-[1100px] flex-col items-stretch gap-6">
         <div className="mb-4 flex flex-col items-center gap-2">
           <h1 className="font-clash text-3xl font-medium text-white">
             How can I help you today?
@@ -597,8 +482,7 @@ const EmptyMessage = () => {
         </div>
         <div
           {...getRootFileProps({
-            className:
-              'relative shrink-0 pb-[40px] max-w-[1100px] mx-auto w-full',
+            className: 'relative shrink-0 pb-[40px]  mx-auto w-full',
           })}
         >
           <div className="relative z-[1]">
@@ -970,11 +854,16 @@ const EmptyMessage = () => {
           </motion.div>
         </div>
         <div className="mx-auto grid w-full max-w-6xl grid-cols-4 justify-center gap-3">
-          {promptSuggestions.map((suggestion) => (
+          {PROMPT_SUGGESTIONS.map((suggestion) => (
             <Badge
               className="hover:bg-official-gray-900 hover:text-official-gray-100 text-official-gray-200 cursor-pointer justify-between text-balance rounded-xl px-2 py-1.5 text-left text-sm font-normal normal-case transition-colors"
               key={suggestion.text}
-              onClick={suggestion.onClick}
+              onClick={() => {
+                chatForm.setValue('message', suggestion.prompt);
+                if (suggestion.agentId) {
+                  chatForm.setValue('agent', suggestion.agentId);
+                }
+              }}
               variant="outline"
             >
               {suggestion.text}
@@ -984,41 +873,95 @@ const EmptyMessage = () => {
         </div>
       </div>
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-12 pb-10">
-        <div className="flex flex-col gap-5">
-          <SectionHeading
-            action={{
-              label: 'New Agent',
-              onClick: () => navigate('/add-agent'),
-            }}
-            title="Recently Used"
-          />
-          <div className="grid grid-cols-1 gap-4">
-            {agents?.map((agent, idx) => (
-              <Card
-                action={{
-                  label: 'Chat with Agent',
-                  onClick: () => {
-                    chatForm.setValue('agent', agent.agent_id);
-                    if (agent.tools?.length > 0) {
-                      chatConfigForm.setValue('useTools', true);
-                    } else {
-                      chatConfigForm.setValue('useTools', false);
-                    }
-                    mainLayoutContainerRef?.current?.scrollTo({
-                      top: 0,
-                      behavior: 'smooth',
-                    });
-                  },
-                }}
-                delay={idx * 0.1}
-                description={agent.ui_description}
-                icon={<AIAgentIcon className="size-full" name={agent.name} />}
-                key={agent.agent_id}
-                title={agent.name}
-              />
-            ))}
+        {(recentlyUsedAgents ?? []).length > 0 && (
+          <div className="flex flex-col gap-5">
+            <SectionHeading
+              action={{
+                label: 'New Agent',
+                onClick: () => navigate('/add-agent'),
+              }}
+              title="Recently Used"
+            />
+            <div className="grid grid-cols-1 gap-4">
+              {recentlyUsedAgents?.map((agent, idx) => (
+                <Card
+                  action={{
+                    label: 'Chat with Agent',
+                    onClick: () => {
+                      chatForm.setValue('agent', agent.agent_id);
+                      if (agent.tools?.length > 0) {
+                        chatConfigForm.setValue('useTools', true);
+                      } else {
+                        chatConfigForm.setValue('useTools', false);
+                      }
+                      mainLayoutContainerRef?.current?.scrollTo({
+                        top: 0,
+                        behavior: 'smooth',
+                      });
+                    },
+                  }}
+                  delay={idx * 0.1}
+                  description={agent.ui_description}
+                  icon={<AIAgentIcon className="size-full" name={agent.name} />}
+                  key={agent.agent_id}
+                  secondaryAction={{
+                    label: 'Chat History',
+                    onClick: () => {
+                      navigate(`/inboxes?agentId=${agent.agent_id}`);
+                    },
+                  }}
+                  title={agent.name}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
+        {(agents ?? []).length > 0 &&
+          (recentlyUsedAgents ?? []).length === 0 && (
+            <div className="flex flex-col gap-5">
+              <SectionHeading
+                action={{
+                  label: 'New Agent',
+                  onClick: () => navigate('/add-agent'),
+                }}
+                title="Recently Used"
+              />
+              <div className="grid grid-cols-1 gap-4">
+                {agents?.map((agent, idx) => (
+                  <Card
+                    action={{
+                      label: 'Chat with Agent',
+                      onClick: () => {
+                        chatForm.setValue('agent', agent.agent_id);
+                        if (agent.tools?.length > 0) {
+                          chatConfigForm.setValue('useTools', true);
+                        } else {
+                          chatConfigForm.setValue('useTools', false);
+                        }
+                        mainLayoutContainerRef?.current?.scrollTo({
+                          top: 0,
+                          behavior: 'smooth',
+                        });
+                      },
+                    }}
+                    delay={idx * 0.1}
+                    description={agent.ui_description}
+                    icon={
+                      <AIAgentIcon className="size-full" name={agent.name} />
+                    }
+                    key={agent.agent_id}
+                    secondaryAction={{
+                      label: 'Chat History',
+                      onClick: () => {
+                        navigate(`/inboxes?agentId=${agent.agent_id}`);
+                      },
+                    }}
+                    title={agent.name}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
       </div>
     </motion.div>
   );
@@ -1041,6 +984,10 @@ interface CardProps {
   };
   delay?: number;
   className?: string;
+  secondaryAction?: {
+    label: string;
+    onClick: () => void;
+  };
 }
 const Card: React.FC<CardProps> = ({
   icon,
@@ -1049,13 +996,14 @@ const Card: React.FC<CardProps> = ({
   action,
   delay = 0,
   className,
+  secondaryAction,
 }) => {
   const delayClass = `animate-delay-${delay}`;
 
   return (
     <div
       className={cn(
-        'bg-official-gray-900 animate-scale-in border-official-gray-850 group relative overflow-hidden rounded-2xl border p-3 transition-all duration-300 hover:shadow-lg',
+        'bg-official-gray-900 animate-scale-in border-official-gray-850 group relative overflow-hidden rounded-2xl border p-3 transition-all duration-300',
         delayClass,
         className,
       )}
@@ -1071,15 +1019,27 @@ const Card: React.FC<CardProps> = ({
             {description || 'No description available'}
           </p>
         </div>
-        <Button
-          className="shrink-0 text-sm font-medium text-white/70 transition-all duration-300 hover:bg-white/5 hover:text-white"
-          onClick={action.onClick}
-          size="sm"
-          variant="tertiary"
-        >
-          {action.label}
-          <ArrowUpRight className="ml-1.5 h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-        </Button>
+        <div className="flex items-center gap-2">
+          {secondaryAction && (
+            <Button
+              className="shrink-0 text-sm font-medium text-white/70 transition-all duration-300 hover:bg-white/5 hover:text-white"
+              onClick={secondaryAction.onClick}
+              size="sm"
+              variant="tertiary"
+            >
+              {secondaryAction.label}
+            </Button>
+          )}
+          <Button
+            className="shrink-0 text-sm font-medium text-white/70 transition-all duration-300 hover:bg-white/5 hover:text-white"
+            onClick={action.onClick}
+            size="sm"
+            variant="tertiary"
+          >
+            {action.label}
+            <ArrowUpRight className="ml-1.5 h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+          </Button>
+        </div>
       </div>
     </div>
   );

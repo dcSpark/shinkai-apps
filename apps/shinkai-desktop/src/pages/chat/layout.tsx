@@ -38,7 +38,6 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
-  AgentIcon,
   AIAgentIcon,
   ScheduledTasksIcon,
 } from '@shinkai_network/shinkai-ui/assets';
@@ -62,6 +61,7 @@ import { toast } from 'sonner';
 import ArtifactPreview from '../../components/chat/artifact-preview';
 import { useChatStore } from '../../components/chat/context/chat-context';
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
+import { useURLQueryParams } from '../../hooks/use-url-query-params';
 import { handleSendNotification } from '../../lib/notifications';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -739,6 +739,15 @@ const variants = {
 const ChatSidebar = () => {
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   const [direction, setDirection] = useState(0);
+
+  const query = useURLQueryParams();
+
+  useEffect(() => {
+    const agentId = query.get('agentId');
+    if (agentId) {
+      setSelectedAgent(agentId);
+    }
+  }, [query]);
 
   const content = useMemo(() => {
     if (selectedAgent) {
