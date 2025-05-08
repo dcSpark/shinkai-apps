@@ -458,7 +458,7 @@ const ChatList = () => {
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className="text-official-gray-300 hidden size-8 items-center justify-center rounded-full hover:text-white group-hover/actions:flex"
+              className="text-official-gray-300 flex size-8 items-center justify-center rounded-full hover:text-white"
               onClick={() => {
                 navigate(`/home`);
               }}
@@ -555,7 +555,7 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className="text-official-gray-300 hidden size-8 items-center justify-center rounded-full hover:text-white group-hover/actions:flex"
+              className="text-official-gray-300 flex size-8 items-center justify-center rounded-full hover:text-white"
               onClick={() => {
                 navigate(`/home`, {
                   state: { agentName: agentId },
@@ -643,7 +643,7 @@ const AgentList = ({
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className="text-official-gray-300 hidden size-8 items-center justify-center rounded-full hover:text-white group-hover/actions:flex"
+              className="text-official-gray-300 flex size-8 items-center justify-center rounded-full hover:text-white"
               onClick={() => {
                 navigate(`/add-agent`);
               }}
@@ -788,7 +788,7 @@ const ChatSidebar = () => {
   }, [selectedAgent]);
 
   return (
-    <div className="group/actions flex size-full flex-col overflow-auto px-2 py-4 pt-6">
+    <div className="flex size-full flex-col overflow-auto px-2 py-4 pt-6">
       <AnimatePresence custom={direction} initial={false} mode="popLayout">
         <motion.div
           animate="active"
