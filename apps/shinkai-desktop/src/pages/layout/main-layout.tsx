@@ -576,7 +576,7 @@ const MainLayout = () => {
     return () => {
       unlisten.then((fn) => fn());
     };
-  }, [importTool, importAgentFromUrl, auth, navigate, t]);
+  }, [importTool, importAgentFromUrl, auth]);
 
   useEffect(() => {
     if (isSuccess && nodeInfo?.status !== 'ok') {
