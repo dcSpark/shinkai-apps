@@ -14,7 +14,6 @@ import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/querie
 import {
   Badge,
   Button,
-  buttonVariants,
   ChatInputArea,
   Command,
   CommandEmpty,
@@ -44,20 +43,9 @@ import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
-import { open } from '@tauri-apps/plugin-shell';
 import { motion } from 'framer-motion';
-import {
-  ArrowRight,
-  ArrowUpRight,
-  ChevronDownIcon,
-  EllipsisIcon,
-  InfoIcon,
-  MessageSquare,
-  Paperclip,
-  Plus,
-  X,
-} from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { ArrowRight, ArrowUpRight, EllipsisIcon, Plus, X } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -87,16 +75,43 @@ import {
 } from '../components/chat/conversation-footer';
 import { FeedbackModal } from '../components/feedback/feedback-modal';
 import { usePromptSelectionStore } from '../components/prompt/context/prompt-selection-context';
-import { VideoBanner } from '../components/video-banner';
+// import { VideoBanner } from '../components/video-banner';
 import { useAnalytics } from '../lib/posthog-provider';
 import { useAuth } from '../store/auth';
-import { TutorialBanner, useSettings } from '../store/settings';
+import { useSettings } from '../store/settings';
 import { useViewportStore } from '../store/viewport';
-import { SHINKAI_DOCS_URL, SHINKAI_TUTORIALS } from '../utils/constants';
+// import { SHINKAI_DOCS_URL, SHINKAI_TUTORIALS } from '../utils/constants';
 
 export const showSpotlightWindow = async () => {
   return invoke('show_spotlight_window_app');
 };
+
+const PROMPT_SUGGESTIONS = [
+  {
+    agentId: 'product_expert',
+    text: 'Create a user journey map for a mobile banking app',
+    prompt:
+      'Create a detailed user journey map for a mobile banking app, including key touchpoints, user actions, emotions, and pain points. Consider the onboarding process, account management, transactions, and customer support interactions.',
+  },
+  {
+    agentId: 'product_expert',
+    text: 'Design a checkout flow for an e-commerce platform',
+    prompt:
+      'Design a checkout flow for an e-commerce platform, including the checkout process, payment methods, and user experience. Consider the user journey, payment security, and order confirmation.',
+  },
+  {
+    agentId: 'seo_strategist',
+    text: 'Analyze website SEO and optimizations',
+    prompt:
+      'Analyze website SEO and provide optimization recommendations, including keyword research, content strategy, and technical SEO improvements.',
+  },
+  {
+    agentId: 'product_expert',
+    text: 'Conduct a competitive analysis of food delivery apps',
+    prompt:
+      'Conduct a competitive analysis of food delivery apps, including key features, user experience, and pricing. Identify opportunities for improvement and recommend strategies for differentiation.',
+  },
+];
 
 const EmptyMessage = () => {
   const auth = useAuth((state) => state.auth);
@@ -173,15 +188,16 @@ const EmptyMessage = () => {
     onDrop,
   });
 
-  const { data: agents } = useGetAgents(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-    },
-    {
-      select: (data) => data.slice(0, 4),
-    },
-  );
+  const { data: recentlyUsedAgents } = useGetAgents({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    categoryFilter: 'recently_used',
+  });
+
+  const { data: agents } = useGetAgents({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
 
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const { data: toolsList, isSuccess: isToolsListSuccess } = useGetTools(
@@ -430,85 +446,43 @@ const EmptyMessage = () => {
     setToolFormData(null);
   };
 
-  const onCreateJob = async (message: string) => {
-    if (!auth) return;
-    await createJob({
-      nodeAddress: auth.node_address,
-      token: auth.api_v2_key,
-      llmProvider: defaultAgentId,
-      content: message,
-      isHidden: false,
-      chatConfig: {
-        stream: DEFAULT_CHAT_CONFIG.stream,
-        custom_prompt: '',
-        temperature: DEFAULT_CHAT_CONFIG.temperature,
-        top_p: DEFAULT_CHAT_CONFIG.top_p,
-        top_k: DEFAULT_CHAT_CONFIG.top_k,
-        use_tools: DEFAULT_CHAT_CONFIG.use_tools,
-      },
-    });
-  };
-
   const mainLayoutContainerRef = useViewportStore(
     (state) => state.mainLayoutContainerRef,
   );
+
   return (
     <motion.div
       animate={{ opacity: 1 }}
-      className="container-fluid flex w-full flex-col items-stretch gap-28 px-4 text-center md:px-8 lg:px-12"
+      className="container-fluid flex w-full flex-col items-stretch gap-20 px-4 text-center md:px-8 lg:px-12"
       exit={{ opacity: 0 }}
       initial={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
       <FeedbackModal buttonProps={{ className: 'absolute right-4 top-4' }} />
-      <div className="from-brand/5 pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top_center,_var(--tw-gradient-stops))] via-transparent to-transparent" />
-      <div className="mx-auto mt-[110px] flex w-full flex-col items-stretch gap-4">
-        <div className="flex h-[52px] flex-col gap-2">
-          {selectedAgent ? (
-            <div>
-              <p className="font-clash text-2xl font-medium uppercase text-white">
-                {formatText(selectedAgent.name)}
-              </p>
-              <p className="text-official-gray-400 text-sm">
-                {selectedAgent.ui_description ?? 'No description'}
-                {selectedAgent.tools.length > 0 && (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <span className="text-official-gray-400 inline-flex cursor-pointer items-center gap-1 capitalize hover:text-white">
-                        - {selectedAgent.tools.length} Active{' '}
-                        {selectedAgent.tools.length === 1 ? 'tool' : 'tools'}
-                        <ChevronDownIcon className="ml-1 size-4" />
-                      </span>
-                    </PopoverTrigger>
-                    <PopoverContent className="text-xs">
-                      <p className="text-official-gray-400 mb-2 font-medium">
-                        Active Tools
-                      </p>
-                      {selectedAgent.tools.map((tool) => (
-                        <div className="flex items-center gap-2" key={tool}>
-                          <ToolsIcon className="size-4" />
-                          <p>{formatText(tool?.split(':').at(-1) ?? '')}</p>
-                        </div>
-                      ))}
-                    </PopoverContent>
-                  </Popover>
-                )}
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="text-center">
-                <h1 className="font-clash text-4xl font-medium text-white">
-                  How can I help you today?
-                </h1>
-              </div>
-            </>
-          )}
+      <div className="mx-auto mt-[110px] flex w-full max-w-[1100px] flex-col items-stretch gap-6">
+        <div className="mb-4 flex flex-col items-center gap-2">
+          <h1 className="font-clash text-3xl font-medium text-white">
+            How can I help you today?
+          </h1>
+          <AIModelSelector
+            onValueChange={(value) => {
+              chatForm.setValue('agent', value);
+              const selectedAgent = agents?.find(
+                (agent) => agent.agent_id === value,
+              );
+              if (selectedAgent && selectedAgent.tools?.length > 0) {
+                chatConfigForm.setValue('useTools', true);
+              } else {
+                chatConfigForm.setValue('useTools', false);
+              }
+            }}
+            value={currentAI ?? ''}
+            variant="card"
+          />
         </div>
         <div
           {...getRootFileProps({
-            className:
-              'relative shrink-0 pb-[40px] max-w-[1152px] mx-auto w-full',
+            className: 'relative shrink-0 pb-[40px]  mx-auto w-full',
           })}
         >
           <div className="relative z-[1]">
@@ -589,23 +563,6 @@ const EmptyMessage = () => {
                             </div>
                           </PopoverContent>
                         </Popover>
-                        <AIModelSelector
-                          onValueChange={(value) => {
-                            chatForm.setValue('agent', value);
-                            const selectedAgent = agents?.find(
-                              (agent) => agent.agent_id === value,
-                            );
-                            if (
-                              selectedAgent &&
-                              selectedAgent.tools?.length > 0
-                            ) {
-                              chatConfigForm.setValue('useTools', true);
-                            } else {
-                              chatConfigForm.setValue('useTools', false);
-                            }
-                          }}
-                          value={currentAI ?? ''}
-                        />
 
                         {!selectedTool && !selectedAgent && (
                           <ToolsSwitchActionBar
@@ -630,9 +587,7 @@ const EmptyMessage = () => {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        {!selectedAgent && (
-                          <CreateChatConfigActionBar form={chatConfigForm} />
-                        )}
+                        <CreateChatConfigActionBar form={chatConfigForm} />
 
                         <Button
                           className={cn('size-[36px] p-2')}
@@ -660,6 +615,7 @@ const EmptyMessage = () => {
                       </div>
                     </div>
                   }
+                  className="rounded-2xl"
                   disabled={isPending}
                   onChange={(value) => {
                     chatForm.setValue('message', value);
@@ -699,7 +655,7 @@ const EmptyMessage = () => {
                   onSubmit={chatForm.handleSubmit(onSubmit)}
                   ref={textareaRef}
                   textareaClassName={cn(
-                    'h-full max-h-[60vh] min-h-[220px] rounded-xl p-4 text-base',
+                    'h-full max-h-[60vh] min-h-[200px] p-4 text-base',
                   )}
                   topAddons={
                     <>
@@ -897,204 +853,115 @@ const EmptyMessage = () => {
             )}
           </motion.div>
         </div>
-        <div className="mx-auto mt-3 flex w-full flex-wrap justify-center gap-3">
-          <Badge
-            className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left text-xs font-medium normal-case text-gray-50 transition-colors"
-            onClick={() => showSpotlightWindow()}
-            variant="outline"
-          >
-            Quick Ask Spotlight
-            <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
-          </Badge>
-          {[
-            {
-              text: 'Summarize a Youtube video',
-              prompt: 'Summarize a Youtube video: ',
-              tool: toolsList?.find(
-                (tool) =>
-                  tool.tool_router_key ===
-                  'local:::__official_shinkai:::youtube_transcript_summarizer',
-              ),
-            },
-            {
-              text: 'Search in DuckDuckGo',
-              prompt: 'Search in DuckDuckGo for: ',
-              tool: toolsList?.find(
-                (tool) =>
-                  tool.tool_router_key ===
-                  'local:::__official_shinkai:::duckduckgo_search',
-              ),
-            },
-          ].map((suggestion) => (
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-4 justify-center gap-3">
+          {PROMPT_SUGGESTIONS.map((suggestion) => (
             <Badge
-              className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left text-xs font-medium normal-case text-gray-50 transition-colors"
+              className="hover:bg-official-gray-900 hover:text-official-gray-100 text-official-gray-200 cursor-pointer justify-between text-balance rounded-xl px-2 py-1.5 text-left text-sm font-normal normal-case transition-colors"
               key={suggestion.text}
               onClick={() => {
-                chatConfigForm.setValue('useTools', true);
-                chatForm.setValue('message', 'Tool Used');
-                if (!suggestion.tool) return;
-
-                chatForm.setValue('tool', {
-                  key: suggestion.tool.tool_router_key,
-                  name: suggestion.tool.name,
-                  description: suggestion.tool.description,
-                  args: suggestion.tool.input_args,
-                });
+                chatForm.setValue('message', suggestion.prompt);
+                if (suggestion.agentId) {
+                  chatForm.setValue('agent', suggestion.agentId);
+                }
               }}
               variant="outline"
             >
               {suggestion.text}
-              <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
+              <ArrowUpRight className="ml-2 h-3.5 w-3.5 shrink-0" />
             </Badge>
           ))}
-          <Badge
-            className="hover:bg-official-gray-900 cursor-pointer justify-between text-balance rounded-full py-1.5 text-left text-xs font-medium normal-case text-gray-50 transition-colors"
-            onClick={() => onCreateJob('Tell me about the Roman Empire')}
-            variant="outline"
-          >
-            Tell me about the Roman Empire
-            <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
-          </Badge>
         </div>
       </div>
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-12 pb-10">
-        <div className="flex flex-col gap-4">
-          <SectionHeading
-            action={{
-              label: 'New Agent',
-              onClick: () => navigate('/add-agent'),
-            }}
-            description="Build custom AI agents tailored to your specific needs"
-            title="Explore AI Agents"
-            viewAll={{
-              label: 'View All Agents',
-              onClick: () => navigate('/agents'),
-            }}
-          />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {agents?.map((agent, idx) => (
-              <Card
-                action={{
-                  label: 'Use Agent',
-                  onClick: () => {
-                    chatForm.setValue('agent', agent.agent_id);
-                    if (agent.tools?.length > 0) {
-                      chatConfigForm.setValue('useTools', true);
-                    } else {
-                      chatConfigForm.setValue('useTools', false);
-                    }
-                    mainLayoutContainerRef?.current?.scrollTo({
-                      top: 0,
-                      behavior: 'smooth',
-                    });
-                  },
-                }}
-                delay={idx * 0.1}
-                description={agent.ui_description}
-                icon={<AIAgentIcon className="size-4" />}
-                key={agent.agent_id}
-                title={agent.name}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="flex flex-col gap-4">
-          <SectionHeading
-            action={{
-              label: 'New Tool',
-              onClick: () => navigate('/tools'),
-            }}
-            description="Enhance your AI agents with tools, including custom skills or workflows."
-            title="Explore AI Tools"
-            viewAll={{
-              label: 'View All Tools',
-              onClick: () => navigate('/tools'),
-            }}
-          />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {toolsList?.slice(0, 4).map((tool, idx) => (
-              <Card
-                action={{
-                  label: 'Use Tool',
-                  onClick: () => {
-                    chatForm.setValue('tool', {
-                      key: tool.tool_router_key,
-                      name: tool.name,
-                      description: tool.description,
-                      args: tool.input_args,
-                    });
-                    chatConfigForm.setValue('useTools', true);
-                    chatForm.setValue('message', 'Tool Used');
-                    mainLayoutContainerRef?.current?.scrollTo({
-                      top: 0,
-                      behavior: 'smooth',
-                    });
-                  },
-                }}
-                delay={idx * 0.1}
-                description={tool.description}
-                icon={<ToolsIcon className="size-4" />}
-                key={tool.tool_router_key}
-                title={tool.name}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="flex flex-col gap-4">
-          <SectionHeading
-            description="How to include AI in your workflow"
-            title="Watch & Learn"
-            viewAll={{
-              label: 'Explore Docs',
-              onClick: () => open(SHINKAI_DOCS_URL),
-            }}
-          />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {[
-              {
-                name: TutorialBanner.AIS_AND_AGENTS,
-                title: 'Agents',
-                description:
-                  'Learn to create custom AI agents with tailored instructions.',
-                videoUrl: SHINKAI_TUTORIALS['add-ai'],
-                duration: '00:22',
-              },
-              {
-                name: TutorialBanner.SHINKAI_TOOLS,
-                title: 'AI Tools',
-                description:
-                  'Learn to create custom AI tools with tailored instructions.',
-                videoUrl: SHINKAI_TUTORIALS['shinkai-tools'],
-                duration: '00:36',
-              },
-              {
-                name: TutorialBanner.FILES_EXPLORER,
-                title: 'AI File Explorer',
-                description:
-                  'Learn to create custom AI file explorer with tailored instructions.',
-                videoUrl: SHINKAI_TUTORIALS['file-explorer'],
-                duration: '00:32',
-              },
-              {
-                name: TutorialBanner.SCHEDULED_TASKS,
-                title: 'Scheduled Tasks',
-                description:
-                  'Learn to create custom AI scheduled tasks with tailored instructions.',
-                videoUrl: SHINKAI_TUTORIALS['scheduled-tasks'],
-                duration: '00:30',
-              },
-            ]
-              ?.slice(0, 4)
-              .map((tool) => (
-                <VideoBanner
-                  duration={tool.duration}
-                  key={tool.name}
-                  title={tool.title}
-                  videoUrl={tool.videoUrl}
+        {(recentlyUsedAgents ?? []).length > 0 && (
+          <div className="flex flex-col gap-5">
+            <SectionHeading
+              action={{
+                label: 'New Agent',
+                onClick: () => navigate('/add-agent'),
+              }}
+              title="Recently Used"
+            />
+            <div className="grid grid-cols-1 gap-4">
+              {recentlyUsedAgents?.map((agent, idx) => (
+                <Card
+                  action={{
+                    label: 'Chat with Agent',
+                    onClick: () => {
+                      chatForm.setValue('agent', agent.agent_id);
+                      if (agent.tools?.length > 0) {
+                        chatConfigForm.setValue('useTools', true);
+                      } else {
+                        chatConfigForm.setValue('useTools', false);
+                      }
+                      mainLayoutContainerRef?.current?.scrollTo({
+                        top: 0,
+                        behavior: 'smooth',
+                      });
+                    },
+                  }}
+                  delay={idx * 0.1}
+                  description={agent.ui_description}
+                  icon={<AIAgentIcon className="size-full" name={agent.name} />}
+                  key={agent.agent_id}
+                  secondaryAction={{
+                    label: 'Chat History',
+                    onClick: () => {
+                      navigate(`/inboxes?agentId=${agent.agent_id}`);
+                    },
+                  }}
+                  title={agent.name}
                 />
               ))}
+            </div>
           </div>
-        </div>
+        )}
+        {(agents ?? []).length > 0 &&
+          (recentlyUsedAgents ?? []).length === 0 && (
+            <div className="flex flex-col gap-5">
+              <SectionHeading
+                action={{
+                  label: 'New Agent',
+                  onClick: () => navigate('/add-agent'),
+                }}
+                title="Recently Used"
+              />
+              <div className="grid grid-cols-1 gap-4">
+                {agents?.map((agent, idx) => (
+                  <Card
+                    action={{
+                      label: 'Chat with Agent',
+                      onClick: () => {
+                        chatForm.setValue('agent', agent.agent_id);
+                        if (agent.tools?.length > 0) {
+                          chatConfigForm.setValue('useTools', true);
+                        } else {
+                          chatConfigForm.setValue('useTools', false);
+                        }
+                        mainLayoutContainerRef?.current?.scrollTo({
+                          top: 0,
+                          behavior: 'smooth',
+                        });
+                      },
+                    }}
+                    delay={idx * 0.1}
+                    description={agent.ui_description}
+                    icon={
+                      <AIAgentIcon className="size-full" name={agent.name} />
+                    }
+                    key={agent.agent_id}
+                    secondaryAction={{
+                      label: 'Chat History',
+                      onClick: () => {
+                        navigate(`/inboxes?agentId=${agent.agent_id}`);
+                      },
+                    }}
+                    title={agent.name}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
       </div>
     </motion.div>
   );
@@ -1117,6 +984,10 @@ interface CardProps {
   };
   delay?: number;
   className?: string;
+  secondaryAction?: {
+    label: string;
+    onClick: () => void;
+  };
 }
 const Card: React.FC<CardProps> = ({
   icon,
@@ -1125,25 +996,42 @@ const Card: React.FC<CardProps> = ({
   action,
   delay = 0,
   className,
+  secondaryAction,
 }) => {
   const delayClass = `animate-delay-${delay}`;
 
   return (
     <div
       className={cn(
-        'bg-official-gray-900 animate-scale-in border-official-gray-850 group relative overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:shadow-lg',
+        'bg-official-gray-900 animate-scale-in border-official-gray-850 group relative overflow-hidden rounded-2xl border p-3 transition-all duration-300',
         delayClass,
         className,
       )}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-      <div className="relative z-10">
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-white">
-            {icon}
-          </div>
+      <div className="relative z-10 flex items-start gap-3">
+        <div className="flex size-10 items-center justify-center">{icon}</div>
+        <div className="flex flex-1 flex-col gap-1">
+          <h3 className="text-left text-base font-medium capitalize">
+            {title}
+          </h3>
+          <p className="text-official-gray-400 line-clamp-2 h-10 text-balance text-left text-sm">
+            {description || 'No description available'}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {secondaryAction && (
+            <Button
+              className="shrink-0 text-sm font-medium text-white/70 transition-all duration-300 hover:bg-white/5 hover:text-white"
+              onClick={secondaryAction.onClick}
+              size="sm"
+              variant="tertiary"
+            >
+              {secondaryAction.label}
+            </Button>
+          )}
           <Button
-            className="text-sm font-medium text-white/70 transition-all duration-300 hover:bg-white/5 hover:text-white"
+            className="shrink-0 text-sm font-medium text-white/70 transition-all duration-300 hover:bg-white/5 hover:text-white"
             onClick={action.onClick}
             size="sm"
             variant="tertiary"
@@ -1152,10 +1040,6 @@ const Card: React.FC<CardProps> = ({
             <ArrowUpRight className="ml-1.5 h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
         </div>
-        <h3 className="mb-1.5 text-left text-base font-medium">{title}</h3>
-        <p className="text-official-gray-400 line-clamp-2 text-balance text-left text-sm">
-          {description}
-        </p>
       </div>
     </div>
   );
@@ -1163,7 +1047,7 @@ const Card: React.FC<CardProps> = ({
 
 interface SectionHeadingProps {
   title: string;
-  description: string;
+  description?: string;
   action?: {
     label: string;
     onClick: () => void;
@@ -1193,7 +1077,9 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
         <h2 className="text-balance text-lg font-medium tracking-normal">
           {title}
         </h2>
-        <p className="text-official-gray-400 text-sm">{description}</p>
+        {description && (
+          <p className="text-official-gray-400 text-sm">{description}</p>
+        )}
       </div>
       <div className="animate-fade-in animate-delay-200 mt-4 flex items-center space-x-3 md:mt-0">
         {viewAll && (
@@ -1203,7 +1089,7 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
           </Button>
         )}
         {action && (
-          <Button onClick={action.onClick} size="sm">
+          <Button onClick={action.onClick} size="sm" variant="outline">
             <Plus className="h-3.5 w-3.5" />
             {action.label}
           </Button>

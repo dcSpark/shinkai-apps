@@ -77,11 +77,18 @@ export const getAgent = async (
   return response.data as GetAgentResponse;
 };
 
-export const getAgents = async (nodeAddress: string, bearerToken: string) => {
+export const getAgents = async (
+  nodeAddress: string,
+  bearerToken: string,
+  categoryFilter?: 'recently_used',
+) => {
   const response = await httpClient.get(
     urlJoin(nodeAddress, '/v2/get_all_agents'),
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
+      params: {
+        filters: categoryFilter,
+      },
       responseType: 'json',
     },
   );

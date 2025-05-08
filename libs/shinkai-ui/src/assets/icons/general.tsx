@@ -1247,66 +1247,141 @@ export const ReactJsIcon = ({ className }: { className?: string }) => (
     </defs>
   </svg>
 );
-export const AIAgentIcon = ({ className }: { className?: string }) => (
-  <svg
-    className={cn('shrink-0', className)}
-    fill="none"
-    height="24"
-    viewBox="0 0 24 24"
-    width="24"
-  >
-    <path
-      d="M19 16V14C19 11.1716 19 9.75736 18.1213 8.87868C17.2426 8 15.8284 8 13 8H11C8.17157 8 6.75736 8 5.87868 8.87868C5 9.75736 5 11.1716 5 14V16C5 18.8284 5 20.2426 5.87868 21.1213C6.75736 22 8.17157 22 11 22H13C15.8284 22 17.2426 22 18.1213 21.1213C19 20.2426 19 18.8284 19 16Z"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M19 18C20.4142 18 21.1213 18 21.5607 17.5607C22 17.1213 22 16.4142 22 15C22 13.5858 22 12.8787 21.5607 12.4393C21.1213 12 20.4142 12 19 12"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M5 18C3.58579 18 2.87868 18 2.43934 17.5607C2 17.1213 2 16.4142 2 15C2 13.5858 2 12.8787 2.43934 12.4393C2.87868 12 3.58579 12 5 12"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M13.5 3.5C13.5 4.32843 12.8284 5 12 5C11.1716 5 10.5 4.32843 10.5 3.5C10.5 2.67157 11.1716 2 12 2C12.8284 2 13.5 2.67157 13.5 3.5Z"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M12 5V8"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M9 13V14"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M15 13V14"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M10 17.5C10 17.5 10.6667 18 12 18C13.3333 18 14 17.5 14 17.5"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeWidth="1.5"
-    />
-  </svg>
-);
+
+type AgentGradientAvatarProps = {
+  name: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  className?: string;
+};
+
+export const AIAgentIcon: React.FC<AgentGradientAvatarProps> = ({
+  name,
+  size = 'md',
+  className,
+}) => {
+  const getGradientByLetter = (letter: string) => {
+    const gradients = {
+      a: 'bg-gradient-to-br from-green-400 to-yellow-300',
+      b: 'bg-gradient-to-br from-blue-400 to-purple-500',
+      c: 'bg-gradient-to-br from-red-400 to-pink-500',
+      d: 'bg-gradient-to-br from-indigo-400 to-cyan-400',
+      e: 'bg-gradient-to-br from-yellow-200 to-yellow-500',
+      f: 'bg-gradient-to-br from-green-500 to-emerald-700',
+      g: 'bg-gradient-to-br from-purple-400 to-indigo-500',
+      h: 'bg-gradient-to-br from-red-500 to-orange-500',
+      i: 'bg-gradient-to-br from-blue-400 to-indigo-600',
+      j: 'bg-gradient-to-br from-amber-200 to-amber-600',
+      k: 'bg-gradient-to-br from-emerald-400 to-cyan-500',
+      l: 'bg-gradient-to-br from-purple-500 to-pink-500',
+      m: 'bg-gradient-to-br from-blue-500 to-purple-600',
+      n: 'bg-gradient-to-br from-green-300 to-blue-400',
+      o: 'bg-gradient-to-br from-orange-300 to-red-500',
+      p: 'bg-gradient-to-br from-pink-400 to-rose-600',
+      q: 'bg-gradient-to-br from-indigo-300 to-indigo-600',
+      r: 'bg-gradient-to-br from-red-400 to-red-700',
+      s: 'bg-gradient-to-br from-sky-300 to-blue-500',
+      t: 'bg-gradient-to-br from-teal-300 to-emerald-500',
+      u: 'bg-gradient-to-br from-violet-300 to-purple-600',
+      v: 'bg-gradient-to-br from-amber-300 to-orange-600',
+      w: 'bg-gradient-to-br from-emerald-400 to-teal-700',
+      x: 'bg-gradient-to-br from-zinc-400 to-slate-700',
+      y: 'bg-gradient-to-br from-yellow-300 to-amber-600',
+      z: 'bg-gradient-to-br from-blue-300 to-cyan-600',
+    };
+
+    const firstLetter = letter.toLowerCase()[0];
+    return (
+      gradients[firstLetter as keyof typeof gradients] ||
+      'bg-gradient-to-br from-gray-400 to-gray-600'
+    );
+  };
+
+  const sizeClasses = {
+    xs: 'h-6 w-6 text-xs rounded-lg',
+    sm: 'h-8 w-8 text-xs',
+    md: 'h-10 w-10 text-sm',
+    lg: 'h-12 w-12 text-base',
+  };
+  const initial = name ? name[0] : null;
+  const last = name ? name[name.length - 2] : null;
+
+  if (!initial || !last) {
+    return (
+      <svg
+        className={cn('shrink-0', className)}
+        fill="none"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+      >
+        <path
+          d="M19 16V14C19 11.1716 19 9.75736 18.1213 8.87868C17.2426 8 15.8284 8 13 8H11C8.17157 8 6.75736 8 5.87868 8.87868C5 9.75736 5 11.1716 5 14V16C5 18.8284 5 20.2426 5.87868 21.1213C6.75736 22 8.17157 22 11 22H13C15.8284 22 17.2426 22 18.1213 21.1213C19 20.2426 19 18.8284 19 16Z"
+          stroke="currentColor"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M19 18C20.4142 18 21.1213 18 21.5607 17.5607C22 17.1213 22 16.4142 22 15C22 13.5858 22 12.8787 21.5607 12.4393C21.1213 12 20.4142 12 19 12"
+          stroke="currentColor"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M5 18C3.58579 18 2.87868 18 2.43934 17.5607C2 17.1213 2 16.4142 2 15C2 13.5858 2 12.8787 2.43934 12.4393C2.87868 12 3.58579 12 5 12"
+          stroke="currentColor"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M13.5 3.5C13.5 4.32843 12.8284 5 12 5C11.1716 5 10.5 4.32843 10.5 3.5C10.5 2.67157 11.1716 2 12 2C12.8284 2 13.5 2.67157 13.5 3.5Z"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M12 5V8"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M9 13V14"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M15 13V14"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M10 17.5C10 17.5 10.6667 18 12 18C13.3333 18 14 17.5 14 17.5"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeWidth="1.5"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <div
+      className={cn(
+        'font-clash flex shrink-0 items-center justify-center rounded-xl font-semibold uppercase text-white',
+        getGradientByLetter(initial),
+        sizeClasses[size],
+        className,
+      )}
+    >
+      {initial}
+      {last}
+    </div>
+  );
+};
 
 export const AisIcon = ({ className }: { className?: string }) => (
   <svg

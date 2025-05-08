@@ -234,7 +234,7 @@ export function MainNav() {
     {
       title: t('layout.menuItems.agents'),
       href: '/agents',
-      icon: <AIAgentIcon className="h-5 w-5" />,
+      icon: <AIAgentIcon className="h-5 w-5" name={''} />,
     },
 
     {

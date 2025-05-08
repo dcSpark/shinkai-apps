@@ -38,7 +38,7 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
-  AgentIcon,
+  AIAgentIcon,
   ScheduledTasksIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { formatDateToLocaleStringWithTime } from '@shinkai_network/shinkai-ui/helpers';
@@ -61,6 +61,7 @@ import { toast } from 'sonner';
 import ArtifactPreview from '../../components/chat/artifact-preview';
 import { useChatStore } from '../../components/chat/context/chat-context';
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
+import { useURLQueryParams } from '../../hooks/use-url-query-params';
 import { handleSendNotification } from '../../lib/notifications';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -548,7 +549,7 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
     <div className=" ">
       <div className="flex h-8 items-center justify-between gap-1">
         <h2 className="font-clash flex items-center gap-2 px-2 text-sm font-normal capitalize tracking-wide">
-          <AgentIcon className="h-4 w-4" />
+          <AIAgentIcon name={agent?.name ?? ''} size="xs" />
           {agent?.name}
         </h2>
         <Tooltip>
@@ -677,7 +678,7 @@ const AgentList = ({
               onClick={() => onSelectedAgentChange(agent.agent_id)}
               type="button"
             >
-              <AgentIcon className="h-4 w-4" />
+              <AIAgentIcon name={agent.name} size="xs" />
               <span className="line-clamp-1 flex-1 break-all pr-2 text-left text-xs capitalize">
                 {agent.name}
               </span>
@@ -738,6 +739,15 @@ const variants = {
 const ChatSidebar = () => {
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   const [direction, setDirection] = useState(0);
+
+  const query = useURLQueryParams();
+
+  useEffect(() => {
+    const agentId = query.get('agentId');
+    if (agentId) {
+      setSelectedAgent(agentId);
+    }
+  }, [query]);
 
   const content = useMemo(() => {
     if (selectedAgent) {
