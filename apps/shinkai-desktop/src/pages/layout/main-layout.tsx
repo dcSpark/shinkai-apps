@@ -1,5 +1,6 @@
 import { ExitIcon, GearIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { useImportAgentFromUrl } from '@shinkai_network/shinkai-node-state/v2/mutations/importAgentFromUrl/useImportAgentFromUrl';
 import { useImportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/importTool/useImportTool';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetInboxesWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxesWithPagination';
@@ -532,25 +533,50 @@ const MainLayout = () => {
     },
   });
 
-  useEffect(() => {
-    const unlisten = listen('store-deep-link', (event) => {
-      if (!auth) return;
+  const { mutateAsync: importAgentFromUrl } = useImportAgentFromUrl({
+    onSuccess: () => {
+      navigate('/agents');
+      toast.success('Agent imported successfully', {
+        description: 'Your agent is now ready to use in the app.',
+      });
+    },
+    onError: (error) => {
+      toast.error('Failed to import agent', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
 
+  useEffect(() => {
+    const unlisten = listen('store-deep-link', async (event) => {
+      if (!auth) return;
       const payload = event.payload as { tool_type: string; tool_url: string };
-      if (payload.tool_type === 'tool') {
+      if (payload.tool_type.toLowerCase() === 'tool') {
         importTool({
           nodeAddress: auth?.node_address ?? '',
           token: auth?.api_v2_key ?? '',
           url: payload.tool_url,
         });
+      } else if (payload.tool_type.toLowerCase() === 'agent') {
+        try {
+          importAgentFromUrl({
+            nodeAddress: auth?.node_address ?? '',
+            token: auth?.api_v2_key ?? '',
+            url: payload.tool_url,
+          });
+        } catch (error) {
+          console.error('Error processing agent deep link:', error);
+          toast.error('Failed to process agent from store', {
+            description: error instanceof Error ? error.message : 'An unexpected error occurred.',
+          });
+        }
       }
     });
-
     getCurrentWindow().emit('shinkai-app-ready');
     return () => {
       unlisten.then((fn) => fn());
     };
-  }, [importTool, auth]);
+  }, [importTool, importAgentFromUrl, auth, navigate, t]);
 
   useEffect(() => {
     if (isSuccess && nodeInfo?.status !== 'ok') {
