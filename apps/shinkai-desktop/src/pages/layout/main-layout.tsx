@@ -34,6 +34,7 @@ import {
   // MySubscriptionsIcon,
   SheetIcon,
   ShinkaiCombinationMarkIcon,
+  ShinkaiLogoSoloIcon,
   ToolsIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -308,31 +309,42 @@ export function MainNav() {
         width: sidebarExpanded ? '230px' : '70px',
         opacity: 1,
       }}
-      className="bg-official-gray-900 border-official-gray-850 relative z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r px-2 py-6 pt-9 shadow-xl"
+      className="bg-official-gray-900 border-official-gray-850 group relative z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r px-2 py-6 pt-9 shadow-xl"
       exit={{ width: 0, opacity: 0 }}
       initial={{ width: 0, opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="text-gray-80 flex w-full items-center justify-between gap-2 py-2 pl-4">
+      <div
+        className={cn(
+          'text-gray-80 flex w-full items-center justify-between gap-2 py-2 pl-4',
+          !sidebarExpanded && 'justify-center px-0',
+        )}
+      >
         {sidebarExpanded && (
-          <ShinkaiCombinationMarkIcon className="text-gray-80 h-auto w-[80px]" />
+          <ShinkaiCombinationMarkIcon className="text-official-gray-100 h-auto w-[90px]" />
         )}
 
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               className={cn(
-                'border-gray-350 text-gray-80 h-6 w-6 shrink-0 rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
+                'border-official-gray-780 text-gray-80 h-6 w-6 shrink-0 rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
+                !sidebarExpanded && 'size-8 border-0 bg-transparent',
               )}
               onClick={toggleSidebar}
               size="auto"
               type="button"
               variant="ghost"
             >
+              {!sidebarExpanded && (
+                <ShinkaiLogoSoloIcon className="text-official-gray-100 block size-8 group-hover:hidden" />
+              )}
               {sidebarExpanded ? (
                 <ArrowLeftToLine className="h-3 w-3" />
               ) : (
-                <ArrowRightToLine className="h-3 w-3" />
+                <div className="border-official-gray-780 hidden size-full items-center justify-center gap-1 rounded-md border p-1 group-hover:flex">
+                  <ArrowRightToLine className="h-3 w-3" />
+                </div>
               )}
             </Button>
           </TooltipTrigger>
