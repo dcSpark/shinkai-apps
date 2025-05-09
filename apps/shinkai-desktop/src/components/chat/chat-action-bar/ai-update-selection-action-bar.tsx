@@ -148,7 +148,7 @@ export function AIModelSelectorBase({
       (llmProvider) => llmProvider.id === value,
     );
     if (selectedLlmProvider) {
-      return formatText(selectedLlmProvider.name ?? selectedLlmProvider.id);
+      return formatText(selectedLlmProvider.name || selectedLlmProvider.id);
     }
     return '';
   }, [agents, llmProviders, value]);
@@ -360,7 +360,7 @@ export function AIModelSelectorBase({
                     </div>
                     <div className="flex flex-col gap-0.5">
                       <span className="text-base font-medium capitalize">
-                        {formatText(llmProvider?.name ?? llmProvider.id ?? '')}
+                        {formatText(llmProvider?.name || llmProvider.id || '')}
                         {location.pathname.includes('tools') &&
                           llmProvider.model.toLowerCase() ===
                             CODE_GENERATOR_MODEL_ID.toLowerCase() && (
