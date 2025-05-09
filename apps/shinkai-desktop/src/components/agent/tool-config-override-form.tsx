@@ -1,6 +1,6 @@
 import { RJSFSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
-import { ShinkaiTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { ShinkaiTool, ToolConfigBase } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useGetTool } from '@shinkai_network/shinkai-node-state/v2/queries/getTool/useGetTool';
 import {
   Button,
@@ -33,7 +33,6 @@ export const TooConfigOverrideForm = ({
     token: auth?.api_v2_key ?? '',
     toolKey: toolRouterKey ?? '',
   });
-
   const tool: ShinkaiTool | undefined = data?.content?.[0] as ShinkaiTool;
   const properties = useMemo(() => {
     const properties = (tool as any)?.configurations?.properties || {};
@@ -56,9 +55,14 @@ export const TooConfigOverrideForm = ({
   const internalValue = useRef<any>(value);
   const updateDynamicSchema = useCallback(() => {
     const properties = (tool as any)?.configurations?.properties || {};
+    const toolConfig = (tool as any)?.config as ToolConfigBase[] || [];
+    const toolConfigAsMap = new Map(toolConfig.map((config) => [config.BasicConfig.key_name, config.BasicConfig]));
     const propertiesToShow = Object.fromEntries(
-      Object.entries(properties).filter(([jsonSchemaKey, _]: [string, any]) => {
-        return internalValue.current[jsonSchemaKey] !== undefined;
+      Object.entries(properties).filter(([jsonSchemaKey, _]: [string, unknown]) => {
+        const toolConfig = toolConfigAsMap.get(jsonSchemaKey);
+        const requiresToolConfigurationOrOverride = toolConfig?.required && !toolConfig?.key_value;
+        const hasOverrideValue = internalValue.current[jsonSchemaKey] !== undefined;
+        return hasOverrideValue || requiresToolConfigurationOrOverride;
       }),
     );
     const requiredProperties =

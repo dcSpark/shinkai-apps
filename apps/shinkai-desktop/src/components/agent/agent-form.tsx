@@ -5,7 +5,9 @@ import * as SelectPrimitive from '@radix-ui/react-select'; // <-- Import SelectP
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   ShinkaiTool,
+  ShinkaiToolHeader,
   ShinkaiToolType,
+  ToolConfigBase,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   buildInboxIdFromJobId,
@@ -100,6 +102,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import cronstrue from 'cronstrue';
 import {
   AlertCircle,
+  AlertTriangleIcon,
   BoltIcon,
   ChevronDownIcon,
   ChevronRight,
@@ -114,7 +117,7 @@ import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, To, useNavigate, useParams } from 'react-router-dom';
+import { Link, To, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
@@ -497,6 +500,8 @@ function AgentForm({ mode }: AgentFormProps) {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const defaultTabValue = searchParams.get('defaultTab') || 'persona';
   const [currentTab, setCurrentTab] = useState<
     'persona' | 'knowledge' | 'tools' | 'schedule'
   >('persona');
@@ -510,30 +515,22 @@ function AgentForm({ mode }: AgentFormProps) {
     'normal',
   );
 
-  const setSetJobScopeOpen = useSetJobScope(
-    (state) => state.setSetJobScopeOpen,
-  );
-
   const [searchQueryKnowledge, setSearchQueryKnowledge] = useState('');
   const debouncedSearchQueryKnowledge = useDebounce(searchQueryKnowledge, 600);
   const isSearchQueryKnowledgeSynced =
     searchQueryKnowledge === debouncedSearchQueryKnowledge;
 
-  const {
-    data: searchKnowledgeList,
-    isLoading: isSearchKnowledgeListLoading,
-    isPending: isSearchKnowledgeListPending,
-    isSuccess: isSearchKnowledgeListSuccess,
-  } = useGetSearchDirectoryContents(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      name: debouncedSearchQueryKnowledge,
-    },
-    {
-      enabled: !!debouncedSearchQueryKnowledge,
-    },
-  );
+  const { data: searchKnowledgeList, isPending: isSearchKnowledgeListPending } =
+    useGetSearchDirectoryContents(
+      {
+        nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
+        name: debouncedSearchQueryKnowledge,
+      },
+      {
+        enabled: !!debouncedSearchQueryKnowledge,
+      },
+    );
 
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
@@ -549,13 +546,12 @@ function AgentForm({ mode }: AgentFormProps) {
       { enabled: isSearchQuerySynced && !!searchQuery },
     );
 
-  const { data: fileInfoArray, isSuccess: isVRFilesSuccess } =
-    useGetListDirectoryContents({
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      path: '/',
-      depth: 6,
-    });
+  const { data: fileInfoArray } = useGetListDirectoryContents({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    path: '/',
+    depth: 6,
+  });
 
   const nodes = useMemo(() => {
     return transformDataToTreeNodes(fileInfoArray ?? [], undefined, []);
@@ -1100,6 +1096,34 @@ function AgentForm({ mode }: AgentFormProps) {
     return null;
   };
 
+  const getToolRequiresConfigurations = (configs: ToolConfigBase[]) => {
+    return !configs
+      .map((conf) => ({
+        key_name: conf.BasicConfig.key_name,
+        key_value: conf.BasicConfig.key_value ?? '',
+        required: conf.BasicConfig.required,
+      }))
+      .every(
+        (conf) => !conf.required || (conf.required && conf.key_value !== ''),
+      );
+  };
+
+  const toolsRequiringConfig = useMemo(() => {
+    const getToolsRequiringConfig = (tools: ShinkaiToolHeader[]) => {
+      return tools.filter((tool) =>
+        getToolRequiresConfigurations(tool?.config ?? []),
+      );
+    };
+    const agentTools = new Set(agent?.tools);
+    const tools =
+      toolsList?.filter((tool) => agentTools.has(tool.tool_router_key)) ?? [];
+    return getToolsRequiringConfig(tools);
+  }, [agent?.tools, toolsList]);
+
+  const hasToolsRequiringConfigurations = useMemo(() => {
+    return toolsRequiringConfig.length > 0;
+  }, [toolsRequiringConfig]);
+
   return (
     <ResizablePanelGroup
       className="relative h-full min-h-0"
@@ -1169,7 +1193,7 @@ function AgentForm({ mode }: AgentFormProps) {
                 <div className="h-full min-h-0 space-y-6 overflow-hidden">
                   <Tabs
                     className="flex h-full min-h-0 flex-col gap-4"
-                    defaultValue="persona"
+                    defaultValue={defaultTabValue}
                     onValueChange={(value) =>
                       setCurrentTab(
                         value as 'persona' | 'knowledge' | 'tools' | 'schedule',
@@ -1775,6 +1799,47 @@ function AgentForm({ mode }: AgentFormProps) {
                       className="min-h-0 flex-1 overflow-y-auto"
                       value="tools"
                     >
+                      {hasToolsRequiringConfigurations && (
+                        <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-950/10 p-3">
+                          <div className="mb-2 flex items-center gap-2">
+                            <AlertTriangleIcon className="h-4 w-4 text-amber-500" />
+                            <h3 className="text-sm font-medium text-amber-400">
+                              Some Agent tools require configurations
+                            </h3>
+                          </div>
+                          <p className="mb-2 text-xs text-amber-300">
+                            Please configure the following tools before using
+                            this agent:
+                          </p>
+                          <div className="grid gap-1">
+                            {toolsRequiringConfig.map((tool) => (
+                              <div
+                                className="flex items-center justify-between py-1"
+                                key={tool.tool_router_key}
+                              >
+                                <span className="text-sm">{tool.name}</span>
+                                <Button
+                                  className={cn(
+                                    buttonVariants({
+                                      variant: 'outline',
+                                      size: 'xs',
+                                    }),
+                                  )}
+                                  onClick={() => {
+                                    setSelectedToolConfig(tool.tool_router_key);
+                                    window.location.hash = '#configuration';
+                                  }}
+                                  type="button"
+                                >
+                                  <BoltIcon className="mr-1 size-3" />
+                                  Configure
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       <div className="h-full min-h-0 space-y-6 overflow-y-auto">
                         <div className="flex items-center justify-between gap-2">
                           <div className="space-y-1">
@@ -2048,24 +2113,11 @@ function AgentForm({ mode }: AgentFormProps) {
                                             onCheckedChange={() => {
                                               const configs =
                                                 tool?.config ?? [];
-                                              if (
-                                                configs
-                                                  .map((conf) => ({
-                                                    key_name:
-                                                      conf.BasicConfig.key_name,
-                                                    key_value:
-                                                      conf.BasicConfig
-                                                        .key_value ?? '',
-                                                    required:
-                                                      conf.BasicConfig.required,
-                                                  }))
-                                                  .every(
-                                                    (conf) =>
-                                                      !conf.required ||
-                                                      (conf.required &&
-                                                        conf.key_value !== ''),
-                                                  )
-                                              ) {
+                                              const toolConfigurationNeeded =
+                                                getToolRequiresConfigurations(
+                                                  configs,
+                                                );
+                                              if (toolConfigurationNeeded) {
                                                 field.onChange(
                                                   field.value.includes(
                                                     tool.tool_router_key,
@@ -2797,7 +2849,7 @@ const UploadFileDialog = ({
   });
   const { isPending: isUploadingFile, mutateAsync: uploadVRFiles } =
     useUploadVRFiles({
-      onSuccess: (_, variables) => {
+      onSuccess: (_, _variables) => {
         toast.success(t('vectorFs.success.filesUploaded'), {
           id: 'uploading-VR-files',
           description: '',
