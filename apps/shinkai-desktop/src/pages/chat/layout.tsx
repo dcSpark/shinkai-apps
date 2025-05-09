@@ -671,7 +671,7 @@ const AgentList = ({
           displayedAgents.map((agent) => (
             <button
               className={cn(
-                'text-official-gray-300 flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white',
+                'text-official-gray-300 group flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white',
                 selectedAgent === agent.agent_id && 'bg-white/10 text-white',
               )}
               key={agent.agent_id}
@@ -682,6 +682,25 @@ const AgentList = ({
               <span className="line-clamp-1 flex-1 break-all pr-2 text-left text-xs capitalize">
                 {agent.name}
               </span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    className="inline-flex items-center opacity-0 group-hover:opacity-100"
+                    onClick={() => {
+                      navigate(`/home`, {
+                        state: { agentName: agent.agent_id },
+                      });
+                    }}
+                  >
+                    <PlusIcon className="mr-2 h-4 w-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipPortal>
+                  <TooltipContent>
+                    <p>New Chat With Agent</p>
+                  </TooltipContent>
+                </TooltipPortal>
+              </Tooltip>
               {agent.cron_tasks?.length && agent.cron_tasks.length > 0 && (
                 <Tooltip>
                   <TooltipTrigger asChild>
