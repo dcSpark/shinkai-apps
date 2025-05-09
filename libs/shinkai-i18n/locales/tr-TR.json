@@ -115,6 +115,7 @@
     "folderWithCount_other": "{{count}} Klasörler",
     "folders": "Klasörler",
     "getStarted": "Ücretsiz Başlayın",
+    "howWouldYouLikeToProceed": "Nasıl devam etmek istersiniz?",
     "iAgree": "Kabul Ediyorum",
     "install": "Kur",
     "installed": "Yüklü",
@@ -600,6 +601,18 @@
     "runNow": "Şimdi Çalıştır"
   },
   "tools": {
+    "commonToolsetAffectedTools": "Setteki tüm araçları güncellemeyi seçmek, aynı zamanda şunları da etkileyecektir:",
+    "commonToolsetUpdateDescription": "{{toolName}} için değiştirdiğiniz yapılandırma anahtarı, bu setteki diğer araçlar tarafından da kullanılmaktadır.",
+    "configuration": {
+      "followingToolsAffected": "Bu değişiklikten etkilenecek araçlar:",
+      "updateAllToolsInSet": "Tüm {{toolSetName}} araçlarını güncelle",
+      "updateAllToolsInSetError": "Tüm {{toolSetName}} araçlarını güncelleme başarısız oldu.",
+      "updateAllToolsInSetSuccess": "{{toolSetName}} araçlarının tamamı başarıyla güncellendi",
+      "updateConfig": "{{toolName}} Yapılandırmasını Güncelle",
+      "updateConfigDescription": "{{toolName}} için değiştirdiğiniz yapılandırma anahtarı, bu set içindeki diğer araçlar tarafından da kullanılmaktadır.",
+      "updateConfigDescription2": "Bu yapılandırma, birden fazla {{toolSetName}} aracı tarafından paylaşılmaktadır. Bu değişikliği nasıl uygulamak istersiniz?",
+      "updateOnlyThisTool": "Sadece bu aracı güncelle"
+    },
     "configurationRequired": "Araç Yapılandırması Gerekli",
     "create": "Araç Oluştur",
     "description": "Yapay zeka araçlarınızı yönetin, özelleştirin ve genişletin.",
