@@ -65,6 +65,7 @@ export const MessageList = memo(
     lastMessageContent,
     editAndRegenerateMessage,
     regenerateMessage,
+    forkMessage,
     disabledRetryAndEdit,
     messageExtra,
     hidePythonExecution,
@@ -82,6 +83,7 @@ export const MessageList = memo(
       InfiniteQueryObserverResult<ChatConversationInfiniteData, Error>
     >;
     regenerateMessage?: (messageId: string) => void;
+    forkMessage?: (messageId: string) => void;
     editAndRegenerateMessage?: (content: string, messageHash: string) => void;
     containerClassName?: string;
     lastMessageContent?: React.ReactNode;
@@ -281,6 +283,10 @@ export const MessageList = memo(
                             regenerateMessage?.(message?.messageId ?? '');
                           };
 
+                          const handleForkMessage = () => {
+                            forkMessage?.(message?.messageId ?? '');
+                          };
+
                           const handleEditMessage = (message: string) => {
                             editAndRegenerateMessage?.(
                               message,
@@ -292,6 +298,7 @@ export const MessageList = memo(
                             <Message
                               disabledEdit={disabledRetryAndEditValue}
                               handleEditMessage={handleEditMessage}
+                              handleForkMessage={handleForkMessage}
                               handleRetryMessage={handleRetryMessage}
                               hidePythonExecution={hidePythonExecution}
                               key={`${message.messageId}::${messageIndex}`}

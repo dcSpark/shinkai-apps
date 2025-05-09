@@ -45,6 +45,7 @@ import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Edit3,
+  GitFork,
   InfoIcon,
   Loader2,
   RotateCcw,
@@ -88,6 +89,7 @@ type MessageProps = {
   isPending?: boolean;
   message: FormattedMessage;
   handleRetryMessage?: () => void;
+  handleForkMessage?: () => void;
   disabledRetry?: boolean;
   disabledEdit?: boolean;
   handleEditMessage?: (message: string) => void;
@@ -176,6 +178,7 @@ export const MessageBase = ({
   hidePythonExecution,
   isPending,
   handleRetryMessage,
+  handleForkMessage,
   disabledRetry,
   disabledEdit,
   handleEditMessage,
@@ -575,23 +578,42 @@ export const MessageBase = ({
                       </Tooltip>
                     )}
                     {message.role === 'assistant' && !disabledRetry && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            className={cn(
-                              'text-official-gray-400 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
-                            )}
-                            onClick={handleRetryMessage}
-                          >
-                            <RotateCcw />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipPortal>
-                          <TooltipContent>
-                            <p>{t('common.retry')}</p>
-                          </TooltipContent>
-                        </TooltipPortal>
-                      </Tooltip>
+                      <>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              className={cn(
+                                'text-official-gray-400 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                              )}
+                              onClick={handleForkMessage}
+                            >
+                              <GitFork />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent>
+                              <p>Fork</p>
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              className={cn(
+                                'text-official-gray-400 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                              )}
+                              onClick={handleRetryMessage}
+                            >
+                              <RotateCcw />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipPortal>
+                            <TooltipContent>
+                              <p>{t('common.retry')}</p>
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+                      </>
                     )}
 
                     <Tooltip>
