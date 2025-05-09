@@ -44,7 +44,7 @@ import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import { motion } from 'framer-motion';
-import { ArrowRight, ArrowUpRight, EllipsisIcon, Plus, X } from 'lucide-react';
+import { AlertTriangleIcon, ArrowRight, ArrowUpRight, BoltIcon, EllipsisIcon, Plus, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
@@ -75,6 +75,7 @@ import {
 } from '../components/chat/conversation-footer';
 import { FeedbackModal } from '../components/feedback/feedback-modal';
 import { usePromptSelectionStore } from '../components/prompt/context/prompt-selection-context';
+import { useAgentRequiresToolConfigurations } from '../hooks/use-agent-requires-tool-configurations';
 // import { VideoBanner } from '../components/video-banner';
 import { useAnalytics } from '../lib/posthog-provider';
 import { useAuth } from '../store/auth';
@@ -450,6 +451,10 @@ const EmptyMessage = () => {
     (state) => state.mainLayoutContainerRef,
   );
 
+  const { requiresConfiguration } = useAgentRequiresToolConfigurations(
+    selectedAgent,
+  );
+
   return (
     <motion.div
       animate={{ opacity: 1 }}
@@ -480,6 +485,30 @@ const EmptyMessage = () => {
             variant="card"
           />
         </div>
+
+        {requiresConfiguration && (
+          <div className="flex flex-row items-center justify-between p-3 border border-yellow-500/30 bg-yellow-500/10 rounded-lg">
+            <div className="flex flex-col items-start text-left">
+              <div className="flex items-center gap-2 text-yellow-400">
+                <AlertTriangleIcon className="h-4 w-4" />
+                <span className="font-medium">Configuration Required</span>
+              </div>
+              <p className="text-xs text-yellow-300/80">
+                {selectedAgent?.name} requires some configurations to work properly.
+              </p>
+            </div>
+            <Button 
+              className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/20 text-sm py-1" 
+              onClick={() => navigate(`/agents/edit/${selectedAgent?.agent_id}?defaultTab=tools`)}
+              size="sm"
+              variant="outline"
+            >
+              <BoltIcon className="h-3.5 w-3.5" />
+              Setup Agent
+            </Button>
+          </div>
+        )}
+
         <div
           {...getRootFileProps({
             className: 'relative shrink-0 pb-[40px]  mx-auto w-full',
