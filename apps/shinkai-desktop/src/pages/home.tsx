@@ -924,7 +924,7 @@ const EmptyMessage = () => {
                   label: 'New Agent',
                   onClick: () => navigate('/add-agent'),
                 }}
-                title="Recently Used"
+                title="Recommended Agents"
               />
               <div className="grid grid-cols-1 gap-4">
                 {agents?.map((agent, idx) => (
