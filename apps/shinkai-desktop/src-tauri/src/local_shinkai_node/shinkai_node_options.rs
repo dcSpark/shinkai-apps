@@ -28,7 +28,6 @@ pub struct ShinkaiNodeOptions {
     pub supported_embedding_models: Option<String>,
     pub shinkai_tools_runner_deno_binary_path: Option<String>,
     pub shinkai_tools_runner_uv_binary_path: Option<String>,
-    pub pdfium_dynamic_lib_path: Option<String>,
     pub shinkai_store_url: Option<String>,
     pub secret_desktop_installation_proof_key: Option<String>,
 }
@@ -38,25 +37,13 @@ impl ShinkaiNodeOptions {
         app_resource_dir: PathBuf,
         app_data_dir: PathBuf,
     ) -> ShinkaiNodeOptions {
-        let default_pdfium_dynamic_lib_path = if cfg!(target_os = "macos") {
-            app_resource_dir.join("../Frameworks")
-        } else {
-            app_resource_dir.join("external-binaries/shinkai-node")
-        }
-        .to_string_lossy()
-        .replace("\\\\?\\C", "C");
         let default_node_storage_path = app_data_dir
             .join("node_storage")
             .to_string_lossy()
             .to_string();
-        log::debug!(
-            "PDFium dynamic library path: {:?}",
-            default_pdfium_dynamic_lib_path
-        );
         log::debug!("Node storage path: {:?}", default_node_storage_path);
         ShinkaiNodeOptions {
             node_storage_path: Some(default_node_storage_path),
-            pdfium_dynamic_lib_path: Some(default_pdfium_dynamic_lib_path),
             ..Default::default()
         }
     }
@@ -188,10 +175,6 @@ impl ShinkaiNodeOptions {
                     .or(base_options.shinkai_tools_runner_uv_binary_path)
                     .unwrap_or_default(),
             ),
-            pdfium_dynamic_lib_path: Some(match options.pdfium_dynamic_lib_path {
-                Some(ref path) if !path.is_empty() => path.clone(),
-                _ => base_options.pdfium_dynamic_lib_path.unwrap_or_default(),
-            }),
             shinkai_store_url: Some(
                 options
                     .shinkai_store_url
@@ -251,7 +234,6 @@ impl Default for ShinkaiNodeOptions {
             supported_embedding_models: Some("snowflake-arctic-embed:xs".to_string()),
             shinkai_tools_runner_deno_binary_path: Some(shinkai_tools_runner_deno_binary_path),
             shinkai_tools_runner_uv_binary_path: Some(shinkai_tools_runner_uv_binary_path),
-            pdfium_dynamic_lib_path: None,
             shinkai_store_url: Some("https://store-api.shinkai.com".to_string()),
             secret_desktop_installation_proof_key: option_env!(
                 "SECRET_DESKTOP_INSTALLATION_PROOF_KEY"
