@@ -598,6 +598,14 @@
   "tools": {
     "commonToolsetAffectedTools": "Memilih untuk memperbarui semua alat dalam set juga akan mempengaruhi:",
     "commonToolsetUpdateDescription": "Kunci konfigurasi yang Anda ubah untuk {{toolName}} juga digunakan oleh alat lain dalam set ini.",
+    "configuration": {
+      "followingToolsAffected": "Alat berikut akan terpengaruh oleh perubahan ini:",
+      "updateAllToolsInSet": "Perbarui semua alat {{toolSetName}}",
+      "updateConfig": "Perbarui Konfigurasi {{toolName}}",
+      "updateConfigDescription": "Kunci konfigurasi yang Anda ubah untuk {{toolName}} juga digunakan oleh alat lain dalam set ini.",
+      "updateConfigDescription2": "Konfigurasi ini dibagikan oleh beberapa alat {{toolSetName}}. Bagaimana Anda ingin menerapkan perubahan ini?",
+      "updateOnlyThisTool": "Perbarui hanya alat ini"
+    },
     "configurationRequired": "Konfigurasi Alat Diperlukan",
     "confirmConfigurationUpdate": "Konfirmasi Pembaruan Konfigurasi",
     "create": "Buat Alat",
@@ -639,8 +647,6 @@
     },
     "successDuplicateTool": "Alat berhasil diduplikasi",
     "successOpenToolInCodeEditor": "Alat dibuka di editor kode",
-    "updateAllToolsInSet": "Perbarui Semua Alat dalam Set",
-    "updateOnlyThisTool": "Perbarui Hanya Alat Ini",
     "visitStore": "Kunjungi Toko Shinkai untuk menemukan dan menginstal alat tambahan yang dapat meningkatkan alur kerja Anda"
   },
   "vectorFs": {

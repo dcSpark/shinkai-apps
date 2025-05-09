@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@shinkai_network/shinkai-ui';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 
 interface ConfirmToolsetUpdateDialogProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ interface ConfirmToolsetUpdateDialogProps {
   onConfirmUpdateToolset: () => void;
   toolName?: string;
   affectedToolNames?: string[];
+  toolSetName?: string;
 }
 
 export function ConfirmToolsetUpdateDialog({
@@ -25,6 +27,7 @@ export function ConfirmToolsetUpdateDialog({
   onConfirmUpdateToolset,
   toolName,
   affectedToolNames,
+  toolSetName,
 }: ConfirmToolsetUpdateDialogProps) {
   const { t } = useTranslation();
 
@@ -32,41 +35,57 @@ export function ConfirmToolsetUpdateDialog({
     <Dialog onOpenChange={onOpenChange} open={isOpen}>
       <DialogContent showCloseButton={true}>
         <DialogHeader>
-          <DialogTitle>{t('tools.confirmConfigurationUpdate')}</DialogTitle>
-          <DialogDescription>
-            {t('tools.commonToolsetUpdateDescription', { toolName: toolName ? `"${toolName}"` : 'this tool' })}
-            <br />
-            {t('common.howWouldYouLikeToProceed')}
-            {affectedToolNames && affectedToolNames.length > 0 && (
-              <div className="mt-2 text-xs">
-                <p className="font-medium">{t('tools.commonToolsetAffectedTools')}:</p>
-                <ul className="list-disc pl-5">
-                  {affectedToolNames.map(name => <li key={name}>{name}</li>)}
-                </ul>
-              </div>
-            )}
+          <DialogTitle>
+            {t('tools.configuration.updateConfig', {
+              toolName: toolName ? `"${toolName}"` : 'this tool',
+            })}
+          </DialogTitle>
+          <DialogDescription className="text-sm">
+            {t('tools.configuration.updateConfigDescription2', {
+              toolSetName: toolSetName
+                ? formatText(toolSetName ?? '')
+                : 'this tool',
+            })}
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="gap-2 pt-4 sm:justify-center">
+        {affectedToolNames && affectedToolNames.length > 0 && (
+          <div className="border-official-gray-800 bg-official-gray-900 space-y-2 rounded-lg border p-3 text-sm">
+            <p className="font-medium">
+              {t('tools.configuration.followingToolsAffected')}
+            </p>
+            <ul className="text-official-gray-300 list-disc space-y-1 pl-5">
+              {affectedToolNames.map((name) => (
+                <li key={name}>{name}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <DialogFooter className="flex flex-col gap-2 pt-4 sm:justify-center">
           <Button
-            onClick={() => {
-              onConfirmUpdateTool();
-              onOpenChange(false);
-            }}
-            variant="outline"
-          >
-            {t('tools.updateOnlyThisTool')}
-          </Button>
-          <Button
+            className="flex-1"
             onClick={() => {
               onConfirmUpdateToolset();
               onOpenChange(false);
             }}
+            size="md"
           >
-            {t('tools.updateAllToolsInSet')}
+            {t('tools.configuration.updateAllToolsInSet', {
+              toolSetName: formatText(toolSetName?.split('_')[0] ?? ''),
+            })}
+          </Button>
+          <Button
+            className="flex-1"
+            onClick={() => {
+              onConfirmUpdateTool();
+              onOpenChange(false);
+            }}
+            size="md"
+            variant="outline"
+          >
+            {t('tools.configuration.updateOnlyThisTool')}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
-} 
+}

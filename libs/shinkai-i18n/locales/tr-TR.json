@@ -598,6 +598,14 @@
   "tools": {
     "commonToolsetAffectedTools": "Setteki tüm araçları güncellemeyi seçmek, aynı zamanda şunları da etkileyecektir:",
     "commonToolsetUpdateDescription": "{{toolName}} için değiştirdiğiniz yapılandırma anahtarı, bu setteki diğer araçlar tarafından da kullanılmaktadır.",
+    "configuration": {
+      "followingToolsAffected": "Bu değişiklikten etkilenecek araçlar:",
+      "updateAllToolsInSet": "Tüm {{toolSetName}} araçlarını güncelle",
+      "updateConfig": "{{toolName}} Yapılandırmasını Güncelle",
+      "updateConfigDescription": "{{toolName}} için değiştirdiğiniz yapılandırma anahtarı, bu set içindeki diğer araçlar tarafından da kullanılmaktadır.",
+      "updateConfigDescription2": "Bu yapılandırma, birden fazla {{toolSetName}} aracı tarafından paylaşılmaktadır. Bu değişikliği nasıl uygulamak istersiniz?",
+      "updateOnlyThisTool": "Sadece bu aracı güncelle"
+    },
     "configurationRequired": "Araç Yapılandırması Gerekli",
     "confirmConfigurationUpdate": "Yapılandırma Güncellemesini Onayla",
     "create": "Araç Oluştur",
@@ -639,8 +647,6 @@
     },
     "successDuplicateTool": "Araç başarıyla kopyalandı",
     "successOpenToolInCodeEditor": "Araç kod editöründe açıldı",
-    "updateAllToolsInSet": "Setteki Tüm Araçları Güncelle",
-    "updateOnlyThisTool": "Sadece Bu Aracı Güncelle",
     "visitStore": "İş akışınızı geliştirmek için ek araçlar keşfetmek ve yüklemek üzere Shinkai Mağazası'nı ziyaret edin"
   },
   "vectorFs": {

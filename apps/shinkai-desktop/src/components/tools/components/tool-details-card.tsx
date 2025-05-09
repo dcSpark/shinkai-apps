@@ -141,7 +141,9 @@ export default function ToolDetailsCard({
     any
   > | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [affectedNamesForDialog, setAffectedNamesForDialog] = useState<string[]>([]);
+  const [affectedNamesForDialog, setAffectedNamesForDialog] = useState<
+    string[]
+  >([]);
   const { t } = useTranslation();
   const {
     mutateAsync: publishTool,
@@ -346,14 +348,17 @@ export default function ToolDetailsCard({
     }
   }, [tool]);
 
-  const handleSaveCommonToolsetConfig = async (toolsetKey: string, formData: Record<string, any>) => {
+  const handleSaveCommonToolsetConfig = async (
+    toolsetKey: string,
+    formData: Record<string, any>,
+  ) => {
     await setCommonToolsetConfig({
       tool_set_key: toolsetKey,
       value: formData,
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
     });
-  }
+  };
 
   const performUpdateThisTool = () => {
     const toolKeyToUpdate = (tool as any).tool_router_key;
@@ -398,9 +403,10 @@ export default function ToolDetailsCard({
           return config.BasicConfig.key_name in submittedFormData;
         });
       })
-      .map(t => t.content[0].name as string);
+      .map((t) => t.content[0].name as string);
 
-    const hasCommonToolsetConfig = calculatedCommonToolsetConfigNames.length > 0;
+    const hasCommonToolsetConfig =
+      calculatedCommonToolsetConfigNames.length > 0;
 
     if (hasCommonToolsetConfig && 'tool_set' in tool) {
       setAffectedNamesForDialog(calculatedCommonToolsetConfigNames);
@@ -613,6 +619,7 @@ export default function ToolDetailsCard({
         onConfirmUpdateToolset={performUpdateToolsetForAll}
         onOpenChange={setIsConfirmDialogOpen}
         toolName={tool.name}
+        toolSetName={tool.tool_set}
       />
 
       <Tabs

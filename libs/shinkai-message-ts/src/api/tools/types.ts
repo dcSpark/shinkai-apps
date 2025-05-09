@@ -80,6 +80,7 @@ export type DenoShinkaiTool = {
   activated: boolean;
   embedding?: Embedding;
   result: Record<string, any>;
+  tool_set: string;
 };
 export type PythonShinkaiTool = {
   activated: boolean;

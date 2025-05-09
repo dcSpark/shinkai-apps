@@ -598,6 +598,14 @@
   "tools": {
     "commonToolsetAffectedTools": "选择更新该工具集中的所有工具也将影响：",
     "commonToolsetUpdateDescription": "您正在更改的配置键 {{toolName}} 也被该工具集中的其他工具使用。",
+    "configuration": {
+      "followingToolsAffected": "以下工具将受到此更改的影响：",
+      "updateAllToolsInSet": "更新所有 {{toolSetName}} 工具",
+      "updateConfig": "更新 {{toolName}} 配置",
+      "updateConfigDescription": "您正在更改的 {{toolName}} 配置键也被此集合中的其他工具使用。",
+      "updateConfigDescription2": "此配置由多个 {{toolSetName}} 工具共享。您希望如何应用此更改？",
+      "updateOnlyThisTool": "仅更新此工具"
+    },
     "configurationRequired": "工具配置必需",
     "confirmConfigurationUpdate": "确认配置更新",
     "create": "创建工具",
@@ -639,8 +647,6 @@
     },
     "successDuplicateTool": "工具复制成功",
     "successOpenToolInCodeEditor": "工具已在代码编辑器中打开",
-    "updateAllToolsInSet": "更新该工具集中的所有工具",
-    "updateOnlyThisTool": "仅更新此工具",
     "visitStore": "访问深海商店，发现并安装更多工具以增强您的工作流程"
   },
   "vectorFs": {

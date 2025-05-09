@@ -600,6 +600,14 @@
   "tools": {
     "commonToolsetAffectedTools": "セット内のすべてのツールを更新することを選択すると、次のツールにも影響があります：",
     "commonToolsetUpdateDescription": "{{toolName}}の変更している設定キーは、このセット内の他のツールでも使用されています。",
+    "configuration": {
+      "followingToolsAffected": "この変更の影響を受けるツールは次のとおりです：",
+      "updateAllToolsInSet": "すべての{{toolSetName}}ツールを更新",
+      "updateConfig": "{{toolName}}の設定を更新",
+      "updateConfigDescription": "{{toolName}}の変更している設定キーは、このセット内の他のツールでも使用されています。",
+      "updateConfigDescription2": "この設定は複数の{{toolSetName}}ツールで共有されています。この変更をどのように適用しますか？",
+      "updateOnlyThisTool": "このツールのみを更新"
+    },
     "configurationRequired": "ツールの設定が必要です",
     "confirmConfigurationUpdate": "設定の更新を確認する",
     "create": "ツールを作成",
@@ -641,8 +649,6 @@
     },
     "successDuplicateTool": "ツールが正常に複製されました",
     "successOpenToolInCodeEditor": "ツールがコードエディタで開かれました",
-    "updateAllToolsInSet": "セット内のすべてのツールを更新",
-    "updateOnlyThisTool": "このツールのみを更新",
     "visitStore": "作業を向上させるための追加ツールを発見し、インストールするには新海ストアを訪れてください"
   },
   "vectorFs": {

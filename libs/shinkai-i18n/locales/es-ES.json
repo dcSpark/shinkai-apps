@@ -1,4 +1,6 @@
 {
+  "": {
+  },
   "agents": {
     "systemInstructions": "Instrucciones del sistema"
   },
@@ -598,6 +600,14 @@
   "tools": {
     "commonToolsetAffectedTools": "Elegir actualizar todas las herramientas en el conjunto también afectará a:",
     "commonToolsetUpdateDescription": "La clave de configuración que estás cambiando para {{toolName}} también es utilizada por otras herramientas en este conjunto.",
+    "configuration": {
+      "followingToolsAffected": "Las siguientes herramientas se verán afectadas por este cambio:",
+      "updateAllToolsInSet": "Actualizar todas las herramientas de {{toolSetName}}",
+      "updateConfig": "Actualizar la configuración de {{toolName}}",
+      "updateConfigDescription": "La clave de configuración que estás cambiando para {{toolName}} también es utilizada por otras herramientas en este conjunto.",
+      "updateConfigDescription2": "Esta configuración es compartida por múltiples herramientas de {{toolSetName}}. ¿Cómo te gustaría aplicar este cambio?",
+      "updateOnlyThisTool": "Actualizar solo esta herramienta"
+    },
     "configurationRequired": "Se requiere configuración de la herramienta",
     "confirmConfigurationUpdate": "Confirmar Actualización de Configuración",
     "create": "Crear herramienta",
@@ -639,8 +649,6 @@
     },
     "successDuplicateTool": "Herramienta duplicada con éxito",
     "successOpenToolInCodeEditor": "Herramienta abierta en el editor de código",
-    "updateAllToolsInSet": "Actualizar Todas las Herramientas en el Conjunto",
-    "updateOnlyThisTool": "Actualizar Solo Esta Herramienta",
     "visitStore": "Visita la tienda Shinkai para descubrir e instalar herramientas adicionales que mejoren tu flujo de trabajo"
   },
   "vectorFs": {

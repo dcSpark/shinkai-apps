@@ -668,11 +668,22 @@ export default {
     errorDuplicateTool: 'Failed to duplicate tool',
     successOpenToolInCodeEditor: 'Tool opened in code editor successfully',
     errorOpenToolInCodeEditor: 'Failed to open tool in code editor',
-    commonToolsetAffectedTools: 'Choosing to update all tools in the set will also affect:',
-    commonToolsetUpdateDescription: 'The configuration key you are changing for {{toolName}} is also used by other tools in this set.',
+    commonToolsetAffectedTools:
+      'Choosing to update all tools in the set will also affect:',
+    commonToolsetUpdateDescription:
+      'The configuration key you are changing for {{toolName}} is also used by other tools in this set.',
     confirmConfigurationUpdate: 'Confirm Configuration Update',
-    updateOnlyThisTool: 'Update Only This Tool',
-    updateAllToolsInSet: 'Update All Tools in Set',
+    configuration: {
+      updateConfig: 'Update {{toolName}} Configuration',
+      updateConfigDescription:
+        'The configuration key you are changing for {{toolName}} is also used by other tools in this set.',
+      updateConfigDescription2:
+        'This configuration is shared by multiple {{toolSetName}} tools. How would you like to apply this change?',
+      followingToolsAffected:
+        'The following tools will be affected by this change:',
+      updateOnlyThisTool: 'Update only this tool',
+      updateAllToolsInSet: 'Update all {{toolSetName}} tools',
+    },
     installFromStore: 'Install from Store',
     lookingForMoreTools: 'Looking for more tools?',
     visitStore:
