@@ -87,7 +87,7 @@ export const getAgents = async (
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
       params: {
-        filters: categoryFilter,
+        filter: categoryFilter,
       },
       responseType: 'json',
     },
