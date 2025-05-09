@@ -1,5 +1,8 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
+import {
+  buildInboxIdFromJobId,
+  extractJobIdFromInbox,
+} from '@shinkai_network/shinkai-message-ts/utils';
 import {
   FunctionKeyV2,
   generateOptimisticAssistantMessage,
@@ -13,7 +16,7 @@ import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-n
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import { useEffect, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { MessageList } from '../../components/chat/components/message-list';
@@ -126,6 +129,7 @@ export const useChatConversationWithOptimisticUpdates = ({
 const ChatConversation = () => {
   const { captureAnalyticEvent } = useAnalytics();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const queryClient = useQueryClient();
 
@@ -187,8 +191,21 @@ const ChatConversation = () => {
   }, [data?.pages, optInExperimental]);
 
   const { mutateAsync: retryMessage } = useRetryMessage();
-  
-  const { mutateAsync: forkMessage } = useForkJobMessages();
+
+  const { mutateAsync: forkMessage } = useForkJobMessages({
+    onSuccess: (response) => {
+      navigate(
+        `/inboxes/${encodeURIComponent(
+          buildInboxIdFromJobId(response.job_id),
+        )}`,
+      );
+    },
+    onError: (error) => {
+      toast.error('Failed to fork message', {
+        description: error.message,
+      });
+    },
+  });
 
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
     onSuccess: () => {
@@ -210,12 +227,12 @@ const ChatConversation = () => {
       messageId: messageId,
     });
   };
-  
+
   const handleForkMessage = async (messageId: string) => {
     if (!auth) return;
     const decodedInboxId = decodeURIComponent(inboxId);
     const jobId = extractJobIdFromInbox(decodedInboxId);
-    
+
     await forkMessage({
       nodeAddress: auth.node_address,
       token: auth.api_v2_key,
@@ -249,6 +266,7 @@ const ChatConversation = () => {
           containerClassName="px-5"
           editAndRegenerateMessage={editAndRegenerateMessage}
           fetchPreviousPage={fetchPreviousPage}
+          forkMessage={handleForkMessage}
           hasPreviousPage={hasPreviousPage}
           isFetchingPreviousPage={isFetchingPreviousPage}
           isLoading={isChatConversationLoading}
@@ -257,7 +275,6 @@ const ChatConversation = () => {
           noMoreMessageLabel={t('chat.allMessagesLoaded')}
           paginatedMessages={data}
           regenerateMessage={regenerateMessage}
-          forkMessage={handleForkMessage}
         />
       ) : (
         <EmptyMessage />
