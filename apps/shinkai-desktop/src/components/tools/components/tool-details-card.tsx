@@ -11,8 +11,10 @@ import { useDuplicateTool } from '@shinkai_network/shinkai-node-state/v2/mutatio
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
 import { useExportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/exportTool/useExportTool';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
+import { useSetCommonToolsetConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/setCommonToolsetConfig/useSetCommonToolsetConfig';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
+import { useGetToolsFromToolset } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsFromToolset/useGetToolsFromToolset';
 import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
 import {
   Alert,
@@ -63,6 +65,7 @@ import { SHINKAI_STORE_URL } from '../../../utils/store';
 import { FileInputField } from '../../playground-tool/components/execution-panel';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
+import { ConfirmToolsetUpdateDialog } from './confirm-update-common-toolset-config';
 import EditToolDetailsDialog from './edit-tool-details-dialog';
 import { ExecutionFiles } from './execution-files';
 
@@ -137,6 +140,10 @@ export default function ToolDetailsCard({
     string,
     any
   > | null>(null);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [affectedNamesForDialog, setAffectedNamesForDialog] = useState<
+    string[]
+  >([]);
   const { t } = useTranslation();
   const {
     mutateAsync: publishTool,
@@ -156,7 +163,7 @@ export default function ToolDetailsCard({
     },
   });
 
-  const { mutateAsync: updateTool, isPending } = useUpdateTool({
+  const { mutateAsync: updateTool, isPending: isUpdatingTool } = useUpdateTool({
     onSuccess: (_, variables) => {
       if (
         'config' in variables.toolPayload &&
@@ -164,6 +171,7 @@ export default function ToolDetailsCard({
         variables.toolPayload.config?.length > 0
       ) {
         toast.success('Tool configuration updated successfully');
+        setIsConfirmDialogOpen(false);
       }
       if ('oauth' in variables.toolPayload && variables.toolPayload.oauth) {
         toast.success('OAuth settings updated successfully');
@@ -273,7 +281,39 @@ export default function ToolDetailsCard({
       },
     },
   );
+  const {
+    mutateAsync: setCommonToolsetConfig,
+    isPending: isSettingCommonToolsetConfig,
+  } = useSetCommonToolsetConfig({
+    onSuccess: () => {
+      toast.success(
+        t('tools.configuration.updateAllToolsInSetSuccess', {
+          toolSetName: formatText(
+            'tool_set' in tool ? tool.tool_set?.split('_')[0] ?? '' : '',
+          ),
+        }),
+      );
+      setIsConfirmDialogOpen(false);
+    },
+    onError: (error) => {
+      toast.error(
+        t('tools.configuration.updateAllToolsInSetError', {
+          toolSetName: formatText(
+            'tool_set' in tool ? tool.tool_set?.split('_')[0] ?? '' : '',
+          ),
+        }),
+        {
+          description: error.response?.data?.message ?? error.message,
+        },
+      );
+    },
+  });
 
+  const { data: toolsFromToolSet } = useGetToolsFromToolset({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+    tool_set_key: 'tool_set' in tool ? (tool.tool_set as string) : '',
+  });
   useEffect(() => {
     if (
       tool &&
@@ -336,10 +376,21 @@ export default function ToolDetailsCard({
     }
   }, [tool]);
 
-  const handleSaveToolConfig: FormProps['onSubmit'] = async (data) => {
-    const formData = data.formData;
+  const handleSaveCommonToolsetConfig = async (
+    toolsetKey: string,
+    formData: Record<string, any>,
+  ) => {
+    await setCommonToolsetConfig({
+      tool_set_key: toolsetKey,
+      value: formData,
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    });
+  };
 
-    const sanitizedConfig = Object.entries(formData).map(
+  const performUpdateThisTool = () => {
+    const toolKeyToUpdate = (tool as any).tool_router_key;
+    const configToSave = Object.entries(formData ?? {}).map(
       ([key_name, key_value]) => {
         const sanitizedValue = key_value == null ? '' : key_value;
         return {
@@ -350,17 +401,47 @@ export default function ToolDetailsCard({
         };
       },
     );
-
-    await updateTool({
-      toolKey: toolKey ?? '',
+    updateTool({
+      toolKey: toolKeyToUpdate ?? '',
       toolType: toolType,
-      toolPayload: {
-        config: sanitizedConfig,
-      } as unknown as ShinkaiTool,
+      toolPayload: { config: configToSave } as unknown as ShinkaiTool,
       isToolEnabled: true,
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
     });
+  };
+
+  const performUpdateToolsetForAll = () => {
+    if ('tool_set' in tool && tool.tool_set && formData) {
+      handleSaveCommonToolsetConfig(tool.tool_set as string, formData);
+    }
+  };
+
+  const handleSaveToolConfig: FormProps['onSubmit'] = async (data) => {
+    const submittedFormData = data.formData;
+    setFormData(submittedFormData);
+
+    const toolKey = (tool as any).tool_router_key;
+    const calculatedCommonToolsetConfigNames = (toolsFromToolSet ?? [])
+      .filter((t) => t.content[0].tool_router_key !== toolKey)
+      .filter((t) => {
+        const toolConfig = t.content[0].config;
+        if (!toolConfig) return false;
+        return toolConfig.some((config: any) => {
+          return config.BasicConfig.key_name in submittedFormData;
+        });
+      })
+      .map((t) => t.content[0].name as string);
+
+    const hasCommonToolsetConfig =
+      calculatedCommonToolsetConfigNames.length > 0;
+
+    if (hasCommonToolsetConfig && 'tool_set' in tool) {
+      setAffectedNamesForDialog(calculatedCommonToolsetConfigNames);
+      setIsConfirmDialogOpen(true);
+    } else {
+      performUpdateThisTool();
+    }
   };
 
   const handleSaveOAuthConfig: FormProps['onSubmit'] = async (data) => {
@@ -558,6 +639,18 @@ export default function ToolDetailsCard({
           </div>
         </div>
       )}
+
+      <ConfirmToolsetUpdateDialog
+        affectedToolNames={affectedNamesForDialog}
+        isOpen={isConfirmDialogOpen}
+        isSettingCommonToolsetConfig={isSettingCommonToolsetConfig}
+        isUpdatingTool={isUpdatingTool}
+        onConfirmUpdateTool={performUpdateThisTool}
+        onConfirmUpdateToolset={performUpdateToolsetForAll}
+        onOpenChange={setIsConfirmDialogOpen}
+        toolName={tool.name}
+        toolSetName={'tool_set' in tool ? tool.tool_set : ''}
+      />
 
       <Tabs
         className={cn('w-full py-8', hideToolHeaderDetails && 'pt-0')}
@@ -904,9 +997,9 @@ export default function ToolDetailsCard({
                 <div className="flex w-full justify-end">
                   <Button
                     className="min-w-[100px]"
-                    disabled={isPending}
+                    disabled={isUpdatingTool}
                     form="configurations-form"
-                    isLoading={isPending}
+                    isLoading={isUpdatingTool}
                     rounded="lg"
                     size="sm"
                     variant="outline"
@@ -994,9 +1087,9 @@ export default function ToolDetailsCard({
               <div className="flex w-full justify-end">
                 <Button
                   className="min-w-[100px]"
-                  disabled={isPending}
+                  disabled={isUpdatingTool}
                   form="oauth-form"
-                  isLoading={isPending}
+                  isLoading={isUpdatingTool}
                   rounded="lg"
                   size="sm"
                   variant="outline"

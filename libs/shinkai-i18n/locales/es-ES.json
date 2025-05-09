@@ -115,6 +115,7 @@
     "folderWithCount_other": "{{count}} Carpetas",
     "folders": "Carpetas",
     "getStarted": "Comienza gratis",
+    "howWouldYouLikeToProceed": "¿Cómo te gustaría proceder?",
     "iAgree": "Estoy de Acuerdo",
     "install": "Instalar",
     "installed": "Instalado",
@@ -600,6 +601,18 @@
     "runNow": "Ejecutar ahora"
   },
   "tools": {
+    "commonToolsetAffectedTools": "Elegir actualizar todas las herramientas en el conjunto también afectará a:",
+    "commonToolsetUpdateDescription": "La clave de configuración que estás cambiando para {{toolName}} también es utilizada por otras herramientas en este conjunto.",
+    "configuration": {
+      "followingToolsAffected": "Las siguientes herramientas se verán afectadas por este cambio:",
+      "updateAllToolsInSet": "Actualizar todas las herramientas de {{toolSetName}}",
+      "updateAllToolsInSetError": "No se pudo actualizar todas las herramientas de {{toolSetName}}.",
+      "updateAllToolsInSetSuccess": "Todas las herramientas de {{toolSetName}} se han actualizado correctamente",
+      "updateConfig": "Actualizar la configuración de {{toolName}}",
+      "updateConfigDescription": "La clave de configuración que estás cambiando para {{toolName}} también es utilizada por otras herramientas en este conjunto.",
+      "updateConfigDescription2": "Esta configuración es compartida por múltiples herramientas de {{toolSetName}}. ¿Cómo te gustaría aplicar este cambio?",
+      "updateOnlyThisTool": "Actualizar solo esta herramienta"
+    },
     "configurationRequired": "Se requiere configuración de la herramienta",
     "create": "Crear herramienta",
     "description": "Gestiona, personaliza y amplía tus herramientas de IA.",

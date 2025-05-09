@@ -115,6 +115,7 @@
     "folderWithCount_other": "{{count}} Folder",
     "folders": "Folder",
     "getStarted": "Mulai Gratis",
+    "howWouldYouLikeToProceed": "Bagaimana Anda ingin melanjutkan?",
     "iAgree": "Saya Setuju",
     "install": "Instal",
     "installed": "Terinstal",
@@ -600,6 +601,18 @@
     "runNow": "Jalankan Sekarang"
   },
   "tools": {
+    "commonToolsetAffectedTools": "Memilih untuk memperbarui semua alat dalam set juga akan mempengaruhi:",
+    "commonToolsetUpdateDescription": "Kunci konfigurasi yang Anda ubah untuk {{toolName}} juga digunakan oleh alat lain dalam set ini.",
+    "configuration": {
+      "followingToolsAffected": "Alat berikut akan terpengaruh oleh perubahan ini:",
+      "updateAllToolsInSet": "Perbarui semua alat {{toolSetName}}",
+      "updateAllToolsInSetError": "Gagal memperbarui semua alat {{toolSetName}}.",
+      "updateAllToolsInSetSuccess": "Semua alat {{toolSetName}} telah diperbarui dengan sukses",
+      "updateConfig": "Perbarui Konfigurasi {{toolName}}",
+      "updateConfigDescription": "Kunci konfigurasi yang Anda ubah untuk {{toolName}} juga digunakan oleh alat lain dalam set ini.",
+      "updateConfigDescription2": "Konfigurasi ini dibagikan oleh beberapa alat {{toolSetName}}. Bagaimana Anda ingin menerapkan perubahan ini?",
+      "updateOnlyThisTool": "Perbarui hanya alat ini"
+    },
     "configurationRequired": "Konfigurasi Alat Diperlukan",
     "create": "Buat Alat",
     "description": "Kelola, sesuaikan, dan kembangkan alat AI Anda.",

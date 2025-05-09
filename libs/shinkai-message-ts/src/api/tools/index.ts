@@ -28,6 +28,7 @@ import {
   GetShinkaiFileProtocolResponse,
   GetToolProtocolsResponse,
   GetToolResponse,
+  GetToolsFromToolsetResponse,
   GetToolsRequest,
   GetToolsResponse,
   GetToolStoreDetailsRequest,
@@ -47,6 +48,8 @@ import {
   SaveToolCodeRequest,
   SaveToolCodeResponse,
   SearchPromptsResponse,
+  SetCommonToolsetConfigRequest,
+  SetCommonToolsetConfigResponse,
   SetOAuthTokenRequest,
   SetOAuthTokenResponse,
   ToggleEnableToolRequest,
@@ -122,6 +125,35 @@ export const searchTools = async (
     },
   );
   return response.data as GetToolsResponse;
+};
+
+export const getToolsFromToolset = async (
+  nodeAddress: string,
+  bearerToken: string,
+  tool_set_key: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/tools_from_toolset'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      params: { tool_set_key },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetToolsFromToolsetResponse;
+};
+
+export const setCommonToolsetConfig = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: SetCommonToolsetConfigRequest,
+) => {
+  const response = await httpClient.post(urlJoin(nodeAddress, '/v2/set_common_toolset_config'), payload, {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as SetCommonToolsetConfigResponse;
 };
 
 export const updateTool = async (

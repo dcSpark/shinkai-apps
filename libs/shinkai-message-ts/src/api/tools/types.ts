@@ -80,6 +80,7 @@ export type DenoShinkaiTool = {
   activated: boolean;
   embedding?: Embedding;
   result: Record<string, any>;
+  tool_set: string;
 };
 export type PythonShinkaiTool = {
   activated: boolean;
@@ -97,6 +98,7 @@ export type PythonShinkaiTool = {
     json: string;
   };
   result: JSToolResult;
+  tool_set: string;
 };
 export type RustShinkaiTool = {
   description: string;
@@ -167,6 +169,19 @@ export type GetToolsRequest = {
 export type GetToolsResponse = ShinkaiToolHeader[];
 export type GetToolsSearchResponse = [ShinkaiToolHeader, number][];
 
+export type GetToolsFromToolsetResponse = {
+  type: ShinkaiToolType;
+  content: [ShinkaiToolHeader, boolean];
+}[];
+
+export type SetCommonToolsetConfigRequest = {
+  tool_set_key: string;
+  value: Record<string, unknown>;
+};
+
+export type SetCommonToolsetConfigResponse = {
+  updated_tool_keys: string[];
+};
 export type AddToolRequest = {
   type: ShinkaiToolType;
   content: [ShinkaiTool, boolean];
