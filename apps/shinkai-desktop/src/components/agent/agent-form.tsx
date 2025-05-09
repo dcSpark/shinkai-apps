@@ -116,12 +116,19 @@ import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, To, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import {
+  Link,
+  To,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import { toast } from 'sonner';
 import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
 
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
+import { useURLQueryParams } from '../../hooks/use-url-query-params';
 import { treeOptions } from '../../lib/constants';
 import { useChatConversationWithOptimisticUpdates } from '../../pages/chat/chat-conversation';
 import { useAuth } from '../../store/auth';
@@ -502,7 +509,8 @@ function AgentForm({ mode }: AgentFormProps) {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   type TabValue = 'persona' | 'knowledge' | 'tools' | 'schedule';
-  const defaultTabValue = searchParams.get('defaultTab') as TabValue || 'persona';
+  const defaultTabValue =
+    (searchParams.get('defaultTab') as TabValue) || 'persona';
   const [currentTab, setCurrentTab] = useState<TabValue>(defaultTabValue);
 
   const [isSideChatOpen, setIsSideChatOpen] = useState(false);
@@ -551,6 +559,9 @@ function AgentForm({ mode }: AgentFormProps) {
     path: '/',
     depth: 6,
   });
+
+  const queryParams = useURLQueryParams();
+  const isOpenQueryActive = queryParams.get('openChat') === 'true';
 
   const nodes = useMemo(() => {
     return transformDataToTreeNodes(fileInfoArray ?? [], undefined, []);
@@ -679,13 +690,10 @@ function AgentForm({ mode }: AgentFormProps) {
   }, [agent, form, mode, onSelectedKeysChange]);
 
   useEffect(() => {
-    if (mode === 'edit') {
-      const searchParams = new URLSearchParams(window.location.search);
-      if (searchParams.get('openChat') === 'true') {
-        setIsSideChatOpen(true);
-      }
+    if (mode === 'edit' && isOpenQueryActive) {
+      setIsSideChatOpen(true);
     }
-  }, [mode]);
+  }, [mode, isOpenQueryActive]);
 
   const { data: toolsList } = useGetTools({
     nodeAddress: auth?.node_address ?? '',
@@ -1124,7 +1132,7 @@ function AgentForm({ mode }: AgentFormProps) {
         <div className="container flex h-full min-h-0 max-w-3xl flex-col">
           <div className="flex items-center justify-between pb-6 pt-10">
             <div className="flex items-center gap-5">
-              <Link to={-1 as To}>
+              <Link to={isSideChatOpen ? '/agents' : (-1 as To)}>
                 <LucideArrowLeft />
                 <span className="sr-only">{t('common.back')}</span>
               </Link>
@@ -1787,50 +1795,50 @@ function AgentForm({ mode }: AgentFormProps) {
                       value="tools"
                     >
                       <div className="h-full min-h-0 space-y-6 overflow-y-auto">
-                      {hasToolsRequiringConfigurations && (
-                        <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-950/10 p-3">
-                          <div className="mb-2 flex items-center gap-2">
-                            <AlertTriangleIcon className="h-4 w-4 text-amber-500" />
-                            <h3 className="text-sm font-medium text-amber-400">
-                              Configuration Required
-                            </h3>
-                          </div>
-                          <p className="mb-2 text-xs text-amber-300">
-                            Please configure the following tools before using
-                            this agent:
-                          </p>
-                          <div className="grid gap-1">
-                            {toolsRequiringConfig.map((tool) => (
-                              <div
-                                className="flex items-center justify-between py-1"
-                                key={tool.tool_router_key}
-                              >
-                                <span className="text-sm">{tool.name}</span>
-                                <Button
-                                  className={cn(
-                                    buttonVariants({
-                                      variant: 'outline',
-                                      size: 'xs',
-                                    }),
-                                  )}
-                                  onClick={() => {
-                                    setSelectedToolConfig(tool.tool_router_key);
-                                    window.location.hash = '#configuration';
-                                  }}
-                                  type="button"
+                        {hasToolsRequiringConfigurations && (
+                          <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-950/10 p-3">
+                            <div className="mb-2 flex items-center gap-2">
+                              <AlertTriangleIcon className="h-4 w-4 text-amber-500" />
+                              <h3 className="text-sm font-medium text-amber-400">
+                                Configuration Required
+                              </h3>
+                            </div>
+                            <p className="mb-2 text-xs text-amber-300">
+                              Please configure the following tools before using
+                              this agent:
+                            </p>
+                            <div className="grid gap-1">
+                              {toolsRequiringConfig.map((tool) => (
+                                <div
+                                  className="flex items-center justify-between py-1"
+                                  key={tool.tool_router_key}
                                 >
-                                  <BoltIcon className="mr-1 size-3" />
-                                  Configure
-                                </Button>
-                              </div>
-                            ))}
+                                  <span className="text-sm">{tool.name}</span>
+                                  <Button
+                                    className={cn(
+                                      buttonVariants({
+                                        variant: 'outline',
+                                        size: 'xs',
+                                      }),
+                                    )}
+                                    onClick={() => {
+                                      setSelectedToolConfig(
+                                        tool.tool_router_key,
+                                      );
+                                      window.location.hash = '#configuration';
+                                    }}
+                                    type="button"
+                                  >
+                                    <BoltIcon className="mr-1 size-3" />
+                                    Configure
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                         <div className="flex items-center justify-between gap-2">
-                          
                           <div className="space-y-1">
-                            
                             <h2 className="text-base font-medium">Tools</h2>
                             <p className="text-official-gray-400 text-sm">
                               Select which tools &amp; skills your agent can use
