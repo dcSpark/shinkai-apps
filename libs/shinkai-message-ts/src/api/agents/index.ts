@@ -131,3 +131,19 @@ export const importAgent = async (
   );
   return response.data as ImportAgentResponse;
 };
+
+export const importAgentFromUrl = async (
+  nodeAddress: string,
+  bearerToken: string,
+  url: string,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/import_agent'),
+    { url },
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as ImportAgentResponse;
+};
