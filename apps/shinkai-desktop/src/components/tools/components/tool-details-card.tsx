@@ -163,7 +163,7 @@ export default function ToolDetailsCard({
     },
   });
 
-  const { mutateAsync: updateTool, isPending } = useUpdateTool({
+  const { mutateAsync: updateTool, isPending: isUpdatingTool } = useUpdateTool({
     onSuccess: (_, variables) => {
       if (
         'config' in variables.toolPayload &&
@@ -171,6 +171,7 @@ export default function ToolDetailsCard({
         variables.toolPayload.config?.length > 0
       ) {
         toast.success('Tool configuration updated successfully');
+        setIsConfirmDialogOpen(false);
       }
       if ('oauth' in variables.toolPayload && variables.toolPayload.oauth) {
         toast.success('OAuth settings updated successfully');
@@ -280,7 +281,34 @@ export default function ToolDetailsCard({
       },
     },
   );
-  const { mutateAsync: setCommonToolsetConfig } = useSetCommonToolsetConfig();
+  const {
+    mutateAsync: setCommonToolsetConfig,
+    isPending: isSettingCommonToolsetConfig,
+  } = useSetCommonToolsetConfig({
+    onSuccess: () => {
+      toast.success(
+        t('tools.configuration.updateAllToolsInSetSuccess', {
+          toolSetName: formatText(
+            'tool_set' in tool ? tool.tool_set?.split('_')[0] ?? '' : '',
+          ),
+        }),
+      );
+      setIsConfirmDialogOpen(false);
+    },
+    onError: (error) => {
+      toast.error(
+        t('tools.configuration.updateAllToolsInSetError', {
+          toolSetName: formatText(
+            'tool_set' in tool ? tool.tool_set?.split('_')[0] ?? '' : '',
+          ),
+        }),
+        {
+          description: error.response?.data?.message ?? error.message,
+        },
+      );
+    },
+  });
+
   const { data: toolsFromToolSet } = useGetToolsFromToolset({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
@@ -615,11 +643,13 @@ export default function ToolDetailsCard({
       <ConfirmToolsetUpdateDialog
         affectedToolNames={affectedNamesForDialog}
         isOpen={isConfirmDialogOpen}
+        isSettingCommonToolsetConfig={isSettingCommonToolsetConfig}
+        isUpdatingTool={isUpdatingTool}
         onConfirmUpdateTool={performUpdateThisTool}
         onConfirmUpdateToolset={performUpdateToolsetForAll}
         onOpenChange={setIsConfirmDialogOpen}
         toolName={tool.name}
-        toolSetName={tool.tool_set}
+        toolSetName={'tool_set' in tool ? tool.tool_set : ''}
       />
 
       <Tabs
@@ -967,9 +997,9 @@ export default function ToolDetailsCard({
                 <div className="flex w-full justify-end">
                   <Button
                     className="min-w-[100px]"
-                    disabled={isPending}
+                    disabled={isUpdatingTool}
                     form="configurations-form"
-                    isLoading={isPending}
+                    isLoading={isUpdatingTool}
                     rounded="lg"
                     size="sm"
                     variant="outline"
@@ -1057,9 +1087,9 @@ export default function ToolDetailsCard({
               <div className="flex w-full justify-end">
                 <Button
                   className="min-w-[100px]"
-                  disabled={isPending}
+                  disabled={isUpdatingTool}
                   form="oauth-form"
-                  isLoading={isPending}
+                  isLoading={isUpdatingTool}
                   rounded="lg"
                   size="sm"
                   variant="outline"

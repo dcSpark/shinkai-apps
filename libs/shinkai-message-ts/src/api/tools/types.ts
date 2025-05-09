@@ -98,6 +98,7 @@ export type PythonShinkaiTool = {
     json: string;
   };
   result: JSToolResult;
+  tool_set: string;
 };
 export type RustShinkaiTool = {
   description: string;

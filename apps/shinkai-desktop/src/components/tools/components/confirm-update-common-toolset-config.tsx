@@ -18,6 +18,8 @@ interface ConfirmToolsetUpdateDialogProps {
   toolName?: string;
   affectedToolNames?: string[];
   toolSetName?: string;
+  isSettingCommonToolsetConfig: boolean;
+  isUpdatingTool: boolean;
 }
 
 export function ConfirmToolsetUpdateDialog({
@@ -28,6 +30,8 @@ export function ConfirmToolsetUpdateDialog({
   toolName,
   affectedToolNames,
   toolSetName,
+  isSettingCommonToolsetConfig,
+  isUpdatingTool,
 }: ConfirmToolsetUpdateDialogProps) {
   const { t } = useTranslation();
 
@@ -63,10 +67,9 @@ export function ConfirmToolsetUpdateDialog({
         <DialogFooter className="flex flex-col gap-2 pt-4 sm:justify-center">
           <Button
             className="flex-1"
-            onClick={() => {
-              onConfirmUpdateToolset();
-              onOpenChange(false);
-            }}
+            disabled={isSettingCommonToolsetConfig}
+            isLoading={isSettingCommonToolsetConfig}
+            onClick={onConfirmUpdateToolset}
             size="md"
           >
             {t('tools.configuration.updateAllToolsInSet', {
@@ -75,10 +78,9 @@ export function ConfirmToolsetUpdateDialog({
           </Button>
           <Button
             className="flex-1"
-            onClick={() => {
-              onConfirmUpdateTool();
-              onOpenChange(false);
-            }}
+            disabled={isUpdatingTool}
+            isLoading={isUpdatingTool}
+            onClick={onConfirmUpdateTool}
             size="md"
             variant="outline"
           >

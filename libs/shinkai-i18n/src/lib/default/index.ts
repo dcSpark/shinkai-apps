@@ -672,7 +672,6 @@ export default {
       'Choosing to update all tools in the set will also affect:',
     commonToolsetUpdateDescription:
       'The configuration key you are changing for {{toolName}} is also used by other tools in this set.',
-    confirmConfigurationUpdate: 'Confirm Configuration Update',
     configuration: {
       updateConfig: 'Update {{toolName}} Configuration',
       updateConfigDescription:
@@ -683,6 +682,9 @@ export default {
         'The following tools will be affected by this change:',
       updateOnlyThisTool: 'Update only this tool',
       updateAllToolsInSet: 'Update all {{toolSetName}} tools',
+      updateAllToolsInSetSuccess:
+        'All {{toolSetName}} tools have been updated successfully',
+      updateAllToolsInSetError: 'Failed to update all {{toolSetName}} tools. ',
     },
     installFromStore: 'Install from Store',
     lookingForMoreTools: 'Looking for more tools?',

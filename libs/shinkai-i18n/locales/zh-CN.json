@@ -601,13 +601,14 @@
     "configuration": {
       "followingToolsAffected": "以下工具将受到此更改的影响：",
       "updateAllToolsInSet": "更新所有 {{toolSetName}} 工具",
+      "updateAllToolsInSetError": "更新所有 {{toolSetName}} 工具失败。",
+      "updateAllToolsInSetSuccess": "所有 {{toolSetName}} 工具已成功更新",
       "updateConfig": "更新 {{toolName}} 配置",
       "updateConfigDescription": "您正在更改的 {{toolName}} 配置键也被此集合中的其他工具使用。",
       "updateConfigDescription2": "此配置由多个 {{toolSetName}} 工具共享。您希望如何应用此更改？",
       "updateOnlyThisTool": "仅更新此工具"
     },
     "configurationRequired": "工具配置必需",
-    "confirmConfigurationUpdate": "确认配置更新",
     "create": "创建工具",
     "description": "管理、定制和扩展您的人工智能工具。",
     "disconnect": {
