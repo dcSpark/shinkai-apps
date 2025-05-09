@@ -7,7 +7,6 @@ import {
   ShinkaiTool,
   ShinkaiToolHeader,
   ShinkaiToolType,
-  ToolConfigBase,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   buildInboxIdFromJobId,
@@ -127,6 +126,7 @@ import { treeOptions } from '../../lib/constants';
 import { useChatConversationWithOptimisticUpdates } from '../../pages/chat/chat-conversation';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
+import { getToolRequiresConfigurations } from '../../utils/tools-configurations';
 import { AIModelSelector } from '../chat/chat-action-bar/ai-update-selection-action-bar';
 import { MessageList } from '../chat/components/message-list';
 import { ChatProvider } from '../chat/context/chat-context';
@@ -501,10 +501,9 @@ function AgentForm({ mode }: AgentFormProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const defaultTabValue = searchParams.get('defaultTab') || 'persona';
-  const [currentTab, setCurrentTab] = useState<
-    'persona' | 'knowledge' | 'tools' | 'schedule'
-  >('persona');
+  type TabValue = 'persona' | 'knowledge' | 'tools' | 'schedule';
+  const defaultTabValue = searchParams.get('defaultTab') as TabValue || 'persona';
+  const [currentTab, setCurrentTab] = useState<TabValue>(defaultTabValue);
 
   const [isSideChatOpen, setIsSideChatOpen] = useState(false);
   const [selectedToolConfig, setSelectedToolConfig] = useState<null | string>(
@@ -1094,18 +1093,6 @@ function AgentForm({ mode }: AgentFormProps) {
       }
     }
     return null;
-  };
-
-  const getToolRequiresConfigurations = (configs: ToolConfigBase[]) => {
-    return !configs
-      .map((conf) => ({
-        key_name: conf.BasicConfig.key_name,
-        key_value: conf.BasicConfig.key_value ?? '',
-        required: conf.BasicConfig.required,
-      }))
-      .every(
-        (conf) => !conf.required || (conf.required && conf.key_value !== ''),
-      );
   };
 
   const toolsRequiringConfig = useMemo(() => {
@@ -1799,12 +1786,13 @@ function AgentForm({ mode }: AgentFormProps) {
                       className="min-h-0 flex-1 overflow-y-auto"
                       value="tools"
                     >
+                      <div className="h-full min-h-0 space-y-6 overflow-y-auto">
                       {hasToolsRequiringConfigurations && (
                         <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-950/10 p-3">
                           <div className="mb-2 flex items-center gap-2">
                             <AlertTriangleIcon className="h-4 w-4 text-amber-500" />
                             <h3 className="text-sm font-medium text-amber-400">
-                              Some Agent tools require configurations
+                              Configuration Required
                             </h3>
                           </div>
                           <p className="mb-2 text-xs text-amber-300">
@@ -1839,10 +1827,10 @@ function AgentForm({ mode }: AgentFormProps) {
                           </div>
                         </div>
                       )}
-
-                      <div className="h-full min-h-0 space-y-6 overflow-y-auto">
                         <div className="flex items-center justify-between gap-2">
+                          
                           <div className="space-y-1">
+                            
                             <h2 className="text-base font-medium">Tools</h2>
                             <p className="text-official-gray-400 text-sm">
                               Select which tools &amp; skills your agent can use
