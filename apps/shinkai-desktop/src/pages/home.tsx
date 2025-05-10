@@ -996,7 +996,7 @@ const EmptyMessage = () => {
           </div>
         )}
         {(agents ?? []).length > 0 &&
-          (recentlyUsedAgents ?? []).length === 0 && (
+          (recentlyUsedAgents ?? []).length < 4 && (
             <div className="flex flex-col gap-5">
               <SectionHeading
                 action={{
