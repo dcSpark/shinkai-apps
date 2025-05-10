@@ -42,10 +42,11 @@ import {
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import axios from 'axios';
 import { invoke } from '@tauri-apps/api/core';
 import { motion } from 'framer-motion';
-import { AlertTriangleIcon, ArrowRight, ArrowUpRight, BoltIcon, EllipsisIcon, Plus, X } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AlertTriangleIcon, ArrowRight, ArrowUpRight, BoltIcon, EllipsisIcon, Loader2, Plus, X } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -189,16 +190,65 @@ const EmptyMessage = () => {
     onDrop,
   });
 
+  const [isPolling, setIsPolling] = useState(true);
+  const [defaultAgents, setDefaultAgents] = useState<{ id: string; name: string }[]>([]);
+  const [loadedDefaultAgents, setLoadedDefaultAgents] = useState<string[]>([]);
+  
+  useEffect(() => {
+    const fetchDefaultAgents = async () => {
+      try {
+        const response = await axios.get('https://store-api.shinkai.com/store/defaults');
+        const defaultAgentsList = response.data
+          .filter((item: any) => item.type === 'Agent' && item.isDefault === true)
+          .map((agent: any) => {
+            const routerKeyParts = agent.routerKey.split(':::');
+            const agentId = routerKeyParts[routerKeyParts.length - 1];
+            return { id: agentId, name: agent.name };
+          });
+        setDefaultAgents(defaultAgentsList);
+      } catch (error) {
+        console.error('Error fetching default agents:', error);
+      }
+    };
+    
+    fetchDefaultAgents();
+  }, []);
+  
   const { data: recentlyUsedAgents } = useGetAgents({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
     categoryFilter: 'recently_used',
+  }, {
+    refetchInterval: isPolling ? 2000 : false,
   });
 
   const { data: agents } = useGetAgents({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
+  }, {
+    refetchInterval: isPolling ? 2000 : false,
   });
+  
+  useEffect(() => {
+    if (!defaultAgents.length || !agents?.length) return;
+    
+    const loadedAgentIds = agents.map(agent => agent.agent_id);
+    const newLoadedDefaultAgents = defaultAgents
+      .filter(agent => loadedAgentIds.includes(agent.id))
+      .map(agent => agent.id);
+    
+    setLoadedDefaultAgents(newLoadedDefaultAgents);
+    
+    if (newLoadedDefaultAgents.length === defaultAgents.length) {
+      setIsPolling(false);
+    }
+    
+    const timeoutId = setTimeout(() => {
+      setIsPolling(false);
+    }, 60000);
+    
+    return () => clearTimeout(timeoutId);
+  }, [agents, defaultAgents]);
 
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const { data: toolsList, isSuccess: isToolsListSuccess } = useGetTools(
@@ -988,6 +1038,21 @@ const EmptyMessage = () => {
                     title={agent.name}
                   />
                 ))}
+              </div>
+            </div>
+          )}
+        {(agents ?? []).length === 0 &&
+          (recentlyUsedAgents ?? []).length === 0 &&
+          isPolling && (
+            <div className="flex flex-col gap-5">
+              <SectionHeading
+                title="Recommended Agents"
+              />
+              <div className="flex flex-col items-center justify-center gap-4 py-8">
+                <div className="flex items-center gap-2 text-lg text-white">
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                  <span>Installing default agents</span>
+                </div>
               </div>
             </div>
           )}
