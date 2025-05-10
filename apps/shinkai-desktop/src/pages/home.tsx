@@ -42,8 +42,8 @@ import {
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import axios from 'axios';
 import { invoke } from '@tauri-apps/api/core';
+import axios from 'axios';
 import { motion } from 'framer-motion';
 import { AlertTriangleIcon, ArrowRight, ArrowUpRight, BoltIcon, EllipsisIcon, Loader2, Plus, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
