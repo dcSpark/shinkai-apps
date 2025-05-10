@@ -549,3 +549,9 @@ export type GetToolProtocolsResponse = {
     documentationURL: string;
   }[];
 };
+
+export type GetToolPlaygroundMetadataRequest = {
+  tool_router_key: string;
+};
+
+export type GetToolPlaygroundMetadataResponse = ToolMetadata | null;
