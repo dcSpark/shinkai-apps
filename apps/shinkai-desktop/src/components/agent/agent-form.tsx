@@ -2107,36 +2107,19 @@ function AgentForm({ mode }: AgentFormProps) {
                                             className="shrink-0"
                                             id={tool.tool_router_key}
                                             onCheckedChange={() => {
-                                              const configs =
-                                                tool?.config ?? [];
-                                              const toolConfigurationNeeded =
-                                                getToolRequiresConfigurations(
-                                                  configs,
-                                                );
-                                              if (toolConfigurationNeeded) {
-                                                field.onChange(
-                                                  field.value.includes(
-                                                    tool.tool_router_key,
-                                                  )
-                                                    ? field.value.filter(
-                                                        (value) =>
-                                                          value !==
-                                                          tool.tool_router_key,
-                                                      )
-                                                    : [
-                                                        ...field.value,
+                                              field.onChange(
+                                                field.value.includes(
+                                                  tool.tool_router_key,
+                                                )
+                                                  ? field.value.filter(
+                                                      (value) =>
+                                                        value !==
                                                         tool.tool_router_key,
-                                                      ],
-                                                );
-
-                                                return;
-                                              }
-                                              toast.error(
-                                                'Tool configuration is required',
-                                                {
-                                                  description:
-                                                    'Please fill in the config required in tool details',
-                                                },
+                                                    )
+                                                  : [
+                                                      ...field.value,
+                                                      tool.tool_router_key,
+                                                    ],
                                               );
                                             }}
                                           />
@@ -2163,30 +2146,6 @@ function AgentForm({ mode }: AgentFormProps) {
                                 }
                                 id="all"
                                 onCheckedChange={(checked) => {
-                                  const isAllConfigFilled = toolsList
-                                    ?.map((tool) => tool.config)
-                                    .filter((item) => !!item)
-                                    .flat()
-                                    ?.map((conf) => ({
-                                      key_name: conf.BasicConfig.key_name,
-                                      key_value:
-                                        conf.BasicConfig.key_value ?? '',
-                                      required: conf.BasicConfig.required,
-                                    }))
-                                    .every(
-                                      (conf) =>
-                                        !conf.required ||
-                                        (conf.required &&
-                                          conf.key_value !== ''),
-                                    );
-                                  if (!isAllConfigFilled && checked) {
-                                    // Check config only when enabling all
-                                    toast.error('Tool configuration', {
-                                      description:
-                                        'Please fill in the config required in tool details',
-                                    });
-                                    return;
-                                  }
                                   if (checked && toolsList) {
                                     form.setValue(
                                       'tools',
@@ -2260,52 +2219,19 @@ function AgentForm({ mode }: AgentFormProps) {
                                               className="shrink-0"
                                               id={tool.tool_router_key}
                                               onCheckedChange={() => {
-                                                const configs =
-                                                  tool?.config ?? [];
-                                                if (
-                                                  configs
-                                                    .map((conf) => ({
-                                                      key_name:
-                                                        conf.BasicConfig
-                                                          .key_name,
-                                                      key_value:
-                                                        conf.BasicConfig
-                                                          .key_value ?? '',
-                                                      required:
-                                                        conf.BasicConfig
-                                                          .required,
-                                                    }))
-                                                    .every(
-                                                      (conf) =>
-                                                        !conf.required ||
-                                                        (conf.required &&
-                                                          conf.key_value !==
-                                                            ''),
-                                                    )
-                                                ) {
-                                                  field.onChange(
-                                                    field.value.includes(
-                                                      tool.tool_router_key,
-                                                    )
-                                                      ? field.value.filter(
-                                                          (value) =>
-                                                            value !==
-                                                            tool.tool_router_key,
-                                                        )
-                                                      : [
-                                                          ...field.value,
+                                                field.onChange(
+                                                  field.value.includes(
+                                                    tool.tool_router_key,
+                                                  )
+                                                    ? field.value.filter(
+                                                        (value) =>
+                                                          value !==
                                                           tool.tool_router_key,
-                                                        ],
-                                                  );
-
-                                                  return;
-                                                }
-                                                toast.error(
-                                                  'Tool configuration is required',
-                                                  {
-                                                    description:
-                                                      'Please fill in the config required in tool details',
-                                                  },
+                                                      )
+                                                    : [
+                                                        ...field.value,
+                                                        tool.tool_router_key,
+                                                      ],
                                                 );
                                               }}
                                             />
