@@ -26,6 +26,8 @@ import {
   GetPlaygroundToolsResponse,
   GetShinkaiFileProtocolRequest,
   GetShinkaiFileProtocolResponse,
+  GetToolPlaygroundMetadataRequest,
+  GetToolPlaygroundMetadataResponse,
   GetToolProtocolsResponse,
   GetToolResponse,
   GetToolsFromToolsetResponse,
@@ -308,6 +310,22 @@ export const toolMetadataImplementation = async (
     },
   );
   return response.data as CreateToolMetadataResponse;
+};
+
+export const getToolPlaygroundMetadata = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetToolPlaygroundMetadataRequest,
+) => {
+  const url = urlJoin(nodeAddress, '/v2/get_shinkai_tool_metadata');
+  const params = new URLSearchParams();
+  params.set('tool_router_key', payload.tool_router_key);
+  const response = await httpClient.get(url, {
+    headers: { Authorization: `Bearer ${bearerToken}` },
+    params,
+    responseType: 'json',
+  });
+  return response.data as GetToolPlaygroundMetadataResponse;
 };
 
 export const executeToolCode = async (

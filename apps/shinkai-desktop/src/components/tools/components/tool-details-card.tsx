@@ -14,6 +14,7 @@ import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations
 import { useSetCommonToolsetConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/setCommonToolsetConfig/useSetCommonToolsetConfig';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
+import { useGetToolPlaygroundMetadata } from '@shinkai_network/shinkai-node-state/v2/queries/getToolPlaygroundMetadata/useGetToolPlaygroundMetadata';
 import { useGetToolsFromToolset } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsFromToolset/useGetToolsFromToolset';
 import { useGetToolStoreDetails } from '@shinkai_network/shinkai-node-state/v2/queries/getToolStoreDetails/useGetToolStoreDetails';
 import {
@@ -125,6 +126,11 @@ export default function ToolDetailsCard({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
     toolRouterKey: toolKey ?? '',
+  });
+  const { data: toolPlaygroundMetadata } = useGetToolPlaygroundMetadata({
+    toolRouterKey: toolKey ?? '',
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
   });
   const defaultAgentId = useSettings((state) => state.defaultAgentId);
   const [formData, setFormData] = useState<Record<string, any> | null>(null);
@@ -943,7 +949,7 @@ export default function ToolDetailsCard({
                   <CopyToClipboardIcon
                     className="text-gray-80 h-4 w-auto bg-transparent"
                     string={JSON.stringify(
-                      removeEmbeddingFields(tool),
+                      toolPlaygroundMetadata ?? removeEmbeddingFields(tool),
                       null,
                       2,
                     )}
@@ -959,7 +965,11 @@ export default function ToolDetailsCard({
                     borderRadius: '0.5rem',
                     overflowY: 'hidden',
                   }}
-                  value={JSON.stringify(removeEmbeddingFields(tool), null, 2)}
+                  value={JSON.stringify(
+                    toolPlaygroundMetadata ?? removeEmbeddingFields(tool),
+                    null,
+                    2,
+                  )}
                 />
               </div>
             </div>
