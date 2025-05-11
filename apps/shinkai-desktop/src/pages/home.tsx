@@ -93,24 +93,28 @@ const PROMPT_SUGGESTIONS = [
     agentId: 'youtube_expert',
     text: 'Talk with a YouTube video',
     prompt: 'Summarize this video: https://www.youtube.com/watch?v=tRXy-b6_lBc',
+    use_tools: true,
   },
   {
     agentId: 'negotiation_expert',
     text: 'Negotiate My Salary Like a Pro',
     prompt:
       'Help me negotiate my salary. Explain the tactics in detail.',
+    use_tools: false,
   },
   {
     agentId: 'jupiter_stablecoin_arbitrager',
     text: 'Find Arbitrage Opportunities in Solana',
     prompt:
       'Find arbitrage opportunities in Jupiter for my largest stablecoin holdings.',
+    use_tools: true,
   },
   {
     agentId: 'twitter_expert___read_only',
     text: 'Find the latest news on X / Twitter',
     prompt:
       'Find the latest news on X / Twitter.',
+    use_tools: true,
   },
 ];
 
@@ -941,6 +945,7 @@ const EmptyMessage = () => {
                 if (suggestion.agentId) {
                   chatForm.setValue('agent', suggestion.agentId);
                 }
+                chatConfigForm.setValue('useTools', suggestion.use_tools);
               }}
               variant="outline"
             >
