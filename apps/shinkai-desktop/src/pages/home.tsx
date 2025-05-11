@@ -90,28 +90,27 @@ export const showSpotlightWindow = async () => {
 
 const PROMPT_SUGGESTIONS = [
   {
-    agentId: 'product_expert',
-    text: 'Create a user journey map for a mobile banking app',
-    prompt:
-      'Create a detailed user journey map for a mobile banking app, including key touchpoints, user actions, emotions, and pain points. Consider the onboarding process, account management, transactions, and customer support interactions.',
+    agentId: 'youtube_expert',
+    text: 'Talk with a YouTube video',
+    prompt: 'Summarize this video: https://www.youtube.com/watch?v=tRXy-b6_lBc',
   },
   {
-    agentId: 'product_expert',
-    text: 'Design a checkout flow for an e-commerce platform',
+    agentId: 'negotiation_expert',
+    text: 'Negotiate My Salary Like a Pro',
     prompt:
-      'Design a checkout flow for an e-commerce platform, including the checkout process, payment methods, and user experience. Consider the user journey, payment security, and order confirmation.',
+      'Help me negotiate my salary. Explain the tactics in detail.',
   },
   {
-    agentId: 'seo_strategist',
-    text: 'Analyze website SEO and optimizations',
+    agentId: 'jupiter_stablecoin_arbitrager',
+    text: 'Find Arbitrage Opportunities in Solana',
     prompt:
-      'Analyze website SEO and provide optimization recommendations, including keyword research, content strategy, and technical SEO improvements.',
+      'Find arbitrage opportunities in Jupiter for my largest stablecoin holdings.',
   },
   {
-    agentId: 'product_expert',
-    text: 'Conduct a competitive analysis of food delivery apps',
+    agentId: 'twitter_expert_read_only',
+    text: 'Find the latest news on X / Twitter',
     prompt:
-      'Conduct a competitive analysis of food delivery apps, including key features, user experience, and pricing. Identify opportunities for improvement and recommend strategies for differentiation.',
+      'Find the latest news on X / Twitter.',
   },
 ];
 
@@ -935,7 +934,7 @@ const EmptyMessage = () => {
         <div className="mx-auto grid w-full max-w-6xl grid-cols-4 justify-center gap-3">
           {PROMPT_SUGGESTIONS.map((suggestion) => (
             <Badge
-              className="hover:bg-official-gray-900 hover:text-official-gray-100 text-official-gray-200 cursor-pointer justify-between text-balance rounded-xl px-2 py-1.5 text-left text-sm font-normal normal-case transition-colors"
+              className="hover:bg-official-gray-900 hover:text-official-gray-100 text-official-gray-200 cursor-pointer justify-between text-balance rounded-xl px-2 py-1.5 text-left text-sm font-normal normal-case transition-colors pl-4"
               key={suggestion.text}
               onClick={() => {
                 chatForm.setValue('message', suggestion.prompt);
