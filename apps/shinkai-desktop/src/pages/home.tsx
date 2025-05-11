@@ -107,7 +107,7 @@ const PROMPT_SUGGESTIONS = [
       'Find arbitrage opportunities in Jupiter for my largest stablecoin holdings.',
   },
   {
-    agentId: 'twitter_expert_read_only',
+    agentId: 'twitter_expert___read_only',
     text: 'Find the latest news on X / Twitter',
     prompt:
       'Find the latest news on X / Twitter.',
