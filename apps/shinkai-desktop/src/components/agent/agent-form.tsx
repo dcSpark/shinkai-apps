@@ -752,7 +752,7 @@ function AgentForm({ mode }: AgentFormProps) {
 
       const agentData = {
         agent_id: agent.agent_id,
-        full_identity_name: agent.full_identity_name,
+        full_identity_name: `${auth.shinkai_identity}/${auth?.profile ?? 'main'}/agent/${agent.agent_id}`,
         llm_provider_id: values.llmProviderId,
         ui_description: values.uiDescription,
         storage_path: values.storage_path,
@@ -955,7 +955,7 @@ function AgentForm({ mode }: AgentFormProps) {
           token: auth.api_v2_key,
           agent: merge(agentData, {
             agent_id: agent.agent_id,
-            full_identity_name: agent.full_identity_name,
+            full_identity_name: `${auth.shinkai_identity}/${auth?.profile ?? 'main'}/agent/${agent.agent_id}`,
           }),
         });
 
