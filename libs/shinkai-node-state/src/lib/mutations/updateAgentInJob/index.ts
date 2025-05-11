@@ -14,13 +14,15 @@ export const updateAgentInJob = async ({
   profile_encryption_sk,
   profile_identity_sk,
 }: UpdateAgentInJobInput) => {
+  const fullNodeName = `${shinkaiIdentity}/${profile}`;
+  
   const response = await updateAgentInJobApi(
     nodeAddress,
     jobId,
     newAgentId,
-    shinkaiIdentity,
+    fullNodeName,
     profile,
-    shinkaiIdentity,
+    fullNodeName,
     profile,
     {
       my_device_encryption_sk: my_device_encryption_sk,
