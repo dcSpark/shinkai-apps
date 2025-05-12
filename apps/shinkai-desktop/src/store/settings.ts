@@ -18,7 +18,7 @@ export enum TutorialBanner {
   AIS_AND_AGENTS = 'ais-and-agents',
 }
 
-export type ChatFontSize = 'xs' | 'sm' | 'base' | 'lg';
+export type ChatFontSize = 'sm' | 'base' | 'lg' | 'xl';
 
 type SettingsStore = {
   onboarding: OnboardingState;
@@ -215,20 +215,20 @@ export const useSettings = create<SettingsStore>()(
           set({ isChatSidebarCollapsed });
         },
 
-        chatFontSize: 'sm',
+        chatFontSize: 'base',
         getChatFontSizeInPts: () => {
           const { chatFontSize } = get();
           switch (chatFontSize) {
-            case 'xs':
-              return 12;
             case 'sm':
               return 14;
             case 'base':
               return 16;
             case 'lg':
               return 18;
+            case 'xl':
+              return 20;
             default:
-              return 14;
+              return 16;
           }
         },
         setChatFontSize: (size) => {
