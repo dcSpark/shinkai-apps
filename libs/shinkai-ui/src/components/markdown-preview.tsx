@@ -93,7 +93,7 @@ export const SyntaxHighlighterBase = makePrismAsyncLightSyntaxHighlighter({
     width: '100%',
     background: '#0d1117',
     padding: '1.5rem 1rem',
-    fontSize: '0.75em',
+    fontSize: '0.875em',
   },
 });
 
@@ -101,7 +101,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h1: ({ node, className, ...props }) => (
     <h1
       className={cn(
-        'text-em-2xl mb-[1em] mt-[1em] scroll-m-20 font-bold last:mb-0',
+        'mb-[0.7em] mt-[1em] scroll-m-20 text-[1.375rem] font-bold last:mb-0',
         className,
       )}
       {...props}
@@ -110,7 +110,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h2: ({ node, className, ...props }) => (
     <h2
       className={cn(
-        'text-em-xl mb-[1.25em] mt-[1em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
+        'text-em-xl mb-[0.4em] mt-[0.8em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -193,7 +193,13 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
     />
   ),
   hr: ({ node, className, ...props }) => (
-    <hr className={cn('my-[2.5em] border-b', className)} {...props} />
+    <hr
+      className={cn(
+        'border-official-gray-600/25 my-[2.25em] border-b',
+        className,
+      )}
+      {...props}
+    />
   ),
   table: ({ node, className, ...props }) => (
     <div className="my-[1.5em] size-full overflow-x-auto">
@@ -250,7 +256,8 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
     return (
       <code
         className={cn(
-          !isCodeBlock && 'rounded border bg-gray-300 font-semibold',
+          !isCodeBlock &&
+            'bg-official-gray-1000 text-em-sm rounded border p-[0.25em] font-semibold',
           className,
         )}
         {...props}
