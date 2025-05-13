@@ -1,13 +1,14 @@
 import { UseMutationOptions, useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { FunctionKeyV2 } from '../../../v2/constants';
+import { FunctionKeyV2 } from '../../constants';
+import { APIError } from '../../types';
 import { updateAgentInJob } from '.';
 import { UpdateAgentInJobInput, UpdateAgentInJobOutput } from './types';
 
 type Options = UseMutationOptions<
   UpdateAgentInJobOutput,
-  Error,
+  APIError,
   UpdateAgentInJobInput
 >;
 

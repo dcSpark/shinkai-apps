@@ -44,6 +44,8 @@ import {
   UpdateInboxNameRequest,
   UpdateInboxNameResponse,
   UpdateJobScopeRequest,
+  UpdateLLMProviderInJobRequest,
+  UpdateLLMProviderInJobResponse,
   UpdateLLMProviderRequest,
   UpdateLLMProviderResponse,
 } from './types';
@@ -112,6 +114,21 @@ export const getLastMessagesWithBranches = async (
   return response.data as GetLastMessagesWithBranchesResponse;
 };
 
+export const updateLLMProviderInJob = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: UpdateLLMProviderInJobRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/change_job_llm_provider'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as UpdateLLMProviderInJobResponse;
+};
 export const getFileNames = async (
   nodeAddress: string,
   bearerToken: string,
