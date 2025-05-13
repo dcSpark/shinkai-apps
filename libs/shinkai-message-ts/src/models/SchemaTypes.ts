@@ -37,13 +37,7 @@ export enum MessageSchemaType {
   ConvertFilesAndSaveToFolder = 'ConvertFilesAndSaveToFolder',
   VecFsSearchItems = 'VecFsSearchItems',
   VecFsRetrieveVRPack = 'VecFsRetrieveVRPack',
-  // subscriptions
-  AvailableSharedItems = 'AvailableSharedItems',
-  CreateShareableFolder = 'CreateShareableFolder',
-  UnshareFolder = 'UnshareFolder',
-  SubscribeToSharedFolder = 'SubscribeToSharedFolder',
-  UnsubscribeToSharedFolder = 'UnsubscribeToSharedFolder',
-  MySubscriptions = 'MySubscriptions',
+
   // ollama
   APIScanOllamaModels = 'APIScanOllamaModels',
   APIAddOllamaModels = 'APIAddOllamaModels',

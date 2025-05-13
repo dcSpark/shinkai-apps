@@ -85,7 +85,7 @@ const AIsPage = () => {
                 size="sm"
                 variant="outline"
               >
-                <AIAgentIcon className="h-4 w-4" />
+                <AIAgentIcon className="h-4 w-4" name={''} />
                 <span>Agents</span>
               </Button>
               <Button

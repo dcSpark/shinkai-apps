@@ -68,8 +68,6 @@ export default {
       aiTasks: 'AI Tasks',
       vectorFs: 'AI Files Explorer',
       vectorSearch: 'AI Files Content Search',
-      subscriptions: 'Browse Subscriptions',
-      mySubscriptions: 'My Subscriptions',
       agents: 'Agents',
       ais: 'AIs',
       settings: 'Settings',
@@ -227,10 +225,6 @@ export default {
       text: 'You must register a Shinkai identity before you can share folders over the Shinkai Network.',
       action: 'Click Here to Learn How',
     },
-  },
-  subscriptions: {
-    label: 'My Subscriptions',
-    browse: 'Browse Public Subscriptions',
   },
   inboxes: {
     updateName: 'Update inbox name',
@@ -481,6 +475,7 @@ export default {
     upload: 'Upload',
     clearSearch: 'Clear Search',
     searchPlaceholder: 'Search...',
+    howWouldYouLikeToProceed: 'How would you like to proceed?',
     uploadFile: 'Upload a File',
     uploadAFileDescription:
       'Supports Images, PDF, CSV, TXT, XLSX and more formats',
@@ -667,6 +662,24 @@ export default {
     errorDuplicateTool: 'Failed to duplicate tool',
     successOpenToolInCodeEditor: 'Tool opened in code editor successfully',
     errorOpenToolInCodeEditor: 'Failed to open tool in code editor',
+    commonToolsetAffectedTools:
+      'Choosing to update all tools in the set will also affect:',
+    commonToolsetUpdateDescription:
+      'The configuration key you are changing for {{toolName}} is also used by other tools in this set.',
+    configuration: {
+      updateConfig: 'Update {{toolName}} Configuration',
+      updateConfigDescription:
+        'The configuration key you are changing for {{toolName}} is also used by other tools in this set.',
+      updateConfigDescription2:
+        'This configuration is shared by multiple {{toolSetName}} tools. How would you like to apply this change?',
+      followingToolsAffected:
+        'The following tools will be affected by this change:',
+      updateOnlyThisTool: 'Update only this tool',
+      updateAllToolsInSet: 'Update all {{toolSetName}} tools',
+      updateAllToolsInSetSuccess:
+        'All {{toolSetName}} tools have been updated successfully',
+      updateAllToolsInSetError: 'Failed to update all {{toolSetName}} tools. ',
+    },
     installFromStore: 'Install from Store',
     lookingForMoreTools: 'Looking for more tools?',
     visitStore:

@@ -1,5 +1,6 @@
 import { ExitIcon, GearIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { useImportAgentFromUrl } from '@shinkai_network/shinkai-node-state/v2/mutations/importAgentFromUrl/useImportAgentFromUrl';
 import { useImportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/importTool/useImportTool';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetInboxesWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getInboxes/useGetInboxesWithPagination';
@@ -25,13 +26,10 @@ import {
   AIAgentIcon,
   AISearchContentIcon,
   AisIcon,
-  // AiTasksIcon,
-  // BrowseSubscriptionIcon,
   CreateAIIcon,
   FilesIcon,
   InboxIcon,
   ScheduledTasksIcon,
-  // MySubscriptionsIcon,
   SheetIcon,
   ShinkaiCombinationMarkIcon,
   ToolsIcon,
@@ -234,7 +232,7 @@ export function MainNav() {
     {
       title: t('layout.menuItems.agents'),
       href: '/agents',
-      icon: <AIAgentIcon className="h-5 w-5" />,
+      icon: <AIAgentIcon className="h-5 w-5" name={''} />,
     },
 
     {
@@ -253,18 +251,6 @@ export function MainNav() {
         href: '/vector-search',
         icon: <AISearchContentIcon className="h-5 w-5" />,
       },
-
-    // {
-    //   title: t('layout.menuItems.subscriptions'),
-    //   href: '/public-subscriptions',
-    //   icon: <BrowseSubscriptionIcon className="h-5 w-5" />,
-    // },
-    // {
-    //   title: t('layout.menuItems.mySubscriptions'),
-    //   href: '/my-subscriptions',
-    //   icon: <MySubscriptionsIcon className="h-5 w-5" />,
-    // },
-
     {
       title: 'Scheduled Tasks',
       href: '/tasks',
@@ -313,16 +299,21 @@ export function MainNav() {
       initial={{ width: 0, opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="text-gray-80 flex w-full items-center justify-between gap-2 py-2 pl-4">
+      <div
+        className={cn(
+          'text-gray-80 flex w-full items-center justify-between gap-2 py-2 pl-4',
+          !sidebarExpanded && 'justify-center px-0',
+        )}
+      >
         {sidebarExpanded && (
-          <ShinkaiCombinationMarkIcon className="text-gray-80 h-auto w-[80px]" />
+          <ShinkaiCombinationMarkIcon className="text-official-gray-100 h-auto w-[90px]" />
         )}
 
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               className={cn(
-                'border-gray-350 text-gray-80 h-6 w-6 shrink-0 rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
+                'border-official-gray-780 text-gray-80 h-6 w-6 shrink-0 rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
               )}
               onClick={toggleSidebar}
               size="auto"
@@ -532,25 +523,53 @@ const MainLayout = () => {
     },
   });
 
-  useEffect(() => {
-    const unlisten = listen('store-deep-link', (event) => {
-      if (!auth) return;
+  const { mutateAsync: importAgentFromUrl } = useImportAgentFromUrl({
+    onSuccess: () => {
+      navigate('/agents');
+      toast.success('Agent imported successfully', {
+        description: 'Your agent is now ready to use in the app.',
+      });
+    },
+    onError: (error) => {
+      toast.error('Failed to import agent', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
 
+  useEffect(() => {
+    const unlisten = listen('store-deep-link', async (event) => {
+      if (!auth) return;
       const payload = event.payload as { tool_type: string; tool_url: string };
-      if (payload.tool_type === 'tool') {
+      if (payload.tool_type.toLowerCase() === 'tool') {
         importTool({
           nodeAddress: auth?.node_address ?? '',
           token: auth?.api_v2_key ?? '',
           url: payload.tool_url,
         });
+      } else if (payload.tool_type.toLowerCase() === 'agent') {
+        try {
+          importAgentFromUrl({
+            nodeAddress: auth?.node_address ?? '',
+            token: auth?.api_v2_key ?? '',
+            url: payload.tool_url,
+          });
+        } catch (error) {
+          console.error('Error processing agent deep link:', error);
+          toast.error('Failed to process agent from store', {
+            description:
+              error instanceof Error
+                ? error.message
+                : 'An unexpected error occurred.',
+          });
+        }
       }
     });
-
     getCurrentWindow().emit('shinkai-app-ready');
     return () => {
       unlisten.then((fn) => fn());
     };
-  }, [importTool, auth]);
+  }, [importTool, importAgentFromUrl, auth]);
 
   useEffect(() => {
     if (isSuccess && nodeInfo?.status !== 'ok') {

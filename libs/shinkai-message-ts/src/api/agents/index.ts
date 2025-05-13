@@ -77,11 +77,18 @@ export const getAgent = async (
   return response.data as GetAgentResponse;
 };
 
-export const getAgents = async (nodeAddress: string, bearerToken: string) => {
+export const getAgents = async (
+  nodeAddress: string,
+  bearerToken: string,
+  categoryFilter?: 'recently_used',
+) => {
   const response = await httpClient.get(
     urlJoin(nodeAddress, '/v2/get_all_agents'),
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
+      params: {
+        filter: categoryFilter,
+      },
       responseType: 'json',
     },
   );
@@ -117,6 +124,22 @@ export const importAgent = async (
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/import_agent_zip'),
     formData,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as ImportAgentResponse;
+};
+
+export const importAgentFromUrl = async (
+  nodeAddress: string,
+  bearerToken: string,
+  url: string,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/import_agent'),
+    { url },
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',

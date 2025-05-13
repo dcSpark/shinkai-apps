@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/anchor-has-content */
+/* eslint-disable jsx-a11y/heading-has-content */
 import { Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import React, {
@@ -91,7 +93,7 @@ export const SyntaxHighlighterBase = makePrismAsyncLightSyntaxHighlighter({
     width: '100%',
     background: '#0d1117',
     padding: '1.5rem 1rem',
-    fontSize: '0.75em',
+    fontSize: '0.875em',
   },
 });
 
@@ -99,7 +101,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h1: ({ node, className, ...props }) => (
     <h1
       className={cn(
-        'mb-3.5 scroll-m-20 text-[1.203125em] font-extrabold leading-[1.5] last:mb-0',
+        'mb-[0.7em] mt-[1em] scroll-m-20 text-[1.375rem] font-bold last:mb-0',
         className,
       )}
       {...props}
@@ -108,7 +110,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h2: ({ node, className, ...props }) => (
     <h2
       className={cn(
-        'mb-3.5 mt-5 scroll-m-20 text-[1.09375em] font-semibold leading-[1.25] first:mt-0 last:mb-0',
+        'text-em-xl mb-[0.4em] mt-[0.8em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -117,7 +119,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h3: ({ node, className, ...props }) => (
     <h3
       className={cn(
-        'text-em-lg mb-2 mt-4 scroll-m-20 font-semibold leading-[1.25] first:mt-0 last:mb-0',
+        'text-em-lg mb-[0.5em] mt-[1em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -126,7 +128,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h4: ({ node, className, ...props }) => (
     <h4
       className={cn(
-        'text-em-base mb-2 mt-4 scroll-m-20 font-semibold leading-[1.25] first:mt-0 last:mb-0',
+        'text-em-base mb-[0.5em] mt-[1em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -135,7 +137,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h5: ({ node, className, ...props }) => (
     <h5
       className={cn(
-        'text-em-base my-2 font-semibold first:mt-0 last:mb-0',
+        'text-em-base mb-[0.5em] mt-[1em] font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -144,7 +146,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h6: ({ node, className, ...props }) => (
     <h6
       className={cn(
-        'text-em-base my-2 font-semibold first:mt-0 last:mb-0',
+        'text-em-base mb-[0.5em] mt-[1em] font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -152,7 +154,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   ),
   p: ({ node, className, ...props }) => (
     <p
-      className={cn('text-em-base mb-5 mt-5 first:mt-0 last:mb-0', className)}
+      className={cn('text-em-base my-[0.5em] first:mt-0 last:mb-0', className)}
       {...props}
     />
   ),
@@ -174,24 +176,33 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   ),
   ul: ({ node, className, ...props }) => (
     <ul
-      className={cn('text-em-base my-4 ml-6 list-disc [&>li]:mt-2', className)}
+      className={cn(
+        'text-em-base my-[1em] ml-6 list-disc [&>li]:mt-2',
+        className,
+      )}
       {...props}
     />
   ),
   ol: ({ node, className, ...props }) => (
     <ol
       className={cn(
-        'text-em-base my-4 ml-6 list-decimal [&>li]:mt-2',
+        'text-em-base my-[1em] ml-6 list-decimal [&>li]:mt-[0.5em]',
         className,
       )}
       {...props}
     />
   ),
   hr: ({ node, className, ...props }) => (
-    <hr className={cn('my-2.5 border-b', className)} {...props} />
+    <hr
+      className={cn(
+        'border-official-gray-600/25 my-[2.25em] border-b',
+        className,
+      )}
+      {...props}
+    />
   ),
   table: ({ node, className, ...props }) => (
-    <div className="my-3 size-full overflow-x-auto">
+    <div className="my-[1.5em] size-full overflow-x-auto">
       <table className="w-full border-collapse border-spacing-0" {...props} />
     </div>
   ),
@@ -201,7 +212,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   th: ({ node, className, ...props }) => (
     <th
       className={cn(
-        'text-em-xs bg-[#161b22] px-4 py-2 text-left font-bold first:rounded-tl-lg last:rounded-tr-lg [&[align=center]]:text-center [&[align=right]]:text-right',
+        'text-em-sm px-[1em] py-[0.875em] text-left font-semibold first:rounded-tl-lg last:rounded-tr-lg [&[align=center]]:text-center [&[align=right]]:text-right',
         className,
       )}
       {...props}
@@ -210,7 +221,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   td: ({ node, className, ...props }) => (
     <td
       className={cn(
-        'border-b border-l border-[#30363d] px-4 py-2 text-left last:border-r [&[align=center]]:text-center [&[align=right]]:text-right',
+        'text-em-sm border-official-gray-700 border-b px-[1em] py-[0.875em] text-left last:border-r [&[align=center]]:text-center [&[align=right]]:text-right',
         className,
       )}
       {...props}
@@ -219,7 +230,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   tr: ({ node, className, ...props }) => (
     <tr
       className={cn(
-        'm-0 border-b p-0 first:border-t [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg [&:nth-child(2n)]:bg-[#30363d]',
+        'm-0 border-b p-0 first:border-t [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg',
         className,
       )}
       {...props}
@@ -234,7 +245,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   pre: ({ node, className, ...props }) => (
     <pre
       className={cn(
-        'overflow-x-auto rounded-b-lg bg-black !px-4 !py-3 text-white',
+        'overflow-x-auto rounded-b-lg bg-black !px-[1em] !py-[0.5em] text-white',
         className,
       )}
       {...props}
@@ -245,7 +256,8 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
     return (
       <code
         className={cn(
-          !isCodeBlock && 'rounded border bg-gray-300 font-semibold',
+          !isCodeBlock &&
+            'bg-official-gray-1000 text-em-sm rounded border p-[0.25em] font-semibold',
           className,
         )}
         {...props}
@@ -533,7 +545,7 @@ export const MarkdownTextBase = ({
       components={components}
       remarkPlugins={[remarkGfm]}
       {...rest}
-      className={cn(isRunning && 'md-running')}
+      className={cn(isRunning && 'md-running', className)}
       // rehypePlugins={[rehypeRaw]} // enable when needed to render raw html
     />
   );

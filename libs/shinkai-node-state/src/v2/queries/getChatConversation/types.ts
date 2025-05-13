@@ -61,7 +61,7 @@ export type Attachment = {
   error?: string;
 };
 
-export type MessageStatus =
+export type TextStatus =
   | {
       type: 'running';
     }
@@ -112,12 +112,18 @@ export type UserMessage = BaseMessage & {
   attachments: Attachment[];
 };
 
+export type ReasoningPart = {
+  text: string;
+  status: TextStatus;
+};
+
 export type AssistantMessage = BaseMessage & {
   role: 'assistant';
   content: string; // AssistantContentPart
-  status: MessageStatus;
+  status: TextStatus;
   toolCalls: ToolCall[];
   artifacts: Artifact[];
+  reasoning?: ReasoningPart;
 };
 
 export type FormattedMessage = AssistantMessage | UserMessage;

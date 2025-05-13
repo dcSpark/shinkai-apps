@@ -349,6 +349,20 @@ export const useWebSocketMessage = ({
               lastMessage.status?.type === 'running'
             ) {
               lastMessage.content += parseData.message;
+              const isThinkingOpen = lastMessage.content.includes('<think>');
+              const isThinkingClosed = lastMessage.content.includes('</think>');
+
+              if (isThinkingOpen && !isThinkingClosed) {
+                lastMessage.reasoning = {
+                  text: '',
+                  status: { type: 'running' },
+                };
+              } else if (isThinkingOpen && isThinkingClosed) {
+                lastMessage.reasoning = {
+                  text: '',
+                  status: { type: 'complete', reason: 'unknown' },
+                };
+              }
             }
           }),
         );

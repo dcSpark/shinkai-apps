@@ -19,6 +19,15 @@ export const ShinkaiLogoIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+export const ShinkaiLogoSoloIcon = ({ className }: { className?: string }) => (
+  <svg className={cn('shrink-0', className)} fill="none" viewBox="0 0 60 60">
+    <path
+      d="M45.9269 46.3536C45.65 45.3274 44.9038 44.8299 43.8628 44.9314C41.8474 45.1268 41.1782 44.4808 40.2218 43.0613C42.7423 43.5952 44.3679 42.9389 44.8756 42.6471C45.5295 42.2694 46.191 41.785 45.9295 40.9306C45.6731 40.0945 44.9038 39.9278 44.1141 40.0789C42.9936 40.2925 41.9192 40.4175 41.0474 39.3261C41.232 39.1594 41.4166 38.9875 41.6064 38.8234C42.0705 38.4249 42.4295 37.9561 42.1936 37.3231C41.9679 36.7188 41.3961 36.3724 40.8141 36.4792C40.3397 36.5678 39.3884 36.8647 39.0987 36.3802L39.1115 36.375C39.0013 36.349 38.832 35.8957 38.7961 35.5649C38.6269 33.9474 39.3269 32.395 40.2705 31.1057C41.4474 29.5038 42.2551 27.7378 42.6141 25.7791C43.1756 22.7055 42.5807 19.8456 40.9192 17.2174C38.9474 14.097 36.1679 12.0419 32.509 11.2865C31.65 11.1094 30.8115 11.0156 29.9987 11C29.1833 11.0156 28.3474 11.1094 27.4884 11.2865C23.832 12.0419 21.05 14.097 19.0782 17.2174C17.4192 19.8456 16.8243 22.7055 17.3833 25.7791C17.7397 27.7404 18.55 29.5038 19.7269 31.1057C20.6731 32.395 21.3731 33.9448 21.2013 35.5649C21.1654 35.8957 20.9961 36.349 20.8859 36.375L20.8987 36.3802C20.609 36.8621 19.6602 36.5678 19.1833 36.4792C18.6038 36.3724 18.0295 36.7188 17.8038 37.3231C17.5679 37.9561 17.9243 38.4249 18.391 38.8234C18.5807 38.9875 18.7654 39.1594 18.95 39.3261C18.0782 40.4175 17.0013 40.2925 15.8833 40.0789C15.0936 39.9278 14.3243 40.0945 14.0679 40.9306C13.8064 41.785 14.4679 42.2694 15.1218 42.6471C15.6269 42.9389 17.2551 43.5926 19.7756 43.0613C18.8192 44.4808 18.15 45.1268 16.1346 44.9314C15.0936 44.8299 14.3448 45.3274 14.0705 46.3536C13.8013 47.3564 14.332 48.0753 15.1731 48.5546C15.7243 48.8672 16.3397 48.9896 16.991 49C20.5577 49.0495 23.5013 47.5778 26.1525 45.3638C27.6115 44.1448 28.8115 43.5275 30.0013 43.5119C31.191 43.5275 32.3884 44.1448 33.85 45.3638C36.5013 47.5778 39.4448 49.0495 43.0115 49C43.6628 48.9922 44.2782 48.8672 44.8295 48.5546C45.6731 48.0753 46.2013 47.3564 45.932 46.3536H45.9269ZM25.0756 34.2027C23.9731 34.2001 23.0628 33.278 23.0602 32.1658C23.0602 31.0328 23.9807 30.1055 25.1166 30.0951C26.1961 30.0847 27.1577 31.1083 27.1474 32.257C27.1372 33.3952 26.2705 34.2079 25.0756 34.2027ZM34.9192 34.2027C33.7218 34.2079 32.8577 33.3926 32.8474 32.257C32.8372 31.1083 33.8013 30.0847 34.8782 30.0951C36.0141 30.1081 36.9346 31.0354 36.9346 32.1658C36.9346 33.278 36.0218 34.2001 34.9192 34.2027Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
 export const ShinkaiCombinationMarkIcon = ({
   className,
 }: {
@@ -27,9 +36,8 @@ export const ShinkaiCombinationMarkIcon = ({
   <svg
     className={cn('shrink-0', className)}
     fill="none"
-    height="60"
     viewBox="0 0 194 60"
-    width="184"
+    xmlns="http://www.w3.org/2000/svg"
   >
     <path
       d="M35.9269 46.3536C35.65 45.3274 34.9038 44.8299 33.8628 44.9314C31.8474 45.1268 31.1782 44.4808 30.2218 43.0613C32.7423 43.5952 34.3679 42.9389 34.8756 42.6471C35.5295 42.2694 36.191 41.785 35.9295 40.9306C35.6731 40.0945 34.9038 39.9278 34.1141 40.0789C32.9936 40.2925 31.9192 40.4175 31.0474 39.3261C31.232 39.1594 31.4166 38.9875 31.6064 38.8234C32.0705 38.4249 32.4295 37.9561 32.1936 37.3231C31.9679 36.7188 31.3961 36.3724 30.8141 36.4792C30.3397 36.5678 29.3884 36.8647 29.0987 36.3802L29.1115 36.375C29.0013 36.349 28.832 35.8957 28.7961 35.5649C28.6269 33.9474 29.3269 32.395 30.2705 31.1057C31.4474 29.5038 32.2551 27.7378 32.6141 25.7791C33.1756 22.7055 32.5807 19.8456 30.9192 17.2174C28.9474 14.097 26.1679 12.0419 22.509 11.2865C21.65 11.1094 20.8115 11.0156 19.9987 11C19.1833 11.0156 18.3474 11.1094 17.4884 11.2865C13.832 12.0419 11.05 14.097 9.07818 17.2174C7.41921 19.8456 6.82434 22.7055 7.38331 25.7791C7.73972 27.7404 8.54998 29.5038 9.7269 31.1057C10.6731 32.395 11.3731 33.9448 11.2013 35.5649C11.1654 35.8957 10.9961 36.349 10.8859 36.375L10.8987 36.3802C10.609 36.8621 9.66023 36.5678 9.18331 36.4792C8.60382 36.3724 8.02946 36.7188 7.80382 37.3231C7.56793 37.9561 7.92434 38.4249 8.391 38.8234C8.58075 38.9875 8.76536 39.1594 8.94998 39.3261C8.07818 40.4175 7.00126 40.2925 5.88331 40.0789C5.09357 39.9278 4.32434 40.0945 4.06793 40.9306C3.80639 41.785 4.46793 42.2694 5.12177 42.6471C5.6269 42.9389 7.25511 43.5926 9.77562 43.0613C8.81921 44.4808 8.14998 45.1268 6.13459 44.9314C5.09357 44.8299 4.34485 45.3274 4.07049 46.3536C3.80126 47.3564 4.33203 48.0753 5.17305 48.5546C5.72434 48.8672 6.33972 48.9896 6.991 49C10.5577 49.0495 13.5013 47.5778 16.1525 45.3638C17.6115 44.1448 18.8115 43.5275 20.0013 43.5119C21.191 43.5275 22.3884 44.1448 23.85 45.3638C26.5013 47.5778 29.4448 49.0495 33.0115 49C33.6628 48.9922 34.2782 48.8672 34.8295 48.5546C35.6731 48.0753 36.2013 47.3564 35.932 46.3536H35.9269ZM15.0756 34.2027C13.9731 34.2001 13.0628 33.278 13.0602 32.1658C13.0602 31.0328 13.9807 30.1055 15.1166 30.0951C16.1961 30.0847 17.1577 31.1083 17.1474 32.257C17.1372 33.3952 16.2705 34.2079 15.0756 34.2027ZM24.9192 34.2027C23.7218 34.2079 22.8577 33.3926 22.8474 32.257C22.8372 31.1083 23.8013 30.0847 24.8782 30.0951C26.0141 30.1081 26.9346 31.0354 26.9346 32.1658C26.9346 33.278 26.0218 34.2001 24.9192 34.2027Z"
@@ -1247,66 +1255,141 @@ export const ReactJsIcon = ({ className }: { className?: string }) => (
     </defs>
   </svg>
 );
-export const AIAgentIcon = ({ className }: { className?: string }) => (
-  <svg
-    className={cn('shrink-0', className)}
-    fill="none"
-    height="24"
-    viewBox="0 0 24 24"
-    width="24"
-  >
-    <path
-      d="M19 16V14C19 11.1716 19 9.75736 18.1213 8.87868C17.2426 8 15.8284 8 13 8H11C8.17157 8 6.75736 8 5.87868 8.87868C5 9.75736 5 11.1716 5 14V16C5 18.8284 5 20.2426 5.87868 21.1213C6.75736 22 8.17157 22 11 22H13C15.8284 22 17.2426 22 18.1213 21.1213C19 20.2426 19 18.8284 19 16Z"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M19 18C20.4142 18 21.1213 18 21.5607 17.5607C22 17.1213 22 16.4142 22 15C22 13.5858 22 12.8787 21.5607 12.4393C21.1213 12 20.4142 12 19 12"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M5 18C3.58579 18 2.87868 18 2.43934 17.5607C2 17.1213 2 16.4142 2 15C2 13.5858 2 12.8787 2.43934 12.4393C2.87868 12 3.58579 12 5 12"
-      stroke="currentColor"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M13.5 3.5C13.5 4.32843 12.8284 5 12 5C11.1716 5 10.5 4.32843 10.5 3.5C10.5 2.67157 11.1716 2 12 2C12.8284 2 13.5 2.67157 13.5 3.5Z"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M12 5V8"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M9 13V14"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M15 13V14"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M10 17.5C10 17.5 10.6667 18 12 18C13.3333 18 14 17.5 14 17.5"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeWidth="1.5"
-    />
-  </svg>
-);
+
+type AgentGradientAvatarProps = {
+  name: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  className?: string;
+};
+
+export const AIAgentIcon: React.FC<AgentGradientAvatarProps> = ({
+  name,
+  size = 'md',
+  className,
+}) => {
+  const getGradientByLetter = (letter: string) => {
+    const gradients = {
+      a: 'bg-gradient-to-br from-green-400 to-yellow-300',
+      b: 'bg-gradient-to-br from-blue-400 to-purple-500',
+      c: 'bg-gradient-to-br from-red-400 to-pink-500',
+      d: 'bg-gradient-to-br from-indigo-400 to-cyan-400',
+      e: 'bg-gradient-to-br from-yellow-200 to-yellow-500',
+      f: 'bg-gradient-to-br from-green-500 to-emerald-700',
+      g: 'bg-gradient-to-br from-purple-400 to-indigo-500',
+      h: 'bg-gradient-to-br from-red-500 to-orange-500',
+      i: 'bg-gradient-to-br from-blue-400 to-indigo-600',
+      j: 'bg-gradient-to-br from-amber-200 to-amber-600',
+      k: 'bg-gradient-to-br from-emerald-400 to-cyan-500',
+      l: 'bg-gradient-to-br from-purple-500 to-pink-500',
+      m: 'bg-gradient-to-br from-blue-500 to-purple-600',
+      n: 'bg-gradient-to-br from-green-300 to-blue-400',
+      o: 'bg-gradient-to-br from-orange-300 to-red-500',
+      p: 'bg-gradient-to-br from-pink-400 to-rose-600',
+      q: 'bg-gradient-to-br from-indigo-300 to-indigo-600',
+      r: 'bg-gradient-to-br from-red-400 to-red-700',
+      s: 'bg-gradient-to-br from-sky-300 to-blue-500',
+      t: 'bg-gradient-to-br from-teal-300 to-emerald-500',
+      u: 'bg-gradient-to-br from-violet-300 to-purple-600',
+      v: 'bg-gradient-to-br from-amber-300 to-orange-600',
+      w: 'bg-gradient-to-br from-emerald-400 to-teal-700',
+      x: 'bg-gradient-to-br from-zinc-400 to-slate-700',
+      y: 'bg-gradient-to-br from-yellow-300 to-amber-600',
+      z: 'bg-gradient-to-br from-blue-300 to-cyan-600',
+    };
+
+    const firstLetter = letter.toLowerCase()[0];
+    return (
+      gradients[firstLetter as keyof typeof gradients] ||
+      'bg-gradient-to-br from-gray-400 to-gray-600'
+    );
+  };
+
+  const sizeClasses = {
+    xs: 'h-6 w-6 text-xs rounded-lg',
+    sm: 'h-8 w-8 text-xs',
+    md: 'h-10 w-10 text-sm',
+    lg: 'h-12 w-12 text-base',
+  };
+  const initial = name ? name[0] : null;
+  const last = name ? name[name.length - 2] : null;
+
+  if (!initial || !last) {
+    return (
+      <svg
+        className={cn('shrink-0', className)}
+        fill="none"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+      >
+        <path
+          d="M19 16V14C19 11.1716 19 9.75736 18.1213 8.87868C17.2426 8 15.8284 8 13 8H11C8.17157 8 6.75736 8 5.87868 8.87868C5 9.75736 5 11.1716 5 14V16C5 18.8284 5 20.2426 5.87868 21.1213C6.75736 22 8.17157 22 11 22H13C15.8284 22 17.2426 22 18.1213 21.1213C19 20.2426 19 18.8284 19 16Z"
+          stroke="currentColor"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M19 18C20.4142 18 21.1213 18 21.5607 17.5607C22 17.1213 22 16.4142 22 15C22 13.5858 22 12.8787 21.5607 12.4393C21.1213 12 20.4142 12 19 12"
+          stroke="currentColor"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M5 18C3.58579 18 2.87868 18 2.43934 17.5607C2 17.1213 2 16.4142 2 15C2 13.5858 2 12.8787 2.43934 12.4393C2.87868 12 3.58579 12 5 12"
+          stroke="currentColor"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M13.5 3.5C13.5 4.32843 12.8284 5 12 5C11.1716 5 10.5 4.32843 10.5 3.5C10.5 2.67157 11.1716 2 12 2C12.8284 2 13.5 2.67157 13.5 3.5Z"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M12 5V8"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M9 13V14"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M15 13V14"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+        />
+        <path
+          d="M10 17.5C10 17.5 10.6667 18 12 18C13.3333 18 14 17.5 14 17.5"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeWidth="1.5"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <div
+      className={cn(
+        'font-clash flex shrink-0 items-center justify-center rounded-xl font-semibold uppercase text-white',
+        getGradientByLetter(initial),
+        sizeClasses[size],
+        className,
+      )}
+    >
+      {initial}
+      {last}
+    </div>
+  );
+};
 
 export const AisIcon = ({ className }: { className?: string }) => (
   <svg
@@ -1852,6 +1935,39 @@ export const PlusIcon = ({ className }: { className?: string }) => (
   >
     <path
       d="M12 4V20M20 12H4"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+    />
+  </svg>
+);
+export const ReasoningIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    fill="none"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+  >
+    <path
+      d="M5.14286 14C4.41735 12.8082 4 11.4118 4 9.91886C4 5.54539 7.58172 2 12 2C16.4183 2 20 5.54539 20 9.91886C20 11.4118 19.5827 12.8082 18.8571 14"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M7.38287 17.0982C7.291 16.8216 7.24507 16.6833 7.25042 16.5713C7.26174 16.3343 7.41114 16.1262 7.63157 16.0405C7.73579 16 7.88105 16 8.17157 16H15.8284C16.119 16 16.2642 16 16.3684 16.0405C16.5889 16.1262 16.7383 16.3343 16.7496 16.5713C16.7549 16.6833 16.709 16.8216 16.6171 17.0982C16.4473 17.6094 16.3624 17.8651 16.2315 18.072C15.9572 18.5056 15.5272 18.8167 15.0306 18.9408C14.7935 19 14.525 19 13.9881 19H10.0119C9.47495 19 9.2065 19 8.96944 18.9408C8.47283 18.8167 8.04281 18.5056 7.7685 18.072C7.63755 17.8651 7.55266 17.6094 7.38287 17.0982Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M15 19L14.8707 19.6466C14.7293 20.3537 14.6586 20.7072 14.5001 20.9866C14.2552 21.4185 13.8582 21.7439 13.3866 21.8994C13.0816 22 12.7211 22 12 22C11.2789 22 10.9184 22 10.6134 21.8994C10.1418 21.7439 9.74484 21.4185 9.49987 20.9866C9.34144 20.7072 9.27073 20.3537 9.12932 19.6466L9 19"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M12 16V11"
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"

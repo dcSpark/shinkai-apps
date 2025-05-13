@@ -133,8 +133,10 @@ const ConversationHeaderWithInboxId = () => {
                     </Badge>
                   )}
               </span>
-              <span className="text-official-gray-400 text-xs">
-                {selectedAgent?.ui_description || 'No description'}
+              <span className="text-official-gray-400 flex items-center text-xs">
+                <span className="max-w-[300px] truncate">
+                  {selectedAgent?.ui_description || 'No description'}
+                </span>
                 <span className="px-2">⋅</span>
                 <Sheet>
                   <SheetTrigger asChild>

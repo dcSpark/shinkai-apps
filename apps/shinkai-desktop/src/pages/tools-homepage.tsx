@@ -507,7 +507,7 @@ const ProtocolsBannerBase = () => {
         <Dialog>
           <DialogTrigger className="text-official-gray-300 hover:text-official-gray-200 flex items-center gap-1 text-xs transition-colors">
             <div className="border-official-gray-300 border-b">
-              View Supported Protocols
+              Well Supported Protocols (Shinkai Codegen)
             </div>
             <ArrowRight className="ml-0.5 h-3 w-3" />
           </DialogTrigger>

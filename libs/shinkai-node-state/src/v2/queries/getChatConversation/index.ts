@@ -172,7 +172,9 @@ const createAssistantMessage = async (
       inboxId: message.inbox,
       tps: message.job_message.metadata?.tps,
     },
-    content: text.replace(/<antartifact[^>]*>[\s\S]*?<\/antartifact>/g, ''),
+    content: text
+      .replace(/<antartifact[^>]*>[\s\S]*?<\/antartifact>/g, '')
+      .replace(/<think>[\s\S]*?<\/think>/g, ''),
     role: 'assistant',
     status: {
       type: 'complete',
@@ -180,6 +182,16 @@ const createAssistantMessage = async (
     },
     toolCalls,
     artifacts,
+    reasoning:
+      text.includes('<think>') && text.includes('</think>')
+        ? {
+            text: text.match(/<think>([\s\S]*?)<\/think>/)?.[1] ?? '',
+            status: {
+              type: 'complete',
+              reason: 'unknown',
+            },
+          }
+        : undefined,
   };
 };
 

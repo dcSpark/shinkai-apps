@@ -9,7 +9,7 @@
       }
     },
     "resources": {
-      "external-binaries/shinkai-node/pdfium.dll": "external-binaries/shinkai-node/pdfium.dll",
+      "llm-models/": "llm-models/",
       "external-binaries/ollama/lib/": "lib/"
     }
   }
