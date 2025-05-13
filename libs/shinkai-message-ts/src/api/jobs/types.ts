@@ -21,12 +21,7 @@ export type CreateJobRequest = {
   llm_provider: string;
   job_creation_info: {
     scope: JobScope;
-    associated_ui:
-      | 'Playground'
-      | {
-          Sheet: string;
-        }
-      | null;
+    associated_ui: 'Playground' | null;
     is_hidden: boolean;
   };
 };
