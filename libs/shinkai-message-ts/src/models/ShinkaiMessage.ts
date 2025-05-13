@@ -54,14 +54,6 @@ export interface ShinkaiMessage {
   encryption: keyof typeof TSEncryptionMethod;
 }
 
-export interface RegistrationCode {
-  code: string;
-  profileName: string;
-  identityPk: string;
-  encryptionPk: string;
-  permissionType: string;
-}
-
 export type CreateChatInboxResponse = {
   status: string;
   message: string;
