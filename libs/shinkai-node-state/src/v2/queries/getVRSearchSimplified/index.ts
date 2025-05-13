@@ -1,4 +1,3 @@
-import { retrieveVectorSearchSimplified as retrieveVectorSearchSimplifiedApi } from '@shinkai_network/shinkai-message-ts/api';
 import { searchVectorFs } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 
 import {
