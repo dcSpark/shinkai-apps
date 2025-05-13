@@ -31,24 +31,6 @@ const AppearancePage = () => {
           <Label
             className={cn(
               'cursor-pointer space-y-2',
-              chatFontSize === 'xs' && '[&_div]:border-brand',
-            )}
-            htmlFor="default"
-          >
-            <RadioGroupItem className="sr-only" id="default" value="xs" />
-            <Card className="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border-2 p-4">
-              <span className="font-inter flex min-h-[40px] items-center justify-center text-xs">
-                Aa
-              </span>
-              <span className="text-sm font-medium">
-                {t('settings.appearance.chatFontSize.small')}
-              </span>
-            </Card>
-          </Label>
-
-          <Label
-            className={cn(
-              'cursor-pointer space-y-2',
               chatFontSize === 'sm' && '[&_div]:border-brand',
             )}
             htmlFor="sm"
@@ -59,7 +41,7 @@ const AppearancePage = () => {
                 Aa
               </span>
               <span className="text-sm font-medium">
-                {t('settings.appearance.chatFontSize.medium')}
+                {t('settings.appearance.chatFontSize.small')}
               </span>
             </Card>
           </Label>
@@ -77,7 +59,7 @@ const AppearancePage = () => {
                 Aa
               </span>
               <span className="text-sm font-medium">
-                {t('settings.appearance.chatFontSize.large')}
+                {t('settings.appearance.chatFontSize.medium')}
               </span>
             </Card>
           </Label>
@@ -90,6 +72,24 @@ const AppearancePage = () => {
             htmlFor="lg"
           >
             <RadioGroupItem className="sr-only" id="lg" value="lg" />
+            <Card className="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border-2 p-4">
+              <span className="font-inter flex min-h-[40px] items-center justify-center text-lg">
+                Aa
+              </span>
+              <span className="text-sm font-medium">
+                {t('settings.appearance.chatFontSize.large')}
+              </span>
+            </Card>
+          </Label>
+
+          <Label
+            className={cn(
+              'cursor-pointer space-y-2',
+              chatFontSize === 'xl' && '[&_div]:border-brand',
+            )}
+            htmlFor="xl"
+          >
+            <RadioGroupItem className="sr-only" id="xl" value="xl" />
             <Card className="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg border-2 p-4">
               <span className="font-inter flex min-h-[40px] items-center justify-center text-xl">
                 Aa
