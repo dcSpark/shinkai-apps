@@ -152,48 +152,6 @@ export interface APIAddAgentRequest {
   agent: SerializedLLMProvider;
 }
 
-export type ToolConfig = {
-  BasicConfig: {
-    description: string;
-    key_name: string;
-    key_value: string | null;
-    required: boolean;
-  };
-};
-export type ToolArgument = {
-  name: string;
-  arg_type: string;
-  description: string;
-  is_required: boolean;
-};
-
-type Embedding = {
-  id: string;
-  vector: number[];
-};
-
-type JSToolResult = {
-  result_type: string;
-  properties: Record<string, string>;
-  required: string[];
-};
-export type JSShinkaiTool = {
-  toolkit_name: string;
-  name: string;
-  author: string;
-  js_code: string;
-  config: ToolConfig[];
-  description: string;
-  keywords: string[];
-  input_args: ToolArgument[];
-  config_set: boolean;
-  activated: boolean;
-  embedding?: Embedding;
-  result: JSToolResult;
-};
-export type ShinkaiToolType = 'JS';
-export type ShinkaiTool = JSShinkaiTool;
-
 export type LLMCallPayload = {
   input: string;
   llm_provider_name: string;
