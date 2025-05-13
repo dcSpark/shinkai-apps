@@ -179,30 +179,6 @@ export class ShinkaiMessageBuilderWrapper {
     );
   }
 
-  static job_creation(
-    my_encryption_secret_key: string,
-    my_signature_secret_key: string,
-    receiver_public_key: string,
-    scope: any,
-    is_hidden: boolean,
-    sender: string,
-    sender_subidentity: string,
-    receiver: string,
-    receiver_subidentity: string,
-  ): string {
-    return ShinkaiMessageBuilderWrapperWASM.job_creation(
-      my_encryption_secret_key,
-      my_signature_secret_key,
-      receiver_public_key,
-      scope,
-      is_hidden,
-      sender,
-      sender_subidentity,
-      receiver,
-      receiver_subidentity,
-    );
-  }
-
   static ws_connection(
     ws_content: string,
     my_encryption_secret_key: string,
@@ -231,100 +207,6 @@ export class ShinkaiMessageBuilderWrapper {
 
     builder.body_encryption('DiffieHellmanChaChaPoly1305');
 
-    const message = builder.build_to_string();
-    return message;
-  }
-
-  static create_chat_with_message(
-    my_encryption_secret_key: string,
-    my_signature_secret_key: string,
-    receiver_public_key: string,
-    sender: string,
-    sender_subidentity: string,
-    receiver: string,
-    receiver_subidentity: string,
-    text_message: string,
-    inbox: string,
-  ): string {
-    const builder = new ShinkaiMessageBuilderWrapper(
-      my_encryption_secret_key,
-      my_signature_secret_key,
-      receiver_public_key,
-    );
-
-    builder.message_raw_content(text_message);
-    builder.message_schema_type(MessageSchemaType.TextContent.toString());
-    builder.internal_metadata(
-      sender_subidentity,
-      receiver_subidentity,
-      inbox,
-      'None',
-    );
-    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
-    builder.body_encryption('DiffieHellmanChaChaPoly1305');
-
-    const message = builder.build_to_string();
-
-    return message;
-  }
-
-  static send_text_message_with_inbox(
-    my_encryption_secret_key: string,
-    my_signature_secret_key: string,
-    receiver_public_key: string,
-    sender: string,
-    sender_subidentity: string,
-    receiver: string,
-    receiver_subidentity: string,
-    inbox: string,
-    text_message: string,
-  ): string {
-    const builder = new ShinkaiMessageBuilderWrapperWASM(
-      my_encryption_secret_key,
-      my_signature_secret_key,
-      receiver_public_key,
-    );
-
-    builder.message_raw_content(text_message);
-    builder.message_schema_type(MessageSchemaType.TextContent.toString());
-    builder.internal_metadata_with_inbox(
-      sender_subidentity,
-      receiver_subidentity,
-      inbox,
-      'None',
-    );
-    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
-
-    builder.body_encryption('DiffieHellmanChaChaPoly1305');
-
-    const message = builder.build_to_string();
-
-    return message;
-  }
-
-  static send_create_files_inbox_with_sym_key(
-    my_encryption_secret_key: string,
-    my_signature_secret_key: string,
-    receiver_public_key: string,
-    inbox: string,
-    symmetric_key_sk: string,
-    sender: string,
-    sender_subidentity: string,
-    receiver: string,
-  ): string {
-    const builder = new ShinkaiMessageBuilderWrapperWASM(
-      my_encryption_secret_key,
-      my_signature_secret_key,
-      receiver_public_key,
-    );
-
-    builder.message_raw_content(symmetric_key_sk);
-    builder.message_schema_type(
-      MessageSchemaType.SymmetricKeyExchange.toString(),
-    );
-    builder.internal_metadata_with_inbox(sender_subidentity, '', inbox, 'None');
-    builder.external_metadata_with_intra(receiver, sender, sender_subidentity);
-    builder.body_encryption('DiffieHellmanChaChaPoly1305');
     const message = builder.build_to_string();
     return message;
   }
