@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api/methods';
+import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
   SearchVectorFormSchema,
@@ -451,23 +451,8 @@ export const KnowledgeSearchDrawer = () => {
                             newKeys[event.value] = { checked: true };
                             const fileInfo = await retrieveVectorResource(
                               auth?.node_address ?? '',
-                              auth?.shinkai_identity ?? '',
-                              auth?.profile ?? '',
-                              auth?.shinkai_identity ?? '',
-                              auth?.profile ?? '',
-                              generatedFilePath,
-                              {
-                                my_device_encryption_sk:
-                                  auth?.my_device_encryption_sk ?? '',
-                                my_device_identity_sk:
-                                  auth?.my_device_identity_sk ?? '',
-                                node_encryption_pk:
-                                  auth?.node_encryption_pk ?? '',
-                                profile_encryption_sk:
-                                  auth?.profile_encryption_sk ?? '',
-                                profile_identity_sk:
-                                  auth?.profile_identity_sk ?? '',
-                              },
+                              auth?.api_v2_key ?? '',
+                              { path: generatedFilePath },
                             );
 
                             selectedFileKeysRef.set(event.value, {

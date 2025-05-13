@@ -79,45 +79,6 @@ export const uploadFilesToVR = async (
   }
 };
 
-// fetch details of vr file
-export const retrieveVectorResource = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  path = '/',
-  setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.retrieveResource(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    path,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/vec_fs/retrieve_vector_resource'),
-    message,
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return typeof data?.data === 'string'
-    ? {
-        data: JSON.parse(data.data),
-        status: data.status,
-      }
-    : data;
-};
 export const moveFolderVR = async (
   nodeAddress: string,
   sender: string,
@@ -144,44 +105,6 @@ export const moveFolderVR = async (
 
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v1/vec_fs/move_folder'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
-export const searchItemsVR = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  search: string,
-  path = '/',
-  setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.searchItems(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    search,
-    path,
-    null,
-    null,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/vec_fs/search_items'),
     message,
 
     {
