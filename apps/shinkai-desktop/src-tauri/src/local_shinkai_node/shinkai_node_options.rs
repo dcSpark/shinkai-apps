@@ -28,6 +28,7 @@ pub struct ShinkaiNodeOptions {
     pub supported_embedding_models: Option<String>,
     pub shinkai_tools_runner_deno_binary_path: Option<String>,
     pub shinkai_tools_runner_uv_binary_path: Option<String>,
+    pub shinkai_tools_directory_url: Option<String>,
     pub shinkai_store_url: Option<String>,
     pub install_folder_path: Option<String>,
     pub secret_desktop_installation_proof_key: Option<String>,
@@ -176,6 +177,12 @@ impl ShinkaiNodeOptions {
                     .or(base_options.shinkai_tools_runner_uv_binary_path)
                     .unwrap_or_default(),
             ),
+            shinkai_tools_directory_url: Some(
+                options
+                    .shinkai_tools_directory_url
+                    .or(base_options.shinkai_tools_directory_url)
+                    .unwrap_or_default(),
+            ),
             shinkai_store_url: Some(
                 options
                     .shinkai_store_url
@@ -250,6 +257,7 @@ impl Default for ShinkaiNodeOptions {
             shinkai_tools_runner_deno_binary_path: Some(shinkai_tools_runner_deno_binary_path),
             shinkai_tools_runner_uv_binary_path: Some(shinkai_tools_runner_uv_binary_path),
             shinkai_store_url: Some("https://store-api.shinkai.com".to_string()),
+            shinkai_tools_directory_url: Some("https://store-api.shinkai.com/store/defaults".to_string()),
             install_folder_path: Some(install_folder_path),
             secret_desktop_installation_proof_key: option_env!(
                 "SECRET_DESKTOP_INSTALLATION_PROOF_KEY"
