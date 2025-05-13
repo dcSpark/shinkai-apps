@@ -182,13 +182,16 @@ const createAssistantMessage = async (
     },
     toolCalls,
     artifacts,
-    reasoning: {
-      text: text.match(/<think>([\s\S]*?)<\/think>/)?.[1] ?? '',
-      status: {
-        type: 'complete',
-        reason: 'unknown',
-      },
-    },
+    reasoning:
+      text.includes('<think>') && text.includes('</think>')
+        ? {
+            text: text.match(/<think>([\s\S]*?)<\/think>/)?.[1] ?? '',
+            status: {
+              type: 'complete',
+              reason: 'unknown',
+            },
+          }
+        : undefined,
   };
 };
 
