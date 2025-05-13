@@ -263,9 +263,7 @@
       "chats": "Obrolan",
       "disconnect": "Putuskan Koneksi",
       "helpAndSupport": "Bantuan dan Dukungan",
-      "mySubscriptions": "Langganan Saya",
       "settings": "Pengaturan",
-      "subscriptions": "Jelajahi Langganan",
       "vectorFs": "Pencari Berkas AI Saya",
       "vectorSearch": "Pencarian Konten Berkas AI"
     },
@@ -592,10 +590,6 @@
     },
     "restartNode": "Harap restart Node Shinkai Anda",
     "unavailable": "Node Shinkai Anda tidak tersedia"
-  },
-  "subscriptions": {
-    "browse": "Telusuri Langganan Publik",
-    "label": "Langganan Saya"
   },
   "tasks": {
     "runNow": "Jalankan Sekarang"

@@ -263,9 +263,7 @@
       "chats": "Sohbetler",
       "disconnect": "Bağlantıyı Kes",
       "helpAndSupport": "Yardım ve Destek",
-      "mySubscriptions": "Benim Aboneliklerim",
       "settings": "Ayarlar",
-      "subscriptions": "Abonelikleri Gözden Geçir",
       "vectorFs": "Yapay Zeka Dosya Gezgini",
       "vectorSearch": "Yapay Zeka Dosya İçeriği Arama"
     },
@@ -592,10 +590,6 @@
     },
     "restartNode": "Lütfen Shinkai Düğümünüzü yeniden başlatın",
     "unavailable": "Shinkai Düğümünüz kullanılamıyor"
-  },
-  "subscriptions": {
-    "browse": "Halka Açık Abonelikleri Gözat",
-    "label": "Aboneliklerim"
   },
   "tasks": {
     "runNow": "Şimdi Çalıştır"
