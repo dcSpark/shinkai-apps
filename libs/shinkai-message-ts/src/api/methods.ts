@@ -4,43 +4,6 @@ import { CredentialsPayload } from '../models';
 import { urlJoin } from '../utils/url-join';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
 
-export const moveFolderVR = async (
-  nodeAddress: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  originPath: string,
-  destionationPath: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.moveFolder(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    originPath,
-    destionationPath,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/vec_fs/move_folder'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-
-  const data = response.data;
-  return data;
-};
-
 export const scanOllamaModels = async (
   nodeAddress: string,
   sender_subidentity: string,
