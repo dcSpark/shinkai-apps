@@ -59,7 +59,7 @@ export default function PasswordWidget<
       />
       <Button
         aria-label={showPassword ? 'Hide password' : 'Show password'}
-        className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 text-gray-500 hover:bg-transparent hover:text-gray-700"
+        className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 text-official-gray-400 hover:bg-transparent hover:text-official-gray-200"
         disabled={disabled || readonly}
         onClick={() => setShowPassword(!showPassword)}
         size="icon"
