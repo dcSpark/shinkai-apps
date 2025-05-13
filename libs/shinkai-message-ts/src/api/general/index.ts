@@ -65,6 +65,19 @@ export const submitRegistrationCode = async (
   }
 };
 
+export const updateNodeName = async (
+  nodeAddress: string,
+  token: string,
+  newNodeName: string,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/change_node_name'),
+    { new_node_name: newNodeName },
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  return response.data;
+};
+
 export const submitRegistrationNoCode = async (
   nodeAddress: string,
   payload: SubmitRegistrationNoCodeRequest,
