@@ -1,5 +1,21 @@
 import { ToolUsageType } from '../tools/types';
 
+export type QRSetupData = {
+  registration_code: string;
+  profile: string;
+  identity_type: string;
+  permission_type: string;
+  node_address: string;
+  shinkai_identity: string;
+  node_encryption_pk: string;
+  node_signature_pk: string;
+  // Just filled when identity_type === device
+  profile_encryption_sk?: string;
+  profile_encryption_pk?: string;
+  profile_identity_sk?: string;
+  profile_identity_pk?: string;
+};
+
 export type DockerStatus = 'not-installed' | 'not-running' | 'running';
 
 export type CheckHealthResponse = {
