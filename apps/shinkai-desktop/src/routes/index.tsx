@@ -25,7 +25,6 @@ import {
 } from '../components/onboarding/constants';
 import { PlaygroundProvider } from '../components/playground-tool/context/playground-context';
 import { PromptSelectionProvider } from '../components/prompt/context/prompt-selection-context';
-import { TableSheetProvider } from '../components/sheet/context/table-context';
 import ToolDetails from '../components/tools/tool-details';
 import { VectorFolderSelectionProvider } from '../components/vector-fs/components/folder-selection-list';
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
@@ -50,7 +49,6 @@ import AppearancePage from '../pages/appearance';
 import ChatConversation from '../pages/chat/chat-conversation';
 import ChatLayout from '../pages/chat/layout';
 import { ConnectMethodQrCodePage } from '../pages/connect-method-qr-code';
-import CreateChatPage from '../pages/create-chat';
 import CreateTaskPage from '../pages/create-task';
 import CryptoWalletPage from '../pages/crypto-wallet';
 import EditTaskPage from '../pages/edit-task';
@@ -66,8 +64,6 @@ import { PublicKeys } from '../pages/public-keys';
 import QuickConnectionPage from '../pages/quick-connection';
 import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
-import SheetDashboard from '../pages/sheet-dashboard';
-import SheetProject from '../pages/sheet-project';
 import { TaskLogs } from '../pages/task-logs';
 import { Tasks } from '../pages/tasks';
 import TermsAndConditionsPage from '../pages/terms-conditions';
@@ -371,32 +367,6 @@ const AppRoutes = () => {
                 </VectorFsProvider>
               }
               path="/agents/edit/:agentId"
-            />
-          </Route>
-          <Route
-            element={
-              <ProtectedRoute>
-                <CreateChatPage />
-              </ProtectedRoute>
-            }
-            path={'/create-chat'}
-          />
-          <Route
-            element={
-              <ProtectedRoute>
-                <Outlet />
-              </ProtectedRoute>
-            }
-            path="sheets"
-          >
-            <Route element={<SheetDashboard />} index />
-            <Route
-              element={
-                <TableSheetProvider>
-                  <SheetProject />
-                </TableSheetProvider>
-              }
-              path=":sheetId"
             />
           </Route>
           <Route

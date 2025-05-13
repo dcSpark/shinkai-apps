@@ -524,20 +524,6 @@
       "label": "Sidebar"
     }
   },
-  "sheet": {
-    "actions": {
-      "createProject": "Buat Proyek",
-      "deleteProject": "Hapus Proyek",
-      "deleteProjectConfirmationDescription": "Proyek ini akan segera dihapus. Anda tidak dapat mengurungkan tindakan ini.",
-      "deleteProjectConfirmationTitle": "Hapus Proyek ini?"
-    },
-    "emptyStateDescription": "Mulai menghubungkan data Anda dengan Lembar Shinkai!",
-    "emptyStateTitle": "Tidak ada Lembar ditemukan.",
-    "form": {
-      "projectName": "Nama Proyek"
-    },
-    "label": "Lembar Shinkai"
-  },
   "shinkaiNode": {
     "manager": "Manajer Node Shinkai",
     "models": {

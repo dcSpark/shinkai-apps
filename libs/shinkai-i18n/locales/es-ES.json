@@ -524,20 +524,6 @@
       "label": "Barra lateral"
     }
   },
-  "sheet": {
-    "actions": {
-      "createProject": "Crear Proyecto",
-      "deleteProject": "Eliminar Proyecto",
-      "deleteProjectConfirmationDescription": "Este proyecto se eliminará inmediatamente. No podrás deshacer esta acción.",
-      "deleteProjectConfirmationTitle": "¿Eliminar este Proyecto?"
-    },
-    "emptyStateDescription": "¡Comienza a conectar tus datos con Hoja Shinkai!",
-    "emptyStateTitle": "No se encontraron hojas.",
-    "form": {
-      "projectName": "Nombre del Proyecto"
-    },
-    "label": "Hoja Shinkai"
-  },
   "shinkaiNode": {
     "manager": "Gestor de Nodos de Shinkai",
     "models": {

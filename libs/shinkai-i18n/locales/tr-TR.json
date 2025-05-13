@@ -524,20 +524,6 @@
       "label": "Yan Menü"
     }
   },
-  "sheet": {
-    "actions": {
-      "createProject": "Proje Oluştur",
-      "deleteProject": "Projeyi Sil",
-      "deleteProjectConfirmationDescription": "Bu proje hemen silinecek. Bu işlemi geri alamazsınız.",
-      "deleteProjectConfirmationTitle": "Bu Projeyi Silmek İstiyor Musunuz?"
-    },
-    "emptyStateDescription": "Verilerinizi Shinkai Sayfası ile bağlamaya başlayın!",
-    "emptyStateTitle": "Hiç Sayfa Bulunamadı.",
-    "form": {
-      "projectName": "Proje Adı"
-    },
-    "label": "Shinkai Sayfası"
-  },
   "shinkaiNode": {
     "manager": "Shinkai Düğüm Yöneticisi",
     "models": {
