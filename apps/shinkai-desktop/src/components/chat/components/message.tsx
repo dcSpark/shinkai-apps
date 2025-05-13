@@ -46,7 +46,6 @@ import { format } from 'date-fns';
 import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  CheckCircle,
   Edit3,
   GitFork,
   InfoIcon,
@@ -419,8 +418,14 @@ export const MessageBase = ({
 
                 {message.role === 'assistant' && (
                   <MarkdownText
+                    className={cn(
+                      message.reasoning?.status?.type === 'running' &&
+                        'text-official-gray-400',
+                    )}
                     content={extractErrorPropertyOrContent(
-                      message.content.replace(/<think>[\s\S]*?<\/think>/g, ''),
+                      message.content
+                        .replace(/<think>[\s\S]*?<\/think>/g, '')
+                        .replace('<think>', ''),
                       'error_message',
                     )}
                     isRunning={
@@ -770,7 +775,7 @@ export function Reasoning({
       return <XCircle className="text-official-gray-400 size-full" />;
     }
     if (status?.type === 'running') {
-      return <Loader2 className="text-brand size-full animate-spin" />;
+      return null;
     }
     return null;
   };
@@ -789,24 +794,45 @@ export function Reasoning({
       type="single"
     >
       <AccordionItem
-        className="bg-official-gray-950 border-official-gray-750 overflow-hidden rounded-lg border"
+        className={cn(
+          'bg-official-gray-950 border-official-gray-750 overflow-hidden rounded-lg border',
+          status?.type === 'running' &&
+            'animate-pulse border-none bg-transparent',
+        )}
         value="reasoning"
       >
         <AccordionTrigger
           className={cn(
             'inline-flex w-auto gap-3 p-[5px] no-underline hover:no-underline',
             'transition-colors',
+            status?.type === 'running' && 'p-0',
           )}
-          disabled={status?.type === 'running'}
+          hideArrow={status?.type === 'running'}
         >
-          <div className="flex items-center gap-1">
-            <div className="size-7 shrink-0 px-1.5">{renderStatus()}</div>
-            <div className="flex items-center gap-1">
-              <span className="text-gray-80 text-em-sm">
-                {renderReasoningText()}
-              </span>
-            </div>
-          </div>
+          <AnimatePresence initial={false} mode="popLayout">
+            <motion.div
+              animate="visible"
+              exit="exit"
+              initial="initial"
+              key={status?.type}
+              transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+              variants={variants}
+            >
+              <div
+                className={cn(
+                  'text-official-gray-300 flex items-center gap-1',
+                  status?.type === 'running' && 'text-official-gray-200',
+                )}
+              >
+                {renderStatus() && (
+                  <div className="size-7 shrink-0 px-1.5">{renderStatus()}</div>
+                )}
+                <div className="flex items-center gap-1">
+                  <span className="text-em-sm">{renderReasoningText()}</span>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </AccordionTrigger>
         <AccordionContent className="bg-official-gray-950 flex flex-col gap-1 rounded-b-lg px-3 pb-3 pt-2 text-sm">
           <span className="text-official-gray-400 break-words">

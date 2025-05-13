@@ -348,19 +348,21 @@ export const useWebSocketMessage = ({
               lastMessage.role === 'assistant' &&
               lastMessage.status?.type === 'running'
             ) {
-              const raw = (lastMessage.content ?? '') + parseData.message;
+              lastMessage.content += parseData.message;
+              const isThinkingOpen = lastMessage.content.includes('<think>');
+              const isThinkingClosed = lastMessage.content.includes('</think>');
 
-              const hasCompleteThinking =
-                raw.includes('<think>') && raw.includes('</think>');
-
-              lastMessage.reasoning = {
-                text: '',
-                status: hasCompleteThinking
-                  ? { type: 'complete', reason: 'unknown' }
-                  : { type: 'running' },
-              };
-
-              lastMessage.content = raw;
+              if (isThinkingOpen && !isThinkingClosed) {
+                lastMessage.reasoning = {
+                  text: '',
+                  status: { type: 'running' },
+                };
+              } else if (isThinkingOpen && isThinkingClosed) {
+                lastMessage.reasoning = {
+                  text: '',
+                  status: { type: 'complete', reason: 'unknown' },
+                };
+              }
             }
           }),
         );

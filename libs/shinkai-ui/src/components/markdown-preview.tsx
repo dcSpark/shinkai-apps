@@ -545,7 +545,7 @@ export const MarkdownTextBase = ({
       components={components}
       remarkPlugins={[remarkGfm]}
       {...rest}
-      className={cn(isRunning && 'md-running')}
+      className={cn(isRunning && 'md-running', className)}
       // rehypePlugins={[rehypeRaw]} // enable when needed to render raw html
     />
   );
