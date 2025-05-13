@@ -377,7 +377,7 @@ export const MessageBase = ({
                             <AccordionTrigger
                               className={cn(
                                 'min-w-[10rem] gap-3 py-0 pr-2 no-underline hover:no-underline',
-                                'hover:bg-official-gray-900 [&[data-state=open]]:bg-official-gray-900 transition-colors',
+                                'hover:bg-official-gray-900 [&[data-state=open]]:bg-official-gray-950 transition-colors',
                                 tool.status !== ToolStatusType.Complete &&
                                   '[&>svg]:hidden',
                               )}
@@ -804,7 +804,7 @@ export function Reasoning({
         <AccordionTrigger
           className={cn(
             'inline-flex w-auto gap-3 p-[5px] no-underline hover:no-underline',
-            'transition-colors',
+            'hover:bg-official-gray-900 transition-colors',
             status?.type === 'running' && 'p-0',
           )}
           hideArrow={status?.type === 'running'}
