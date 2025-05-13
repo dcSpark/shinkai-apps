@@ -50,8 +50,6 @@
       "aiTasks": "AI Tasks",
       "vectorFs": "AI Files Explorer",
       "vectorSearch": "AI Files Content Search",
-      "subscriptions": "Browse Subscriptions",
-      "mySubscriptions": "My Subscriptions",
       "agents": "Agents",
       "ais": "AIs",
       "settings": "Settings",
@@ -196,10 +194,6 @@
       "text": "You must register a Shinkai identity before you can share folders over the Shinkai Network.",
       "action": "Click Here to Learn How"
     }
-  },
-  "subscriptions": {
-    "label": "My Subscriptions",
-    "browse": "Browse Public Subscriptions"
   },
   "inboxes": {
     "updateName": "Update inbox name",

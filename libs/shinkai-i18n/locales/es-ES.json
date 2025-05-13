@@ -263,9 +263,7 @@
       "chats": "Chats",
       "disconnect": "Desconectar",
       "helpAndSupport": "Ayuda y Soporte",
-      "mySubscriptions": "Mis Suscripciones",
       "settings": "Ajustes",
-      "subscriptions": "Explorar Suscripciones",
       "vectorFs": "Explorador de Mis Archivos de IA",
       "vectorSearch": "Búsqueda de Contenido de Archivos de IA"
     },
@@ -592,10 +590,6 @@
     },
     "restartNode": "Por favor, reinicia tu Nodo Shinkai",
     "unavailable": "Tu Nodo Shinkai no está disponible"
-  },
-  "subscriptions": {
-    "browse": "Explorar Suscripciones Públicas",
-    "label": "Mis Suscripciones"
   },
   "tasks": {
     "runNow": "Ejecutar ahora"

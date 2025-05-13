@@ -263,9 +263,7 @@
       "chats": "チャット",
       "disconnect": "切断",
       "helpAndSupport": "ヘルプとサポート",
-      "mySubscriptions": "私のサブスクリプション",
       "settings": "設定",
-      "subscriptions": "サブスクリプションを閲覧",
       "vectorFs": "私のAIファイルエクスプローラ",
       "vectorSearch": "AIファイルコンテンツ検索"
     },
@@ -592,10 +590,6 @@
     },
     "restartNode": "Shinkaiノードを再起動してください",
     "unavailable": "Shinkaiノードが利用できません"
-  },
-  "subscriptions": {
-    "browse": "パブリックサブスクリプションを閲覧",
-    "label": "マイサブスクリプション"
   },
   "tasks": {
     "runNow": "今すぐ実行"

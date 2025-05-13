@@ -26,8 +26,6 @@ import {
 import { PlaygroundProvider } from '../components/playground-tool/context/playground-context';
 import { PromptSelectionProvider } from '../components/prompt/context/prompt-selection-context';
 import { TableSheetProvider } from '../components/sheet/context/table-context';
-import PublicSharedFolderSubscription from '../components/subscriptions/public-shared-folders';
-import MySubscriptions from '../components/subscriptions/subscriptions';
 import ToolDetails from '../components/tools/tool-details';
 import { VectorFolderSelectionProvider } from '../components/vector-fs/components/folder-selection-list';
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
@@ -342,21 +340,7 @@ const AppRoutes = () => {
               path="vector-search"
             />
           </Route>
-          <Route
-            element={
-              <ProtectedRoute>
-                <VectorFsProvider>
-                  <Outlet />
-                </VectorFsProvider>
-              </ProtectedRoute>
-            }
-          >
-            <Route element={<MySubscriptions />} path="my-subscriptions" />
-            <Route
-              element={<PublicSharedFolderSubscription />}
-              path="public-subscriptions"
-            />
-          </Route>
+
           <Route
             element={
               <ProtectedRoute>

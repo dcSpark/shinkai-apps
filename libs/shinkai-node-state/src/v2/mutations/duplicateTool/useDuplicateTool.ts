@@ -4,7 +4,6 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../../lib/constants';
 import { FunctionKeyV2 } from '../../constants';
 import { getPlaygroundTool } from '../../queries/getPlaygroundTool';
 import { APIError } from '../../types';
@@ -25,7 +24,7 @@ export const useDuplicateTool = (options?: Options) => {
     ...options,
     onSuccess: async (response, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [FunctionKey.GET_LIST_TOOLS],
+        queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
       });
 
       await queryClient.prefetchQuery({

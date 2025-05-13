@@ -4,7 +4,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../../lib/constants';
+import { FunctionKeyV2 } from '../../constants';
 import { APIError } from '../../types';
 import { importTool } from '.';
 import { ImportToolInput, ImportToolOutput } from './types';
@@ -19,7 +19,7 @@ export const useImportTool = (options?: Options) => {
     ...options,
     onSuccess: (response, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: [FunctionKey.GET_LIST_TOOLS],
+        queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
       });
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);

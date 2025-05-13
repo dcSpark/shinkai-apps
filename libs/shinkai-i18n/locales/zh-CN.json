@@ -263,9 +263,7 @@
       "chats": "聊天",
       "disconnect": "断开连接",
       "helpAndSupport": "帮助与支持",
-      "mySubscriptions": "我的订阅",
       "settings": "设置",
-      "subscriptions": "浏览订阅",
       "vectorFs": "我的 AI 文件浏览器",
       "vectorSearch": "AI 文件内容搜索"
     },
@@ -592,10 +590,6 @@
     },
     "restartNode": "请重启您的 Shinkai 节点",
     "unavailable": "您的Shinkai节点不可用"
-  },
-  "subscriptions": {
-    "browse": "浏览公共订阅",
-    "label": "我的订阅"
   },
   "tasks": {
     "runNow": "立即运行"

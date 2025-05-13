@@ -26,13 +26,10 @@ import {
   AIAgentIcon,
   AISearchContentIcon,
   AisIcon,
-  // AiTasksIcon,
-  // BrowseSubscriptionIcon,
   CreateAIIcon,
   FilesIcon,
   InboxIcon,
   ScheduledTasksIcon,
-  // MySubscriptionsIcon,
   SheetIcon,
   ShinkaiCombinationMarkIcon,
   ToolsIcon,
@@ -254,18 +251,6 @@ export function MainNav() {
         href: '/vector-search',
         icon: <AISearchContentIcon className="h-5 w-5" />,
       },
-
-    // {
-    //   title: t('layout.menuItems.subscriptions'),
-    //   href: '/public-subscriptions',
-    //   icon: <BrowseSubscriptionIcon className="h-5 w-5" />,
-    // },
-    // {
-    //   title: t('layout.menuItems.mySubscriptions'),
-    //   href: '/my-subscriptions',
-    //   icon: <MySubscriptionsIcon className="h-5 w-5" />,
-    // },
-
     {
       title: 'Scheduled Tasks',
       href: '/tasks',
