@@ -11,6 +11,7 @@ import {
   GetListDirectoryContentsResponse,
   GetSearchDirectoryContentsRequest,
   GetSearchDirectoryContentsResponse,
+  GetSearchVectorSearchRequest,
   MoveFolderRequest,
   MoveFolderResponse,
   MoveFsItemRequest,
@@ -176,6 +177,23 @@ export const retrieveVectorResource = async (
     urlJoin(nodeAddress, '/v2/retrieve_vector_resource'),
     {
       params: { path: payload.path },
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
+};
+
+export const searchVectorFs = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetSearchVectorSearchRequest,
+) => {
+  const response = await httpClient.get(
+    // retrieve_vector_search_simplified_json
+    urlJoin(nodeAddress, '/v2/search_vector_fs'),
+    {
+      params: payload,
       headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
     },

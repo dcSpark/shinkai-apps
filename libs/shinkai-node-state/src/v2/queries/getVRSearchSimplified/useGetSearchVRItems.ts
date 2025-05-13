@@ -1,6 +1,6 @@
 import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../constants';
+import { FunctionKeyV2 } from '../../constants';
 import { getVRSearchSimplified } from './index';
 import {
   GetVRSearchSimplifiedInput,
@@ -8,7 +8,7 @@ import {
 } from './types';
 
 export type UseGetSearchVRItems = [
-  FunctionKey.GET_VR_SEARCH_SIMPLIFIED,
+  FunctionKeyV2.GET_VR_SEARCH_SIMPLIFIED,
   GetVRSearchSimplifiedInput,
 ];
 
@@ -25,7 +25,7 @@ export const useGetVRSeachSimplified = (
   options?: Omit<Options, 'queryKey' | 'queryFn'>,
 ) => {
   const response = useQuery({
-    queryKey: [FunctionKey.GET_VR_SEARCH_SIMPLIFIED, input],
+    queryKey: [FunctionKeyV2.GET_VR_SEARCH_SIMPLIFIED, input],
     queryFn: () => getVRSearchSimplified(input),
     ...options,
   });
