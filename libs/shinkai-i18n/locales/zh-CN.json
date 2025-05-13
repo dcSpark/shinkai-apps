@@ -524,20 +524,6 @@
       "label": "侧边栏"
     }
   },
-  "sheet": {
-    "actions": {
-      "createProject": "创建项目",
-      "deleteProject": "删除项目",
-      "deleteProjectConfirmationDescription": "此项目将立即被删除。您无法撤销此操作。",
-      "deleteProjectConfirmationTitle": "删除此项目？"
-    },
-    "emptyStateDescription": "开始使用深海表格连接您的数据！",
-    "emptyStateTitle": "未找到表格。",
-    "form": {
-      "projectName": "项目名称"
-    },
-    "label": "深海表格"
-  },
   "shinkaiNode": {
     "manager": "Shinkai 节点管理器",
     "models": {
