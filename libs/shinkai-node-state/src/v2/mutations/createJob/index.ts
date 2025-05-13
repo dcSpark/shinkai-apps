@@ -27,7 +27,7 @@ export const createJob = async ({
         vector_fs_items: selectedVRFiles ?? [],
         vector_fs_folders: selectedVRFolders ?? [],
       },
-      associated_ui: sheetId ? { Sheet: sheetId } : null,
+      associated_ui: null,
       is_hidden: isHidden,
     },
   });

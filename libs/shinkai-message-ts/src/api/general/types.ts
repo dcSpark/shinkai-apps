@@ -107,7 +107,7 @@ export type Tool = {
 };
 
 export type WsMessage = {
-  message_type: 'Stream' | 'ShinkaiMessage' | 'Sheet' | 'Widget';
+  message_type: 'Stream' | 'ShinkaiMessage' | 'Widget';
   inbox: string;
   message: string;
   error_message: string;

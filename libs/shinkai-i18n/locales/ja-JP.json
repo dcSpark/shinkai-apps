@@ -524,20 +524,6 @@
       "label": "サイドバー"
     }
   },
-  "sheet": {
-    "actions": {
-      "createProject": "プロジェクトを作成",
-      "deleteProject": "プロジェクトを削除",
-      "deleteProjectConfirmationDescription": "このプロジェクトはすぐに削除されます。この操作は元に戻すことができません。",
-      "deleteProjectConfirmationTitle": "このプロジェクトを削除しますか？"
-    },
-    "emptyStateDescription": "データを深海シートに接続し始めましょう！",
-    "emptyStateTitle": "シートが見つかりません。",
-    "form": {
-      "projectName": "プロジェクト名"
-    },
-    "label": "深海シート"
-  },
   "shinkaiNode": {
     "manager": "Shinkaiノードマネージャー",
     "models": {

@@ -10,8 +10,7 @@ export enum MessageSchemaType {
   JobCreationSchema = 'JobCreationSchema',
   JobMessageSchema = 'JobMessageSchema',
   PreMessageSchema = 'PreMessageSchema',
-  CreateRegistrationCode = 'CreateRegistrationCode',
-  UseRegistrationCode = 'UseRegistrationCode',
+
   APIGetMessagesFromInboxRequest = 'APIGetMessagesFromInboxRequest',
   APIReadUpToTimeRequest = 'APIReadUpToTimeRequest',
   APIAddAgentRequest = 'APIAddAgentRequest',
@@ -44,16 +43,6 @@ export enum MessageSchemaType {
   // ws
   WSMessage = 'WSMessage',
   GetLastNotifications = 'GetLastNotifications',
-  // sheet
-  UserSheets = 'UserSheets',
-  SetColumn = 'SetColumn',
-  RemoveColumn = 'RemoveColumn',
-  RemoveSheet = 'RemoveSheet',
-  CreateEmptySheet = 'CreateEmptySheet',
-  SetCellValue = 'SetCellValue',
-  GetSheet = 'GetSheet',
-  AddRows = 'AddRows',
-  RemoveRows = 'RemoveRows',
   // tools
   ListAllShinkaiTools = 'ListAllShinkaiTools',
   GetShinkaiTool = 'GetShinkaiTool',
@@ -205,40 +194,10 @@ export type JSShinkaiTool = {
 export type ShinkaiToolType = 'JS';
 export type ShinkaiTool = JSShinkaiTool;
 
-export enum ColumnType {
-  Text = 'Text',
-  Number = 'Number',
-  Formula = 'Formula',
-  UploadedFiles = 'UploadedFiles',
-  LLMCall = 'LLMCall',
-  MultipleVRFiles = 'MultipleVRFiles',
-}
-export enum ColumnStatus {
-  Ready = 'Ready',
-  Pending = 'Pending',
-  Error = 'Error',
-}
 export type LLMCallPayload = {
   input: string;
   llm_provider_name: string;
   input_hash?: string;
-};
-export type ColumnBehavior =
-  | ColumnType.Text
-  | ColumnType.Number
-  | { [ColumnType.Formula]: string }
-  | {
-      [ColumnType.LLMCall]: LLMCallPayload;
-    }
-  | ColumnType.MultipleVRFiles
-  | { [ColumnType.UploadedFiles]: { fileInboxId: string } };
-
-export type Columns = {
-  [key: string]: {
-    behavior?: ColumnBehavior;
-    id: string;
-    name: string;
-  };
 };
 
 export interface VectorFSItemScopeEntry {
