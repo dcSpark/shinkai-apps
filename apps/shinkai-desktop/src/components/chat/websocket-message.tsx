@@ -224,7 +224,18 @@ export const useWebSocketMessageSmooth = ({
       subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
       unsubscriptions: [],
     };
-    sendMessage(JSON.stringify(wsMessage));
+    const wsMessageString = JSON.stringify(wsMessage);
+    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
+      wsMessageString,
+      auth?.profile_encryption_sk ?? '',
+      auth?.profile_identity_sk ?? '',
+      auth?.node_encryption_pk ?? '',
+      auth?.shinkai_identity ?? '',
+      auth?.profile ?? '',
+      auth?.shinkai_identity ?? '',
+      '',
+    );
+    sendMessage(shinkaiMessage);
   }, [
     auth?.node_encryption_pk,
     auth?.profile,
@@ -381,7 +392,17 @@ export const useWebSocketMessage = ({
       unsubscriptions: [],
     };
     const wsMessageString = JSON.stringify(wsMessage);
-    sendMessage(wsMessageString);
+    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
+      wsMessageString,
+      auth?.profile_encryption_sk ?? '',
+      auth?.profile_identity_sk ?? '',
+      auth?.node_encryption_pk ?? '',
+      auth?.shinkai_identity ?? '',
+      auth?.profile ?? '',
+      auth?.shinkai_identity ?? '',
+      '',
+    );
+    sendMessage(shinkaiMessage);
   }, [
     auth?.node_encryption_pk,
     auth?.profile,
@@ -502,7 +523,17 @@ export const useWebSocketTools = ({
       unsubscriptions: [],
     };
     const wsMessageString = JSON.stringify(wsMessage);
-    sendMessage(wsMessageString);
+    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
+      wsMessageString,
+      auth?.profile_encryption_sk ?? '',
+      auth?.profile_identity_sk ?? '',
+      auth?.node_encryption_pk ?? '',
+      auth?.shinkai_identity ?? '',
+      auth?.profile ?? '',
+      auth?.shinkai_identity ?? '',
+      '',
+    );
+    sendMessage(shinkaiMessage);
   }, [
     auth?.node_encryption_pk,
     auth?.profile,
