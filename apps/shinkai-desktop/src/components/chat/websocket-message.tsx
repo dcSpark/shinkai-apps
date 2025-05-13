@@ -348,7 +348,19 @@ export const useWebSocketMessage = ({
               lastMessage.role === 'assistant' &&
               lastMessage.status?.type === 'running'
             ) {
-              lastMessage.content += parseData.message;
+              const raw = (lastMessage.content ?? '') + parseData.message;
+
+              const hasCompleteThinking =
+                raw.includes('<think>') && raw.includes('</think>');
+
+              lastMessage.reasoning = {
+                text: '',
+                status: hasCompleteThinking
+                  ? { type: 'complete', reason: 'unknown' }
+                  : { type: 'running' },
+              };
+
+              lastMessage.content = raw;
             }
           }),
         );

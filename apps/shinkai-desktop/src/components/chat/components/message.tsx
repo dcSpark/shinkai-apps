@@ -8,6 +8,7 @@ import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils
 import {
   AssistantMessage,
   FormattedMessage,
+  TextStatus,
   ToolCall,
 } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import {
@@ -36,6 +37,7 @@ import { PrettyJsonPrint } from '@shinkai_network/shinkai-ui';
 import {
   appIcon,
   ReactJsIcon,
+  ReasoningIcon,
   ToolsIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
@@ -44,6 +46,7 @@ import { format } from 'date-fns';
 import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
+  CheckCircle,
   Edit3,
   GitFork,
   InfoIcon,
@@ -350,6 +353,13 @@ export const MessageBase = ({
                   minimalistMode && 'rounded-sm px-2 pb-1.5 pt-1.5',
                 )}
               >
+                {message.role === 'assistant' && message.reasoning != null && (
+                  <Reasoning
+                    reasoning={message.reasoning.text}
+                    status={message.reasoning.status}
+                  />
+                )}
+
                 {message.role === 'assistant' &&
                   message.toolCalls &&
                   message.toolCalls.length > 0 && (
@@ -360,7 +370,7 @@ export const MessageBase = ({
                       {message.toolCalls.map((tool, index) => {
                         return (
                           <AccordionItem
-                            className="bg-official-gray-900 overflow-hidden rounded-lg"
+                            className="bg-official-gray-950 border-official-gray-750 overflow-hidden rounded-lg border"
                             disabled={tool.status !== ToolStatusType.Complete}
                             key={`${tool.name}-${index}`}
                             value={`${tool.name}-${index}`}
@@ -368,7 +378,7 @@ export const MessageBase = ({
                             <AccordionTrigger
                               className={cn(
                                 'min-w-[10rem] gap-3 py-0 pr-2 no-underline hover:no-underline',
-                                'hover:bg-official-gray-950 [&[data-state=open]]:bg-official-gray-950 transition-colors',
+                                'hover:bg-official-gray-900 [&[data-state=open]]:bg-official-gray-900 transition-colors',
                                 tool.status !== ToolStatusType.Complete &&
                                   '[&>svg]:hidden',
                               )}
@@ -406,10 +416,11 @@ export const MessageBase = ({
                       })}
                     </Accordion>
                   )}
+
                 {message.role === 'assistant' && (
                   <MarkdownText
                     content={extractErrorPropertyOrContent(
-                      message.content,
+                      message.content.replace(/<think>[\s\S]*?<\/think>/g, ''),
                       'error_message',
                     )}
                     isRunning={
@@ -733,7 +744,7 @@ export function ToolCard({
           <div className="flex items-center gap-1">
             <span className="text-gray-80 text-em-sm">{renderLabelText()}</span>
             <Link
-              className="text-em-xs font-semibold text-white hover:underline"
+              className="text-em-sm font-semibold text-white hover:underline"
               to={`/tools/${toolRouterKey}`}
             >
               {formatText(name)}
@@ -742,6 +753,68 @@ export function ToolCard({
         </div>
       </motion.div>
     </AnimatePresence>
+  );
+}
+export function Reasoning({
+  reasoning,
+  status,
+}: {
+  reasoning: string;
+  status?: TextStatus;
+}) {
+  const renderStatus = () => {
+    if (status?.type === 'complete') {
+      return <ReasoningIcon className="text-brand size-full" />;
+    }
+    if (status?.type === 'incomplete') {
+      return <XCircle className="text-official-gray-400 size-full" />;
+    }
+    if (status?.type === 'running') {
+      return <Loader2 className="text-brand size-full animate-spin" />;
+    }
+    return null;
+  };
+
+  const renderReasoningText = () => {
+    if (status?.type === 'complete') {
+      return 'Reasoning';
+    }
+    return 'Thinking...';
+  };
+
+  return (
+    <Accordion
+      className="max-w-full space-y-1.5 self-baseline overflow-x-auto pb-3"
+      collapsible
+      type="single"
+    >
+      <AccordionItem
+        className="bg-official-gray-950 border-official-gray-750 overflow-hidden rounded-lg border"
+        value="reasoning"
+      >
+        <AccordionTrigger
+          className={cn(
+            'inline-flex w-auto gap-3 p-[5px] no-underline hover:no-underline',
+            'transition-colors',
+          )}
+          disabled={status?.type === 'running'}
+        >
+          <div className="flex items-center gap-1">
+            <div className="size-7 shrink-0 px-1.5">{renderStatus()}</div>
+            <div className="flex items-center gap-1">
+              <span className="text-gray-80 text-em-sm">
+                {renderReasoningText()}
+              </span>
+            </div>
+          </div>
+        </AccordionTrigger>
+        <AccordionContent className="bg-official-gray-950 flex flex-col gap-1 rounded-b-lg px-3 pb-3 pt-2 text-sm">
+          <span className="text-official-gray-400 break-words">
+            {reasoning}
+          </span>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 }
 
