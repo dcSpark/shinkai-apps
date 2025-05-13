@@ -320,6 +320,27 @@ export default function ToolDetailsCard({
     token: auth?.api_v2_key ?? '',
     tool_set_key: 'tool_set' in tool ? (tool.tool_set as string) : '',
   });
+
+  // Dynamically generate uiSchema for configuration form
+  const configUiSchema = useMemo(() => {
+    const uiSchema: Record<string, any> = {
+      'ui:submitButtonOptions': { norender: true },
+    };
+    if (tool && 'configurations' in tool && tool.configurations?.properties) {
+      const sensitiveKeywords = ['secret', 'key', 'password', 'private'];
+      Object.keys(tool.configurations.properties).forEach((key) => {
+        if (
+          sensitiveKeywords.some((keyword) =>
+            key.toLowerCase().includes(keyword),
+          )
+        ) {
+          uiSchema[key] = { 'ui:widget': 'password' };
+        }
+      });
+    }
+    return uiSchema;
+  }, [tool]);
+
   useEffect(() => {
     if (
       tool &&
@@ -719,14 +740,16 @@ export default function ToolDetailsCard({
                 </span>
               </TabsTrigger>
             )}
-          {'oauth' in tool && tool.oauth && tool.oauth.length > 0 && (
-            <TabsTrigger
-              className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
-              value="oauth"
-            >
-              OAuth &amp; Permissions
-            </TabsTrigger>
-          )}
+          {'oauth' in tool &&
+            tool.oauth &&
+            tool.oauth.length > 0 && (
+              <TabsTrigger
+                className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+                value="oauth"
+              >
+                OAuth &amp; Permissions
+              </TabsTrigger>
+            )}
           <TabsTrigger
             className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
             value="try-it-out"
@@ -1001,7 +1024,7 @@ export default function ToolDetailsCard({
                   }}
                   onSubmit={handleSaveToolConfig}
                   schema={tool.configurations}
-                  uiSchema={{ 'ui:submitButtonOptions': { norender: true } }}
+                  uiSchema={configUiSchema}
                   validator={validator}
                 />
                 <div className="flex w-full justify-end">
@@ -1193,9 +1216,12 @@ export default function ToolDetailsCard({
               validator={validator}
             />
 
-            {(!('input_args' in tool) ||
+            {(
+              !('input_args' in tool) ||
               !tool.input_args ||
-              Object.keys(tool.input_args.properties).length === 0) && (
+              !(tool.input_args as any).properties ||
+              Object.keys((tool.input_args as any).properties).length === 0
+            ) && (
               <div className="text-official-gray-400 py-2 text-sm">
                 No input parameters required.
               </div>
