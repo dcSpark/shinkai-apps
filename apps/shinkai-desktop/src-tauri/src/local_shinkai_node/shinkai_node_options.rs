@@ -29,6 +29,7 @@ pub struct ShinkaiNodeOptions {
     pub shinkai_tools_runner_deno_binary_path: Option<String>,
     pub shinkai_tools_runner_uv_binary_path: Option<String>,
     pub shinkai_store_url: Option<String>,
+    pub install_folder_path: Option<String>,
     pub secret_desktop_installation_proof_key: Option<String>,
 }
 
@@ -181,6 +182,12 @@ impl ShinkaiNodeOptions {
                     .or(base_options.shinkai_store_url)
                     .unwrap_or_default(),
             ),
+            install_folder_path: Some(
+                options
+                    .install_folder_path
+                    .or(base_options.install_folder_path)
+                    .unwrap_or_default(),
+            ),
             secret_desktop_installation_proof_key: default_options.secret_desktop_installation_proof_key,
         }
     }
@@ -211,6 +218,14 @@ impl Default for ShinkaiNodeOptions {
             .to_string_lossy()
             .to_string();
 
+        let install_folder_path = std::env::current_exe()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .join("pre-install")
+            .to_string_lossy()
+            .to_string();
+
         ShinkaiNodeOptions {
             node_api_ip: Some("127.0.0.1".to_string()),
             node_api_port: Some("9550".to_string()),
@@ -235,6 +250,7 @@ impl Default for ShinkaiNodeOptions {
             shinkai_tools_runner_deno_binary_path: Some(shinkai_tools_runner_deno_binary_path),
             shinkai_tools_runner_uv_binary_path: Some(shinkai_tools_runner_uv_binary_path),
             shinkai_store_url: Some("https://store-api.shinkai.com".to_string()),
+            install_folder_path: Some(install_folder_path),
             secret_desktop_installation_proof_key: option_env!(
                 "SECRET_DESKTOP_INSTALLATION_PROOF_KEY"
             )
