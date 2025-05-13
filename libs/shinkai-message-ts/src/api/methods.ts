@@ -3,7 +3,6 @@ import { httpClient } from '../http-client';
 import { CredentialsPayload } from '../models';
 import { urlJoin } from '../utils/url-join';
 import { ShinkaiMessageBuilderWrapper } from '../wasm/ShinkaiMessageBuilderWrapper';
-import { DirectoryContent } from './vector-fs/types';
 
 export const retrieveVectorSearchSimplified = async (
   nodeAddress: string,
@@ -194,73 +193,6 @@ export const searchItemsVR = async (
   return data;
 };
 
-export const downloadVectorResource = async (
-  nodeAddress: string,
-  path: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.downloadVectorResource(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    path,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/retrieve_vrkai'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-  const data = response.data;
-  return data;
-};
-export const deleteLLMProvider = async (
-  nodeAddress: string,
-  agentId: string,
-  sender: string,
-  sender_subidentity: string,
-  receiver: string,
-  receiver_subidentity: string,
-  setupDetailsState: CredentialsPayload,
-): Promise<{ data: any; status: string }> => {
-  const messageStr = ShinkaiMessageBuilderWrapper.deleteLLMProvider(
-    setupDetailsState.profile_encryption_sk,
-    setupDetailsState.profile_identity_sk,
-    setupDetailsState.node_encryption_pk,
-    agentId,
-    sender,
-    sender_subidentity,
-    receiver,
-    receiver_subidentity,
-  );
-
-  const message = JSON.parse(messageStr);
-
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v1/remove_agent'),
-    message,
-
-    {
-      responseType: 'json',
-    },
-  );
-  const data = response.data;
-  return data;
-};
-
 export const scanOllamaModels = async (
   nodeAddress: string,
   sender_subidentity: string,
@@ -321,50 +253,4 @@ export const addOllamaModels = async (
   );
   const data = response.data;
   return data;
-};
-
-export const retrieveFilesForJob = async (
-  nodeAddress: string,
-  bearerToken: string,
-  payload: { job_id: string },
-): Promise<DirectoryContent[]> => {
-  const response = await httpClient.get(
-    urlJoin(nodeAddress, '/v2/retrieve_files_for_job'),
-    {
-      params: payload,
-      headers: { Authorization: `Bearer ${bearerToken}` },
-      responseType: 'json',
-    },
-  );
-  return response.data;
-};
-
-export const setPreferences = async (
-  nodeAddress: string,
-  bearerToken: string,
-  payload: { default_llm_provider?: string; max_iterations?: number },
-): Promise<any> => {
-  const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v2/set_preferences'),
-    payload,
-    {
-      headers: { Authorization: `Bearer ${bearerToken}` },
-      responseType: 'json',
-    },
-  );
-  return response.data;
-};
-
-export const getPreferences = async (
-  nodeAddress: string,
-  bearerToken: string,
-): Promise<{ default_llm_provider?: string; max_iterations?: number }> => {
-  const response = await httpClient.get(
-    urlJoin(nodeAddress, '/v2/get_preferences'),
-    {
-      headers: { Authorization: `Bearer ${bearerToken}` },
-      responseType: 'json',
-    },
-  );
-  return response.data;
 };

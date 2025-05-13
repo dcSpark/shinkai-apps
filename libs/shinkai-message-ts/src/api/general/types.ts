@@ -192,3 +192,15 @@ export type GetShinkaiFreeModelQuotaResponse = {
   used_tokens: number;
   reset_time: number;
 };
+
+export type GetPreferencesResponse = {
+  default_llm_provider?: string;
+  max_iterations?: number;
+};
+
+export type SetPreferencesRequest = {
+  default_llm_provider?: string;
+  max_iterations?: number;
+};
+
+export type SetPreferencesResponse = string;

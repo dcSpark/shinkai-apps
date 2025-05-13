@@ -5,5 +5,4 @@ export type SetMaxChatIterationsInput = Token & {
   maxIterations: number;
 };
 
-// The setPreferences endpoint returns 'any' for now.
-export type SetMaxChatIterationsOutput = any;
+export type SetMaxChatIterationsOutput = string;

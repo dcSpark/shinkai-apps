@@ -4,7 +4,10 @@ import { ShinkaiMessageBuilderWrapper } from '../../wasm/ShinkaiMessageBuilderWr
 import {
   CheckHealthResponse,
   GetNodeStorageLocationResponse,
+  GetPreferencesResponse,
   GetShinkaiFreeModelQuotaResponse,
+  SetPreferencesRequest,
+  SetPreferencesResponse,
   SubmitRegistrationCodeRequest,
   SubmitRegistrationCodeResponse,
   SubmitRegistrationNoCodeRequest,
@@ -133,4 +136,34 @@ export const getShinkaiFreeModelQuota = async (
     },
   );
   return response.data as GetShinkaiFreeModelQuotaResponse;
+};
+
+export const setPreferences = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: SetPreferencesRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/set_preferences'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as SetPreferencesResponse;
+};
+
+export const getPreferences = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/get_preferences'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetPreferencesResponse;
 };

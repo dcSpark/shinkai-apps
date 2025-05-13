@@ -19,6 +19,8 @@ import {
   RemoveFolderResponse,
   RemoveFsItemRequest,
   RemoveFsItemResponse,
+  RetrieveFilesForJobRequest,
+  RetrieveFilesForJobResponse,
 } from './types';
 
 export const getListDirectoryContents = async (
@@ -162,4 +164,20 @@ export const removeFsItem = async (
     },
   );
   return response.data as RemoveFsItemResponse;
+};
+
+export const retrieveFilesForJob = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: RetrieveFilesForJobRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/retrieve_files_for_job'),
+    {
+      params: payload,
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as RetrieveFilesForJobResponse;
 };
