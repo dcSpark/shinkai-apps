@@ -1,6 +1,5 @@
 import { httpClient } from '../../http-client';
 import { urlJoin } from '../../utils/url-join';
-import { ShinkaiMessageBuilderWrapper } from '../../wasm/ShinkaiMessageBuilderWrapper';
 import {
   CheckHealthResponse,
   GetNodeStorageLocationResponse,
@@ -10,8 +9,6 @@ import {
   InitialRegistrationResponse,
   SetPreferencesRequest,
   SetPreferencesResponse,
-  SubmitRegistrationCodeRequest,
-  SubmitRegistrationCodeResponse,
 } from './types';
 
 export const checkHealth = async (nodeAddress: string) => {
@@ -31,41 +28,6 @@ export const getNodeStorageLocation = async (
     { responseType: 'json', headers: { Authorization: `Bearer ${token}` } },
   );
   return response.data;
-};
-
-export const submitRegistrationCode = async (
-  nodeAddress: string,
-  setupData: SubmitRegistrationCodeRequest,
-): Promise<SubmitRegistrationCodeResponse> => {
-  try {
-    const messageStr =
-      ShinkaiMessageBuilderWrapper.use_code_registration_for_device(
-        setupData.my_device_encryption_sk,
-        setupData.my_device_identity_sk,
-        setupData.profile_encryption_sk,
-        setupData.profile_identity_sk,
-        setupData.node_encryption_pk,
-        setupData.registration_code,
-        setupData.identity_type,
-        setupData.permission_type,
-        setupData.registration_name,
-        setupData.profile || '', // sender_profile_name: it doesn't exist yet in the Node
-        setupData.shinkai_identity,
-      );
-
-    const message = JSON.parse(messageStr);
-
-    const response = await httpClient.post(
-      urlJoin(nodeAddress, '/v1/use_registration_code'),
-      message,
-      { responseType: 'json' },
-    );
-
-    return response.data;
-  } catch (error) {
-    console.error('Error using registration code:', error);
-    throw error;
-  }
 };
 
 export const updateNodeName = async (
