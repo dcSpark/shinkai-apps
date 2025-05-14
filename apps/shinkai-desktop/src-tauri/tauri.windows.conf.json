@@ -10,6 +10,7 @@
     },
     "resources": {
       "llm-models/": "llm-models/",
+      "pre-install/": "pre-install/",
       "external-binaries/ollama/lib/": "lib/"
     }
   }

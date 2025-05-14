@@ -223,6 +223,10 @@ jobs:
         run: |
           npx ts-node ./ci-scripts/generate-ollama-models-repository.ts
 
+      - name: Download default tools
+        run: |
+          bash ./ci-scripts/update-tools.sh
+
       - name: Adapt package version
         run: |
           npm version ${{ needs.prebuild.outputs.version }}${{ github.run_number }} --git-tag-version false
