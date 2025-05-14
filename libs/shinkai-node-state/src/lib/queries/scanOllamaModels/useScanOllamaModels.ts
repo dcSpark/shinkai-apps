@@ -1,5 +1,4 @@
-import { scanOllamaModels } from '@shinkai_network/shinkai-message-ts/api';
-import { CredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
+import { scanOllamaModels } from '@shinkai_network/shinkai-message-ts/api/ollama';
 import {
   QueryObserverOptions,
   useQuery,
@@ -8,11 +7,9 @@ import {
 
 import { FunctionKey } from '../../constants';
 
-export type ScanOllamaModelsInput = CredentialsPayload & {
+export type ScanOllamaModelsInput = {
   nodeAddress: string;
-  sender: string;
-  senderSubidentity: string;
-  shinkaiIdentity: string;
+  token: string;
 };
 
 export type ScanOllamaModelsResponse = Awaited<
@@ -26,18 +23,8 @@ export const useScanOllamaModels = (
   const query = useQuery({
     queryKey: [FunctionKey.SCAN_OLLAMA_MODELS, input],
     queryFn: async () => {
-      const {
-        nodeAddress,
-        senderSubidentity,
-        shinkaiIdentity,
-        ...credentials
-      } = input;
-      const response = await scanOllamaModels(
-        nodeAddress,
-        senderSubidentity,
-        shinkaiIdentity,
-        credentials,
-      );
+      const { nodeAddress, token } = input;
+      const response = await scanOllamaModels(nodeAddress, token);
 
       // TODO: temporary fix until shinkai node is updated
       const uniqueModels = response.filter(

@@ -1,5 +1,4 @@
-import { addOllamaModels } from '@shinkai_network/shinkai-message-ts/api';
-import { CredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
+import { addOllamaModels } from '@shinkai_network/shinkai-message-ts/api/ollama';
 import {
   useMutation,
   UseMutationOptions,
@@ -8,11 +7,9 @@ import {
 
 import { FunctionKey } from '../../constants';
 
-export type AddOllamaModelsInput = CredentialsPayload & {
+export type AddOllamaModelsInput = {
   nodeAddress: string;
-  sender: string;
-  senderSubidentity: string;
-  shinkaiIdentity: string;
+  token: string;
   payload: { models: string[] };
 };
 
@@ -22,20 +19,8 @@ export const useAddOllamaModels = (
   const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: (value): Promise<void> => {
-      const {
-        nodeAddress,
-        senderSubidentity,
-        shinkaiIdentity,
-        payload,
-        ...credentials
-      } = value;
-      return addOllamaModels(
-        nodeAddress,
-        senderSubidentity,
-        shinkaiIdentity,
-        credentials,
-        payload,
-      );
+      const { nodeAddress, token, payload } = value;
+      return addOllamaModels(nodeAddress, token, payload);
     },
     onSuccess: (...onSuccessParameters) => {
       queryClient.invalidateQueries({

@@ -1,8 +1,7 @@
 import {
   addOllamaModels,
   scanOllamaModels,
-} from '@shinkai_network/shinkai-message-ts/api';
-import { CredentialsPayload } from '@shinkai_network/shinkai-message-ts/models';
+} from '@shinkai_network/shinkai-message-ts/api/ollama';
 import {
   useMutation,
   UseMutationOptions,
@@ -11,11 +10,9 @@ import {
 
 import { FunctionKey } from '../../constants';
 
-export type SyncOllamaModelsInput = CredentialsPayload & {
+export type SyncOllamaModelsInput = {
   nodeAddress: string;
-  sender: string;
-  senderSubidentity: string;
-  shinkaiIdentity: string;
+  token: string;
 };
 
 export const useSyncOllamaModels = (
@@ -25,18 +22,8 @@ export const useSyncOllamaModels = (
   const queryClient = useQueryClient();
   const response = useMutation({
     mutationFn: async (value): Promise<void> => {
-      const {
-        nodeAddress,
-        senderSubidentity,
-        shinkaiIdentity,
-        ...credentials
-      } = value;
-      let ollamaModels = await scanOllamaModels(
-        nodeAddress,
-        senderSubidentity,
-        shinkaiIdentity,
-        credentials,
-      );
+      const { nodeAddress, token } = value;
+      let ollamaModels = await scanOllamaModels(nodeAddress, token);
       if (!ollamaModels?.length) {
         return;
       }
@@ -48,13 +35,7 @@ export const useSyncOllamaModels = (
       const payload = {
         models: ollamaModels.map((v) => v.model),
       };
-      return addOllamaModels(
-        nodeAddress,
-        senderSubidentity,
-        shinkaiIdentity,
-        credentials,
-        payload,
-      );
+      return addOllamaModels(nodeAddress, token, payload);
     },
     onSuccess: (...onSuccessParameters) => {
       queryClient.invalidateQueries({

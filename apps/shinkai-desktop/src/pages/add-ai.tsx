@@ -167,17 +167,7 @@ const AddAIPage = () => {
     isError: isOllamaModelsError,
     error: ollamaModelsError,
   } = useScanOllamaModels(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      sender: auth?.shinkai_identity ?? '',
-      senderSubidentity: auth?.profile ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
-    },
+    { nodeAddress: auth?.node_address ?? '', token: auth?.api_v2_key ?? '' },
     {
       enabled: !isCustomModelMode && currentModel === Models.Ollama,
       retry: 1,
