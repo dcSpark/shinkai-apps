@@ -1,7 +1,7 @@
 import './globals.css';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
+import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/v2/mutations/syncOllamaModels/useSyncOllamaModels';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -152,7 +152,7 @@ const App = () => {
   const {
     mutateAsync: syncOllamaModels,
     isPending: syncOllamaModelsIsPending,
-  } = useSyncOllamaModels(ALLOWED_OLLAMA_MODELS, {
+  } = useSyncOllamaModels({
     onSuccess: () => {
       successOllamaModelsSyncToast();
     },
@@ -181,6 +181,7 @@ const App = () => {
     syncOllamaModels({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
+      allowedModels: ALLOWED_OLLAMA_MODELS,
     });
   };
 

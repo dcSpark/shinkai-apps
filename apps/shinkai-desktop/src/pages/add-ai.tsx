@@ -6,12 +6,12 @@ import {
   AddAiModelFormSchema,
   addAiModelSchema,
 } from '@shinkai_network/shinkai-node-state/forms/agents/add-ai';
-import { useScanOllamaModels } from '@shinkai_network/shinkai-node-state/lib/queries/scanOllamaModels/useScanOllamaModels';
 import {
   Models,
   modelsConfig,
 } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useAddLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/addLLMProvider/useAddLLMProvider';
+import { useScanOllamaModels } from '@shinkai_network/shinkai-node-state/v2/queries/scanOllamaModels/useScanOllamaModels';
 import {
   Button,
   buttonVariants,
