@@ -194,27 +194,31 @@ const EmptyMessage = () => {
   });
 
   const [isPolling, setIsPolling] = useState(true);
-  const [defaultAgents, setDefaultAgents] = useState<{ id: string; name: string }[]>([]);
-  const [loadedDefaultAgents, setLoadedDefaultAgents] = useState<string[]>([]);
   
   useEffect(() => {
-    const fetchDefaultAgents = async () => {
+    const checkDefaultTools = async () => {
+      const auth = useAuth.getState().auth;
       try {
-        const response = await axios.get('https://store-api.shinkai.com/store/defaults');
-        const defaultAgentsList = response.data
-          .filter((item: any) => item.type === 'Agent' && item.isDefault === true)
-          .map((agent: any) => {
-            const routerKeyParts = agent.routerKey.split(':::');
-            const agentId = routerKeyParts[routerKeyParts.length - 1];
-            return { id: agentId, name: agent.name };
-          });
-        setDefaultAgents(defaultAgentsList);
+        if (!auth?.node_address || !auth?.api_v2_key) {
+          console.error('Missing node address or API key');
+          return;
+        }
+        
+        const response = await axios.get(`${auth.node_address}/v2/check_default_tools_sync`, {
+          headers: {
+            'Authorization': `Bearer ${auth.api_v2_key}`
+          }
+        });
+        
+        if (response.data.is_synced) {
+          setIsPolling(false);
+        }
       } catch (error) {
-        console.error('Error fetching default agents:', error);
+        console.error('Error checking default tools sync:', error);
       }
     };
     
-    fetchDefaultAgents();
+    checkDefaultTools();
   }, []);
   
   const { data: recentlyUsedAgents } = useGetAgents({
@@ -233,25 +237,12 @@ const EmptyMessage = () => {
   });
   
   useEffect(() => {
-    if (!defaultAgents.length || !agents?.length) return;
-    
-    const loadedAgentIds = agents.map(agent => agent.agent_id);
-    const newLoadedDefaultAgents = defaultAgents
-      .filter(agent => loadedAgentIds.includes(agent.id))
-      .map(agent => agent.id);
-    
-    setLoadedDefaultAgents(newLoadedDefaultAgents);
-    
-    if (newLoadedDefaultAgents.length === defaultAgents.length) {
-      setIsPolling(false);
-    }
-    
     const timeoutId = setTimeout(() => {
       setIsPolling(false);
     }, 60000);
     
     return () => clearTimeout(timeoutId);
-  }, [agents, defaultAgents]);
+  }, []);
 
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const { data: toolsList, isSuccess: isToolsListSuccess } = useGetTools(
