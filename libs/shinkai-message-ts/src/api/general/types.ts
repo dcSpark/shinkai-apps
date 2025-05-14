@@ -161,13 +161,14 @@ export type SubmitRegistrationCodeResponse = {
 };
 
 export type SubmitRegistrationNoCodeRequest = {
-  node_address: string;
-  my_device_encryption_sk: string;
-  my_device_identity_sk: string;
-  profile_encryption_sk: string;
-  profile_identity_sk: string;
-  registration_name: string;
-  profile: string;
+  // node_address: string;
+  // my_device_encryption_sk: string;
+  // my_device_identity_sk: string;
+  // profile_encryption_sk: string;
+  profile_encryption_pk: string;
+  profile_identity_pk: string;
+  // registration_name: string;
+  // profile: string;
 };
 export type UseRegistrationNoCodeResponse = {
   message: string;

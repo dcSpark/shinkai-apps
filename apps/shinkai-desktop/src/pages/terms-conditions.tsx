@@ -6,10 +6,11 @@ import {
 } from '@shinkai_network/shinkai-node-state/forms/auth/quick-connection';
 import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/v2/mutations/submitRegistation/useSubmitRegistrationNoCode';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/v2/queries/getEncryptionKeys/useGetEncryptionKeys';
+import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { Button, buttonVariants, Checkbox } from '@shinkai_network/shinkai-ui';
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { createContext, useContext,useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
@@ -42,7 +43,11 @@ export const LogoTapContext = createContext<{
 
 export const useLogoTap = () => useContext(LogoTapContext);
 
-export const LogoTapProvider = ({ children }: { children: React.ReactNode }) => {
+export const LogoTapProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [tapCount, setTapCount] = useState(0);
   const [showLocalNodeOption, setShowLocalNodeOption] = useState(false);
 
@@ -65,6 +70,10 @@ const TermsAndConditionsPage = () => {
   const [termsAndConditionsAccepted, setTermsAndConditionsAccepted] =
     useState(false);
   const { showLocalNodeOption } = useLogoTap();
+
+  const { data: health } = useGetHealth({
+    nodeAddress: 'http://127.0.0.1:9550',
+  });
   // useShinkaiNodeEventsToast();
 
   const completeStep = useSettings((state) => state.completeStep);
@@ -104,6 +113,7 @@ const TermsAndConditionsPage = () => {
     isPending: submitRegistrationNodeCodeIsPending,
   } = useSubmitRegistrationNoCode({
     onSuccess: (response, setupPayload) => {
+      console.log('response', response);
       if (response.status === 'success' && encryptionKeys) {
         const updatedSetupData = {
           ...encryptionKeys,
@@ -146,10 +156,15 @@ const TermsAndConditionsPage = () => {
   async function onSubmit(currentValues: QuickConnectFormSchema) {
     if (!encryptionKeys) return;
     await submitRegistrationNoCode({
-      profile: 'main',
-      node_address: currentValues.node_address,
-      registration_name: currentValues.registration_name,
-      ...encryptionKeys,
+      nodeAddress: currentValues.node_address,
+      // profile: 'main',
+      // node_address: currentValues.node_address,
+      // registration_name: currentValues.registration_name,
+      setupData: {
+        // profile_encryption_sk: encryptionKeys.profile_encryption_sk,
+        profile_encryption_pk: encryptionKeys.profile_encryption_pk,
+        profile_identity_pk: encryptionKeys.profile_identity_pk,
+      },
     });
   }
 

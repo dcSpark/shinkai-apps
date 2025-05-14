@@ -15,12 +15,14 @@ export const submitRegistration = async (
   return response;
 };
 
-export const submitRegistrationNoCode = async (
-  setupData: SubmitRegistrationNoCodeRequest,
-) => {
-  const response = await submitRegistrationNoCodeApi(
-    setupData.node_address,
-    setupData,
-  );
+export type SubmitRegistrationNoCodeParams = {
+  nodeAddress: string;
+  setupData: SubmitRegistrationNoCodeRequest;
+};
+export const submitRegistrationNoCode = async ({
+  nodeAddress,
+  setupData,
+}: SubmitRegistrationNoCodeParams) => {
+  const response = await submitRegistrationNoCodeApi(nodeAddress, setupData);
   return response;
 };

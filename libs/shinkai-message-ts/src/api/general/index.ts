@@ -86,34 +86,33 @@ export const submitRegistrationNoCode = async (
   payload: SubmitRegistrationNoCodeRequest,
 ): Promise<SubmitRegistrationNoCodeResponse> => {
   try {
-    const healthResponse = await checkHealth(nodeAddress);
-    const { status, node_name, is_pristine } = healthResponse;
-    if (status !== 'ok') {
-      return { status: 'error' };
-    }
-    if (!is_pristine) {
-      return { status: 'non-pristine' };
-    }
+    // const healthResponse = await checkHealth(nodeAddress);
+    // const { status, node_name, is_pristine } = healthResponse;
+    // if (status !== 'ok') {
+    //   return { status: 'error' };
+    // }
+    // if (!is_pristine) {
+    //   return { status: 'non-pristine' };
+    // }
 
-    const messageStr =
-      ShinkaiMessageBuilderWrapper.initial_registration_with_no_code_for_device(
-        payload.my_device_encryption_sk,
-        payload.my_device_identity_sk,
-        payload.profile_encryption_sk,
-        payload.profile_identity_sk,
-        payload.registration_name,
-        payload.registration_name,
-        payload.profile || '', // sender_profile_name: it doesn't exist yet in the Node
-        node_name,
-      );
+    // const messageStr =
+    //   ShinkaiMessageBuilderWrapper.initial_registration_with_no_code_for_device(
+    //     payload.my_device_encryption_sk,
+    //     payload.my_device_identity_sk,
+    //     payload.profile_encryption_sk,
+    //     payload.profile_identity_sk,
+    //     payload.registration_name,
+    //     payload.registration_name,
+    //     payload.profile || '', // sender_profile_name: it doesn't exist yet in the Node
+    //     node_name,
+    //   );
 
-    const message = JSON.parse(messageStr);
     const response = await httpClient.post(
-      urlJoin(nodeAddress, '/v1/use_registration_code'),
-      message,
+      urlJoin(nodeAddress, '/v2/initial_registration'),
+      payload,
       { responseType: 'json' },
     );
-    const data = response.data.data;
+    const data = response.data;
     return { status: 'success', data };
   } catch (error) {
     console.error('Error in initial registration:', error);
