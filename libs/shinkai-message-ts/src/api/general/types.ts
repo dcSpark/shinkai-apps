@@ -155,36 +155,36 @@ export type SubmitRegistrationCodeRequest = {
   shinkai_identity: string;
   node_address: string;
 };
+
 export type SubmitRegistrationCodeResponse = {
   encryption_public_key: string;
   identity_public_key: string;
 };
 
-export type SubmitRegistrationNoCodeRequest = {
-  // node_address: string;
-  // my_device_encryption_sk: string;
-  // my_device_identity_sk: string;
-  // profile_encryption_sk: string;
+export type InitialRegistrationRequest = {
   profile_encryption_pk: string;
   profile_identity_pk: string;
-  // registration_name: string;
-  // profile: string;
 };
-export type UseRegistrationNoCodeResponse = {
+
+export type InitialRegistrationStatus = 'success' | 'error' | 'non-pristine';
+
+export type InitialRegistrationData = {
   message: string;
   encryption_public_key: string;
   identity_public_key: string;
   node_name: string;
   api_v2_key: string;
+  api_v2_cert?: string;
 };
-export type SubmitRegistrationNoCodeStatus =
-  | 'success'
-  | 'error'
-  | 'non-pristine';
+
+export type InitialRegistrationResponse = {
+  status: InitialRegistrationStatus;
+  data?: InitialRegistrationData;
+};
 
 export type SubmitRegistrationNoCodeResponse = {
-  status: SubmitRegistrationNoCodeStatus;
-  data?: UseRegistrationNoCodeResponse;
+  status: InitialRegistrationStatus;
+  data?: InitialRegistrationResponse;
 };
 
 export type GetShinkaiFreeModelQuotaResponse = {

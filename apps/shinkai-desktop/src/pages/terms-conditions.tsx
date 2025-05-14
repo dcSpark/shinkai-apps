@@ -4,9 +4,8 @@ import {
   QuickConnectFormSchema,
   quickConnectFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/auth/quick-connection';
-import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/v2/mutations/submitRegistation/useSubmitRegistrationNoCode';
+import { useInitialRegistration } from '@shinkai_network/shinkai-node-state/v2/mutations/initialRegistration/useInitialRegistration';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/v2/queries/getEncryptionKeys/useGetEncryptionKeys';
-import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { Button, buttonVariants, Checkbox } from '@shinkai_network/shinkai-ui';
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -20,7 +19,6 @@ import config from '../config';
 import { useShinkaiNodeRemoveStorageMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeSpawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeKillMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
-// import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
@@ -71,11 +69,6 @@ const TermsAndConditionsPage = () => {
     useState(false);
   const { showLocalNodeOption } = useLogoTap();
 
-  const { data: health } = useGetHealth({
-    nodeAddress: 'http://127.0.0.1:9550',
-  });
-  // useShinkaiNodeEventsToast();
-
   const completeStep = useSettings((state) => state.completeStep);
 
   const termsAndConditionsAcceptedLegacy = useSettings((state) =>
@@ -103,7 +96,6 @@ const TermsAndConditionsPage = () => {
   const setupDataForm = useForm<QuickConnectFormSchema>({
     resolver: zodResolver(quickConnectFormSchema),
     defaultValues: {
-      registration_name: 'main_device',
       node_address: 'http://127.0.0.1:9550',
     },
   });
@@ -111,22 +103,17 @@ const TermsAndConditionsPage = () => {
   const {
     mutateAsync: submitRegistrationNoCode,
     isPending: submitRegistrationNodeCodeIsPending,
-  } = useSubmitRegistrationNoCode({
+  } = useInitialRegistration({
     onSuccess: (response, setupPayload) => {
-      console.log('response', response);
       if (response.status === 'success' && encryptionKeys) {
-        const updatedSetupData = {
-          ...encryptionKeys,
-          ...setupPayload,
-          permission_type: '',
-          shinkai_identity:
-            setupDataForm.getValues().shinkai_identity ||
-            (response.data?.node_name ?? ''),
-          node_signature_pk: response.data?.identity_public_key ?? '',
-          node_encryption_pk: response.data?.encryption_public_key ?? '',
+        setAuth({
           api_v2_key: response.data?.api_v2_key ?? '',
-        };
-        setAuth(updatedSetupData);
+          node_address: setupPayload.nodeAddress,
+          profile: 'main',
+          shinkai_identity: response.data?.node_name ?? '',
+          encryption_pk: response.data?.encryption_public_key ?? '',
+          identity_pk: response.data?.identity_public_key ?? '',
+        });
         completeStep(OnboardingStep.TERMS_CONDITIONS, true);
       } else if (response.status === 'non-pristine') {
         setResetStorageBeforeConnectConfirmationPrompt(true);
@@ -157,14 +144,8 @@ const TermsAndConditionsPage = () => {
     if (!encryptionKeys) return;
     await submitRegistrationNoCode({
       nodeAddress: currentValues.node_address,
-      // profile: 'main',
-      // node_address: currentValues.node_address,
-      // registration_name: currentValues.registration_name,
-      setupData: {
-        // profile_encryption_sk: encryptionKeys.profile_encryption_sk,
-        profile_encryption_pk: encryptionKeys.profile_encryption_pk,
-        profile_identity_pk: encryptionKeys.profile_identity_pk,
-      },
+      profileEncryptionPk: encryptionKeys.profile_encryption_pk,
+      profileIdentityPk: encryptionKeys.profile_identity_pk,
     });
   }
 
