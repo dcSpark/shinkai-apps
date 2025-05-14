@@ -123,10 +123,11 @@ const QuickConnectionPage = () => {
   async function onSubmit(currentValues: QuickConnectFormSchema) {
     if (!encryptionKeys) return;
     await submitRegistrationNoCode({
-      profile: 'main',
-      node_address: currentValues.node_address,
-      registration_name: currentValues.registration_name,
-      ...encryptionKeys,
+      nodeAddress: currentValues.node_address,
+      setupData: {
+        profile_encryption_pk: encryptionKeys.profile_encryption_pk,
+        profile_identity_pk: encryptionKeys.profile_identity_pk,
+      },
     });
   }
 
