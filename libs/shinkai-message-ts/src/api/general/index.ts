@@ -75,7 +75,7 @@ export const updateNodeName = async (
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/change_node_name'),
-    { new_node_name: newNodeName },
+    { new_name: newNodeName },
     { headers: { Authorization: `Bearer ${token}` } },
   );
   return response.data;
