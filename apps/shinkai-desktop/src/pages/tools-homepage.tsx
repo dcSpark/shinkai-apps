@@ -8,6 +8,11 @@ import {
   BackgroundBeams,
   Button,
   buttonVariants,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
   ChatInputArea,
   Dialog,
   DialogContent,
@@ -15,6 +20,11 @@ import {
   DialogTitle,
   DialogTrigger,
   Form,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Skeleton,
 } from '@shinkai_network/shinkai-ui';
 import { SendIcon, ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
@@ -25,16 +35,20 @@ import {
   ArrowUpRight,
   CheckCircle,
   CircleAlert,
+  CodeIcon,
   ExternalLink,
+  FileTextIcon,
   LogOut,
+  SettingsIcon,
   StoreIcon,
   XIcon,
 } from 'lucide-react';
-import { memo, useEffect, useRef } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import ProviderIcon from '../components/ais/provider-icon';
 import { MessageList } from '../components/chat/components/message-list';
 import { FeedbackModal } from '../components/feedback/feedback-modal';
 import { AIModelSelectorTools } from '../components/playground-tool/components/ai-update-selection-tool';
@@ -53,6 +67,7 @@ import PlaygroundToolLayout from '../components/playground-tool/layout';
 import ToolCreationStatus from '../components/tools/components/tool-creation-status';
 import {
   CODE_GENERATOR_MODEL_ID,
+  SHINKAI_FREE_TRIAL_MODEL_ID,
   TOOL_HOMEPAGE_SUGGESTIONS,
 } from '../components/tools/constants';
 import ImportToolModal from '../components/tools/import-tool';
@@ -234,6 +249,168 @@ export const ToolsHomepage = () => {
   return <>{renderStep()}</>;
 };
 
+export type ModelOption = {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ElementType;
+};
+
+function AIModelSelector({
+  selectedModelId,
+  onModelSelect,
+}: {
+  selectedModelId: string;
+  onModelSelect: (modelId: string) => void;
+}) {
+  const auth = useAuth((state) => state.auth);
+
+  const { isSuccess: isLlmProviderSuccess, llmProviders } = useGetLLMProviders({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const modelOptions = [
+    {
+      ...llmProviders?.find(
+        (provider) =>
+          provider.model.toLowerCase() ===
+          CODE_GENERATOR_MODEL_ID.toLowerCase(),
+      ),
+      id: CODE_GENERATOR_MODEL_ID.toLowerCase(),
+      name: 'Shinkai Code Generator',
+      description:
+        'Pre-indexed documentation for building tools. Best for development workflows.',
+    },
+    {
+      ...llmProviders?.find(
+        (provider) =>
+          provider.model.toLowerCase() ===
+          SHINKAI_FREE_TRIAL_MODEL_ID.toLowerCase(),
+      ),
+      name: 'Shinkai Free Trial',
+      description:
+        'For non-indexed documents. Works with any content you provide.',
+    },
+    {
+      id: 'custom-model',
+      name: 'Custom',
+      description: 'Use your own AI model or configure advanced settings.',
+      model: 'custom-model',
+    },
+  ].filter((item) => item !== undefined);
+
+  const customModelOptions = llmProviders?.filter(
+    (provider) =>
+      provider.model.toLowerCase() !== CODE_GENERATOR_MODEL_ID.toLowerCase() &&
+      provider.model.toLowerCase() !==
+        SHINKAI_FREE_TRIAL_MODEL_ID.toLowerCase(),
+  );
+
+  const isSpecificCustomModel = customModelOptions.some(
+    (model) => model.id === selectedModelId,
+  );
+
+  const [customModel, setCustomModel] = useState(
+    customModelOptions?.[0]?.id ?? '',
+  );
+
+  const handleCustomModelSelect = (value: string) => {
+    setCustomModel(value);
+    onModelSelect(value);
+  };
+
+  const isCustomModelCategory = selectedModelId === 'custom-model';
+
+  return (
+    <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+      {modelOptions.map((model) => {
+        const isSelected =
+          model.id === 'custom-model'
+            ? isCustomModelCategory || isSpecificCustomModel
+            : selectedModelId === model.id;
+
+        return (
+          <Card
+            className={cn(
+              'border-official-gray-780 bg-official-gray-900 hover:bg-official-gray-850 flex cursor-pointer flex-col gap-2 border p-4 transition-all',
+              isSelected
+                ? 'ring-official-gray-600 border-official-gray-780 bg-official-gray-850 ring-1'
+                : '',
+            )}
+            key={model.id}
+            onClick={() => {
+              if (model.id !== 'custom-model') {
+                onModelSelect(model?.id ?? '');
+              } else if (!isCustomModelCategory && !isSpecificCustomModel) {
+                onModelSelect(customModel);
+              }
+            }}
+          >
+            <CardHeader className="p-0">
+              <div className="flex items-center space-x-2">
+                <div
+                  className={cn(
+                    'flex size-8 items-center justify-center rounded-md border p-2',
+                    isSelected
+                      ? 'bg-primary/10 text-primary'
+                      : 'bg-official-gray-850 text-official-gray-400',
+                  )}
+                >
+                  <ProviderIcon
+                    className="mx-1 size-4"
+                    provider={model?.model?.split(':')[0] ?? ''}
+                  />
+                </div>
+                <div className="flex-1">
+                  <CardTitle className="text-official-gray-100 text-base font-medium">
+                    {model?.name}
+                  </CardTitle>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3 p-0">
+              <CardDescription className="text-official-gray-400 text-sm">
+                {model.description}
+              </CardDescription>
+              {model.id === CODE_GENERATOR_MODEL_ID.toLowerCase() && (
+                <SupportedProtocols />
+              )}
+              {model.id === 'custom-model' && (
+                <Select
+                  onValueChange={handleCustomModelSelect}
+                  value={isSpecificCustomModel ? selectedModelId : customModel}
+                >
+                  <SelectTrigger
+                    className={cn(
+                      'bg-official-gray-900 hover:bg-official-gray-800 flex !h-auto !w-auto max-w-[300px] items-center justify-between border-0 py-2 pr-10 focus:ring-0 [&>svg]:top-[10px]',
+                      isSelected ? 'text-white' : 'text-official-gray-400',
+                    )}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <SelectValue placeholder="Select model" />
+                  </SelectTrigger>
+                  <SelectContent className="border-official-gray-780 bg-official-gray-900 text-official-gray-100">
+                    {customModelOptions.map((option) => (
+                      <SelectItem
+                        className="hover:bg-official-gray-800 focus:bg-official-gray-800 focus:text-official-gray-100"
+                        key={option.id}
+                        value={option.id}
+                      >
+                        {option.name ?? option.id}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
+
 function ToolsHome({
   startToolCreation,
   error,
@@ -323,6 +500,12 @@ function ToolsHome({
             </div>
 
             <div className="w-full max-w-[1100px]">
+              <AIModelSelector
+                onModelSelect={(value) => {
+                  form.setValue('llmProviderId', value);
+                }}
+                selectedModelId={form.watch('llmProviderId')}
+              />
               <Form {...form}>
                 <form>
                   <div className="relative pb-10">
@@ -331,12 +514,12 @@ function ToolsHome({
                       bottomAddons={
                         <div className="flex items-end justify-between gap-3 px-3 pb-2">
                           <div className="flex items-center gap-3">
-                            <AIModelSelectorTools
+                            {/* <AIModelSelectorTools
                               onValueChange={(value) => {
                                 form.setValue('llmProviderId', value);
                               }}
                               value={form.watch('llmProviderId')}
-                            />
+                            /> */}
                             <LanguageToolSelector
                               onValueChange={(value) => {
                                 form.setValue(
@@ -409,7 +592,7 @@ function ToolsHome({
                       textareaClassName="max-h-[200px] min-h-[200px] p-4 text-sm"
                       value={form.watch('message')}
                     />
-                    <ProtocolsBanner />
+                    <ChatBoxFooter />
                   </div>
                   {error && (
                     <div className="mt-3 flex max-w-full items-start gap-2 rounded-md bg-[#2d0607]/40 px-3 py-2.5 text-xs font-medium text-[#ff9ea1]">
@@ -484,114 +667,115 @@ function ToolsHome({
   );
 }
 
-const ProtocolsBannerBase = () => {
-  const { data: toolProtocols, isPending } = useGetToolProtocols();
-
+const ChatBoxFooterBase = () => {
   return (
     <div
       className={cn(
         'bg-official-gray-850 absolute inset-x-2 bottom-1 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pb-1 pt-2.5 shadow-white',
       )}
     >
-      <div className="flex w-full items-center justify-between gap-2 px-2">
-        <span className="text-official-gray-400 inline-flex items-center gap-2">
-          <span className="text-xs font-light">
-            <span className="font-medium">Shift + Enter</span> for a new line
-          </span>
-          <span className="text-official-gray-600 text-xs font-light">|</span>
-          <span className="text-xs font-light">
-            <span className="font-medium">Enter</span> to send
-          </span>
+      <div className="text-official-gray-400 flex w-full items-center justify-between gap-2 px-2">
+        <span className="text-xs font-light">
+          <span className="font-medium">Shift + Enter</span> for a new line
         </span>
 
-        <Dialog>
-          <DialogTrigger className="text-official-gray-300 hover:text-official-gray-200 flex items-center gap-1 text-xs transition-colors">
-            <div className="border-official-gray-300 border-b">
-              Well Supported Protocols (Shinkai Codegen)
-            </div>
-            <ArrowRight className="ml-0.5 h-3 w-3" />
-          </DialogTrigger>
-
-          <DialogContent className="max-w-xl">
-            <DialogClose asChild>
-              <Button
-                className="absolute right-4 top-4"
-                size="icon"
-                variant="tertiary"
-              >
-                <XIcon className="text-gray-80 h-5 w-5" />
-              </Button>
-            </DialogClose>
-            <DialogHeader>
-              <DialogTitle className="text-xl">Verified Protocols</DialogTitle>
-            </DialogHeader>
-
-            {isPending ? (
-              <div className="flex flex-col gap-3">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <Skeleton
-                    className="bg-official-gray-900/30 h-[72px] animate-pulse rounded-lg"
-                    key={i}
-                  />
-                ))}
-              </div>
-            ) : toolProtocols?.supported &&
-              toolProtocols?.supported.length > 0 ? (
-              <div className="divide-official-gray-780 max-h-[500px] divide-y overflow-y-auto">
-                {toolProtocols?.supported.map((protocol) => (
-                  <Link
-                    className="group flex items-center gap-3 px-3 py-2.5 transition-all duration-200"
-                    key={protocol.name}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    to={protocol.documentationURL}
-                  >
-                    <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-gray-900 p-1.5">
-                      <img
-                        alt=""
-                        className="size-full overflow-hidden rounded-full object-cover"
-                        height={40}
-                        src={protocol.icon}
-                        width={40}
-                      />
-                    </div>
-                    <div className="min-w-0 flex-grow">
-                      <div className="flex items-center gap-1">
-                        <p className="truncate text-sm font-medium text-white">
-                          {protocol.name}
-                        </p>
-                        <ExternalLink className="text-official-gray-500 h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
-                      </div>
-                      <div className="text-official-gray-400 mt-0.5 flex items-center text-xs">
-                        <CheckCircle className="mr-1 h-3 w-3 text-green-400" />
-                        <span className="truncate">Verified</span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="py-8 text-center">
-                <p className="text-official-gray-400 text-sm">
-                  No protocols found .
-                </p>
-              </div>
-            )}
-
-            <div className="border-official-gray-780 flex flex-col items-start justify-between gap-3 border-t pt-4 sm:flex-row sm:items-center">
-              <p className="text-official-gray-400 text-xs">
-                Other protocols may also work but haven&apos;t been officially
-                verified.
-              </p>
-              <FeedbackModal
-                buttonLabel="Request Protocol"
-                buttonProps={{ className: 'shrink-0' }}
-              />
-            </div>
-          </DialogContent>
-        </Dialog>
+        <span className="text-xs font-light">
+          <span className="font-medium">Enter</span> to send
+        </span>
       </div>
     </div>
   );
 };
-const ProtocolsBanner = memo(ProtocolsBannerBase);
+const ChatBoxFooter = memo(ChatBoxFooterBase);
+
+function SupportedProtocols() {
+  const { data: toolProtocols, isPending } = useGetToolProtocols();
+
+  return (
+    <Dialog>
+      <DialogTrigger className="text-official-gray-300 hover:text-official-gray-200 flex items-center gap-1 text-sm transition-colors">
+        <div className="border-official-gray-300 border-b">
+          Well Supported Protocols
+        </div>
+        <ArrowRight className="ml-0.5 h-3 w-3" />
+      </DialogTrigger>
+
+      <DialogContent className="max-w-xl">
+        <DialogClose asChild>
+          <Button
+            className="absolute right-4 top-4"
+            size="icon"
+            variant="tertiary"
+          >
+            <XIcon className="text-gray-80 h-5 w-5" />
+          </Button>
+        </DialogClose>
+        <DialogHeader>
+          <DialogTitle className="text-xl">Verified Protocols</DialogTitle>
+        </DialogHeader>
+
+        {isPending ? (
+          <div className="flex flex-col gap-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Skeleton
+                className="bg-official-gray-900/30 h-[72px] animate-pulse rounded-lg"
+                key={i}
+              />
+            ))}
+          </div>
+        ) : toolProtocols?.supported && toolProtocols?.supported.length > 0 ? (
+          <div className="divide-official-gray-780 max-h-[500px] divide-y overflow-y-auto">
+            {toolProtocols?.supported.map((protocol) => (
+              <Link
+                className="group flex items-center gap-3 px-3 py-2.5 transition-all duration-200"
+                key={protocol.name}
+                rel="noopener noreferrer"
+                target="_blank"
+                to={protocol.documentationURL}
+              >
+                <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-gray-900 p-1.5">
+                  <img
+                    alt=""
+                    className="size-full overflow-hidden rounded-full object-cover"
+                    height={40}
+                    src={protocol.icon}
+                    width={40}
+                  />
+                </div>
+                <div className="min-w-0 flex-grow">
+                  <div className="flex items-center gap-1">
+                    <p className="truncate text-sm font-medium text-white">
+                      {protocol.name}
+                    </p>
+                    <ExternalLink className="text-official-gray-500 h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
+                  </div>
+                  <div className="text-official-gray-400 mt-0.5 flex items-center text-xs">
+                    <CheckCircle className="mr-1 h-3 w-3 text-green-400" />
+                    <span className="truncate">Verified</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="py-8 text-center">
+            <p className="text-official-gray-400 text-sm">
+              No protocols found .
+            </p>
+          </div>
+        )}
+
+        <div className="border-official-gray-780 flex flex-col items-start justify-between gap-3 border-t pt-4 sm:flex-row sm:items-center">
+          <p className="text-official-gray-400 text-xs">
+            Other protocols may also work but haven&apos;t been officially
+            verified.
+          </p>
+          <FeedbackModal
+            buttonLabel="Request Protocol"
+            buttonProps={{ className: 'shrink-0' }}
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
