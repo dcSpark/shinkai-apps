@@ -35,15 +35,12 @@ import {
   ArrowUpRight,
   CheckCircle,
   CircleAlert,
-  CodeIcon,
   ExternalLink,
-  FileTextIcon,
   LogOut,
-  SettingsIcon,
   StoreIcon,
   XIcon,
 } from 'lucide-react';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -51,7 +48,6 @@ import { toast } from 'sonner';
 import ProviderIcon from '../components/ais/provider-icon';
 import { MessageList } from '../components/chat/components/message-list';
 import { FeedbackModal } from '../components/feedback/feedback-modal';
-import { AIModelSelectorTools } from '../components/playground-tool/components/ai-update-selection-tool';
 import { LanguageToolSelector } from '../components/playground-tool/components/language-tool-selector';
 import { ToolsSelection } from '../components/playground-tool/components/tools-selection';
 import {
@@ -256,7 +252,7 @@ export type ModelOption = {
   icon: React.ElementType;
 };
 
-function AIModelSelector({
+function AIModelSelectorBase({
   selectedModelId,
   onModelSelect,
 }: {
@@ -265,46 +261,62 @@ function AIModelSelector({
 }) {
   const auth = useAuth((state) => state.auth);
 
-  const { isSuccess: isLlmProviderSuccess, llmProviders } = useGetLLMProviders({
+  const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
 
-  const modelOptions = [
-    {
-      ...llmProviders?.find(
-        (provider) =>
-          provider.model.toLowerCase() ===
-          CODE_GENERATOR_MODEL_ID.toLowerCase(),
-      ),
-      id: CODE_GENERATOR_MODEL_ID.toLowerCase(),
-      name: 'Shinkai Code Generator',
-      description:
-        'Pre-indexed documentation for building tools. Best for development workflows.',
-    },
-    {
-      ...llmProviders?.find(
-        (provider) =>
-          provider.model.toLowerCase() ===
-          SHINKAI_FREE_TRIAL_MODEL_ID.toLowerCase(),
-      ),
-      name: 'Shinkai Free Trial',
-      description:
-        'For non-indexed documents. Works with any content you provide.',
-    },
-    {
-      id: 'custom-model',
-      name: 'Custom',
-      description: 'Use your own AI model or configure advanced settings.',
-      model: 'custom-model',
-    },
-  ].filter((item) => item !== undefined);
+  const modelOptions = useMemo(() => {
+    const codeGeneratorModel = llmProviders?.find(
+      (provider) =>
+        provider.model.toLowerCase() === CODE_GENERATOR_MODEL_ID.toLowerCase(),
+    );
 
-  const customModelOptions = llmProviders?.filter(
-    (provider) =>
-      provider.model.toLowerCase() !== CODE_GENERATOR_MODEL_ID.toLowerCase() &&
-      provider.model.toLowerCase() !==
+    const freeTrialModel = llmProviders?.find(
+      (provider) =>
+        provider.model.toLowerCase() ===
         SHINKAI_FREE_TRIAL_MODEL_ID.toLowerCase(),
+    );
+
+    if (!codeGeneratorModel || !freeTrialModel) {
+      return [];
+    }
+
+    return [
+      {
+        id: codeGeneratorModel?.id ?? '',
+        name: 'Shinkai Code Generator',
+        placeholderId: 'code-generator',
+        description:
+          'Pre-indexed documentation for building tools. Best for development workflows.',
+      },
+      {
+        id: freeTrialModel?.id ?? '',
+        name: 'Shinkai Free Trial',
+        placeholderId: 'free-trial',
+        description:
+          'For non-indexed documents. Works with any content you provide.',
+      },
+      {
+        id: 'custom-model',
+        name: 'Custom Model',
+        placeholderId: 'custom-model',
+        description: 'Use your own AI model or configure advanced settings.',
+        model: 'custom-model',
+      },
+    ];
+  }, [llmProviders]);
+
+  const customModelOptions = useMemo(
+    () =>
+      llmProviders?.filter(
+        (provider) =>
+          provider.model.toLowerCase() !==
+            CODE_GENERATOR_MODEL_ID.toLowerCase() &&
+          provider.model.toLowerCase() !==
+            SHINKAI_FREE_TRIAL_MODEL_ID.toLowerCase(),
+      ),
+    [llmProviders],
   );
 
   const isSpecificCustomModel = customModelOptions.some(
@@ -333,7 +345,7 @@ function AIModelSelector({
         return (
           <Card
             className={cn(
-              'border-official-gray-780 bg-official-gray-900 hover:bg-official-gray-850 flex cursor-pointer flex-col gap-2 border p-4 transition-all',
+              'border-official-gray-780 bg-official-gray-900 hover:bg-official-gray-850 flex cursor-pointer flex-col gap-2.5 border p-4 transition-all',
               isSelected
                 ? 'ring-official-gray-600 border-official-gray-780 bg-official-gray-850 ring-1'
                 : '',
@@ -351,10 +363,8 @@ function AIModelSelector({
               <div className="flex items-center space-x-2">
                 <div
                   className={cn(
-                    'flex size-8 items-center justify-center rounded-md border p-2',
-                    isSelected
-                      ? 'bg-primary/10 text-primary'
-                      : 'bg-official-gray-850 text-official-gray-400',
+                    'flex size-6 items-center justify-center rounded-md',
+                    isSelected ? 'text-white' : 'text-official-gray-400',
                   )}
                 >
                   <ProviderIcon
@@ -362,28 +372,26 @@ function AIModelSelector({
                     provider={model?.model?.split(':')[0] ?? ''}
                   />
                 </div>
-                <div className="flex-1">
-                  <CardTitle className="text-official-gray-100 text-base font-medium">
-                    {model?.name}
-                  </CardTitle>
-                </div>
+                <CardTitle className="text-official-gray-100 text-base font-medium">
+                  {model?.name}
+                </CardTitle>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3 p-0">
+            <CardContent className="space-y-4 p-0">
               <CardDescription className="text-official-gray-400 text-sm">
                 {model.description}
               </CardDescription>
-              {model.id === CODE_GENERATOR_MODEL_ID.toLowerCase() && (
+              {model.placeholderId === 'code-generator' && (
                 <SupportedProtocols />
               )}
-              {model.id === 'custom-model' && (
+              {model.placeholderId === 'custom-model' && (
                 <Select
                   onValueChange={handleCustomModelSelect}
                   value={isSpecificCustomModel ? selectedModelId : customModel}
                 >
                   <SelectTrigger
                     className={cn(
-                      'bg-official-gray-900 hover:bg-official-gray-800 flex !h-auto !w-auto max-w-[300px] items-center justify-between border-0 py-2 pr-10 focus:ring-0 [&>svg]:top-[10px]',
+                      'bg-official-gray-900 hover:bg-official-gray-800 flex !h-auto !w-auto max-w-[300px] items-center justify-between border py-2 pr-10 focus:ring-0 [&>svg]:top-[10px]',
                       isSelected ? 'text-white' : 'text-official-gray-400',
                     )}
                     onClick={(e) => e.stopPropagation()}
@@ -410,6 +418,8 @@ function AIModelSelector({
     </div>
   );
 }
+
+const AIModelSelector = memo(AIModelSelectorBase);
 
 function ToolsHome({
   startToolCreation,
