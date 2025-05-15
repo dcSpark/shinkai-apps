@@ -850,31 +850,34 @@ export const GeneratedFiles = ({ toolCalls }: { toolCalls: ToolCall[] }) => {
     toolCalls?.some(
       (tool) => !!tool.generatedFiles && tool.generatedFiles.length > 0,
     ) && (
-      <div className="mt-4 flex flex-col items-start gap-1 rounded-md py-4 pt-1.5">
+      <div className="mt-4 space-y-1 py-4 pt-1.5">
         <span className="text-official-gray-400 text-em-sm">
           Generated Files
         </span>
-        {toolCalls.map((tool) => {
-          if (!tool.generatedFiles || !tool.generatedFiles.length) return null;
-          return (
-            <FileList
-              className="mt-2"
-              files={tool.generatedFiles.map((file) => ({
-                name: file.name,
-                path: file.path,
-                type: file.type,
-                size: file?.size,
-                content: file?.content,
-                blob: file?.blob,
-                id: file.id,
-                extension: file.extension,
-                mimeType: file.mimeType,
-                url: file.url,
-              }))}
-              key={tool.name}
-            />
-          );
-        })}
+        <div className="flex flex-wrap items-start gap-4 rounded-md">
+          {toolCalls.map((tool) => {
+            if (!tool.generatedFiles || !tool.generatedFiles.length)
+              return null;
+            return (
+              <FileList
+                className="mt-2"
+                files={tool.generatedFiles.map((file) => ({
+                  name: file.name,
+                  path: file.path,
+                  type: file.type,
+                  size: file?.size,
+                  content: file?.content,
+                  blob: file?.blob,
+                  id: file.id,
+                  extension: file.extension,
+                  mimeType: file.mimeType,
+                  url: file.url,
+                }))}
+                key={tool.name}
+              />
+            );
+          })}
+        </div>
       </div>
     )
   );

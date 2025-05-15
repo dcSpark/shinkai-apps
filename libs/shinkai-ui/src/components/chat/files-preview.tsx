@@ -244,7 +244,7 @@ export const FilePreview = ({
         <div>{children}</div>
       </TooltipTrigger>
       <TooltipPortal>
-        <TooltipContent className="container" side="top">
+        <TooltipContent className="container break-words" side="top">
           <p>{fileName}</p>
         </TooltipContent>
       </TooltipPortal>

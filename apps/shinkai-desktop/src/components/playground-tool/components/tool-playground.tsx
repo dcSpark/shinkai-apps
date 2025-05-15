@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-sort-props */
-import { FormProps } from '@rjsf/core';
+
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useCopyToolAssets } from '@shinkai_network/shinkai-node-state/v2/mutations/copyToolAssets/useCopyToolAssets';
 import {
