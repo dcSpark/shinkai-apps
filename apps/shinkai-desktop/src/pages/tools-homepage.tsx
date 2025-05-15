@@ -509,136 +509,157 @@ function ToolsHome({
               </div>
             </div>
 
-            <div className="w-full max-w-[1100px]">
-              <AIModelSelector
-                onModelSelect={(value) => {
-                  form.setValue('llmProviderId', value);
-                }}
-                selectedModelId={form.watch('llmProviderId')}
-              />
-              <Form {...form}>
-                <form>
-                  <div className="relative pb-10">
-                    <ChatInputArea
-                      autoFocus
-                      bottomAddons={
-                        <div className="flex items-end justify-between gap-3 px-3 pb-2">
-                          <div className="flex items-center gap-3">
-                            {/* <AIModelSelectorTools
-                              onValueChange={(value) => {
-                                form.setValue('llmProviderId', value);
-                              }}
-                              value={form.watch('llmProviderId')}
-                            /> */}
-                            <LanguageToolSelector
-                              onValueChange={(value) => {
-                                form.setValue(
-                                  'language',
-                                  value as CodeLanguage,
-                                );
-                              }}
-                              value={form.watch('language')}
-                            />
-                            {!isCodeGeneratorModel && (
-                              <ToolsSelection
-                                onChange={(value) => {
-                                  form.setValue('tools', value);
-                                }}
-                                value={form.watch('tools')}
-                              />
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {!isCodeGeneratorModel && (
-                              <Button
-                                className="flex items-center gap-2 border-none"
-                                isLoading={isOpeningToolInCodeEditor}
-                                onClick={() => {
-                                  if (!auth) return;
-                                  openToolInCodeEditor({
-                                    token: auth?.api_v2_key,
-                                    language: form.watch('language'),
-                                    nodeAddress: auth?.node_address,
-                                    xShinkaiAppId,
-                                    xShinkaiToolId,
-                                    xShinkaiLLMProvider: defaulAgentId,
-                                  });
-                                }}
-                                rounded="lg"
-                                size="xs"
-                                type="button"
-                                variant="link"
-                              >
-                                Create in VSCode/Cursor
-                              </Button>
-                            )}
-                            <Button
-                              className={cn('size-[36px] p-2')}
-                              disabled={form.watch('message') === ''}
-                              isLoading={isProcessing}
-                              onClick={() =>
-                                startToolCreation(form.getValues())
-                              }
-                              size="icon"
-                              type="button"
-                            >
-                              <SendIcon className="h-full w-full" />
-                              <span className="sr-only">
-                                {t('chat.sendMessage')}
-                              </span>
-                            </Button>
-                          </div>
-                        </div>
-                      }
-                      className="relative z-[1]"
-                      disabled={isProcessing}
-                      onChange={(value) => {
-                        form.setValue('message', value);
-                      }}
-                      onSubmit={() => {
-                        startToolCreation(form.getValues());
-                      }}
-                      placeholder={'Describe the tool you want to create...'}
-                      textareaClassName="max-h-[200px] min-h-[200px] p-4 text-sm"
-                      value={form.watch('message')}
-                    />
-                    <ChatBoxFooter />
-                  </div>
-                  {error && (
-                    <div className="mt-3 flex max-w-full items-start gap-2 rounded-md bg-[#2d0607]/40 px-3 py-2.5 text-xs font-medium text-[#ff9ea1]">
-                      <CircleAlert className="mt-1 size-4 shrink-0" />
-                      <div className="flex flex-1 flex-col gap-0.5">
-                        <div className="-ml-2.5 w-full shrink-0 truncate rounded-full px-2.5 py-1 text-xs">
-                          Failed to generate tool. You might want to try using a
-                          more powerful AI model for better results.
-                        </div>
-                        <div className="text-gray-80 py-1">{error}</div>
-                      </div>
-                    </div>
-                  )}
+            <div className="flex w-full max-w-[1100px] flex-col gap-8">
+              <div className="flex flex-col gap-2">
+                <div className="mb-2 flex items-center gap-2">
+                  <span className="bg-official-gray-900 border-official-gray-700 rounded-full border px-3 py-1 text-xs font-semibold text-white">
+                    Step 1
+                  </span>
+                  <span className="text-base font-medium text-white">
+                    Select your model
+                  </span>
+                </div>
+                <div className="p-2">
+                  <AIModelSelector
+                    onModelSelect={(value) => {
+                      form.setValue('llmProviderId', value);
+                    }}
+                    selectedModelId={form.watch('llmProviderId')}
+                  />
+                </div>
+              </div>
 
-                  <div className="flex w-full flex-wrap items-center justify-center gap-3 py-6">
-                    {TOOL_HOMEPAGE_SUGGESTIONS.map((suggestion) => (
-                      <Button
-                        key={suggestion.text}
-                        onClick={() => {
-                          form.setValue('message', suggestion.prompt);
-                          if (suggestion.language) {
-                            form.setValue('language', suggestion.language);
+              <div className="flex flex-col gap-2">
+                <div className="mb-2 flex items-center gap-2">
+                  <span className="bg-official-gray-900 border-official-gray-700 rounded-full border px-3 py-1 text-xs font-semibold text-white">
+                    Step 2
+                  </span>
+                  <span className="text-base font-medium text-white">
+                    Write your requirements
+                  </span>
+                </div>
+                <div className="p-2">
+                  <Form {...form}>
+                    <form>
+                      <div className="relative pb-10">
+                        <ChatInputArea
+                          autoFocus
+                          bottomAddons={
+                            <div className="flex items-end justify-between gap-3 px-3 pb-2">
+                              <div className="flex items-center gap-3">
+                                <LanguageToolSelector
+                                  onValueChange={(value) => {
+                                    form.setValue(
+                                      'language',
+                                      value as CodeLanguage,
+                                    );
+                                  }}
+                                  value={form.watch('language')}
+                                />
+                                {!isCodeGeneratorModel && (
+                                  <ToolsSelection
+                                    onChange={(value) => {
+                                      form.setValue('tools', value);
+                                    }}
+                                    value={form.watch('tools')}
+                                  />
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {!isCodeGeneratorModel && (
+                                  <Button
+                                    className="flex items-center gap-2 border-none"
+                                    isLoading={isOpeningToolInCodeEditor}
+                                    onClick={() => {
+                                      if (!auth) return;
+                                      openToolInCodeEditor({
+                                        token: auth?.api_v2_key,
+                                        language: form.watch('language'),
+                                        nodeAddress: auth?.node_address,
+                                        xShinkaiAppId,
+                                        xShinkaiToolId,
+                                        xShinkaiLLMProvider: defaulAgentId,
+                                      });
+                                    }}
+                                    rounded="lg"
+                                    size="xs"
+                                    type="button"
+                                    variant="link"
+                                  >
+                                    Create in VSCode/Cursor
+                                  </Button>
+                                )}
+                                <Button
+                                  className={cn('size-[36px] p-2')}
+                                  disabled={form.watch('message') === ''}
+                                  isLoading={isProcessing}
+                                  onClick={() =>
+                                    startToolCreation(form.getValues())
+                                  }
+                                  size="icon"
+                                  type="button"
+                                >
+                                  <SendIcon className="h-full w-full" />
+                                  <span className="sr-only">
+                                    {t('chat.sendMessage')}
+                                  </span>
+                                </Button>
+                              </div>
+                            </div>
                           }
-                        }}
-                        size="xs"
-                        type="button"
-                        variant="outline"
-                      >
-                        <ToolsIcon className="mr-1 size-4" />
-                        {suggestion.text}
-                        <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
-                      </Button>
-                    ))}
-                  </div>
-                </form>
-              </Form>
+                          className="relative z-[1]"
+                          disabled={isProcessing}
+                          onChange={(value) => {
+                            form.setValue('message', value);
+                          }}
+                          onSubmit={() => {
+                            startToolCreation(form.getValues());
+                          }}
+                          placeholder={
+                            'Describe the tool you want to create...'
+                          }
+                          textareaClassName="max-h-[200px] min-h-[200px] p-4 text-sm"
+                          value={form.watch('message')}
+                        />
+                        <ChatBoxFooter />
+                      </div>
+                      {error && (
+                        <div className="mt-3 flex max-w-full items-start gap-2 rounded-md bg-[#2d0607]/40 px-3 py-2.5 text-xs font-medium text-[#ff9ea1]">
+                          <CircleAlert className="mt-1 size-4 shrink-0" />
+                          <div className="flex flex-1 flex-col gap-0.5">
+                            <div className="-ml-2.5 w-full shrink-0 truncate rounded-full px-2.5 py-1 text-xs">
+                              Failed to generate tool. You might want to try
+                              using a more powerful AI model for better results.
+                            </div>
+                            <div className="text-gray-80 py-1">{error}</div>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex w-full flex-wrap items-center justify-center gap-3 py-6">
+                        {TOOL_HOMEPAGE_SUGGESTIONS.map((suggestion) => (
+                          <Button
+                            key={suggestion.text}
+                            onClick={() => {
+                              form.setValue('message', suggestion.prompt);
+                              if (suggestion.language) {
+                                form.setValue('language', suggestion.language);
+                              }
+                            }}
+                            size="xs"
+                            type="button"
+                            variant="outline"
+                          >
+                            <ToolsIcon className="mr-1 size-4" />
+                            {suggestion.text}
+                            <ArrowUpRight className="ml-2 h-3.5 w-3.5" />
+                          </Button>
+                        ))}
+                      </div>
+                    </form>
+                  </Form>
+                </div>
+              </div>
             </div>
           </div>
 
