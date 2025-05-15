@@ -335,7 +335,7 @@ function AIModelSelectorBase({
   const isCustomModelCategory = selectedModelId === 'custom-model';
 
   return (
-    <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div className="mb-2 grid grid-cols-1 gap-4 md:grid-cols-3">
       {modelOptions.map((model) => {
         const isSelected =
           model.id === 'custom-model'
@@ -496,7 +496,7 @@ function ToolsHome({
       </div>
       <div className="flex max-w-[1100px] flex-col gap-4">
         <div className="flex flex-col gap-20">
-          <div className="flex min-h-[300px] w-full flex-col items-center justify-between gap-10 pt-2">
+          <div className="flex min-h-[300px] w-full flex-col items-center justify-between gap-6 pt-2">
             <div className="flex flex-col gap-2">
               <div className="flex flex-col items-center">
                 <h1 className="font-clash text-center text-4xl font-medium text-white">
@@ -509,9 +509,9 @@ function ToolsHome({
               </div>
             </div>
 
-            <div className="flex w-full max-w-[1100px] flex-col gap-8">
-              <div className="flex flex-col gap-2">
-                <div className="mb-2 flex items-center gap-2">
+            <div className="flex w-full max-w-[1100px] flex-col gap-4">
+              <div className="flex flex-col gap-2.5">
+                <div className="flex items-center gap-2">
                   <span className="bg-official-gray-900 border-official-gray-700 rounded-full border px-3 py-1 text-xs font-semibold text-white">
                     Step 1
                   </span>
@@ -530,7 +530,7 @@ function ToolsHome({
               </div>
 
               <div className="flex flex-col gap-2">
-                <div className="mb-2 flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   <span className="bg-official-gray-900 border-official-gray-700 rounded-full border px-3 py-1 text-xs font-semibold text-white">
                     Step 2
                   </span>
