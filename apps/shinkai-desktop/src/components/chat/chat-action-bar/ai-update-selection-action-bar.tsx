@@ -84,24 +84,30 @@ export function AIModelSelectorBase({
     {
       enabled: true,
       select: (data) => {
-        return data.map((provider) => {
-          let description =
-            'A versatile AI model for text generation and understanding.';
-          if (provider.model.includes('ollama')) {
-            const model = provider.model.split(':');
-            description = ollamaDescriptionMap[model[1]] || '';
-          } else if (provider.model.includes('claude')) {
-            description =
-              'Safe and thoughtful Anthropic AI model with advanced coding capabilities';
-          } else {
-            description = nonOllamaProviderModels[provider.model] || '';
-          }
+        return data
+          .map((provider) => {
+            let description =
+              'A versatile AI model for text generation and understanding.';
+            if (provider.model.includes('ollama')) {
+              const model = provider.model.split(':');
+              description = ollamaDescriptionMap[model[1]] || '';
+            } else if (provider.model.includes('claude')) {
+              description =
+                'Safe and thoughtful Anthropic AI model with advanced coding capabilities';
+            } else {
+              description = nonOllamaProviderModels[provider.model] || '';
+            }
 
-          return {
-            ...provider,
-            description: description,
-          };
-        });
+            return {
+              ...provider,
+              description: description,
+            };
+          })
+          .filter(
+            (model) =>
+              model.model.toLowerCase() !==
+              CODE_GENERATOR_MODEL_ID.toLowerCase(),
+          );
       },
     },
   );
