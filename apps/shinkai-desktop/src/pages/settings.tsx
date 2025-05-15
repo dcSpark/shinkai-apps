@@ -239,7 +239,11 @@ const SettingsPage = () => {
       },
       onError: (error) => {
         toast.error(t('settings.shinkaiIdentity.error'), {
-          description: error?.response?.data?.error ?? error.message,
+          description: error?.response?.data?.error
+            ? error?.response?.data?.error +
+              ': ' +
+              error?.response?.data?.message
+            : error.message,
         });
       },
     });
