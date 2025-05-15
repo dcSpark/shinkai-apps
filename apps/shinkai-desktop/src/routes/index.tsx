@@ -48,7 +48,6 @@ import AnalyticsSettingsPage from '../pages/analytics-settings';
 import AppearancePage from '../pages/appearance';
 import ChatConversation from '../pages/chat/chat-conversation';
 import ChatLayout from '../pages/chat/layout';
-import { ConnectMethodQrCodePage } from '../pages/connect-method-qr-code';
 import CreateTaskPage from '../pages/create-task';
 import CryptoWalletPage from '../pages/crypto-wallet';
 import EditTaskPage from '../pages/edit-task';
@@ -275,7 +274,7 @@ const AppRoutes = () => {
               path={'quick-connection'}
             />
             <Route element={<RestoreConnectionPage />} path={'restore'} />
-            <Route element={<ConnectMethodQrCodePage />} path={'connect-qr'} />
+            {/* <Route element={<ConnectMethodQrCodePage />} path={'connect-qr'} /> */}
           </Route>
           <Route
             element={

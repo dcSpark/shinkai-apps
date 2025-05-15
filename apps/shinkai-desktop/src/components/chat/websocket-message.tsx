@@ -2,7 +2,6 @@ import {
   WidgetToolType,
   WsMessage,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { ShinkaiMessageBuilderWrapper } from '@shinkai_network/shinkai-message-ts/wasm/ShinkaiMessageBuilderWrapper';
 import {
   FunctionKeyV2,
   generateOptimisticAssistantMessage,
@@ -221,31 +220,15 @@ export const useWebSocketMessageSmooth = ({
   useEffect(() => {
     if (!enabled) return;
     const wsMessage = {
-      subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
-      unsubscriptions: [],
+      bearer_auth: auth?.api_v2_key ?? '',
+      message: {
+        subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
+        unsubscriptions: [],
+      },
     };
     const wsMessageString = JSON.stringify(wsMessage);
-    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
-      wsMessageString,
-      auth?.profile_encryption_sk ?? '',
-      auth?.profile_identity_sk ?? '',
-      auth?.node_encryption_pk ?? '',
-      auth?.shinkai_identity ?? '',
-      auth?.profile ?? '',
-      auth?.shinkai_identity ?? '',
-      '',
-    );
-    sendMessage(shinkaiMessage);
-  }, [
-    auth?.node_encryption_pk,
-    auth?.profile,
-    auth?.profile_encryption_sk,
-    auth?.profile_identity_sk,
-    auth?.shinkai_identity,
-    enabled,
-    inboxId,
-    sendMessage,
-  ]);
+    sendMessage(wsMessageString);
+  }, [auth?.api_v2_key, auth?.shinkai_identity, enabled, inboxId, sendMessage]);
 
   return {
     readyState,
@@ -388,31 +371,15 @@ export const useWebSocketMessage = ({
   useEffect(() => {
     if (!enabled) return;
     const wsMessage = {
-      subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
-      unsubscriptions: [],
+      bearer_auth: auth?.api_v2_key ?? '',
+      message: {
+        subscriptions: [{ topic: 'inbox', subtopic: inboxId }],
+        unsubscriptions: [],
+      },
     };
     const wsMessageString = JSON.stringify(wsMessage);
-    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
-      wsMessageString,
-      auth?.profile_encryption_sk ?? '',
-      auth?.profile_identity_sk ?? '',
-      auth?.node_encryption_pk ?? '',
-      auth?.shinkai_identity ?? '',
-      auth?.profile ?? '',
-      auth?.shinkai_identity ?? '',
-      '',
-    );
-    sendMessage(shinkaiMessage);
-  }, [
-    auth?.node_encryption_pk,
-    auth?.profile,
-    auth?.profile_encryption_sk,
-    auth?.profile_identity_sk,
-    auth?.shinkai_identity,
-    enabled,
-    inboxId,
-    sendMessage,
-  ]);
+    sendMessage(wsMessageString);
+  }, [auth?.api_v2_key, auth?.shinkai_identity, enabled, inboxId, sendMessage]);
 
   return {
     readyState,
@@ -519,31 +486,15 @@ export const useWebSocketTools = ({
   useEffect(() => {
     if (!enabled) return;
     const wsMessage = {
-      subscriptions: [{ topic: 'widget', subtopic: inboxId }],
-      unsubscriptions: [],
+      bearer_auth: auth?.api_v2_key ?? '',
+      message: {
+        subscriptions: [{ topic: 'widget', subtopic: inboxId }],
+        unsubscriptions: [],
+      },
     };
     const wsMessageString = JSON.stringify(wsMessage);
-    const shinkaiMessage = ShinkaiMessageBuilderWrapper.ws_connection(
-      wsMessageString,
-      auth?.profile_encryption_sk ?? '',
-      auth?.profile_identity_sk ?? '',
-      auth?.node_encryption_pk ?? '',
-      auth?.shinkai_identity ?? '',
-      auth?.profile ?? '',
-      auth?.shinkai_identity ?? '',
-      '',
-    );
-    sendMessage(shinkaiMessage);
-  }, [
-    auth?.node_encryption_pk,
-    auth?.profile,
-    auth?.profile_encryption_sk,
-    auth?.profile_identity_sk,
-    auth?.shinkai_identity,
-    enabled,
-    inboxId,
-    sendMessage,
-  ]);
+    sendMessage(wsMessageString);
+  }, [auth?.api_v2_key, auth?.shinkai_identity, enabled, inboxId, sendMessage]);
 
   return { readyState };
 };

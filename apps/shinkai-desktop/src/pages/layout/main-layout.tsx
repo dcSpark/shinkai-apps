@@ -30,7 +30,6 @@ import {
   FilesIcon,
   InboxIcon,
   ScheduledTasksIcon,
-  SheetIcon,
   ShinkaiCombinationMarkIcon,
   ToolsIcon,
 } from '@shinkai_network/shinkai-ui/assets';

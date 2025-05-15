@@ -33,12 +33,8 @@
 //   node_signature_pk: z.string(),
 //   profile_encryption_pk: z.string().min(5),
 //   profile_identity_pk: z.string().min(5),
-//   my_device_encryption_pk: z.string().min(5),
-//   my_device_identity_pk: z.string().min(5),
 //   profile_encryption_sk: z.string().min(5),
 //   profile_identity_sk: z.string().min(5),
-//   my_device_encryption_sk: z.string().min(5),
-//   my_device_identity_sk: z.string().min(5),
 // });
 
 // type FormType = z.infer<typeof formSchema>;
