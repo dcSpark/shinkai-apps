@@ -4,7 +4,7 @@ import {
   QuickConnectFormSchema,
   quickConnectFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/auth/quick-connection';
-import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/v2/mutations/submitRegistation/useSubmitRegistrationNoCode';
+import { useInitialRegistration } from '@shinkai_network/shinkai-node-state/v2/mutations/initialRegistration/useInitialRegistration';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/v2/queries/getEncryptionKeys/useGetEncryptionKeys';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import {
@@ -82,7 +82,6 @@ const QuickConnectionPage = () => {
   const setupDataForm = useForm<QuickConnectFormSchema>({
     resolver: zodResolver(quickConnectFormSchema),
     defaultValues: {
-      registration_name: 'main_device',
       node_address: isShinkaiPrivate
         ? LOCAL_NODE_ADDRESS
         : 'http://127.0.0.1:9550',
@@ -94,21 +93,17 @@ const QuickConnectionPage = () => {
     isError,
     error,
     mutateAsync: submitRegistrationNoCode,
-  } = useSubmitRegistrationNoCode({
+  } = useInitialRegistration({
     onSuccess: (response, setupPayload) => {
       if (response.status === 'success' && encryptionKeys) {
-        const updatedSetupData = {
-          ...encryptionKeys,
-          ...setupPayload,
-          permission_type: '',
-          shinkai_identity:
-            setupDataForm.getValues().shinkai_identity ||
-            (response.data?.node_name ?? ''),
-          node_signature_pk: response.data?.identity_public_key ?? '',
-          node_encryption_pk: response.data?.encryption_public_key ?? '',
+        setAuth({
           api_v2_key: response.data?.api_v2_key ?? '',
-        };
-        setAuth(updatedSetupData);
+          node_address: setupPayload.nodeAddress,
+          profile: 'main',
+          shinkai_identity: response.data?.node_name ?? '',
+          encryption_pk: response.data?.encryption_public_key ?? '',
+          identity_pk: response.data?.identity_public_key ?? '',
+        });
         completeStep(OnboardingStep.TERMS_CONDITIONS, true);
         completeStep(OnboardingStep.ANALYTICS, false);
         navigate(HOME_PATH);
@@ -123,10 +118,9 @@ const QuickConnectionPage = () => {
   async function onSubmit(currentValues: QuickConnectFormSchema) {
     if (!encryptionKeys) return;
     await submitRegistrationNoCode({
-      profile: 'main',
-      node_address: currentValues.node_address,
-      registration_name: currentValues.registration_name,
-      ...encryptionKeys,
+      nodeAddress: currentValues.node_address,
+      profileEncryptionPk: encryptionKeys.profile_encryption_pk,
+      profileIdentityPk: encryptionKeys.profile_identity_pk,
     });
   }
 

@@ -13,10 +13,7 @@ export default defineConfig({
     lib: {
       entry: {
         index: './src/index.ts',
-        api: './src/api.ts',
-        models: './src/models.ts',
         utils: './src/utils.ts',
-        wasm: './src/wasm.ts',
         cryptography: './src/cryptography.ts',
       },
       formats: ['es'],

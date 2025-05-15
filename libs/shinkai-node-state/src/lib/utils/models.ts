@@ -134,7 +134,7 @@ export const modelsConfig = {
       {
         name: 'Qwen-QWQ-32B',
         value: 'qwen-qwq-32b',
-      }
+      },
     ],
   },
   [Models.OpenRouter]: {

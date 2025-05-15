@@ -1,4 +1,3 @@
-import { moveFolderVR } from '@shinkai_network/shinkai-message-ts/api';
 import { moveFolder as moveFolderApi } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 
 import { MoveVRFolderInput } from './types';

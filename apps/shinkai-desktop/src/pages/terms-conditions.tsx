@@ -4,12 +4,12 @@ import {
   QuickConnectFormSchema,
   quickConnectFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/auth/quick-connection';
-import { useSubmitRegistrationNoCode } from '@shinkai_network/shinkai-node-state/v2/mutations/submitRegistation/useSubmitRegistrationNoCode';
+import { useInitialRegistration } from '@shinkai_network/shinkai-node-state/v2/mutations/initialRegistration/useInitialRegistration';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/v2/queries/getEncryptionKeys/useGetEncryptionKeys';
 import { Button, buttonVariants, Checkbox } from '@shinkai_network/shinkai-ui';
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { createContext, useContext,useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
@@ -19,7 +19,6 @@ import config from '../config';
 import { useShinkaiNodeRemoveStorageMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeSpawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useShinkaiNodeKillMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
-// import { useShinkaiNodeEventsToast } from '../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
@@ -42,7 +41,11 @@ export const LogoTapContext = createContext<{
 
 export const useLogoTap = () => useContext(LogoTapContext);
 
-export const LogoTapProvider = ({ children }: { children: React.ReactNode }) => {
+export const LogoTapProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [tapCount, setTapCount] = useState(0);
   const [showLocalNodeOption, setShowLocalNodeOption] = useState(false);
 
@@ -65,7 +68,6 @@ const TermsAndConditionsPage = () => {
   const [termsAndConditionsAccepted, setTermsAndConditionsAccepted] =
     useState(false);
   const { showLocalNodeOption } = useLogoTap();
-  // useShinkaiNodeEventsToast();
 
   const completeStep = useSettings((state) => state.completeStep);
 
@@ -94,7 +96,6 @@ const TermsAndConditionsPage = () => {
   const setupDataForm = useForm<QuickConnectFormSchema>({
     resolver: zodResolver(quickConnectFormSchema),
     defaultValues: {
-      registration_name: 'main_device',
       node_address: 'http://127.0.0.1:9550',
     },
   });
@@ -102,21 +103,17 @@ const TermsAndConditionsPage = () => {
   const {
     mutateAsync: submitRegistrationNoCode,
     isPending: submitRegistrationNodeCodeIsPending,
-  } = useSubmitRegistrationNoCode({
+  } = useInitialRegistration({
     onSuccess: (response, setupPayload) => {
       if (response.status === 'success' && encryptionKeys) {
-        const updatedSetupData = {
-          ...encryptionKeys,
-          ...setupPayload,
-          permission_type: '',
-          shinkai_identity:
-            setupDataForm.getValues().shinkai_identity ||
-            (response.data?.node_name ?? ''),
-          node_signature_pk: response.data?.identity_public_key ?? '',
-          node_encryption_pk: response.data?.encryption_public_key ?? '',
+        setAuth({
           api_v2_key: response.data?.api_v2_key ?? '',
-        };
-        setAuth(updatedSetupData);
+          node_address: setupPayload.nodeAddress,
+          profile: 'main',
+          shinkai_identity: response.data?.node_name ?? '',
+          encryption_pk: response.data?.encryption_public_key ?? '',
+          identity_pk: response.data?.identity_public_key ?? '',
+        });
         completeStep(OnboardingStep.TERMS_CONDITIONS, true);
       } else if (response.status === 'non-pristine') {
         setResetStorageBeforeConnectConfirmationPrompt(true);
@@ -146,10 +143,9 @@ const TermsAndConditionsPage = () => {
   async function onSubmit(currentValues: QuickConnectFormSchema) {
     if (!encryptionKeys) return;
     await submitRegistrationNoCode({
-      profile: 'main',
-      node_address: currentValues.node_address,
-      registration_name: currentValues.registration_name,
-      ...encryptionKeys,
+      nodeAddress: currentValues.node_address,
+      profileEncryptionPk: encryptionKeys.profile_encryption_pk,
+      profileIdentityPk: encryptionKeys.profile_identity_pk,
     });
   }
 

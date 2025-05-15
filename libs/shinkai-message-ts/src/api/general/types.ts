@@ -141,49 +141,30 @@ export type GetNodeStorageLocationResponse = {
   storage_location: string;
 };
 
-export type SubmitRegistrationCodeRequest = {
-  my_device_encryption_sk: string;
-  my_device_identity_sk: string;
-  profile_encryption_sk: string;
-  profile_identity_sk: string;
-  node_encryption_pk: string;
-  registration_code: string;
-  identity_type: string;
-  permission_type: string;
-  registration_name: string;
-  profile: string; // sender_profile_name: it doesn't exist yet in the Node
-  shinkai_identity: string;
-  node_address: string;
-};
-export type SubmitRegistrationCodeResponse = {
-  encryption_public_key: string;
-  identity_public_key: string;
+export type InitialRegistrationRequest = {
+  profile_encryption_pk: string;
+  profile_identity_pk: string;
 };
 
-export type SubmitRegistrationNoCodeRequest = {
-  node_address: string;
-  my_device_encryption_sk: string;
-  my_device_identity_sk: string;
-  profile_encryption_sk: string;
-  profile_identity_sk: string;
-  registration_name: string;
-  profile: string;
-};
-export type UseRegistrationNoCodeResponse = {
+export type InitialRegistrationStatus = 'success' | 'error' | 'non-pristine';
+
+export type InitialRegistrationData = {
   message: string;
   encryption_public_key: string;
   identity_public_key: string;
   node_name: string;
   api_v2_key: string;
+  api_v2_cert?: string;
 };
-export type SubmitRegistrationNoCodeStatus =
-  | 'success'
-  | 'error'
-  | 'non-pristine';
+
+export type InitialRegistrationResponse = {
+  status: InitialRegistrationStatus;
+  data?: InitialRegistrationData;
+};
 
 export type SubmitRegistrationNoCodeResponse = {
-  status: SubmitRegistrationNoCodeStatus;
-  data?: UseRegistrationNoCodeResponse;
+  status: InitialRegistrationStatus;
+  data?: InitialRegistrationResponse;
 };
 
 export type GetShinkaiFreeModelQuotaResponse = {
@@ -192,3 +173,15 @@ export type GetShinkaiFreeModelQuotaResponse = {
   used_tokens: number;
   reset_time: number;
 };
+
+export type GetPreferencesResponse = {
+  default_llm_provider?: string;
+  max_iterations?: number;
+};
+
+export type SetPreferencesRequest = {
+  default_llm_provider?: string;
+  max_iterations?: number;
+};
+
+export type SetPreferencesResponse = string;

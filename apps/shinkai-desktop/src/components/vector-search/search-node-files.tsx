@@ -1,12 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api/methods';
+import { ShinkaiPath } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 import {
   SearchVectorFormSchema,
   searchVectorFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/vector-fs/vector-search';
-import { VRItem } from '@shinkai_network/shinkai-node-state/lib/queries/getVRPathSimplified/types';
-import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/lib/queries/getVRSearchSimplified/useGetSearchVRItems';
+import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/v2/queries/getVRSearchSimplified/useGetSearchVRItems';
 import {
   Badge,
   Button,
@@ -55,7 +55,7 @@ const SearchNodeFiles = () => {
   const auth = useAuth((state) => state.auth);
   const [selectedKeys, setSelectedKeys] =
     useState<TreeCheckboxSelectionKeys | null>(null);
-  const selectedFileKeysRef = useRef<Map<string, VRItem>>(new Map());
+  const selectedFileKeysRef = useRef<Map<string, ShinkaiPath>>(new Map());
 
   const setDestinationFolderPath = useVectorFolderSelectionStore(
     (state) => state.setDestinationFolderPath,
@@ -83,13 +83,7 @@ const SearchNodeFiles = () => {
     {
       nodeAddress: auth?.node_address ?? '',
       search: search,
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      profile: auth?.profile ?? '',
-      my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-      my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
+      token: auth?.api_v2_key ?? '',
       path: destinationFolderPath ?? undefined,
     },
     {
@@ -292,23 +286,8 @@ const SearchNodeFiles = () => {
                               newKeys[event.value] = { checked: true };
                               const fileInfo = await retrieveVectorResource(
                                 auth?.node_address ?? '',
-                                auth?.shinkai_identity ?? '',
-                                auth?.profile ?? '',
-                                auth?.shinkai_identity ?? '',
-                                auth?.profile ?? '',
-                                generatedFilePath,
-                                {
-                                  my_device_encryption_sk:
-                                    auth?.my_device_encryption_sk ?? '',
-                                  my_device_identity_sk:
-                                    auth?.my_device_identity_sk ?? '',
-                                  node_encryption_pk:
-                                    auth?.node_encryption_pk ?? '',
-                                  profile_encryption_sk:
-                                    auth?.profile_encryption_sk ?? '',
-                                  profile_identity_sk:
-                                    auth?.profile_identity_sk ?? '',
-                                },
+                                auth?.api_v2_key ?? '',
+                                { path: generatedFilePath },
                               );
 
                               selectedFileKeysRef.current.set(event.value, {
