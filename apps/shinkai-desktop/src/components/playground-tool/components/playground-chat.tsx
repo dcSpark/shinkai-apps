@@ -16,10 +16,10 @@ import { FetchPreviousPageOptions } from '@tanstack/react-query';
 import { memo } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-import { AIModelSelector } from '../../chat/chat-action-bar/ai-update-selection-action-bar';
 import { MessageList } from '../../chat/components/message-list';
 import { usePlaygroundStore } from '../context/playground-context';
 import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
+import { AIModelSelectorTools } from './ai-update-selection-tool';
 import { LanguageToolSelector } from './language-tool-selector';
 import { ToolsSelection } from './tools-selection';
 
@@ -94,7 +94,7 @@ const PlaygroundChatBase = ({
                 <FormControl>
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2">
-                      <AIModelSelector
+                      <AIModelSelectorTools
                         onValueChange={(value) => {
                           form.setValue('llmProviderId', value);
                         }}

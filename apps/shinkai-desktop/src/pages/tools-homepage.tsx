@@ -35,9 +35,9 @@ import { UseFormReturn } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
-import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import { MessageList } from '../components/chat/components/message-list';
 import { FeedbackModal } from '../components/feedback/feedback-modal';
+import { AIModelSelectorTools } from '../components/playground-tool/components/ai-update-selection-tool';
 import { LanguageToolSelector } from '../components/playground-tool/components/language-tool-selector';
 import { ToolsSelection } from '../components/playground-tool/components/tools-selection';
 import {
@@ -284,7 +284,7 @@ function ToolsHome({
   });
 
   return (
-    <div className="container max-w-[1152px] pb-[80px]">
+    <div className="container max-w-[1100px] pb-[80px]">
       <div className="mb-[80px] flex items-center justify-end gap-3 px-0 py-4">
         <div className="flex items-center gap-3">
           <DockerStatus />
@@ -307,7 +307,7 @@ function ToolsHome({
           <FeedbackModal />
         </div>
       </div>
-      <div className="flex max-w-[1152px] flex-col gap-4">
+      <div className="flex max-w-[1100px] flex-col gap-4">
         <div className="flex flex-col gap-20">
           <div className="flex min-h-[300px] w-full flex-col items-center justify-between gap-10 pt-2">
             <div className="flex flex-col gap-2">
@@ -322,7 +322,7 @@ function ToolsHome({
               </div>
             </div>
 
-            <div className="w-full max-w-[1152px]">
+            <div className="w-full max-w-[1100px]">
               <Form {...form}>
                 <form>
                   <div className="relative pb-10">
@@ -331,7 +331,7 @@ function ToolsHome({
                       bottomAddons={
                         <div className="flex items-end justify-between gap-3 px-3 pb-2">
                           <div className="flex items-center gap-3">
-                            <AIModelSelector
+                            <AIModelSelectorTools
                               onValueChange={(value) => {
                                 form.setValue('llmProviderId', value);
                               }}
