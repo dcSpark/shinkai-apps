@@ -1,4 +1,5 @@
 import { ExitIcon, GearIcon } from '@radix-ui/react-icons';
+import { PopoverClose } from '@radix-ui/react-popover';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useImportAgentFromUrl } from '@shinkai_network/shinkai-node-state/v2/mutations/importAgentFromUrl/useImportAgentFromUrl';
 import { useImportTool } from '@shinkai_network/shinkai-node-state/v2/mutations/importTool/useImportTool';
@@ -15,6 +16,9 @@ import {
   AlertDialogTitle,
   Badge,
   Button,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Separator,
   Tooltip,
   TooltipContent,
@@ -28,6 +32,7 @@ import {
   AisIcon,
   CreateAIIcon,
   FilesIcon,
+  HomeIcon,
   InboxIcon,
   ScheduledTasksIcon,
   ShinkaiCombinationMarkIcon,
@@ -40,6 +45,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowLeftToLine,
   ArrowRightToLine,
+  Ellipsis,
   HelpCircleIcon,
 } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
@@ -94,6 +100,7 @@ const NavLink = ({
   icon,
   title,
   disabled,
+  isPopover,
 }: {
   href: string;
   external?: boolean;
@@ -101,6 +108,7 @@ const NavLink = ({
   icon: React.ReactNode;
   title: string;
   disabled?: boolean;
+  isPopover?: boolean;
 }) => {
   const { t } = useTranslation();
   const sidebarExpanded = useSettings((state) => state.sidebarExpanded);
@@ -120,7 +128,7 @@ const NavLink = ({
       >
         <span>{icon}</span>
         {sidebarExpanded && <span className="sr-only">{title}</span>}
-        <AnimatePresence>
+        <AnimatePresence initial={false}>
           {sidebarExpanded && (
             <motion.div
               animate="show"
@@ -143,7 +151,7 @@ const NavLink = ({
   return (
     <Link
       className={cn(
-        'flex w-full items-center gap-2 rounded-lg px-4 py-3 text-white transition-colors',
+        'flex w-full items-center gap-2.5 rounded-lg px-4 py-3 text-white transition-colors',
         isMatch
           ? 'bg-white/10 text-white shadow-xl'
           : 'opacity-60 hover:bg-white/10 hover:opacity-100',
@@ -155,11 +163,11 @@ const NavLink = ({
     >
       <span>{icon}</span>
       {sidebarExpanded && <span className="sr-only">{title}</span>}
-      <AnimatePresence>
-        {sidebarExpanded && (
+      <AnimatePresence initial={false}>
+        {(sidebarExpanded || isPopover) && (
           <motion.div
             animate="show"
-            className="overflow-hidden whitespace-nowrap text-xs"
+            className="overflow-hidden whitespace-nowrap text-sm"
             exit="hidden"
             initial="hidden"
             variants={showAnimation}
@@ -176,7 +184,6 @@ export function MainNav() {
   const { t, Trans } = useTranslation();
   const optInExperimental = useSettings((state) => state.optInExperimental);
   const auth = useAuth((state) => state.auth);
-  const navigate = useNavigate();
   const logout = useAuth((state) => state.setLogout);
   const resetSettings = useSettings((state) => state.resetSettings);
   const isGetStartedChecklistHidden = useSettings(
@@ -213,9 +220,9 @@ export function MainNav() {
 
   const navigationLinks = [
     {
-      title: 'Create AI Chat',
+      title: 'Home',
       href: '/home',
-      icon: <CreateAIIcon className="h-5 w-5" />,
+      icon: <HomeIcon className="size-[18px]" />,
     },
     {
       title: t('layout.menuItems.chats'),
@@ -226,58 +233,42 @@ export function MainNav() {
             )
           : ''
       }`,
-      icon: <InboxIcon className="h-5 w-5" />,
+      icon: <InboxIcon className="size-[18px]" />,
     },
     {
       title: t('layout.menuItems.agents'),
       href: '/agents',
-      icon: <AIAgentIcon className="h-5 w-5" name={''} />,
-    },
-
-    {
-      title: t('tools.label'),
-      href: '/tools',
-      icon: <ToolsIcon className="h-5 w-5" />,
-    },
-    {
-      title: t('layout.menuItems.vectorFs'),
-      href: '/vector-fs',
-      icon: <FilesIcon className="h-5 w-5" />,
-    },
-    {
-      title: 'Scheduled Tasks',
-      href: '/tasks',
-      icon: <ScheduledTasksIcon className="h-5 w-5" />,
+      icon: <AIAgentIcon className="size-[18px]" name={''} />,
     },
     config.isDev &&
       optInExperimental && {
         title: t('layout.menuItems.vectorSearch'),
         href: '/vector-search',
-        icon: <AISearchContentIcon className="h-5 w-5" />,
+        icon: <AISearchContentIcon className="size-[18px]" />,
       },
   ].filter(Boolean) as NavigationLink[];
 
   const footerNavigationLinks = [
     {
-      title: t('layout.menuItems.ais'),
+      title: t('layout.menuItems.manageAis'),
       href: '/ais',
-      icon: <AisIcon className="h-5 w-5" />,
+      icon: <AisIcon className="size-[18px]" />,
     },
     {
       title: t('layout.menuItems.helpAndSupport'),
       href: `https://docs.shinkai.com/`,
-      icon: <HelpCircleIcon className="h-5 w-5" />,
+      icon: <HelpCircleIcon className="size-[18px]" />,
       external: true,
     },
     {
       title: t('layout.menuItems.settings'),
       href: '/settings',
-      icon: <GearIcon className="h-5 w-5" />,
+      icon: <GearIcon className="size-[18px]" />,
     },
     config.isDev && {
       title: t('layout.menuItems.disconnect'),
       href: '#',
-      icon: <ExitIcon className="h-5 w-5" />,
+      icon: <ExitIcon className="size-[18px]" />,
       onClick: () => confirmDisconnect(),
     },
   ].filter(Boolean) as NavigationLink[];
@@ -388,6 +379,63 @@ export function MainNav() {
               </Fragment>
             );
           })}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                className={cn(
+                  'flex w-full items-center gap-2.5 rounded-lg bg-transparent px-4 py-2.5 text-white transition-colors',
+                  'opacity-60 hover:bg-white/10 hover:opacity-100',
+                )}
+                size="auto"
+                style={{
+                  justifyContent: sidebarExpanded ? 'flex-start' : 'center',
+                }}
+                variant="ghost"
+              >
+                <Ellipsis className="size-[18px]" />
+                <span
+                  className={cn(
+                    'font-clash text-sm font-normal',
+                    !sidebarExpanded && 'sr-only',
+                  )}
+                >
+                  More
+                </span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="start"
+              className="w-[240px] p-2"
+              sideOffset={8}
+            >
+              <div className="flex flex-col gap-1">
+                <PopoverClose asChild>
+                  <NavLink
+                    href="/tools"
+                    icon={<ToolsIcon className="size-[18px]" />}
+                    isPopover
+                    title={t('tools.label')}
+                  />
+                </PopoverClose>
+                <PopoverClose asChild>
+                  <NavLink
+                    href="/vector-fs"
+                    icon={<FilesIcon className="size-[18px]" />}
+                    isPopover
+                    title={t('layout.menuItems.vectorFs')}
+                  />
+                </PopoverClose>
+                <PopoverClose asChild>
+                  <NavLink
+                    href="/tasks"
+                    icon={<ScheduledTasksIcon className="size-[18px]" />}
+                    isPopover
+                    title="Scheduled Tasks"
+                  />
+                </PopoverClose>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
         <div className="flex flex-col gap-1">
           <ResourcesBanner isInSidebar />
