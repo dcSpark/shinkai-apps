@@ -172,8 +172,8 @@ const App = () => {
         <div className="flex h-full items-center justify-center bg-white">
           <DotPattern className="[mask-image:linear-gradient(to_bottom_right,white,transparent,transparent)]" />
           <div className="flex items-center gap-1 text-sm">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-200" />
-            <p className="text-gray-200">Loading...</p>
+            <Loader2 className="text-official-gray-600 h-5 w-5 animate-spin" />
+            <p className="text-official-gray-600">Loading...</p>
           </div>
         </div>
       )}

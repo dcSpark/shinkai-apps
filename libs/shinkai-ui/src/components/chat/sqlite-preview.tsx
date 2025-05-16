@@ -157,7 +157,7 @@ export const SqlitePreview: React.FC<SqlitePreviewProps> = ({ url }) => {
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-lg bg-gray-600 p-4 overflow-y-hidden">
+    <div className="flex flex-col gap-4 overflow-y-hidden rounded-lg bg-gray-600 p-4">
       <div className="flex flex-wrap gap-2">
         {tables.map((table) => (
           <Button
@@ -198,7 +198,7 @@ export const SqlitePreview: React.FC<SqlitePreviewProps> = ({ url }) => {
                   {tableData?.rows.map((row, i) => (
                     <tr className="border-b border-gray-700" key={i}>
                       {row.map((cell, j) => (
-                        <td className="p-2 text-gray-100" key={j}>
+                        <td className="text-official-gray-400 p-2" key={j}>
                           {String(cell)}
                         </td>
                       ))}

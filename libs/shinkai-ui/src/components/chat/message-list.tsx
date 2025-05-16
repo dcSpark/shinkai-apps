@@ -181,7 +181,7 @@ export const MessageList = ({
         !isFetchingPreviousPage &&
         !hasPreviousPage &&
         (paginatedMessages?.pages ?? [])?.length > 1 && (
-          <div className="py-2 text-center text-xs text-gray-100">
+          <div className="text-official-gray-400 py-2 text-center text-xs">
             {noMoreMessageLabel}
           </div>
         )}
@@ -207,7 +207,7 @@ export const MessageList = ({
                     'w-full rounded-lg px-2.5 py-3',
                     index % 2 === 0
                       ? 'h-24 rounded-bl-none bg-gray-300'
-                      : 'h-16 rounded-tr-none bg-gray-200',
+                      : 'bg-official-gray-600 h-16 rounded-tr-none',
                     index % 3 === 0 && 'h-32',
                   )}
                 />
@@ -236,7 +236,7 @@ export const MessageList = ({
                     'w-full rounded-lg px-2.5 py-3',
                     index % 2 === 0
                       ? 'h-24 rounded-bl-none bg-gray-300'
-                      : 'h-16 rounded-tr-none bg-gray-200',
+                      : 'bg-official-gray-600 h-16 rounded-tr-none',
                     index % 3 === 0 && 'h-32',
                   )}
                 />
@@ -256,7 +256,7 @@ export const MessageList = ({
                         'sticky top-5',
                       )}
                     >
-                      <span className="text-gray-80 text-xs font-medium">
+                      <span className="text-official-gray-400 text-xs font-medium">
                         {getRelativeDateLabel(
                           new Date(messages[0].createdAt || ''),
                         )}
@@ -265,7 +265,7 @@ export const MessageList = ({
                     <div className="flex flex-col">
                       {messages.map((message, messageIndex) => {
                         const previousMessage = messages[messageIndex - 1];
-      
+
                         const disabledRetryAndEditValue =
                           disabledRetryAndEdit ?? messageIndex === 0;
 
