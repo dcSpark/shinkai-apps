@@ -3,6 +3,7 @@ import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
+import { useRunTaskNow } from '@shinkai_network/shinkai-node-state/v2/mutations/runTaskNow/useRunTaskNow';
 import { useGetRecurringTask } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTask/useGetRecurringTask';
 import { useGetRecurringTaskLogs } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTaskLogs/useGetRecurringTaskLogs';
 import {
@@ -33,6 +34,7 @@ import {
   CheckCircle2,
   Clock,
   Edit,
+  PlayIcon,
   RefreshCwIcon,
   Sparkles,
   TrashIcon,
@@ -209,8 +211,20 @@ const TaskCard = ({
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
   const [isDeleteTaskDrawerOpen, setIsDeleteTaskDrawerOpen] =
     React.useState(false);
+
+  const { mutateAsync: runTaskNow } = useRunTaskNow({
+    onSuccess: () => {
+      toast.success('Task run successfully');
+    },
+    onError: (error: any) => {
+      toast.error('Failed to run task', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
 
   const readableCron = cronstrue.toString(cronExpression, {
     throwExceptionOnParseError: false,
@@ -266,6 +280,17 @@ const TaskCard = ({
                   icon: <Edit className="mr-3 h-4 w-4" />,
                   onClick: () => {
                     navigate(`/tasks/edit/${taskId}`);
+                  },
+                },
+                {
+                  name: t('tasks.runNow'),
+                  icon: <PlayIcon className="mr-3 h-4 w-4" />,
+                  onClick: async () => {
+                    await runTaskNow({
+                      nodeAddress: auth?.node_address ?? '',
+                      token: auth?.api_v2_key ?? '',
+                      taskId: taskId.toString(),
+                    });
                   },
                 },
                 {
