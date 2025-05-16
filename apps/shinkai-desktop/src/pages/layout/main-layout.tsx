@@ -19,7 +19,6 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  Separator,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -30,7 +29,6 @@ import {
   AIAgentIcon,
   AISearchContentIcon,
   AisIcon,
-  CreateAIIcon,
   FilesIcon,
   HomeIcon,
   InboxIcon,
@@ -286,7 +284,7 @@ export function MainNav() {
     >
       <div
         className={cn(
-          'text-gray-80 flex w-full items-center justify-between gap-2 py-2 pl-4',
+          'text-official-gray-400 flex w-full items-center justify-between gap-2 py-2 pl-4',
           !sidebarExpanded && 'justify-center px-0',
         )}
       >
@@ -298,7 +296,7 @@ export function MainNav() {
           <TooltipTrigger asChild>
             <Button
               className={cn(
-                'border-official-gray-780 text-gray-80 h-6 w-6 shrink-0 rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
+                'border-official-gray-780 text-official-gray-400 h-6 w-6 shrink-0 rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
               )}
               onClick={toggleSidebar}
               size="auto"
@@ -326,9 +324,6 @@ export function MainNav() {
           {navigationLinks.map((item) => {
             return (
               <Fragment key={item.title}>
-                {optInExperimental && item.href === '/sheets' && (
-                  <Separator className="my-0.5 w-full bg-gray-200" />
-                )}
                 <TooltipProvider
                   delayDuration={
                     item.disabled ? 0 : !sidebarExpanded ? 0 : 10000
@@ -356,7 +351,7 @@ export function MainNav() {
                           {item.disabled ? (
                             <>
                               {item.title} <br />
-                              <span className="text-gray-80 text-xs">
+                              <span className="text-official-gray-400 text-xs">
                                 {t('common.comingSoon')}
                               </span>
                             </>
@@ -364,7 +359,7 @@ export function MainNav() {
                             <div className="flex flex-col gap-1">
                               {item.title}
                               {item.href === '/home' ? (
-                                <div className="text-gray-80 flex items-center justify-center gap-2 text-center">
+                                <div className="text-official-gray-400 flex items-center justify-center gap-2 text-center">
                                   <span>⌘</span>
                                   <span>N</span>
                                 </div>
@@ -380,29 +375,48 @@ export function MainNav() {
             );
           })}
           <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                className={cn(
-                  'flex w-full items-center gap-2.5 rounded-lg bg-transparent px-4 py-2.5 text-white transition-colors',
-                  'opacity-60 hover:bg-white/10 hover:opacity-100',
+            <TooltipProvider delayDuration={!sidebarExpanded ? 0 : 10000}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <PopoverTrigger asChild>
+                    <Button
+                      className={cn(
+                        'flex w-full items-center gap-2.5 rounded-lg bg-transparent px-4 py-2.5 text-white transition-colors',
+                        'opacity-60 hover:bg-white/10 hover:opacity-100',
+                      )}
+                      size="auto"
+                      style={{
+                        justifyContent: sidebarExpanded
+                          ? 'flex-start'
+                          : 'center',
+                      }}
+                      variant="ghost"
+                    >
+                      <Ellipsis className="size-[18px]" />
+                      <span
+                        className={cn(
+                          'text-sm font-normal',
+                          !sidebarExpanded && 'sr-only',
+                        )}
+                      >
+                        More
+                      </span>
+                    </Button>
+                  </PopoverTrigger>
+                </TooltipTrigger>
+                {!sidebarExpanded && (
+                  <TooltipPortal>
+                    <TooltipContent
+                      align="center"
+                      arrowPadding={2}
+                      side="right"
+                    >
+                      <p>More</p>
+                    </TooltipContent>
+                  </TooltipPortal>
                 )}
-                size="auto"
-                style={{
-                  justifyContent: sidebarExpanded ? 'flex-start' : 'center',
-                }}
-                variant="ghost"
-              >
-                <Ellipsis className="size-[18px]" />
-                <span
-                  className={cn(
-                    'text-sm font-normal',
-                    !sidebarExpanded && 'sr-only',
-                  )}
-                >
-                  More
-                </span>
-              </Button>
-            </PopoverTrigger>
+              </Tooltip>
+            </TooltipProvider>
             <PopoverContent
               align="start"
               className="w-[240px] p-2"
