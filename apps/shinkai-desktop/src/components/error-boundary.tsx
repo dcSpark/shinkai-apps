@@ -1,4 +1,4 @@
-import { Button } from "@shinkai_network/shinkai-ui";
+import { Button } from '@shinkai_network/shinkai-ui';
 
 const FullPageErrorFallback = ({ error }: { error: Error }) => {
   return (
@@ -7,13 +7,13 @@ const FullPageErrorFallback = ({ error }: { error: Error }) => {
       role="alert"
     >
       <p>Something went wrong. Try refreshing the app.</p>
-      <pre className="whitespace-pre-wrap text-balance break-all text-center mb-4">
+      <pre className="mb-4 whitespace-pre-wrap text-balance break-all text-center">
         {error.message}
       </pre>
       <Button
         onClick={() => window.location.reload()}
         size="sm"
-        variant="secondary"
+        variant="outline"
       >
         Refresh
       </Button>

@@ -1,4 +1,6 @@
 {
+  "": {
+  },
   "agents": {
     "systemInstructions": "システムの指示"
   },
@@ -259,10 +261,10 @@
     "menuItems": {
       "agents": "AI",
       "aiTasks": "AIタスク",
-      "ais": "AI",
       "chats": "チャット",
       "disconnect": "切断",
       "helpAndSupport": "ヘルプとサポート",
+      "manageAis": "AIを管理する",
       "settings": "設定",
       "vectorFs": "私のAIファイルエクスプローラ",
       "vectorSearch": "AIファイルコンテンツ検索"

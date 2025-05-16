@@ -259,10 +259,10 @@
     "menuItems": {
       "agents": "IAs",
       "aiTasks": "Tareas de IA",
-      "ais": "IA",
       "chats": "Chats",
       "disconnect": "Desconectar",
       "helpAndSupport": "Ayuda y Soporte",
+      "manageAis": "Gestionar AIs",
       "settings": "Ajustes",
       "vectorFs": "Explorador de Mis Archivos de IA",
       "vectorSearch": "Búsqueda de Contenido de Archivos de IA"
