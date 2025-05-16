@@ -116,7 +116,7 @@ const ArtifactCard = ({
 }: ArtifactProps) => (
   <Card
     className={cn(
-      'w-full max-w-sm border border-gray-100',
+      'border-official-gray-400 w-full max-w-sm border',
       isSelected && 'border-gray-50 bg-gray-300',
     )}
     onClick={() => {
@@ -249,8 +249,8 @@ const MessageBase = ({
                       <ChatInputArea
                         bottomAddons={
                           <div className="flex w-full items-center justify-between px-1">
-                            <div className="flex items-center gap-1 text-xs text-gray-100">
-                              <InfoCircleIcon className="h-3 w-3 text-gray-100" />
+                            <div className="text-official-gray-400 flex items-center gap-1 text-xs">
+                              <InfoCircleIcon className="text-official-gray-400 h-3 w-3" />
                               <span>{t('chat.editMessage.warning')}</span>
                             </div>
                             <div className="flex items-center gap-2">
@@ -466,7 +466,7 @@ const MessageBase = ({
                   </div>
                   <div
                     className={cn(
-                      'flex items-center gap-1.5 text-xs text-gray-100',
+                      'text-official-gray-400 flex items-center gap-1.5 text-xs',
                     )}
                   >
                     <span>

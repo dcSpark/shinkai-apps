@@ -56,7 +56,7 @@ export const OutputRender = ({ result }: { result: RunResult }) => {
         })}
       </div>
 
-      <details className="rounded-md bg-gray-100 p-4">
+      <details className="bg-official-gray-400 rounded-md p-4">
         <summary className="mb-2 cursor-pointer font-bold">
           {i18n.t('codeRunner.output')}
         </summary>

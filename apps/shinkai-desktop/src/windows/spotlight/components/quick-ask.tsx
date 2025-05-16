@@ -215,7 +215,7 @@ function QuickAsk() {
       <div className="font-lg flex h-[60px] shrink-0 items-center space-x-3 px-5 py-2">
         {inboxId && (
           <button
-            className="h-6 w-6 rounded-md bg-gray-200 p-1"
+            className="bg-official-gray-600 h-6 w-6 rounded-md p-1"
             onClick={() => {
               setInboxId(null);
               setMessageResponse('');
@@ -241,7 +241,7 @@ function QuickAsk() {
               <div className="w-full">
                 <input
                   autoFocus
-                  className="placeholder:text-official-gray-200/70 w-full bg-transparent text-lg text-white focus:outline-none"
+                  className="placeholder:text-official-official-gray-600/70 w-full bg-transparent text-lg text-white focus:outline-none"
                   {...chatForm.register('message')}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
@@ -284,7 +284,7 @@ function QuickAsk() {
                     {isToolsListSuccess &&
                       toolsList?.map((tool) => (
                         <CommandItem
-                          className="data-[selected='true']:bg-gray-200"
+                          className="data-[selected='true']:bg-official-gray-600"
                           key={tool.tool_router_key}
                           onSelect={() => {
                             chatForm.setValue('tool', {
@@ -308,7 +308,7 @@ function QuickAsk() {
                             <span className="line-clamp-1 text-white">
                               {formatText(tool.name)}
                             </span>
-                            <span className="text-official-gray-200 line-clamp-3 text-xs">
+                            <span className="text-official-official-gray-600 line-clamp-3 text-xs">
                               {tool.description}
                             </span>
                           </div>
@@ -335,14 +335,14 @@ function QuickAsk() {
       <div className="flex h-10 w-full items-center justify-between px-4 py-1.5 text-xs">
         <div>
           {isLoadingResponse ? (
-            <div className="flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center text-gray-100 transition-colors hover:bg-gray-300">
+            <div className="text-official-gray-400 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300">
               <Loader2 className="h-4 w-4 animate-spin" />
               <span>Getting AI response...</span>
             </div>
           ) : (
             // TODO: Support for full longer text
             // <button
-            //   className="text-official-gray-200 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
+            //   className="text-official-official-gray-600 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
             //   disabled
             // >
             //   <span>Full Text Input </span>
@@ -355,13 +355,13 @@ function QuickAsk() {
             //     </kbd>
             //   </span>
             // </button>
-            <ShinkaiCombinationMarkIcon className="h-auto w-[60px] text-gray-100" />
+            <ShinkaiCombinationMarkIcon className="text-official-gray-400 h-auto w-[60px]" />
           )}
         </div>
         <div className="flex items-center gap-1">
           {messageInput ? (
             <button
-              className="text-official-gray-200 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
+              className="text-official-official-gray-600 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
               onClick={chatForm.handleSubmit(onSubmit)}
             >
               <span>Submit</span>
@@ -371,7 +371,7 @@ function QuickAsk() {
             </button>
           ) : messageResponse ? (
             <CopyToClipboardIcon asChild string={messageResponse}>
-              <button className="text-official-gray-200 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300">
+              <button className="text-official-official-gray-600 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300">
                 {clipboard && (
                   <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
                 )}
@@ -391,7 +391,7 @@ function QuickAsk() {
             </CopyToClipboardIcon>
           ) : isLoadingResponse ? null : (
             <button
-              className="text-official-gray-200 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
+              className="text-official-official-gray-600 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
               onClick={chatForm.handleSubmit(onSubmit)}
             >
               <span>Submit</span>
@@ -430,7 +430,7 @@ const QuickAskBody = () => {
           <h1 className="text-xl font-bold text-white">
             {t('quickAsk.emptyStateTitle')}
           </h1>
-          <p className="text-official-gray-200 text-xs">
+          <p className="text-official-official-gray-600 text-xs">
             {t('quickAsk.emptyStateDescription')}
           </p>
         </motion.div>
@@ -485,14 +485,14 @@ const QuickAskBodyWithResponseBase = ({ inboxId }: { inboxId: string }) => {
             '[&[data-state=open]>span.content]:hidden',
           )}
         >
-          <span className="input text-official-gray-200 hidden flex-1 items-center gap-1 truncate text-left text-xs">
+          <span className="input text-official-official-gray-600 hidden flex-1 items-center gap-1 truncate text-left text-xs">
             Input Message
           </span>
           <span className="content flex-1 truncate text-left text-gray-50">
             {inputMessage?.content}
           </span>
 
-          <ChevronRight className="text-official-gray-200 h-4 w-4 shrink-0" />
+          <ChevronRight className="text-official-official-gray-600 h-4 w-4 shrink-0" />
         </CollapsibleTrigger>
         <CollapsibleContent className="max-h-[150px] overflow-y-auto px-5 pb-2 pt-0.5">
           <MarkdownText

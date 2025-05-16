@@ -53,11 +53,11 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full border-[1px] border-white bg-gray-100/40;
+    @apply bg-official-gray-400/40 rounded-full border-[1px] border-white;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-100;
+    @apply bg-official-gray-400;
   }
 }
 
@@ -80,11 +80,8 @@
   > :where(li:last-child)
   > :where(:is(ol, ul):last-child)
   > :where(li:last-child)::after {
-  @apply text-gray-50 ml-1 animate-pulse font-sans text-[10px] content-['\25CF'];
+  @apply ml-1 animate-pulse font-sans text-[10px] text-gray-50 content-['\25CF'];
 }
-
-
-
 
 /* react tree view */
 .p-checkbox {

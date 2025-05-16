@@ -11,12 +11,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-brand hover:bg-brand-500 text-white disabled:bg-gray-200 disabled:text-gray-100',
+          'bg-brand hover:bg-brand-500 disabled:text-official-gray-400 text-white disabled:bg-gray-200',
         destructive:
-          'bg-red-500 text-gray-50 shadow-sm hover:bg-red-500/90 disabled:bg-gray-200 disabled:text-gray-100',
+          'disabled:text-official-gray-400 bg-red-500 text-gray-50 shadow-sm hover:bg-red-500/90 disabled:bg-gray-200',
         outline:
           'hover:bg-official-gray-850 border border-gray-200 bg-transparent text-white shadow-sm hover:text-gray-50',
-        secondary: 'bg-gray-100 text-gray-900 shadow-sm hover:bg-gray-100/80',
+        secondary:
+          'bg-official-gray-400 hover:bg-official-gray-400/80 text-gray-900 shadow-sm',
         tertiary: 'bg-transparent hover:bg-gray-400/60',
         ghost: 'bg-gray-400 hover:bg-gray-400/60',
         link: 'text-white underline-offset-4 hover:underline',

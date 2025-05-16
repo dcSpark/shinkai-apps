@@ -289,7 +289,7 @@ export function MainNav() {
         )}
       >
         {sidebarExpanded && (
-          <ShinkaiCombinationMarkIcon className="text-official-gray-100 h-auto w-[90px]" />
+          <ShinkaiCombinationMarkIcon className="text-official-official-gray-400 h-auto w-[90px]" />
         )}
 
         <Tooltip>

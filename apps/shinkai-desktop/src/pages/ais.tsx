@@ -114,7 +114,7 @@ const AIsPage = () => {
                 <p className="text-2xl font-semibold">
                   {t('llmProviders.notFound.title')}
                 </p>
-                <p className="text-center text-sm font-medium text-gray-100">
+                <p className="text-official-gray-400 text-center text-sm font-medium">
                   {t('llmProviders.notFound.description')}
                 </p>
               </div>
@@ -235,7 +235,7 @@ function LLMProviderCard({
                 tabIndex={0}
               >
                 <span className="sr-only">{t('common.moreOptions')}</span>
-                <DotsVerticalIcon className="text-gray-100" />
+                <DotsVerticalIcon className="text-official-gray-400-gray-400" />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent

@@ -40,11 +40,11 @@ export const FileItem = ({
           />
         ) : fileIconMap[getFileExt(file.name)] ? (
           <FileTypeIcon
-            className="text-official-gray-200"
+            className="text-official-official-gray-600"
             type={getFileExt(file.name)}
           />
         ) : (
-          <PaperClipIcon className="text-official-gray-200 h-4 w-4" />
+          <PaperClipIcon className="text-official-official-gray-600 h-4 w-4" />
         )}
       </span>
       <div className="line-clamp-1 flex flex-1 flex-col gap-1">
@@ -58,7 +58,7 @@ export const FileItem = ({
           </span>
         </button>
         {file.size && (
-          <span className="shrink-0 text-xs text-gray-100">
+          <span className="text-official-gray-400 shrink-0 text-xs">
             {size(file.size)}
           </span>
         )}
@@ -119,7 +119,7 @@ export const FileUploader = ({
       <div
         {...getRootFileProps({
           className:
-            'dropzone py-4 bg-gray-400 group relative mt-3 flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed border-gray-200 transition-colors hover:border-gray-100',
+            'dropzone py-4 bg-gray-400 group relative mt-3 flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed border-official-gray-600 transition-colors hover:border-official-gray-400',
         })}
       >
         <div className="flex flex-col items-center justify-center space-y-1 px-2">
@@ -128,7 +128,7 @@ export const FileUploader = ({
           </div>
           <p className="text-sm text-white">{t('common.clickToUpload')}</p>
           {descriptionText && (
-            <p className="text-official-gray-200 line-clamp-1 text-xs">
+            <p className="text-official-official-gray-600 line-clamp-1 text-xs">
               {descriptionText}
             </p>
           )}
@@ -154,7 +154,9 @@ export const FileUploader = ({
                 actions={[
                   {
                     label: 'Delete',
-                    icon: <Trash className="text-official-gray-200 h-4 w-4" />,
+                    icon: (
+                      <Trash className="text-official-official-gray-600 h-4 w-4" />
+                    ),
                     onClick: (file) => {
                       const newFiles = [...value];
                       newFiles.splice(newFiles.indexOf(file), 1);

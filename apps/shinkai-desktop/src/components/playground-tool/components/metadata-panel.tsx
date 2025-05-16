@@ -188,7 +188,7 @@ function MetadataPanelBase({
         </div>
       )}
       {isMetadataGenerationPending && (
-        <div className="text-official-gray-200 flex flex-col gap-2 py-4 text-xs">
+        <div className="text-official-official-gray-600 flex flex-col gap-2 py-4 text-xs">
           <div className="space-y-3 font-mono text-sm">
             <div className="ml-4 flex items-center gap-2">
               <Skeleton className="h-4 w-24 bg-zinc-800" />
@@ -255,7 +255,7 @@ function MetadataPanelBase({
         )}
       {isMetadataGenerationIdle && (
         <div>
-          <p className="text-official-gray-200 py-4 pt-6 text-center text-xs">
+          <p className="text-official-official-gray-600 py-4 pt-6 text-center text-xs">
             No metadata generated yet.
           </p>
         </div>

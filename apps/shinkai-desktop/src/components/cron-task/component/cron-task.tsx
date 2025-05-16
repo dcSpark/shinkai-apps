@@ -250,7 +250,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
       className="container"
       title={`${mode === 'create' ? 'Create' : 'Edit'} Scheduled Task`}
     >
-      <p className="text-official-gray-200 -mt-8 py-3 pb-6 text-center text-sm">
+      <p className="text-official-official-gray-600 -mt-8 py-3 pb-6 text-center text-sm">
         Schedule recurring tasks at a specified time
       </p>
       <Form {...form}>
@@ -321,7 +321,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                 <ScheduledTasksIcon className="size-4" />
                 <span>
                   This cron will run {readableCronExpression.toLowerCase()}{' '}
-                  <span className="text-official-gray-200 font-mono">
+                  <span className="text-official-official-gray-600 font-mono">
                     ({form.watch('cronExpression')})
                   </span>
                 </span>
@@ -372,7 +372,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
 
                 <div className="space-y-4">
                   <div className="grid grid-cols-[1fr_auto] items-center">
-                    <span className="text-official-gray-200 text-xs">
+                    <span className="text-official-official-gray-600 text-xs">
                       AI / Agent
                     </span>
                     <AIModelSelector
@@ -383,7 +383,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                     />
                   </div>
                   <div className="grid grid-cols-[1fr_auto] items-center">
-                    <span className="text-official-gray-200 text-xs">
+                    <span className="text-official-official-gray-600 text-xs">
                       Force Tool Usage (Optional)
                     </span>
 
@@ -420,7 +420,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                           value={form.watch('jobMessage.tool_key')}
                         >
                           <DropdownMenuRadioItem
-                            className="flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
+                            className="hover:bg-official-gray-600 aria-checked:bg-official-gray-600 flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 text-white transition-colors"
                             value=""
                           >
                             <ToolsIcon className="h-3.5 w-3.5 shrink-0" />
@@ -432,7 +432,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                             toolsList.length > 0 &&
                             toolsList?.map((tool) => (
                               <DropdownMenuRadioItem
-                                className="flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
+                                className="hover:bg-official-gray-600 aria-checked:bg-official-gray-600 flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 text-white transition-colors"
                                 key={tool.tool_router_key}
                                 value={tool.tool_router_key}
                               >

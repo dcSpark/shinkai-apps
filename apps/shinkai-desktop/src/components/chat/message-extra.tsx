@@ -146,7 +146,9 @@ function Payment({
                                   `
                               : data.usage_type.PerUse.DirectDelegation}
                         </span>
-                        <span className="text-gray-100">one-time use</span>
+                        <span className="text-official-gray-400">
+                          one-time use
+                        </span>
                       </Label>
                     </div>
                   )}
@@ -177,26 +179,34 @@ function Payment({
                                   `
                               : data.usage_type.Downloadable.DirectDelegation}
                         </span>
-                        <span className="text-gray-100">for download</span>
+                        <span className="text-official-gray-400-gray-400">
+                          for download
+                        </span>
                       </Label>
                     </div>
                   )}
                 </RadioGroup>
                 <div className="mx-auto flex max-w-sm flex-col gap-2 py-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-100">Author</span>
+                    <span className="text-official-gray-400-gray-400">
+                      Author
+                    </span>
                     <span className="text-white">
                       {data.invoice.provider_name}
                     </span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-100">Wallet Address</span>
+                    <span className="text-official-gray-400-gray-400">
+                      Wallet Address
+                    </span>
                     <span className="text-white">
                       {truncateAddress(data.invoice.address.address_id)}
                     </span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-100">Wallet Balances</span>
+                    <span className="text-official-gray-400-gray-400">
+                      Wallet Balances
+                    </span>
                     <div className="text-white">
                       {data.wallet_balances.data.map((balance) => (
                         <div
@@ -255,7 +265,9 @@ function Payment({
             >
               <CardContent className="flex flex-col items-center justify-center gap-2 py-8">
                 <Loader2 className="h-8 w-8 animate-spin text-white" />
-                <span className="text-gray-80 ml-2">Processing payment...</span>
+                <span className="text-official-gray-400 ml-2">
+                  Processing payment...
+                </span>
               </CardContent>
             </motion.div>
           )}
@@ -273,7 +285,7 @@ function Payment({
                   <span className="mt-4 text-lg font-semibold text-white">
                     Payment Successful!
                   </span>
-                  <span className="mt-2 text-sm text-gray-100">
+                  <span className="text-official-gray-400-gray-400 mt-2 text-sm">
                     Thank you for your purchase.
                   </span>
                 </div>
@@ -307,7 +319,7 @@ function Payment({
                   <span className="mt-4 text-lg font-semibold text-white">
                     Payment Failed!
                   </span>
-                  <span className="mt-2 text-sm text-gray-100">
+                  <span className="text-official-gray-400-gray-400 mt-2 text-sm">
                     Please try again.
                   </span>
                 </div>

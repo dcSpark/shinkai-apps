@@ -122,7 +122,7 @@ const InboxNameInput = ({
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className="h-full border-none bg-transparent py-2 pr-16 text-xs caret-white placeholder:text-gray-100 focus-visible:ring-0 focus-visible:ring-white"
+                      className="placeholder:text-official-gray-400 h-full border-none bg-transparent py-2 pr-16 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                       placeholder={inboxName}
                       {...field}
                       ref={inputRef}
@@ -591,7 +591,7 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
               key={inbox.inbox_id}
               to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
             >
-              <span className="text-official-gray-100 line-clamp-2 text-sm">
+              <span className="text-official-official-gray-400 line-clamp-2 text-sm">
                 {inbox.custom_name || inbox.inbox_id}
               </span>
               <span className="text-official-gray-500 text-xs">

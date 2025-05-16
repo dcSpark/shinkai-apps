@@ -133,7 +133,7 @@ export default function EditToolBasicInfoDialog({
                     </Label>
                     <Input
                       autoFocus
-                      className="placeholder-official-gray-200 bg-official-gray-900 !h-[40px] resize-none border-none py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                      className="placeholder-official-official-gray-600 bg-official-gray-900 !h-[40px] resize-none border-none py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                       id="name"
                       onChange={field.onChange}
                       placeholder="Tool Name"
@@ -155,7 +155,7 @@ export default function EditToolBasicInfoDialog({
                       Description
                     </Label>
                     <Textarea
-                      className="placeholder-official-gray-200 bg-official-gray-900 resize-none border-none py-2 pl-2 pt-2 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                      className="placeholder-official-official-gray-600 bg-official-gray-900 resize-none border-none py-2 pl-2 pt-2 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                       id="description"
                       onChange={field.onChange}
                       placeholder="Tool Description"

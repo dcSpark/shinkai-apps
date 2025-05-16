@@ -65,16 +65,16 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
           <span className="text-sm font-medium text-white">
             {formatText(tool.name)}{' '}
           </span>
-          <Badge className="text-official-gray-200 bg-official-gray-750 text-xs font-normal">
+          <Badge className="text-official-official-gray-600 bg-official-gray-750 text-xs font-normal">
             {getVersionFromTool(tool)}
           </Badge>
           {tool.author !== '@@official.shinkai' && (
-            <Badge className="text-official-gray-200 bg-official-gray-750 text-xs font-normal">
+            <Badge className="text-official-official-gray-600 bg-official-gray-750 text-xs font-normal">
               {tool.author}
             </Badge>
           )}
         </div>
-        <p className="text-official-gray-200 line-clamp-2 whitespace-pre-wrap text-xs">
+        <p className="text-official-official-gray-600 line-clamp-2 whitespace-pre-wrap text-xs">
           {tool.description}
         </p>
       </div>

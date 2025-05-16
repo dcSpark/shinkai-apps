@@ -183,7 +183,7 @@ const TabNavigation = () => {
         className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
         value="persona"
       >
-        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
+        <Badge className="bg-official-gray-700 border-official-gray-600 inline-flex size-5 items-center justify-center rounded-full border-none p-0 text-center text-[10px] text-gray-50">
           1
         </Badge>
         <span>Persona</span>
@@ -192,7 +192,7 @@ const TabNavigation = () => {
         className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
         value="knowledge"
       >
-        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
+        <Badge className="bg-official-gray-700 border-official-gray-600 inline-flex size-5 items-center justify-center rounded-full border-none p-0 text-center text-[10px] text-gray-50">
           2
         </Badge>
         <span>Knowledge</span>
@@ -201,7 +201,7 @@ const TabNavigation = () => {
         className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
         value="tools"
       >
-        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
+        <Badge className="bg-official-gray-700 border-official-gray-600 inline-flex size-5 items-center justify-center rounded-full border-none p-0 text-center text-[10px] text-gray-50">
           3
         </Badge>
         <span>Tools</span>
@@ -210,7 +210,7 @@ const TabNavigation = () => {
         className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
         value="schedule"
       >
-        <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
+        <Badge className="bg-official-gray-700 border-official-gray-600 inline-flex size-5 items-center justify-center rounded-full border-none p-0 text-center text-[10px] text-gray-50">
           4
         </Badge>
         <span>Schedule</span>
@@ -470,7 +470,7 @@ function AgentSideChat({
               autoFocus
               bottomAddons={
                 <div className="relative z-50 flex items-end gap-3 self-end p-2">
-                  <span className="pb-1 font-light text-gray-100">
+                  <span className="text-official-gray-400 pb-1 font-light">
                     <span className="font-medium">Enter</span> to send
                   </span>
 
@@ -1283,11 +1283,11 @@ function AgentForm({ mode }: AgentFormProps) {
                               <p className="text-official-gray-400 text-sm">
                                 {t('chat.form.selectAI')}
                               </p>
-                              <span className="text-official-gray-200 text-xs">
+                              <span className="text-official-official-gray-600 text-xs">
                                 Choose the model that will power your agent
                               </span>
                               <AIModelSelector
-                                className="bg-official-gray-900 !h-auto w-full rounded-lg border !border-gray-200 py-2.5"
+                                className="bg-official-gray-900 !border-official-gray-600 !h-auto w-full rounded-lg border py-2.5"
                                 onValueChange={field.onChange}
                                 value={field.value}
                               />
@@ -1560,7 +1560,7 @@ function AgentForm({ mode }: AgentFormProps) {
                           <h2 className="inline-flex items-center gap-2 text-base font-medium">
                             Knowledge Base
                             {Object.keys(selectedKeys ?? {}).length > 0 && (
-                              <Badge className="bg-official-gray-1000 inline-flex size-6 items-center justify-center rounded-full border-gray-200 p-0 text-center text-sm text-gray-50">
+                              <Badge className="bg-official-gray-1000 border-official-gray-600 inline-flex size-6 items-center justify-center rounded-full p-0 text-center text-sm text-gray-50">
                                 {Object.keys(selectedKeys ?? {}).length}
                               </Badge>
                             )}
@@ -1584,7 +1584,7 @@ function AgentForm({ mode }: AgentFormProps) {
                         >
                           <div className="flex items-center gap-2">
                             {Object.keys(selectedKeys || {}).length > 0 ? (
-                              <Badge className="bg-official-gray-1000 inline-flex size-4 items-center justify-center rounded-full border-gray-200 p-0 text-center text-[10px] text-gray-50">
+                              <Badge className="bg-official-gray-1000 inline-flex size-4 items-center justify-center rounded-full border-official-gray-600 p-0 text-center text-[10px] text-gray-50">
                                 {Object.keys(selectedKeys || {}).length}
                               </Badge>
                             ) : (
@@ -1599,7 +1599,7 @@ function AgentForm({ mode }: AgentFormProps) {
                         <div className="flex items-center justify-between gap-4">
                           <div className="relative flex h-10 w-full items-center">
                             <Input
-                              className="placeholder-official-gray-200 !h-full rounded-full bg-transparent py-2 pl-10"
+                              className="placeholder-official-official-gray-600 !h-full rounded-full bg-transparent py-2 pl-10"
                               onChange={(e) => {
                                 setSearchQueryKnowledge(e.target.value);
                               }}
@@ -1641,7 +1641,7 @@ function AgentForm({ mode }: AgentFormProps) {
                           {searchQueryKnowledge &&
                             isSearchQueryKnowledgeSynced &&
                             searchKnowledgeList?.length === 0 && (
-                              <div className="flex h-20 items-center justify-center text-gray-100">
+                              <div className="text-official-gray-400 flex h-20 items-center justify-center">
                                 {t('vectorFs.emptyState.noFiles')}
                               </div>
                             )}
@@ -1860,11 +1860,11 @@ function AgentForm({ mode }: AgentFormProps) {
                         {form.watch('tools')?.length > 0 && (
                           <div className="bg-official-gray-850 mr-2 rounded-lg p-3">
                             <div className="flex items-center justify-between">
-                              <h3 className="text-official-gray-200 mb-2 text-xs font-medium uppercase tracking-wide">
+                              <h3 className="text-official-official-gray-600 mb-2 text-xs font-medium uppercase tracking-wide">
                                 Selected Tools
                               </h3>
                               <Button
-                                className="text-official-gray-400 hover:text-official-gray-100 text-xs"
+                                className="text-official-gray-400 hover:text-official-official-gray-400 text-xs"
                                 onClick={() => {
                                   form.setValue('tools', []);
                                   form.setValue('tools_config_override', {});
@@ -2005,7 +2005,7 @@ function AgentForm({ mode }: AgentFormProps) {
 
                         <div className="relative flex h-10 w-full items-center">
                           <Input
-                            className="placeholder-official-gray-200 !h-full rounded-lg bg-transparent py-2 pl-10"
+                            className="placeholder-official-official-gray-600 !h-full rounded-lg bg-transparent py-2 pl-10"
                             onChange={(e) => {
                               setSearchQuery(e.target.value);
                             }}
@@ -2433,7 +2433,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                         <span>
                                           This cron will run{' '}
                                           {readableCronExpression.toLowerCase()}{' '}
-                                          <span className="text-official-gray-200 font-mono">
+                                          <span className="text-official-official-gray-600 font-mono">
                                             ({form.watch('cronExpression')})
                                           </span>
                                         </span>
@@ -2774,7 +2774,7 @@ const ToolConfigModal = ({
             size="icon"
             variant="tertiary"
           >
-            <XIcon className="text-official-gray-200 h-5 w-5" />
+            <XIcon className="text-official-official-gray-600 h-5 w-5" />
           </Button>
         </DialogClose>
         <DialogHeader>

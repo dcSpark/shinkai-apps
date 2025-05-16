@@ -117,13 +117,13 @@ const PlaygroundChatBase = ({
                       autoFocus
                       bottomAddons={
                         <div className="relative z-50 flex items-end gap-3 self-end">
-                          <span className="pb-1 text-xs font-light text-gray-100">
+                          <span className="text-official-gray-400 pb-1 text-xs font-light">
                             <span className="font-medium">Enter</span> to send
                           </span>
                           <Button
                             className={cn(
                               'bg-official-gray-850 h-[40px] w-[40px] cursor-pointer rounded-xl p-3 transition-colors',
-                              'disabled:text-gray-80 disabled:bg-official-gray-800 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border disabled:border-gray-200 hover:disabled:bg-gray-300',
+                              'disabled:text-official-gray-400 disabled:bg-official-gray-800 disabled:border-official-gray-600 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border hover:disabled:bg-gray-300',
                             )}
                             disabled={
                               isToolCodeGenerationPending ||

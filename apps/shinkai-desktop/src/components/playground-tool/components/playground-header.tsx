@@ -170,7 +170,7 @@ function PlaygroundHeaderBase({
     <div className="flex items-center justify-between gap-2 border-b border-gray-400 px-4 pb-2.5">
       <div className="flex items-center gap-2">
         <Button
-          className="text-gray-80 border-none"
+          className="text-official-gray-400 border-none"
           onClick={() => {
             resetPlaygroundStore();
             navigate('/tools');
@@ -241,7 +241,7 @@ function PlaygroundHeaderBase({
                   disabled={toolCode === toolHistory?.at(0)?.code}
                 >
                   <Button
-                    className="size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent disabled:text-gray-100"
+                    className="disabled:text-official-gray-400 size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent"
                     onClick={goPreviousToolCode}
                     size="auto"
                     variant="ghost"
@@ -261,7 +261,7 @@ function PlaygroundHeaderBase({
                   disabled={toolCode === toolHistory?.at(-1)?.code}
                 >
                   <Button
-                    className="size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent disabled:text-gray-100"
+                    className="disabled:text-official-gray-400-gray-400 size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent"
                     onClick={goNextToolCode}
                     size="auto"
                     variant="ghost"

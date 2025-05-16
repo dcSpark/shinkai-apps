@@ -81,7 +81,7 @@ export const OllamaModels = ({
   if (!isShinkaiNodeRunning) {
     return (
       <div className="flex h-full w-full flex-row items-center justify-center">
-        <div className="text-gray-100">
+        <div className="text-official-gray-400">
           <span
             className={cn('cursor-pointer text-white underline')}
             onClick={() => {
@@ -200,7 +200,7 @@ export const OllamaModels = ({
           </AutoSizer>
         </div>
       )}
-      <span className="w-full text-right text-xs text-gray-100">
+      <span className="text-official-gray-400-gray-400 w-full text-right text-xs">
         {t('shinkaiNode.models.poweredByOllama')}
       </span>
       {parentShowAllOllamaModels == null && (

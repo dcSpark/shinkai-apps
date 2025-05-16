@@ -30,7 +30,7 @@ html {
 .p-node-disabled {
   pointer-events: none;
   & .p-checkbox-box {
-    @apply !bg-gray-100;
+    @apply !bg-official-gray-400;
   }
   & .p-icon.p-checkbox-icon {
     @apply !pointer-events-none;

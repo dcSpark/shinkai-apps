@@ -57,7 +57,7 @@ export function ToolsSelection({
             tabIndex={0}
           >
             {value.length > 0 ? (
-              <Badge className="bg-official-gray-1000 inline-flex size-4 items-center justify-center rounded-full border-gray-200 p-0 text-center text-[10px] text-gray-50">
+              <Badge className="bg-official-gray-1000 border-official-gray-600 inline-flex size-4 items-center justify-center rounded-full p-0 text-center text-[10px] text-gray-50">
                 {value.length}
               </Badge>
             ) : (
@@ -165,7 +165,7 @@ export function ToolsSelection({
                           </label>
                           <Tooltip>
                             <TooltipTrigger className="flex shrink-0 items-center gap-1">
-                              <InfoCircleIcon className="h-3 w-3 text-gray-100" />
+                              <InfoCircleIcon className="text-official-gray-400 h-3 w-3" />
                             </TooltipTrigger>
                             <TooltipPortal>
                               <TooltipContent
@@ -186,7 +186,7 @@ export function ToolsSelection({
                               className="flex shrink-0 items-center gap-1"
                             >
                               <Link
-                                className="text-official-gray-200 size-3.5 rounded-lg hover:text-white"
+                                className="text-official-official-gray-600 size-3.5 rounded-lg hover:text-white"
                                 to={`/tools/${tool.tool_router_key}`}
                               >
                                 <BoltIcon className="size-full" />

@@ -372,7 +372,7 @@ function AIModelSelectorBase({
                     provider={model?.model?.split(':')[0] ?? ''}
                   />
                 </div>
-                <CardTitle className="text-official-gray-100 text-base font-medium">
+                <CardTitle className="text-official-official-gray-400 text-base font-medium">
                   {model?.name}
                 </CardTitle>
               </div>
@@ -398,10 +398,10 @@ function AIModelSelectorBase({
                   >
                     <SelectValue placeholder="Select model" />
                   </SelectTrigger>
-                  <SelectContent className="border-official-gray-780 bg-official-gray-900 text-official-gray-100">
+                  <SelectContent className="border-official-gray-780 bg-official-gray-900 text-official-official-gray-400">
                     {customModelOptions.map((option) => (
                       <SelectItem
-                        className="hover:bg-official-gray-800 focus:bg-official-gray-800 focus:text-official-gray-100"
+                        className="hover:bg-official-gray-800 focus:bg-official-gray-800 focus:text-official-official-gray-400"
                         key={option.id}
                         value={option.id}
                       >
@@ -631,7 +631,7 @@ function ToolsHome({
                               Failed to generate tool. You might want to try
                               using a more powerful AI model for better results.
                             </div>
-                            <div className="text-official-gray-200 py-1">
+                            <div className="text-official-official-gray-600 py-1">
                               {error}
                             </div>
                           </div>
@@ -726,7 +726,7 @@ function SupportedProtocols() {
 
   return (
     <Dialog>
-      <DialogTrigger className="text-official-gray-300 hover:text-official-gray-200 flex items-center gap-1 text-sm transition-colors">
+      <DialogTrigger className="text-official-gray-300 hover:text-official-official-gray-600 flex items-center gap-1 text-sm transition-colors">
         <div className="border-official-gray-300 border-b">
           Well Supported Protocols
         </div>
@@ -740,7 +740,7 @@ function SupportedProtocols() {
             size="icon"
             variant="tertiary"
           >
-            <XIcon className="text-official-gray-200 h-5 w-5" />
+            <XIcon className="text-official-official-gray-600 h-5 w-5" />
           </Button>
         </DialogClose>
         <DialogHeader>

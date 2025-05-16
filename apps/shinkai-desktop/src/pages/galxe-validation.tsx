@@ -147,7 +147,7 @@ export const GalxeValidation = () => {
           <AlertTitle className="text-sm">
             Setup Your Shinkai Identity
           </AlertTitle>
-          <AlertDescription className="text-official-gray-200 text-xs">
+          <AlertDescription className="text-official-official-gray-600 text-xs">
             Before you can sync and track your quest progress, you&apos;ll need
             to set up your Shinkai identity.
           </AlertDescription>
@@ -173,7 +173,7 @@ export const GalxeValidation = () => {
                   <CardTitle className="flex items-center gap-2 p-0 text-base font-semibold">
                     {quest.name}
                   </CardTitle>
-                  <CardDescription className="text-official-gray-200 p-0 text-sm">
+                  <CardDescription className="text-official-official-gray-600 p-0 text-sm">
                     {quest.description}
                   </CardDescription>
                 </div>

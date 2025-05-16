@@ -104,7 +104,7 @@ export const VectorFsFolderDeleteAction = () => {
           </span>{' '}
         </DialogTitle>
       </DialogHeader>
-      <p className="text-official-gray-200 my-3 text-base">
+      <p className="text-official-official-gray-600 my-3 text-base">
         {t('vectorFs.deleteFolderConfirmation')}
       </p>
       <DialogFooter className="mt-4">

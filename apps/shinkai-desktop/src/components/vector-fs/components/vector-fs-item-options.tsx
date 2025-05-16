@@ -106,7 +106,7 @@ export const VectorFsItemDeleteAction = () => {
         </DialogTitle>
       </DialogHeader>
 
-      <p className="text-official-gray-200 my-3 text-base">
+      <p className="text-official-official-gray-600 my-3 text-base">
         {t('vectorFs.deleteFileConfirmation')}
       </p>
       <DialogFooter className="mt-4">

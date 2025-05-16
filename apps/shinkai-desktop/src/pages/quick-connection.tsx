@@ -58,7 +58,7 @@ const ConnectionOptionButton = ({
     >
       <div className="">{icon}</div>
       <p className="text-[15px] font-medium leading-none">{title}</p>
-      <p className="text-xs text-gray-100">{description}</p>
+      <p className="text-official-gray-400 text-xs">{description}</p>
     </Button>
   );
 };
@@ -187,7 +187,7 @@ const QuickConnectionPage = () => {
         {/*<ConnectionOptionButton*/}
         {/*  className="h-32"*/}
         {/*  description={'Use the QR code to connect'}*/}
-        {/*  icon={<QrCode className="text-gray-100" />}*/}
+        {/*  icon={<QrCode className="text-official-gray-400-gray-400" />}*/}
         {/*  onClick={() => {*/}
         {/*    navigate('/connect-qr');*/}
         {/*  }}*/}
