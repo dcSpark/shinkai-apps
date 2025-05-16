@@ -631,7 +631,9 @@ function ToolsHome({
                               Failed to generate tool. You might want to try
                               using a more powerful AI model for better results.
                             </div>
-                            <div className="text-gray-80 py-1">{error}</div>
+                            <div className="text-official-gray-200 py-1">
+                              {error}
+                            </div>
                           </div>
                         </div>
                       )}
@@ -738,7 +740,7 @@ function SupportedProtocols() {
             size="icon"
             variant="tertiary"
           >
-            <XIcon className="text-gray-80 h-5 w-5" />
+            <XIcon className="text-official-gray-200 h-5 w-5" />
           </Button>
         </DialogClose>
         <DialogHeader>

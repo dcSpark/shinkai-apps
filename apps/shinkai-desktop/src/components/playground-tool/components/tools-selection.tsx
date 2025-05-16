@@ -186,7 +186,7 @@ export function ToolsSelection({
                               className="flex shrink-0 items-center gap-1"
                             >
                               <Link
-                                className="text-gray-80 size-3.5 rounded-lg hover:text-white"
+                                className="text-official-gray-200 size-3.5 rounded-lg hover:text-white"
                                 to={`/tools/${tool.tool_router_key}`}
                               >
                                 <BoltIcon className="size-full" />

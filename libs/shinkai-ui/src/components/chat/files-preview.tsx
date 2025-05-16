@@ -171,7 +171,7 @@ const FullscreenDialog = ({
   <Dialog onOpenChange={setOpen} open={open}>
     <DialogContent className="flex size-full max-h-[99vh] max-w-[99vw] flex-col gap-2 bg-transparent p-1 py-8">
       <div className="flex w-full items-center justify-between gap-16 px-10">
-        <div className="text-gray-80 max-w-3xl truncate text-left text-sm">
+        <div className="text-official-gray-200 max-w-3xl truncate text-left text-sm">
           {name}
         </div>
         <div className="flex items-center gap-4">
@@ -179,7 +179,7 @@ const FullscreenDialog = ({
             Download
           </Button>
           <DialogClose>
-            <XIcon className="text-gray-80 h-6 w-6" />
+            <XIcon className="text-official-gray-200 h-6 w-6" />
             <span className="sr-only">Close</span>
           </DialogClose>
         </div>

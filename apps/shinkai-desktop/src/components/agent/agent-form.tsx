@@ -1599,7 +1599,7 @@ function AgentForm({ mode }: AgentFormProps) {
                         <div className="flex items-center justify-between gap-4">
                           <div className="relative flex h-10 w-full items-center">
                             <Input
-                              className="placeholder-gray-80 !h-full rounded-full bg-transparent py-2 pl-10"
+                              className="placeholder-official-gray-200 !h-full rounded-full bg-transparent py-2 pl-10"
                               onChange={(e) => {
                                 setSearchQueryKnowledge(e.target.value);
                               }}
@@ -2005,7 +2005,7 @@ function AgentForm({ mode }: AgentFormProps) {
 
                         <div className="relative flex h-10 w-full items-center">
                           <Input
-                            className="placeholder-gray-80 !h-full rounded-lg bg-transparent py-2 pl-10"
+                            className="placeholder-official-gray-200 !h-full rounded-lg bg-transparent py-2 pl-10"
                             onChange={(e) => {
                               setSearchQuery(e.target.value);
                             }}
@@ -2433,7 +2433,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                         <span>
                                           This cron will run{' '}
                                           {readableCronExpression.toLowerCase()}{' '}
-                                          <span className="text-gray-80 font-mono">
+                                          <span className="text-official-gray-200 font-mono">
                                             ({form.watch('cronExpression')})
                                           </span>
                                         </span>
@@ -2774,7 +2774,7 @@ const ToolConfigModal = ({
             size="icon"
             variant="tertiary"
           >
-            <XIcon className="text-gray-80 h-5 w-5" />
+            <XIcon className="text-official-gray-200 h-5 w-5" />
           </Button>
         </DialogClose>
         <DialogHeader>

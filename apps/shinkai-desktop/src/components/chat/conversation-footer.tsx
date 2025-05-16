@@ -648,7 +648,7 @@ function ConversationChatFooter({
                             <span className="line-clamp-1 text-white">
                               {formatText(tool.name)}
                             </span>
-                            <span className="text-gray-80 line-clamp-3 whitespace-pre-wrap text-xs">
+                            <span className="text-official-gray-200 line-clamp-3 whitespace-pre-wrap text-xs">
                               {tool.description}
                             </span>
                           </div>
@@ -834,7 +834,7 @@ const FileListBase = ({
               ) : getFileExt(file.name) &&
                 fileIconMap[getFileExt(file.name)] ? (
                 <FileTypeIcon
-                  className="text-gray-80 h-[18px] w-[18px] shrink-0"
+                  className="text-official-gray-200 h-[18px] w-[18px] shrink-0"
                   type={getFileExt(file.name)}
                 />
               ) : (
@@ -850,7 +850,7 @@ const FileListBase = ({
             </div>
             <button
               className={cn(
-                'bg-official-gray-850 hover:bg-official-gray-800 text-gray-80 border-official-gray-780 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
+                'bg-official-gray-850 hover:bg-official-gray-800 text-official-gray-200 border-official-gray-780 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
               )}
               onClick={(event) => {
                 event.stopPropagation();

@@ -87,11 +87,11 @@ const CryptoWalletPage = () => {
                 </Badge>
               )}
             </h2>
-            <p className="text-gray-80 text-sm">
+            <p className="text-official-gray-200 text-sm">
               {walletInfo?.payment_wallet?.data?.address?.address_id}
             </p>
           </div>
-          <span className="text-gray-80 text-xs">
+          <span className="text-official-gray-200 text-xs">
             -{' '}
             {walletInfo?.payment_wallet?.data?.network?.native_asset?.asset_id}
           </span>
@@ -104,7 +104,7 @@ const CryptoWalletPage = () => {
               <h2 className="text-lg font-medium">
                 {t('settings.cryptoWallet.emptyState.title')}
               </h2>
-              <p className="text-gray-80 text-sm">
+              <p className="text-official-gray-200 text-sm">
                 {t('settings.cryptoWallet.emptyState.description')}
               </p>
             </div>
@@ -200,7 +200,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                   <div className="text-sm font-semibold">
                     Multi-Party Computation Wallet{' '}
                   </div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-200 text-sm">
                     MPC Wallets provides better recovery and stronger security
                     in crypto wallets.
                   </div>
@@ -216,7 +216,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 <AddCryptoWalletIcon className="size-5" />
                 <div>
                   <div className="text-sm font-semibold">Hot Wallet</div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-200 text-sm">
                     Use a hot wallet to store your cryptocurrency assets.
                   </div>
                 </div>
@@ -246,7 +246,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 <PlusIcon className="size-4 shrink-0" />
                 <div>
                   <div className="text-sm font-semibold">Create New</div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-200 text-sm">
                     Create a new MPC wallet to store your assets.
                   </div>
                 </div>
@@ -264,7 +264,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                     {' '}
                     Import Private Key
                   </div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-200 text-sm">
                     Restore to regain access to your cryptocurrency assets.
                   </div>
                 </div>
@@ -289,7 +289,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 <PlusIcon className="size-4 shrink-0" />
                 <div>
                   <div className="text-sm font-semibold">Create New</div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-200 text-sm">
                     Create a new wallet to store your assets.
                   </div>
                 </div>
@@ -307,7 +307,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                     {' '}
                     Import Secret Recovery Phrase
                   </div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-200 text-sm">
                     Restore to regain access to your cryptocurrency assets.
                   </div>
                 </div>
@@ -327,7 +327,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                     {' '}
                     Import Private Key
                   </div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-200 text-sm">
                     Restore to regain access to your cryptocurrency assets.
                   </div>
                 </div>
@@ -394,7 +394,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
               size="icon"
               variant="tertiary"
             >
-              <XIcon className="text-gray-80 h-5 w-5" />
+              <XIcon className="text-official-gray-200 h-5 w-5" />
             </Button>
           </DialogClose>
           <div className="px-2 pt-2.5 antialiased" ref={elementRef}>
@@ -518,7 +518,7 @@ const MpcRestoreWallet = () => {
                 </FormControl>
                 <div
                   className={cn(
-                    'text-gray-80 space-y-1 text-sm leading-none',
+                    'text-official-gray-200 space-y-1 text-sm leading-none',
                     field.value && 'text-white',
                   )}
                 >
@@ -711,7 +711,7 @@ const RegularRestoreWalletPrivateKey = () => {
           {/*  name="role"*/}
           {/*  render={({ field }) => (*/}
           {/*    <div className="space-y-1.5">*/}
-          {/*      <Label className="text-gray-80 pb-2 pl-2 text-xs">*/}
+          {/*      <Label className="text-official-gray-200 pb-2 pl-2 text-xs">*/}
           {/*        Select account type*/}
           {/*      </Label>*/}
           {/*      <FormItem>*/}

@@ -98,12 +98,16 @@ export default function EditToolBasicInfoDialog({
         }}
         open={isOpen}
       >
-        <PopoverTrigger className={cn(
-          "hover:bg-official-gray-900 transtion-colors flex max-w-[400px] items-center gap-2 truncate rounded-lg p-1 text-base font-medium",
-          className
-        )}>
+        <PopoverTrigger
+          className={cn(
+            'hover:bg-official-gray-900 transtion-colors flex max-w-[400px] items-center gap-2 truncate rounded-lg p-1 text-base font-medium',
+            className,
+          )}
+        >
           <span className="truncate">{toolName}</span>
-          <Button className="px-2 h-6" size="xs" variant="ghost">Edit</Button>
+          <Button className="h-6 px-2" size="xs" variant="ghost">
+            Edit
+          </Button>
         </PopoverTrigger>
         <PopoverContent
           align="start"
@@ -129,7 +133,7 @@ export default function EditToolBasicInfoDialog({
                     </Label>
                     <Input
                       autoFocus
-                      className="placeholder-gray-80 bg-official-gray-900 !h-[40px] resize-none border-none py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                      className="placeholder-official-gray-200 bg-official-gray-900 !h-[40px] resize-none border-none py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                       id="name"
                       onChange={field.onChange}
                       placeholder="Tool Name"
@@ -144,11 +148,14 @@ export default function EditToolBasicInfoDialog({
                 name="description"
                 render={({ field }) => (
                   <FormItem className="space-y-1">
-                    <Label className="text-xs font-medium" htmlFor="description">
+                    <Label
+                      className="text-xs font-medium"
+                      htmlFor="description"
+                    >
                       Description
                     </Label>
                     <Textarea
-                      className="placeholder-gray-80 bg-official-gray-900 resize-none border-none py-2 pl-2 pt-2 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                      className="placeholder-official-gray-200 bg-official-gray-900 resize-none border-none py-2 pl-2 pt-2 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                       id="description"
                       onChange={field.onChange}
                       placeholder="Tool Description"
@@ -184,7 +191,10 @@ export default function EditToolBasicInfoDialog({
           </Form>
         </PopoverContent>
       </Popover>
-      <RemoveToolButton isPlaygroundTool={false} toolKey={initialToolRouterKeyWithVersion} />
+      <RemoveToolButton
+        isPlaygroundTool={false}
+        toolKey={initialToolRouterKeyWithVersion}
+      />
     </div>
   );
 }

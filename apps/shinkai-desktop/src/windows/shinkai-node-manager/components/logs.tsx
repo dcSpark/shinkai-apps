@@ -82,7 +82,7 @@ export const Logs = () => {
         <div className="relative flex items-center">
           <Search className="absolute left-3 h-4 w-4 text-gray-100" />
           <Input
-            className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
+            className="placeholder-official-gray-200 !h-full bg-transparent py-2 pl-10"
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search logs..."
             value={searchQuery}
@@ -105,7 +105,7 @@ export const Logs = () => {
             const log = filteredLogs?.[virtualRow.index];
             return (
               <div
-                className="text-gray-80 absolute left-0 top-0 w-full overflow-hidden border-b border-gray-100/10 font-mono text-xs leading-relaxed"
+                className="text-official-gray-200 absolute left-0 top-0 w-full overflow-hidden border-b border-gray-100/10 font-mono text-xs leading-relaxed"
                 key={virtualRow.index}
                 style={{
                   height: `${virtualRow.size}px`,

@@ -102,7 +102,7 @@ function CodePanelBase({
       !isToolCodeGenerationSuccess
     ) {
       return (
-        <p className="text-gray-80 pt-6 text-center text-xs">
+        <p className="text-official-gray-200 pt-6 text-center text-xs">
           No code generated yet. <br />
           Ask Shinkai AI to generate your tool code.
         </p>
@@ -115,15 +115,15 @@ function CodePanelBase({
       } catch (error) {
         console.error('Error detecting language:', error);
       }
-      
+
       return (
         <form
           className="flex size-full flex-col"
           key={resetCounter}
           onSubmit={handleApplyChangesCodeSubmit}
         >
-          <div className="sticky top-0 z-10 flex h-[40px] shrink-0 items-center justify-between rounded-t-sm border-b border-gray-400 px-3 py-2 bg-official-gray-950">
-            <span className="text-gray-80 inline-flex items-center gap-2 pl-2 text-xs font-medium">
+          <div className="bg-official-gray-950 sticky top-0 z-10 flex h-[40px] shrink-0 items-center justify-between rounded-t-sm border-b border-gray-400 px-3 py-2">
+            <span className="text-official-gray-200 inline-flex items-center gap-2 pl-2 text-xs font-medium">
               {' '}
               {detectedLanguage}{' '}
               {isDirtyCodeEditor && (
@@ -193,7 +193,7 @@ function CodePanelBase({
         {/*    <TooltipTrigger asChild>*/}
         {/*      <div>*/}
         {/*        <CopyToClipboardIcon*/}
-        {/*          className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"*/}
+        {/*          className="text-official-gray-200 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"*/}
         {/*          string={toolCode ?? ''}*/}
         {/*        />*/}
         {/*      </div>*/}

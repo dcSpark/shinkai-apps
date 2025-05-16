@@ -142,7 +142,7 @@ const PromptSearchDrawer = () => {
         <div className="relative mb-4 flex h-10 w-full items-center">
           <Input
             autoFocus
-            className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
+            className="placeholder-official-gray-200 !h-full bg-transparent py-2 pl-10"
             onChange={(e) => {
               setSearchQuery(e.target.value);
             }}
@@ -192,7 +192,7 @@ const PromptSearchDrawer = () => {
                 >
                   <div className="absolute right-1 top-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
                     <button
-                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+                      className="text-official-gray-200 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
                       onClick={(event) => {
                         event.stopPropagation();
                         setSelectedPromptEdit(prompt);
@@ -203,7 +203,7 @@ const PromptSearchDrawer = () => {
                     </button>
 
                     <button
-                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+                      className="text-official-gray-200 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
                       onClick={async (event) => {
                         event.stopPropagation();
                         await removePrompt({
@@ -237,7 +237,7 @@ const PromptSearchDrawer = () => {
                 >
                   <div className="absolute right-1 top-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
                     <button
-                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+                      className="text-official-gray-200 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
                       onClick={(event) => {
                         event.stopPropagation();
                         setSelectedPromptEdit(prompt);
@@ -248,7 +248,7 @@ const PromptSearchDrawer = () => {
                     </button>
 
                     <button
-                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+                      className="text-official-gray-200 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
                       onClick={async (event) => {
                         event.stopPropagation();
                         await removePrompt({
@@ -269,7 +269,7 @@ const PromptSearchDrawer = () => {
               isSearchQuerySynced &&
               searchPromptList?.length === 0 && (
                 <div className="flex h-20 items-center justify-center">
-                  <p className="text-gray-80 text-sm">
+                  <p className="text-official-gray-200 text-sm">
                     No prompts found for the search query
                   </p>
                 </div>

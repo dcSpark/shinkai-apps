@@ -449,7 +449,7 @@ const SettingsPage = () => {
                       }}
                       helperMessage={
                         <div className="flex items-center justify-start gap-3">
-                          <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
+                          <span className="text-official-gray-200 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
                             {isIdentityLocalhost ? (
                               <a
                                 className={cn(
@@ -494,7 +494,7 @@ const SettingsPage = () => {
                                 size: 'auto',
                                 variant: 'link',
                               }),
-                              'text-gray-80 rounded-lg p-0 text-xs underline hover:text-white',
+                              'text-official-gray-200 rounded-lg p-0 text-xs underline hover:text-white',
                             )}
                             href="https://docs.shinkai.com/advanced/shinkai-identity-troubleshooting"
                             rel="noreferrer"
@@ -512,7 +512,7 @@ const SettingsPage = () => {
                 />
                 {currentShinkaiIdentity !== auth?.shinkai_identity && (
                   <div className="space-y-1.5">
-                    <p className="text-gray-80/80 flex items-center gap-1 text-xs">
+                    <p className="text-official-gray-200/80 flex items-center gap-1 text-xs">
                       <InfoIcon className="size-3" />
                       {t('settings.shinkaiIdentity.saveWillRestartApp')}
                     </p>
@@ -565,7 +565,7 @@ const SettingsPage = () => {
                       <span className="capitalize">
                         {t('settings.shinkaiIdentity.checkIdentityInSync')}
                       </span>
-                      <span className="text-gray-80">
+                      <span className="text-official-gray-200">
                         {t(
                           'settings.shinkaiIdentity.checkIdentityInSyncDescription',
                         )}
@@ -641,7 +641,7 @@ const SettingsPage = () => {
           </Form>
         </div>
         <div>
-          <p className="text-gray-80 text-right text-xs">
+          <p className="text-official-gray-200 text-right text-xs">
             {t('settings.shinkaiVersion')}{' '}
             <span className="font-bold">{appVersion}</span>
           </p>

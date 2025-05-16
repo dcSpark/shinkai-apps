@@ -149,10 +149,12 @@ const ArtifactCard = ({
     <CardContent className="flex items-center gap-1 p-1 py-1.5">
       <div className="rounded-md p-2">
         {loading ? (
-          <Loader2 className="text-gray-80 h-5 w-5 animate-spin" />
+          <Loader2 className="text-official-gray-200 h-5 w-5 animate-spin" />
         ) : (
           <ReactJsIcon
-            className={cn(isSelected ? 'text-gray-50' : 'text-gray-80')}
+            className={cn(
+              isSelected ? 'text-gray-50' : 'text-official-gray-200',
+            )}
           />
         )}
       </div>
@@ -160,7 +162,7 @@ const ArtifactCard = ({
         <p className="text-em-sm text-official-gray-50 !mb-0 line-clamp-1 font-medium">
           {title}
         </p>
-        <p className="text-gray-80 !mb-0 text-xs">
+        <p className="text-official-gray-200 !mb-0 text-xs">
           {loading ? 'Generating...' : 'Click to preview'}
         </p>
       </div>
@@ -577,7 +579,7 @@ export const MessageBase = ({
                         <TooltipTrigger asChild>
                           <button
                             className={cn(
-                              'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                              'text-official-gray-200 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                             )}
                             onClick={() => {
                               setEditing(true);
@@ -637,7 +639,7 @@ export const MessageBase = ({
                         <div>
                           <CopyToClipboardIcon
                             className={cn(
-                              'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                              'text-official-gray-200 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
                             )}
                             string={extractErrorPropertyOrContent(
                               message.content,
@@ -747,7 +749,9 @@ export function ToolCard({
         <div className="flex items-center gap-1 p-[5px]">
           <div className="size-7 shrink-0 px-1.5">{renderStatus()}</div>
           <div className="flex items-center gap-1">
-            <span className="text-gray-80 text-em-sm">{renderLabelText()}</span>
+            <span className="text-official-gray-200 text-em-sm">
+              {renderLabelText()}
+            </span>
             <Link
               className="text-em-sm font-semibold text-white hover:underline"
               to={`/tools/${toolRouterKey}`}

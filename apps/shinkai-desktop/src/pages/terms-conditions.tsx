@@ -231,7 +231,7 @@ const TermsAndConditionsPage = () => {
         </Button>
 
         {(config.isDev || showLocalNodeOption) && (
-          <div className="text-gray-80 items-center space-x-2 text-center text-sm">
+          <div className="text-official-gray-200 items-center space-x-2 text-center text-sm">
             <span>{t('common.alreadyHaveNode')}</span>
             <Link
               className="font-semibold text-white underline"

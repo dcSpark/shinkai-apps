@@ -14,7 +14,17 @@ export interface InputProps
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, startAdornment, endAdornment, hidePasswordToggle, ...props }, ref) => {
+  (
+    {
+      className,
+      type,
+      startAdornment,
+      endAdornment,
+      hidePasswordToggle,
+      ...props
+    },
+    ref,
+  ) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const startAdornmentRef = useRef<HTMLDivElement>(null);
     const endAdornmentRef = useRef<HTMLDivElement>(null);
@@ -94,7 +104,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {type === 'password' && !hidePasswordToggle && (
           <Button
             aria-label={showPassword ? 'Hide password' : 'Show password'}
-            className="text-gray-80 hover:bg-gray-350 absolute right-3 top-3"
+            className="text-official-gray-200 hover:bg-gray-350 absolute right-3 top-3"
             onClick={togglePasswordVisibility}
             size={'icon'}
             type="button"

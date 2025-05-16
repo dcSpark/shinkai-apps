@@ -88,7 +88,7 @@ export const FeedbackModal = ({
             size="icon"
             variant="tertiary"
           >
-            <XIcon className="text-gray-80 h-5 w-5" />
+            <XIcon className="text-official-gray-200 h-5 w-5" />
           </Button>
         </DialogClose>
         <DialogHeader>

@@ -38,12 +38,12 @@ type CodeHeaderProps = {
 export const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
   return (
     <div className="code-header-root flex items-center justify-between gap-4 rounded-t-lg border-b border-gray-400 bg-[#0d1117] px-4 py-1 text-white">
-      <span className="code-header-language text-gray-80 text-xs font-medium lowercase">
+      <span className="code-header-language text-official-gray-200 text-xs font-medium lowercase">
         {language}
       </span>
       <CopyToClipboardIcon
         className={cn(
-          'text-gray-80 h-7 w-7 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+          'text-official-gray-200 h-7 w-7 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
         )}
         string={code}
       />

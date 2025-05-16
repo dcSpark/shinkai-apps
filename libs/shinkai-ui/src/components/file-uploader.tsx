@@ -39,9 +39,12 @@ export const FileItem = ({
             file={file}
           />
         ) : fileIconMap[getFileExt(file.name)] ? (
-          <FileTypeIcon className="text-gray-80" type={getFileExt(file.name)} />
+          <FileTypeIcon
+            className="text-official-gray-200"
+            type={getFileExt(file.name)}
+          />
         ) : (
-          <PaperClipIcon className="text-gray-80 h-4 w-4" />
+          <PaperClipIcon className="text-official-gray-200 h-4 w-4" />
         )}
       </span>
       <div className="line-clamp-1 flex flex-1 flex-col gap-1">
@@ -125,7 +128,7 @@ export const FileUploader = ({
           </div>
           <p className="text-sm text-white">{t('common.clickToUpload')}</p>
           {descriptionText && (
-            <p className="text-gray-80 line-clamp-1 text-xs">
+            <p className="text-official-gray-200 line-clamp-1 text-xs">
               {descriptionText}
             </p>
           )}
@@ -151,7 +154,7 @@ export const FileUploader = ({
                 actions={[
                   {
                     label: 'Delete',
-                    icon: <Trash className="text-gray-80 h-4 w-4" />,
+                    icon: <Trash className="text-official-gray-200 h-4 w-4" />,
                     onClick: (file) => {
                       const newFiles = [...value];
                       newFiles.splice(newFiles.indexOf(file), 1);

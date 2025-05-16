@@ -241,7 +241,7 @@ const AllFiles = () => {
       <div className="mt-2 flex justify-between gap-3">
         <div className="relative flex h-10 w-full max-w-[500px] items-center">
           <Input
-            className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
+            className="placeholder-official-gray-200 !h-full bg-transparent py-2 pl-10"
             onChange={(e) => {
               setSearchQuery(e.target.value);
             }}
@@ -384,7 +384,7 @@ const AllFiles = () => {
             isVRFilesSuccess &&
             folderList.length === 0 &&
             currentGlobalPath === '/' && (
-              <div className="text-gray-80 mt-4 flex flex-col items-center justify-center gap-4 text-center text-base">
+              <div className="text-official-gray-200 mt-4 flex flex-col items-center justify-center gap-4 text-center text-base">
                 <FileEmptyStateIcon className="h-20 w-20" />
                 <div>
                   <h2 className="font-medium text-white">
@@ -426,7 +426,9 @@ const AllFiles = () => {
                   }}
                 >
                   <FileTypeIcon />
-                  <span className="text-gray-80 text-sm">{item?.name}</span>
+                  <span className="text-official-gray-200 text-sm">
+                    {item?.name}
+                  </span>
                 </button>
               );
             })}

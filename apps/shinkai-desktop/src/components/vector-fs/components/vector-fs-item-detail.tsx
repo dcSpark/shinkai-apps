@@ -201,7 +201,7 @@ export const VectorFileDetails = () => {
             </div>
             <p className="break-words text-lg font-medium text-white">
               {selectedFile?.name}
-              <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
+              <Badge className="text-official-gray-200 ml-2 bg-gray-400 text-xs uppercase">
                 {getFileExt(selectedFile?.name ?? '') ?? '-'}
               </Badge>
             </p>
