@@ -196,7 +196,7 @@
 //                     </div>
 //                   ) : (
 //                     <label
-//                       className="flex h-[100px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-official-gray-400 bg-gray-400"
+//                       className="flex h-[100px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-official-official-gray-750 bg-official-gray-750"
 //                       htmlFor="dropzone-file"
 //                     >
 //                       <div className="flex flex-col items-center justify-center space-y-1">

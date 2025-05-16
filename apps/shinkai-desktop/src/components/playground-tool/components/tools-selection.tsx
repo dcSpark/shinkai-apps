@@ -165,7 +165,7 @@ export function ToolsSelection({
                           </label>
                           <Tooltip>
                             <TooltipTrigger className="flex shrink-0 items-center gap-1">
-                              <InfoCircleIcon className="text-official-gray-400 h-3 w-3" />
+                              <InfoCircleIcon className="text-official-official-gray-750 h-3 w-3" />
                             </TooltipTrigger>
                             <TooltipPortal>
                               <TooltipContent

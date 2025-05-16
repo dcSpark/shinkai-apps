@@ -122,7 +122,7 @@ function CodePanelBase({
           key={resetCounter}
           onSubmit={handleApplyChangesCodeSubmit}
         >
-          <div className="bg-official-gray-950 sticky top-0 z-10 flex h-[40px] shrink-0 items-center justify-between rounded-t-sm border-b border-gray-400 px-3 py-2">
+          <div className="bg-official-gray-950 border-official-gray-750 sticky top-0 z-10 flex h-[40px] shrink-0 items-center justify-between rounded-t-sm border-b px-3 py-2">
             <span className="text-official-official-gray-600 inline-flex items-center gap-2 pl-2 text-xs font-medium">
               {' '}
               {detectedLanguage}{' '}
@@ -193,7 +193,7 @@ function CodePanelBase({
         {/*    <TooltipTrigger asChild>*/}
         {/*      <div>*/}
         {/*        <CopyToClipboardIcon*/}
-        {/*          className="text-official-official-gray-600 flex h-7 w-7 items-center justify-center rounded-lg border border-official-gray-600 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"*/}
+        {/*          className="text-official-official-gray-600 flex h-7 w-7 items-center justify-center rounded-lg border border-official-gray-600 bg-transparent transition-colors hover:bg-official-gray-700 hover:text-white [&>svg]:h-3 [&>svg]:w-3"*/}
         {/*          string={toolCode ?? ''}*/}
         {/*        />*/}
         {/*      </div>*/}

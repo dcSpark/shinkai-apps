@@ -94,7 +94,7 @@ function ExecutionPanelBase({
 
   return (
     <Tabs className="flex size-full flex-col" defaultValue="view">
-      <div className="bg-official-gray-1000 flex w-full shrink-0 items-center justify-between gap-2 border-b border-gray-500">
+      <div className="bg-official-gray-1000 border-official-gray-850 flex w-full shrink-0 items-center justify-between gap-2 border-b">
         <TabsList className="grid h-8 grid-cols-2 rounded-none bg-transparent p-0">
           <TabsTrigger
             className={cn(tabTriggerClassnames)}
@@ -102,7 +102,7 @@ function ExecutionPanelBase({
             onClick={() => setFocusedPanel('preview')}
             value="view"
           >
-            <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
+            <div className="border-official-gray-750 flex size-full items-center justify-start gap-2 border-r pl-3 pr-5 text-xs font-normal">
               {isExecutionToolCodePending || isMetadataGenerationPending ? (
                 <LoaderIcon className="size-4 animate-spin" />
               ) : (
@@ -126,7 +126,7 @@ function ExecutionPanelBase({
             }}
             value="console"
           >
-            <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
+            <div className="border-official-gray-750 flex size-full items-center justify-start gap-2 border-r pl-3 pr-5 text-xs font-normal">
               <TerminalIcon className="size-4 text-inherit" />
               Console
             </div>
@@ -151,7 +151,7 @@ function ExecutionPanelBase({
                     <h1 className="text-base font-medium text-white">
                       {toolMetadata.name}
                     </h1>
-                    <p className="text-official-gray-400 text-xs">
+                    <p className="text-official-official-gray-750 text-xs">
                       {toolMetadata.description}
                     </p>
                   </div>
@@ -500,10 +500,12 @@ const ToolLogsBase = ({
 
         return (
           <div
-            className="px-2 py-2 font-mono text-xs hover:bg-gray-500"
+            className="hover:bg-official-gray-850 px-2 py-2 font-mono text-xs"
             key={i}
           >
-            <span className="text-official-gray-400">{readableDate} </span>
+            <span className="text-official-official-gray-750">
+              {readableDate}{' '}
+            </span>
             <span className="text-gray-50">{logContent}</span>
           </div>
         );
@@ -568,7 +570,7 @@ export const FileInputField = ({ value, onChange }: FieldProps) => {
       />
       {value && (
         <div className="inline-flex items-center gap-2">
-          <span className="text-official-gray-400">File Path:</span>
+          <span className="text-official-official-gray-750">File Path:</span>
           <Tooltip>
             <TooltipTrigger asChild>
               <span className="text-white">{value?.split('/')?.at(-1)}</span>

@@ -133,14 +133,14 @@ const ConversationHeaderWithInboxId = () => {
                     </Badge>
                   )}
               </span>
-              <span className="text-official-gray-400 flex items-center text-xs">
+              <span className="text-official-official-gray-750 flex items-center text-xs">
                 <span className="max-w-[300px] truncate">
                   {selectedAgent?.ui_description || 'No description'}
                 </span>
                 <span className="px-2">⋅</span>
                 <Sheet>
                   <SheetTrigger asChild>
-                    <span className="text-official-gray-400 text-xs hover:cursor-pointer hover:text-white hover:underline">
+                    <span className="text-official-official-gray-750 text-xs hover:cursor-pointer hover:text-white hover:underline">
                       {t('common.viewDetails')}
                     </span>
                   </SheetTrigger>
@@ -165,7 +165,7 @@ const ConversationHeaderWithInboxId = () => {
 
                     <ScrollArea className="h-[calc(100vh-130px)] pr-3">
                       <div className="py-6">
-                        <h3 className="text-official-gray-400 mb-2 flex items-center gap-2 text-sm font-medium">
+                        <h3 className="text-official-official-gray-750 mb-2 flex items-center gap-2 text-sm font-medium">
                           {t('common.about')}
                         </h3>
                         <p className="text-sm leading-relaxed">
@@ -173,7 +173,7 @@ const ConversationHeaderWithInboxId = () => {
                         </p>
 
                         <div className="mt-6">
-                          <h3 className="text-official-gray-400 mb-2 flex items-center gap-2 text-sm font-medium">
+                          <h3 className="text-official-official-gray-750 mb-2 flex items-center gap-2 text-sm font-medium">
                             AI Model
                           </h3>
                           <div className="flex items-center gap-2">
@@ -226,7 +226,7 @@ const ConversationHeaderWithInboxId = () => {
                                 <span className="text-sm font-medium">
                                   Available Tools{' '}
                                   {selectedAgent.tools.length > 0 && (
-                                    <span className="text-official-gray-400 text-xs">
+                                    <span className="text-official-official-gray-750 text-xs">
                                       ({selectedAgent.tools.length})
                                     </span>
                                   )}
@@ -236,7 +236,7 @@ const ConversationHeaderWithInboxId = () => {
                             <AccordionContent>
                               <div className="space-y-3">
                                 {selectedAgent.tools.length === 0 && (
-                                  <p className="text-official-gray-400 text-sm">
+                                  <p className="text-official-official-gray-750 text-sm">
                                     No tools found.
                                   </p>
                                 )}
@@ -252,7 +252,7 @@ const ConversationHeaderWithInboxId = () => {
                                       )}
                                     </span>
                                     <Link
-                                      className="text-official-gray-400 absolute right-2 hover:text-white"
+                                      className="text-official-official-gray-750 absolute right-2 hover:text-white"
                                       to={`/tools/${tool}`}
                                     >
                                       <ExternalLinkIcon className="h-4 w-4" />
@@ -280,7 +280,7 @@ const ConversationHeaderWithInboxId = () => {
                                     ((
                                       selectedAgent.scope?.vector_fs_items ?? []
                                     )?.length > 0 && (
-                                      <span className="text-official-gray-400 text-xs">
+                                      <span className="text-official-official-gray-750 text-xs">
                                         (
                                         {(
                                           selectedAgent.scope
@@ -302,7 +302,7 @@ const ConversationHeaderWithInboxId = () => {
                                   .length === 0 &&
                                   (selectedAgent.scope?.vector_fs_items ?? [])
                                     .length === 0 && (
-                                    <p className="text-official-gray-400 text-sm">
+                                    <p className="text-official-official-gray-750 text-sm">
                                       No knowledge sources found.
                                     </p>
                                   )}
@@ -348,7 +348,7 @@ const ConversationHeaderWithInboxId = () => {
                               <div className="space-y-2">
                                 {(selectedAgent.cron_tasks ?? []).length ===
                                   0 && (
-                                  <p className="text-official-gray-400 text-sm">
+                                  <p className="text-official-official-gray-750 text-sm">
                                     No scheduled tasks found.
                                   </p>
                                 )}
@@ -360,7 +360,7 @@ const ConversationHeaderWithInboxId = () => {
                                     <ScheduledTasksIcon className="mt-1 h-4 w-4" />
                                     <div className="flex flex-col gap-1">
                                       <p className="text-sm">{task.name}</p>
-                                      <p className="text-official-gray-400 text-xs">
+                                      <p className="text-official-official-gray-750 text-xs">
                                         {cronstrue.toString(task.cron, {
                                           throwExceptionOnParseError: false,
                                         })}{' '}
@@ -368,7 +368,7 @@ const ConversationHeaderWithInboxId = () => {
                                       </p>
                                     </div>
                                     <Link
-                                      className="text-official-gray-400 absolute right-2 top-2 hover:text-white"
+                                      className="text-official-official-gray-750 absolute right-2 top-2 hover:text-white"
                                       to={`/tasks/${task.task_id}`}
                                     >
                                       <ExternalLinkIcon className="h-4 w-4" />

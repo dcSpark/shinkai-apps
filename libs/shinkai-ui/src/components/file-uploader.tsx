@@ -58,7 +58,7 @@ export const FileItem = ({
           </span>
         </button>
         {file.size && (
-          <span className="text-official-gray-400 shrink-0 text-xs">
+          <span className="text-official-official-gray-750 shrink-0 text-xs">
             {size(file.size)}
           </span>
         )}
@@ -119,7 +119,7 @@ export const FileUploader = ({
       <div
         {...getRootFileProps({
           className:
-            'dropzone py-4 bg-gray-400 group relative mt-3 flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed border-official-gray-600 transition-colors hover:border-official-gray-400',
+            'dropzone py-4 bg-official-gray-750 group relative mt-3 flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed border-official-gray-600 transition-colors hover:border-official-official-gray-750',
         })}
       >
         <div className="flex flex-col items-center justify-center space-y-1 px-2">

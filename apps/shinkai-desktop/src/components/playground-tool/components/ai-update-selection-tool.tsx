@@ -156,12 +156,12 @@ export function AIModelSelectorToolsBase({
             </span>
             {isRegularChatPage && (
               <div className="flex items-center gap-4 text-left">
-                <div className="text-official-gray-400 flex items-center justify-center gap-2 text-xs">
+                <div className="text-official-official-gray-750 flex items-center justify-center gap-2 text-xs">
                   <CommandShortcut>⌘ [</CommandShortcut> or
                   <CommandShortcut>⌘ ]</CommandShortcut>
                 </div>
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-official-gray-400 text-xs">
+                  <span className="text-official-official-gray-750 text-xs">
                     Prev / Next AI
                   </span>
                 </div>
@@ -176,7 +176,7 @@ export function AIModelSelectorToolsBase({
       >
         <div className="space-y-1 px-2 py-2">
           <DropdownMenuLabel>Best Models for Tool Builder</DropdownMenuLabel>
-          <p className="text-official-gray-400 text-xs">
+          <p className="text-official-official-gray-750 text-xs">
             These models are optimized for tool creation specifically.
           </p>
         </div>
@@ -213,7 +213,7 @@ export function AIModelSelectorToolsBase({
           <DropdownMenuSeparator className="bg-official-gray-780 my-2" />
           <div className="space-y-1 px-2 py-2">
             <DropdownMenuLabel>Other Models</DropdownMenuLabel>
-            <p className="text-official-gray-400 text-xs">
+            <p className="text-official-official-gray-750 text-xs">
               Use your own models, but note they may not be optimized for tool
               creation specifically.
             </p>

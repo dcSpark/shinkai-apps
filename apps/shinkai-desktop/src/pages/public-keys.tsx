@@ -49,7 +49,7 @@ export const PublicKeys = () => {
                         endAdornment={
                           <div className="w-8">
                             <CopyToClipboardIcon
-                              className="peer/adornment adornment border-official-gray-600 absolute right-1 top-4 rounded-md border bg-gray-300 px-2"
+                              className="peer/adornment adornment border-official-gray-600 bg-official-gray-700 absolute right-1 top-4 rounded-md border px-2"
                               string={field.value}
                             />
                           </div>
@@ -70,7 +70,7 @@ export const PublicKeys = () => {
                         endAdornment={
                           <div className="w-8">
                             <CopyToClipboardIcon
-                              className="peer/adornment adornment border-official-gray-600 absolute right-1 top-4 rounded-md border bg-gray-300 px-2"
+                              className="peer/adornment adornment border-official-gray-600 bg-official-gray-700 absolute right-1 top-4 rounded-md border px-2"
                               string={field.value}
                             />
                           </div>
@@ -99,7 +99,7 @@ export const PublicKeys = () => {
                       endAdornment={
                         <div className="w-8">
                           <CopyToClipboardIcon
-                            className="peer/adornment adornment border-official-gray-600 absolute right-1 top-4 rounded-md border bg-gray-300 px-2"
+                            className="peer/adornment adornment border-official-gray-600 bg-official-gray-700 absolute right-1 top-4 rounded-md border px-2"
                             string={field.value}
                           />
                         </div>

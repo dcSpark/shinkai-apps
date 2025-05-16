@@ -551,7 +551,7 @@ export default function ToolDetailsCard({
   };
 
   const boxContainerClass = cn(
-    'flex flex-col gap-4 rounded-lg bg-gray-300/20 p-8',
+    'bg-official-gray-700/20 flex flex-col gap-4 rounded-lg p-8',
   );
 
   const hasToolCode = 'js_code' in tool || 'py_code' in tool;
@@ -560,7 +560,7 @@ export default function ToolDetailsCard({
     <>
       {hideToolHeaderDetails ? null : (
         <div className="flex w-full flex-col gap-6 md:flex-row">
-          <div className="flex size-12 items-center justify-center overflow-hidden rounded-2xl border bg-gray-500">
+          <div className="bg-official-gray-850 flex size-12 items-center justify-center overflow-hidden rounded-2xl border">
             {toolStoreDetails?.assets?.iconUrl ? (
               <img
                 alt=""
@@ -631,7 +631,10 @@ export default function ToolDetailsCard({
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
+                <DropdownMenuContent
+                  align="end"
+                  className="bg-official-gray-700 p-2.5"
+                >
                   <DropdownMenuItem
                     className="text-xs"
                     disabled={isExportingTool}
@@ -869,7 +872,7 @@ export default function ToolDetailsCard({
                   toolType={toolType}
                 />
               </div>
-              <div className="aspect-video overflow-hidden rounded-lg border border-zinc-800 bg-gray-500 object-cover object-top">
+              <div className="bg-official-gray-850 aspect-video overflow-hidden rounded-lg border border-zinc-800 object-cover object-top">
                 <img
                   alt=""
                   className="size-full object-contain"
@@ -894,7 +897,7 @@ export default function ToolDetailsCard({
                   toolType={toolType}
                 />
               </div>
-              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-zinc-800 bg-gray-500 object-cover object-center">
+              <div className="bg-official-gray-850 flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-zinc-800 object-cover object-center">
                 {toolStoreDetails?.assets?.iconUrl ? (
                   <img
                     alt=""
@@ -1229,7 +1232,7 @@ export default function ToolDetailsCard({
               !(tool.input_args as any).properties ||
               Object.keys((tool.input_args as any).properties).length ===
                 0) && (
-              <div className="text-official-gray-400 py-2 text-sm">
+              <div className="text-official-official-gray-750 py-2 text-sm">
                 No input parameters required.
               </div>
             )}
@@ -1415,7 +1418,7 @@ export function AuthorAvatarLink({ author }: { author: string }) {
 
 export function ToolIcon() {
   return (
-    <div className="from-brand-500 to-brand-600 flex size-10 items-center justify-center rounded-lg border border-gray-300 bg-gray-500 bg-gradient-to-tr text-gray-50">
+    <div className="from-brand-500 to-brand-600 border-official-gray-700 bg-official-gray-850 flex size-10 items-center justify-center rounded-lg border bg-gradient-to-tr text-gray-50">
       <svg
         color="currentColor"
         fill="none"

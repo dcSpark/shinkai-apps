@@ -181,7 +181,7 @@ export const MessageList = ({
         !isFetchingPreviousPage &&
         !hasPreviousPage &&
         (paginatedMessages?.pages ?? [])?.length > 1 && (
-          <div className="text-official-gray-400 py-2 text-center text-xs">
+          <div className="text-official-official-gray-750 py-2 text-center text-xs">
             {noMoreMessageLabel}
           </div>
         )}
@@ -199,14 +199,14 @@ export const MessageList = ({
                 key={`${index}`}
               >
                 <Skeleton
-                  className="h-8 w-8 shrink-0 rounded-full bg-gray-300"
+                  className="bg-official-gray-700 h-8 w-8 shrink-0 rounded-full"
                   key={index}
                 />
                 <Skeleton
                   className={cn(
                     'w-full rounded-lg px-2.5 py-3',
                     index % 2 === 0
-                      ? 'h-24 rounded-bl-none bg-gray-300'
+                      ? 'bg-official-gray-700 h-24 rounded-bl-none'
                       : 'bg-official-gray-600 h-16 rounded-tr-none',
                     index % 3 === 0 && 'h-32',
                   )}
@@ -228,14 +228,14 @@ export const MessageList = ({
                 key={`${index}`}
               >
                 <Skeleton
-                  className="h-8 w-8 shrink-0 rounded-full bg-gray-300"
+                  className="bg-official-gray-700 h-8 w-8 shrink-0 rounded-full"
                   key={index}
                 />
                 <Skeleton
                   className={cn(
                     'w-full rounded-lg px-2.5 py-3',
                     index % 2 === 0
-                      ? 'h-24 rounded-bl-none bg-gray-300'
+                      ? 'bg-official-gray-700 h-24 rounded-bl-none'
                       : 'bg-official-gray-600 h-16 rounded-tr-none',
                     index % 3 === 0 && 'h-32',
                   )}
@@ -252,11 +252,11 @@ export const MessageList = ({
                   <div key={date}>
                     <div
                       className={cn(
-                        'relative z-10 m-auto my-2 flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl bg-gray-400 px-2.5 capitalize',
+                        'bg-official-gray-750 relative z-10 m-auto my-2 flex h-[26px] w-fit min-w-[100px] items-center justify-center rounded-xl px-2.5 capitalize',
                         'sticky top-5',
                       )}
                     >
-                      <span className="text-official-gray-400 text-xs font-medium">
+                      <span className="text-official-official-gray-750 text-xs font-medium">
                         {getRelativeDateLabel(
                           new Date(messages[0].createdAt || ''),
                         )}

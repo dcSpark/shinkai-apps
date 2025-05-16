@@ -205,9 +205,9 @@ export function VectorFsActionBarPreview() {
               >
                 <div className="flex w-6 shrink-0 items-center justify-center">
                   {item.type === 'file' ? (
-                    <FileTypeIcon className="text-official-gray-400 size-4 shrink-0" />
+                    <FileTypeIcon className="text-official-official-gray-750 size-4 shrink-0" />
                   ) : (
-                    <DirectoryTypeIcon className="text-official-gray-400 size-4 shrink-0" />
+                    <DirectoryTypeIcon className="text-official-official-gray-750 size-4 shrink-0" />
                   )}
                 </div>
 

@@ -103,7 +103,7 @@ export const FolderSelectionList = () => {
             <BreadcrumbLink asChild>
               <button
                 className={cn(
-                  'flex items-center gap-2 rounded-full p-2 hover:bg-gray-400',
+                  'hover:bg-official-gray-750 flex items-center gap-2 rounded-full p-2',
                   currentSelectedFolderPath === '/' && 'text-white',
                 )}
                 onClick={() => {
@@ -129,7 +129,7 @@ export const FolderSelectionList = () => {
               ) : (
                 <BreadcrumbLink asChild>
                   <button
-                    className="flex items-center gap-1 rounded-full bg-transparent p-2 hover:bg-gray-400"
+                    className="hover:bg-official-gray-750 flex items-center gap-1 rounded-full bg-transparent p-2"
                     onClick={() => {
                       const buildPath = splitCurrentPath
                         .slice(0, idx + 1)
@@ -151,13 +151,13 @@ export const FolderSelectionList = () => {
       <ScrollArea className="min-h-[300px]">
         <div
           className={cn(
-            'grid flex-1 grid-cols-1 divide-y divide-gray-300 py-1',
+            'divide-official-gray-700 grid flex-1 grid-cols-1 divide-y py-1',
           )}
         >
           {isVRFilesPending &&
             Array.from({ length: 4 }).map((_, idx) => (
               <div
-                className="mb-1 flex h-[69px] items-center justify-between gap-2 rounded-lg bg-gray-400 py-3"
+                className="bg-official-gray-750 mb-1 flex h-[69px] items-center justify-between gap-2 rounded-lg py-3"
                 key={idx}
               />
             ))}
@@ -165,9 +165,10 @@ export const FolderSelectionList = () => {
             return (
               <button
                 className={cn(
-                  'flex items-center justify-between gap-2 py-3.5 hover:bg-gray-300',
+                  'hover:bg-official-gray-700 flex items-center justify-between gap-2 py-3.5',
                   'rounded-md p-2',
-                  destinationFolderPath === folder.path && 'bg-gray-300',
+                  destinationFolderPath === folder.path &&
+                    'bg-official-gray-700',
                 )}
                 key={folder.path}
                 onClick={() => {

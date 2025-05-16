@@ -80,7 +80,7 @@ export const Logs = () => {
     <div className="h-full overflow-hidden">
       <div className="bg-background sticky top-0 z-10 mb-2 flex items-center gap-2 p-2">
         <div className="relative flex items-center">
-          <Search className="text-official-gray-400 absolute left-3 h-4 w-4" />
+          <Search className="text-official-official-gray-750 absolute left-3 h-4 w-4" />
           <Input
             className="placeholder-official-official-gray-600 !h-full bg-transparent py-2 pl-10"
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -105,7 +105,7 @@ export const Logs = () => {
             const log = filteredLogs?.[virtualRow.index];
             return (
               <div
-                className="text-official-official-gray-600 border-official-gray-400/10 absolute left-0 top-0 w-full overflow-hidden border-b font-mono text-xs leading-relaxed"
+                className="text-official-official-gray-600 border-official-official-gray-750/10 absolute left-0 top-0 w-full overflow-hidden border-b font-mono text-xs leading-relaxed"
                 key={virtualRow.index}
                 style={{
                   height: `${virtualRow.size}px`,
@@ -162,7 +162,7 @@ export const Logs = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <LogIcon level="INFO" />
-                <span className="text-official-gray-400 text-sm font-medium">
+                <span className="text-official-official-gray-750 text-sm font-medium">
                   Log Details
                 </span>
               </div>
@@ -175,7 +175,7 @@ export const Logs = () => {
               </Button>
             </div>
             <div className="rounded-lg bg-gray-900 p-4">
-              <pre className="text-official-gray-400 whitespace-pre-wrap break-words font-mono text-sm leading-relaxed sm:text-base">
+              <pre className="text-official-official-gray-750 whitespace-pre-wrap break-words font-mono text-sm leading-relaxed sm:text-base">
                 {selectedLog}
               </pre>
             </div>

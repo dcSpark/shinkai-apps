@@ -267,7 +267,7 @@ const AllFiles = () => {
         <div className="flex gap-3">
           <VectorFsToggleSortName />
           <Separator
-            className="bg-gray-300"
+            className="bg-official-gray-700"
             decorative
             orientation="vertical"
           />
@@ -282,7 +282,7 @@ const AllFiles = () => {
                 <BreadcrumbLink asChild>
                   <button
                     className={cn(
-                      'flex items-center gap-2 rounded-full p-2 hover:bg-gray-400',
+                      'hover:bg-official-gray-750 flex items-center gap-2 rounded-full p-2',
                       currentGlobalPath === '/' && 'text-white',
                     )}
                     onClick={() => {
@@ -306,7 +306,7 @@ const AllFiles = () => {
                   ) : (
                     <BreadcrumbLink asChild>
                       <button
-                        className="flex items-center gap-1 rounded-full bg-transparent p-2 hover:bg-gray-400"
+                        className="hover:bg-official-gray-750 flex items-center gap-1 rounded-full bg-transparent p-2"
                         onClick={() => {
                           const buildPath = splitCurrentPath
                             .slice(0, idx + 1)
@@ -331,7 +331,7 @@ const AllFiles = () => {
             layout === VectorFSLayout.Grid &&
               'grid-cols-2 gap-3 md:grid-cols-3',
             layout === VectorFSLayout.List &&
-              'grid-cols-1 divide-y divide-gray-400',
+              'divide-official-gray-750 grid-cols-1 divide-y',
             searchQuery && 'pt-4',
           )}
         >
@@ -340,7 +340,7 @@ const AllFiles = () => {
             (searchQuery && searchQuery !== debouncedSearchQuery)) &&
             Array.from({ length: 4 }).map((_, idx) => (
               <div
-                className="mb-1 flex h-[69px] items-center justify-between gap-2 rounded-lg bg-gray-400 py-3"
+                className="bg-official-gray-750 mb-1 flex h-[69px] items-center justify-between gap-2 rounded-lg py-3"
                 key={idx}
               />
             ))}
@@ -400,14 +400,14 @@ const AllFiles = () => {
             isVRFilesSuccess &&
             itemList.length === 0 &&
             folderList.length === 0 && (
-              <div className="text-official-gray-400 flex h-20 items-center justify-center">
+              <div className="text-official-official-gray-750 flex h-20 items-center justify-center">
                 {t('vectorFs.emptyState.noFiles')}
               </div>
             )}
           {searchQuery &&
             isSearchVRItemsSuccess &&
             searchVRItems?.length === 0 && (
-              <div className="text-official-gray-400 flex h-20 items-center justify-center">
+              <div className="text-official-official-gray-750 flex h-20 items-center justify-center">
                 {t('vectorFs.emptyState.noFiles')}
               </div>
             )}
@@ -417,7 +417,7 @@ const AllFiles = () => {
             searchVRItems?.map((item) => {
               return (
                 <button
-                  className="relative flex items-center gap-2 text-ellipsis px-3 py-1.5 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400"
+                  className="hover:to-official-gray-750 hover:from-official-gray-850 relative flex items-center gap-2 text-ellipsis px-3 py-1.5 hover:bg-gradient-to-r"
                   key={item.path}
                   onClick={() => {
                     const directoryMainPath = item.path.split('/').slice(0, -1);
@@ -447,7 +447,7 @@ const AllFiles = () => {
           ))}
         </ContextMenuContent>
       </ContextMenu>
-      {/*<div className="fixed bottom-0 left-0 right-0 flex items-center justify-between rounded-t-md bg-gray-300 py-3">*/}
+      {/*<div className="fixed bottom-0 left-0 right-0 flex items-center justify-between rounded-t-md bg-official-gray-700 py-3">*/}
       {/*  <span className="flex flex-1 items-center justify-center gap-1">*/}
       {/*    <FileIcon className="h-4 w-4" />*/}
       {/*    <span className="font-medium">TODO items</span>*/}
@@ -513,7 +513,7 @@ const AllFiles = () => {
       {isVRSelectionActive && (
         <MotionButton
           animate={{ opacity: 1 }}
-          className="border-official-gray-400 fixed bottom-12 right-[230px] h-[24px] w-[24px] border bg-gray-300 p-1 text-gray-50 hover:bg-gray-500 hover:text-white"
+          className="border-official-official-gray-750 bg-official-gray-700 hover:bg-official-gray-850 fixed bottom-12 right-[230px] h-[24px] w-[24px] border p-1 text-gray-50 hover:text-white"
           initial={{ opacity: 0 }}
           onClick={() => setVRSelectionActive(false)}
           size="icon"

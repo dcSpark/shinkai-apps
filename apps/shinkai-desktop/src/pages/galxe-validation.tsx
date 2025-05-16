@@ -154,7 +154,10 @@ export const GalxeValidation = () => {
         </Alert>
         {isPending &&
           Array.from({ length: 10 }).map((_, index) => (
-            <Skeleton className="h-20 w-full bg-gray-300" key={index} />
+            <Skeleton
+              className="bg-official-gray-700 h-20 w-full"
+              key={index}
+            />
           ))}
         {isSuccess &&
           quests?.map((quest, index) => (

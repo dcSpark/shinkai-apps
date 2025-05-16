@@ -171,7 +171,7 @@ const PromptSearchDrawer = () => {
             {(isPending || !isSearchQuerySynced || isSearchPromptListPending) &&
               Array.from({ length: 4 }).map((_, idx) => (
                 <div
-                  className="mb-2 flex h-[40px] items-center justify-between gap-2 rounded-lg bg-gray-300 py-3"
+                  className="bg-official-gray-700 mb-2 flex h-[40px] items-center justify-between gap-2 rounded-lg py-3"
                   key={idx}
                 />
               ))}
@@ -180,7 +180,7 @@ const PromptSearchDrawer = () => {
               promptList?.map((prompt) => (
                 <div
                   className={cn(
-                    'group relative flex min-h-[40px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm hover:bg-gray-300',
+                    'hover:bg-official-gray-700 group relative flex min-h-[40px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm',
                   )}
                   key={prompt.name}
                   onClick={() => {
@@ -192,7 +192,7 @@ const PromptSearchDrawer = () => {
                 >
                   <div className="absolute right-1 top-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
                     <button
-                      className="text-official-official-gray-600 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+                      className="text-official-official-gray-600 hover:bg-official-gray-750 rounded-full p-2 transition-colors hover:text-white"
                       onClick={(event) => {
                         event.stopPropagation();
                         setSelectedPromptEdit(prompt);
@@ -203,7 +203,7 @@ const PromptSearchDrawer = () => {
                     </button>
 
                     <button
-                      className="text-official-official-gray-600 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+                      className="text-official-official-gray-600 hover:bg-official-gray-750 rounded-full p-2 transition-colors hover:text-white"
                       onClick={async (event) => {
                         event.stopPropagation();
                         await removePrompt({
@@ -225,7 +225,7 @@ const PromptSearchDrawer = () => {
               searchPromptList?.map((prompt) => (
                 <div
                   className={cn(
-                    'group relative flex min-h-[40px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm hover:bg-gray-300',
+                    'hover:bg-official-gray-700 group relative flex min-h-[40px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm',
                   )}
                   key={prompt.name}
                   onClick={() => {
@@ -237,7 +237,7 @@ const PromptSearchDrawer = () => {
                 >
                   <div className="absolute right-1 top-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
                     <button
-                      className="text-official-official-gray-600 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+                      className="text-official-official-gray-600 hover:bg-official-gray-750 rounded-full p-2 transition-colors hover:text-white"
                       onClick={(event) => {
                         event.stopPropagation();
                         setSelectedPromptEdit(prompt);
@@ -248,7 +248,7 @@ const PromptSearchDrawer = () => {
                     </button>
 
                     <button
-                      className="text-official-official-gray-600 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+                      className="text-official-official-gray-600 hover:bg-official-gray-750 rounded-full p-2 transition-colors hover:text-white"
                       onClick={async (event) => {
                         event.stopPropagation();
                         await removePrompt({

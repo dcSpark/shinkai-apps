@@ -82,8 +82,8 @@ const NavLink = ({
       className={cn(
         'flex w-full items-center gap-2 rounded-lg px-4 py-3 text-white transition-colors',
         isMatch
-          ? 'bg-gray-300 text-white'
-          : 'opacity-60 hover:bg-gray-500 hover:opacity-100',
+          ? 'bg-official-gray-700 text-white'
+          : 'hover:bg-official-gray-850 opacity-60 hover:opacity-100',
       )}
       onClick={onClick}
       rel={external ? 'noreferrer' : ''}
@@ -171,7 +171,7 @@ export function MainNav() {
       title: t('settings.layout.galxe'),
       href: '/settings/galxe-validation',
       icon: (
-        <div className="text-official-gray-400">
+        <div className="text-official-official-gray-750">
           <img alt="galxe icon" className="h-4 w-4" src={galxeIcon} />
         </div>
       ),
@@ -179,7 +179,7 @@ export function MainNav() {
   ].filter(Boolean) as NavigationLink[];
 
   return (
-    <aside className="flex max-w-[250px] flex-1 shrink-0 flex-col gap-2 overflow-x-hidden border-r border-gray-400 px-2 py-6 pt-9">
+    <aside className="border-official-gray-750 flex max-w-[250px] flex-1 shrink-0 flex-col gap-2 overflow-x-hidden border-r px-2 py-6 pt-9">
       <div className="flex flex-col gap-1.5">
         {navigationLinks.map((item) => {
           if (item.disabled) {

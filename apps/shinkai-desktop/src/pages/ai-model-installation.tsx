@@ -160,7 +160,7 @@ const AIModelInstallation = ({
         <FixedHeaderLayout
           className="relative flex h-full w-full max-w-6xl flex-col gap-2 px-4"
           rightElement={
-            <TabsList className="grid w-full max-w-xs grid-cols-2 rounded-lg border border-gray-400 bg-transparent p-0.5">
+            <TabsList className="border-official-gray-750 grid w-full max-w-xs grid-cols-2 rounded-lg border bg-transparent p-0.5">
               <TabsTrigger
                 className="flex items-center gap-1.5 px-3 text-sm font-semibold"
                 value="local"

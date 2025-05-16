@@ -81,7 +81,7 @@ function AgentsPage() {
               </Button>
             </div>
           </div>
-          <p className="text-official-gray-400 text-sm">
+          <p className="text-official-official-gray-750 text-sm">
             Create and explore AI agents with personalized instructions,
             enriched knowledge, <br /> diverse task capabilities, and more to
             tackle your goals autonomously.
@@ -95,7 +95,7 @@ function AgentsPage() {
               </div>
               <div className="flex flex-col items-center gap-1">
                 <p className="font-medium">No available agents</p>
-                <p className="text-official-gray-400 text-center text-sm font-medium">
+                <p className="text-official-official-gray-750 text-center text-sm font-medium">
                   Create your first Agent to start exploring the power of AI.
                 </p>
               </div>
@@ -205,7 +205,7 @@ const AgentCard = ({
               )}
             </span>
 
-            <span className="text-official-gray-400 text-sm">
+            <span className="text-official-official-gray-750 text-sm">
               {agentDescription ?? 'No description'}
             </span>
             {hasScheduledTasks && (
@@ -275,7 +275,7 @@ const AgentCard = ({
                     variant: 'tertiary',
                     size: 'icon',
                   }),
-                  'border-0 hover:bg-gray-500/40',
+                  'hover:bg-official-gray-850/40 border-0',
                 )}
                 onClick={(event) => {
                   event.stopPropagation();
@@ -284,12 +284,12 @@ const AgentCard = ({
                 tabIndex={0}
               >
                 <span className="sr-only">{t('common.moreOptions')}</span>
-                <DotsVerticalIcon className="text-official-gray-400" />
+                <DotsVerticalIcon className="text-official-official-gray-750" />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="w-[160px] border bg-gray-500 px-2.5 py-2"
+              className="bg-official-gray-850 w-[160px] border px-2.5 py-2"
             >
               {[
                 {
@@ -320,7 +320,7 @@ const AgentCard = ({
               ].map((option) => (
                 <React.Fragment key={option.name}>
                   {option.name === 'Delete' && (
-                    <DropdownMenuSeparator className="bg-gray-300" />
+                    <DropdownMenuSeparator className="bg-official-gray-700" />
                   )}
                   <DropdownMenuItem
                     key={option.name}

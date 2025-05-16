@@ -25,11 +25,11 @@ export const LogIcon = ({ level }: { level: string }) => {
       case 'INFO':
         return 'bg-blue-500/20 text-blue-500';
       case 'TRACE':
-        return 'bg-gray-500/10 text-official-gray-600';
+        return 'bg-official-gray-850/10 text-official-gray-600';
       case 'DEBUG':
         return 'bg-purple-500/20 text-purple-500';
       default:
-        return 'bg-gray-500/20 text-gray-500';
+        return 'bg-official-gray-850/20 text-official-gray-850';
     }
   };
 

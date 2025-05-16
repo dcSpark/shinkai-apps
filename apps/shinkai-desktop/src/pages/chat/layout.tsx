@@ -113,7 +113,7 @@ const InboxNameInput = ({
             control={updateInboxNameForm.control}
             name="name"
             render={({ field }) => (
-              <div className="flex h-[46px] items-center rounded-lg bg-gray-300">
+              <div className="bg-official-gray-700 flex h-[46px] items-center rounded-lg">
                 <Edit3 className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 transform text-white" />
 
                 <FormItem className="space-y-0 pl-7 text-xs">
@@ -122,7 +122,7 @@ const InboxNameInput = ({
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className="placeholder:text-official-gray-400 h-full border-none bg-transparent py-2 pr-16 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                      className="placeholder:text-official-official-gray-750 h-full border-none bg-transparent py-2 pr-16 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                       placeholder={inboxName}
                       {...field}
                       ref={inputRef}
@@ -219,7 +219,7 @@ const InboxMessageButtonBase = ({
           ) : (
             <Link
               className={cn(
-                'text-official-gray-300 group relative flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white',
+                'text-official-official-gray-700 group relative flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white',
                 location.pathname === to && 'bg-white/10 text-white',
               )}
               key={inboxId}
@@ -232,7 +232,7 @@ const InboxMessageButtonBase = ({
               <span className="line-clamp-1 flex-1 break-all pr-2 text-left text-xs">
                 {inboxName}
               </span>
-              <div className="absolute right-0 rounded-full bg-transparent opacity-0 duration-200 group-hover:bg-gray-300 group-hover:opacity-100">
+              <div className="group-hover:bg-official-gray-700 absolute right-0 rounded-full bg-transparent opacity-0 duration-200 group-hover:opacity-100">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -394,7 +394,9 @@ const ChatLayout = () => {
         <ResizablePanel className="flex h-full flex-col">
           <Outlet />
         </ResizablePanel>
-        {showArtifactPanel && <ResizableHandle className="bg-gray-300" />}
+        {showArtifactPanel && (
+          <ResizableHandle className="bg-official-gray-700" />
+        )}
         {showArtifactPanel && (
           <ResizablePanel
             collapsible
@@ -458,7 +460,7 @@ const ChatList = () => {
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className="text-official-gray-300 flex size-8 items-center justify-center rounded-full hover:text-white"
+              className="text-official-official-gray-700 flex size-8 items-center justify-center rounded-full hover:text-white"
               onClick={() => {
                 navigate(`/home`);
               }}
@@ -477,7 +479,7 @@ const ChatList = () => {
         {isPending &&
           Array.from({ length: 5 }).map((_, index) => (
             <Skeleton
-              className="h-11 w-full shrink-0 rounded-md bg-gray-300"
+              className="bg-official-gray-700 h-11 w-full shrink-0 rounded-md"
               key={index}
             />
           ))}
@@ -555,7 +557,7 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className="text-official-gray-300 flex size-8 items-center justify-center rounded-full hover:text-white"
+              className="text-official-official-gray-700 flex size-8 items-center justify-center rounded-full hover:text-white"
               onClick={() => {
                 navigate(`/home`, {
                   state: { agentName: agentId },
@@ -574,7 +576,7 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
       </div>
       <div className="flex flex-col gap-2 py-4">
         {isSuccess && agentInboxes.length === 0 && (
-          <p className="text-official-gray-400 py-3 text-center text-xs">
+          <p className="text-official-official-gray-750 py-3 text-center text-xs">
             {t('chat.actives.notFound')}
           </p>
         )}
@@ -591,10 +593,10 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
               key={inbox.inbox_id}
               to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
             >
-              <span className="text-official-official-gray-400 line-clamp-2 text-sm">
+              <span className="text-official-official-official-gray-750 line-clamp-2 text-sm">
                 {inbox.custom_name || inbox.inbox_id}
               </span>
-              <span className="text-official-gray-500 text-xs">
+              <span className="text-official-official-gray-850 text-xs">
                 {formatDateToLocaleStringWithTime(
                   new Date(inbox.datetime_created),
                 )}
@@ -643,7 +645,7 @@ const AgentList = ({
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className="text-official-gray-300 flex size-8 items-center justify-center rounded-full hover:text-white"
+              className="text-official-official-gray-700 flex size-8 items-center justify-center rounded-full hover:text-white"
               onClick={() => {
                 navigate(`/add-agent`);
               }}
@@ -662,7 +664,7 @@ const AgentList = ({
         {isPending &&
           Array.from({ length: 5 }).map((_, index) => (
             <Skeleton
-              className="h-11 w-full shrink-0 rounded-md bg-gray-300"
+              className="bg-official-gray-700 h-11 w-full shrink-0 rounded-md"
               key={index}
             />
           ))}
@@ -671,7 +673,7 @@ const AgentList = ({
           displayedAgents.map((agent) => (
             <button
               className={cn(
-                'text-official-gray-300 group flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white',
+                'text-official-official-gray-700 group flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white',
                 selectedAgent === agent.agent_id && 'bg-white/10 text-white',
               )}
               key={agent.agent_id}
@@ -726,13 +728,13 @@ const AgentList = ({
             </button>
           ))}
         {isSuccess && !agents && (
-          <p className="text-official-gray-400 py-3 text-center text-xs">
+          <p className="text-official-official-gray-750 py-3 text-center text-xs">
             {t('chat.actives.notFound')}{' '}
           </p>
         )}
         {isSuccess && agents && agents.length > AGENTS_DISPLAY_LIMIT && (
           <button
-            className="text-official-gray-300 flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white"
+            className="text-official-official-gray-700 flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white"
             onClick={() => setShowAll(!showAll)}
             type="button"
           >

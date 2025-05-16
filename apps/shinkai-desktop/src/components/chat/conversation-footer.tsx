@@ -675,7 +675,7 @@ function ConversationChatFooter({
             isSearchToolListSuccess &&
             searchToolList?.length > 0 && (
               <div className="flex items-center gap-2 px-2">
-                <span className="text-official-gray-400 pr-1 text-xs font-light">
+                <span className="text-official-official-gray-750 pr-1 text-xs font-light">
                   Suggested Tools
                 </span>
                 {searchToolList?.map((tool, idx) => (
@@ -716,7 +716,7 @@ function ConversationChatFooter({
                         </span>
 
                         <br />
-                        <div className="text-official-gray-400 flex items-center justify-end gap-2 text-xs">
+                        <div className="text-official-official-gray-750 flex items-center justify-end gap-2 text-xs">
                           <CommandShortcut>⌘ + {idx + 1}</CommandShortcut>
                         </div>
                       </TooltipContent>
@@ -736,11 +736,11 @@ function ConversationChatFooter({
             )}
           {(!debounceMessage || selectedTool) && (
             <div className="flex w-full items-center justify-between gap-2 px-2">
-              <span className="text-official-gray-400 text-xs font-light">
+              <span className="text-official-official-gray-750 text-xs font-light">
                 <span className="font-medium">Shift + Enter</span> for a new
                 line
               </span>
-              <span className="text-official-gray-400 text-xs font-light">
+              <span className="text-official-official-gray-750 text-xs font-light">
                 <span className="font-medium">Enter</span> to send
               </span>
             </div>
@@ -830,7 +830,7 @@ const FileListBase = ({
           >
             <div className="flex w-6 shrink-0 items-center justify-center">
               {isPending ? (
-                <Loader2 className="text-official-gray-400 h-5 w-5 animate-spin" />
+                <Loader2 className="text-official-official-gray-750 h-5 w-5 animate-spin" />
               ) : getFileExt(file.name) &&
                 fileIconMap[getFileExt(file.name)] ? (
                 <FileTypeIcon
@@ -838,13 +838,13 @@ const FileListBase = ({
                   type={getFileExt(file.name)}
                 />
               ) : (
-                <Paperclip className="text-official-gray-400 h-4 w-4 shrink-0" />
+                <Paperclip className="text-official-official-gray-750 h-4 w-4 shrink-0" />
               )}
             </div>
 
             <div className="text-left text-xs">
               <span className="line-clamp-1 break-all">{file.name}</span>
-              <span className="text-official-gray-500 line-clamp-1 break-all">
+              <span className="text-official-official-gray-850 line-clamp-1 break-all">
                 {size(file.size)}
               </span>
             </div>
@@ -878,7 +878,7 @@ export const DropFileActive = () => (
     initial={{ opacity: 0, y: 10 }}
     transition={{ duration: 0.2 }}
   >
-    <div className="border-official-gray-400 w-full rounded-lg border border-dashed">
+    <div className="border-official-official-gray-750 w-full rounded-lg border border-dashed">
       <div className="flex w-full items-center justify-center px-4 py-3.5">
         <PlusCircledIcon className="h-4 w-4 text-white" />
         <span className="ml-2 text-xs font-medium text-white">
@@ -966,7 +966,7 @@ export const SelectedToolChat = ({
       initial={{ opacity: 0 }}
       transition={{ duration: 0.2, ease: 'easeInOut' }}
     >
-      <div className="text-official-gray-400 flex flex-1 flex-col gap-2 text-sm">
+      <div className="text-official-official-gray-750 flex flex-1 flex-col gap-2 text-sm">
         <Tooltip>
           <TooltipTrigger asChild>
             <div className="flex items-center gap-2">
@@ -1020,7 +1020,7 @@ export const SelectedToolChat = ({
           </div>
         )}
       </div>
-      <div className="text-official-gray-400 absolute right-3 top-3 flex items-center gap-6 hover:text-white">
+      <div className="text-official-official-gray-750 absolute right-3 top-3 flex items-center gap-6 hover:text-white">
         <ToggleGroup
           className="bg-background inline-flex gap-0 -space-x-px rounded-lg shadow-sm shadow-black/5 rtl:space-x-reverse"
           onValueChange={(value) => {
@@ -1060,7 +1060,7 @@ export const SelectedToolChat = ({
           </ToggleGroupItem>
         </ToggleGroup>
         <button
-          className="text-official-gray-400 hover:text-white"
+          className="text-official-official-gray-750 hover:text-white"
           onClick={() => {
             remove();
             setToolRawInput('');

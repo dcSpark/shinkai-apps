@@ -1300,7 +1300,7 @@ export const AIAgentIcon: React.FC<AgentGradientAvatarProps> = ({
     const firstLetter = letter.toLowerCase()[0];
     return (
       gradients[firstLetter as keyof typeof gradients] ||
-      'bg-gradient-to-br from-gray-400 to-gray-600'
+      'bg-gradient-to-br from-official-gray-750 to-gray-600'
     );
   };
 

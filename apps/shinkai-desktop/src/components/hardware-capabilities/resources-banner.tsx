@@ -92,7 +92,7 @@ export const ResourcesBanner = ({
         </div>
       </AlertDescription>
       <button
-        className="absolute right-2 top-2 z-[100] text-gray-500 hover:text-gray-700"
+        className="text-official-gray-850 absolute right-2 top-2 z-[100] hover:text-gray-700"
         onClick={() => setCompatibilityBannerDismissed(true)}
         type="button"
       >

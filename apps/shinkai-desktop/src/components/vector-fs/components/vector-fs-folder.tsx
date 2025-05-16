@@ -46,7 +46,7 @@ export const VectorFsFolderInfo = ({
     <div className="flex-1 truncate text-left">
       <div className="truncate text-sm font-medium">{folder.name}</div>
       {layout === VectorFSLayout.List && !allowFolderNameOnly && (
-        <p className="text-official-gray-400 text-xs font-medium">
+        <p className="text-official-official-gray-750 text-xs font-medium">
           <span>
             {formatDateToUSLocaleString(new Date(folder.created_time ?? ''))}
           </span>{' '}
@@ -84,8 +84,8 @@ const VectorFsFolder = ({
     (state) => state.isVRSelectionActive,
   );
   const wrapperClassName = cn(
-    'flex items-center justify-between gap-2 truncate rounded-lg py-3.5 pr-2 hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-400',
-    layout === VectorFSLayout.Grid && 'bg-gray-400/30 p-2',
+    'hover:to-official-gray-750 hover:from-official-gray-850 flex items-center justify-between gap-2 truncate rounded-lg py-3.5 pr-2 hover:bg-gradient-to-r',
+    layout === VectorFSLayout.Grid && 'bg-official-gray-750/30 p-2',
   );
   const totalItem = (folder.children ?? []).length;
 
@@ -164,7 +164,7 @@ const VectorFsFolder = ({
                 variant: 'tertiary',
                 size: 'icon',
               }),
-              'border-0 hover:bg-gray-500/40',
+              'hover:bg-official-gray-850/40 border-0',
             )}
             onClick={(event) => {
               event.stopPropagation();
@@ -173,12 +173,12 @@ const VectorFsFolder = ({
             tabIndex={0}
           >
             <span className="sr-only">{t('common.moreOptions')}</span>
-            <DotsVerticalIcon className="text-official-gray-400-gray-400" />
+            <DotsVerticalIcon className="text-official-official-gray-750-official-gray-750" />
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="min-w-[160px] border bg-gray-500 px-2.5 py-2"
+          className="bg-official-gray-850 min-w-[160px] border px-2.5 py-2"
         >
           {[
             {
@@ -218,7 +218,7 @@ const VectorFsFolder = ({
             .map((option, idx) => (
               <React.Fragment key={option.name}>
                 {(idx === 3 || idx === 5 || idx === 2) && (
-                  <DropdownMenuSeparator className="bg-gray-300" />
+                  <DropdownMenuSeparator className="bg-official-gray-700" />
                 )}
                 <DropdownMenuItem
                   key={option.name}

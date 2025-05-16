@@ -65,12 +65,12 @@ export default function ToolDetails() {
           <div className="flex items-center gap-4">
             <Skeleton className="bg-official-gray-900 h-6 w-24 rounded-md" />{' '}
             <div className="flex h-8 w-8 items-center justify-center">
-              <MoreVertical className="h-5 w-5 text-gray-400" />
+              <MoreVertical className="text-official-gray-750 h-5 w-5" />
             </div>
           </div>
         </div>
 
-        <div className="mb-8 border-b border-gray-500 pb-2">
+        <div className="border-official-gray-850 mb-8 border-b pb-2">
           <div className="flex gap-2">
             <Skeleton className="bg-official-gray-900 h-6 w-20 rounded-md" />
             <Skeleton className="bg-official-gray-900 h-6 w-20 rounded-md" />

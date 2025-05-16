@@ -180,7 +180,7 @@ const TabNavigation = () => {
   return (
     <TabsList className="border-official-gray-780 flex h-auto justify-start gap-4 rounded-full bg-transparent px-0.5 py-1">
       <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        className="data-[state=active]:bg-official-gray-850 text-official-official-gray-750 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
         value="persona"
       >
         <Badge className="bg-official-gray-700 border-official-gray-600 inline-flex size-5 items-center justify-center rounded-full border-none p-0 text-center text-[10px] text-gray-50">
@@ -189,7 +189,7 @@ const TabNavigation = () => {
         <span>Persona</span>
       </TabsTrigger>
       <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        className="data-[state=active]:bg-official-gray-850 text-official-official-gray-750 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
         value="knowledge"
       >
         <Badge className="bg-official-gray-700 border-official-gray-600 inline-flex size-5 items-center justify-center rounded-full border-none p-0 text-center text-[10px] text-gray-50">
@@ -198,7 +198,7 @@ const TabNavigation = () => {
         <span>Knowledge</span>
       </TabsTrigger>
       <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        className="data-[state=active]:bg-official-gray-850 text-official-official-gray-750 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
         value="tools"
       >
         <Badge className="bg-official-gray-700 border-official-gray-600 inline-flex size-5 items-center justify-center rounded-full border-none p-0 text-center text-[10px] text-gray-50">
@@ -207,7 +207,7 @@ const TabNavigation = () => {
         <span>Tools</span>
       </TabsTrigger>
       <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        className="data-[state=active]:bg-official-gray-850 text-official-official-gray-750 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
         value="schedule"
       >
         <Badge className="bg-official-gray-700 border-official-gray-600 inline-flex size-5 items-center justify-center rounded-full border-none p-0 text-center text-[10px] text-gray-50">
@@ -366,7 +366,7 @@ function AgentSideChat({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    className="text-official-gray-300 p-2"
+                    className="text-official-official-gray-700 p-2"
                     onClick={() => setChatInboxId(null)}
                     size="auto"
                     variant="tertiary"
@@ -389,7 +389,7 @@ function AgentSideChat({
                   <TooltipTrigger asChild>
                     <SelectPrimitive.Trigger asChild>
                       <Button
-                        className="text-official-gray-300 p-2"
+                        className="text-official-official-gray-700 p-2"
                         disabled={!agentInboxes || agentInboxes.length === 0}
                         size="auto"
                         variant="tertiary"
@@ -409,7 +409,7 @@ function AgentSideChat({
                         <span className="max-w-[255px] truncate text-sm text-white">
                           {inbox.custom_name || inbox.inbox_id}
                         </span>
-                        <span className="text-official-gray-400 truncate text-xs">
+                        <span className="text-official-official-gray-750 truncate text-xs">
                           {formatDateToLocaleStringWithTime(
                             new Date(inbox.datetime_created),
                           )}
@@ -423,7 +423,7 @@ function AgentSideChat({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    className="text-official-gray-300 p-2"
+                    className="text-official-official-gray-700 p-2"
                     onClick={onClose}
                     size="auto"
                     variant="tertiary"
@@ -445,7 +445,7 @@ function AgentSideChat({
                   🤖
                 </span>
                 <h2 className="text-base font-medium">Chat with your Agent</h2>
-                <p className="text-official-gray-400">
+                <p className="text-official-official-gray-750">
                   Send a message to start chatting with this agent
                 </p>
               </div>
@@ -470,7 +470,7 @@ function AgentSideChat({
               autoFocus
               bottomAddons={
                 <div className="relative z-50 flex items-end gap-3 self-end p-2">
-                  <span className="text-official-gray-400 pb-1 font-light">
+                  <span className="text-official-official-gray-750 pb-1 font-light">
                     <span className="font-medium">Enter</span> to send
                   </span>
 
@@ -1260,7 +1260,7 @@ function AgentForm({ mode }: AgentFormProps) {
                               <FormLabel>Instructions</FormLabel>
                               <FormControl>
                                 <Textarea
-                                  className="placeholder-official-gray-500 !max-h-[auto] !min-h-[300px] text-sm"
+                                  className="placeholder-official-official-gray-850 !max-h-[auto] !min-h-[300px] text-sm"
                                   placeholder="e.g., You are a professional UX expert. Answer questions about UI/UX best practices."
                                   resize="vertical"
                                   spellCheck={false}
@@ -1280,7 +1280,7 @@ function AgentForm({ mode }: AgentFormProps) {
                           name="llmProviderId"
                           render={({ field }) => (
                             <div className="space-y-2">
-                              <p className="text-official-gray-400 text-sm">
+                              <p className="text-official-official-gray-750 text-sm">
                                 {t('chat.form.selectAI')}
                               </p>
                               <span className="text-official-official-gray-600 text-xs">
@@ -1298,7 +1298,7 @@ function AgentForm({ mode }: AgentFormProps) {
                         <Collapsible>
                           <CollapsibleTrigger
                             className={cn(
-                              'text-official-gray-400 hover:text-official-gray-300 flex items-center gap-1 text-sm',
+                              'text-official-official-gray-750 hover:text-official-official-gray-700 flex items-center gap-1 text-sm',
                               '[&[data-state=open]>svg]:rotate-90',
                               '[&[data-state=open]>span.input]:block',
                               '[&[data-state=open]>span.content]:hidden',
@@ -1317,7 +1317,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                     <FormLabel>Message Context</FormLabel>
                                     <FormControl>
                                       <Textarea
-                                        className="placeholder-official-gray-500 !min-h-[100px] text-sm"
+                                        className="placeholder-official-official-gray-850 !min-h-[100px] text-sm"
                                         placeholder="e.g., {{user_message}}. And then say: Chao amigo!"
                                         spellCheck={false}
                                         {...field}
@@ -1341,7 +1341,7 @@ function AgentForm({ mode }: AgentFormProps) {
                         <Collapsible>
                           <CollapsibleTrigger
                             className={cn(
-                              'text-official-gray-400 hover:text-official-gray-300 flex items-center gap-1 text-sm',
+                              'text-official-official-gray-750 hover:text-official-official-gray-700 flex items-center gap-1 text-sm',
                               '[&[data-state=open]>svg]:rotate-90',
                               '[&[data-state=open]>span.input]:block',
                               '[&[data-state=open]>span.content]:hidden',
@@ -1362,7 +1362,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                         <FormLabel className="static space-y-1.5 text-sm text-white">
                                           Enable Stream
                                         </FormLabel>
-                                        <p className="text-official-gray-400 text-xs">
+                                        <p className="text-official-official-gray-750 text-xs">
                                           Streams the agent&apos;s response as
                                           it generates.
                                         </p>
@@ -1387,7 +1387,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                         <FormLabel className="static space-y-1.5 text-sm text-white">
                                           Enable Tools
                                         </FormLabel>
-                                        <p className="text-official-gray-400 text-xs">
+                                        <p className="text-official-official-gray-750 text-xs">
                                           Allows the agent to use tools to
                                           complete tasks.
                                         </p>
@@ -1415,7 +1415,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                               <Label htmlFor="temperature">
                                                 Temperature
                                               </Label>
-                                              <span className="text-official-gray-400 hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                                              <span className="text-official-official-gray-750 hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
                                                 {field.value}
                                               </span>
                                             </div>
@@ -1460,7 +1460,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                               <Label htmlFor="topP">
                                                 Top P
                                               </Label>
-                                              <span className="text-official-gray-400 hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                                              <span className="text-official-official-gray-750 hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
                                                 {field.value}
                                               </span>
                                             </div>
@@ -1510,7 +1510,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                               <Label htmlFor="topK">
                                                 Top K
                                               </Label>
-                                              <span className="text-official-gray-400 hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                                              <span className="text-official-official-gray-750 hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
                                                 {field.value}
                                               </span>
                                             </div>
@@ -1565,7 +1565,7 @@ function AgentForm({ mode }: AgentFormProps) {
                               </Badge>
                             )}
                           </h2>
-                          <p className="text-official-gray-400 text-sm">
+                          <p className="text-official-official-gray-750 text-sm">
                             Provide your agent with local AI files to enhance
                             its knowledge and capabilities.
                           </p>
@@ -1641,7 +1641,7 @@ function AgentForm({ mode }: AgentFormProps) {
                           {searchQueryKnowledge &&
                             isSearchQueryKnowledgeSynced &&
                             searchKnowledgeList?.length === 0 && (
-                              <div className="text-official-gray-400 flex h-20 items-center justify-center">
+                              <div className="text-official-official-gray-750 flex h-20 items-center justify-center">
                                 {t('vectorFs.emptyState.noFiles')}
                               </div>
                             )}
@@ -1840,7 +1840,7 @@ function AgentForm({ mode }: AgentFormProps) {
                         <div className="flex items-center justify-between gap-2">
                           <div className="space-y-1">
                             <h2 className="text-base font-medium">Tools</h2>
-                            <p className="text-official-gray-400 text-sm">
+                            <p className="text-official-official-gray-750 text-sm">
                               Select which tools &amp; skills your agent can use
                               to complete tasks.
                             </p>
@@ -1864,7 +1864,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                 Selected Tools
                               </h3>
                               <Button
-                                className="text-official-gray-400 hover:text-official-official-gray-400 text-xs"
+                                className="text-official-official-gray-750 hover:text-official-official-official-gray-750 text-xs"
                                 onClick={() => {
                                   form.setValue('tools', []);
                                   form.setValue('tools_config_override', {});
@@ -1892,7 +1892,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                           <span className="inline-flex items-center gap-1 text-sm text-white">
                                             {formatText(tool.name)}
                                           </span>
-                                          <span className="text-official-gray-400 line-clamp-2 text-sm">
+                                          <span className="text-official-official-gray-750 line-clamp-2 text-sm">
                                             {tool.description}
                                           </span>
                                         </div>
@@ -2043,13 +2043,13 @@ function AgentForm({ mode }: AgentFormProps) {
                                   key={idx}
                                 >
                                   <div className="flex w-full flex-1 flex-col gap-3">
-                                    <span className="h-4 w-36 rounded-sm bg-gray-300" />
+                                    <span className="bg-official-gray-700 h-4 w-36 rounded-sm" />
                                     <div className="flex flex-col gap-1">
-                                      <span className="h-3 w-full rounded-sm bg-gray-300" />
-                                      <span className="h-3 w-2/4 rounded-sm bg-gray-300" />
+                                      <span className="bg-official-gray-700 h-3 w-full rounded-sm" />
+                                      <span className="bg-official-gray-700 h-3 w-2/4 rounded-sm" />
                                     </div>
                                   </div>
-                                  <span className="h-5 w-[36px] rounded-full bg-gray-300" />
+                                  <span className="bg-official-gray-700 h-5 w-[36px] rounded-full" />
                                 </div>
                               ))}
                             </div>
@@ -2074,7 +2074,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                               <span className="inline-flex items-center gap-1 text-sm text-white">
                                                 {formatText(tool.name)}
                                               </span>
-                                              <span className="text-official-gray-400 line-clamp-2 text-sm">
+                                              <span className="text-official-official-gray-750 line-clamp-2 text-sm">
                                                 {tool.description}
                                               </span>
                                             </label>
@@ -2227,7 +2227,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                                 <span className="inline-flex items-center gap-1 text-sm text-white">
                                                   {formatText(tool.name)}
                                                 </span>
-                                                <span className="text-official-gray-400 line-clamp-2 text-sm">
+                                                <span className="text-official-official-gray-750 line-clamp-2 text-sm">
                                                   {tool.description}
                                                 </span>
                                               </label>
@@ -2323,7 +2323,7 @@ function AgentForm({ mode }: AgentFormProps) {
                       <div className="space-y-4">
                         <div className="space-y-1">
                           <h2 className="text-base font-medium">Schedule</h2>
-                          <p className="text-official-gray-400 text-sm">
+                          <p className="text-official-official-gray-750 text-sm">
                             Set when your agent will automatically run tasks.
                           </p>
                         </div>
@@ -2358,7 +2358,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                 >
                                   Normal Usage
                                 </Label>
-                                <p className="text-official-gray-400 text-sm">
+                                <p className="text-official-official-gray-750 text-sm">
                                   Agent is ready to respond immediately when
                                   used upon in a chat.
                                 </p>
@@ -2379,7 +2379,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                   >
                                     Normal Usage + Scheduled Execution
                                   </Label>
-                                  <p className="text-official-gray-400 text-sm">
+                                  <p className="text-official-official-gray-750 text-sm">
                                     Normal usage and also configure specific
                                     times and frequencies for agent tasks e.g.
                                     Twitter Agent that performs a workflow like
@@ -2411,7 +2411,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                         </FormItem>
                                       )}
                                     />
-                                    <p className="text-official-gray-400 text-sm">
+                                    <p className="text-official-official-gray-750 text-sm">
                                       Write the prompt that will be used for the
                                       scheduled execution.
                                     </p>
@@ -2521,7 +2521,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                     </div>
 
                                     <Button
-                                      className="text-official-gray-400 p-2 hover:bg-red-900/10 hover:text-red-400/90"
+                                      className="text-official-official-gray-750 p-2 hover:bg-red-900/10 hover:text-red-400/90"
                                       isLoading={isRemovingTask}
                                       onClick={() =>
                                         onDeleteTask(task.task_id.toString())
@@ -2697,7 +2697,7 @@ function AgentForm({ mode }: AgentFormProps) {
       {/* Side Chat Panel */}
       {isSideChatOpen && mode === 'edit' && agent && (
         <>
-          <ResizableHandle className="bg-gray-300" />
+          <ResizableHandle className="bg-official-gray-700" />
           <ResizablePanel
             className="flex h-full min-h-0 flex-col"
             collapsible

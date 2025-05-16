@@ -167,10 +167,10 @@ function PlaygroundHeaderBase({
   };
 
   return (
-    <div className="flex items-center justify-between gap-2 border-b border-gray-400 px-4 pb-2.5">
+    <div className="border-official-gray-750 flex items-center justify-between gap-2 border-b px-4 pb-2.5">
       <div className="flex items-center gap-2">
         <Button
-          className="text-official-gray-400 border-none"
+          className="text-official-official-gray-750 border-none"
           onClick={() => {
             resetPlaygroundStore();
             navigate('/tools');
@@ -214,7 +214,7 @@ function PlaygroundHeaderBase({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Badge
-                    className="bg-gray-350 cursor-pointer border-0 px-2.5 py-2 hover:bg-gray-400"
+                    className="bg-gray-350 hover:bg-official-gray-750 cursor-pointer border-0 px-2.5 py-2"
                     onClick={restoreCode}
                     variant="secondary"
                   >
@@ -241,7 +241,7 @@ function PlaygroundHeaderBase({
                   disabled={toolCode === toolHistory?.at(0)?.code}
                 >
                   <Button
-                    className="disabled:text-official-gray-400 size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent"
+                    className="disabled:text-official-official-gray-750 size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent"
                     onClick={goPreviousToolCode}
                     size="auto"
                     variant="ghost"
@@ -261,7 +261,7 @@ function PlaygroundHeaderBase({
                   disabled={toolCode === toolHistory?.at(-1)?.code}
                 >
                   <Button
-                    className="disabled:text-official-gray-400-gray-400 size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent"
+                    className="disabled:text-official-official-gray-750-official-gray-750 size-[30px] rounded-lg p-1 disabled:pointer-events-none disabled:bg-transparent"
                     onClick={goNextToolCode}
                     size="auto"
                     variant="ghost"
@@ -276,7 +276,10 @@ function PlaygroundHeaderBase({
                 </TooltipPortal>
               </Tooltip>
             </div>
-            <Separator className="my-1 bg-gray-300" orientation="vertical" />
+            <Separator
+              className="bg-official-gray-700 my-1"
+              orientation="vertical"
+            />
           </div>
         )}
         <ManageSourcesButton />
@@ -321,7 +324,7 @@ function PlaygroundHeaderBase({
                   <StoreIcon className="h-4 w-4" />
                   Publish to the App Store
                 </h4>
-                <p className="text-official-gray-300 text-xs">
+                <p className="text-official-official-gray-700 text-xs">
                   Publishing will make your tool available in the{' '}
                   <a
                     className="text-white underline"

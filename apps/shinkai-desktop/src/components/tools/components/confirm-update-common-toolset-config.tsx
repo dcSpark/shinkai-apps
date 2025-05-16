@@ -57,7 +57,7 @@ export function ConfirmToolsetUpdateDialog({
             <p className="font-medium">
               {t('tools.configuration.followingToolsAffected')}
             </p>
-            <ul className="text-official-gray-300 list-disc space-y-1 pl-5">
+            <ul className="text-official-official-gray-700 list-disc space-y-1 pl-5">
               {affectedToolNames.map((name) => (
                 <li key={name}>{name}</li>
               ))}

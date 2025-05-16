@@ -214,12 +214,12 @@ export function AIModelSelectorBase({
             </span>
             {isRegularChatPage && (
               <div className="flex items-center gap-4 text-left">
-                <div className="text-official-gray-400 flex items-center justify-center gap-2 text-xs">
+                <div className="text-official-official-gray-750 flex items-center justify-center gap-2 text-xs">
                   <CommandShortcut>⌘ [</CommandShortcut> or
                   <CommandShortcut>⌘ ]</CommandShortcut>
                 </div>
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-official-gray-400 text-xs">
+                  <span className="text-official-official-gray-750 text-xs">
                     Prev / Next AI
                   </span>
                 </div>
@@ -244,7 +244,7 @@ export function AIModelSelectorBase({
           value={value}
         >
           <CommandInput placeholder="Search..." />
-          <CommandEmpty className="text-official-gray-400 py-5 text-center text-sm">
+          <CommandEmpty className="text-official-official-gray-750 py-5 text-center text-sm">
             No results found.
           </CommandEmpty>
           <CommandList className="flex max-h-full flex-col">
@@ -256,7 +256,7 @@ export function AIModelSelectorBase({
                     <h3 className="font-clash text-base font-medium text-white">
                       Agents
                     </h3>
-                    <p className="text-official-gray-400 text-sm font-normal">
+                    <p className="text-official-official-gray-750 text-sm font-normal">
                       Explore custom AI agents for your needs
                     </p>
                   </div>
@@ -290,7 +290,7 @@ export function AIModelSelectorBase({
                         <span className="inline-flex items-center gap-1.5 text-base capitalize">
                           {agent.name}
                         </span>
-                        <span className="text-official-gray-400 line-clamp-1 text-xs">
+                        <span className="text-official-official-gray-750 line-clamp-1 text-xs">
                           {agent.ui_description}
                         </span>
                       </div>
@@ -327,7 +327,7 @@ export function AIModelSelectorBase({
                     <h3 className="font-clash text-base font-medium text-white">
                       AI Models
                     </h3>
-                    <p className="text-official-gray-400 text-sm font-normal">
+                    <p className="text-official-official-gray-750 text-sm font-normal">
                       Explore a wide range of AI models
                     </p>
                   </div>
@@ -378,7 +378,7 @@ export function AIModelSelectorBase({
                             </Badge>
                           )}
                       </span>
-                      <span className="text-official-gray-400 line-clamp-2 text-xs">
+                      <span className="text-official-official-gray-750 line-clamp-2 text-xs">
                         {llmProvider?.description}
                       </span>
                     </div>

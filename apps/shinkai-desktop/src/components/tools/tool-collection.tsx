@@ -282,7 +282,7 @@ const ToolCollectionBase = () => {
               value={selectedToolCategory}
             >
               <ToggleGroupItem
-                className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
+                className="data-[state=on]:bg-official-gray-850 text-official-official-gray-750 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
                 key="all"
                 size="sm"
                 value="all"
@@ -291,7 +291,7 @@ const ToolCollectionBase = () => {
               </ToggleGroupItem>
               {toolsGroup.map((tool) => (
                 <ToggleGroupItem
-                  className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
+                  className="data-[state=on]:bg-official-gray-850 text-official-official-gray-750 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
                   key={tool.value}
                   size="sm"
                   value={tool.value}
@@ -305,7 +305,7 @@ const ToolCollectionBase = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    className="text-official-gray-400 hover:text-white"
+                    className="text-official-official-gray-750 hover:text-white"
                     size="sm"
                     variant="ghost"
                   >
@@ -353,7 +353,10 @@ const ToolCollectionBase = () => {
                   <MoreVerticalIcon className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
+              <DropdownMenuContent
+                align="end"
+                className="bg-official-gray-700 p-2.5"
+              >
                 <DropdownMenuItem
                   className="text-xs"
                   onClick={() => {
@@ -384,7 +387,7 @@ const ToolCollectionBase = () => {
           <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
             {toolsList?.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-2 py-8">
-                <p className="text-official-gray-400 text-sm">
+                <p className="text-official-official-gray-750 text-sm">
                   No tools found in this category. Create a new tool or install
                   from the App Store.
                 </p>
@@ -588,15 +591,15 @@ const ToolCollectionBase = () => {
               key={idx}
             >
               <div className="flex w-full flex-1 flex-col gap-3">
-                <span className="h-4 w-36 rounded-sm bg-gray-300" />
+                <span className="bg-official-gray-700 h-4 w-36 rounded-sm" />
                 <div className="flex flex-col gap-1">
-                  <span className="h-3 w-full rounded-sm bg-gray-300" />
-                  <span className="h-3 w-2/4 rounded-sm bg-gray-300" />
+                  <span className="bg-official-gray-700 h-3 w-full rounded-sm" />
+                  <span className="bg-official-gray-700 h-3 w-2/4 rounded-sm" />
                 </div>
               </div>
-              <span className="h-7 w-full rounded-md bg-gray-300" />
-              <span className="h-7 w-10 rounded-md bg-gray-300" />
-              <span className="h-5 w-[36px] rounded-full bg-gray-300" />
+              <span className="bg-official-gray-700 h-7 w-full rounded-md" />
+              <span className="bg-official-gray-700 h-7 w-10 rounded-md" />
+              <span className="bg-official-gray-700 h-5 w-[36px] rounded-full" />
             </div>
           ))}
         </div>
@@ -725,7 +728,9 @@ export function DockerStatus() {
         <span
           className={`h-2 w-2 rounded-full ${config.color} ${config.borderColor}`}
         />
-        <span className="text-official-gray-400 text-xs">{config.title}</span>
+        <span className="text-official-official-gray-750 text-xs">
+          {config.title}
+        </span>
       </TooltipTrigger>
       <TooltipPortal>
         <TooltipContent
@@ -739,7 +744,7 @@ export function DockerStatus() {
             className={cn(
               'border',
               config.borderColor,
-              'bg-gray-300',
+              'bg-official-gray-700',
               config.bgColor,
             )}
           >

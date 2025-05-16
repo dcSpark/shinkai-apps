@@ -168,7 +168,7 @@ const TermsAndConditionsPage = () => {
         <h1 className="font-clash text-4xl font-semibold">
           {t('desktop.welcome')}
         </h1>
-        <p className="text-official-gray-300 text-base">
+        <p className="text-official-official-gray-700 text-base">
           <Trans
             components={{
               b: (

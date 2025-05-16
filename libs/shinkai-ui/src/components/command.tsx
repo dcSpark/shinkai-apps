@@ -44,7 +44,7 @@ const CommandInput = React.forwardRef<
     <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
     <CommandPrimitive.Input
       className={cn(
-        'placeholder:text-official-gray-400 flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50',
+        'placeholder:text-official-official-gray-750 flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50',
         className,
       )}
       ref={ref}
@@ -90,7 +90,7 @@ const CommandGroup = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.Group
     className={cn(
-      '[&_[cmdk-group-heading]]:text-official-gray-400 overflow-hidden p-1 text-white [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
+      '[&_[cmdk-group-heading]]:text-official-official-gray-750 overflow-hidden p-1 text-white [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
       className,
     )}
     ref={ref}
@@ -135,7 +135,7 @@ const CommandShortcut = ({
   return (
     <span
       className={cn(
-        'text-official-gray-400 ml-auto text-xs tracking-widest',
+        'text-official-official-gray-750 ml-auto text-xs tracking-widest',
         className,
       )}
       {...props}

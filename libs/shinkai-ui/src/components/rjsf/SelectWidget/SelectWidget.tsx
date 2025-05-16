@@ -53,7 +53,7 @@ export default function SelectWidget<
     <select
       aria-describedby={ariaDescribedByIds<T>(id)}
       autoFocus={autofocus}
-      className={`border-official-gray-400 focus:border-official-gray-400 w-full border bg-gray-400 p-2 text-white focus:outline-none ${rawErrors.length > 0 ? 'border-red-500' : 'border-official-gray-400'} `}
+      className={`border-official-official-gray-750 focus:border-official-official-gray-750 bg-official-gray-750 w-full border p-2 text-white focus:outline-none ${rawErrors.length > 0 ? 'border-red-500' : 'border-official-official-gray-750'} `}
       disabled={disabled || readonly}
       id={id}
       multiple={multiple}
@@ -90,7 +90,7 @@ export default function SelectWidget<
       }
     >
       {!multiple && schema.default === undefined && (
-        <option className="bg-gray-400" value="">
+        <option className="bg-official-gray-750" value="">
           {placeholder}
         </option>
       )}
@@ -100,7 +100,7 @@ export default function SelectWidget<
           (enumDisabled as any).indexOf(value) != -1;
         return (
           <option
-            className="bg-gray-400"
+            className="bg-official-gray-750"
             disabled={disabled}
             id={label}
             key={i}

@@ -116,8 +116,8 @@ const ArtifactCard = ({
 }: ArtifactProps) => (
   <Card
     className={cn(
-      'border-official-gray-400 w-full max-w-sm border',
-      isSelected && 'border-gray-50 bg-gray-300',
+      'border-official-official-gray-750 w-full max-w-sm border',
+      isSelected && 'bg-official-gray-700 border-gray-50',
     )}
     onClick={() => {
       onArtifactClick?.();
@@ -249,8 +249,8 @@ const MessageBase = ({
                       <ChatInputArea
                         bottomAddons={
                           <div className="flex w-full items-center justify-between px-1">
-                            <div className="text-official-gray-400 flex items-center gap-1 text-xs">
-                              <InfoCircleIcon className="text-official-gray-400 h-3 w-3" />
+                            <div className="text-official-official-gray-750 flex items-center gap-1 text-xs">
+                              <InfoCircleIcon className="text-official-official-gray-750 h-3 w-3" />
                               <span>{t('chat.editMessage.warning')}</span>
                             </div>
                             <div className="flex items-center gap-2">
@@ -288,7 +288,7 @@ const MessageBase = ({
                 className={cn(
                   'relative mt-1 flex flex-col rounded-lg bg-black/40 px-3.5 pt-3 text-sm text-white',
                   message.role === 'user'
-                    ? 'rounded-tr-none bg-gray-300'
+                    ? 'bg-official-gray-700 rounded-tr-none'
                     : 'bg-official-gray-600 rounded-bl-none border-none',
                   !message.content ? 'pb-3' : 'pb-4',
                   editing && 'w-full py-1',
@@ -315,7 +315,7 @@ const MessageBase = ({
                             <AccordionTrigger
                               className={cn(
                                 'min-w-[10rem] py-0 pr-2 no-underline hover:no-underline',
-                                'transition-colors hover:bg-gray-500 [&[data-state=open]]:bg-gray-500',
+                                'hover:bg-official-gray-850 [&[data-state=open]]:bg-official-gray-850 transition-colors',
                                 tool.status !== ToolStatusType.Complete &&
                                   '[&>svg]:hidden',
                               )}
@@ -403,7 +403,7 @@ const MessageBase = ({
                           <TooltipTrigger asChild>
                             <button
                               className={cn(
-                                'text-official-official-gray-600 border-official-gray-600 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                                'text-official-official-gray-600 border-official-gray-600 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                               )}
                               onClick={() => {
                                 setEditing(true);
@@ -426,7 +426,7 @@ const MessageBase = ({
                           <TooltipTrigger asChild>
                             <button
                               className={cn(
-                                'text-official-official-gray-600 border-official-gray-600 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                                'text-official-official-gray-600 border-official-gray-600 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                               )}
                               onClick={handleRetryMessage}
                             >
@@ -447,7 +447,7 @@ const MessageBase = ({
                           <div>
                             <CopyToClipboardIcon
                               className={cn(
-                                'text-official-official-gray-600 border-official-gray-600 h-7 w-7 border bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                                'text-official-official-gray-600 border-official-gray-600 hover:bg-official-gray-700 h-7 w-7 border bg-transparent [&>svg]:h-3 [&>svg]:w-3',
                               )}
                               string={extractErrorPropertyOrContent(
                                 message.content,
@@ -466,7 +466,7 @@ const MessageBase = ({
                   </div>
                   <div
                     className={cn(
-                      'text-official-gray-400 flex items-center gap-1.5 text-xs',
+                      'text-official-official-gray-750 flex items-center gap-1.5 text-xs',
                     )}
                   >
                     <span>

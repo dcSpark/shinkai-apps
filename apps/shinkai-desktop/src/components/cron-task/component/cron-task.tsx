@@ -351,7 +351,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                 },
               ].map((item) => (
                 <Badge
-                  className="cursor-pointer hover:bg-gray-400"
+                  className="hover:bg-official-gray-750 cursor-pointer"
                   key={item.cron}
                   onClick={() => {
                     form.setValue('cronExpression', item.cron);
@@ -410,7 +410,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="start"
-                        className="max-h-[400px] min-w-[330px] overflow-y-auto bg-gray-300 p-1 py-2"
+                        className="bg-official-gray-700 max-h-[400px] min-w-[330px] overflow-y-auto p-1 py-2"
                         side="top"
                       >
                         <DropdownMenuRadioGroup
@@ -451,7 +451,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                 </div>
 
                 <Collapsible className="space-y-4">
-                  <CollapsibleTrigger className="text-official-gray-400 hover:text-official-gray-300 flex items-center gap-1 text-sm [&[data-state=open]>svg]:rotate-90">
+                  <CollapsibleTrigger className="text-official-official-gray-750 hover:text-official-official-gray-700 flex items-center gap-1 text-sm [&[data-state=open]>svg]:rotate-90">
                     Advanced
                     <ChevronDownIcon className="h-3 w-3" />
                   </CollapsibleTrigger>

@@ -224,7 +224,7 @@ const SearchNodeFiles = () => {
           isLoading &&
           Array.from({ length: 4 }).map((_, idx) => (
             <div
-              className="mb-1 flex h-[69px] items-center justify-between gap-2 rounded-lg bg-gray-400 py-3"
+              className="bg-official-gray-750 mb-1 flex h-[69px] items-center justify-between gap-2 rounded-lg py-3"
               key={idx}
             />
           ))}
@@ -313,7 +313,7 @@ const SearchNodeFiles = () => {
                               {generatedFilePath.split('/').at(-1)}
                             </span>
                           </div>
-                          <div className="divide-y divide-gray-300">
+                          <div className="divide-official-gray-700 divide-y">
                             {contents?.map((content) => (
                               <p
                                 className="text-official-official-gray-600 py-3 text-xs"
@@ -364,7 +364,7 @@ function SelectFolderButton() {
           <SheetTrigger asChild>
             <TooltipTrigger asChild>
               <Button
-                className="hover:bg-gray-400 hover:text-white"
+                className="hover:bg-official-gray-750 hover:text-white"
                 size="sm"
                 type="button"
                 variant="outline"

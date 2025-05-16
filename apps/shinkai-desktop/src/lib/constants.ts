@@ -19,7 +19,7 @@ export const treeOptions: TreePassThroughOptions = {
   root: {
     className: cn(
       '',
-      'my-0 w-full rounded-md border border-gray-400 bg-transparent p-0 p-2 text-white',
+      'border-official-gray-750 my-0 w-full rounded-md border bg-transparent p-0 p-2 text-white',
     ),
   },
   label: { className: 'text-white text-sm line-clamp-1 break-all' },
@@ -29,7 +29,7 @@ export const treeOptions: TreePassThroughOptions = {
   node: { className: 'p-0 outline-none' },
   content: {
     className: cn(
-      'text-official-official-gray-600 mb-1 rounded-lg bg-transparent p-1 py-1.5 shadow-none hover:bg-gray-400 hover:text-white',
+      'text-official-official-gray-600 hover:bg-official-gray-750 mb-1 rounded-lg bg-transparent p-1 py-1.5 shadow-none hover:text-white',
       'cursor-pointer select-none',
     ),
   },
@@ -39,7 +39,7 @@ export const treeOptions: TreePassThroughOptions = {
       'mr-2.5 h-4 w-4 rounded-full border-0 bg-transparent transition duration-200',
       context.selected
         ? 'text-blue-600 hover:bg-white/30'
-        : 'hover:text-official-official-gray-600 text-white hover:bg-gray-400',
+        : 'hover:text-official-official-gray-600 hover:bg-official-gray-750 text-white',
       // @ts-expect-error - TS doesn't know about the isLeaf property
       context.isLeaf && 'invisible',
     ),

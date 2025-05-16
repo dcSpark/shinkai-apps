@@ -298,7 +298,7 @@ const SettingsPage = () => {
                   <div className="flex items-center gap-1">
                     <span className="text-xs text-white">
                       {shinkaiFreeModelQuota.usedTokens}{' '}
-                      <span className="text-official-gray-500 text-xs">
+                      <span className="text-official-official-gray-850 text-xs">
                         / {shinkaiFreeModelQuota.tokensQuota}
                       </span>
                     </span>

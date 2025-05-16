@@ -198,7 +198,7 @@ function PlaygroundToolEditor({
         }
         rightTopElement={
           <Tabs className="flex size-full flex-col" defaultValue="code">
-            <div className="bg-official-gray-1000 flex h-8 w-full shrink-0 items-center justify-between gap-2 border-b border-gray-400">
+            <div className="bg-official-gray-1000 border-official-gray-750 flex h-8 w-full shrink-0 items-center justify-between gap-2 border-b">
               <TabsList className="grid h-full grid-cols-2 rounded-none bg-transparent p-0">
                 <TabsTrigger
                   className={tabTriggerClassnames}
@@ -206,7 +206,7 @@ function PlaygroundToolEditor({
                   data-focused={focusedPanel === 'code'}
                   onClick={() => setFocusedPanel('code')}
                 >
-                  <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
+                  <div className="border-official-gray-750 flex size-full items-center justify-start gap-2 border-r pl-3 pr-5 text-xs font-normal">
                     {isToolCodeGenerationPending ? (
                       <LoaderIcon className="size-4 animate-spin" />
                     ) : (
@@ -221,7 +221,7 @@ function PlaygroundToolEditor({
                   data-focused={focusedPanel === 'metadata'}
                   onClick={() => setFocusedPanel('metadata')}
                 >
-                  <div className="flex size-full items-center justify-start gap-2 border-r border-gray-400 pl-3 pr-5 text-xs font-normal">
+                  <div className="border-official-gray-750 flex size-full items-center justify-start gap-2 border-r pl-3 pr-5 text-xs font-normal">
                     {isToolMetadataPending ? (
                       <LoaderIcon className="size-4 animate-spin" />
                     ) : (

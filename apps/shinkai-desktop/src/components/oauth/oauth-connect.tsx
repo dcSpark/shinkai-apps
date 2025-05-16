@@ -122,7 +122,7 @@ export const OAuthConnect = () => {
                   <CheckCircle className="mr-2 h-5 w-5 animate-bounce" />
                   <span>{t('oauth.success')}</span>
                 </div>
-                <span className="mt-2 text-xs text-gray-500">
+                <span className="text-official-gray-850 mt-2 text-xs">
                   {t('oauth.successDescription', { countdown })}
                 </span>
               </div>
@@ -154,9 +154,9 @@ export const OAuthConnect = () => {
           {!connectDone && (
             <div className="flex items-center">
               <div className="flex flex-row items-center space-x-1">
-                <Loader2 className="h-5 w-5 shrink-0 animate-spin text-gray-500" />
+                <Loader2 className="text-official-gray-850 h-5 w-5 shrink-0 animate-spin" />
               </div>{' '}
-              <span className="ml-2 text-gray-500">
+              <span className="text-official-gray-850 ml-2">
                 {t('oauth.processing')}
               </span>
             </div>
@@ -165,7 +165,7 @@ export const OAuthConnect = () => {
         <div className="mt-4">
           <div className="flex justify-end">
             <button
-              className="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400"
+              className="bg-official-gray-700 hover:bg-official-gray-750 rounded px-4 py-2"
               onClick={() => setOauthModalVisible({ visible: false })}
             >
               Close

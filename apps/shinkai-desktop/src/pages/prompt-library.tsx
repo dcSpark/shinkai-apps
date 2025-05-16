@@ -104,10 +104,10 @@ export const PromptLibrary = () => {
       title={t('settings.promptLibrary.label')}
     >
       <div className="grid h-[calc(100dvh-134px)] grid-cols-[250px_1fr]">
-        <ScrollArea className="h-full border-r border-gray-400 pr-4 [&>div>div]:!block">
+        <ScrollArea className="border-official-gray-750 h-full border-r pr-4 [&>div>div]:!block">
           <div className="relative mb-4 flex h-10 w-full items-center">
             <Input
-              className="placeholder-official-official-gray-600 !h-full border-none bg-gray-400 py-2 pl-10"
+              className="placeholder-official-official-gray-600 bg-official-gray-750 !h-full border-none py-2 pl-10"
               onChange={(e) => {
                 setSearchQuery(e.target.value);
               }}
@@ -136,8 +136,8 @@ export const PromptLibrary = () => {
               Array.from({ length: 8 }).map((_, idx) => (
                 <div
                   className={cn(
-                    'text-official-official-gray-600 mb-2 flex h-10 w-full items-center gap-5 rounded-md px-2 py-2.5 text-left text-sm hover:bg-gray-300 hover:text-white',
-                    'bg-gray-300 text-white',
+                    'text-official-official-gray-600 hover:bg-official-gray-700 mb-2 flex h-10 w-full items-center gap-5 rounded-md px-2 py-2.5 text-left text-sm hover:text-white',
+                    'bg-official-gray-700 text-white',
                   )}
                   key={idx}
                 />
@@ -147,9 +147,9 @@ export const PromptLibrary = () => {
               promptList?.map((prompt) => (
                 <button
                   className={cn(
-                    'text-official-official-gray-600 flex items-center gap-5 rounded-md px-2 py-2.5 pr-6 text-left text-sm hover:bg-gray-300 hover:text-white',
+                    'text-official-official-gray-600 hover:bg-official-gray-700 flex items-center gap-5 rounded-md px-2 py-2.5 pr-6 text-left text-sm hover:text-white',
                     selectedPrompt?.name === prompt.name &&
-                      'bg-gray-300 text-white',
+                      'bg-official-gray-700 text-white',
                   )}
                   key={prompt.name}
                   onClick={() => {
@@ -164,9 +164,9 @@ export const PromptLibrary = () => {
               searchPromptList?.map((prompt) => (
                 <button
                   className={cn(
-                    'text-official-official-gray-600 flex items-center gap-5 rounded-md px-2 py-2.5 pr-6 text-left text-sm hover:bg-gray-300',
+                    'text-official-official-gray-600 hover:bg-official-gray-700 flex items-center gap-5 rounded-md px-2 py-2.5 pr-6 text-left text-sm',
                     selectedPrompt?.name === prompt.name &&
-                      'bg-gray-300 text-white',
+                      'bg-official-gray-700 text-white',
                   )}
                   key={prompt.name}
                   onClick={() => {
@@ -264,7 +264,7 @@ function PromptPreview({
                       <TooltipTrigger asChild>
                         <button
                           className={cn(
-                            'text-official-official-gray-600 border-official-gray-600 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                            'text-official-official-gray-600 border-official-gray-600 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                           )}
                           onClick={() => {
                             setEditing(true);
@@ -287,7 +287,7 @@ function PromptPreview({
                         <div>
                           <CopyToClipboardIcon
                             className={cn(
-                              'text-official-official-gray-600 border-official-gray-600 h-7 w-7 border bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                              'text-official-official-gray-600 border-official-gray-600 hover:bg-official-gray-700 h-7 w-7 border bg-transparent [&>svg]:h-3 [&>svg]:w-3',
                             )}
                             string={selectedPrompt?.prompt ?? ''}
                           />
@@ -305,7 +305,7 @@ function PromptPreview({
                       <TooltipTrigger asChild>
                         <button
                           className={cn(
-                            'text-official-official-gray-600 border-official-gray-600 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                            'text-official-official-gray-600 border-official-gray-600 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                           )}
                           onClick={async () => {
                             await removePrompt({
@@ -329,7 +329,7 @@ function PromptPreview({
               )}
 
               <button
-                className="text-official-official-gray-600 border-official-gray-600 flex h-7 min-w-[100px] items-center justify-center gap-1 rounded-lg border bg-transparent text-xs font-medium transition-colors hover:bg-gray-300 hover:text-white"
+                className="text-official-official-gray-600 border-official-gray-600 hover:bg-official-gray-700 flex h-7 min-w-[100px] items-center justify-center gap-1 rounded-lg border bg-transparent text-xs font-medium transition-colors hover:text-white"
                 onClick={() => {
                   setIsTryActive(!isTryActive);
                   setPromptEditContent(selectedPrompt?.prompt);
@@ -532,11 +532,11 @@ export const PromptTryOut = ({
         {!isLoadingMessage && chatInboxId && (
           <motion.div
             animate={{ opacity: 1 }}
-            className="mt-4 overflow-hidden rounded-md border border-gray-400"
+            className="border-official-gray-750 mt-4 overflow-hidden rounded-md border"
             exit={{ opacity: 0 }}
             initial={{ opacity: 0 }}
           >
-            <p className="text-official-official-gray-600 bg-official-gray-600 border-b border-gray-300 px-2.5 py-2 text-xs">
+            <p className="text-official-official-gray-600 bg-official-gray-600 border-official-gray-700 border-b px-2.5 py-2 text-xs">
               Output
             </p>
             <div className="p-4">

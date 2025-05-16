@@ -75,7 +75,7 @@ const CryptoWalletPage = () => {
     >
       {walletExist ? (
         <div className="border-official-gray-600 mt-6 flex w-full items-center justify-between gap-4 rounded-md border px-6 py-3">
-          <span className="rounded-md bg-gray-300 p-2">
+          <span className="bg-official-gray-700 rounded-md p-2">
             <CryptoWalletIcon className="size-4" />
           </span>
           <div className="flex-1 space-y-1">
@@ -189,7 +189,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
             </DialogHeader>
             <div className="mt-8 space-y-3">
               <Button
-                className="hover:bg-official-gray-600 flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left"
+                className="hover:bg-official-gray-600 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
                 onClick={() =>
                   setWalletCreationView(WalletCreateConnectView.Mpc)
                 }
@@ -207,7 +207,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 </div>
               </Button>
               <Button
-                className="hover:bg-official-gray-600 flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left"
+                className="hover:bg-official-gray-600 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
                 onClick={() =>
                   setWalletCreationView(WalletCreateConnectView.Regular)
                 }
@@ -236,7 +236,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                   buttonVariants({
                     variant: 'tertiary',
                     className:
-                      'hover:bg-official-gray-600 flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left',
+                      'hover:bg-official-gray-600 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left',
                   }),
                 )}
                 href="https://portal.cdp.coinbase.com/access/api"
@@ -252,7 +252,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 </div>
               </a>
               <Button
-                className="hover:bg-official-gray-600 flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left"
+                className="hover:bg-official-gray-600 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
                 onClick={() =>
                   setWalletCreationView(WalletCreateConnectView.MpcRestore)
                 }
@@ -280,7 +280,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
             </DialogHeader>
             <div className="mt-8 space-y-3">
               <Button
-                className="hover:bg-official-gray-600 flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left"
+                className="hover:bg-official-gray-600 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
                 onClick={() =>
                   setWalletCreationView(WalletCreateConnectView.RegularCreate)
                 }
@@ -295,7 +295,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 </div>
               </Button>
               <Button
-                className="hover:bg-official-gray-600 flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left"
+                className="hover:bg-official-gray-600 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
                 onClick={() =>
                   setWalletCreationView(WalletCreateConnectView.RegularMnemonic)
                 }
@@ -313,7 +313,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 </div>
               </Button>
               <Button
-                className="hover:bg-official-gray-600 flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left"
+                className="hover:bg-official-gray-600 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
                 onClick={() =>
                   setWalletCreationView(
                     WalletCreateConnectView.RegularPrivateKey,
@@ -746,7 +746,7 @@ const RegularRestoreWalletPrivateKey = () => {
           {/*                  value={value}*/}
           {/*                />*/}
           {/*                <Label*/}
-          {/*                  className="peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand hover:bg-gray-450 flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-official-gray-600 bg-gray-400 p-4 transition-colors hover:text-white"*/}
+          {/*                  className="peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand hover:bg-gray-450 flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-official-gray-600 bg-official-gray-750 p-4 transition-colors hover:text-white"*/}
           {/*                  htmlFor={value}*/}
           {/*                >*/}
           {/*                  <Icon className="mb-3 h-6 w-6" />*/}

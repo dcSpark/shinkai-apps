@@ -154,7 +154,7 @@ const stepIconColorMap: {
 } = {
   [GetStartedStatus.NotStarted]: {
     iconClassName: 'bg-cyan-100/30',
-    icon: <CheckIcon className="w-full text-gray-400" />,
+    icon: <CheckIcon className="text-official-gray-750 w-full" />,
   },
   // [StepStatus.Loading]: {
   //   icon: <Loader className="text-brand animate-spin" />,
@@ -323,13 +323,13 @@ export const Stepper = ({ steps }: StepperProps) => {
                     <AccordionTrigger
                       className={cn(
                         'px-3 py-2 text-gray-50 [&>svg]:mt-0 [&>svg]:h-4 [&>svg]:w-4 [&>svg]:stroke-white',
-                        'hover:bg-gray-500 hover:no-underline',
+                        'hover:bg-official-gray-850 hover:no-underline',
                       )}
                     >
                       <div className="flex flex-row items-center gap-2 font-normal capitalize text-white">
                         <div
                           className={cn(
-                            'bg-official-gray-400 flex h-6 w-6 shrink-0 items-center justify-center rounded-full p-1',
+                            'bg-official-official-gray-750 flex h-6 w-6 shrink-0 items-center justify-center rounded-full p-1',
                             stepIconColorMap[stepStatus]?.iconClassName,
                           )}
                         >
