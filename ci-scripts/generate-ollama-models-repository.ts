@@ -51,24 +51,24 @@ const modelHtmlToObject = async (
 
   const getTags = (): OllamaModelTag[] => {
     const tags: OllamaModelTag[] = modelTagsApi(
-      `body > main > div > section > ul > li:nth-child(n+1) > div > div`,
+      `body > main > div > section > div > div > div:not(:first-child)`,
     )
       .toArray()
       .map((el) => {
-        const name = modelTagsApi(el).find('div:nth-child(1) a').text().trim();
+        const name = modelTagsApi(el).find('div > div:nth-child(1) a').text().trim();
         const hash = modelTagsApi(el)
-          .find('div:nth-child(2) > div div:nth-child(1)')
+          .find('div > div:nth-child(2) > span')
           .text()
           .trim();
         const size = modelTagsApi(el)
-          .find('div:nth-child(2) > div div:nth-child(2)')
+          .find('div > div:nth-child(1) > p:nth-child(2)')
           .text()
           .trim();
         const defaultElementText = modelTagsApi(el)
-          .find('div:nth-child(1) span span')
+          .find('div > div:nth-child(1) span span')
           .text()
           .trim();
-        const isDefault = defaultElementText === 'Default';
+        const isDefault = defaultElementText === 'Latest';
         return { name, hash, size, isDefault };
       });
     return tags.filter((tag) => tag.name !== 'latest');
