@@ -395,7 +395,7 @@ export function MainNav() {
                 <Ellipsis className="size-[18px]" />
                 <span
                   className={cn(
-                    'font-clash text-sm font-normal',
+                    'text-sm font-normal',
                     !sidebarExpanded && 'sr-only',
                   )}
                 >
