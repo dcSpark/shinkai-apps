@@ -97,7 +97,7 @@ export const FileContentViewer: React.FC<FileContentViewerProps> = ({
   switch (type) {
     case FileTypeSupported.Text: {
       return (
-        <pre className="h-full overflow-auto whitespace-pre-wrap break-words bg-gray-600 p-4 pt-10 font-mono text-xs">
+        <pre className="bg-official-gray-900 h-full overflow-auto whitespace-pre-wrap break-words p-4 pt-10 font-mono text-xs">
           {content}
         </pre>
       );
@@ -171,7 +171,7 @@ const FullscreenDialog = ({
   <Dialog onOpenChange={setOpen} open={open}>
     <DialogContent className="flex size-full max-h-[99vh] max-w-[99vw] flex-col gap-2 bg-transparent p-1 py-8">
       <div className="flex w-full items-center justify-between gap-16 px-10">
-        <div className="text-official-official-gray-600 max-w-3xl truncate text-left text-sm">
+        <div className="text-official-official-official-gray-900 max-w-3xl truncate text-left text-sm">
           {name}
         </div>
         <div className="flex items-center gap-4">
@@ -179,7 +179,7 @@ const FullscreenDialog = ({
             Download
           </Button>
           <DialogClose>
-            <XIcon className="text-official-official-gray-600 h-6 w-6" />
+            <XIcon className="text-official-official-official-gray-900 h-6 w-6" />
             <span className="sr-only">Close</span>
           </DialogClose>
         </div>

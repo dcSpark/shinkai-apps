@@ -125,7 +125,7 @@ export const OllamaModelsRepository = ({
                 )}
               </div>
 
-              <span className="text-official-official-gray-600 line-clamp-3 text-ellipsis text-xs">
+              <span className="text-official-official-official-gray-900 line-clamp-3 text-ellipsis text-xs">
                 {model.description}
               </span>
             </div>

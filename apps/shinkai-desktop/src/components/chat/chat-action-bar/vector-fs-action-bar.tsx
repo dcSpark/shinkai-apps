@@ -54,7 +54,7 @@ function VectorFsActionBarBase({
               type="button"
             >
               {aiFilesCount > 0 ? (
-                <Badge className="bg-official-gray-1000 border-official-gray-600 inline-flex size-4 items-center justify-center rounded-full p-0 text-center text-[10px] text-gray-50">
+                <Badge className="bg-official-gray-1000 border-official-official-gray-900 inline-flex size-4 items-center justify-center rounded-full p-0 text-center text-[10px] text-gray-50">
                   {aiFilesCount}
                 </Badge>
               ) : (
@@ -82,7 +82,7 @@ function VectorFsActionBarBase({
       <FilesIcon className="size-4" />
       <span className="">Local AI Files</span>
       {aiFilesCount > 0 ? (
-        <Badge className="bg-official-gray-1000 border-official-gray-600 inline-flex size-4 items-center justify-center rounded-full p-0 text-center text-[10px] text-gray-50">
+        <Badge className="bg-official-gray-1000 border-official-official-gray-900 inline-flex size-4 items-center justify-center rounded-full p-0 text-center text-[10px] text-gray-50">
           {aiFilesCount}
         </Badge>
       ) : null}
@@ -216,7 +216,7 @@ export function VectorFsActionBarPreview() {
                 </div>
                 <button
                   className={cn(
-                    'bg-official-gray-850 hover:bg-official-gray-800 text-official-official-gray-600 border-official-gray-780 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
+                    'bg-official-gray-850 hover:bg-official-gray-800 text-official-official-official-gray-900 border-official-gray-780 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
                     isUpdatingJobScope && 'opacity-50',
                   )}
                   disabled={isUpdatingJobScope}

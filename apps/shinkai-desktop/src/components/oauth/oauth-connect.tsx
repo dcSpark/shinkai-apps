@@ -115,7 +115,7 @@ export const OAuthConnect = () => {
               {t('oauth.title', { provider: oauthData?.providerData?.name })}
             </AlertDialogTitle>
           </div>
-          <AlertDialogDescription className="text-gray-600">
+          <AlertDialogDescription className="text-official-gray-900">
             {connectDone ? (
               <div className="mt-4 flex flex-col items-start">
                 <div className="flex items-center text-green-600">

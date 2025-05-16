@@ -119,7 +119,7 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
                 </HoverCardTrigger>
                 <HoverCardContent
                   align="start"
-                  className="w-[300px] bg-gray-600 px-2 py-3 text-xs"
+                  className="bg-official-gray-900 w-[300px] px-2 py-3 text-xs"
                   side="left"
                 >
                   Temperature is a parameter that affects the randomness of AI
@@ -164,7 +164,7 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
                 </HoverCardTrigger>
                 <HoverCardContent
                   align="start"
-                  className="w-[300px] bg-gray-600 px-2 py-3 text-xs"
+                  className="bg-official-gray-900 w-[300px] px-2 py-3 text-xs"
                   side="left"
                 >
                   Adjust the probability threshold to increase the relevance of
@@ -210,7 +210,7 @@ function ChatConfigForm({ form }: ChatConfigFormProps) {
                 </HoverCardTrigger>
                 <HoverCardContent
                   align="start"
-                  className="w-[300px] bg-gray-600 px-2 py-3 text-xs"
+                  className="bg-official-gray-900 w-[300px] px-2 py-3 text-xs"
                   side="left"
                 >
                   Adjust the count of key words for creating sequences. This
@@ -362,7 +362,7 @@ export function UpdateChatConfigActionBarBase() {
               className="min-w-[380px] px-6 py-7 text-xs"
               side="top"
             >
-              <h2 className="leading-1 text-official-official-gray-600 mb-5 text-xs uppercase">
+              <h2 className="leading-1 text-official-official-official-gray-900 mb-5 text-xs uppercase">
                 Chat Settings
               </h2>
 
@@ -433,7 +433,7 @@ export function CreateChatConfigActionBar({
               side="bottom"
               // side="top"
             >
-              <h2 className="leading-1 text-official-official-gray-600 mb-5 text-xs uppercase">
+              <h2 className="leading-1 text-official-official-official-gray-900 mb-5 text-xs uppercase">
                 Chat Settings
               </h2>
 

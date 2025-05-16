@@ -949,7 +949,7 @@ const EmptyMessage = () => {
         <div className="mx-auto grid w-full max-w-6xl grid-cols-4 justify-center gap-3">
           {PROMPT_SUGGESTIONS.map((suggestion) => (
             <Badge
-              className="hover:bg-official-gray-900 hover:text-official-official-official-gray-750 text-official-official-gray-600 cursor-pointer justify-between text-balance rounded-xl px-2 py-1.5 pl-4 text-left text-sm font-normal normal-case transition-colors"
+              className="hover:bg-official-gray-900 hover:text-official-official-official-gray-750 text-official-official-official-gray-900 cursor-pointer justify-between text-balance rounded-xl px-2 py-1.5 pl-4 text-left text-sm font-normal normal-case transition-colors"
               key={suggestion.text}
               onClick={() => {
                 chatForm.setValue('message', suggestion.prompt);

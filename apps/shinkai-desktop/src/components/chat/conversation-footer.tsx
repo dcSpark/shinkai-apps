@@ -86,7 +86,7 @@ import { useChatStore } from './context/chat-context';
 import { useSetJobScope } from './context/set-job-scope-context';
 
 export const actionButtonClassnames =
-  'shrink-0 inline-flex h-[32px] w-[32px] rounded-full cursor-pointer items-center justify-center gap-1.5 truncate p-[8px] text-left text-[13px] font-normal text-official-official-gray-600 hover:bg-official-gray-950 hover:text-white disabled:opacity-50';
+  'shrink-0 inline-flex h-[32px] w-[32px] rounded-full cursor-pointer items-center justify-center gap-1.5 truncate p-[8px] text-left text-[13px] font-normal text-official-official-official-gray-900 hover:bg-official-gray-950 hover:text-white disabled:opacity-50';
 
 export type ChatConversationLocationState = {
   files: File[];
@@ -629,7 +629,7 @@ function ConversationChatFooter({
                     {isToolsListSuccess &&
                       toolsList?.map((tool) => (
                         <CommandItem
-                          className="data-[selected='true']:bg-official-gray-600"
+                          className="data-[selected='true']:bg-official-official-gray-900"
                           key={tool.tool_router_key}
                           onSelect={() => {
                             setIsCommandOpen(false);
@@ -648,7 +648,7 @@ function ConversationChatFooter({
                             <span className="line-clamp-1 text-white">
                               {formatText(tool.name)}
                             </span>
-                            <span className="text-official-official-gray-600 line-clamp-3 whitespace-pre-wrap text-xs">
+                            <span className="text-official-official-official-gray-900 line-clamp-3 whitespace-pre-wrap text-xs">
                               {tool.description}
                             </span>
                           </div>
@@ -834,7 +834,7 @@ const FileListBase = ({
               ) : getFileExt(file.name) &&
                 fileIconMap[getFileExt(file.name)] ? (
                 <FileTypeIcon
-                  className="text-official-official-gray-600 h-[18px] w-[18px] shrink-0"
+                  className="text-official-official-official-gray-900 h-[18px] w-[18px] shrink-0"
                   type={getFileExt(file.name)}
                 />
               ) : (
@@ -850,7 +850,7 @@ const FileListBase = ({
             </div>
             <button
               className={cn(
-                'bg-official-gray-850 hover:bg-official-gray-800 text-official-official-gray-600 border-official-gray-780 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
+                'bg-official-gray-850 hover:bg-official-gray-800 text-official-official-official-gray-900 border-official-gray-780 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
               )}
               onClick={(event) => {
                 event.stopPropagation();

@@ -205,7 +205,7 @@ const AIModelInstallation = ({
             <div className="flex items-center justify-between gap-10 space-y-2 pb-4">
               <div className="max-w-3xl">
                 <h1 className="font-clash text-lg font-medium">Local AI</h1>
-                <p className="text-official-official-gray-600 text-sm">
+                <p className="text-official-official-official-gray-900 text-sm">
                   Local AI operates directly on your device, providing immediate
                   responses and strict data privacy with no internet required.
                   Ideal for consistent, secure AI access anywhere.
@@ -250,7 +250,7 @@ const AIModelInstallation = ({
             <div className="flex items-center justify-between gap-10 space-y-2 pb-4">
               <div className="max-w-3xl">
                 <h1 className="font-clash text-lg font-medium">Cloud AI</h1>
-                <p className="text-official-official-gray-600 text-sm">
+                <p className="text-official-official-official-gray-900 text-sm">
                   Cloud AI leverages remote servers for powerful computational
                   capabilities, offering scalability and real-time updates.
                   Access cutting-edge AI features with an active internet
@@ -289,13 +289,13 @@ const AIModelInstallation = ({
                     <CardContent className="space-y-4 px-4">
                       {model.models && model.models.length > 0 ? (
                         <div>
-                          <p className="text-official-official-gray-600 mb-2 text-xs uppercase">
+                          <p className="text-official-official-official-gray-900 mb-2 text-xs uppercase">
                             Available Models
                           </p>
                           <ul className="space-y-1">
                             {model.models.map((item) => (
                               <li
-                                className="text-official-official-gray-600 flex items-center gap-2 truncate text-xs"
+                                className="text-official-official-official-gray-900 flex items-center gap-2 truncate text-xs"
                                 key={item}
                               >
                                 <span>✓</span>
@@ -305,7 +305,7 @@ const AIModelInstallation = ({
                           </ul>
                         </div>
                       ) : (
-                        <p className="text-official-official-gray-600 text-xs">
+                        <p className="text-official-official-official-gray-900 text-xs">
                           {model.description}
                         </p>
                       )}

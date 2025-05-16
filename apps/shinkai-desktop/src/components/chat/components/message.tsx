@@ -149,11 +149,13 @@ const ArtifactCard = ({
     <CardContent className="flex items-center gap-1 p-1 py-1.5">
       <div className="rounded-md p-2">
         {loading ? (
-          <Loader2 className="text-official-official-gray-600 h-5 w-5 animate-spin" />
+          <Loader2 className="text-official-official-official-gray-900 h-5 w-5 animate-spin" />
         ) : (
           <ReactJsIcon
             className={cn(
-              isSelected ? 'text-gray-50' : 'text-official-official-gray-600',
+              isSelected
+                ? 'text-gray-50'
+                : 'text-official-official-official-gray-900',
             )}
           />
         )}
@@ -162,7 +164,7 @@ const ArtifactCard = ({
         <p className="text-em-sm text-official-gray-50 !mb-0 line-clamp-1 font-medium">
           {title}
         </p>
-        <p className="text-official-official-gray-600 !mb-0 text-xs">
+        <p className="text-official-official-official-gray-900 !mb-0 text-xs">
           {loading ? 'Generating...' : 'Click to preview'}
         </p>
       </div>
@@ -350,7 +352,7 @@ export const MessageBase = ({
                   editing && 'w-full py-1',
                   message.role === 'assistant' &&
                     isPending &&
-                    'before:from-official-gray-600 before:to-official-gray-600/10 relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l',
+                    'before:from-official-official-gray-900 before:to-official-official-gray-900/10 relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l',
                   minimalistMode && 'rounded-sm px-2 pb-1.5 pt-1.5',
                 )}
               >
@@ -579,7 +581,7 @@ export const MessageBase = ({
                         <TooltipTrigger asChild>
                           <button
                             className={cn(
-                              'text-official-official-gray-600 border-official-gray-600 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                              'text-official-official-official-gray-900 border-official-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                             )}
                             onClick={() => {
                               setEditing(true);
@@ -601,7 +603,7 @@ export const MessageBase = ({
                           <TooltipTrigger asChild>
                             <button
                               className={cn(
-                                'text-official-official-gray-750 border-official-gray-600 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                                'text-official-official-gray-750 border-official-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                               )}
                               onClick={handleForkMessage}
                             >
@@ -618,7 +620,7 @@ export const MessageBase = ({
                           <TooltipTrigger asChild>
                             <button
                               className={cn(
-                                'text-official-official-gray-750 border-official-gray-600 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                                'text-official-official-gray-750 border-official-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                               )}
                               onClick={handleRetryMessage}
                             >
@@ -639,7 +641,7 @@ export const MessageBase = ({
                         <div>
                           <CopyToClipboardIcon
                             className={cn(
-                              'text-official-official-gray-600 border-official-gray-600 hover:bg-official-gray-700 h-7 w-7 border bg-transparent [&>svg]:h-3 [&>svg]:w-3',
+                              'text-official-official-official-gray-900 border-official-official-gray-900 hover:bg-official-gray-700 h-7 w-7 border bg-transparent [&>svg]:h-3 [&>svg]:w-3',
                             )}
                             string={extractErrorPropertyOrContent(
                               message.content,
@@ -751,7 +753,7 @@ export function ToolCard({
         <div className="flex items-center gap-1 p-[5px]">
           <div className="size-7 shrink-0 px-1.5">{renderStatus()}</div>
           <div className="flex items-center gap-1">
-            <span className="text-official-official-gray-600 text-em-sm">
+            <span className="text-official-official-official-gray-900 text-em-sm">
               {renderLabelText()}
             </span>
             <Link
@@ -828,7 +830,7 @@ export function Reasoning({
                 className={cn(
                   'text-official-official-gray-700 flex items-center gap-1',
                   status?.type === 'running' &&
-                    'text-official-official-gray-600',
+                    'text-official-official-official-gray-900',
                 )}
               >
                 {renderStatus() && (

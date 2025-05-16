@@ -347,7 +347,7 @@ function AIModelSelectorBase({
             className={cn(
               'border-official-gray-780 bg-official-gray-900 hover:bg-official-gray-850 flex cursor-pointer flex-col gap-2.5 border p-4 transition-all',
               isSelected
-                ? 'ring-official-gray-600 border-official-gray-780 bg-official-gray-850 ring-1'
+                ? 'ring-official-official-gray-900 border-official-gray-780 bg-official-gray-850 ring-1'
                 : '',
             )}
             key={model.id}
@@ -635,7 +635,7 @@ function ToolsHome({
                               Failed to generate tool. You might want to try
                               using a more powerful AI model for better results.
                             </div>
-                            <div className="text-official-official-gray-600 py-1">
+                            <div className="text-official-official-official-gray-900 py-1">
                               {error}
                             </div>
                           </div>
@@ -730,7 +730,7 @@ function SupportedProtocols() {
 
   return (
     <Dialog>
-      <DialogTrigger className="text-official-official-gray-700 hover:text-official-official-gray-600 flex items-center gap-1 text-sm transition-colors">
+      <DialogTrigger className="text-official-official-gray-700 hover:text-official-official-official-gray-900 flex items-center gap-1 text-sm transition-colors">
         <div className="border-official-official-gray-700 border-b">
           Well Supported Protocols
         </div>
@@ -744,7 +744,7 @@ function SupportedProtocols() {
             size="icon"
             variant="tertiary"
           >
-            <XIcon className="text-official-official-gray-600 h-5 w-5" />
+            <XIcon className="text-official-official-official-gray-900 h-5 w-5" />
           </Button>
         </DialogClose>
         <DialogHeader>

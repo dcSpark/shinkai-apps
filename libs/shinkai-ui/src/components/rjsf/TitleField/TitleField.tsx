@@ -20,7 +20,7 @@ export default function TitleField<
       <h5 className={cn('mb-2 inline-block text-xs uppercase text-gray-50')}>
         {uiOptions.title || title}
       </h5>
-      {/*<hr className="my-1 border-t border-official-gray-600" />*/}
+      {/*<hr className="my-1 border-t border-official-official-gray-900" />*/}
     </div>
   );
 }

@@ -74,7 +74,7 @@ const CryptoWalletPage = () => {
       title={t('settings.cryptoWallet.title')}
     >
       {walletExist ? (
-        <div className="border-official-gray-600 mt-6 flex w-full items-center justify-between gap-4 rounded-md border px-6 py-3">
+        <div className="border-official-official-gray-900 mt-6 flex w-full items-center justify-between gap-4 rounded-md border px-6 py-3">
           <span className="bg-official-gray-700 rounded-md p-2">
             <CryptoWalletIcon className="size-4" />
           </span>
@@ -87,11 +87,11 @@ const CryptoWalletPage = () => {
                 </Badge>
               )}
             </h2>
-            <p className="text-official-official-gray-600 text-sm">
+            <p className="text-official-official-official-gray-900 text-sm">
               {walletInfo?.payment_wallet?.data?.address?.address_id}
             </p>
           </div>
-          <span className="text-official-official-gray-600 text-xs">
+          <span className="text-official-official-official-gray-900 text-xs">
             -{' '}
             {walletInfo?.payment_wallet?.data?.network?.native_asset?.asset_id}
           </span>
@@ -104,7 +104,7 @@ const CryptoWalletPage = () => {
               <h2 className="text-lg font-medium">
                 {t('settings.cryptoWallet.emptyState.title')}
               </h2>
-              <p className="text-official-official-gray-600 text-sm">
+              <p className="text-official-official-official-gray-900 text-sm">
                 {t('settings.cryptoWallet.emptyState.description')}
               </p>
             </div>
@@ -189,7 +189,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
             </DialogHeader>
             <div className="mt-8 space-y-3">
               <Button
-                className="hover:bg-official-gray-600 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
+                className="hover:bg-official-official-gray-900 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
                 onClick={() =>
                   setWalletCreationView(WalletCreateConnectView.Mpc)
                 }
@@ -200,14 +200,14 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                   <div className="text-sm font-semibold">
                     Multi-Party Computation Wallet{' '}
                   </div>
-                  <div className="text-official-official-gray-600 text-sm">
+                  <div className="text-official-official-official-gray-900 text-sm">
                     MPC Wallets provides better recovery and stronger security
                     in crypto wallets.
                   </div>
                 </div>
               </Button>
               <Button
-                className="hover:bg-official-gray-600 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
+                className="hover:bg-official-official-gray-900 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
                 onClick={() =>
                   setWalletCreationView(WalletCreateConnectView.Regular)
                 }
@@ -216,7 +216,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 <AddCryptoWalletIcon className="size-5" />
                 <div>
                   <div className="text-sm font-semibold">Hot Wallet</div>
-                  <div className="text-official-official-gray-600 text-sm">
+                  <div className="text-official-official-official-gray-900 text-sm">
                     Use a hot wallet to store your cryptocurrency assets.
                   </div>
                 </div>
@@ -236,7 +236,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                   buttonVariants({
                     variant: 'tertiary',
                     className:
-                      'hover:bg-official-gray-600 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left',
+                      'hover:bg-official-official-gray-900 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left',
                   }),
                 )}
                 href="https://portal.cdp.coinbase.com/access/api"
@@ -246,13 +246,13 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 <PlusIcon className="size-4 shrink-0" />
                 <div>
                   <div className="text-sm font-semibold">Create New</div>
-                  <div className="text-official-official-gray-600 text-sm">
+                  <div className="text-official-official-official-gray-900 text-sm">
                     Create a new MPC wallet to store your assets.
                   </div>
                 </div>
               </a>
               <Button
-                className="hover:bg-official-gray-600 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
+                className="hover:bg-official-official-gray-900 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
                 onClick={() =>
                   setWalletCreationView(WalletCreateConnectView.MpcRestore)
                 }
@@ -264,7 +264,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                     {' '}
                     Import Private Key
                   </div>
-                  <div className="text-official-official-gray-600 text-sm">
+                  <div className="text-official-official-official-gray-900 text-sm">
                     Restore to regain access to your cryptocurrency assets.
                   </div>
                 </div>
@@ -280,7 +280,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
             </DialogHeader>
             <div className="mt-8 space-y-3">
               <Button
-                className="hover:bg-official-gray-600 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
+                className="hover:bg-official-official-gray-900 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
                 onClick={() =>
                   setWalletCreationView(WalletCreateConnectView.RegularCreate)
                 }
@@ -289,13 +289,13 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 <PlusIcon className="size-4 shrink-0" />
                 <div>
                   <div className="text-sm font-semibold">Create New</div>
-                  <div className="text-official-official-gray-600 text-sm">
+                  <div className="text-official-official-official-gray-900 text-sm">
                     Create a new wallet to store your assets.
                   </div>
                 </div>
               </Button>
               <Button
-                className="hover:bg-official-gray-600 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
+                className="hover:bg-official-official-gray-900 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
                 onClick={() =>
                   setWalletCreationView(WalletCreateConnectView.RegularMnemonic)
                 }
@@ -307,13 +307,13 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                     {' '}
                     Import Secret Recovery Phrase
                   </div>
-                  <div className="text-official-official-gray-600 text-sm">
+                  <div className="text-official-official-official-gray-900 text-sm">
                     Restore to regain access to your cryptocurrency assets.
                   </div>
                 </div>
               </Button>
               <Button
-                className="hover:bg-official-gray-600 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
+                className="hover:bg-official-official-gray-900 bg-official-gray-850/20 flex h-[auto] w-full items-center justify-start gap-4 rounded-md px-5 py-2.5 text-left"
                 onClick={() =>
                   setWalletCreationView(
                     WalletCreateConnectView.RegularPrivateKey,
@@ -327,7 +327,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                     {' '}
                     Import Private Key
                   </div>
-                  <div className="text-official-official-gray-600 text-sm">
+                  <div className="text-official-official-official-gray-900 text-sm">
                     Restore to regain access to your cryptocurrency assets.
                   </div>
                 </div>
@@ -394,7 +394,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
               size="icon"
               variant="tertiary"
             >
-              <XIcon className="text-official-official-gray-600 h-5 w-5" />
+              <XIcon className="text-official-official-official-gray-900 h-5 w-5" />
             </Button>
           </DialogClose>
           <div className="px-2 pt-2.5 antialiased" ref={elementRef}>
@@ -518,7 +518,7 @@ const MpcRestoreWallet = () => {
                 </FormControl>
                 <div
                   className={cn(
-                    'text-official-official-gray-600 space-y-1 text-sm leading-none',
+                    'text-official-official-official-gray-900 space-y-1 text-sm leading-none',
                     field.value && 'text-white',
                   )}
                 >
@@ -711,7 +711,7 @@ const RegularRestoreWalletPrivateKey = () => {
           {/*  name="role"*/}
           {/*  render={({ field }) => (*/}
           {/*    <div className="space-y-1.5">*/}
-          {/*      <Label className="text-official-official-gray-600 pb-2 pl-2 text-xs">*/}
+          {/*      <Label className="text-official-official-official-gray-900 pb-2 pl-2 text-xs">*/}
           {/*        Select account type*/}
           {/*      </Label>*/}
           {/*      <FormItem>*/}
@@ -746,7 +746,7 @@ const RegularRestoreWalletPrivateKey = () => {
           {/*                  value={value}*/}
           {/*                />*/}
           {/*                <Label*/}
-          {/*                  className="peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand hover:bg-gray-450 flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-official-gray-600 bg-official-gray-750 p-4 transition-colors hover:text-white"*/}
+          {/*                  className="peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand hover:bg-gray-450 flex cursor-pointer flex-col items-center justify-between rounded-md border-2 border-official-official-gray-900 bg-official-gray-750 p-4 transition-colors hover:text-white"*/}
           {/*                  htmlFor={value}*/}
           {/*                >*/}
           {/*                  <Icon className="mb-3 h-6 w-6" />*/}

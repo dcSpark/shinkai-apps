@@ -173,7 +173,9 @@ const TermsAndConditionsPage = () => {
             components={{
               b: (
                 <span
-                  className={'text-official-official-gray-600 font-semibold'}
+                  className={
+                    'text-official-official-official-gray-900 font-semibold'
+                  }
                 />
               ),
             }}
@@ -235,7 +237,7 @@ const TermsAndConditionsPage = () => {
         </Button>
 
         {(config.isDev || showLocalNodeOption) && (
-          <div className="text-official-official-gray-600 items-center space-x-2 text-center text-sm">
+          <div className="text-official-official-official-gray-900 items-center space-x-2 text-center text-sm">
             <span>{t('common.alreadyHaveNode')}</span>
             <Link
               className="font-semibold text-white underline"

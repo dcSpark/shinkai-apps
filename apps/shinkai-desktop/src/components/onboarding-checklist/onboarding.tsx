@@ -158,7 +158,7 @@ const stepIconColorMap: {
   },
   // [StepStatus.Loading]: {
   //   icon: <Loader className="text-brand animate-spin" />,
-  //   iconClassName: 'bg-official-gray-600',
+  //   iconClassName: 'bg-official-official-gray-900',
   // },
   [GetStartedStatus.Done]: {
     icon: <CheckIcon className="w-full text-white" />,
@@ -219,7 +219,7 @@ export const Stepper = ({ steps }: StepperProps) => {
               value={currentPercents}
             />
             {hasCompletedAllSteps ? (
-              <span className="text-official-official-gray-600">
+              <span className="text-official-official-official-gray-900">
                 {currentPercents}% -
                 <Button
                   className="h-auto py-0 text-xs"
@@ -234,7 +234,7 @@ export const Stepper = ({ steps }: StepperProps) => {
                 </Button>
               </span>
             ) : (
-              <span className="text-official-official-gray-600 truncate capitalize">
+              <span className="text-official-official-official-gray-900 truncate capitalize">
                 {currentPercents}% - {t('common.next')},{' '}
                 {
                   steps.find(
@@ -271,7 +271,7 @@ export const Stepper = ({ steps }: StepperProps) => {
           <div className="flex justify-between gap-3 rounded-lg p-1 font-medium text-white">
             <p>{t('onboardingChecklist.getStartedChecklist')}</p>
             <button
-              className="text-official-official-gray-600 hover:text-white"
+              className="text-official-official-official-gray-900 hover:text-white"
               onClick={() => setIsPopoverOpen(false)}
             >
               <XIcon className="h-4 w-4" />
@@ -285,7 +285,7 @@ export const Stepper = ({ steps }: StepperProps) => {
         {hasCompletedAllSteps && (
           <div>
             <div className="bg-official-gray-950 flex justify-center gap-2 p-3">
-              <span className="text-official-official-gray-600">
+              <span className="text-official-official-official-gray-900">
                 {t('onboardingChecklist.completedSteps')}
               </span>
               <CheckIcon className="w-4 text-cyan-700" />

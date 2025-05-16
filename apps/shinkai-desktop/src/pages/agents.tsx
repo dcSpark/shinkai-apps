@@ -215,7 +215,7 @@ const AgentCard = ({
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Link
-                          className="text-official-official-gray-600 bg-official-gray-850 flex items-center gap-2 rounded-md px-2 py-1 text-xs transition-colors hover:text-white"
+                          className="text-official-official-official-gray-900 bg-official-gray-850 flex items-center gap-2 rounded-md px-2 py-1 text-xs transition-colors hover:text-white"
                           key={task.task_id}
                           to={`/tasks/${task.task_id}`}
                         >

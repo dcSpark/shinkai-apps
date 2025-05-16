@@ -14,7 +14,7 @@ const PrismEditorFallback = ({
     <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-4 text-center text-xs">
       <p>The code editor encountered an error.</p>
       <button
-        className="hover:bg-official-gray-850 rounded-md bg-gray-600 px-3 py-1"
+        className="hover:bg-official-gray-850 bg-official-gray-900 rounded-md px-3 py-1"
         onClick={resetErrorBoundary}
       >
         Try again

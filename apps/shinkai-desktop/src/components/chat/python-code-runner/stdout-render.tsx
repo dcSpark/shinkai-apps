@@ -10,7 +10,7 @@ export const StdoutRender = ({ stdout }: { stdout: string[] }) => {
   }
 
   return (
-    <div className="border-official-gray-600 mt-4 rounded-md border bg-gray-50">
+    <div className="border-official-official-gray-900 mt-4 rounded-md border bg-gray-50">
       <button
         className="hover:bg-official-official-gray-750 flex w-full items-center justify-between p-3 text-sm text-gray-700 transition-colors duration-200 focus:outline-none"
         onClick={() => setIsExpanded(!isExpanded)}
@@ -29,7 +29,7 @@ export const StdoutRender = ({ stdout }: { stdout: string[] }) => {
         </span>
       </button>
       {isExpanded && (
-        <div className="border-official-gray-600 border-t">
+        <div className="border-official-official-gray-900 border-t">
           <pre className="max-h-60 overflow-y-auto whitespace-pre-wrap break-words p-4 text-sm text-gray-800">
             {stdout.map((line, index) => (
               <div className="mb-1 last:mb-0" key={index}>

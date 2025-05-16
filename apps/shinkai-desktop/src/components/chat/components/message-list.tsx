@@ -215,7 +215,7 @@ export const MessageList = memo(
                       'w-full rounded-lg px-2.5 py-3',
                       index % 2 === 0
                         ? 'bg-official-gray-700 h-24 rounded-bl-none'
-                        : 'bg-official-gray-600 h-16 rounded-tr-none',
+                        : 'bg-official-official-gray-900 h-16 rounded-tr-none',
                       index % 3 === 0 && 'h-32',
                     )}
                   />
@@ -244,7 +244,7 @@ export const MessageList = memo(
                       'w-full rounded-lg px-2.5 py-3',
                       index % 2 === 0
                         ? 'bg-official-gray-700 h-24 rounded-bl-none'
-                        : 'bg-official-gray-600 h-16 rounded-tr-none',
+                        : 'bg-official-official-gray-900 h-16 rounded-tr-none',
                       index % 3 === 0 && 'h-32',
                     )}
                   />
@@ -265,7 +265,7 @@ export const MessageList = memo(
                             'sticky top-5',
                           )}
                         >
-                          <span className="text-official-official-gray-600 text-sm font-medium">
+                          <span className="text-official-official-official-gray-900 text-sm font-medium">
                             {getRelativeDateLabel(
                               new Date(messages[0].createdAt || ''),
                             )}

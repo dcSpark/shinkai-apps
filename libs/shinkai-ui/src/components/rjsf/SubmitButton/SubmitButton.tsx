@@ -29,7 +29,7 @@ export default function SubmitButton<
       <Button
         {...submitButtonProps}
         className={cn(
-          'border-official-gray-600 text-white',
+          'border-official-official-gray-900 text-white',
           submitButtonProps?.className,
         )}
         rounded="lg"

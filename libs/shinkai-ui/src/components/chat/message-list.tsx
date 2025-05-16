@@ -207,7 +207,7 @@ export const MessageList = ({
                     'w-full rounded-lg px-2.5 py-3',
                     index % 2 === 0
                       ? 'bg-official-gray-700 h-24 rounded-bl-none'
-                      : 'bg-official-gray-600 h-16 rounded-tr-none',
+                      : 'bg-official-official-gray-900 h-16 rounded-tr-none',
                     index % 3 === 0 && 'h-32',
                   )}
                 />
@@ -236,7 +236,7 @@ export const MessageList = ({
                     'w-full rounded-lg px-2.5 py-3',
                     index % 2 === 0
                       ? 'bg-official-gray-700 h-24 rounded-bl-none'
-                      : 'bg-official-gray-600 h-16 rounded-tr-none',
+                      : 'bg-official-official-gray-900 h-16 rounded-tr-none',
                     index % 3 === 0 && 'h-32',
                   )}
                 />

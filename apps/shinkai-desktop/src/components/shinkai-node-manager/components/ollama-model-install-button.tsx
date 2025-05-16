@@ -141,7 +141,7 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
             {getProgress(pullingModelsMap.get(model) as ProgressResponse) + '%'}
           </span>
           <Progress
-            className="[&>*]:bg-official-official-gray-750 bg-official-gray-600 h-2 w-full"
+            className="[&>*]:bg-official-official-gray-750 bg-official-official-gray-900 h-2 w-full"
             value={getProgress(pullingModelsMap.get(model) as ProgressResponse)}
           />
           <span className="text-official-official-gray-750-official-gray-750 text-xs">

@@ -123,7 +123,7 @@ const PlaygroundChatBase = ({
                           <Button
                             className={cn(
                               'bg-official-gray-850 h-[40px] w-[40px] cursor-pointer rounded-xl p-3 transition-colors',
-                              'disabled:text-official-official-gray-750 disabled:bg-official-gray-800 disabled:border-official-gray-600 hover:disabled:bg-official-gray-700 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border',
+                              'disabled:text-official-official-gray-750 disabled:bg-official-gray-800 disabled:border-official-official-gray-900 hover:disabled:bg-official-gray-700 disabled:pointer-events-none disabled:cursor-not-allowed disabled:border',
                             )}
                             disabled={
                               isToolCodeGenerationPending ||

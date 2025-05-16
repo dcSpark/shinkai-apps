@@ -65,7 +65,7 @@ export default function FieldTemplate<
         {displayLabel && (
           <label
             className={cn(
-              'text-official-official-gray-600 mb-2 inline-block text-xs uppercase tracking-[2px]',
+              'text-official-official-official-gray-900 mb-2 inline-block text-xs uppercase tracking-[2px]',
               rawErrors.length > 0 ? 'text-red-500' : '',
             )}
             htmlFor={id}
@@ -81,7 +81,7 @@ export default function FieldTemplate<
               className={cn(
                 rawErrors.length > 0
                   ? 'text-red-500'
-                  : 'text-official-official-gray-600',
+                  : 'text-official-official-official-gray-900',
               )}
             >
               {description}

@@ -108,14 +108,14 @@ export function MainNav() {
       title: t('settings.layout.general'),
       href: '/settings',
       icon: (
-        <SettingsIcon className="text-official-official-gray-600 h-4 w-4" />
+        <SettingsIcon className="text-official-official-official-gray-900 h-4 w-4" />
       ),
     },
     {
       title: t('settings.layout.appearance'),
       href: '/settings/appearance',
       icon: (
-        <PaintbrushIcon className="text-official-official-gray-600 h-4 w-4" />
+        <PaintbrushIcon className="text-official-official-official-gray-900 h-4 w-4" />
       ),
     },
     isLocalShinkaiNodeInUse && {
@@ -125,25 +125,29 @@ export function MainNav() {
         openShinkaiNodeManagerWindow();
       },
       icon: (
-        <CodesandboxIcon className="text-official-official-gray-600 h-4 w-4" />
+        <CodesandboxIcon className="text-official-official-official-gray-900 h-4 w-4" />
       ),
     },
     {
       title: t('settings.layout.analytics'),
       href: '/settings/analytics-settings',
-      icon: <BarChart2 className="text-official-official-gray-600 h-4 w-4" />,
+      icon: (
+        <BarChart2 className="text-official-official-official-gray-900 h-4 w-4" />
+      ),
     },
     {
       title: t('settings.layout.exportConnection'),
       href: '/settings/export-connection',
-      icon: <ExportIcon className="text-official-official-gray-600 h-4 w-4" />,
+      icon: (
+        <ExportIcon className="text-official-official-official-gray-900 h-4 w-4" />
+      ),
     },
     {
       title: t('settings.layout.publicKeys'),
       href: '/settings/public-keys',
       icon: (
         <svg
-          className="text-official-official-gray-600 h-4 w-4"
+          className="text-official-official-official-gray-900 h-4 w-4"
           fill="currentColor"
           stroke="currentColor"
           strokeWidth="0"
@@ -157,14 +161,14 @@ export function MainNav() {
       title: t('settings.layout.promptLibrary'),
       href: '/settings/prompt-library',
       icon: (
-        <PromptLibraryIcon className="text-official-official-gray-600 h-4 w-4" />
+        <PromptLibraryIcon className="text-official-official-official-gray-900 h-4 w-4" />
       ),
     },
     {
       title: t('settings.layout.cryptoWallet'),
       href: '/settings/crypto-wallet',
       icon: (
-        <WalletMinimal className="text-official-official-gray-600 h-4 w-4" />
+        <WalletMinimal className="text-official-official-official-gray-900 h-4 w-4" />
       ),
     },
     {

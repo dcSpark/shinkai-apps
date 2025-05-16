@@ -102,7 +102,7 @@ function CodePanelBase({
       !isToolCodeGenerationSuccess
     ) {
       return (
-        <p className="text-official-official-gray-600 pt-6 text-center text-xs">
+        <p className="text-official-official-official-gray-900 pt-6 text-center text-xs">
           No code generated yet. <br />
           Ask Shinkai AI to generate your tool code.
         </p>
@@ -123,7 +123,7 @@ function CodePanelBase({
           onSubmit={handleApplyChangesCodeSubmit}
         >
           <div className="bg-official-gray-950 border-official-gray-750 sticky top-0 z-10 flex h-[40px] shrink-0 items-center justify-between rounded-t-sm border-b px-3 py-2">
-            <span className="text-official-official-gray-600 inline-flex items-center gap-2 pl-2 text-xs font-medium">
+            <span className="text-official-official-official-gray-900 inline-flex items-center gap-2 pl-2 text-xs font-medium">
               {' '}
               {detectedLanguage}{' '}
               {isDirtyCodeEditor && (
@@ -193,7 +193,7 @@ function CodePanelBase({
         {/*    <TooltipTrigger asChild>*/}
         {/*      <div>*/}
         {/*        <CopyToClipboardIcon*/}
-        {/*          className="text-official-official-gray-600 flex h-7 w-7 items-center justify-center rounded-lg border border-official-gray-600 bg-transparent transition-colors hover:bg-official-gray-700 hover:text-white [&>svg]:h-3 [&>svg]:w-3"*/}
+        {/*          className="text-official-official-official-gray-900 flex h-7 w-7 items-center justify-center rounded-lg border border-official-official-gray-900 bg-transparent transition-colors hover:bg-official-gray-700 hover:text-white [&>svg]:h-3 [&>svg]:w-3"*/}
         {/*          string={toolCode ?? ''}*/}
         {/*        />*/}
         {/*      </div>*/}

@@ -67,7 +67,7 @@ const ArtifactPreview = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      className="text-official-official-gray-600 flex items-center gap-2"
+                      className="text-official-official-official-gray-900 flex items-center gap-2"
                       onClick={() => {
                         setArtifact(null);
                       }}
@@ -110,7 +110,7 @@ const ArtifactPreview = () => {
             >
               <div className="bg-official-gray-700 flex h-10 items-center justify-between gap-3 rounded-t-lg pl-4 pr-3">
                 {/* by default App.tsx */}
-                <h2 className="text-official-official-gray-600 text-xs font-semibold">
+                <h2 className="text-official-official-official-gray-900 text-xs font-semibold">
                   App.tsx
                 </h2>
                 {iframeLoaded && (
@@ -119,7 +119,7 @@ const ArtifactPreview = () => {
                       <TooltipTrigger asChild>
                         <div>
                           <CopyToClipboardIcon
-                            className="text-official-official-gray-600 border-official-gray-600 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3"
+                            className="text-official-official-official-gray-900 border-official-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3"
                             string={artifact?.code ?? ''}
                           />
                         </div>
@@ -133,7 +133,7 @@ const ArtifactPreview = () => {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
-                          className="text-official-official-gray-600 border-official-gray-600 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3"
+                          className="text-official-official-official-gray-900 border-official-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3"
                           onClick={async () => {
                             const file = new Blob([artifact?.code ?? ''], {
                               type: 'text/plain',

@@ -9,7 +9,7 @@ const alertVariants = cva(
     variants: {
       variant: {
         default: 'background-secondary-600/50 text-foreground',
-        info: 'text-official-official-gray-600 [&>svg]:text-official-official-gray-600 bg-gray-250 border-official-official-gray-750 border-official-gray-600',
+        info: 'text-official-official-official-gray-900 [&>svg]:text-official-official-official-gray-900 bg-gray-250 border-official-official-gray-750 border-official-official-gray-900',
         destructive:
           'border-[#4d0408] bg-[#2d0607] text-[#ff9ea1] [&>svg]:text-[#ff9ea1]',
         warning:

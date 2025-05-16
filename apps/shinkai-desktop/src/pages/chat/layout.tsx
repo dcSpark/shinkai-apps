@@ -286,7 +286,7 @@ const InboxMessageButtonBase = ({
       <TooltipPortal>
         <TooltipContent
           align="end"
-          className="max-w-[200px] bg-gray-600"
+          className="bg-official-gray-900 max-w-[200px]"
           side="right"
         >
           <p>{inboxName}</p>

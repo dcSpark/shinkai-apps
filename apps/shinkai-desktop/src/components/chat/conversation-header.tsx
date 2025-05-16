@@ -92,7 +92,7 @@ const ConversationHeaderWithInboxId = () => {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              className="text-official-official-gray-600 flex items-center gap-2"
+              className="text-official-official-official-gray-900 flex items-center gap-2"
               onClick={() => setChatSidebarCollapsed(!isChatSidebarCollapsed)}
               size="icon"
               variant="tertiary"
@@ -110,7 +110,7 @@ const ConversationHeaderWithInboxId = () => {
           <TooltipPortal>
             <TooltipContent className="flex flex-col items-center gap-1">
               <p> Toggle Chat Sidebar</p>
-              <div className="text-official-official-gray-600 flex items-center justify-center gap-2 text-center">
+              <div className="text-official-official-official-gray-900 flex items-center justify-center gap-2 text-center">
                 <span>⌘</span>
                 <span>B</span>
               </div>
@@ -204,7 +204,7 @@ const ConversationHeaderWithInboxId = () => {
                             value="instructions"
                           >
                             <AccordionTrigger className="py-3 hover:no-underline">
-                              <div className="text-official-official-gray-600 flex items-center gap-2">
+                              <div className="text-official-official-official-gray-900 flex items-center gap-2">
                                 <span className="text-sm font-medium">
                                   {t('agents.systemInstructions')}
                                 </span>
@@ -222,7 +222,7 @@ const ConversationHeaderWithInboxId = () => {
 
                           <AccordionItem className="border-b-0" value="tools">
                             <AccordionTrigger className="py-3 hover:no-underline">
-                              <div className="text-official-official-gray-600 flex items-center gap-2">
+                              <div className="text-official-official-official-gray-900 flex items-center gap-2">
                                 <span className="text-sm font-medium">
                                   Available Tools{' '}
                                   {selectedAgent.tools.length > 0 && (
@@ -271,7 +271,7 @@ const ConversationHeaderWithInboxId = () => {
                             value="knowledge"
                           >
                             <AccordionTrigger className="py-3 hover:no-underline">
-                              <div className="text-official-official-gray-600 flex items-center gap-2">
+                              <div className="text-official-official-official-gray-900 flex items-center gap-2">
                                 <span className="text-sm font-medium">
                                   Knowledge Sources{' '}
                                   {(
@@ -338,7 +338,7 @@ const ConversationHeaderWithInboxId = () => {
 
                           <AccordionItem className="border-b-0" value="tasks">
                             <AccordionTrigger className="py-3 hover:no-underline">
-                              <div className="text-official-official-gray-600 flex items-center gap-2">
+                              <div className="text-official-official-official-gray-900 flex items-center gap-2">
                                 <span className="text-sm font-medium">
                                   Scheduled Tasks
                                 </span>

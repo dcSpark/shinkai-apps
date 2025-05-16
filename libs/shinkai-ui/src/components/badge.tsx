@@ -15,9 +15,9 @@ const badgeVariants = cva(
         destructive:
           'bg-destructive text-destructive-foreground hover:bg-destructive/80 border-transparent shadow',
         outline: 'text-foreground',
-        inputAdornment: 'bg-gray-600 px-2 font-medium text-white',
+        inputAdornment: 'bg-official-gray-900 px-2 font-medium text-white',
         gradient: 'bg-brand-gradient border-brand px-2 font-medium text-white',
-        tags: 'text-official-official-gray-600 border-official-gray-750 bg-official-gray-750 rounded-lg px-2 py-1 font-normal capitalize',
+        tags: 'text-official-official-official-gray-900 border-official-gray-750 bg-official-gray-750 rounded-lg px-2 py-1 font-normal capitalize',
       },
     },
     defaultVariants: {

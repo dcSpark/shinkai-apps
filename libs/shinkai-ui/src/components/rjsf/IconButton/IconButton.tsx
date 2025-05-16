@@ -27,7 +27,7 @@ export default function IconButton<
     props.variant === 'danger'
       ? 'bg-official-gray-750  text-official-official-gray-750 hover:text-gray-50'
       : disabled
-        ? 'bg-official-gray-600 text-official-official-gray-750'
+        ? 'bg-official-official-gray-900 text-official-official-gray-750'
         : 'bg-official-gray-700 hover:bg-official-gray-750 text-white';
 
   return (

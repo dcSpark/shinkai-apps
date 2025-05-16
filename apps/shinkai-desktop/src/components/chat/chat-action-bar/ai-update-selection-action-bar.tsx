@@ -298,7 +298,7 @@ export function AIModelSelectorBase({
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Link
-                          className="text-official-official-gray-600 size-8 shrink-0 rounded-lg p-2 hover:text-white"
+                          className="text-official-official-official-gray-900 size-8 shrink-0 rounded-lg p-2 hover:text-white"
                           to={`/agents/edit/${agent.agent_id}`}
                         >
                           <BoltIcon className="size-full" />
