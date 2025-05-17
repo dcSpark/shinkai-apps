@@ -142,7 +142,7 @@ export const SetJobScopeDrawer = () => {
               </Badge>
             )}
           </SheetTitle>
-          <p className="text-gray-80 text-sm">
+          <p className="text-official-official-gray-900 text-sm">
             {t('chat.form.setContextText')}
           </p>
         </SheetHeader>
@@ -344,7 +344,7 @@ export const KnowledgeSearchDrawer = () => {
           <SheetTitle className="flex h-[40px] items-center gap-4">
             {t('aiFilesSearch.label')}
           </SheetTitle>
-          <p className="text-gray-80 text-sm">
+          <p className="text-official-official-gray-900 text-sm">
             {t('aiFilesSearch.description')}
           </p>
         </SheetHeader>
@@ -362,15 +362,15 @@ export const KnowledgeSearchDrawer = () => {
                   <div className="relative flex-1">
                     <Input
                       autoFocus
-                      className="placeholder-gray-80 !h-[50px] bg-gray-200 py-2 pl-10"
+                      className="placeholder-official-official-gray-900 bg-official-gray-900 !h-[50px] py-2 pl-10"
                       onChange={field.onChange}
                       placeholder={t('common.searchPlaceholder')}
                       value={field.value}
                     />
-                    <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2 bg-gray-300" />
+                    <SearchIcon className="bg-official-gray-700 absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
                     {currentSearchQuery && (
                       <Button
-                        className="absolute right-1 top-2 h-8 w-8 bg-gray-200 p-2"
+                        className="bg-official-gray-900 absolute right-1 top-2 h-8 w-8 p-2"
                         onClick={() => {
                           searchVectorFSForm.reset({ searchQuery: '' });
                           setIsSearchEntered(false);
@@ -406,14 +406,14 @@ export const KnowledgeSearchDrawer = () => {
             isPending &&
             Array.from({ length: 4 }).map((_, idx) => (
               <div
-                className="mb-1 flex h-[69px] items-center justify-between gap-2 rounded-lg bg-gray-400 py-3"
+                className="bg-official-gray-750 mb-1 flex h-[69px] items-center justify-between gap-2 rounded-lg py-3"
                 key={idx}
               />
             ))}
           {isSearchEntered && isSuccess && (
             <div>
               <div className="flex items-center justify-between gap-4 p-2">
-                <h2 className="text-gray-80 text-sm font-medium">
+                <h2 className="text-official-official-gray-900 text-sm font-medium">
                   {t('aiFilesSearch.foundResults', {
                     count: data?.length,
                   })}
@@ -472,10 +472,10 @@ export const KnowledgeSearchDrawer = () => {
                             {generatedFilePath.split('/').at(-1)}
                           </span>
                         </div>
-                        <div className="divide-y divide-gray-300">
+                        <div className="divide-official-gray-700 divide-y">
                           {contents?.map((content) => (
                             <p
-                              className="text-gray-80 py-3 text-xs"
+                              className="text-official-official-gray-900 py-3 text-xs"
                               key={content}
                             >
                               {content}

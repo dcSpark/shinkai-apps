@@ -105,19 +105,19 @@ export const TaskLogs = () => {
           Array.from({ length: 8 }).map((_, idx) => (
             <div
               className={cn(
-                'grid animate-pulse grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm bg-gray-500 px-2 py-4 text-left text-sm',
+                'bg-official-gray-850 grid animate-pulse grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm px-2 py-4 text-left text-sm',
               )}
               key={idx}
             >
               <div className="flex w-full flex-1 flex-col gap-3">
-                <span className="h-4 w-36 rounded-sm bg-gray-300" />
+                <span className="bg-official-gray-700 h-4 w-36 rounded-sm" />
                 <div className="flex flex-col gap-1">
-                  <span className="h-3 w-full rounded-sm bg-gray-300" />
-                  <span className="h-3 w-2/4 rounded-sm bg-gray-300" />
+                  <span className="bg-official-gray-700 h-3 w-full rounded-sm" />
+                  <span className="bg-official-gray-700 h-3 w-2/4 rounded-sm" />
                 </div>
               </div>
-              <span className="h-7 w-full rounded-md bg-gray-300" />
-              <span className="h-5 w-[36px] rounded-full bg-gray-300" />
+              <span className="bg-official-gray-700 h-7 w-full rounded-md" />
+              <span className="bg-official-gray-700 h-5 w-[36px] rounded-full" />
             </div>
           ))}
 
@@ -140,7 +140,7 @@ export const TaskLogs = () => {
           {isSuccess && logs.length === 0 && (
             <div className="p-10 text-center text-sm">
               <p className="text-white">No runs for this task yet</p>
-              <p className="text-gray-80 text-xs">
+              <p className="text-official-official-gray-900 text-xs">
                 check the schedule for your tasks to see when it runs
               </p>
             </div>
@@ -174,12 +174,12 @@ export const TaskLogs = () => {
                   </div>
 
                   <Link
-                    className="text-gray-80 font-mono underline"
+                    className="text-official-official-gray-900 font-mono underline"
                     to={`/inboxes/${encodeURIComponent(buildInboxIdFromJobId(log.job_id))}`}
                   >
                     Go to chat
                   </Link>
-                  <div className="text-gray-80 font-mono">
+                  <div className="text-official-official-gray-900 font-mono">
                     {log.error_message || '-'}
                   </div>
                 </div>
@@ -239,7 +239,7 @@ const TaskCard = ({
               {name}
               <Badge
                 className={cn(
-                  'rounded-md border border-gray-300',
+                  'border-official-gray-700 rounded-md border',
                   isRunning &&
                     'border-cyan-600 bg-cyan-900/20 font-normal text-cyan-400',
                 )}
@@ -267,12 +267,12 @@ const TaskCard = ({
                 tabIndex={0}
               >
                 <span className="sr-only">{t('common.moreOptions')}</span>
-                <DotsVerticalIcon className="text-gray-100" />
+                <DotsVerticalIcon className="text-official-gray-750" />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="w-[160px] border bg-gray-500 px-2.5 py-2"
+              className="bg-official-gray-850 w-[160px] border px-2.5 py-2"
             >
               {[
                 {
@@ -303,7 +303,7 @@ const TaskCard = ({
               ].map((option) => (
                 <React.Fragment key={option.name}>
                   {option.name === 'Delete' && (
-                    <DropdownMenuSeparator className="bg-gray-300" />
+                    <DropdownMenuSeparator className="bg-official-gray-700" />
                   )}
                   <DropdownMenuItem
                     key={option.name}
@@ -342,7 +342,7 @@ const TaskCard = ({
           </div>
           <div className="text-sm">
             {readableCron}
-            <span className="text-gray-80 ml-2 rounded-lg bg-gray-300 px-2 py-1 font-mono">
+            <span className="text-official-official-gray-900 bg-official-gray-700 ml-2 rounded-lg px-2 py-1 font-mono">
               {cronExpression}
             </span>
           </div>

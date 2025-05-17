@@ -127,7 +127,7 @@ const RestoreConnectionPage = () => {
                         />
                       </div>
                       {!!encryptedConnectionFileValue?.length && (
-                        <div className="truncate rounded-lg bg-gray-400 px-2 py-2 text-sm">
+                        <div className="bg-official-gray-750 truncate rounded-lg px-2 py-2 text-sm">
                           {encryptedConnectionFileValue[0].encryptedConnection}
                         </div>
                       )}

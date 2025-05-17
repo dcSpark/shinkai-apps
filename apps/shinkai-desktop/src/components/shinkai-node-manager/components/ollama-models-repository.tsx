@@ -125,7 +125,7 @@ export const OllamaModelsRepository = ({
                 )}
               </div>
 
-              <span className="text-gray-80 line-clamp-3 text-ellipsis text-xs">
+              <span className="text-official-official-gray-900 line-clamp-3 text-ellipsis text-xs">
                 {model.description}
               </span>
             </div>
@@ -274,7 +274,7 @@ export const OllamaModelsRepository = ({
         style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
       >
         <Table>
-          <TableHeader className="bg-gray-400 text-xs">
+          <TableHeader className="bg-official-gray-750 text-xs">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -321,7 +321,7 @@ export const OllamaModelsRepository = ({
               const row = rows[virtualRow.index] as Row<OllamaModelDefinition>;
               return (
                 <TableRow
-                  className="transition-colors hover:bg-gray-300/50"
+                  className="hover:bg-official-gray-700/50 transition-colors"
                   key={row.id}
                   style={{
                     height: `${virtualRow.size}px`,

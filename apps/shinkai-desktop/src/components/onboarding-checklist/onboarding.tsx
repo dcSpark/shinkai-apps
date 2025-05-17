@@ -154,11 +154,11 @@ const stepIconColorMap: {
 } = {
   [GetStartedStatus.NotStarted]: {
     iconClassName: 'bg-cyan-100/30',
-    icon: <CheckIcon className="w-full text-gray-400" />,
+    icon: <CheckIcon className="text-official-gray-750 w-full" />,
   },
   // [StepStatus.Loading]: {
   //   icon: <Loader className="text-brand animate-spin" />,
-  //   iconClassName: 'bg-gray-200',
+  //   iconClassName: 'bg-official-gray-900',
   // },
   [GetStartedStatus.Done]: {
     icon: <CheckIcon className="w-full text-white" />,
@@ -219,7 +219,7 @@ export const Stepper = ({ steps }: StepperProps) => {
               value={currentPercents}
             />
             {hasCompletedAllSteps ? (
-              <span className="text-gray-80">
+              <span className="text-official-official-gray-900">
                 {currentPercents}% -
                 <Button
                   className="h-auto py-0 text-xs"
@@ -234,7 +234,7 @@ export const Stepper = ({ steps }: StepperProps) => {
                 </Button>
               </span>
             ) : (
-              <span className="text-gray-80 truncate capitalize">
+              <span className="text-official-official-gray-900 truncate capitalize">
                 {currentPercents}% - {t('common.next')},{' '}
                 {
                   steps.find(
@@ -271,7 +271,7 @@ export const Stepper = ({ steps }: StepperProps) => {
           <div className="flex justify-between gap-3 rounded-lg p-1 font-medium text-white">
             <p>{t('onboardingChecklist.getStartedChecklist')}</p>
             <button
-              className="text-gray-80 hover:text-white"
+              className="text-official-official-gray-900 hover:text-white"
               onClick={() => setIsPopoverOpen(false)}
             >
               <XIcon className="h-4 w-4" />
@@ -285,7 +285,7 @@ export const Stepper = ({ steps }: StepperProps) => {
         {hasCompletedAllSteps && (
           <div>
             <div className="bg-official-gray-950 flex justify-center gap-2 p-3">
-              <span className="text-gray-80">
+              <span className="text-official-official-gray-900">
                 {t('onboardingChecklist.completedSteps')}
               </span>
               <CheckIcon className="w-4 text-cyan-700" />
@@ -323,13 +323,13 @@ export const Stepper = ({ steps }: StepperProps) => {
                     <AccordionTrigger
                       className={cn(
                         'px-3 py-2 text-gray-50 [&>svg]:mt-0 [&>svg]:h-4 [&>svg]:w-4 [&>svg]:stroke-white',
-                        'hover:bg-gray-500 hover:no-underline',
+                        'hover:bg-official-gray-850 hover:no-underline',
                       )}
                     >
                       <div className="flex flex-row items-center gap-2 font-normal capitalize text-white">
                         <div
                           className={cn(
-                            'flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 p-1',
+                            'bg-official-gray-750 flex h-6 w-6 shrink-0 items-center justify-center rounded-full p-1',
                             stepIconColorMap[stepStatus]?.iconClassName,
                           )}
                         >

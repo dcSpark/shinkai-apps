@@ -12,7 +12,7 @@ const Command = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive
     className={cn(
-      'bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md [&_[cmdk-list]]:scroll-auto [&_[cmdk-list]]:scroll-pt-0',
+      'bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md [&_[cmdk-list]]:scroll-pt-0 [&_[cmdk-list]]:scroll-auto',
       className,
     )}
     loop={true}
@@ -44,7 +44,7 @@ const CommandInput = React.forwardRef<
     <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
     <CommandPrimitive.Input
       className={cn(
-        'placeholder:text-official-gray-400 flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50',
+        'placeholder:text-official-gray-750 flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50',
         className,
       )}
       ref={ref}
@@ -60,7 +60,10 @@ const CommandList = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.List>
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.List
-    className={cn('max-h-[300px] overflow-y-auto overflow-x-hidden scroll-auto scroll-pt-0', className)}
+    className={cn(
+      'max-h-[300px] scroll-pt-0 overflow-y-auto overflow-x-hidden scroll-auto',
+      className,
+    )}
     ref={ref}
     {...props}
   />
@@ -87,7 +90,7 @@ const CommandGroup = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.Group
     className={cn(
-      'overflow-hidden p-1 text-white [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-gray-100',
+      '[&_[cmdk-group-heading]]:text-official-gray-750 overflow-hidden p-1 text-white [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
       className,
     )}
     ref={ref}
@@ -131,7 +134,10 @@ const CommandShortcut = ({
 }: React.HTMLAttributes<HTMLSpanElement>) => {
   return (
     <span
-      className={cn('text-gray-80 ml-auto text-xs tracking-widest', className)}
+      className={cn(
+        'text-official-gray-750 ml-auto text-xs tracking-widest',
+        className,
+      )}
       {...props}
     />
   );

@@ -56,7 +56,6 @@ const toolsGroup: {
   label: string;
   value: GetToolsCategory;
 }[] = [
-
   {
     label: 'MCP Servers',
     value: 'mcp_servers',
@@ -83,8 +82,10 @@ const ToolCollectionBase = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
-  
-  const [mcpEnabledState, setMcpEnabledState] = useState<Record<string, boolean>>({});
+
+  const [mcpEnabledState, setMcpEnabledState] = useState<
+    Record<string, boolean>
+  >({});
 
   // State for the error dialog
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -93,8 +94,8 @@ const ToolCollectionBase = () => {
   const [dialogHelpText, setDialogHelpText] = useState('');
   const [jsonConfigToCopy, setJsonConfigToCopy] = useState(''); // State for JSON config
   const [customDialogOpen, setCustomDialogOpen] = useState(false); // State for custom dialog
-  const [customSseUrl, setCustomSseUrl] = useState('');         // State for SSE URL
-  const [customCommand, setCustomCommand] = useState('');       // State for Command
+  const [customSseUrl, setCustomSseUrl] = useState(''); // State for SSE URL
+  const [customCommand, setCustomCommand] = useState(''); // State for Command
 
   const selectedToolCategory = usePlaygroundStore(
     (state) => state.selectedToolCategory,
@@ -109,11 +110,11 @@ const ToolCollectionBase = () => {
     token: auth?.api_v2_key ?? '',
     category: selectedToolCategory === 'all' ? undefined : selectedToolCategory,
   });
-  
+
   useEffect(() => {
     if (toolsList && toolsList.length > 0) {
       const initialState: Record<string, boolean> = {};
-      toolsList.forEach(tool => {
+      toolsList.forEach((tool) => {
         initialState[tool.tool_router_key] = tool.mcp_enabled === true;
       });
       setMcpEnabledState(initialState);
@@ -158,7 +159,7 @@ const ToolCollectionBase = () => {
       toast.error(error.message);
     },
   });
-  
+
   const { mutateAsync: toggleEnableTool } = useToggleEnableTool({
     onSuccess: () => {
       toast.success('Tool state updated successfully');
@@ -168,7 +169,10 @@ const ToolCollectionBase = () => {
     },
   });
 
-  const handleConfigureClick = async (configureFn: (serverId: string, tFunc: TFunction) => Promise<void>, clientName: string) => {
+  const handleConfigureClick = async (
+    configureFn: (serverId: string, tFunc: TFunction) => Promise<void>,
+    clientName: string,
+  ) => {
     try {
       await configureFn(MCP_SERVER_ID, t);
     } catch (error) {
@@ -177,14 +181,20 @@ const ToolCollectionBase = () => {
         const extractedJson = jsonMatch ? jsonMatch[1].trim() : '';
 
         setDialogTitle(t('mcpClients.configFailTitle', { clientName }));
-        setDialogDescription(t('mcpClients.configFailDescription', { errorMessage: error.message }));
+        setDialogDescription(
+          t('mcpClients.configFailDescription', {
+            errorMessage: error.message,
+          }),
+        );
         setDialogHelpText(error.helpText);
         setJsonConfigToCopy(extractedJson);
         setDialogOpen(true);
       } else if (error instanceof Error) {
         toast.error(`Failed to configure ${clientName}: ${error.message}`);
       } else {
-        toast.error(`An unknown error occurred while configuring ${clientName}.`);
+        toast.error(
+          `An unknown error occurred while configuring ${clientName}.`,
+        );
       }
       console.error(`Configuration error for ${clientName}:`, error);
     }
@@ -205,7 +215,7 @@ const ToolCollectionBase = () => {
   };
 
   return (
-    <div className="flex flex-col gap-8 max-w-[956px] mx-auto">
+    <div className="mx-auto flex max-w-[956px] flex-col gap-8">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h2 className="text-lg font-semibold tracking-tight">
@@ -217,7 +227,7 @@ const ToolCollectionBase = () => {
         </div>
         <div className="shadow-official-gray-950 focus-within:shadow-official-gray-700 relative flex h-10 items-center rounded-lg shadow-[0_0_0_1px_currentColor] transition-shadow">
           <Input
-            className="placeholder-gray-80 bg-official-gray-900 !h-full border-none py-2 pl-10"
+            className="placeholder-official-official-gray-900 bg-official-gray-900 !h-full border-none py-2 pl-10"
             onChange={(e) => {
               setSearchQuery(e.target.value);
             }}
@@ -228,7 +238,7 @@ const ToolCollectionBase = () => {
           <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
           {searchQuery && (
             <Button
-              className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
+              className="bg-official-gray-900 absolute right-1 h-8 w-8 p-2"
               onClick={() => {
                 setSearchQuery('');
               }}
@@ -245,7 +255,7 @@ const ToolCollectionBase = () => {
 
       {searchQuery && isSearchQuerySynced && searchToolList?.length === 0 && (
         <div className="flex h-20 items-center justify-center">
-          <p className="text-gray-80 text-sm">
+          <p className="text-official-official-gray-900 text-sm">
             {t('tools.emptyState.search.text')}
           </p>
         </div>
@@ -272,7 +282,7 @@ const ToolCollectionBase = () => {
               value={selectedToolCategory}
             >
               <ToggleGroupItem
-                className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
+                className="data-[state=on]:bg-official-gray-850 text-official-gray-750 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
                 key="all"
                 size="sm"
                 value="all"
@@ -281,7 +291,7 @@ const ToolCollectionBase = () => {
               </ToggleGroupItem>
               {toolsGroup.map((tool) => (
                 <ToggleGroupItem
-                  className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
+                  className="data-[state=on]:bg-official-gray-850 text-official-gray-750 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
                   key={tool.value}
                   size="sm"
                   value={tool.value}
@@ -294,15 +304,35 @@ const ToolCollectionBase = () => {
             {selectedToolCategory === 'mcp_servers' && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button className="text-official-gray-400 hover:text-white" size="sm" variant="ghost">
+                  <Button
+                    className="text-official-gray-750 hover:text-white"
+                    size="sm"
+                    variant="ghost"
+                  >
                     Add To External Client
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => handleConfigureClick((serverId, tFunc) => handleConfigureClaude(serverId, tFunc), 'Claude Desktop')}>
+                  <DropdownMenuItem
+                    onClick={() =>
+                      handleConfigureClick(
+                        (serverId, tFunc) =>
+                          handleConfigureClaude(serverId, tFunc),
+                        'Claude Desktop',
+                      )
+                    }
+                  >
                     Claude Desktop
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleConfigureClick((serverId, tFunc) => handleConfigureCursor(serverId, tFunc), 'Cursor')}>
+                  <DropdownMenuItem
+                    onClick={() =>
+                      handleConfigureClick(
+                        (serverId, tFunc) =>
+                          handleConfigureCursor(serverId, tFunc),
+                        'Cursor',
+                      )
+                    }
+                  >
                     Cursor
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleShowCustomInstructions}>
@@ -315,7 +345,7 @@ const ToolCollectionBase = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  className="text-gray-80"
+                  className="text-official-official-gray-900"
                   rounded="lg"
                   size="icon"
                   variant="outline"
@@ -323,7 +353,10 @@ const ToolCollectionBase = () => {
                   <MoreVerticalIcon className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
+              <DropdownMenuContent
+                align="end"
+                className="bg-official-gray-700 p-2.5"
+              >
                 <DropdownMenuItem
                   className="text-xs"
                   onClick={() => {
@@ -354,7 +387,7 @@ const ToolCollectionBase = () => {
           <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
             {toolsList?.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-2 py-8">
-                <p className="text-official-gray-400 text-sm">
+                <p className="text-official-gray-750 text-sm">
                   No tools found in this category. Create a new tool or install
                   from the App Store.
                 </p>
@@ -372,44 +405,58 @@ const ToolCollectionBase = () => {
                       <span className="text-sm font-medium text-white">
                         {tool.name}{' '}
                       </span>
-                      <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
+                      <Badge className="text-official-official-gray-900 bg-official-gray-750 text-xs font-normal">
                         {tool.author}
                       </Badge>
                     </div>
-                    <p className="text-gray-80 line-clamp-2 text-xs">{tool.description}</p>
+                    <p className="text-official-official-gray-900 line-clamp-2 text-xs">
+                      {tool.description}
+                    </p>
                   </div>
                   <div />
                   <div />
-                  <div className="text-gray-80 text-xs flex items-center">
+                  <div className="text-official-official-gray-900 flex items-center text-xs">
                     <Tooltip>
-                      <TooltipTrigger asChild className="flex items-center gap-1">
-                        <Button 
+                      <TooltipTrigger
+                        asChild
+                        className="flex items-center gap-1"
+                      >
+                        <Button
                           className={
-                            (mcpEnabledState[tool.tool_router_key] !== undefined 
-                              ? mcpEnabledState[tool.tool_router_key] 
-                              : tool.mcp_enabled === true) 
-                            ? "text-green-400" 
-                            : ""
-                          } 
+                            (
+                              mcpEnabledState[tool.tool_router_key] !==
+                              undefined
+                                ? mcpEnabledState[tool.tool_router_key]
+                                : tool.mcp_enabled === true
+                            )
+                              ? 'text-green-400'
+                              : ''
+                          }
                           disabled={tool.enabled !== true}
                           onClick={async () => {
                             if (auth) {
                               if (tool.enabled !== true) {
-                                toast.error('Tool must be enabled before changing MCP server mode');
+                                toast.error(
+                                  'Tool must be enabled before changing MCP server mode',
+                                );
                                 return;
                               }
-                              
-                              const currentState = mcpEnabledState[tool.tool_router_key] !== undefined 
-                                ? mcpEnabledState[tool.tool_router_key] 
-                                : tool.mcp_enabled === true;
+
+                              const currentState =
+                                mcpEnabledState[tool.tool_router_key] !==
+                                undefined
+                                  ? mcpEnabledState[tool.tool_router_key]
+                                  : tool.mcp_enabled === true;
                               const newMcpEnabled = !currentState;
-                              
+
                               const updatedTool = {
                                 ...tool,
                                 mcp_enabled: newMcpEnabled,
                               };
-                              
-                              queryClient.getQueryData([FunctionKeyV2.GET_LIST_TOOLS]);
+
+                              queryClient.getQueryData([
+                                FunctionKeyV2.GET_LIST_TOOLS,
+                              ]);
 
                               queryClient.setQueryData(
                                 [FunctionKeyV2.GET_LIST_TOOLS],
@@ -417,24 +464,28 @@ const ToolCollectionBase = () => {
                                   if (!oldData || !Array.isArray(oldData)) {
                                     return oldData;
                                   }
-                                  
+
                                   return oldData.map((t) =>
-                                    t.tool_router_key === tool.tool_router_key ? updatedTool : t
+                                    t.tool_router_key === tool.tool_router_key
+                                      ? updatedTool
+                                      : t,
                                   );
-                                }
+                                },
                               );
-                              
-                              queryClient.getQueryData([FunctionKeyV2.GET_LIST_TOOLS]);
-                              
+
+                              queryClient.getQueryData([
+                                FunctionKeyV2.GET_LIST_TOOLS,
+                              ]);
+
                               // queryClient.invalidateQueries({
                               //   queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
                               // });
 
-                              setMcpEnabledState(prev => ({
+                              setMcpEnabledState((prev) => ({
                                 ...prev,
-                                [tool.tool_router_key]: newMcpEnabled
+                                [tool.tool_router_key]: newMcpEnabled,
                               }));
-                              
+
                               try {
                                 await setToolMcpEnabled({
                                   toolRouterKey: tool.tool_router_key,
@@ -443,19 +494,23 @@ const ToolCollectionBase = () => {
                                   token: auth.api_v2_key,
                                 });
                               } catch (error) {
-                                setMcpEnabledState(prev => ({
+                                setMcpEnabledState((prev) => ({
                                   ...prev,
-                                  [tool.tool_router_key]: tool.mcp_enabled === true
+                                  [tool.tool_router_key]:
+                                    tool.mcp_enabled === true,
                                 }));
-                                
+
                                 queryClient.setQueryData(
                                   [FunctionKeyV2.GET_LIST_TOOLS],
                                   (oldData: unknown) => {
-                                    if (!oldData || !Array.isArray(oldData)) return oldData;
+                                    if (!oldData || !Array.isArray(oldData))
+                                      return oldData;
                                     return oldData.map((t) =>
-                                      t.tool_router_key === tool.tool_router_key ? { ...tool } : t
+                                      t.tool_router_key === tool.tool_router_key
+                                        ? { ...tool }
+                                        : t,
                                     );
-                                  }
+                                  },
                                 );
                                 throw error; // Let the error handler handle the error
                               }
@@ -464,18 +519,29 @@ const ToolCollectionBase = () => {
                           size="sm"
                           variant="ghost"
                         >
-                          {mcpEnabledState[tool.tool_router_key] !== undefined 
-                            ? mcpEnabledState[tool.tool_router_key] ? "Enabled" : "Disabled"
-                            : tool.mcp_enabled === true ? "Enabled" : "Disabled"}
+                          {mcpEnabledState[tool.tool_router_key] !== undefined
+                            ? mcpEnabledState[tool.tool_router_key]
+                              ? 'Enabled'
+                              : 'Disabled'
+                            : tool.mcp_enabled === true
+                              ? 'Enabled'
+                              : 'Disabled'}
                         </Button>
                       </TooltipTrigger>
                       <TooltipPortal>
                         <TooltipContent align="center" side="top">
-                          {tool.enabled !== true 
-                            ? "Enable tool first to manage MCP Server mode" 
-                            : `MCP Server ${mcpEnabledState[tool.tool_router_key] !== undefined 
-                                ? mcpEnabledState[tool.tool_router_key] ? "Enabled" : "Disabled"
-                                : tool.mcp_enabled === true ? "Enabled" : "Disabled"}`}
+                          {tool.enabled !== true
+                            ? 'Enable tool first to manage MCP Server mode'
+                            : `MCP Server ${
+                                mcpEnabledState[tool.tool_router_key] !==
+                                undefined
+                                  ? mcpEnabledState[tool.tool_router_key]
+                                    ? 'Enabled'
+                                    : 'Disabled'
+                                  : tool.mcp_enabled === true
+                                    ? 'Enabled'
+                                    : 'Disabled'
+                              }`}
                         </TooltipContent>
                       </TooltipPortal>
                     </Tooltip>
@@ -525,15 +591,15 @@ const ToolCollectionBase = () => {
               key={idx}
             >
               <div className="flex w-full flex-1 flex-col gap-3">
-                <span className="h-4 w-36 rounded-sm bg-gray-300" />
+                <span className="bg-official-gray-700 h-4 w-36 rounded-sm" />
                 <div className="flex flex-col gap-1">
-                  <span className="h-3 w-full rounded-sm bg-gray-300" />
-                  <span className="h-3 w-2/4 rounded-sm bg-gray-300" />
+                  <span className="bg-official-gray-700 h-3 w-full rounded-sm" />
+                  <span className="bg-official-gray-700 h-3 w-2/4 rounded-sm" />
                 </div>
               </div>
-              <span className="h-7 w-full rounded-md bg-gray-300" />
-              <span className="h-7 w-10 rounded-md bg-gray-300" />
-              <span className="h-5 w-[36px] rounded-full bg-gray-300" />
+              <span className="bg-official-gray-700 h-7 w-full rounded-md" />
+              <span className="bg-official-gray-700 h-7 w-10 rounded-md" />
+              <span className="bg-official-gray-700 h-5 w-[36px] rounded-full" />
             </div>
           ))}
         </div>
@@ -544,16 +610,16 @@ const ToolCollectionBase = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{dialogTitle}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {dialogDescription}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{dialogDescription}</AlertDialogDescription>
           </AlertDialogHeader>
           <div className="my-4 max-h-[60vh] overflow-y-auto rounded bg-gray-800 p-3 text-sm">
-            <pre><code>{dialogHelpText}</code></pre>
+            <pre>
+              <code>{dialogHelpText}</code>
+            </pre>
           </div>
           <AlertDialogFooter className="flex justify-between gap-4">
             <AlertDialogCancel>{t('oauth.close')}</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               disabled={!jsonConfigToCopy}
               onClick={() => {
                 if (jsonConfigToCopy) {
@@ -579,33 +645,37 @@ const ToolCollectionBase = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="my-2 rounded bg-gray-800 p-3">
-            <pre className="mt-1 whitespace-pre-wrap text-sm"><code>{customSseUrl}</code></pre>
+            <pre className="mt-1 whitespace-pre-wrap text-sm">
+              <code>{customSseUrl}</code>
+            </pre>
           </div>
           <AlertDialogDescription className="mt-4">
             {t('mcpClients.customDescriptionSecondary')}
           </AlertDialogDescription>
           <div className="my-2 rounded bg-gray-800 p-3">
-            <pre className="mt-1 whitespace-pre-wrap text-sm"><code>{customCommand}</code></pre>
+            <pre className="mt-1 whitespace-pre-wrap text-sm">
+              <code>{customCommand}</code>
+            </pre>
           </div>
           <AlertDialogFooter className="mt-4 flex justify-end gap-4">
             <AlertDialogCancel>{t('oauth.close')}</AlertDialogCancel>
             <div className="flex flex-grow justify-center gap-4">
-                <AlertDialogAction
-                    onClick={() => {
-                    navigator.clipboard.writeText(customSseUrl);
-                    toast.success(t('mcpClients.copySuccessUrl'));
-                    }}
-                >
-                    {t('mcpClients.customCopySseUrlButton')}
-                </AlertDialogAction>
-                <AlertDialogAction
-                    onClick={() => {
-                    navigator.clipboard.writeText(customCommand);
-                    toast.success(t('mcpClients.copySuccessCommand'));
-                    }}
-                >
-                    {t('mcpClients.customCopyCommandButton')}
-                </AlertDialogAction>
+              <AlertDialogAction
+                onClick={() => {
+                  navigator.clipboard.writeText(customSseUrl);
+                  toast.success(t('mcpClients.copySuccessUrl'));
+                }}
+              >
+                {t('mcpClients.customCopySseUrlButton')}
+              </AlertDialogAction>
+              <AlertDialogAction
+                onClick={() => {
+                  navigator.clipboard.writeText(customCommand);
+                  toast.success(t('mcpClients.copySuccessCommand'));
+                }}
+              >
+                {t('mcpClients.customCopyCommandButton')}
+              </AlertDialogAction>
             </div>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -658,7 +728,7 @@ export function DockerStatus() {
         <span
           className={`h-2 w-2 rounded-full ${config.color} ${config.borderColor}`}
         />
-        <span className="text-official-gray-400 text-xs">{config.title}</span>
+        <span className="text-official-gray-750 text-xs">{config.title}</span>
       </TooltipTrigger>
       <TooltipPortal>
         <TooltipContent
@@ -672,7 +742,7 @@ export function DockerStatus() {
             className={cn(
               'border',
               config.borderColor,
-              'bg-gray-300',
+              'bg-official-gray-700',
               config.bgColor,
             )}
           >
