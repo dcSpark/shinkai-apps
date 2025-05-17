@@ -779,9 +779,9 @@ const EmptyMessage = () => {
                                 >
                                   <div className="flex w-6 shrink-0 items-center justify-center">
                                     {isFileOrFolder(file) === 'file' ? (
-                                      <FileTypeIcon className="text-official-official-gray-750 size-4 shrink-0" />
+                                      <FileTypeIcon className="text-official-gray-750 size-4 shrink-0" />
                                     ) : (
-                                      <DirectoryTypeIcon className="text-official-official-gray-750 size-4 shrink-0" />
+                                      <DirectoryTypeIcon className="text-official-gray-750 size-4 shrink-0" />
                                     )}
                                   </div>
 
@@ -876,7 +876,7 @@ const EmptyMessage = () => {
               isSearchToolListSuccess &&
               searchToolList?.length > 0 && (
                 <div className="flex items-center gap-2 px-2">
-                  <span className="text-official-official-gray-750 pr-1 text-xs font-light">
+                  <span className="text-official-gray-750 pr-1 text-xs font-light">
                     Suggested Tools
                   </span>
                   {searchToolList?.map((tool, idx) => (
@@ -915,7 +915,7 @@ const EmptyMessage = () => {
                           {tool.description}
 
                           <br />
-                          <div className="text-official-official-gray-750 flex items-center justify-end gap-2 text-xs">
+                          <div className="text-official-gray-750 flex items-center justify-end gap-2 text-xs">
                             <CommandShortcut>⌘ + {idx + 1}</CommandShortcut>
                           </div>
                         </TooltipContent>
@@ -935,11 +935,11 @@ const EmptyMessage = () => {
               )}
             {(!debounceMessage || selectedTool || selectedAgent) && (
               <div className="flex w-full items-center justify-between gap-2 px-2">
-                <span className="text-official-official-gray-750 text-xs font-light">
+                <span className="text-official-gray-750 text-xs font-light">
                   <span className="font-medium">Shift + Enter</span> for a new
                   line
                 </span>
-                <span className="text-official-official-gray-750 text-xs font-light">
+                <span className="text-official-gray-750 text-xs font-light">
                   <span className="font-medium">Enter</span> to send
                 </span>
               </div>
@@ -949,7 +949,7 @@ const EmptyMessage = () => {
         <div className="mx-auto grid w-full max-w-6xl grid-cols-4 justify-center gap-3">
           {PROMPT_SUGGESTIONS.map((suggestion) => (
             <Badge
-              className="hover:bg-official-gray-900 hover:text-official-official-official-gray-750 text-official-official-official-gray-900 cursor-pointer justify-between text-balance rounded-xl px-2 py-1.5 pl-4 text-left text-sm font-normal normal-case transition-colors"
+              className="hover:bg-official-gray-900 hover:text-official-official-gray-750 text-official-official-gray-900 cursor-pointer justify-between text-balance rounded-xl px-2 py-1.5 pl-4 text-left text-sm font-normal normal-case transition-colors"
               key={suggestion.text}
               onClick={() => {
                 chatForm.setValue('message', suggestion.prompt);
@@ -1119,7 +1119,7 @@ const Card: React.FC<CardProps> = ({
           <h3 className="text-left text-base font-medium capitalize">
             {title}
           </h3>
-          <p className="text-official-official-gray-750 line-clamp-2 h-10 text-balance text-left text-sm">
+          <p className="text-official-gray-750 line-clamp-2 h-10 text-balance text-left text-sm">
             {description || 'No description available'}
           </p>
         </div>
@@ -1182,9 +1182,7 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
           {title}
         </h2>
         {description && (
-          <p className="text-official-official-gray-750 text-sm">
-            {description}
-          </p>
+          <p className="text-official-gray-750 text-sm">{description}</p>
         )}
       </div>
       <div className="animate-fade-in animate-delay-200 mt-4 flex items-center space-x-3 md:mt-0">

@@ -138,7 +138,7 @@ const ArtifactCard = ({
 }: ArtifactProps) => (
   <Card
     className={cn(
-      'border-official-official-gray-750 w-full max-w-sm border',
+      'border-official-gray-750 w-full max-w-sm border',
       isSelected && 'bg-official-gray-700 border-gray-50',
     )}
     onClick={() => {
@@ -149,13 +149,11 @@ const ArtifactCard = ({
     <CardContent className="flex items-center gap-1 p-1 py-1.5">
       <div className="rounded-md p-2">
         {loading ? (
-          <Loader2 className="text-official-official-official-gray-900 h-5 w-5 animate-spin" />
+          <Loader2 className="text-official-official-gray-900 h-5 w-5 animate-spin" />
         ) : (
           <ReactJsIcon
             className={cn(
-              isSelected
-                ? 'text-gray-50'
-                : 'text-official-official-official-gray-900',
+              isSelected ? 'text-gray-50' : 'text-official-official-gray-900',
             )}
           />
         )}
@@ -164,7 +162,7 @@ const ArtifactCard = ({
         <p className="text-em-sm text-official-gray-50 !mb-0 line-clamp-1 font-medium">
           {title}
         </p>
-        <p className="text-official-official-official-gray-900 !mb-0 text-xs">
+        <p className="text-official-official-gray-900 !mb-0 text-xs">
           {loading ? 'Generating...' : 'Click to preview'}
         </p>
       </div>
@@ -277,7 +275,7 @@ export const MessageBase = ({
           ) : (
             <AvatarFallback
               className={cn(
-                'text-em-xs text-official-official-gray-700 h-8 w-8 border bg-[#313336]',
+                'text-em-xs text-official-gray-700 h-8 w-8 border bg-[#313336]',
                 minimalistMode && 'text-em-xs h-5 w-5',
               )}
             >
@@ -305,8 +303,8 @@ export const MessageBase = ({
                       <ChatInputArea
                         bottomAddons={
                           <div className="flex w-full items-center justify-between px-1">
-                            <div className="text-em-xs text-official-official-gray-750 flex items-center gap-1">
-                              <InfoIcon className="text-official-official-gray-750 h-3 w-3" />
+                            <div className="text-em-xs text-official-gray-750 flex items-center gap-1">
+                              <InfoIcon className="text-official-gray-750 h-3 w-3" />
                               <span>{t('chat.editMessage.warning')}</span>
                             </div>
                             <div className="flex items-center gap-2">
@@ -352,7 +350,7 @@ export const MessageBase = ({
                   editing && 'w-full py-1',
                   message.role === 'assistant' &&
                     isPending &&
-                    'before:from-official-official-gray-900 before:to-official-official-gray-900/10 relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l',
+                    'before:from-official-gray-900 before:to-official-gray-900/10 relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l',
                   minimalistMode && 'rounded-sm px-2 pb-1.5 pt-1.5',
                 )}
               >
@@ -398,7 +396,7 @@ export const MessageBase = ({
                                 <span className="font-medium text-white">
                                   {tool.name}(
                                   {Object.keys(tool.args).length > 0 && (
-                                    <span className="text-official-official-gray-750 font-mono font-medium">
+                                    <span className="text-official-gray-750 font-mono font-medium">
                                       <PrettyJsonPrint json={tool.args} />
                                     </span>
                                   )}
@@ -408,7 +406,7 @@ export const MessageBase = ({
                               {tool.result && (
                                 <div>
                                   <span>Response:</span>
-                                  <span className="text-official-official-gray-750 break-all font-mono">
+                                  <span className="text-official-gray-750 break-all font-mono">
                                     <PrettyJsonPrint json={tool.result} />
                                   </span>
                                 </div>
@@ -424,7 +422,7 @@ export const MessageBase = ({
                   <MarkdownText
                     className={cn(
                       message.reasoning?.status?.type === 'running' &&
-                        'text-official-official-gray-750',
+                        'text-official-gray-750',
                     )}
                     content={extractErrorPropertyOrContent(
                       message.content
@@ -473,7 +471,7 @@ export const MessageBase = ({
                   ) &&
                   message.content === '' && (
                     <div className="whitespace-pre-line pt-1.5">
-                      <span className="text-official-official-gray-750 text-xs">
+                      <span className="text-official-gray-750 text-xs">
                         Executing tools
                       </span>
                     </div>
@@ -485,7 +483,7 @@ export const MessageBase = ({
                   ) &&
                   message.content === '' && (
                     <div className="whitespace-pre-line pt-1.5">
-                      <span className="text-official-official-gray-750 text-xs">
+                      <span className="text-official-gray-750 text-xs">
                         Getting AI response
                       </span>
                     </div>
@@ -581,7 +579,7 @@ export const MessageBase = ({
                         <TooltipTrigger asChild>
                           <button
                             className={cn(
-                              'text-official-official-official-gray-900 border-official-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                              'text-official-official-gray-900 border-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                             )}
                             onClick={() => {
                               setEditing(true);
@@ -603,7 +601,7 @@ export const MessageBase = ({
                           <TooltipTrigger asChild>
                             <button
                               className={cn(
-                                'text-official-official-gray-750 border-official-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                                'text-official-gray-750 border-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                               )}
                               onClick={handleForkMessage}
                             >
@@ -620,7 +618,7 @@ export const MessageBase = ({
                           <TooltipTrigger asChild>
                             <button
                               className={cn(
-                                'text-official-official-gray-750 border-official-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                                'text-official-gray-750 border-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                               )}
                               onClick={handleRetryMessage}
                             >
@@ -641,7 +639,7 @@ export const MessageBase = ({
                         <div>
                           <CopyToClipboardIcon
                             className={cn(
-                              'text-official-official-official-gray-900 border-official-official-gray-900 hover:bg-official-gray-700 h-7 w-7 border bg-transparent [&>svg]:h-3 [&>svg]:w-3',
+                              'text-official-official-gray-900 border-official-gray-900 hover:bg-official-gray-700 h-7 w-7 border bg-transparent [&>svg]:h-3 [&>svg]:w-3',
                             )}
                             string={extractErrorPropertyOrContent(
                               message.content,
@@ -659,7 +657,7 @@ export const MessageBase = ({
                   </div>
                   <div
                     className={cn(
-                      'text-official-official-gray-750 flex items-center gap-1.5',
+                      'text-official-gray-750 flex items-center gap-1.5',
                     )}
                   >
                     <span>
@@ -720,10 +718,10 @@ export function ToolCard({
       return <ToolsIcon className="text-brand size-full" />;
     }
     if (status === ToolStatusType.Incomplete) {
-      return <XCircle className="text-official-official-gray-750 size-full" />;
+      return <XCircle className="text-official-gray-750 size-full" />;
     }
     if (status === ToolStatusType.RequiresAction) {
-      return <InfoIcon className="text-official-official-gray-750 size-full" />;
+      return <InfoIcon className="text-official-gray-750 size-full" />;
     }
     return <Loader2 className="text-brand size-full animate-spin" />;
   };
@@ -753,7 +751,7 @@ export function ToolCard({
         <div className="flex items-center gap-1 p-[5px]">
           <div className="size-7 shrink-0 px-1.5">{renderStatus()}</div>
           <div className="flex items-center gap-1">
-            <span className="text-official-official-official-gray-900 text-em-sm">
+            <span className="text-official-official-gray-900 text-em-sm">
               {renderLabelText()}
             </span>
             <Link
@@ -780,7 +778,7 @@ export function Reasoning({
       return <ReasoningIcon className="text-brand size-full" />;
     }
     if (status?.type === 'incomplete') {
-      return <XCircle className="text-official-official-gray-750 size-full" />;
+      return <XCircle className="text-official-gray-750 size-full" />;
     }
     if (status?.type === 'running') {
       return null;
@@ -828,9 +826,9 @@ export function Reasoning({
             >
               <div
                 className={cn(
-                  'text-official-official-gray-700 flex items-center gap-1',
+                  'text-official-gray-700 flex items-center gap-1',
                   status?.type === 'running' &&
-                    'text-official-official-official-gray-900',
+                    'text-official-official-gray-900',
                 )}
               >
                 {renderStatus() && (
@@ -844,7 +842,7 @@ export function Reasoning({
           </AnimatePresence>
         </AccordionTrigger>
         <AccordionContent className="bg-official-gray-950 flex flex-col gap-1 rounded-b-lg px-3 pb-3 pt-2 text-sm">
-          <span className="text-official-official-gray-750 break-words">
+          <span className="text-official-gray-750 break-words">
             {reasoning}
           </span>
         </AccordionContent>
@@ -860,7 +858,7 @@ export const GeneratedFiles = ({ toolCalls }: { toolCalls: ToolCall[] }) => {
       (tool) => !!tool.generatedFiles && tool.generatedFiles.length > 0,
     ) && (
       <div className="mt-4 space-y-1 py-4 pt-1.5">
-        <span className="text-official-official-gray-750 text-em-sm">
+        <span className="text-official-gray-750 text-em-sm">
           Generated Files
         </span>
         <div className="flex flex-wrap items-start gap-4 rounded-md">

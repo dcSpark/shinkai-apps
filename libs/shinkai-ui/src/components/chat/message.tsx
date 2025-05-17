@@ -116,7 +116,7 @@ const ArtifactCard = ({
 }: ArtifactProps) => (
   <Card
     className={cn(
-      'border-official-official-gray-750 w-full max-w-sm border',
+      'border-official-gray-750 w-full max-w-sm border',
       isSelected && 'bg-official-gray-700 border-gray-50',
     )}
     onClick={() => {
@@ -127,13 +127,11 @@ const ArtifactCard = ({
     <CardContent className="flex items-center gap-1 p-1 py-1.5">
       <div className="rounded-md p-2">
         {loading ? (
-          <Loader2 className="text-official-official-official-gray-900 h-5 w-5 animate-spin" />
+          <Loader2 className="text-official-official-gray-900 h-5 w-5 animate-spin" />
         ) : (
           <ReactJsIcon
             className={cn(
-              isSelected
-                ? 'text-gray-50'
-                : 'text-official-official-official-gray-900',
+              isSelected ? 'text-gray-50' : 'text-official-official-gray-900',
             )}
           />
         )}
@@ -142,7 +140,7 @@ const ArtifactCard = ({
         <p className="!mb-0 line-clamp-1 text-sm font-medium text-gray-50">
           {title}
         </p>
-        <p className="text-official-official-official-gray-900 !mb-0 text-xs">
+        <p className="text-official-official-gray-900 !mb-0 text-xs">
           {loading ? 'Generating...' : 'Click to preview'}
         </p>
       </div>
@@ -251,8 +249,8 @@ const MessageBase = ({
                       <ChatInputArea
                         bottomAddons={
                           <div className="flex w-full items-center justify-between px-1">
-                            <div className="text-official-official-gray-750 flex items-center gap-1 text-xs">
-                              <InfoCircleIcon className="text-official-official-gray-750 h-3 w-3" />
+                            <div className="text-official-gray-750 flex items-center gap-1 text-xs">
+                              <InfoCircleIcon className="text-official-gray-750 h-3 w-3" />
                               <span>{t('chat.editMessage.warning')}</span>
                             </div>
                             <div className="flex items-center gap-2">
@@ -291,12 +289,12 @@ const MessageBase = ({
                   'relative mt-1 flex flex-col rounded-lg bg-black/40 px-3.5 pt-3 text-sm text-white',
                   message.role === 'user'
                     ? 'bg-official-gray-700 rounded-tr-none'
-                    : 'bg-official-official-gray-900 rounded-bl-none border-none',
+                    : 'bg-official-gray-900 rounded-bl-none border-none',
                   !message.content ? 'pb-3' : 'pb-4',
                   editing && 'w-full py-1',
                   message.role === 'assistant' &&
                     isPending &&
-                    'before:from-official-official-gray-900 before:to-official-official-gray-900/10 relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l',
+                    'before:from-official-gray-900 before:to-official-gray-900/10 relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l',
                 )}
               >
                 {message.role === 'assistant' &&
@@ -334,7 +332,7 @@ const MessageBase = ({
                                 <span className="font-medium text-white">
                                   {tool.name}(
                                   {Object.keys(tool.args).length > 0 && (
-                                    <span className="text-official-official-official-gray-900 font-mono font-medium">
+                                    <span className="text-official-official-gray-900 font-mono font-medium">
                                       {JSON.stringify(tool.args)}
                                     </span>
                                   )}
@@ -344,7 +342,7 @@ const MessageBase = ({
                               {tool.result && (
                                 <div>
                                   <span>Response:</span>
-                                  <span className="text-official-official-official-gray-900 break-all font-mono">
+                                  <span className="text-official-official-gray-900 break-all font-mono">
                                     <PrettyJsonPrint json={tool.result} />
                                   </span>
                                 </div>
@@ -405,7 +403,7 @@ const MessageBase = ({
                           <TooltipTrigger asChild>
                             <button
                               className={cn(
-                                'text-official-official-official-gray-900 border-official-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                                'text-official-official-gray-900 border-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                               )}
                               onClick={() => {
                                 setEditing(true);
@@ -428,7 +426,7 @@ const MessageBase = ({
                           <TooltipTrigger asChild>
                             <button
                               className={cn(
-                                'text-official-official-official-gray-900 border-official-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                                'text-official-official-gray-900 border-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                               )}
                               onClick={handleRetryMessage}
                             >
@@ -449,7 +447,7 @@ const MessageBase = ({
                           <div>
                             <CopyToClipboardIcon
                               className={cn(
-                                'text-official-official-official-gray-900 border-official-official-gray-900 hover:bg-official-gray-700 h-7 w-7 border bg-transparent [&>svg]:h-3 [&>svg]:w-3',
+                                'text-official-official-gray-900 border-official-gray-900 hover:bg-official-gray-700 h-7 w-7 border bg-transparent [&>svg]:h-3 [&>svg]:w-3',
                               )}
                               string={extractErrorPropertyOrContent(
                                 message.content,
@@ -468,7 +466,7 @@ const MessageBase = ({
                   </div>
                   <div
                     className={cn(
-                      'text-official-official-gray-750 flex items-center gap-1.5 text-xs',
+                      'text-official-gray-750 flex items-center gap-1.5 text-xs',
                     )}
                   >
                     <span>
@@ -526,13 +524,11 @@ export function ToolCard({
       return <ToolsIcon className="text-brand size-full" />;
     }
     if (status === ToolStatusType.Incomplete) {
-      return (
-        <XCircle className="text-official-official-official-gray-900 size-full" />
-      );
+      return <XCircle className="text-official-official-gray-900 size-full" />;
     }
     if (status === ToolStatusType.RequiresAction) {
       return (
-        <InfoCircleIcon className="text-official-official-official-gray-900 size-full" />
+        <InfoCircleIcon className="text-official-official-gray-900 size-full" />
       );
     }
     return <Loader2 className="text-brand size-full animate-spin" />;
@@ -563,7 +559,7 @@ export function ToolCard({
         <div className="flex items-center gap-1 p-[5px]">
           <div className="size-7 shrink-0 px-1.5">{renderStatus()}</div>
           <div className="flex items-center gap-1">
-            <span className="text-official-official-official-gray-900 text-em-sm">
+            <span className="text-official-official-gray-900 text-em-sm">
               {renderLabelText()}
             </span>
             <Link

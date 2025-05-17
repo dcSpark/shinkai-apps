@@ -142,7 +142,7 @@ function ExecutionPanelBase({
       >
         <div className="flex size-full flex-col pb-4 pl-4 pr-3">
           <div className="flex items-start justify-between gap-8 py-3">
-            <div className="text-official-official-official-gray-900 flex items-center gap-1 text-xs">
+            <div className="text-official-official-gray-900 flex items-center gap-1 text-xs">
               {isMetadataGenerationSuccess &&
                 !isToolCodeGenerationPending &&
                 !isMetadataGenerationError &&
@@ -151,7 +151,7 @@ function ExecutionPanelBase({
                     <h1 className="text-base font-medium text-white">
                       {toolMetadata.name}
                     </h1>
-                    <p className="text-official-official-gray-750 text-xs">
+                    <p className="text-official-gray-750 text-xs">
                       {toolMetadata.description}
                     </p>
                   </div>
@@ -181,7 +181,7 @@ function ExecutionPanelBase({
           </div>
           <div className="pb-6">
             {(isMetadataGenerationPending || isToolCodeGenerationPending) && (
-              <div className="text-official-official-official-gray-900 flex w-full flex-col items-start gap-5 text-xs">
+              <div className="text-official-official-gray-900 flex w-full flex-col items-start gap-5 text-xs">
                 <div className="w-full space-y-2">
                   <Skeleton className="bg-official-gray-900 h-6 w-2/4 animate-pulse rounded" />
                   <Skeleton className="bg-official-gray-900 h-10 w-3/4 animate-pulse rounded" />
@@ -206,7 +206,7 @@ function ExecutionPanelBase({
             {isMetadataGenerationSuccess &&
               !isToolCodeGenerationPending &&
               !isMetadataGenerationError && (
-                <div className="text-official-official-official-gray-900 size-full text-xs">
+                <div className="text-official-official-gray-900 size-full text-xs">
                   <JsonForm
                     className={cn(
                       (toolMetadata?.configurations?.properties &&
@@ -282,7 +282,7 @@ function ExecutionPanelBase({
                         initial={{ opacity: 0, x: 20 }}
                       >
                         {isExecutionToolCodePending && (
-                          <div className="text-official-official-official-gray-900 flex flex-col items-center gap-2 py-4 text-xs">
+                          <div className="text-official-official-gray-900 flex flex-col items-center gap-2 py-4 text-xs">
                             <LoaderIcon className="shrink-0 animate-spin" />
                             Running Tool...
                           </div>
@@ -313,7 +313,7 @@ function ExecutionPanelBase({
               )}
             {isMetadataGenerationIdle && !isToolCodeGenerationPending && (
               <div>
-                <p className="text-official-official-official-gray-900 py-4 pt-6 text-center text-xs">
+                <p className="text-official-official-gray-900 py-4 pt-6 text-center text-xs">
                   No metadata generated yet.
                 </p>
               </div>
@@ -503,9 +503,7 @@ const ToolLogsBase = ({
             className="hover:bg-official-gray-850 px-2 py-2 font-mono text-xs"
             key={i}
           >
-            <span className="text-official-official-gray-750">
-              {readableDate}{' '}
-            </span>
+            <span className="text-official-gray-750">{readableDate} </span>
             <span className="text-gray-50">{logContent}</span>
           </div>
         );
@@ -517,7 +515,7 @@ const ToolLogsBase = ({
       {logsFile ? (
         <div className="space-y-1">{formatLogs(logsFile)}</div>
       ) : (
-        <div className="text-official-official-official-gray-900 px-2 py-2 text-left text-xs">
+        <div className="text-official-official-gray-900 px-2 py-2 text-left text-xs">
           Results of your code will appear here when you run
         </div>
       )}
@@ -570,7 +568,7 @@ export const FileInputField = ({ value, onChange }: FieldProps) => {
       />
       {value && (
         <div className="inline-flex items-center gap-2">
-          <span className="text-official-official-gray-750">File Path:</span>
+          <span className="text-official-gray-750">File Path:</span>
           <Tooltip>
             <TooltipTrigger asChild>
               <span className="text-white">{value?.split('/')?.at(-1)}</span>

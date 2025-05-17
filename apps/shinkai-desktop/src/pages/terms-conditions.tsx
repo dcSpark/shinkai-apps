@@ -168,14 +168,12 @@ const TermsAndConditionsPage = () => {
         <h1 className="font-clash text-4xl font-semibold">
           {t('desktop.welcome')}
         </h1>
-        <p className="text-official-official-gray-700 text-base">
+        <p className="text-official-gray-700 text-base">
           <Trans
             components={{
               b: (
                 <span
-                  className={
-                    'text-official-official-official-gray-900 font-semibold'
-                  }
+                  className={'text-official-official-gray-900 font-semibold'}
                 />
               ),
             }}
@@ -237,7 +235,7 @@ const TermsAndConditionsPage = () => {
         </Button>
 
         {(config.isDev || showLocalNodeOption) && (
-          <div className="text-official-official-official-gray-900 items-center space-x-2 text-center text-sm">
+          <div className="text-official-official-gray-900 items-center space-x-2 text-center text-sm">
             <span>{t('common.alreadyHaveNode')}</span>
             <Link
               className="font-semibold text-white underline"

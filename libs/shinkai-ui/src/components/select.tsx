@@ -18,7 +18,7 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     className={cn(
       'h-input border-official-gray-750 bg-official-gray-900 relative flex w-full items-center justify-between rounded-md border px-4 py-2 text-sm shadow-sm',
-      'focus:ring-official-gray-700 placeholder:text-official-official-gray-750 focus:outline-none focus:ring-1 focus:ring-inset disabled:cursor-not-allowed disabled:opacity-50',
+      'focus:ring-official-gray-700 placeholder:text-official-gray-750 focus:outline-none focus:ring-1 focus:ring-inset disabled:cursor-not-allowed disabled:opacity-50',
       'peer/select [&[data-placeholder]>svg]:mt-0',
       'pt-6 data-[placeholder]:pt-2',
       'aria-expanded:ring-official-gray-700 aria-expanded:ring-1 aria-expanded:ring-inset',

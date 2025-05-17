@@ -77,7 +77,7 @@ const ContextMenuItem = React.forwardRef<
 >(({ className, inset, ...props }, ref) => (
   <ContextMenuPrimitive.Item
     className={cn(
-      'focus:bg-official-official-gray-900 relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      'focus:bg-official-gray-900 relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       inset && 'pl-8',
       className,
     )}

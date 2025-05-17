@@ -181,7 +181,7 @@ export const MessageList = ({
         !isFetchingPreviousPage &&
         !hasPreviousPage &&
         (paginatedMessages?.pages ?? [])?.length > 1 && (
-          <div className="text-official-official-gray-750 py-2 text-center text-xs">
+          <div className="text-official-gray-750 py-2 text-center text-xs">
             {noMoreMessageLabel}
           </div>
         )}
@@ -207,7 +207,7 @@ export const MessageList = ({
                     'w-full rounded-lg px-2.5 py-3',
                     index % 2 === 0
                       ? 'bg-official-gray-700 h-24 rounded-bl-none'
-                      : 'bg-official-official-gray-900 h-16 rounded-tr-none',
+                      : 'bg-official-gray-900 h-16 rounded-tr-none',
                     index % 3 === 0 && 'h-32',
                   )}
                 />
@@ -236,7 +236,7 @@ export const MessageList = ({
                     'w-full rounded-lg px-2.5 py-3',
                     index % 2 === 0
                       ? 'bg-official-gray-700 h-24 rounded-bl-none'
-                      : 'bg-official-official-gray-900 h-16 rounded-tr-none',
+                      : 'bg-official-gray-900 h-16 rounded-tr-none',
                     index % 3 === 0 && 'h-32',
                   )}
                 />
@@ -256,7 +256,7 @@ export const MessageList = ({
                         'sticky top-5',
                       )}
                     >
-                      <span className="text-official-official-gray-750 text-xs font-medium">
+                      <span className="text-official-gray-750 text-xs font-medium">
                         {getRelativeDateLabel(
                           new Date(messages[0].createdAt || ''),
                         )}

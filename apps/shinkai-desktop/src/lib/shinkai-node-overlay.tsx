@@ -62,7 +62,7 @@ export const ShinkaiNodeRunningOverlay = ({
     return (
       <div className="flex size-full flex-col items-center justify-center gap-3 py-8">
         <Loader2 className="h-8 w-8 animate-spin text-white" />
-        <span className="text-official-official-official-gray-900 text-sm">
+        <span className="text-official-official-gray-900 text-sm">
           Checking Shinkai Node Status ...
         </span>
       </div>
@@ -126,7 +126,7 @@ export const ShinkaiNodeRunningOverlay = ({
         <h1 className="text-3xl font-bold">
           Unable to Connect to Shinkai Node
         </h1>
-        <p className="text-official-official-official-gray-900 text-base">
+        <p className="text-official-official-gray-900 text-base">
           Please make sure the Shinkai Node is running and try again.
         </p>
       </div>

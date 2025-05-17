@@ -96,7 +96,7 @@ const EmptyMessage = () => {
           <h1 className="mb-2 text-3xl font-bold text-white">
             {t('chat.emptyStateTitle')}
           </h1>
-          <p className="text-official-official-official-gray-900 text-sm">
+          <p className="text-official-official-gray-900 text-sm">
             {t('chat.emptyStateDescription')}
           </p>
         </div>

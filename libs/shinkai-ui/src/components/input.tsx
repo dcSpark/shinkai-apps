@@ -63,7 +63,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <>
         <input
           className={cn(
-            'h-input disabled:text-official-official-gray-750 border-official-gray-750 bg-official-gray-900 focus:border-official-gray-700 disabled:bg-official-gray-900 placeholder-shown:border-official-official-gray-900 peer w-full rounded-lg border px-4 py-3 pt-8 text-sm font-medium text-white placeholder-transparent outline outline-0 transition-all placeholder-shown:border focus:border focus:outline-0 disabled:border-0',
+            'h-input disabled:text-official-gray-750 border-official-gray-750 bg-official-gray-900 focus:border-official-gray-700 disabled:bg-official-gray-900 placeholder-shown:border-official-gray-900 peer w-full rounded-lg border px-4 py-3 pt-8 text-sm font-medium text-white placeholder-transparent outline outline-0 transition-all placeholder-shown:border focus:border focus:outline-0 disabled:border-0',
             startAdornment && 'pl-[var(--custom-padding-left-input)]',
             endAdornment && 'pr-[var(--custom-padding-right-input)]',
             type === 'password' && 'pr-[60px]',
@@ -104,7 +104,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {type === 'password' && !hidePasswordToggle && (
           <Button
             aria-label={showPassword ? 'Hide password' : 'Show password'}
-            className="text-official-official-official-gray-900 hover:bg-gray-350 absolute right-3 top-3"
+            className="text-official-official-gray-900 hover:bg-gray-350 absolute right-3 top-3"
             onClick={togglePasswordVisibility}
             size={'icon'}
             type="button"

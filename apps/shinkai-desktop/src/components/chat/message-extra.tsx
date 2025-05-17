@@ -146,7 +146,7 @@ function Payment({
                                   `
                               : data.usage_type.PerUse.DirectDelegation}
                         </span>
-                        <span className="text-official-official-gray-750">
+                        <span className="text-official-gray-750">
                           one-time use
                         </span>
                       </Label>
@@ -179,7 +179,7 @@ function Payment({
                                   `
                               : data.usage_type.Downloadable.DirectDelegation}
                         </span>
-                        <span className="text-official-official-gray-750-official-gray-750">
+                        <span className="text-official-gray-750-official-gray-750">
                           for download
                         </span>
                       </Label>
@@ -188,7 +188,7 @@ function Payment({
                 </RadioGroup>
                 <div className="mx-auto flex max-w-sm flex-col gap-2 py-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-official-official-gray-750-official-gray-750">
+                    <span className="text-official-gray-750-official-gray-750">
                       Author
                     </span>
                     <span className="text-white">
@@ -196,7 +196,7 @@ function Payment({
                     </span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-official-official-gray-750-official-gray-750">
+                    <span className="text-official-gray-750-official-gray-750">
                       Wallet Address
                     </span>
                     <span className="text-white">
@@ -204,7 +204,7 @@ function Payment({
                     </span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-official-official-gray-750-official-gray-750">
+                    <span className="text-official-gray-750-official-gray-750">
                       Wallet Balances
                     </span>
                     <div className="text-white">
@@ -265,7 +265,7 @@ function Payment({
             >
               <CardContent className="flex flex-col items-center justify-center gap-2 py-8">
                 <Loader2 className="h-8 w-8 animate-spin text-white" />
-                <span className="text-official-official-gray-750 ml-2">
+                <span className="text-official-gray-750 ml-2">
                   Processing payment...
                 </span>
               </CardContent>
@@ -285,7 +285,7 @@ function Payment({
                   <span className="mt-4 text-lg font-semibold text-white">
                     Payment Successful!
                   </span>
-                  <span className="text-official-official-gray-750-official-gray-750 mt-2 text-sm">
+                  <span className="text-official-gray-750-official-gray-750 mt-2 text-sm">
                     Thank you for your purchase.
                   </span>
                 </div>
@@ -319,7 +319,7 @@ function Payment({
                   <span className="mt-4 text-lg font-semibold text-white">
                     Payment Failed!
                   </span>
-                  <span className="text-official-official-gray-750-official-gray-750 mt-2 text-sm">
+                  <span className="text-official-gray-750-official-gray-750 mt-2 text-sm">
                     Please try again.
                   </span>
                 </div>

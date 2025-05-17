@@ -74,7 +74,7 @@ export function LanguageToolSelector({
             <DropdownMenuRadioGroup onValueChange={onValueChange} value={value}>
               {LANGUAGE_TOOLS.map((language) => (
                 <DropdownMenuRadioItem
-                  className="hover:bg-official-official-gray-900 aria-checked:bg-official-official-gray-900 flex cursor-pointer items-center justify-between gap-1.5 rounded-md px-2 py-2 text-white transition-colors"
+                  className="hover:bg-official-gray-900 aria-checked:bg-official-gray-900 flex cursor-pointer items-center justify-between gap-1.5 rounded-md px-2 py-2 text-white transition-colors"
                   key={language.value}
                   value={language.value}
                 >

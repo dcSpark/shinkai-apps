@@ -154,10 +154,10 @@ function MetadataPanelBase({
                   side="bottom"
                 >
                   <p className="font-medium">Invalid metadata format</p>
-                  <span className="text-official-official-gray-850">
+                  <span className="text-official-gray-850">
                     {validateMetadataEditorValue}
                   </span>
-                  <p className="text-official-official-gray-850 text-xs">
+                  <p className="text-official-gray-850 text-xs">
                     This value will not be saved.
                   </p>
                 </TooltipContent>
@@ -188,7 +188,7 @@ function MetadataPanelBase({
         </div>
       )}
       {isMetadataGenerationPending && (
-        <div className="text-official-official-official-gray-900 flex flex-col gap-2 py-4 text-xs">
+        <div className="text-official-official-gray-900 flex flex-col gap-2 py-4 text-xs">
           <div className="space-y-3 font-mono text-sm">
             <div className="ml-4 flex items-center gap-2">
               <Skeleton className="h-4 w-24 bg-zinc-800" />
@@ -255,7 +255,7 @@ function MetadataPanelBase({
         )}
       {isMetadataGenerationIdle && (
         <div>
-          <p className="text-official-official-official-gray-900 py-4 pt-6 text-center text-xs">
+          <p className="text-official-official-gray-900 py-4 pt-6 text-center text-xs">
             No metadata generated yet.
           </p>
         </div>

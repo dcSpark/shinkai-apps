@@ -81,7 +81,7 @@ function AgentsPage() {
               </Button>
             </div>
           </div>
-          <p className="text-official-official-gray-750 text-sm">
+          <p className="text-official-gray-750 text-sm">
             Create and explore AI agents with personalized instructions,
             enriched knowledge, <br /> diverse task capabilities, and more to
             tackle your goals autonomously.
@@ -95,7 +95,7 @@ function AgentsPage() {
               </div>
               <div className="flex flex-col items-center gap-1">
                 <p className="font-medium">No available agents</p>
-                <p className="text-official-official-gray-750 text-center text-sm font-medium">
+                <p className="text-official-gray-750 text-center text-sm font-medium">
                   Create your first Agent to start exploring the power of AI.
                 </p>
               </div>
@@ -205,7 +205,7 @@ const AgentCard = ({
               )}
             </span>
 
-            <span className="text-official-official-gray-750 text-sm">
+            <span className="text-official-gray-750 text-sm">
               {agentDescription ?? 'No description'}
             </span>
             {hasScheduledTasks && (
@@ -215,7 +215,7 @@ const AgentCard = ({
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Link
-                          className="text-official-official-official-gray-900 bg-official-gray-850 flex items-center gap-2 rounded-md px-2 py-1 text-xs transition-colors hover:text-white"
+                          className="text-official-official-gray-900 bg-official-gray-850 flex items-center gap-2 rounded-md px-2 py-1 text-xs transition-colors hover:text-white"
                           key={task.task_id}
                           to={`/tasks/${task.task_id}`}
                         >
@@ -284,7 +284,7 @@ const AgentCard = ({
                 tabIndex={0}
               >
                 <span className="sr-only">{t('common.moreOptions')}</span>
-                <DotsVerticalIcon className="text-official-official-gray-750" />
+                <DotsVerticalIcon className="text-official-gray-750" />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent

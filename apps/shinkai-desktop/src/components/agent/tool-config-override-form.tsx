@@ -145,7 +145,7 @@ export const TooConfigOverrideForm = ({
                       <span className="text-sm font-medium">
                         {property.name}
                       </span>
-                      <span className="text-official-official-gray-850 text-xs">
+                      <span className="text-official-gray-850 text-xs">
                         {property.description}
                       </span>
                     </div>

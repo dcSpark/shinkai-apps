@@ -284,19 +284,19 @@ export function MainNav() {
     >
       <div
         className={cn(
-          'text-official-official-gray-750 flex w-full items-center justify-between gap-2 py-2 pl-4',
+          'text-official-gray-750 flex w-full items-center justify-between gap-2 py-2 pl-4',
           !sidebarExpanded && 'justify-center px-0',
         )}
       >
         {sidebarExpanded && (
-          <ShinkaiCombinationMarkIcon className="text-official-official-official-gray-750 h-auto w-[90px]" />
+          <ShinkaiCombinationMarkIcon className="text-official-official-gray-750 h-auto w-[90px]" />
         )}
 
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               className={cn(
-                'border-official-gray-780 text-official-official-gray-750 h-6 w-6 shrink-0 rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
+                'border-official-gray-780 text-official-gray-750 h-6 w-6 shrink-0 rounded-lg border bg-black/20 p-0 hover:bg-black/20 hover:text-white',
               )}
               onClick={toggleSidebar}
               size="auto"
@@ -351,7 +351,7 @@ export function MainNav() {
                           {item.disabled ? (
                             <>
                               {item.title} <br />
-                              <span className="text-official-official-gray-750 text-xs">
+                              <span className="text-official-gray-750 text-xs">
                                 {t('common.comingSoon')}
                               </span>
                             </>
@@ -359,7 +359,7 @@ export function MainNav() {
                             <div className="flex flex-col gap-1">
                               {item.title}
                               {item.href === '/home' ? (
-                                <div className="text-official-official-gray-750 flex items-center justify-center gap-2 text-center">
+                                <div className="text-official-gray-750 flex items-center justify-center gap-2 text-center">
                                   <span>⌘</span>
                                   <span>N</span>
                                 </div>

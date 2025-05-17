@@ -46,7 +46,7 @@ export const VectorFsFolderInfo = ({
     <div className="flex-1 truncate text-left">
       <div className="truncate text-sm font-medium">{folder.name}</div>
       {layout === VectorFSLayout.List && !allowFolderNameOnly && (
-        <p className="text-official-official-gray-750 text-xs font-medium">
+        <p className="text-official-gray-750 text-xs font-medium">
           <span>
             {formatDateToUSLocaleString(new Date(folder.created_time ?? ''))}
           </span>{' '}
@@ -173,7 +173,7 @@ const VectorFsFolder = ({
             tabIndex={0}
           >
             <span className="sr-only">{t('common.moreOptions')}</span>
-            <DotsVerticalIcon className="text-official-official-gray-750-official-gray-750" />
+            <DotsVerticalIcon className="text-official-gray-750-official-gray-750" />
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent

@@ -184,7 +184,7 @@ export const FolderSelectionList = () => {
                 <DirectoryTypeIcon />
                 <VectorFsFolderInfo allowFolderNameOnly folder={folder} />
                 {!!(folder?.children ?? []).length && (
-                  <ChevronRight className="text-official-official-official-gray-900 h-5 w-5" />
+                  <ChevronRight className="text-official-official-gray-900 h-5 w-5" />
                 )}
               </button>
             );

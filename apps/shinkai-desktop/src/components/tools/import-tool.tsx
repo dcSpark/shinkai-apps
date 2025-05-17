@@ -167,7 +167,7 @@ export default function ImportToolModal() {
                 <Link className="size-5" />
                 <div>
                   <div className="text-sm font-semibold">Import from URL</div>
-                  <div className="text-official-official-official-gray-900 text-sm">
+                  <div className="text-official-official-gray-900 text-sm">
                     Import a tool from a URL.
                   </div>
                 </div>
@@ -180,7 +180,7 @@ export default function ImportToolModal() {
                 <Package2Icon className="size-5" />
                 <div>
                   <div className="text-sm font-semibold">Import from Zip</div>
-                  <div className="text-official-official-official-gray-900 text-sm">
+                  <div className="text-official-official-gray-900 text-sm">
                     Import a tool from a zip file.
                   </div>
                 </div>
@@ -340,7 +340,7 @@ export default function ImportToolModal() {
             size="icon"
             variant="tertiary"
           >
-            <XIcon className="text-official-official-official-gray-900 h-5 w-5" />
+            <XIcon className="text-official-official-gray-900 h-5 w-5" />
           </Button>
           <div className="px-2 pt-2.5 antialiased" ref={elementRef}>
             <AnimatePresence

@@ -25,7 +25,7 @@ export const LogIcon = ({ level }: { level: string }) => {
       case 'INFO':
         return 'bg-blue-500/20 text-blue-500';
       case 'TRACE':
-        return 'bg-official-gray-850/10 text-official-official-gray-900';
+        return 'bg-official-gray-850/10 text-official-gray-900';
       case 'DEBUG':
         return 'bg-purple-500/20 text-purple-500';
       default:

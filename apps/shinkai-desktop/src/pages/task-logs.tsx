@@ -140,7 +140,7 @@ export const TaskLogs = () => {
           {isSuccess && logs.length === 0 && (
             <div className="p-10 text-center text-sm">
               <p className="text-white">No runs for this task yet</p>
-              <p className="text-official-official-official-gray-900 text-xs">
+              <p className="text-official-official-gray-900 text-xs">
                 check the schedule for your tasks to see when it runs
               </p>
             </div>
@@ -174,12 +174,12 @@ export const TaskLogs = () => {
                   </div>
 
                   <Link
-                    className="text-official-official-official-gray-900 font-mono underline"
+                    className="text-official-official-gray-900 font-mono underline"
                     to={`/inboxes/${encodeURIComponent(buildInboxIdFromJobId(log.job_id))}`}
                   >
                     Go to chat
                   </Link>
-                  <div className="text-official-official-official-gray-900 font-mono">
+                  <div className="text-official-official-gray-900 font-mono">
                     {log.error_message || '-'}
                   </div>
                 </div>
@@ -267,7 +267,7 @@ const TaskCard = ({
                 tabIndex={0}
               >
                 <span className="sr-only">{t('common.moreOptions')}</span>
-                <DotsVerticalIcon className="text-official-official-gray-750" />
+                <DotsVerticalIcon className="text-official-gray-750" />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -342,7 +342,7 @@ const TaskCard = ({
           </div>
           <div className="text-sm">
             {readableCron}
-            <span className="text-official-official-official-gray-900 bg-official-gray-700 ml-2 rounded-lg px-2 py-1 font-mono">
+            <span className="text-official-official-gray-900 bg-official-gray-700 ml-2 rounded-lg px-2 py-1 font-mono">
               {cronExpression}
             </span>
           </div>

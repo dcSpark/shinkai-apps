@@ -196,7 +196,7 @@
 //                     </div>
 //                   ) : (
 //                     <label
-//                       className="flex h-[100px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-official-official-gray-750 bg-official-gray-750"
+//                       className="flex h-[100px] w-full cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-official-gray-750 bg-official-gray-750"
 //                       htmlFor="dropzone-file"
 //                     >
 //                       <div className="flex flex-col items-center justify-center space-y-1">
@@ -206,7 +206,7 @@
 //                         <p className="text-sm text-white">
 //                           Click to upload or drag and drop
 //                         </p>
-//                         <p className="text-official-official-official-gray-900 text-xs">JPG | PNG</p>
+//                         <p className="text-official-official-gray-900 text-xs">JPG | PNG</p>
 //                       </div>
 //                       <input
 //                         accept="image/png, image/jpeg"

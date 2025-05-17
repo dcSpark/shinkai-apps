@@ -227,7 +227,7 @@ const ToolCollectionBase = () => {
         </div>
         <div className="shadow-official-gray-950 focus-within:shadow-official-gray-700 relative flex h-10 items-center rounded-lg shadow-[0_0_0_1px_currentColor] transition-shadow">
           <Input
-            className="placeholder-official-official-official-gray-900 bg-official-gray-900 !h-full border-none py-2 pl-10"
+            className="placeholder-official-official-gray-900 bg-official-gray-900 !h-full border-none py-2 pl-10"
             onChange={(e) => {
               setSearchQuery(e.target.value);
             }}
@@ -238,7 +238,7 @@ const ToolCollectionBase = () => {
           <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
           {searchQuery && (
             <Button
-              className="bg-official-official-gray-900 absolute right-1 h-8 w-8 p-2"
+              className="bg-official-gray-900 absolute right-1 h-8 w-8 p-2"
               onClick={() => {
                 setSearchQuery('');
               }}
@@ -255,7 +255,7 @@ const ToolCollectionBase = () => {
 
       {searchQuery && isSearchQuerySynced && searchToolList?.length === 0 && (
         <div className="flex h-20 items-center justify-center">
-          <p className="text-official-official-official-gray-900 text-sm">
+          <p className="text-official-official-gray-900 text-sm">
             {t('tools.emptyState.search.text')}
           </p>
         </div>
@@ -282,7 +282,7 @@ const ToolCollectionBase = () => {
               value={selectedToolCategory}
             >
               <ToggleGroupItem
-                className="data-[state=on]:bg-official-gray-850 text-official-official-gray-750 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
+                className="data-[state=on]:bg-official-gray-850 text-official-gray-750 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
                 key="all"
                 size="sm"
                 value="all"
@@ -291,7 +291,7 @@ const ToolCollectionBase = () => {
               </ToggleGroupItem>
               {toolsGroup.map((tool) => (
                 <ToggleGroupItem
-                  className="data-[state=on]:bg-official-gray-850 text-official-official-gray-750 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
+                  className="data-[state=on]:bg-official-gray-850 text-official-gray-750 rounded-full bg-transparent px-3 py-2.5 text-xs font-medium data-[state=on]:text-white"
                   key={tool.value}
                   size="sm"
                   value={tool.value}
@@ -305,7 +305,7 @@ const ToolCollectionBase = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    className="text-official-official-gray-750 hover:text-white"
+                    className="text-official-gray-750 hover:text-white"
                     size="sm"
                     variant="ghost"
                   >
@@ -345,7 +345,7 @@ const ToolCollectionBase = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  className="text-official-official-official-gray-900"
+                  className="text-official-official-gray-900"
                   rounded="lg"
                   size="icon"
                   variant="outline"
@@ -387,7 +387,7 @@ const ToolCollectionBase = () => {
           <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
             {toolsList?.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-2 py-8">
-                <p className="text-official-official-gray-750 text-sm">
+                <p className="text-official-gray-750 text-sm">
                   No tools found in this category. Create a new tool or install
                   from the App Store.
                 </p>
@@ -405,17 +405,17 @@ const ToolCollectionBase = () => {
                       <span className="text-sm font-medium text-white">
                         {tool.name}{' '}
                       </span>
-                      <Badge className="text-official-official-official-gray-900 bg-official-gray-750 text-xs font-normal">
+                      <Badge className="text-official-official-gray-900 bg-official-gray-750 text-xs font-normal">
                         {tool.author}
                       </Badge>
                     </div>
-                    <p className="text-official-official-official-gray-900 line-clamp-2 text-xs">
+                    <p className="text-official-official-gray-900 line-clamp-2 text-xs">
                       {tool.description}
                     </p>
                   </div>
                   <div />
                   <div />
-                  <div className="text-official-official-official-gray-900 flex items-center text-xs">
+                  <div className="text-official-official-gray-900 flex items-center text-xs">
                     <Tooltip>
                       <TooltipTrigger
                         asChild
@@ -728,9 +728,7 @@ export function DockerStatus() {
         <span
           className={`h-2 w-2 rounded-full ${config.color} ${config.borderColor}`}
         />
-        <span className="text-official-official-gray-750 text-xs">
-          {config.title}
-        </span>
+        <span className="text-official-gray-750 text-xs">{config.title}</span>
       </TooltipTrigger>
       <TooltipPortal>
         <TooltipContent

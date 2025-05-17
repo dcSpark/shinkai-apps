@@ -98,7 +98,7 @@ const AIsPage = () => {
               </Button>
             </div>
           </div>
-          <p className="text-official-official-gray-750 text-sm">
+          <p className="text-official-gray-750 text-sm">
             Easily manage both cloud and local AI models, <br />
             switching between them seamlessly to fit your workflow.
           </p>
@@ -114,7 +114,7 @@ const AIsPage = () => {
                 <p className="text-2xl font-semibold">
                   {t('llmProviders.notFound.title')}
                 </p>
-                <p className="text-official-official-gray-750 text-center text-sm font-medium">
+                <p className="text-official-gray-750 text-center text-sm font-medium">
                   {t('llmProviders.notFound.description')}
                 </p>
               </div>
@@ -181,11 +181,11 @@ function LLMProviderCard({
             <span className="w-full truncate text-start text-sm">
               {name || llmProviderId}
             </span>
-            <Badge className="text-official-official-gray-700 bg-official-gray-850 truncate text-start text-xs font-normal shadow-none">
+            <Badge className="text-official-gray-700 bg-official-gray-850 truncate text-start text-xs font-normal shadow-none">
               {model}
             </Badge>
             {description && (
-              <span className="text-official-official-gray-750 truncate text-start text-xs">
+              <span className="text-official-gray-750 truncate text-start text-xs">
                 {description}
               </span>
             )}
@@ -235,7 +235,7 @@ function LLMProviderCard({
                 tabIndex={0}
               >
                 <span className="sr-only">{t('common.moreOptions')}</span>
-                <DotsVerticalIcon className="text-official-official-gray-750-official-gray-750" />
+                <DotsVerticalIcon className="text-official-gray-750-official-gray-750" />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent

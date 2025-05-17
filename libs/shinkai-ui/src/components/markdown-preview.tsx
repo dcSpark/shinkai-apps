@@ -38,12 +38,12 @@ type CodeHeaderProps = {
 export const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
   return (
     <div className="code-header-root border-official-gray-750 flex items-center justify-between gap-4 rounded-t-lg border-b bg-[#0d1117] px-4 py-1 text-white">
-      <span className="code-header-language text-official-official-official-gray-900 text-xs font-medium lowercase">
+      <span className="code-header-language text-official-official-gray-900 text-xs font-medium lowercase">
         {language}
       </span>
       <CopyToClipboardIcon
         className={cn(
-          'text-official-official-official-gray-900 hover:bg-official-gray-700 h-7 w-7 bg-transparent [&>svg]:h-3 [&>svg]:w-3',
+          'text-official-official-gray-900 hover:bg-official-gray-700 h-7 w-7 bg-transparent [&>svg]:h-3 [&>svg]:w-3',
         )}
         string={code}
       />
@@ -195,7 +195,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   hr: ({ node, className, ...props }) => (
     <hr
       className={cn(
-        'border-official-official-gray-900/25 my-[2.25em] border-b',
+        'border-official-gray-900/25 my-[2.25em] border-b',
         className,
       )}
       {...props}

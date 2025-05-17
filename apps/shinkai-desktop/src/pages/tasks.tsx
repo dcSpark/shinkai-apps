@@ -123,20 +123,20 @@ export const Tasks = () => {
                       className="flex items-start gap-2 py-1"
                       key={task.task_id}
                     >
-                      <ScheduledTasksIcon className="text-official-official-official-gray-900 mt-1 size-4" />
+                      <ScheduledTasksIcon className="text-official-official-gray-900 mt-1 size-4" />
                       <div className="flex flex-col gap-1 text-left">
                         <span className="text-sm text-gray-50">
                           {task.name}
-                          <span className="text-official-official-official-gray-900 border-official-official-gray-900 mx-1 rounded-lg border px-1.5 py-1 text-xs">
+                          <span className="text-official-official-gray-900 border-official-gray-900 mx-1 rounded-lg border px-1.5 py-1 text-xs">
                             {cronstrue.toString(task.cron, {
                               throwExceptionOnParseError: false,
                             })}
                           </span>
                         </span>
-                        <span className="text-official-official-official-gray-900">
+                        <span className="text-official-official-gray-900">
                           {' '}
                           Next execution in{' '}
-                          <span className="text-official-official-official-gray-900 font-semibold">
+                          <span className="text-official-official-gray-900 font-semibold">
                             {formatDistance(new Date(date), new Date(), {
                               addSuffix: false,
                             })}
@@ -234,7 +234,7 @@ export const Tasks = () => {
         {isSuccess && tasks?.length === 0 && (
           <div className="mx-auto flex h-28 max-w-lg flex-col items-center justify-center gap-2 text-center">
             <h1 className="text-base font-medium">No scheduled tasks found</h1>
-            <p className="text-official-official-official-gray-900 text-sm">
+            <p className="text-official-official-gray-900 text-sm">
               Create your first scheduled task to automate reminders, summaries,
               or any other tasks you need to manage
             </p>
@@ -296,19 +296,15 @@ const TaskCard = ({
             {name}
           </span>
         </div>
-        <p className="text-official-official-official-gray-900 line-clamp-2 text-xs">
+        <p className="text-official-official-gray-900 line-clamp-2 text-xs">
           {description ?? '-'}
         </p>
         <p className="line-clamp-2 text-xs text-gray-50">
-          <span className="text-official-official-official-gray-900 mr-2">
-            Prompt
-          </span>
+          <span className="text-official-official-gray-900 mr-2">Prompt</span>
           {prompt}
         </p>
         <p className="line-clamp-2 text-xs text-gray-50">
-          <span className="text-official-official-official-gray-900 mr-2">
-            Schedule
-          </span>
+          <span className="text-official-official-gray-900 mr-2">Schedule</span>
           {readableCron}
         </p>
       </div>
@@ -369,7 +365,7 @@ const TaskCard = ({
             tabIndex={0}
           >
             <span className="sr-only">{t('common.moreOptions')}</span>
-            <DotsVerticalIcon className="text-official-official-gray-750" />
+            <DotsVerticalIcon className="text-official-gray-750" />
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent

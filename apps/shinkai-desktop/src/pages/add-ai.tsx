@@ -299,7 +299,7 @@ const AddAIPage = () => {
                   </FormControl>
                   <div
                     className={cn(
-                      'text-official-official-official-gray-900 space-y-1 text-sm leading-none',
+                      'text-official-official-gray-900 space-y-1 text-sm leading-none',
                       field.value && 'text-white',
                     )}
                   >

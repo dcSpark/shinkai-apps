@@ -53,7 +53,7 @@ export default function SelectWidget<
     <select
       aria-describedby={ariaDescribedByIds<T>(id)}
       autoFocus={autofocus}
-      className={`border-official-official-gray-750 focus:border-official-official-gray-750 bg-official-gray-750 w-full border p-2 text-white focus:outline-none ${rawErrors.length > 0 ? 'border-red-500' : 'border-official-official-gray-750'} `}
+      className={`border-official-gray-750 focus:border-official-gray-750 bg-official-gray-750 w-full border p-2 text-white focus:outline-none ${rawErrors.length > 0 ? 'border-red-500' : 'border-official-gray-750'} `}
       disabled={disabled || readonly}
       id={id}
       multiple={multiple}

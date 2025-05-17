@@ -53,11 +53,11 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-official-official-gray-750/40 rounded-full border-[1px] border-white;
+    @apply bg-official-gray-750/40 rounded-full border-[1px] border-white;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-official-official-gray-750;
+    @apply bg-official-gray-750;
   }
 }
 

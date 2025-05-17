@@ -18,7 +18,7 @@ const AppearancePage = () => {
       <div className="space-y-6">
         <div>
           <h2 className="text-lg font-semibold text-white">Chat font</h2>
-          <p className="text-official-official-gray-750 text-sm">
+          <p className="text-official-gray-750 text-sm">
             Select your preferred font size for the chat interface.
           </p>
         </div>

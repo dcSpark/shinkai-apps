@@ -8,5 +8,5 @@ body,
 }
 
 #root {
-  @apply bg-official-gray-950 border-official-official-gray-900 rounded-xl border text-white shadow-xl;
+  @apply bg-official-gray-950 border-official-gray-900 rounded-xl border text-white shadow-xl;
 }

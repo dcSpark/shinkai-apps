@@ -47,17 +47,17 @@ const ImagePreview = ({
   onFullscreen: (open: boolean) => void;
 }) => (
   <button
-    className="border-official-official-gray-750/40 hover:bg-official-gray-700/30 flex h-14 w-full min-w-[210px] max-w-[210px] shrink-0 cursor-pointer items-center gap-2 rounded-md border py-1.5 pl-2 pr-1.5 text-left"
+    className="border-official-gray-750/40 hover:bg-official-gray-700/30 flex h-14 w-full min-w-[210px] max-w-[210px] shrink-0 cursor-pointer items-center gap-2 rounded-md border py-1.5 pl-2 pr-1.5 text-left"
     onClick={() => onFullscreen(true)}
   >
-    <Avatar className="text-official-official-gray-750 bg-official-gray-700 flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-sm transition-colors">
+    <Avatar className="text-official-gray-750 bg-official-gray-700 flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-sm transition-colors">
       <AvatarImage
         alt={name}
         className="border-official-gray-750 aspect-square h-full w-full rounded-sm border object-cover"
         src={url}
       />
       <AvatarFallback>
-        <CircleSlashIcon className="text-official-official-gray-750 h-4 w-4" />
+        <CircleSlashIcon className="text-official-gray-750 h-4 w-4" />
       </AvatarFallback>
     </Avatar>
     <FileInfo fileName={name} fileSize={size} />
@@ -71,12 +71,12 @@ const FileInfo = ({
   fileSize?: number;
   fileName: string;
 }) => (
-  <div className="text-official-official-gray-750 text-em-sm grid flex-1 -translate-x-px gap-1 py-0.5 leading-none">
-    <div className="text-official-official-official-gray-750 overflow-hidden truncate font-medium">
+  <div className="text-official-gray-750 text-em-sm grid flex-1 -translate-x-px gap-1 py-0.5 leading-none">
+    <div className="text-official-official-gray-750 overflow-hidden truncate font-medium">
       {decodeURIComponent(fileName.split('/').at(-1) ?? '')}
     </div>
     {fileSize && (
-      <div className="text-official-official-gray-750 line-clamp-1 aspect-auto font-normal">
+      <div className="text-official-gray-750 line-clamp-1 aspect-auto font-normal">
         {size(fileSize)}
       </div>
     )}
@@ -171,7 +171,7 @@ const FullscreenDialog = ({
   <Dialog onOpenChange={setOpen} open={open}>
     <DialogContent className="flex size-full max-h-[99vh] max-w-[99vw] flex-col gap-2 bg-transparent p-1 py-8">
       <div className="flex w-full items-center justify-between gap-16 px-10">
-        <div className="text-official-official-official-gray-900 max-w-3xl truncate text-left text-sm">
+        <div className="text-official-official-gray-900 max-w-3xl truncate text-left text-sm">
           {name}
         </div>
         <div className="flex items-center gap-4">
@@ -179,7 +179,7 @@ const FullscreenDialog = ({
             Download
           </Button>
           <DialogClose>
-            <XIcon className="text-official-official-official-gray-900 h-6 w-6" />
+            <XIcon className="text-official-official-gray-900 h-6 w-6" />
             <span className="sr-only">Close</span>
           </DialogClose>
         </div>
@@ -203,17 +203,17 @@ const FileButton = ({
   onFullscreen: (open: boolean) => void;
 }) => (
   <button
-    className="border-official-official-gray-750/40 hover:bg-official-gray-700/30 flex h-14 w-full min-w-[210px] max-w-[210px] shrink-0 cursor-pointer items-center gap-2 rounded-md border py-1.5 pl-2 pr-1.5 text-left"
+    className="border-official-gray-750/40 hover:bg-official-gray-700/30 flex h-14 w-full min-w-[210px] max-w-[210px] shrink-0 cursor-pointer items-center gap-2 rounded-md border py-1.5 pl-2 pr-1.5 text-left"
     onClick={() => onFullscreen(true)}
   >
-    <span className="text-official-official-gray-750 bg-official-gray-700 flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-sm transition-colors">
+    <span className="text-official-gray-750 bg-official-gray-700 flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-sm transition-colors">
       {fileIconMap[getFileExt(name)] ? (
         <FileTypeIcon
-          className="text-official-official-gray-750 h-5 w-5"
+          className="text-official-gray-750 h-5 w-5"
           type={getFileExt(name)}
         />
       ) : (
-        <PaperClipIcon className="text-official-official-gray-750 h-4 w-4" />
+        <PaperClipIcon className="text-official-gray-750 h-4 w-4" />
       )}
     </span>
     <FileInfo fileName={name} fileSize={size} />

@@ -93,10 +93,10 @@ const FormLabel = React.forwardRef<
   return (
     <Label
       className={cn(
-        'text-official-official-gray-750 pointer-events-none absolute left-4 top-3 flex select-none text-xs font-medium leading-tight transition-all',
+        'text-official-gray-750 pointer-events-none absolute left-4 top-3 flex select-none text-xs font-medium leading-tight transition-all',
         // input
-        'peer-placeholder-shown:text-official-official-gray-750 z-[1] peer-placeholder-shown:text-base peer-placeholder-shown:leading-[2.3]',
-        'peer-focus:text-official-official-gray-750 peer-disabled:text-official-official-gray-750 peer-disabled:peer-placeholder-shown:text-official-official-gray-750/80 peer-focus:text-xs peer-focus:leading-tight',
+        'peer-placeholder-shown:text-official-gray-750 z-[1] peer-placeholder-shown:text-base peer-placeholder-shown:leading-[2.3]',
+        'peer-focus:text-official-gray-750 peer-disabled:text-official-gray-750 peer-disabled:peer-placeholder-shown:text-official-gray-750/80 peer-focus:text-xs peer-focus:leading-tight',
         // select
         'peer-data-[placeholder]/select:top-5 peer-data-[placeholder]/select:text-base',
         // adornment
@@ -141,10 +141,7 @@ const FormDescription = React.forwardRef<
 
   return (
     <p
-      className={cn(
-        'text-official-official-gray-750 py-1 text-[0.75rem]',
-        className,
-      )}
+      className={cn('text-official-gray-750 py-1 text-[0.75rem]', className)}
       id={formDescriptionId}
       ref={ref}
       {...props}

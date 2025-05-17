@@ -64,7 +64,7 @@ export const VectorFsItemInfo = ({
         )}
       </div>
       {layout === VectorFSLayout.List && (
-        <p className="text-official-official-gray-750 text-xs font-medium">
+        <p className="text-official-gray-750 text-xs font-medium">
           <span>{createdDatetime}</span> - <span>{fileSize}</span>
         </p>
       )}
@@ -188,7 +188,7 @@ const VectorFsItem = ({
             tabIndex={0}
           >
             <span className="sr-only">{t('common.moreOptions')}</span>
-            <DotsVerticalIcon className="text-official-official-gray-750-official-gray-750" />
+            <DotsVerticalIcon className="text-official-gray-750-official-gray-750" />
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent

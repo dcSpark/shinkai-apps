@@ -122,7 +122,7 @@ const InboxNameInput = ({
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className="placeholder:text-official-official-gray-750 h-full border-none bg-transparent py-2 pr-16 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                      className="placeholder:text-official-gray-750 h-full border-none bg-transparent py-2 pr-16 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                       placeholder={inboxName}
                       {...field}
                       ref={inputRef}
@@ -219,7 +219,7 @@ const InboxMessageButtonBase = ({
           ) : (
             <Link
               className={cn(
-                'text-official-official-gray-700 group relative flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white',
+                'text-official-gray-700 group relative flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white',
                 location.pathname === to && 'bg-white/10 text-white',
               )}
               key={inboxId}
@@ -460,7 +460,7 @@ const ChatList = () => {
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className="text-official-official-gray-700 flex size-8 items-center justify-center rounded-full hover:text-white"
+              className="text-official-gray-700 flex size-8 items-center justify-center rounded-full hover:text-white"
               onClick={() => {
                 navigate(`/home`);
               }}
@@ -557,7 +557,7 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className="text-official-official-gray-700 flex size-8 items-center justify-center rounded-full hover:text-white"
+              className="text-official-gray-700 flex size-8 items-center justify-center rounded-full hover:text-white"
               onClick={() => {
                 navigate(`/home`, {
                   state: { agentName: agentId },
@@ -576,7 +576,7 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
       </div>
       <div className="flex flex-col gap-2 py-4">
         {isSuccess && agentInboxes.length === 0 && (
-          <p className="text-official-official-gray-750 py-3 text-center text-xs">
+          <p className="text-official-gray-750 py-3 text-center text-xs">
             {t('chat.actives.notFound')}
           </p>
         )}
@@ -593,10 +593,10 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
               key={inbox.inbox_id}
               to={`/inboxes/${encodeURIComponent(inbox.inbox_id)}`}
             >
-              <span className="text-official-official-official-gray-750 line-clamp-2 text-sm">
+              <span className="text-official-official-gray-750 line-clamp-2 text-sm">
                 {inbox.custom_name || inbox.inbox_id}
               </span>
-              <span className="text-official-official-gray-850 text-xs">
+              <span className="text-official-gray-850 text-xs">
                 {formatDateToLocaleStringWithTime(
                   new Date(inbox.datetime_created),
                 )}
@@ -645,7 +645,7 @@ const AgentList = ({
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className="text-official-official-gray-700 flex size-8 items-center justify-center rounded-full hover:text-white"
+              className="text-official-gray-700 flex size-8 items-center justify-center rounded-full hover:text-white"
               onClick={() => {
                 navigate(`/add-agent`);
               }}
@@ -673,7 +673,7 @@ const AgentList = ({
           displayedAgents.map((agent) => (
             <button
               className={cn(
-                'text-official-official-gray-700 group flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white',
+                'text-official-gray-700 group flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white',
                 selectedAgent === agent.agent_id && 'bg-white/10 text-white',
               )}
               key={agent.agent_id}
@@ -728,13 +728,13 @@ const AgentList = ({
             </button>
           ))}
         {isSuccess && !agents && (
-          <p className="text-official-official-gray-750 py-3 text-center text-xs">
+          <p className="text-official-gray-750 py-3 text-center text-xs">
             {t('chat.actives.notFound')}{' '}
           </p>
         )}
         {isSuccess && agents && agents.length > AGENTS_DISPLAY_LIMIT && (
           <button
-            className="text-official-official-gray-700 flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white"
+            className="text-official-gray-700 flex h-[46px] w-full items-center gap-2 rounded-xl px-2 py-2 text-xs hover:bg-white/10 hover:text-white"
             onClick={() => setShowAll(!showAll)}
             type="button"
           >

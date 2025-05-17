@@ -198,10 +198,7 @@ export const SqlitePreview: React.FC<SqlitePreviewProps> = ({ url }) => {
                   {tableData?.rows.map((row, i) => (
                     <tr className="border-b border-gray-700" key={i}>
                       {row.map((cell, j) => (
-                        <td
-                          className="text-official-official-gray-750 p-2"
-                          key={j}
-                        >
+                        <td className="text-official-gray-750 p-2" key={j}>
                           {String(cell)}
                         </td>
                       ))}

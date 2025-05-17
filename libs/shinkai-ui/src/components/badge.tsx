@@ -17,7 +17,7 @@ const badgeVariants = cva(
         outline: 'text-foreground',
         inputAdornment: 'bg-official-gray-900 px-2 font-medium text-white',
         gradient: 'bg-brand-gradient border-brand px-2 font-medium text-white',
-        tags: 'text-official-official-official-gray-900 border-official-gray-750 bg-official-gray-750 rounded-lg px-2 py-1 font-normal capitalize',
+        tags: 'text-official-official-gray-900 border-official-gray-750 bg-official-gray-750 rounded-lg px-2 py-1 font-normal capitalize',
       },
     },
     defaultVariants: {
