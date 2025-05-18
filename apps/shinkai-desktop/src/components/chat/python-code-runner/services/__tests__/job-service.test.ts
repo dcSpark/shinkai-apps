@@ -221,6 +221,28 @@ describe('JobService', () => {
       );
     });
 
+    it('should sync file with nested path correctly', async () => {
+      mockDownloadFile.mockResolvedValue('nested content');
+
+      await jobService.syncFileToIDBFS({
+        path: 'subdir/test.txt',
+        name: 'test.txt',
+      });
+
+      expect(mockDownloadFile).toHaveBeenCalledWith({
+        nodeAddress: 'test-node',
+        token: 'test-token',
+        path: 'subdir/test.txt',
+      });
+      expect(mockFileSystemService.ensureDirectory).toHaveBeenCalledWith(
+        '/home/pyodide/subdir'
+      );
+      expect(mockFileSystemService.writeFile).toHaveBeenCalledWith(
+        '/home/pyodide/subdir/test.txt',
+        'nested content'
+      );
+    });
+
     it('should handle download errors', async () => {
       mockDownloadFile.mockRejectedValue(new Error('Download failed'));
 
