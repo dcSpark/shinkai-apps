@@ -2,6 +2,14 @@
   <img width="36" height="36" src="assets/icon.png"/><br/>
   Shinkai apps
 </h1>
+
+<p align="center">
+  <a href="https://github.com/dcSpark/shinkai-apps/stargazers"><img src="https://img.shields.io/github/stars/dcSpark/shinkai-apps?style=social" alt="GitHub stars"></a>
+  <a href="https://discord.gg/EuA45U3sEu"><img src="https://img.shields.io/discord/1303749220842340412?color=7289DA&label=Discord&logo=discord&logoColor=white" alt="Discord"></a>
+  <a href="http://github.com/dcSpark/shinkai-apps/"><img src="https://img.shields.io/badge/Cloud-☁️-blue" alt="Cloud"></a>
+  <a href="https://x.com/ShinkaiProtocol"><img src="https://img.shields.io/twitter/follow/ShinkaiProtocol?style=social" alt="Twitter Follow"></a>
+</p>
+
 <p align="center">Shinkai is a two click install AI manager (Local and Remote) that allows you to create AI agents in 5 minutes or less using a simple UI. Agents and tools are exposed as an MCP Server.
 <br/>
 <br/>
