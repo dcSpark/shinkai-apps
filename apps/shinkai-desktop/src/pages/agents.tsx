@@ -30,6 +30,7 @@ import {
   AisIcon,
   CreateAIIcon,
   ScheduledTasksIcon,
+  StoreIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { save } from '@tauri-apps/plugin-dialog';
@@ -43,10 +44,12 @@ import { toast } from 'sonner';
 
 import ImportAgentModal from '../components/agent/import-agent-modal';
 import { useAuth } from '../store/auth';
+import { SHINKAI_STORE_URL } from '../utils/store';
 
 function AgentsPage() {
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { data: agents } = useGetAgents({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
@@ -69,6 +72,17 @@ function AgentsPage() {
                 <span>AIs</span>
               </Button>
               <ImportAgentModal />
+              <Button
+                asChild
+                className="min-w-[100px]"
+                size="sm"
+                variant="outline"
+              >
+                <Link rel="noreferrer" target="_blank" to={SHINKAI_STORE_URL}>
+                  <StoreIcon className="h-4 w-4" />
+                  <span>{t('tools.store.label')}</span>
+                </Link>
+              </Button>
               <Button
                 className="min-w-[100px]"
                 onClick={() => {
