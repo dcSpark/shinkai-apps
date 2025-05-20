@@ -1,6 +1,7 @@
 import {
   AgentShinkaiTool,
   DenoShinkaiTool,
+  McpServerTool as McpServerToolType,
   NetworkShinkaiTool,
   PythonShinkaiTool,
   RustShinkaiTool,
@@ -16,6 +17,7 @@ import { SubpageLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';
 import AgentTool from './agent-tool';
 import DenoTool from './deno-tool';
+import McpServerTool from './mcp-server-tool';
 import NetworkTool from './network-tool';
 import PythonTool from './python-tool';
 import RustTool from './rust-tool';
@@ -34,7 +36,6 @@ export default function ToolDetails() {
   const auth = useAuth((state) => state.auth);
 
   const { toolKey } = useParams();
-
   const { data, isSuccess, isPending } = useGetTool({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
@@ -157,6 +158,19 @@ export default function ToolDetails() {
             (playgroundTool) => playgroundTool.tool_router_key === toolKey,
           )}
           tool={tool as AgentShinkaiTool}
+          toolRouterKey={toolKey ?? ''}
+        />
+      </SubpageLayout>
+    );
+  } else if (isSuccess && toolType === 'MCPServer') {
+    return (
+      <SubpageLayout className="container" title="">
+        <McpServerTool
+          isEnabled={isEnabled}
+          isPlaygroundTool={playgroundTools?.some(
+            (playgroundTool) => playgroundTool.tool_router_key === toolKey,
+          )}
+          tool={tool as McpServerToolType}
           toolRouterKey={toolKey ?? ''}
         />
       </SubpageLayout>

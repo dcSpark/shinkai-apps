@@ -146,11 +146,13 @@ export type AgentShinkaiTool = {
 export type McpServerTool = {
   id: number;
   name: string;
+  description: string;
+  tool_router_key?: string;
   mcp_server_ref: string;
   mcp_server_tool: string;
 };
 
-export type ShinkaiToolType = 'Deno' | 'Python' | 'Rust' | 'Network' | 'Agent' | 'McpServerTool';
+export type ShinkaiToolType = 'Deno' | 'Python' | 'Rust' | 'Network' | 'Agent' | 'MCPServer';
 export type ShinkaiTool =
   | DenoShinkaiTool
   | PythonShinkaiTool
