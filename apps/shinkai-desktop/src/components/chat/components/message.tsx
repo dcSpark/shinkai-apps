@@ -273,7 +273,7 @@ export const MessageBase = ({
           ) : (
             <AvatarFallback
               className={cn(
-                'text-em-xs text-official-gray-300 h-8 w-8 border bg-[#313336]',
+                'text-em-xs text-official-gray-300 border-official-gray-780 h-8 w-8 border bg-[#313336]',
                 minimalistMode && 'text-em-xs h-5 w-5',
               )}
             >

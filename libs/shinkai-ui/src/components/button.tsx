@@ -6,22 +6,22 @@ import * as React from 'react';
 import { cn } from '../utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 border border-transparent text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-gray-50',
+  'inline-flex items-center justify-center gap-2 border border-transparent text-sm font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-gray-50',
   {
     variants: {
       variant: {
         default:
           'bg-brand hover:bg-brand-500 text-white disabled:bg-gray-200 disabled:text-gray-100',
         destructive:
-          'bg-red-500 text-gray-50 shadow-sm hover:bg-red-500/90 disabled:bg-gray-200 disabled:text-gray-100',
+          'bg-red-500 text-gray-50 shadow-xs hover:bg-red-500/90 disabled:bg-gray-200 disabled:text-gray-100',
         outline:
-          'hover:bg-official-gray-850 border border-gray-200 bg-transparent text-white shadow-sm hover:text-gray-50',
-        secondary: 'bg-gray-100 text-gray-900 shadow-sm hover:bg-gray-100/80',
+          'hover:bg-official-gray-850 border border-gray-200 bg-transparent text-white shadow-xs hover:text-gray-50',
+        secondary: 'bg-gray-100 text-gray-900 shadow-xs hover:bg-gray-100/80',
         tertiary: 'bg-transparent hover:bg-gray-400/60',
         ghost: 'bg-gray-400 hover:bg-gray-400/60',
         link: 'text-white underline-offset-4 hover:underline',
         gradient:
-          'bg-brand-gradient border-brand border-[1px] text-white transition-colors hover:bg-[#201F1F]',
+          'bg-brand-gradient border-brand border text-white transition-colors hover:bg-[#201F1F]',
       },
       size: {
         default: 'h-[50px] px-8 text-sm',

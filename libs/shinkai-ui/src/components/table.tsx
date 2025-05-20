@@ -39,7 +39,7 @@ const TableFooter = React.forwardRef<
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
   <tfoot
-    className={cn('border-t font-medium [&>tr]:last:border-b-0', className)}
+    className={cn('border-t font-medium last:[&>tr]:border-b-0', className)}
     ref={ref}
     {...props}
   />

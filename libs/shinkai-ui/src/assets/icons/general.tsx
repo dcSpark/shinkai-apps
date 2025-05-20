@@ -1269,38 +1269,38 @@ export const AIAgentIcon: React.FC<AgentGradientAvatarProps> = ({
 }) => {
   const getGradientByLetter = (letter: string) => {
     const gradients = {
-      a: 'bg-gradient-to-br from-green-400 to-yellow-300',
-      b: 'bg-gradient-to-br from-blue-400 to-purple-500',
-      c: 'bg-gradient-to-br from-red-400 to-pink-500',
-      d: 'bg-gradient-to-br from-indigo-400 to-cyan-400',
-      e: 'bg-gradient-to-br from-yellow-200 to-yellow-500',
-      f: 'bg-gradient-to-br from-green-500 to-emerald-700',
-      g: 'bg-gradient-to-br from-purple-400 to-indigo-500',
-      h: 'bg-gradient-to-br from-red-500 to-orange-500',
-      i: 'bg-gradient-to-br from-blue-400 to-indigo-600',
-      j: 'bg-gradient-to-br from-amber-200 to-amber-600',
-      k: 'bg-gradient-to-br from-emerald-400 to-cyan-500',
-      l: 'bg-gradient-to-br from-purple-500 to-pink-500',
-      m: 'bg-gradient-to-br from-blue-500 to-purple-600',
-      n: 'bg-gradient-to-br from-green-300 to-blue-400',
-      o: 'bg-gradient-to-br from-orange-300 to-red-500',
-      p: 'bg-gradient-to-br from-pink-400 to-rose-600',
-      q: 'bg-gradient-to-br from-indigo-300 to-indigo-600',
-      r: 'bg-gradient-to-br from-red-400 to-red-700',
-      s: 'bg-gradient-to-br from-sky-300 to-blue-500',
-      t: 'bg-gradient-to-br from-teal-300 to-emerald-500',
-      u: 'bg-gradient-to-br from-violet-300 to-purple-600',
-      v: 'bg-gradient-to-br from-amber-300 to-orange-600',
-      w: 'bg-gradient-to-br from-emerald-400 to-teal-700',
-      x: 'bg-gradient-to-br from-zinc-400 to-slate-700',
-      y: 'bg-gradient-to-br from-yellow-300 to-amber-600',
-      z: 'bg-gradient-to-br from-blue-300 to-cyan-600',
+      a: 'bg-linear-to-br from-green-400 to-yellow-300',
+      b: 'bg-linear-to-br from-blue-400 to-purple-500',
+      c: 'bg-linear-to-br from-red-400 to-pink-500',
+      d: 'bg-linear-to-br from-indigo-400 to-cyan-400',
+      e: 'bg-linear-to-br from-yellow-200 to-yellow-500',
+      f: 'bg-linear-to-br from-green-500 to-emerald-700',
+      g: 'bg-linear-to-br from-purple-400 to-indigo-500',
+      h: 'bg-linear-to-br from-red-500 to-orange-500',
+      i: 'bg-linear-to-br from-blue-400 to-indigo-600',
+      j: 'bg-linear-to-br from-amber-200 to-amber-600',
+      k: 'bg-linear-to-br from-emerald-400 to-cyan-500',
+      l: 'bg-linear-to-br from-purple-500 to-pink-500',
+      m: 'bg-linear-to-br from-blue-500 to-purple-600',
+      n: 'bg-linear-to-br from-green-300 to-blue-400',
+      o: 'bg-linear-to-br from-orange-300 to-red-500',
+      p: 'bg-linear-to-br from-pink-400 to-rose-600',
+      q: 'bg-linear-to-br from-indigo-300 to-indigo-600',
+      r: 'bg-linear-to-br from-red-400 to-red-700',
+      s: 'bg-linear-to-br from-sky-300 to-blue-500',
+      t: 'bg-linear-to-br from-teal-300 to-emerald-500',
+      u: 'bg-linear-to-br from-violet-300 to-purple-600',
+      v: 'bg-linear-to-br from-amber-300 to-orange-600',
+      w: 'bg-linear-to-br from-emerald-400 to-teal-700',
+      x: 'bg-linear-to-br from-zinc-400 to-slate-700',
+      y: 'bg-linear-to-br from-yellow-300 to-amber-600',
+      z: 'bg-linear-to-br from-blue-300 to-cyan-600',
     };
 
     const firstLetter = letter.toLowerCase()[0];
     return (
       gradients[firstLetter as keyof typeof gradients] ||
-      'bg-gradient-to-br from-gray-400 to-gray-600'
+      'bg-linear-to-br from-gray-400 to-gray-600'
     );
   };
 

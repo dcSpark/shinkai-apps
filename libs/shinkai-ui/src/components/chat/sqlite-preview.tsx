@@ -164,7 +164,7 @@ export const SqlitePreview: React.FC<SqlitePreviewProps> = ({ url }) => {
             key={table.name}
             onClick={() => setSelectedTable(table.name)}
             size="sm"
-            variant={selectedTable === table.name ? 'default' : 'outline'}
+            variant={selectedTable === table.name ? 'default' : 'outline-solid'}
           >
             {table.name} ({table.count})
           </Button>

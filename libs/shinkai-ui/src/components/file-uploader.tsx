@@ -120,7 +120,7 @@ export const FileUploader = ({
         })}
       >
         <div className="flex flex-col items-center justify-center space-y-1 px-2">
-          <div className="bg-gray-350 rounded-full p-2 shadow-sm">
+          <div className="bg-gray-350 rounded-full p-2 shadow-xs">
             <Upload className="h-4 w-4" />
           </div>
           <p className="text-sm text-white">{t('common.clickToUpload')}</p>
@@ -141,7 +141,7 @@ export const FileUploader = ({
       {!!value?.length && (
         <ScrollArea
           className={cn(
-            'max-h-[40vh] flex-1 grow overflow-y-scroll pr-1 [&>div>div]:!block',
+            'max-h-[40vh] flex-1 grow overflow-y-scroll pr-1 [&>div>div]:block!',
             shouldDisableScrolling && 'max-h-full overflow-y-auto pr-0',
           )}
         >

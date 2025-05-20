@@ -8,5 +8,8 @@
       "import": "./index.mjs",
       "require": "./index.js"
     }
+  },
+  "dependencies": {
+    "tailwindcss": "^4.1.7"
   }
 }

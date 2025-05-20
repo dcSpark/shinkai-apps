@@ -50,10 +50,10 @@ const ImagePreview = ({
     className="flex h-14 w-full min-w-[210px] max-w-[210px] shrink-0 cursor-pointer items-center gap-2 rounded-md border border-gray-100/40 py-1.5 pl-2 pr-1.5 text-left hover:bg-gray-300/30"
     onClick={() => onFullscreen(true)}
   >
-    <Avatar className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-gray-300 text-gray-100 transition-colors">
+    <Avatar className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xs bg-gray-300 text-gray-100 transition-colors">
       <AvatarImage
         alt={name}
-        className="aspect-square h-full w-full rounded-sm border border-gray-400 object-cover"
+        className="aspect-square h-full w-full rounded-xs border border-gray-400 object-cover"
         src={url}
       />
       <AvatarFallback>
@@ -206,7 +206,7 @@ const FileButton = ({
     className="flex h-14 w-full min-w-[210px] max-w-[210px] shrink-0 cursor-pointer items-center gap-2 rounded-md border border-gray-100/40 py-1.5 pl-2 pr-1.5 text-left hover:bg-gray-300/30"
     onClick={() => onFullscreen(true)}
   >
-    <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-gray-300 text-gray-100 transition-colors">
+    <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xs bg-gray-300 text-gray-100 transition-colors">
       {fileIconMap[getFileExt(name)] ? (
         <FileTypeIcon
           className="text-official-gray-400 h-5 w-5"

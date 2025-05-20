@@ -135,10 +135,10 @@ const ArtifactCard = ({
         )}
       </div>
       <div className="flex flex-1 flex-col gap-0.5">
-        <p className="!mb-0 line-clamp-1 text-sm font-medium text-gray-50">
+        <p className="mb-0! line-clamp-1 text-sm font-medium text-gray-50">
           {title}
         </p>
-        <p className="text-gray-80 !mb-0 text-xs">
+        <p className="text-gray-80 mb-0! text-xs">
           {loading ? 'Generating...' : 'Click to preview'}
         </p>
       </div>
@@ -292,7 +292,7 @@ const MessageBase = ({
                   editing && 'w-full py-1',
                   message.role === 'assistant' &&
                     isPending &&
-                    'relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l before:from-gray-200 before:to-gray-200/10',
+                    'relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-linear-to-l before:from-gray-200 before:to-gray-200/10',
                 )}
               >
                 {message.role === 'assistant' &&
@@ -312,8 +312,8 @@ const MessageBase = ({
                           >
                             <AccordionTrigger
                               className={cn(
-                                'min-w-[10rem] py-0 pr-2 no-underline hover:no-underline',
-                                'transition-colors hover:bg-gray-500 [&[data-state=open]]:bg-gray-500',
+                                'min-w-40 py-0 pr-2 no-underline hover:no-underline',
+                                'transition-colors hover:bg-gray-500 data-[state=open]:bg-gray-500',
                                 tool.status !== ToolStatusType.Complete &&
                                   '[&>svg]:hidden',
                               )}

@@ -14,7 +14,7 @@ export default function ErrorList<
   const { translateString } = registry;
 
   return (
-    <div className="mb-4 rounded border border-red-700">
+    <div className="mb-4 rounded-sm border border-red-700">
       <div className="rounded-t bg-red-900/20 p-3 text-xs text-red-500">
         {translateString(TranslatableString.ErrorsLabel)}
       </div>

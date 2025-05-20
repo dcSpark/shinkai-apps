@@ -245,7 +245,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   pre: ({ node, className, ...props }) => (
     <pre
       className={cn(
-        'overflow-x-auto rounded-b-lg bg-black !px-[1em] !py-[0.5em] text-white',
+        'overflow-x-auto rounded-b-lg bg-black px-[1em]! py-[0.5em]! text-white',
         className,
       )}
       {...props}
@@ -257,7 +257,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       <code
         className={cn(
           !isCodeBlock &&
-            'bg-official-gray-1000 text-em-sm rounded border p-[0.25em] font-semibold',
+            'bg-official-gray-1000 text-em-sm rounded-sm border p-[0.25em] font-semibold',
           className,
         )}
         {...props}
