@@ -10,5 +10,9 @@
     "lint": "eslint --ext .js,.jsx,.ts,.tsx . --ignore-path .gitignore",
     "tauri": "tauri",
     "tauri:dev": "tauri dev"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.1.7",
+    "tailwindcss": "^4.1.7"
   }
 }
