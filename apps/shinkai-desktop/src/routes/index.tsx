@@ -58,6 +58,7 @@ import HomePage from '../pages/home';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
+import { McpServers } from '../pages/mcp-servers';
 import { PromptLibrary } from '../pages/prompt-library';
 import { PublicKeys } from '../pages/public-keys';
 import QuickConnectionPage from '../pages/quick-connection';
@@ -429,6 +430,19 @@ const AppRoutes = () => {
               }
               path={'crypto-wallet'}
             />
+          </Route>
+
+          <Route
+            element={
+              <ProtectedRoute>
+                  <TooltipProvider delayDuration={0}>
+                      <Outlet />
+                  </TooltipProvider>
+              </ProtectedRoute>
+            }
+            path={'mcp-servers'}
+          >
+            <Route element={<McpServers />} index />
           </Route>
         </Route>
         <Route

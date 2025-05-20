@@ -143,13 +143,21 @@ export type AgentShinkaiTool = {
   author?: string;
 };
 
-export type ShinkaiToolType = 'Deno' | 'Python' | 'Rust' | 'Network' | 'Agent';
+export type McpServerTool = {
+  id: number;
+  name: string;
+  mcp_server_ref: string;
+  mcp_server_tool: string;
+};
+
+export type ShinkaiToolType = 'Deno' | 'Python' | 'Rust' | 'Network' | 'Agent' | 'McpServerTool';
 export type ShinkaiTool =
   | DenoShinkaiTool
   | PythonShinkaiTool
   | RustShinkaiTool
   | NetworkShinkaiTool
-  | AgentShinkaiTool;
+  | AgentShinkaiTool
+  | McpServerTool;
 
 export type GetToolResponse = {
   content: [ShinkaiTool, boolean];

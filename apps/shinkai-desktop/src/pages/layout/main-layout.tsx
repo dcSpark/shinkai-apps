@@ -45,6 +45,7 @@ import {
   ArrowRightToLine,
   Ellipsis,
   HelpCircleIcon,
+  ServerIcon,
 } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
 import {
@@ -429,6 +430,14 @@ export function MainNav() {
                     icon={<ToolsIcon className="size-[18px]" />}
                     isPopover
                     title={t('tools.label')}
+                  />
+                </PopoverClose>
+                <PopoverClose asChild>
+                  <NavLink
+                    href="/mcp-servers"
+                    icon={<ServerIcon className="size-[18px]" />}
+                    isPopover
+                    title="MCP Servers"
                   />
                 </PopoverClose>
                 <PopoverClose asChild>
