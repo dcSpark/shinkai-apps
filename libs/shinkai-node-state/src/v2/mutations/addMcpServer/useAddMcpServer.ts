@@ -12,6 +12,7 @@ export const useAddMcpServer = (
 
   return useMutation({
     mutationFn: (input: AddMcpServerInput) => addMcpServer(input),
+    ...options,
     onSuccess: async (data, variables, context) => {
       await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_MCP_SERVERS],
@@ -20,6 +21,5 @@ export const useAddMcpServer = (
         await options.onSuccess(data, variables, context);
       }
     },
-    ...options,
   });
 }; 

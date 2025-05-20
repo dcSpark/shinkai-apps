@@ -1,6 +1,7 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useDeleteMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/deleteMcpServer/useDeleteMcpServer';
+import { useSetEnableMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/setEnableMcpServer/useSetEnableMcpServer';
 import { useGetMcpServers } from '@shinkai_network/shinkai-node-state/v2/queries/getMcpServers/useGetMcpServers';
 import {
   Badge,
@@ -19,12 +20,7 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import {
-  Plus,
-  Search as SearchIcon,
-  Trash2,
-  X as XIcon,
-} from 'lucide-react';
+import { Plus, Search as SearchIcon, Trash2, X as XIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -138,23 +134,41 @@ export const McpServers = () => {
     token: auth?.api_v2_key ?? '',
   });
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString();
+  const { mutateAsync: setEnableMcpServer } = useSetEnableMcpServer({
+    onSuccess: () => {
+      toast.success('MCP server status updated successfully');
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to update MCP server status', {
+        description: error?.message,
+      });
+    },
+  });
+
+  const handleToggleEnabled = async (
+    serverId: number,
+    currentEnabled: boolean,
+  ) => {
+    if (!auth) return;
+
+    try {
+      await setEnableMcpServer({
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
+        mcpServerId: serverId,
+        isEnabled: !currentEnabled,
+      });
+    } catch (error) {
+      console.error('Failed to update MCP server status:', error);
+    }
   };
 
-  let filteredServers = mcpServers?.filter(
+  const filteredServers = mcpServers?.filter(
     (server) =>
       server.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       server.type.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  filteredServers = filteredServers?.flatMap(server => 
-    Array(100).fill(0).map((_, i) => ({
-      ...server,
-      id: server.id + (i * 10000) // Ensure unique IDs
-    }))
-  );
   return (
     <SimpleLayout
       headerRightElement={
@@ -221,7 +235,7 @@ export const McpServers = () => {
             </div>
           </div>
         ) : filteredServers && filteredServers.length > 0 ? (
-          <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4 max-h-[calc(100vh-300px)] overflow-y-auto">
+          <div className="divide-official-gray-780 grid max-h-[calc(100vh-300px)] grid-cols-1 divide-y overflow-y-auto py-4">
             {filteredServers.map((server) => (
               <div
                 className={cn(
@@ -251,7 +265,12 @@ export const McpServers = () => {
                   />
                 </div>
                 <div className="flex items-center justify-center">
-                  <Switch checked={server.is_enabled} disabled={true} />
+                  <Switch
+                    checked={server.is_enabled}
+                    onCheckedChange={() =>
+                      handleToggleEnabled(server.id, server.is_enabled)
+                    }
+                  />
                 </div>
               </div>
             ))}

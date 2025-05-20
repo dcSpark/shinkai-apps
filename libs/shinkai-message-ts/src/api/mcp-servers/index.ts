@@ -6,8 +6,6 @@ export const getMcpServers = async (
   nodeAddress: string,
   bearerToken: string,
 ) => {
-  console.log('bearerToken', bearerToken);
-
   const response = await httpClient.get(
     urlJoin(nodeAddress, '/v2/list_mcp_servers'),
     {
@@ -83,4 +81,24 @@ export const importMcpServerFromGithubUrl = async (
     },
   );
   return response.data as McpServer;
+};
+
+export const setEnableMcpServer = async (
+  nodeAddress: string,
+  bearerToken: string,
+  mcpServerId: number,
+  isEnabled: boolean,
+): Promise<{ success: boolean }> => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/set_enable_mcp_server'),
+    {
+      mcp_server_id: mcpServerId,
+      is_enabled: isEnabled,
+    },
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
 };

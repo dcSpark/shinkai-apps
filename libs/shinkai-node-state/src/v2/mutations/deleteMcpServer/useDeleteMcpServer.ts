@@ -12,6 +12,7 @@ export const useDeleteMcpServer = (
 
   return useMutation({
     mutationFn: (input: DeleteMcpServerInput) => deleteMcpServer(input),
+    ...options,
     onSuccess: async (data, variables, context) => {
       await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_MCP_SERVERS],
@@ -20,6 +21,5 @@ export const useDeleteMcpServer = (
         await options.onSuccess(data, variables, context);
       }
     },
-    ...options,
   });
 }; 
