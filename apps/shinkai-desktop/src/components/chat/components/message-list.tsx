@@ -189,7 +189,7 @@ export const MessageList = memo(
           !isFetchingPreviousPage &&
           !hasPreviousPage &&
           (paginatedMessages?.pages ?? [])?.length > 1 && (
-            <div className="py-2 text-center text-xs text-gray-100">
+            <div className="text-official-gray-750 py-2 text-center text-xs">
               {noMoreMessageLabel}
             </div>
           )}
@@ -207,15 +207,15 @@ export const MessageList = memo(
                   key={`${index}`}
                 >
                   <Skeleton
-                    className="h-8 w-8 shrink-0 rounded-full bg-gray-300"
+                    className="bg-official-gray-700 h-8 w-8 shrink-0 rounded-full"
                     key={index}
                   />
                   <Skeleton
                     className={cn(
                       'w-full rounded-lg px-2.5 py-3',
                       index % 2 === 0
-                        ? 'h-24 rounded-bl-none bg-gray-300'
-                        : 'h-16 rounded-tr-none bg-gray-200',
+                        ? 'bg-official-gray-700 h-24 rounded-bl-none'
+                        : 'bg-official-gray-900 h-16 rounded-tr-none',
                       index % 3 === 0 && 'h-32',
                     )}
                   />
@@ -236,15 +236,15 @@ export const MessageList = memo(
                   key={`${index}`}
                 >
                   <Skeleton
-                    className="h-8 w-8 shrink-0 rounded-full bg-gray-300"
+                    className="bg-official-gray-700 h-8 w-8 shrink-0 rounded-full"
                     key={index}
                   />
                   <Skeleton
                     className={cn(
                       'w-full rounded-lg px-2.5 py-3',
                       index % 2 === 0
-                        ? 'h-24 rounded-bl-none bg-gray-300'
-                        : 'h-16 rounded-tr-none bg-gray-200',
+                        ? 'bg-official-gray-700 h-24 rounded-bl-none'
+                        : 'bg-official-gray-900 h-16 rounded-tr-none',
                       index % 3 === 0 && 'h-32',
                     )}
                   />
@@ -265,7 +265,7 @@ export const MessageList = memo(
                             'sticky top-5',
                           )}
                         >
-                          <span className="text-official-gray-200 text-sm font-medium">
+                          <span className="text-official-official-gray-900 text-sm font-medium">
                             {getRelativeDateLabel(
                               new Date(messages[0].createdAt || ''),
                             )}

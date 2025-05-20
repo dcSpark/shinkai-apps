@@ -67,7 +67,7 @@ const ArtifactPreview = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      className="text-gray-80 flex items-center gap-2"
+                      className="text-official-official-gray-900 flex items-center gap-2"
                       onClick={() => {
                         setArtifact(null);
                       }}
@@ -88,7 +88,7 @@ const ArtifactPreview = () => {
                   {artifact?.title}
                 </h1>
               </div>
-              <TabsList className="grid grid-cols-2 rounded-lg border border-gray-400 bg-transparent p-0.5">
+              <TabsList className="border-official-gray-750 grid grid-cols-2 rounded-lg border bg-transparent p-0.5">
                 <TabsTrigger
                   className="flex h-8 items-center gap-1.5 text-xs font-semibold"
                   value="source"
@@ -108,16 +108,18 @@ const ArtifactPreview = () => {
               className="mt-1 h-full overflow-y-scroll whitespace-pre-line break-words px-4 py-2 font-mono"
               value="source"
             >
-              <div className="flex h-10 items-center justify-between gap-3 rounded-t-lg bg-gray-300 pl-4 pr-3">
+              <div className="bg-official-gray-700 flex h-10 items-center justify-between gap-3 rounded-t-lg pl-4 pr-3">
                 {/* by default App.tsx */}
-                <h2 className="text-gray-80 text-xs font-semibold">App.tsx</h2>
+                <h2 className="text-official-official-gray-900 text-xs font-semibold">
+                  App.tsx
+                </h2>
                 {iframeLoaded && (
                   <div className="flex items-center gap-2">
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div>
                           <CopyToClipboardIcon
-                            className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"
+                            className="text-official-official-gray-900 border-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3"
                             string={artifact?.code ?? ''}
                           />
                         </div>
@@ -131,7 +133,7 @@ const ArtifactPreview = () => {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
-                          className="text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3"
+                          className="text-official-official-gray-900 border-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3"
                           onClick={async () => {
                             const file = new Blob([artifact?.code ?? ''], {
                               type: 'text/plain',

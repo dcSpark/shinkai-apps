@@ -81,12 +81,12 @@ function ManageSourcesButtonBase() {
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          className="text-gray-80 relative shrink-0"
+          className="text-official-official-gray-900 relative shrink-0"
           rounded="lg"
           size="xs"
           variant="outline"
         >
-          <ToolAssetsIcon className="text-gray-80 h-4 w-4" />
+          <ToolAssetsIcon className="text-official-official-gray-900 h-4 w-4" />
           Tool Project Files
           {isGetAllToolAssetsSuccess && assets.length > 0 && (
             <Badge className="bg-official-gray-800 min-w-5 rounded-full px-1 text-white">
@@ -97,7 +97,7 @@ function ManageSourcesButtonBase() {
       </DialogTrigger>
       <DialogContent className="flex h-[60vh] max-w-[500px] flex-col gap-4">
         <DialogClose className="absolute right-4 top-4">
-          <XIcon className="text-gray-80 h-5 w-5" />
+          <XIcon className="text-official-official-gray-900 h-5 w-5" />
         </DialogClose>
         <div className="space-y-2">
           <DialogTitle className="pb-0">Attach files to your tool</DialogTitle>
@@ -109,7 +109,7 @@ function ManageSourcesButtonBase() {
         <div
           {...getRootFileProps({
             className:
-              'dropzone py-4 bg-gray-400 group relative  flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed border-gray-200 transition-colors hover:border-gray-100',
+              'dropzone py-4 bg-official-gray-750 group relative  flex cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-dashed border-official-gray-900 transition-colors hover:border-official-gray-750',
           })}
         >
           <div className="flex flex-col items-center justify-center space-y-1 px-2">
@@ -118,14 +118,17 @@ function ManageSourcesButtonBase() {
             </div>
             <p className="text-sm text-white">{t('common.clickToUpload')}</p>
 
-            <p className="text-gray-80 line-clamp-1 text-xs">
+            <p className="text-official-official-gray-900 line-clamp-1 text-xs">
               {t('common.uploadAFileDescription')}
             </p>
           </div>
 
           <input {...getInputFileProps({})} />
         </div>
-        <Separator className="my-1 bg-gray-200" orientation="horizontal" />
+        <Separator
+          className="bg-official-gray-900 my-1"
+          orientation="horizontal"
+        />
         <div
           className={cn(
             'flex flex-1 flex-col gap-2 overflow-y-auto pr-2',
@@ -133,14 +136,14 @@ function ManageSourcesButtonBase() {
           )}
         >
           {isGetAllToolAssetsSuccess && assets.length === 0 && (
-            <span className="text-gray-80 text-center text-xs">
+            <span className="text-official-official-gray-900 text-center text-xs">
               No files uploaded yet.
             </span>
           )}
           {isUploadingAssets && (
             <div className="flex flex-col items-center gap-2">
-              <Loader2 className="text-gray-80 shrink-0 animate-spin" />
-              <span className="text-gray-80 text-center text-xs">
+              <Loader2 className="text-official-official-gray-900 shrink-0 animate-spin" />
+              <span className="text-official-official-gray-900 text-center text-xs">
                 Uploading files...
               </span>
             </div>
@@ -155,11 +158,11 @@ function ManageSourcesButtonBase() {
                   <div className="w-4.5 flex aspect-square shrink-0 items-center justify-center">
                     {getFileExt(asset) && fileIconMap[getFileExt(asset)] ? (
                       <FileTypeIcon
-                        className="text-gray-80 h-[18px] w-[18px] shrink-0"
+                        className="text-official-official-gray-900 h-[18px] w-[18px] shrink-0"
                         type={getFileExt(asset)}
                       />
                     ) : (
-                      <Paperclip className="text-gray-80 h-3.5 w-3.5 shrink-0" />
+                      <Paperclip className="text-official-official-gray-900 h-3.5 w-3.5 shrink-0" />
                     )}
                   </div>
                   <Tooltip delayDuration={1000}>
@@ -176,7 +179,7 @@ function ManageSourcesButtonBase() {
                   </Tooltip>
                 </div>
                 <Button
-                  className="text-gray-80 !size-5 shrink-0 border-0 p-0.5 hover:text-white"
+                  className="text-official-official-gray-900 !size-5 shrink-0 border-0 p-0.5 hover:text-white"
                   onClick={async () => {
                     await removeAsset({
                       nodeAddress: auth?.node_address ?? '',

@@ -55,7 +55,7 @@ export const FilePreview: React.FC<FilePreviewProps> = ({
       }
       const textContent = new TextDecoder('utf-8').decode(bytes);
       return (
-        <pre className="h-full overflow-auto whitespace-pre-wrap break-words bg-gray-600 p-4 font-mono text-sm">
+        <pre className="bg-official-gray-900 h-full overflow-auto whitespace-pre-wrap break-words p-4 font-mono text-sm">
           {textContent}
         </pre>
       );
@@ -180,7 +180,7 @@ export const VectorFileDetails = () => {
   return (
     <React.Fragment>
       <div className="flex size-full">
-        <div className="flex max-w-[80%] flex-1 basis-[80%] flex-col overflow-hidden rounded-l-xl bg-gray-600 p-10 text-white">
+        <div className="bg-official-gray-900 flex max-w-[80%] flex-1 basis-[80%] flex-col overflow-hidden rounded-l-xl p-10 text-white">
           <FilePreview
             extension={fileExtension}
             fileContentBase64={fileContent}
@@ -188,7 +188,7 @@ export const VectorFileDetails = () => {
             onDownload={handleDownloadFile}
           />
         </div>
-        <div className="flex min-w-[350px] flex-1 shrink-0 flex-col rounded-r-xl border-l border-gray-200 bg-gray-300 p-5 pl-4">
+        <div className="border-official-gray-900 bg-official-gray-700 flex min-w-[350px] flex-1 shrink-0 flex-col rounded-r-xl border-l p-5 pl-4">
           <DialogHeader>
             <DialogTitle className={'sr-only'}>File Information</DialogTitle>
           </DialogHeader>
@@ -201,11 +201,11 @@ export const VectorFileDetails = () => {
             </div>
             <p className="break-words text-lg font-medium text-white">
               {selectedFile?.name}
-              <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
+              <Badge className="text-official-official-gray-900 bg-official-gray-750 ml-2 text-xs uppercase">
                 {getFileExt(selectedFile?.name ?? '') ?? '-'}
               </Badge>
             </p>
-            <p className="text-gray-100">
+            <p className="text-official-gray-750">
               <span className="text-sm">
                 {formatDateToUSLocaleString(
                   new Date(selectedFile?.created_time ?? ''),
@@ -226,7 +226,7 @@ export const VectorFileDetails = () => {
             <h2 className="mb-3 text-left text-base font-medium text-white">
               Information
             </h2>
-            <div className="divide-y divide-gray-300">
+            <div className="divide-official-gray-700 divide-y">
               {[
                 { label: 'Created', value: selectedFile?.created_time },
                 {
@@ -242,7 +242,9 @@ export const VectorFileDetails = () => {
                   className="flex items-center justify-between py-2 text-xs font-medium"
                   key={item.label}
                 >
-                  <span className="text-sm text-gray-100">{item.label}</span>
+                  <span className="text-official-gray-750 text-sm">
+                    {item.label}
+                  </span>
                   <span className="text-sm text-white">
                     {formatDateToLocaleStringWithTime(
                       new Date(item.value ?? ''),

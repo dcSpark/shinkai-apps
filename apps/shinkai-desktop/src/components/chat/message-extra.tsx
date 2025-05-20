@@ -89,7 +89,7 @@ function Payment({
   return (
     <motion.div
       animate={{ opacity: 1, y: 0 }}
-      className="-mt-7 mb-4 ml-10 min-h-[300px] max-w-3xl rounded-xl border border-gray-300 p-2"
+      className="border-official-gray-700 -mt-7 mb-4 ml-10 min-h-[300px] max-w-3xl rounded-xl border p-2"
       exit={{ opacity: 0, y: -20 }}
       initial={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.3 }}
@@ -128,7 +128,7 @@ function Payment({
                         value="one-time"
                       />
                       <Label
-                        className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand flex w-full flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"
+                        className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand border-official-gray-750 bg-official-gray-850 flex w-full flex-col items-center justify-between rounded-md border-2 p-4"
                         htmlFor="one-time"
                       >
                         <span className="font-clash text-2xl font-semibold">
@@ -146,7 +146,9 @@ function Payment({
                                   `
                               : data.usage_type.PerUse.DirectDelegation}
                         </span>
-                        <span className="text-gray-100">one-time use</span>
+                        <span className="text-official-gray-750">
+                          one-time use
+                        </span>
                       </Label>
                     </div>
                   )}
@@ -158,7 +160,7 @@ function Payment({
                         value="download"
                       />
                       <Label
-                        className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand flex w-full flex-col items-center justify-between rounded-md border-2 border-gray-400 bg-gray-500 p-4"
+                        className="hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-brand [&:has([data-state=checked])]:border-brand border-official-gray-750 bg-official-gray-850 flex w-full flex-col items-center justify-between rounded-md border-2 p-4"
                         htmlFor="download"
                       >
                         <span className="font-clash text-xl font-semibold">
@@ -177,26 +179,34 @@ function Payment({
                                   `
                               : data.usage_type.Downloadable.DirectDelegation}
                         </span>
-                        <span className="text-gray-100">for download</span>
+                        <span className="text-official-gray-750-official-gray-750">
+                          for download
+                        </span>
                       </Label>
                     </div>
                   )}
                 </RadioGroup>
                 <div className="mx-auto flex max-w-sm flex-col gap-2 py-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-100">Author</span>
+                    <span className="text-official-gray-750-official-gray-750">
+                      Author
+                    </span>
                     <span className="text-white">
                       {data.invoice.provider_name}
                     </span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-100">Wallet Address</span>
+                    <span className="text-official-gray-750-official-gray-750">
+                      Wallet Address
+                    </span>
                     <span className="text-white">
                       {truncateAddress(data.invoice.address.address_id)}
                     </span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-100">Wallet Balances</span>
+                    <span className="text-official-gray-750-official-gray-750">
+                      Wallet Balances
+                    </span>
                     <div className="text-white">
                       {data.wallet_balances.data.map((balance) => (
                         <div
@@ -255,7 +265,9 @@ function Payment({
             >
               <CardContent className="flex flex-col items-center justify-center gap-2 py-8">
                 <Loader2 className="h-8 w-8 animate-spin text-white" />
-                <span className="text-gray-80 ml-2">Processing payment...</span>
+                <span className="text-official-gray-750 ml-2">
+                  Processing payment...
+                </span>
               </CardContent>
             </motion.div>
           )}
@@ -273,7 +285,7 @@ function Payment({
                   <span className="mt-4 text-lg font-semibold text-white">
                     Payment Successful!
                   </span>
-                  <span className="mt-2 text-sm text-gray-100">
+                  <span className="text-official-gray-750-official-gray-750 mt-2 text-sm">
                     Thank you for your purchase.
                   </span>
                 </div>
@@ -307,7 +319,7 @@ function Payment({
                   <span className="mt-4 text-lg font-semibold text-white">
                     Payment Failed!
                   </span>
-                  <span className="mt-2 text-sm text-gray-100">
+                  <span className="text-official-gray-750-official-gray-750 mt-2 text-sm">
                     Please try again.
                   </span>
                 </div>

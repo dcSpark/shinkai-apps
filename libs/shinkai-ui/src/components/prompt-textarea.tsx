@@ -48,7 +48,7 @@ const PromptTextarea = React.forwardRef<
     <>
       <textarea
         className={cn(
-          'flex w-full break-words rounded-md border border-gray-200 bg-gray-400 px-4 py-2 pt-4 text-sm placeholder-gray-100 placeholder:text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-gray-100 disabled:cursor-not-allowed disabled:opacity-50',
+          'placeholder-official-gray-750 focus-visible:ring-official-gray-750 border-official-gray-900 bg-official-gray-750 flex w-full break-words rounded-md border px-4 py-2 pt-4 text-sm placeholder:text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-50',
           className,
         )}
         style={{

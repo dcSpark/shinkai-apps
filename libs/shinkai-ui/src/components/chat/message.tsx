@@ -116,8 +116,8 @@ const ArtifactCard = ({
 }: ArtifactProps) => (
   <Card
     className={cn(
-      'w-full max-w-sm border border-gray-100',
-      isSelected && 'border-gray-50 bg-gray-300',
+      'border-official-gray-750 w-full max-w-sm border',
+      isSelected && 'bg-official-gray-700 border-gray-50',
     )}
     onClick={() => {
       onArtifactClick?.();
@@ -127,10 +127,12 @@ const ArtifactCard = ({
     <CardContent className="flex items-center gap-1 p-1 py-1.5">
       <div className="rounded-md p-2">
         {loading ? (
-          <Loader2 className="text-gray-80 h-5 w-5 animate-spin" />
+          <Loader2 className="text-official-official-gray-900 h-5 w-5 animate-spin" />
         ) : (
           <ReactJsIcon
-            className={cn(isSelected ? 'text-gray-50' : 'text-gray-80')}
+            className={cn(
+              isSelected ? 'text-gray-50' : 'text-official-official-gray-900',
+            )}
           />
         )}
       </div>
@@ -138,7 +140,7 @@ const ArtifactCard = ({
         <p className="!mb-0 line-clamp-1 text-sm font-medium text-gray-50">
           {title}
         </p>
-        <p className="text-gray-80 !mb-0 text-xs">
+        <p className="text-official-official-gray-900 !mb-0 text-xs">
           {loading ? 'Generating...' : 'Click to preview'}
         </p>
       </div>
@@ -247,8 +249,8 @@ const MessageBase = ({
                       <ChatInputArea
                         bottomAddons={
                           <div className="flex w-full items-center justify-between px-1">
-                            <div className="flex items-center gap-1 text-xs text-gray-100">
-                              <InfoCircleIcon className="h-3 w-3 text-gray-100" />
+                            <div className="text-official-gray-750 flex items-center gap-1 text-xs">
+                              <InfoCircleIcon className="text-official-gray-750 h-3 w-3" />
                               <span>{t('chat.editMessage.warning')}</span>
                             </div>
                             <div className="flex items-center gap-2">
@@ -286,13 +288,13 @@ const MessageBase = ({
                 className={cn(
                   'relative mt-1 flex flex-col rounded-lg bg-black/40 px-3.5 pt-3 text-sm text-white',
                   message.role === 'user'
-                    ? 'rounded-tr-none bg-gray-300'
-                    : 'rounded-bl-none border-none bg-gray-200',
+                    ? 'bg-official-gray-700 rounded-tr-none'
+                    : 'bg-official-gray-900 rounded-bl-none border-none',
                   !message.content ? 'pb-3' : 'pb-4',
                   editing && 'w-full py-1',
                   message.role === 'assistant' &&
                     isPending &&
-                    'relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l before:from-gray-200 before:to-gray-200/10',
+                    'before:from-official-gray-900 before:to-official-gray-900/10 relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l',
                 )}
               >
                 {message.role === 'assistant' &&
@@ -313,7 +315,7 @@ const MessageBase = ({
                             <AccordionTrigger
                               className={cn(
                                 'min-w-[10rem] py-0 pr-2 no-underline hover:no-underline',
-                                'transition-colors hover:bg-gray-500 [&[data-state=open]]:bg-gray-500',
+                                'hover:bg-official-gray-850 [&[data-state=open]]:bg-official-gray-850 transition-colors',
                                 tool.status !== ToolStatusType.Complete &&
                                   '[&>svg]:hidden',
                               )}
@@ -330,7 +332,7 @@ const MessageBase = ({
                                 <span className="font-medium text-white">
                                   {tool.name}(
                                   {Object.keys(tool.args).length > 0 && (
-                                    <span className="text-gray-80 font-mono font-medium">
+                                    <span className="text-official-official-gray-900 font-mono font-medium">
                                       {JSON.stringify(tool.args)}
                                     </span>
                                   )}
@@ -340,7 +342,7 @@ const MessageBase = ({
                               {tool.result && (
                                 <div>
                                   <span>Response:</span>
-                                  <span className="text-gray-80 break-all font-mono">
+                                  <span className="text-official-official-gray-900 break-all font-mono">
                                     <PrettyJsonPrint json={tool.result} />
                                   </span>
                                 </div>
@@ -401,7 +403,7 @@ const MessageBase = ({
                           <TooltipTrigger asChild>
                             <button
                               className={cn(
-                                'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                                'text-official-official-gray-900 border-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                               )}
                               onClick={() => {
                                 setEditing(true);
@@ -424,7 +426,7 @@ const MessageBase = ({
                           <TooltipTrigger asChild>
                             <button
                               className={cn(
-                                'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                                'text-official-official-gray-900 border-official-gray-900 hover:bg-official-gray-700 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                               )}
                               onClick={handleRetryMessage}
                             >
@@ -445,7 +447,7 @@ const MessageBase = ({
                           <div>
                             <CopyToClipboardIcon
                               className={cn(
-                                'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                                'text-official-official-gray-900 border-official-gray-900 hover:bg-official-gray-700 h-7 w-7 border bg-transparent [&>svg]:h-3 [&>svg]:w-3',
                               )}
                               string={extractErrorPropertyOrContent(
                                 message.content,
@@ -464,7 +466,7 @@ const MessageBase = ({
                   </div>
                   <div
                     className={cn(
-                      'flex items-center gap-1.5 text-xs text-gray-100',
+                      'text-official-gray-750 flex items-center gap-1.5 text-xs',
                     )}
                   >
                     <span>
@@ -522,10 +524,12 @@ export function ToolCard({
       return <ToolsIcon className="text-brand size-full" />;
     }
     if (status === ToolStatusType.Incomplete) {
-      return <XCircle className="text-gray-80 size-full" />;
+      return <XCircle className="text-official-official-gray-900 size-full" />;
     }
     if (status === ToolStatusType.RequiresAction) {
-      return <InfoCircleIcon className="text-gray-80 size-full" />;
+      return (
+        <InfoCircleIcon className="text-official-official-gray-900 size-full" />
+      );
     }
     return <Loader2 className="text-brand size-full animate-spin" />;
   };
@@ -555,7 +559,9 @@ export function ToolCard({
         <div className="flex items-center gap-1 p-[5px]">
           <div className="size-7 shrink-0 px-1.5">{renderStatus()}</div>
           <div className="flex items-center gap-1">
-            <span className="text-gray-80 text-em-sm">{renderLabelText()}</span>
+            <span className="text-official-official-gray-900 text-em-sm">
+              {renderLabelText()}
+            </span>
             <Link
               className="text-gray-white text-xs font-semibold hover:underline"
               to={`/tools/${toolRouterKey}`}

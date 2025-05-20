@@ -68,13 +68,13 @@ export function LanguageToolSelector({
           </TooltipPortal>
           <DropdownMenuContent
             align="start"
-            className="min-w-[200px] overflow-y-auto bg-gray-300 p-1 py-2"
+            className="bg-official-gray-700 min-w-[200px] overflow-y-auto p-1 py-2"
             side="top"
           >
             <DropdownMenuRadioGroup onValueChange={onValueChange} value={value}>
               {LANGUAGE_TOOLS.map((language) => (
                 <DropdownMenuRadioItem
-                  className="flex cursor-pointer items-center justify-between gap-1.5 rounded-md px-2 py-2 text-white transition-colors hover:bg-gray-200 aria-checked:bg-gray-200"
+                  className="hover:bg-official-gray-900 aria-checked:bg-official-gray-900 flex cursor-pointer items-center justify-between gap-1.5 rounded-md px-2 py-2 text-white transition-colors"
                   key={language.value}
                   value={language.value}
                 >

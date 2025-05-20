@@ -138,7 +138,7 @@ const SearchNodeFiles = () => {
           <h1 className="text-center text-2xl font-semibold text-white">
             {t('aiFilesSearch.label')}
           </h1>
-          <p className="text-gray-80 mx-auto text-center text-sm">
+          <p className="text-official-official-gray-900 mx-auto text-center text-sm">
             {t('aiFilesSearch.description')}
           </p>
           <Form {...searchVectorFSForm}>
@@ -154,7 +154,7 @@ const SearchNodeFiles = () => {
                     <div className="relative flex-1">
                       <Input
                         autoFocus
-                        className="placeholder-gray-80 !h-[50px] bg-gray-200 py-2 pl-10"
+                        className="placeholder-official-official-gray-900 bg-official-gray-900 !h-[50px] py-2 pl-10"
                         onChange={field.onChange}
                         placeholder={t('common.searchPlaceholder')}
                         value={field.value}
@@ -162,7 +162,7 @@ const SearchNodeFiles = () => {
                       <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
                       {currentSearchQuery && (
                         <Button
-                          className="absolute right-1 top-2 h-8 w-8 bg-gray-200 p-2"
+                          className="bg-official-gray-900 absolute right-1 top-2 h-8 w-8 p-2"
                           onClick={() => {
                             searchVectorFSForm.reset({ searchQuery: '' });
                           }}
@@ -193,7 +193,7 @@ const SearchNodeFiles = () => {
 
               <div className="flex items-center gap-2 self-start px-2 py-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-80 text-xs">
+                  <span className="text-official-official-gray-900 text-xs">
                     {t('common.folderLocation')}
                   </span>
                   <SelectFolderButton />
@@ -224,13 +224,13 @@ const SearchNodeFiles = () => {
           isLoading &&
           Array.from({ length: 4 }).map((_, idx) => (
             <div
-              className="mb-1 flex h-[69px] items-center justify-between gap-2 rounded-lg bg-gray-400 py-3"
+              className="bg-official-gray-750 mb-1 flex h-[69px] items-center justify-between gap-2 rounded-lg py-3"
               key={idx}
             />
           ))}
         {isSearchEntered && isSuccess && (
           <div className="flex min-h-[50px] items-center justify-between gap-4 px-2">
-            <h2 className="text-gray-80 text-sm font-medium">
+            <h2 className="text-official-official-gray-900 text-sm font-medium">
               Found {data?.length} results
             </h2>
             {selectedKeys && Object.keys(selectedKeys).length > 0 && (
@@ -313,10 +313,10 @@ const SearchNodeFiles = () => {
                               {generatedFilePath.split('/').at(-1)}
                             </span>
                           </div>
-                          <div className="divide-y divide-gray-300">
+                          <div className="divide-official-gray-700 divide-y">
                             {contents?.map((content) => (
                               <p
-                                className="text-gray-80 py-3 text-xs"
+                                className="text-official-official-gray-900 py-3 text-xs"
                                 key={content}
                               >
                                 {content}
@@ -364,7 +364,7 @@ function SelectFolderButton() {
           <SheetTrigger asChild>
             <TooltipTrigger asChild>
               <Button
-                className="hover:bg-gray-400 hover:text-white"
+                className="hover:bg-official-gray-750 hover:text-white"
                 size="sm"
                 type="button"
                 variant="outline"

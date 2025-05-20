@@ -142,7 +142,7 @@ export const SqlitePreview: React.FC<SqlitePreviewProps> = ({ url }) => {
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-4 rounded-lg bg-gray-600 p-4">
+      <div className="bg-official-gray-900 flex flex-col gap-4 rounded-lg p-4">
         <div className="flex gap-2">
           <Skeleton className="h-8 w-24" />
           <Skeleton className="h-8 w-24" />
@@ -157,7 +157,7 @@ export const SqlitePreview: React.FC<SqlitePreviewProps> = ({ url }) => {
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-lg bg-gray-600 p-4 overflow-y-hidden">
+    <div className="bg-official-gray-900 flex flex-col gap-4 overflow-y-hidden rounded-lg p-4">
       <div className="flex flex-wrap gap-2">
         {tables.map((table) => (
           <Button
@@ -182,11 +182,11 @@ export const SqlitePreview: React.FC<SqlitePreviewProps> = ({ url }) => {
               </div>
             ) : (
               <table className="w-full text-left text-sm">
-                <thead className="sticky top-0 bg-gray-600">
-                  <tr className="border-b border-gray-500">
+                <thead className="bg-official-gray-900 sticky top-0">
+                  <tr className="border-official-gray-850 border-b">
                     {tableData?.columns.map((column) => (
                       <th
-                        className="p-2 font-medium text-gray-300"
+                        className="text-official-gray-700 p-2 font-medium"
                         key={String(column)}
                       >
                         {String(column)}
@@ -198,7 +198,7 @@ export const SqlitePreview: React.FC<SqlitePreviewProps> = ({ url }) => {
                   {tableData?.rows.map((row, i) => (
                     <tr className="border-b border-gray-700" key={i}>
                       {row.map((cell, j) => (
-                        <td className="p-2 text-gray-100" key={j}>
+                        <td className="text-official-gray-750 p-2" key={j}>
                           {String(cell)}
                         </td>
                       ))}

@@ -10,9 +10,9 @@ export const StdoutRender = ({ stdout }: { stdout: string[] }) => {
   }
 
   return (
-    <div className="mt-4 rounded-md border border-gray-200 bg-gray-50">
+    <div className="border-official-gray-900 mt-4 rounded-md border bg-gray-50">
       <button
-        className="flex w-full items-center justify-between p-3 text-sm text-gray-700 transition-colors duration-200 hover:bg-gray-100 focus:outline-none"
+        className="hover:bg-official-gray-750 flex w-full items-center justify-between p-3 text-sm text-gray-700 transition-colors duration-200 focus:outline-none"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <span className="flex items-center">
@@ -24,14 +24,16 @@ export const StdoutRender = ({ stdout }: { stdout: string[] }) => {
           {i18n.t('codeRunner.stdout')} ({stdout.length} line
           {stdout.length !== 1 ? 's' : ''})
         </span>
-        <span className="text-gray-500">{isExpanded ? 'Hide' : 'Show'}</span>
+        <span className="text-official-gray-850">
+          {isExpanded ? 'Hide' : 'Show'}
+        </span>
       </button>
       {isExpanded && (
-        <div className="border-t border-gray-200">
+        <div className="border-official-gray-900 border-t">
           <pre className="max-h-60 overflow-y-auto whitespace-pre-wrap break-words p-4 text-sm text-gray-800">
             {stdout.map((line, index) => (
               <div className="mb-1 last:mb-0" key={index}>
-                <span className="mr-2 select-none text-gray-500">
+                <span className="text-official-gray-850 mr-2 select-none">
                   {index + 1}
                 </span>
                 {line}

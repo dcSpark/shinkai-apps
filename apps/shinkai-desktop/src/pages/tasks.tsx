@@ -123,20 +123,20 @@ export const Tasks = () => {
                       className="flex items-start gap-2 py-1"
                       key={task.task_id}
                     >
-                      <ScheduledTasksIcon className="text-gray-80 mt-1 size-4" />
+                      <ScheduledTasksIcon className="text-official-official-gray-900 mt-1 size-4" />
                       <div className="flex flex-col gap-1 text-left">
                         <span className="text-sm text-gray-50">
                           {task.name}
-                          <span className="text-gray-80 mx-1 rounded-lg border border-gray-200 px-1.5 py-1 text-xs">
+                          <span className="text-official-official-gray-900 border-official-gray-900 mx-1 rounded-lg border px-1.5 py-1 text-xs">
                             {cronstrue.toString(task.cron, {
                               throwExceptionOnParseError: false,
                             })}
                           </span>
                         </span>
-                        <span className="text-gray-80">
+                        <span className="text-official-official-gray-900">
                           {' '}
                           Next execution in{' '}
-                          <span className="text-gray-80 font-semibold">
+                          <span className="text-official-official-gray-900 font-semibold">
                             {formatDistance(new Date(date), new Date(), {
                               addSuffix: false,
                             })}
@@ -170,19 +170,19 @@ export const Tasks = () => {
           Array.from({ length: 8 }).map((_, idx) => (
             <div
               className={cn(
-                'grid animate-pulse grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm bg-gray-500 px-2 py-4 text-left text-sm',
+                'bg-official-gray-850 grid animate-pulse grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm px-2 py-4 text-left text-sm',
               )}
               key={idx}
             >
               <div className="flex w-full flex-1 flex-col gap-3">
-                <span className="h-4 w-36 rounded-sm bg-gray-300" />
+                <span className="bg-official-gray-700 h-4 w-36 rounded-sm" />
                 <div className="flex flex-col gap-1">
-                  <span className="h-3 w-full rounded-sm bg-gray-300" />
-                  <span className="h-3 w-2/4 rounded-sm bg-gray-300" />
+                  <span className="bg-official-gray-700 h-3 w-full rounded-sm" />
+                  <span className="bg-official-gray-700 h-3 w-2/4 rounded-sm" />
                 </div>
               </div>
-              <span className="h-7 w-full rounded-md bg-gray-300" />
-              <span className="h-5 w-[36px] rounded-full bg-gray-300" />
+              <span className="bg-official-gray-700 h-7 w-full rounded-md" />
+              <span className="bg-official-gray-700 h-5 w-[36px] rounded-full" />
             </div>
           ))}
         {isSuccess &&
@@ -234,7 +234,7 @@ export const Tasks = () => {
         {isSuccess && tasks?.length === 0 && (
           <div className="mx-auto flex h-28 max-w-lg flex-col items-center justify-center gap-2 text-center">
             <h1 className="text-base font-medium">No scheduled tasks found</h1>
-            <p className="text-gray-80 text-sm">
+            <p className="text-official-official-gray-900 text-sm">
               Create your first scheduled task to automate reminders, summaries,
               or any other tasks you need to manage
             </p>
@@ -296,15 +296,15 @@ const TaskCard = ({
             {name}
           </span>
         </div>
-        <p className="text-gray-80 line-clamp-2 text-xs">
+        <p className="text-official-official-gray-900 line-clamp-2 text-xs">
           {description ?? '-'}
         </p>
         <p className="line-clamp-2 text-xs text-gray-50">
-          <span className="text-gray-80 mr-2">Prompt</span>
+          <span className="text-official-official-gray-900 mr-2">Prompt</span>
           {prompt}
         </p>
         <p className="line-clamp-2 text-xs text-gray-50">
-          <span className="text-gray-80 mr-2">Schedule</span>
+          <span className="text-official-official-gray-900 mr-2">Schedule</span>
           {readableCron}
         </p>
       </div>
@@ -365,12 +365,12 @@ const TaskCard = ({
             tabIndex={0}
           >
             <span className="sr-only">{t('common.moreOptions')}</span>
-            <DotsVerticalIcon className="text-gray-100" />
+            <DotsVerticalIcon className="text-official-gray-750" />
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="w-[160px] border bg-gray-500 px-2.5 py-2"
+          className="bg-official-gray-850 w-[160px] border px-2.5 py-2"
         >
           {[
             {
@@ -401,7 +401,7 @@ const TaskCard = ({
           ].map((option) => (
             <React.Fragment key={option.name}>
               {option.name === 'Delete' && (
-                <DropdownMenuSeparator className="bg-gray-300" />
+                <DropdownMenuSeparator className="bg-official-gray-700" />
               )}
               <DropdownMenuItem
                 key={option.name}

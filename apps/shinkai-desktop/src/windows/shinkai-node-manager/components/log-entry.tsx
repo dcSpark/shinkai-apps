@@ -25,11 +25,11 @@ export const LogIcon = ({ level }: { level: string }) => {
       case 'INFO':
         return 'bg-blue-500/20 text-blue-500';
       case 'TRACE':
-        return 'bg-gray-500/10 text-gray-200';
+        return 'bg-official-gray-850/10 text-official-gray-900';
       case 'DEBUG':
         return 'bg-purple-500/20 text-purple-500';
       default:
-        return 'bg-gray-500/20 text-gray-500';
+        return 'bg-official-gray-850/20 text-official-gray-850';
     }
   };
 
@@ -58,10 +58,10 @@ export const LogIcon = ({ level }: { level: string }) => {
 export const LogItem = ({ log, onLogClick }: LogEntryProps) => {
   return (
     <div
-      className="h-full flex cursor-pointer items-start gap-2"
+      className="flex h-full cursor-pointer items-start gap-2"
       onClick={() => onLogClick?.(log.message)}
     >
-      <div className="h-full flex w-full min-w-0 items-center gap-1.5">
+      <div className="flex h-full w-full min-w-0 items-center gap-1.5">
         <LogIcon level={log.level} />
         <span className="shrink-0 text-white/40">[{log.timestamp}]</span>
         <span className="shrink-0 text-white/40">[{log.target}]</span>

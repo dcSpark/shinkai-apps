@@ -142,7 +142,7 @@ const PromptSearchDrawer = () => {
         <div className="relative mb-4 flex h-10 w-full items-center">
           <Input
             autoFocus
-            className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
+            className="placeholder-official-official-gray-900 !h-full bg-transparent py-2 pl-10"
             onChange={(e) => {
               setSearchQuery(e.target.value);
             }}
@@ -153,7 +153,7 @@ const PromptSearchDrawer = () => {
           <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
           {searchQuery && (
             <Button
-              className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
+              className="bg-official-gray-900 absolute right-1 h-8 w-8 p-2"
               onClick={() => {
                 setSearchQuery('');
               }}
@@ -167,11 +167,11 @@ const PromptSearchDrawer = () => {
           )}
         </div>
         <ScrollArea className="h-[calc(100vh-140px)] pr-4 [&>div>div]:!block">
-          <div className="divide-y divide-gray-200 py-5">
+          <div className="divide-official-gray-900 divide-y py-5">
             {(isPending || !isSearchQuerySynced || isSearchPromptListPending) &&
               Array.from({ length: 4 }).map((_, idx) => (
                 <div
-                  className="mb-2 flex h-[40px] items-center justify-between gap-2 rounded-lg bg-gray-300 py-3"
+                  className="bg-official-gray-700 mb-2 flex h-[40px] items-center justify-between gap-2 rounded-lg py-3"
                   key={idx}
                 />
               ))}
@@ -180,7 +180,7 @@ const PromptSearchDrawer = () => {
               promptList?.map((prompt) => (
                 <div
                   className={cn(
-                    'group relative flex min-h-[40px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm hover:bg-gray-300',
+                    'hover:bg-official-gray-700 group relative flex min-h-[40px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm',
                   )}
                   key={prompt.name}
                   onClick={() => {
@@ -192,7 +192,7 @@ const PromptSearchDrawer = () => {
                 >
                   <div className="absolute right-1 top-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
                     <button
-                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+                      className="text-official-official-gray-900 hover:bg-official-gray-750 rounded-full p-2 transition-colors hover:text-white"
                       onClick={(event) => {
                         event.stopPropagation();
                         setSelectedPromptEdit(prompt);
@@ -203,7 +203,7 @@ const PromptSearchDrawer = () => {
                     </button>
 
                     <button
-                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+                      className="text-official-official-gray-900 hover:bg-official-gray-750 rounded-full p-2 transition-colors hover:text-white"
                       onClick={async (event) => {
                         event.stopPropagation();
                         await removePrompt({
@@ -225,7 +225,7 @@ const PromptSearchDrawer = () => {
               searchPromptList?.map((prompt) => (
                 <div
                   className={cn(
-                    'group relative flex min-h-[40px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm hover:bg-gray-300',
+                    'hover:bg-official-gray-700 group relative flex min-h-[40px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm',
                   )}
                   key={prompt.name}
                   onClick={() => {
@@ -237,7 +237,7 @@ const PromptSearchDrawer = () => {
                 >
                   <div className="absolute right-1 top-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
                     <button
-                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+                      className="text-official-official-gray-900 hover:bg-official-gray-750 rounded-full p-2 transition-colors hover:text-white"
                       onClick={(event) => {
                         event.stopPropagation();
                         setSelectedPromptEdit(prompt);
@@ -248,7 +248,7 @@ const PromptSearchDrawer = () => {
                     </button>
 
                     <button
-                      className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
+                      className="text-official-official-gray-900 hover:bg-official-gray-750 rounded-full p-2 transition-colors hover:text-white"
                       onClick={async (event) => {
                         event.stopPropagation();
                         await removePrompt({
@@ -269,7 +269,7 @@ const PromptSearchDrawer = () => {
               isSearchQuerySynced &&
               searchPromptList?.length === 0 && (
                 <div className="flex h-20 items-center justify-center">
-                  <p className="text-gray-80 text-sm">
+                  <p className="text-official-official-gray-900 text-sm">
                     No prompts found for the search query
                   </p>
                 </div>
