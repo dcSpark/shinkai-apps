@@ -43,7 +43,7 @@ export default function PasswordWidget<
       <Input
         aria-describedby={rawErrors?.length > 0 ? `${id}-error` : undefined}
         autoFocus={autofocus}
-        className={cn('!h-11 !pt-1 !pb-1 pr-10')}
+        className={cn('h-11! pt-1! pb-1! pr-10')}
         disabled={disabled || readonly}
         hidePasswordToggle={true}
         id={id}

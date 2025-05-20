@@ -95,10 +95,10 @@ const FormLabel = React.forwardRef<
       className={cn(
         'text-official-gray-400 pointer-events-none absolute left-4 top-3 flex select-none text-xs font-medium leading-tight transition-all',
         // input
-        'peer-placeholder-shown:text-official-gray-400 z-[1] peer-placeholder-shown:text-base peer-placeholder-shown:leading-[2.3]',
-        'peer-focus:text-official-gray-400 peer-disabled:text-official-gray-400 peer-disabled:peer-placeholder-shown:text-official-gray-400/80 peer-focus:text-xs peer-focus:leading-tight',
+        'peer-placeholder-shown:text-official-gray-400 z-1 peer-placeholder-shown:text-base peer-placeholder-shown:leading-[2.3]',
+        'peer-focus:text-official-gray-400 peer-disabled:text-official-gray-400 peer-placeholder-shown:peer-disabled:text-official-gray-400/80 peer-focus:text-xs peer-focus:leading-tight',
         // select
-        'peer-data-[placeholder]/select:top-5 peer-data-[placeholder]/select:text-base',
+        'peer-data-placeholder/select:top-5 peer-data-placeholder/select:text-base',
         // adornment
         'peer-[.adornment]/adornment:text-xs',
         error && 'text-red-500',

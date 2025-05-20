@@ -1,8 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap')
+layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@config '../../tailwind.config.js';
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 @layer base {
   /*@font-face {*/
@@ -34,8 +53,8 @@
   body {
     .wmde-markdown-var[data-color-mode*='dark'] {
       --color-canvas-default: transparent;
-      --color-border-default: theme('colors.gray.400');
-      --color-fg-default: theme('colors.white');
+      --color-border-default: var(--color-gray-400);
+      --color-fg-default: var(--color-white);
       @apply text-sm;
     }
   }
@@ -53,7 +72,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full border-[1px] border-white bg-gray-100/40;
+    @apply rounded-full border border-white bg-gray-100/40;
   }
 
   ::-webkit-scrollbar-thumb:hover {
