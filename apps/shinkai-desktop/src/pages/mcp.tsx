@@ -20,6 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   Input,
+  Switch,
   ToggleGroup,
   ToggleGroupItem,
   Tooltip,
@@ -30,11 +31,20 @@ import {
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { TFunction } from 'i18next';
-import { BoltIcon, Plus, SearchIcon, XIcon } from 'lucide-react';
+import {
+  BoltIcon,
+  CopyIcon,
+  MoreVertical,
+  Plus,
+  SearchIcon,
+  Trash2,
+  XIcon,
+} from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
 
+import RemoveToolButton from '../components/playground-tool/components/remove-tool-button';
 import { handleConfigureClaude } from '../lib/external-clients/claude-desktop';
 import { ConfigError, getDenoBinPath } from '../lib/external-clients/common';
 import { handleConfigureCursor } from '../lib/external-clients/cursor';
@@ -145,11 +155,7 @@ export const McpRegistryPage = () => {
           <div className="flex gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  className="text-official-gray-400"
-                  size="sm"
-                  variant="outline"
-                >
+                <Button size="sm" variant="outline">
                   Connect External MCP Client
                 </Button>
               </DropdownMenuTrigger>
@@ -289,6 +295,11 @@ export const McpRegistryPage = () => {
               <McpCard
                 hideToolTypeBadge={selectedMCCategory !== 'all'}
                 key={tool.tool_router_key}
+                requiredConfig={(tool.config ?? []).some(
+                  (config) =>
+                    config.BasicConfig?.required &&
+                    !config.BasicConfig?.key_value,
+                )}
                 toolAuthor={tool.author}
                 toolDescription={tool.description}
                 toolEnabled={tool.enabled}
@@ -308,6 +319,11 @@ export const McpRegistryPage = () => {
               {searchToolList?.map((tool) => (
                 <McpCard
                   key={tool.tool_router_key}
+                  requiredConfig={(tool.config ?? []).some(
+                    (config) =>
+                      config.BasicConfig?.required &&
+                      !config.BasicConfig?.key_value,
+                  )}
                   toolAuthor={tool.author}
                   toolDescription={tool.description}
                   toolEnabled={tool.enabled}
@@ -325,7 +341,7 @@ export const McpRegistryPage = () => {
             {Array.from({ length: 8 }).map((_, idx) => (
               <div
                 className={cn(
-                  'grid animate-pulse grid-cols-[1fr_110px_60px] items-center gap-5 rounded-sm px-2 py-3 pr-4 text-left text-sm',
+                  'grid animate-pulse items-center gap-5 rounded-sm px-2 py-3 pr-4 text-left text-sm',
                 )}
                 key={idx}
               >
@@ -425,6 +441,7 @@ const McpCard = ({
   toolEnabled,
   toolType,
   hideToolTypeBadge,
+  requiredConfig,
 }: {
   toolRouterKey: string;
   toolName: string;
@@ -434,6 +451,7 @@ const McpCard = ({
   toolEnabled: boolean;
   toolType: string;
   hideToolTypeBadge?: boolean;
+  requiredConfig?: boolean;
 }) => {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
@@ -448,13 +466,17 @@ const McpCard = ({
   return (
     <div
       className={cn(
-        'grid grid-cols-[1fr_110px_60px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
+        'flex items-center justify-between gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
       )}
-      key={toolRouterKey}
     >
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center gap-2">
-          <span className="font-medium text-white">{toolName} </span>
+          <Link
+            className="font-medium text-white hover:underline"
+            to={`/tools/${toolRouterKey}`}
+          >
+            {toolName}
+          </Link>
           {!hideToolTypeBadge && (
             <Badge
               className="text-official-gray-300 text-xs font-normal"
@@ -469,55 +491,78 @@ const McpCard = ({
         </p>
         <p className="text-official-gray-400 text-xs">{toolAuthor}</p>
       </div>
-      <Link
-        className={cn(
-          buttonVariants({
-            variant: 'outline',
-            size: 'sm',
-          }),
-          'min-h-auto h-auto rounded-md py-2',
+      <div className="text-official-gray-400 flex items-center gap-4 text-xs">
+        {requiredConfig && (
+          <Link
+            className={cn(
+              buttonVariants({
+                variant: 'outline',
+                size: 'sm',
+              }),
+              'min-h-auto h-auto rounded-md py-2',
+            )}
+            to={`/tools/${toolRouterKey}`}
+          >
+            <BoltIcon className="mr-1.5 h-4 w-4" />
+            {t('common.configure')}
+          </Link>
         )}
-        to={`/tools/${toolRouterKey}`}
-      >
-        <BoltIcon className="mr-1.5 h-4 w-4" />
-        {t('common.configure')}
-      </Link>
-      <div className="text-official-gray-400 flex items-center text-xs">
-        <Tooltip>
-          <TooltipTrigger asChild className="flex items-center gap-1">
+        {!requiredConfig && (
+          <Tooltip>
+            <TooltipTrigger className="">
+              <Switch
+                checked={toolMcpEnabled}
+                disabled={!toolEnabled}
+                onCheckedChange={async () => {
+                  if (!auth) return;
+                  if (toolEnabled !== true) {
+                    toast.error(
+                      'Tool must be enabled before changing MCP server mode',
+                    );
+                    return;
+                  }
+                  await setToolMcpEnabled({
+                    toolRouterKey: toolRouterKey,
+                    mcpEnabled: !toolMcpEnabled,
+                    nodeAddress: auth.node_address,
+                    token: auth.api_v2_key,
+                  });
+                }}
+              />
+            </TooltipTrigger>
+            <TooltipPortal>
+              <TooltipContent align="center" side="top">
+                {toolEnabled !== true
+                  ? 'Enable tool first to manage MCP Server mode'
+                  : `MCP Server ${
+                      toolMcpEnabled === true ? 'Enabled' : 'Disabled'
+                    }`}
+              </TooltipContent>
+            </TooltipPortal>
+          </Tooltip>
+        )}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button
-              className={cn(toolMcpEnabled && 'text-green-400')}
-              onClick={async () => {
-                if (!auth) return;
-                if (toolEnabled !== true) {
-                  toast.error(
-                    'Tool must be enabled before changing MCP server mode',
-                  );
-                  return;
-                }
-                await setToolMcpEnabled({
-                  toolRouterKey: toolRouterKey,
-                  mcpEnabled: !toolMcpEnabled,
-                  nodeAddress: auth.node_address,
-                  token: auth.api_v2_key,
-                });
-              }}
-              size="sm"
-              variant="ghost"
+              className="size-8 p-2"
+              rounded="lg"
+              size="auto"
+              variant="outline"
             >
-              {toolMcpEnabled === true ? 'Enabled' : 'Disabled'}
+              <MoreVertical className="size-full" />
             </Button>
-          </TooltipTrigger>
-          <TooltipPortal>
-            <TooltipContent align="center" side="top">
-              {toolEnabled !== true
-                ? 'Enable tool first to manage MCP Server mode'
-                : `MCP Server ${
-                    toolMcpEnabled === true ? 'Enabled' : 'Disabled'
-                  }`}
-            </TooltipContent>
-          </TooltipPortal>
-        </Tooltip>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
+            <DropdownMenuItem asChild className="text-xs">
+              <Link
+                className={cn('min-h-auto h-auto rounded-md py-2 text-sm')}
+                to={`/tools/${toolRouterKey}`}
+              >
+                View Details
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
