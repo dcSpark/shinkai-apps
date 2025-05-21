@@ -1,33 +1,20 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { GetToolsCategory } from '@shinkai_network/shinkai-message-ts/api/tools/types';
-import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useDisableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/disableAllTools/useDisableAllTools';
 import { useEnableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/enableAllTools/useEnableAllTools';
-import { useSetToolMcpEnabled } from '@shinkai_network/shinkai-node-state/v2/mutations/setToolMcpEnabled/useSetToolMcpEnabled';
-import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
 import {
   Alert,
   AlertDescription,
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertTitle,
-  Badge,
   Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   Input,
-  Switch,
   ToggleGroup,
   ToggleGroupItem,
   Tooltip,
@@ -36,31 +23,19 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { useQueryClient } from '@tanstack/react-query';
-import { TFunction } from 'i18next';
 import { Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { useDebounce } from '../../hooks/use-debounce';
-import { handleConfigureClaude } from '../../lib/external-clients/claude-desktop';
-import { ConfigError, getDenoBinPath } from '../../lib/external-clients/common';
-import { handleConfigureCursor } from '../../lib/external-clients/cursor';
 import { useAuth } from '../../store/auth';
 import { usePlaygroundStore } from '../playground-tool/context/playground-context';
 import ToolCard from './components/tool-card';
-
-const MCP_SERVER_ID = 'shinkai-mcp-server';
 
 const toolsGroup: {
   label: string;
   value: GetToolsCategory;
 }[] = [
-
-  {
-    label: 'MCP Servers',
-    value: 'mcp_servers',
-  },
   {
     label: 'Default Tools',
     value: 'default',
@@ -79,22 +54,9 @@ const ToolCollectionBase = () => {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
 
-  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
-  
-  const [mcpEnabledState, setMcpEnabledState] = useState<Record<string, boolean>>({});
-
-  // State for the error dialog
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogTitle, setDialogTitle] = useState('');
-  const [dialogDescription, setDialogDescription] = useState('');
-  const [dialogHelpText, setDialogHelpText] = useState('');
-  const [jsonConfigToCopy, setJsonConfigToCopy] = useState(''); // State for JSON config
-  const [customDialogOpen, setCustomDialogOpen] = useState(false); // State for custom dialog
-  const [customSseUrl, setCustomSseUrl] = useState('');         // State for SSE URL
-  const [customCommand, setCustomCommand] = useState('');       // State for Command
 
   const selectedToolCategory = usePlaygroundStore(
     (state) => state.selectedToolCategory,
@@ -109,16 +71,6 @@ const ToolCollectionBase = () => {
     token: auth?.api_v2_key ?? '',
     category: selectedToolCategory === 'all' ? undefined : selectedToolCategory,
   });
-  
-  useEffect(() => {
-    if (toolsList && toolsList.length > 0) {
-      const initialState: Record<string, boolean> = {};
-      toolsList.forEach(tool => {
-        initialState[tool.tool_router_key] = tool.mcp_enabled === true;
-      });
-      setMcpEnabledState(initialState);
-    }
-  }, [toolsList]);
 
   const {
     data: searchToolList,
@@ -150,62 +102,8 @@ const ToolCollectionBase = () => {
     },
   });
 
-  const { mutateAsync: setToolMcpEnabled } = useSetToolMcpEnabled({
-    onSuccess: () => {
-      toast.success('MCP server mode updated successfully');
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-  
-  const { mutateAsync: toggleEnableTool } = useToggleEnableTool({
-    onSuccess: () => {
-      toast.success('Tool state updated successfully');
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-
-  const handleConfigureClick = async (configureFn: (serverId: string, tFunc: TFunction) => Promise<void>, clientName: string) => {
-    try {
-      await configureFn(MCP_SERVER_ID, t);
-    } catch (error) {
-      if (error instanceof ConfigError) {
-        const jsonMatch = error.helpText.match(/```json\s*([\s\S]*?)\s*```/);
-        const extractedJson = jsonMatch ? jsonMatch[1].trim() : '';
-
-        setDialogTitle(t('mcpClients.configFailTitle', { clientName }));
-        setDialogDescription(t('mcpClients.configFailDescription', { errorMessage: error.message }));
-        setDialogHelpText(error.helpText);
-        setJsonConfigToCopy(extractedJson);
-        setDialogOpen(true);
-      } else if (error instanceof Error) {
-        toast.error(`Failed to configure ${clientName}: ${error.message}`);
-      } else {
-        toast.error(`An unknown error occurred while configuring ${clientName}.`);
-      }
-      console.error(`Configuration error for ${clientName}:`, error);
-    }
-  };
-
-  const handleShowCustomInstructions = async () => {
-    // Generate SSE URL (same logic as cursor)
-    const nodeUrl = auth?.node_address || 'http://localhost:9550'; // Default or get from auth
-    const sseUrl = `${nodeUrl}/mcp/sse`;
-    setCustomSseUrl(sseUrl);
-
-    // Generate Command (using deno as requested, referencing the SSE URL)
-    const denoBinPath = await getDenoBinPath(); // Get deno path
-    const command = `${denoBinPath} run -A npm:supergateway --sse ${sseUrl}`; // Use deno
-    setCustomCommand(command);
-
-    setCustomDialogOpen(true); // Open the dialog
-  };
-
   return (
-    <div className="flex flex-col gap-8 max-w-[956px] mx-auto">
+    <div className="mx-auto flex w-full max-w-[956px] flex-col gap-8">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h2 className="text-lg font-semibold tracking-tight">
@@ -291,27 +189,6 @@ const ToolCollectionBase = () => {
               ))}
             </ToggleGroup>
 
-            {selectedToolCategory === 'mcp_servers' && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button className="text-official-gray-400 hover:text-white" size="sm" variant="ghost">
-                    Add To External Client
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => handleConfigureClick((serverId, tFunc) => handleConfigureClaude(serverId, tFunc), 'Claude Desktop')}>
-                    Claude Desktop
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleConfigureClick((serverId, tFunc) => handleConfigureCursor(serverId, tFunc), 'Cursor')}>
-                    Cursor
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleShowCustomInstructions}>
-                    Custom
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -359,153 +236,6 @@ const ToolCollectionBase = () => {
                   from the App Store.
                 </p>
               </div>
-            ) : selectedToolCategory === 'mcp_servers' ? (
-              toolsList?.map((tool) => (
-                <div
-                  className={cn(
-                    'grid grid-cols-[1fr_120px_40px_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
-                  )}
-                  key={tool.tool_router_key}
-                >
-                  <div className="flex flex-col gap-2.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-white">
-                        {tool.name}{' '}
-                      </span>
-                      <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
-                        {tool.author}
-                      </Badge>
-                    </div>
-                    <p className="text-gray-80 line-clamp-2 text-xs">{tool.description}</p>
-                  </div>
-                  <div />
-                  <div />
-                  <div className="text-gray-80 text-xs flex items-center">
-                    <Tooltip>
-                      <TooltipTrigger asChild className="flex items-center gap-1">
-                        <Button 
-                          className={
-                            (mcpEnabledState[tool.tool_router_key] !== undefined 
-                              ? mcpEnabledState[tool.tool_router_key] 
-                              : tool.mcp_enabled === true) 
-                            ? "text-green-400" 
-                            : ""
-                          } 
-                          disabled={tool.enabled !== true}
-                          onClick={async () => {
-                            if (auth) {
-                              if (tool.enabled !== true) {
-                                toast.error('Tool must be enabled before changing MCP server mode');
-                                return;
-                              }
-                              
-                              const currentState = mcpEnabledState[tool.tool_router_key] !== undefined 
-                                ? mcpEnabledState[tool.tool_router_key] 
-                                : tool.mcp_enabled === true;
-                              const newMcpEnabled = !currentState;
-                              
-                              const updatedTool = {
-                                ...tool,
-                                mcp_enabled: newMcpEnabled,
-                              };
-                              
-                              queryClient.getQueryData([FunctionKeyV2.GET_LIST_TOOLS]);
-
-                              queryClient.setQueryData(
-                                [FunctionKeyV2.GET_LIST_TOOLS],
-                                (oldData: unknown) => {
-                                  if (!oldData || !Array.isArray(oldData)) {
-                                    return oldData;
-                                  }
-                                  
-                                  return oldData.map((t) =>
-                                    t.tool_router_key === tool.tool_router_key ? updatedTool : t
-                                  );
-                                }
-                              );
-                              
-                              queryClient.getQueryData([FunctionKeyV2.GET_LIST_TOOLS]);
-                              
-                              // queryClient.invalidateQueries({
-                              //   queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
-                              // });
-
-                              setMcpEnabledState(prev => ({
-                                ...prev,
-                                [tool.tool_router_key]: newMcpEnabled
-                              }));
-                              
-                              try {
-                                await setToolMcpEnabled({
-                                  toolRouterKey: tool.tool_router_key,
-                                  mcpEnabled: newMcpEnabled,
-                                  nodeAddress: auth.node_address,
-                                  token: auth.api_v2_key,
-                                });
-                              } catch (error) {
-                                setMcpEnabledState(prev => ({
-                                  ...prev,
-                                  [tool.tool_router_key]: tool.mcp_enabled === true
-                                }));
-                                
-                                queryClient.setQueryData(
-                                  [FunctionKeyV2.GET_LIST_TOOLS],
-                                  (oldData: unknown) => {
-                                    if (!oldData || !Array.isArray(oldData)) return oldData;
-                                    return oldData.map((t) =>
-                                      t.tool_router_key === tool.tool_router_key ? { ...tool } : t
-                                    );
-                                  }
-                                );
-                                throw error; // Let the error handler handle the error
-                              }
-                            }
-                          }}
-                          size="sm"
-                          variant="ghost"
-                        >
-                          {mcpEnabledState[tool.tool_router_key] !== undefined 
-                            ? mcpEnabledState[tool.tool_router_key] ? "Enabled" : "Disabled"
-                            : tool.mcp_enabled === true ? "Enabled" : "Disabled"}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipPortal>
-                        <TooltipContent align="center" side="top">
-                          {tool.enabled !== true 
-                            ? "Enable tool first to manage MCP Server mode" 
-                            : `MCP Server ${mcpEnabledState[tool.tool_router_key] !== undefined 
-                                ? mcpEnabledState[tool.tool_router_key] ? "Enabled" : "Disabled"
-                                : tool.mcp_enabled === true ? "Enabled" : "Disabled"}`}
-                        </TooltipContent>
-                      </TooltipPortal>
-                    </Tooltip>
-                  </div>
-                  <Tooltip>
-                    <TooltipTrigger asChild className="flex items-center gap-1">
-                      <div>
-                        <Switch
-                          checked={tool.enabled === true}
-                          onCheckedChange={async () => {
-                            if (auth) {
-                              await toggleEnableTool({
-                                toolKey: tool.tool_router_key,
-                                isToolEnabled: tool.enabled !== true,
-                                nodeAddress: auth.node_address,
-                                token: auth.api_v2_key,
-                              });
-                            }
-                          }}
-                        />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipPortal>
-                      <TooltipContent align="center" side="top">
-                        Tool Enabled
-                      </TooltipContent>
-                    </TooltipPortal>
-                  </Tooltip>
-                </div>
-              ))
             ) : (
               toolsList?.map((tool) => (
                 <ToolCard key={tool.tool_router_key} tool={tool} />
@@ -538,78 +268,6 @@ const ToolCollectionBase = () => {
           ))}
         </div>
       )}
-
-      {/* Error Dialog */}
-      <AlertDialog onOpenChange={setDialogOpen} open={dialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{dialogTitle}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {dialogDescription}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="my-4 max-h-[60vh] overflow-y-auto rounded bg-gray-800 p-3 text-sm">
-            <pre><code>{dialogHelpText}</code></pre>
-          </div>
-          <AlertDialogFooter className="flex justify-between gap-4">
-            <AlertDialogCancel>{t('oauth.close')}</AlertDialogCancel>
-            <AlertDialogAction 
-              disabled={!jsonConfigToCopy}
-              onClick={() => {
-                if (jsonConfigToCopy) {
-                  navigator.clipboard.writeText(jsonConfigToCopy);
-                  toast.success(t('mcpClients.copyJsonSuccess'));
-                  setDialogOpen(false);
-                }
-              }}
-            >
-              {t('mcpClients.copyJsonButton')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Custom Instructions Dialog */}
-      <AlertDialog onOpenChange={setCustomDialogOpen} open={customDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('mcpClients.customTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('mcpClients.customDescriptionPrimary')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="my-2 rounded bg-gray-800 p-3">
-            <pre className="mt-1 whitespace-pre-wrap text-sm"><code>{customSseUrl}</code></pre>
-          </div>
-          <AlertDialogDescription className="mt-4">
-            {t('mcpClients.customDescriptionSecondary')}
-          </AlertDialogDescription>
-          <div className="my-2 rounded bg-gray-800 p-3">
-            <pre className="mt-1 whitespace-pre-wrap text-sm"><code>{customCommand}</code></pre>
-          </div>
-          <AlertDialogFooter className="mt-4 flex justify-end gap-4">
-            <AlertDialogCancel>{t('oauth.close')}</AlertDialogCancel>
-            <div className="flex flex-grow justify-center gap-4">
-                <AlertDialogAction
-                    onClick={() => {
-                    navigator.clipboard.writeText(customSseUrl);
-                    toast.success(t('mcpClients.copySuccessUrl'));
-                    }}
-                >
-                    {t('mcpClients.customCopySseUrlButton')}
-                </AlertDialogAction>
-                <AlertDialogAction
-                    onClick={() => {
-                    navigator.clipboard.writeText(customCommand);
-                    toast.success(t('mcpClients.copySuccessCommand'));
-                    }}
-                >
-                    {t('mcpClients.customCopyCommandButton')}
-                </AlertDialogAction>
-            </div>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 };

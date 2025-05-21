@@ -115,13 +115,6 @@ export const ToolsHomepage = () => {
     }
   }, [form, llmProviders]);
 
-  const scrollElementRef = useRef<HTMLDivElement>(null);
-  useScrollRestoration({
-    key: 'tools',
-    containerRef: scrollElementRef,
-    scrollTopStateRef: toolHomepageScrollPositionRef,
-  });
-
   const {
     currentStep,
     toolCode,
