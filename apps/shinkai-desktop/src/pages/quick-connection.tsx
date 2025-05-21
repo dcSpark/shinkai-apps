@@ -24,7 +24,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ArrowLeft } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, To, useLocation, useNavigate } from 'react-router-dom';
+import { Link, To, useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { OnboardingStep } from '../components/onboarding/constants';

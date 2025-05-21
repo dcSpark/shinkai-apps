@@ -31,7 +31,7 @@ import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BoltIcon, BotIcon, ChevronDownIcon, PlusIcon } from 'lucide-react';
 import { memo, useMemo, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router';
 import { toast } from 'sonner';
 
 import OLLAMA_MODELS_REPOSITORY from '../../../lib/shinkai-node-manager/ollama-models-repository.json';

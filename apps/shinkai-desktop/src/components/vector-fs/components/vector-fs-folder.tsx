@@ -25,7 +25,7 @@ import { formatDateToUSLocaleString } from '@shinkai_network/shinkai-ui/helpers'
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { CopyIcon, FolderInputIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import config from '../../../config';
 import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';

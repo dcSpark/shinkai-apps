@@ -10,7 +10,7 @@ import { useGetPlaygroundTools } from '@shinkai_network/shinkai-node-state/v2/qu
 import { useGetTool } from '@shinkai_network/shinkai-node-state/v2/queries/getTool/useGetTool';
 import { Skeleton } from '@shinkai_network/shinkai-ui';
 import { MoreVertical } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 import { SubpageLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';

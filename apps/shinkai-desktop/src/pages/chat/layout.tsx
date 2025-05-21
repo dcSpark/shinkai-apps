@@ -56,7 +56,7 @@ import {
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useInView } from 'react-intersection-observer';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import ArtifactPreview from '../../components/chat/artifact-preview';

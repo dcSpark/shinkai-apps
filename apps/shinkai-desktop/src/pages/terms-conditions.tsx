@@ -11,7 +11,7 @@ import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpe
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import { OnboardingStep } from '../components/onboarding/constants';
 import { ResetStorageBeforeConnectConfirmationPrompt } from '../components/reset-storage-before-connect-confirmation-prompt';

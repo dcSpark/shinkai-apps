@@ -25,7 +25,7 @@ import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BotIcon, ChevronDownIcon } from 'lucide-react';
 import { memo, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';

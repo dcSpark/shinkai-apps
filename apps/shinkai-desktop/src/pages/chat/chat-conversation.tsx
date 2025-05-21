@@ -16,7 +16,7 @@ import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-n
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import { useEffect, useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 
 import { MessageList } from '../../components/chat/components/message-list';

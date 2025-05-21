@@ -10,7 +10,7 @@ import {
   Routes,
   useLocation,
   useNavigate,
-} from 'react-router-dom';
+} from 'react-router';
 
 import AddAgentPage from '../components/agent/add-agent';
 import EditAgentPage from '../components/agent/edit-agent';

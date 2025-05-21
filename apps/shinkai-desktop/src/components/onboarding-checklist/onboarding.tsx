@@ -20,7 +20,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, PlusIcon, Sparkles, XIcon } from 'lucide-react';
 import { ReactNode, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { showAnimation } from '../../pages/layout/main-layout';
 import { useSettings } from '../../store/settings';

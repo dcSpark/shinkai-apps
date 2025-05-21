@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { memo } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
