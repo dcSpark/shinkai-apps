@@ -40,7 +40,7 @@ import {
   TrashIcon,
 } from 'lucide-react';
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { useAuth } from '../store/auth';

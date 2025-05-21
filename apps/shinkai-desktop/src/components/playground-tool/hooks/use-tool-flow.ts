@@ -12,7 +12,7 @@ import { useUpdateToolCodeImplementation } from '@shinkai_network/shinkai-node-s
 import { debug } from '@tauri-apps/plugin-log';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { handleSendNotification } from '../../../lib/notifications';

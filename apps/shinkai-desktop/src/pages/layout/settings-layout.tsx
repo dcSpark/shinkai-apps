@@ -20,7 +20,7 @@ import {
   WalletMinimal,
 } from 'lucide-react';
 import React from 'react';
-import { Link, Outlet, useMatch } from 'react-router-dom';
+import { Link, Outlet, useMatch } from 'react-router';
 
 import galxeIcon from '../../assets/galxe-icon.png';
 import { openShinkaiNodeManagerWindow } from '../../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';

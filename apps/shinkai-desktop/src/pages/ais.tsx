@@ -42,7 +42,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Edit, Plus, TrashIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import ProviderIcon from '../components/ais/provider-icon';

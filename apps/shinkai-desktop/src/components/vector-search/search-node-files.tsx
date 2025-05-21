@@ -36,7 +36,7 @@ import { Checkbox } from 'primereact/checkbox';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router';
 
 import { SimpleLayout } from '../../pages/layout/simple-layout';
 import { useAuth } from '../../store/auth';

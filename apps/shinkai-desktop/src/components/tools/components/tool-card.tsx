@@ -19,7 +19,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { BoltIcon, PlayCircle } from 'lucide-react';
 import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import { useAuth } from '../../../store/auth';
 import RemoveToolButton from '../../playground-tool/components/remove-tool-button';
@@ -100,9 +100,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
       </Tooltip>
 
       <div className="flex justify-center">
-        <RemoveToolButton
-          toolKey={tool.tool_router_key}
-        />
+        <RemoveToolButton toolKey={tool.tool_router_key} />
       </div>
 
       <Link

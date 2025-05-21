@@ -32,7 +32,7 @@ import {
   XIcon,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { useWebSocketMessage } from '../components/chat/websocket-message';

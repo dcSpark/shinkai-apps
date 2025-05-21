@@ -47,13 +47,7 @@ import {
   HelpCircleIcon,
 } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
-import {
-  Link,
-  Outlet,
-  useLocation,
-  useMatch,
-  useNavigate,
-} from 'react-router-dom';
+import { Link, Outlet, useLocation, useMatch, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { ResourcesBanner } from '../../components/hardware-capabilities/resources-banner';
