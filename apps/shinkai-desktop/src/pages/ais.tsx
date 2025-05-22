@@ -37,7 +37,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { AIAgentIcon, CreateAIIcon } from '@shinkai_network/shinkai-ui/assets';
+import { CreateAIIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Edit, Plus, TrashIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
@@ -79,15 +79,6 @@ const AIsPage = () => {
           <div className="flex justify-between gap-4">
             <h1 className="font-clash text-3xl font-medium">Manage AIs</h1>
             <div className="flex gap-2">
-              <Button
-                className="min-w-[100px]"
-                onClick={() => navigate('/agents')}
-                size="sm"
-                variant="outline"
-              >
-                <AIAgentIcon className="h-4 w-4" name={''} />
-                <span>Agents</span>
-              </Button>
               <Button
                 className="min-w-[100px]"
                 onClick={onAddAgentClick}
