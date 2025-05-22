@@ -46,6 +46,14 @@ jobs:
         run: |
           npx ts-node ./ci-scripts/download-side-binaries.ts
 
+      - name: Download ollama repository
+        run: |
+          npx ts-node ./ci-scripts/generate-ollama-models-repository.ts
+  
+      - name: Download default tools
+        run: |
+          bash ./ci-scripts/update-tools.sh          
+
       - name: (Linux) Install build dependencies
         run: |
           sudo apt-get update
