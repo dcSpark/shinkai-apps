@@ -1823,13 +1823,13 @@ function AgentForm({ mode }: AgentFormProps) {
                                 Selected Tools
                               </h3>
                               <Button
-                                className="text-official-gray-400 hover:text-official-gray-100 text-xs"
+                                className="text-official-gray-200 text-xs"
                                 onClick={() => {
                                   form.setValue('tools', []);
                                   form.setValue('tools_config_override', {});
                                 }}
                                 size="xs"
-                                variant="ghost"
+                                variant="tertiary"
                               >
                                 Clear
                               </Button>
