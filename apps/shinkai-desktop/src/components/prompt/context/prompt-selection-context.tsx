@@ -19,8 +19,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
   ScrollArea,
+  SearchInput,
   Sheet,
   SheetContent,
   SheetDescription,
@@ -34,9 +34,7 @@ import {
   Edit3Icon,
   // Edit3Icon,
   PlusIcon,
-  SearchIcon,
   Trash2Icon,
-  XIcon,
 } from 'lucide-react';
 import React, { createContext, useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -139,33 +137,13 @@ const PromptSearchDrawer = () => {
             <p>Choose a prompt from the library to get started.</p>
           </SheetDescription>
         </SheetHeader>
-        <div className="relative mb-4 flex h-10 w-full items-center">
-          <Input
-            autoFocus
-            className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-            }}
-            placeholder="Search..."
-            spellCheck={false}
-            value={searchQuery}
-          />
-          <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
-          {searchQuery && (
-            <Button
-              className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
-              onClick={() => {
-                setSearchQuery('');
-              }}
-              size="auto"
-              type="button"
-              variant="ghost"
-            >
-              <XIcon />
-              <span className="sr-only">Clear Search</span>
-            </Button>
-          )}
-        </div>
+        <SearchInput
+          classNames={{ input: 'bg-transparent' }}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+          }}
+          value={searchQuery}
+        />
         <ScrollArea className="h-[calc(100vh-140px)] pr-4 [&>div>div]:!block">
           <div className="divide-y divide-gray-200 py-5">
             {(isPending || !isSearchQuerySynced || isSearchPromptListPending) &&

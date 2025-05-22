@@ -19,7 +19,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Input,
+  SearchInput,
   Switch,
   ToggleGroup,
   ToggleGroupItem,
@@ -31,20 +31,11 @@ import {
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { TFunction } from 'i18next';
-import {
-  BoltIcon,
-  CopyIcon,
-  MoreVertical,
-  Plus,
-  SearchIcon,
-  Trash2,
-  XIcon,
-} from 'lucide-react';
+import { BoltIcon, MoreVertical, Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
 
-import RemoveToolButton from '../components/playground-tool/components/remove-tool-button';
 import { handleConfigureClaude } from '../lib/external-clients/claude-desktop';
 import { ConfigError, getDenoBinPath } from '../lib/external-clients/common';
 import { handleConfigureCursor } from '../lib/external-clients/cursor';
@@ -207,32 +198,15 @@ export const McpRegistryPage = () => {
 
       <div className="flex justify-between gap-10">
         <div className="flex flex-1 items-center justify-between gap-4">
-          <div className="shadow-official-gray-950 focus-within:shadow-official-gray-700 relative flex h-10 flex-1 items-center rounded-lg shadow-[0_0_0_1px_currentColor] transition-shadow">
-            <Input
-              className="placeholder-gray-80 bg-official-gray-900 !h-full border-none py-2 pl-10"
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-              }}
-              placeholder="Search..."
-              spellCheck={false}
-              value={searchQuery}
-            />
-            <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
-            {searchQuery && (
-              <Button
-                className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
-                onClick={() => {
-                  setSearchQuery('');
-                }}
-                size="auto"
-                type="button"
-                variant="ghost"
-              >
-                <XIcon />
-                <span className="sr-only">{t('common.clearSearch')}</span>
-              </Button>
-            )}
-          </div>
+          <SearchInput
+            classNames={{
+              input: 'bg-transparent',
+            }}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
+            value={searchQuery}
+          />
         </div>
         <div className="flex justify-start">
           <ToggleGroup
@@ -245,7 +219,7 @@ export const McpRegistryPage = () => {
             value={selectedMCCategory}
           >
             <ToggleGroupItem
-              className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-6 py-2 text-xs font-medium data-[state=on]:text-white"
+              className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-5 py-1.5 text-xs font-medium data-[state=on]:text-white"
               key="all"
               size="sm"
               value="all"
@@ -263,7 +237,7 @@ export const McpRegistryPage = () => {
               },
             ].map((tool) => (
               <ToggleGroupItem
-                className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-6 py-2 text-xs font-medium data-[state=on]:text-white"
+                className="data-[state=on]:bg-official-gray-850 text-official-gray-400 rounded-full bg-transparent px-5 py-1.5 text-xs font-medium data-[state=on]:text-white"
                 key={tool.value}
                 size="sm"
                 value={tool.value}

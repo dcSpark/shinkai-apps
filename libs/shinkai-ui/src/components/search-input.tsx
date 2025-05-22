@@ -17,7 +17,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
     return (
       <div
         className={cn(
-          'shadow-official-gray-950 focus-within:shadow-official-gray-700 relative flex h-10 flex-1 items-center rounded-lg shadow-[0_0_0_1px_currentColor] transition-shadow',
+          'shadow-official-gray-750 focus-within:shadow-official-gray-600 relative flex h-10 flex-1 items-center overflow-hidden rounded-full shadow-[0_0_0_1px_currentColor] transition-shadow',
           classNames?.container,
         )}
       >

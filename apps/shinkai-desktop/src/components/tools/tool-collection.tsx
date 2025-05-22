@@ -15,6 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   Input,
+  SearchInput,
   ToggleGroup,
   ToggleGroupItem,
   Tooltip,
@@ -113,32 +114,13 @@ const ToolCollectionBase = () => {
             {t('tools.description')}
           </p>
         </div>
-        <div className="shadow-official-gray-950 focus-within:shadow-official-gray-700 relative flex h-10 items-center rounded-lg shadow-[0_0_0_1px_currentColor] transition-shadow">
-          <Input
-            className="placeholder-gray-80 bg-official-gray-900 !h-full border-none py-2 pl-10"
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-            }}
-            placeholder="Search..."
-            spellCheck={false}
-            value={searchQuery}
-          />
-          <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
-          {searchQuery && (
-            <Button
-              className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
-              onClick={() => {
-                setSearchQuery('');
-              }}
-              size="auto"
-              type="button"
-              variant="ghost"
-            >
-              <XIcon />
-              <span className="sr-only">{t('common.clearSearch')}</span>
-            </Button>
-          )}
-        </div>
+        <SearchInput
+          classNames={{ container: 'max-w-[340px]', input: 'bg-transparent' }}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+          }}
+          value={searchQuery}
+        />
       </div>
 
       {searchQuery && isSearchQuerySynced && searchToolList?.length === 0 && (

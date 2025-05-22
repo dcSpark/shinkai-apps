@@ -36,14 +36,7 @@ import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import cronstrue from 'cronstrue';
-import {
-  DownloadIcon,
-  Edit,
-  Plus,
-  SearchIcon,
-  TrashIcon,
-  XIcon,
-} from 'lucide-react';
+import { DownloadIcon, Edit, Plus, TrashIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import React from 'react';
 import { Link, useNavigate } from 'react-router';
