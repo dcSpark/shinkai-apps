@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-sort-props */
-import { FormProps } from '@rjsf/core';
+
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useCopyToolAssets } from '@shinkai_network/shinkai-node-state/v2/mutations/copyToolAssets/useCopyToolAssets';
 import {
@@ -18,7 +18,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { LoaderIcon } from 'lucide-react';
 import { useCallback, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';

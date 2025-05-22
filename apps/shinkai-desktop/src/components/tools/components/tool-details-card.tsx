@@ -57,7 +57,7 @@ import {
   Rocket,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
@@ -740,16 +740,14 @@ export default function ToolDetailsCard({
                 </span>
               </TabsTrigger>
             )}
-          {'oauth' in tool &&
-            tool.oauth &&
-            tool.oauth.length > 0 && (
-              <TabsTrigger
-                className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
-                value="oauth"
-              >
-                OAuth &amp; Permissions
-              </TabsTrigger>
-            )}
+          {'oauth' in tool && tool.oauth && tool.oauth.length > 0 && (
+            <TabsTrigger
+              className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
+              value="oauth"
+            >
+              OAuth &amp; Permissions
+            </TabsTrigger>
+          )}
           <TabsTrigger
             className="data-[state=active]:border-b-gray-80 rounded-none px-0.5 data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
             value="try-it-out"
@@ -1216,12 +1214,11 @@ export default function ToolDetailsCard({
               validator={validator}
             />
 
-            {(
-              !('input_args' in tool) ||
+            {(!('input_args' in tool) ||
               !tool.input_args ||
               !(tool.input_args as any).properties ||
-              Object.keys((tool.input_args as any).properties).length === 0
-            ) && (
+              Object.keys((tool.input_args as any).properties).length ===
+                0) && (
               <div className="text-official-gray-400 py-2 text-sm">
                 No input parameters required.
               </div>

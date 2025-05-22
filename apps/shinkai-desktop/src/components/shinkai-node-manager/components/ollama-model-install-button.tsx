@@ -1,6 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/lib/mutations/syncOllamaModels/useSyncOllamaModels';
 import { removeLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/removeLLMProvider/index';
+import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/v2/mutations/syncOllamaModels/useSyncOllamaModels';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { Button, Progress } from '@shinkai_network/shinkai-ui';
 import { useMap } from '@shinkai_network/shinkai-ui/hooks';
@@ -34,9 +34,7 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
       handlePullProgress(input.model, data);
     },
   });
-  const { mutateAsync: syncOllamaModels } = useSyncOllamaModels(
-    ALLOWED_OLLAMA_MODELS,
-  );
+  const { mutateAsync: syncOllamaModels } = useSyncOllamaModels();
   const { data: llmProviders, isSuccess: isSuccessLLMProviders } =
     useGetLLMProviders({
       nodeAddress: auth?.node_address ?? '',
@@ -81,14 +79,8 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
           if (auth) {
             syncOllamaModels({
               nodeAddress: auth?.node_address ?? '',
-              senderSubidentity: auth?.profile ?? '',
-              shinkaiIdentity: auth?.shinkai_identity ?? '',
-              sender: auth?.node_address ?? '',
-              my_device_encryption_sk: auth?.my_device_encryption_sk ?? '',
-              my_device_identity_sk: auth?.my_device_identity_sk ?? '',
-              node_encryption_pk: auth?.node_encryption_pk ?? '',
-              profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-              profile_identity_sk: auth?.profile_identity_sk ?? '',
+              token: auth?.api_v2_key ?? '',
+              allowedModels: ALLOWED_OLLAMA_MODELS,
             });
           }
           break;

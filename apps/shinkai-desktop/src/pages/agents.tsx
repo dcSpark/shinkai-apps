@@ -38,7 +38,7 @@ import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import cronstrue from 'cronstrue';
 import { DownloadIcon, Edit, Plus, TrashIcon } from 'lucide-react';
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import ImportAgentModal from '../components/agent/import-agent-modal';

@@ -58,6 +58,16 @@ export type RemoveFsItemRequest = {
 };
 export type RemoveFsItemResponse = string;
 
+export type RetrieveVectorResourceRequest = {
+  path: string;
+};
+
+export type GetSearchVectorSearchRequest = {
+  path?: string;
+  search: string;
+  depth?: number;
+};
+
 export interface RetrieveFilesForJobRequest {
   job_id: string;
 }

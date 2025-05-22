@@ -10,7 +10,7 @@ import {
   Routes,
   useLocation,
   useNavigate,
-} from 'react-router-dom';
+} from 'react-router';
 
 import AddAgentPage from '../components/agent/add-agent';
 import EditAgentPage from '../components/agent/edit-agent';
@@ -48,7 +48,6 @@ import AnalyticsSettingsPage from '../pages/analytics-settings';
 import AppearancePage from '../pages/appearance';
 import ChatConversation from '../pages/chat/chat-conversation';
 import ChatLayout from '../pages/chat/layout';
-import { ConnectMethodQrCodePage } from '../pages/connect-method-qr-code';
 import CreateTaskPage from '../pages/create-task';
 import CryptoWalletPage from '../pages/crypto-wallet';
 import EditTaskPage from '../pages/edit-task';
@@ -59,6 +58,7 @@ import HomePage from '../pages/home';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
+import { McpRegistryPage } from '../pages/mcp';
 import { PromptLibrary } from '../pages/prompt-library';
 import { PublicKeys } from '../pages/public-keys';
 import QuickConnectionPage from '../pages/quick-connection';
@@ -275,7 +275,7 @@ const AppRoutes = () => {
               path={'quick-connection'}
             />
             <Route element={<RestoreConnectionPage />} path={'restore'} />
-            <Route element={<ConnectMethodQrCodePage />} path={'connect-qr'} />
+            {/* <Route element={<ConnectMethodQrCodePage />} path={'connect-qr'} /> */}
           </Route>
           <Route
             element={
@@ -391,6 +391,7 @@ const AppRoutes = () => {
             />
             <Route element={<EditToolPage />} path={'edit/:toolRouterKey'} />
           </Route>
+          <Route element={<McpRegistryPage />} path={'mcp'} />
           <Route
             element={
               <ProtectedRoute>

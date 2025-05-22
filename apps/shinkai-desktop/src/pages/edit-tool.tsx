@@ -4,7 +4,7 @@ import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils
 import { useGetPlaygroundTool } from '@shinkai_network/shinkai-node-state/v2/queries/getPlaygroundTool/useGetPlaygroundTool';
 import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
 import { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 import PlaygroundToolEditor from '../components/playground-tool/components/tool-playground';
 import { getLanguage } from '../components/playground-tool/utils/code';

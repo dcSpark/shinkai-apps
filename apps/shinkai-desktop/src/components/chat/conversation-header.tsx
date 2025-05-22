@@ -39,7 +39,7 @@ import {
   PanelRightOpen,
 } from 'lucide-react';
 import { memo } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router';
 
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth';

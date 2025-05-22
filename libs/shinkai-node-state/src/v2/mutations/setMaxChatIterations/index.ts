@@ -1,4 +1,4 @@
-import { setPreferences } from '@shinkai_network/shinkai-message-ts/api/methods';
+import { setPreferences } from '@shinkai_network/shinkai-message-ts/api/general/index';
 
 import { SetMaxChatIterationsInput } from './types';
 

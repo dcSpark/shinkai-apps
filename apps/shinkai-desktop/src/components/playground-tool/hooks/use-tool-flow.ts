@@ -12,7 +12,8 @@ import { useUpdateToolCodeImplementation } from '@shinkai_network/shinkai-node-s
 import { debug } from '@tauri-apps/plugin-log';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 import { handleSendNotification } from '../../../lib/notifications';
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
@@ -519,6 +520,10 @@ export const useToolFlow = ({
 
   const startToolCreation = async (data: CreateToolCodeFormSchema) => {
     if (!auth) return;
+    if (!data.llmProviderId) {
+      toast.error('Please select an AI model');
+      return;
+    }
     setToolCreationError(null);
 
     if (requireFeedbackFlow) setCurrentStep(ToolCreationState.PLAN_REVIEW);

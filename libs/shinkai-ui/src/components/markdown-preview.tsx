@@ -221,7 +221,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   td: ({ node, className, ...props }) => (
     <td
       className={cn(
-        'text-em-sm border-official-gray-700 border-b px-[1em] py-[0.875em] text-left last:border-r [&[align=center]]:text-center [&[align=right]]:text-right',
+        'text-em-sm border-official-gray-700 border-b px-[1em] py-[0.875em] text-left [&[align=center]]:text-center [&[align=right]]:text-right',
         className,
       )}
       {...props}

@@ -12,7 +12,7 @@ import { Edit3, Loader2, RotateCcw, XCircle } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import React, { Fragment, memo, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { z } from 'zod';
 
 import { appIcon, ReactJsIcon, ToolsIcon } from '../../assets';

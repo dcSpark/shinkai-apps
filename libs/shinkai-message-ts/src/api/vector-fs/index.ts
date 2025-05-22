@@ -11,6 +11,7 @@ import {
   GetListDirectoryContentsResponse,
   GetSearchDirectoryContentsRequest,
   GetSearchDirectoryContentsResponse,
+  GetSearchVectorSearchRequest,
   MoveFolderRequest,
   MoveFolderResponse,
   MoveFsItemRequest,
@@ -19,6 +20,9 @@ import {
   RemoveFolderResponse,
   RemoveFsItemRequest,
   RemoveFsItemResponse,
+  RetrieveFilesForJobRequest,
+  RetrieveFilesForJobResponse,
+  RetrieveVectorResourceRequest,
 } from './types';
 
 export const getListDirectoryContents = async (
@@ -162,4 +166,89 @@ export const removeFsItem = async (
     },
   );
   return response.data as RemoveFsItemResponse;
+};
+
+export const retrieveVectorResource = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: RetrieveVectorResourceRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/retrieve_vector_resource'),
+    {
+      params: { path: payload.path },
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
+};
+
+export const uploadFilesToVR = async (
+  nodeAddress: string,
+  bearerToken: string,
+  destinationPath: string,
+  files: File[],
+): Promise<{ status: string }> => {
+  try {
+    for (const fileToUpload of files) {
+      const formData = new FormData();
+      formData.append('file_data', fileToUpload);
+      formData.append('filename', fileToUpload.name);
+      formData.append('path', destinationPath);
+
+      const response = await httpClient.post(
+        urlJoin(nodeAddress, '/v2/upload_file_to_folder'),
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${bearerToken}`,
+          },
+        },
+      );
+
+      if (response.status !== 200) {
+        throw new Error(`Failed to upload file: ${fileToUpload.name}`);
+      }
+    }
+
+    return { status: 'success' };
+  } catch (error) {
+    console.error('Error uploadFilesToVR:', error);
+    throw error;
+  }
+};
+
+export const searchVectorFs = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetSearchVectorSearchRequest,
+) => {
+  const response = await httpClient.get(
+    // retrieve_vector_search_simplified_json
+    urlJoin(nodeAddress, '/v2/search_vector_fs'),
+    {
+      params: payload,
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
+};
+
+export const retrieveFilesForJob = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: RetrieveFilesForJobRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/retrieve_files_for_job'),
+    {
+      params: payload,
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as RetrieveFilesForJobResponse;
 };

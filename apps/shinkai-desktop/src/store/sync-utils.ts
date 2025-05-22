@@ -1,11 +1,11 @@
 import { invoke } from '@tauri-apps/api/core';
 import { emit, listen } from '@tauri-apps/api/event';
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { debug, error } from '@tauri-apps/plugin-log';
+import { debug } from '@tauri-apps/plugin-log';
 import { useEffect } from 'react';
 
 import { isLocalShinkaiNode } from '../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
-import { SetupData, useAuth } from './auth';
+import { Auth, useAuth } from './auth';
 import { useExperimental } from './experimental';
 import { useSettings } from './settings';
 import { useShinkaiNodeManager } from './shinkai-node-manager';
@@ -54,8 +54,8 @@ export const useSyncStorageSecondary = () => {
 };
 
 const handleAuthSideEffect = async (
-  auth: SetupData | null,
-  prevAuth: SetupData | null,
+  auth: Auth | null,
+  prevAuth: Auth | null,
 ) => {
   debug(`prev auth: ${prevAuth} --- new auth ${auth}`);
   const currentWindowLabel = getCurrentWindow().label;

@@ -5,8 +5,8 @@ import {
   useTranslation,
 } from '@shinkai_network/shinkai-i18n';
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
-import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/lib/mutations/updateNodeName/useUpdateNodeName';
 import { useSetMaxChatIterations } from '@shinkai_network/shinkai-node-state/v2/mutations/setMaxChatIterations/useSetMaxChatIterations';
+import { useUpdateNodeName } from '@shinkai_network/shinkai-node-state/v2/mutations/updateNodeName/useUpdateNodeName';
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetPreferences } from '@shinkai_network/shinkai-node-state/v2/queries/getPreferences/useGetPreferences';
@@ -54,7 +54,7 @@ import {
   useShinkaiNodeRespawnMutation,
 } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { isHostingShinkaiNode } from '../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
-import { SetupData, useAuth } from '../store/auth';
+import { Auth, useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { SimpleLayout } from './layout/simple-layout';
@@ -226,7 +226,7 @@ const SettingsPage = () => {
       onSuccess: () => {
         toast.success(t('settings.shinkaiIdentity.success'));
         if (!auth) return;
-        const newAuth: SetupData = { ...auth };
+        const newAuth: Auth = { ...auth };
         setAuth({
           ...newAuth,
           shinkai_identity: currentShinkaiIdentity,
@@ -239,7 +239,11 @@ const SettingsPage = () => {
       },
       onError: (error) => {
         toast.error(t('settings.shinkaiIdentity.error'), {
-          description: error?.response?.data?.error ?? error.message,
+          description: error?.response?.data?.error
+            ? error?.response?.data?.error +
+              ': ' +
+              error?.response?.data?.message
+            : error.message,
         });
       },
     });
@@ -259,14 +263,8 @@ const SettingsPage = () => {
     if (!auth) return;
     await updateNodeName({
       nodeAddress: auth?.node_address ?? '',
-      shinkaiIdentity: auth?.shinkai_identity ?? '',
-      profile: auth?.profile,
+      token: auth?.api_v2_key ?? '',
       newNodeName: form.getValues().shinkaiIdentity,
-      my_device_encryption_sk: auth?.profile_encryption_sk ?? '',
-      my_device_identity_sk: auth?.profile_identity_sk ?? '',
-      node_encryption_pk: auth?.node_encryption_pk ?? '',
-      profile_encryption_sk: auth?.profile_encryption_sk ?? '',
-      profile_identity_sk: auth?.profile_identity_sk ?? '',
     });
   };
 
@@ -461,7 +459,7 @@ const SettingsPage = () => {
                                   }),
                                   'rounded-lg p-0 text-xs text-inherit underline',
                                 )}
-                                href={`https://shinkai-contracts.pages.dev?encryption_pk=${auth?.node_encryption_pk}&signature_pk=${auth?.node_signature_pk}&node_address=${auth?.node_address}`}
+                                href={`https://shinkai-contracts.pages.dev?encryption_pk=${auth?.encryption_pk}&signature_pk=${auth?.identity_pk}&node_address=${auth?.node_address}`}
                                 rel="noreferrer"
                                 target="_blank"
                               >
@@ -558,7 +556,7 @@ const SettingsPage = () => {
                     href={`https://shinkai-contracts.pages.dev/identity/${auth?.shinkai_identity?.replace(
                       '@@',
                       '',
-                    )}?encryption_pk=${auth?.node_encryption_pk}&signature_pk=${auth?.node_signature_pk}`}
+                    )}?encryption_pk=${auth?.encryption_pk}&signature_pk=${auth?.identity_pk}`}
                     rel="noreferrer"
                     target="_blank"
                   >

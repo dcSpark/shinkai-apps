@@ -259,10 +259,10 @@
     "menuItems": {
       "agents": "AI",
       "aiTasks": "AI 任务",
-      "ais": "人工智能",
       "chats": "聊天",
       "disconnect": "断开连接",
       "helpAndSupport": "帮助与支持",
+      "manageAis": "管理人工智能",
       "settings": "设置",
       "vectorFs": "我的 AI 文件浏览器",
       "vectorSearch": "AI 文件内容搜索"

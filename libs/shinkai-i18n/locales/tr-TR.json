@@ -259,10 +259,10 @@
     "menuItems": {
       "agents": "Yapay Zekalar",
       "aiTasks": "Yapay Zeka Görevleri",
-      "ais": "Yapay Zekalar",
       "chats": "Sohbetler",
       "disconnect": "Bağlantıyı Kes",
       "helpAndSupport": "Yardım ve Destek",
+      "manageAis": "Yapay Zekaları Yönet",
       "settings": "Ayarlar",
       "vectorFs": "Yapay Zeka Dosya Gezgini",
       "vectorSearch": "Yapay Zeka Dosya İçeriği Arama"

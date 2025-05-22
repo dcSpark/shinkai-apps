@@ -1,34 +1,51 @@
 <h1 align="center">
   <img width="36" height="36" src="assets/icon.png"/><br/>
-  Shinkai apps
+  Shinkai Apps
 </h1>
-<p align="center">Shinkai apps unlock the full capabilities/automation of first-class LLM (AI) support in the web browser. It enables creating multiple agents, each connected to either local or 3rd-party LLMs (ex. OpenAI GPT), which have permissioned (meaning secure) access to act in every webpage you visit.
-<br/>
-<br/>
-There is a companion repo called Shinkai Node, that allows you to set up the node anywhere as the central unit of the Shinkai Network, handling tasks such as agent management, job processing, and secure communications.
-You can find it <a href="https://github.com/dcSpark/shinkai-node">here</a>.</p><br/>
+
+<p align="center">
+  <a href="https://github.com/dcSpark/shinkai-apps/stargazers"><img src="https://img.shields.io/github/stars/dcSpark/shinkai-apps?style=social" alt="GitHub stars"></a>
+  <a href="https://discord.gg/EuA45U3sEu"><img src="https://img.shields.io/discord/1303749220842340412?color=7289DA&label=Discord&logo=discord&logoColor=white" alt="Discord"></a>
+  <a href="https://x.com/ShinkaiProtocol"><img src="https://img.shields.io/twitter/follow/ShinkaiProtocol?style=social" alt="Twitter Follow"></a>
+</p>
+
+<p align="center">
+  Shinkai is a two-click install AI manager (local and remote) that lets you spin up
+  AI agents in minutes through a friendly UI. Agents and tools are all exposed via an
+  MCP server.
+  <br/>
+  <br/>
+  A companion repository, <a href="https://github.com/dcSpark/shinkai-node">Shinkai Node</a>,
+  provides the core services for agent management, job processing and secure communications.
+</p>
+
+## Key Features
+
+- **Rapid Agent Setup** – create and configure agents in under five minutes with a guided UI.
+- **Local or Remote** – run everything on your machine or connect to a remote Shinkai Node.
+- **MCP Server Integration** – expose agents and tools over an MCP server for easy automation.
 
 ## Demo
 
 https://github.com/user-attachments/assets/bc5bb7da-7ca5-477d-838a-8239951b6c01
 
-
 ## Documentation
 
 General Documentation: [https://docs.shinkai.com](https://docs.shinkai.com)
 
-## Projects
+## Repository Structure
 
 ### Apps
 
-- shinkai-visor: Shinkai Visor is a chrome extension to interact with shinkai-node.
-- shinkai-desktop: Shinkai Desktop is a desktop app to interact with shinkai-node.
+- **shinkai-desktop** – cross-platform desktop UI (can also run in the browser).
 
 ### Libs
 
-- shinkai-message-ts: Typescript library that implements the features and networking layer to enable systems to interact with shinkai-nodes.
-- shinkai-node-state: Typescript library which using @tanstack/react-query enables apps to interact with shinkai-node managing the state, caching and evictions.
-- shinkai-ui: React UI library to build shinkai apps.
+- **shinkai-message-ts** – message definitions and network helpers for talking to Shinkai Node.
+- **shinkai-node-state** – React Query based state management for node data.
+- **shinkai-ui** – reusable React components used across the apps.
+- **shinkai-artifacts** – styled UI primitives built on top of Radix and Tailwind.
+- **shinkai-i18n** – translation utilities powered by i18next.
 
 ## Getting started
 
@@ -41,33 +58,37 @@ $ git clone https://github.com/dcSpark/shinkai-apps
 ### Download side binaries:
 
 #### Macos
+
 ```
 ARCH="aarch64-apple-darwin" \
 OLLAMA_VERSION="v0.6.8" \
-SHINKAI_NODE_VERSION="v1.0.2" \
+SHINKAI_NODE_VERSION="v1.0.4" \
 npx ts-node ./ci-scripts/download-side-binaries.ts \
 && ./ci-scripts/update-tools.sh
 ```
 
 #### Linux
+
 ```
 ARCH="x86_64-unknown-linux-gnu" \
 OLLAMA_VERSION="v0.6.8" \
-SHINKAI_NODE_VERSION="v1.0.2" \
+SHINKAI_NODE_VERSION="v1.0.4" \
 npx ts-node ./ci-scripts/download-side-binaries.ts \
 && ./ci-scripts/update-tools.sh
 ```
 
 #### Windows
+
 ```
 $ENV:OLLAMA_VERSION="v0.6.8";
-$ENV:SHINKAI_NODE_VERSION="v1.0.2";
+$ENV:SHINKAI_NODE_VERSION="v1.0.4";
 $ENV:ARCH="x86_64-pc-windows-msvc";
 npx ts-node ./ci-scripts/download-side-binaries.ts \
 && ./ci-scripts/update-tools.sh
 ```
 
 ### Run one of the projects
+
 Once you have done that simply use `npm` to compile/serve it yourself:
 
 ```
@@ -79,15 +100,7 @@ npx nx serve {project-name} # IE: npx nx serve shinkai-desktop
 
 ### Project specific configurations
 
-- shinkai-visor: As this is a Chrome Extension, after build, developers needs to load it in chrome:
-
-  1. Open Chrome.
-  2. Navigate to `chrome://extensions`.
-  3. Enable _Developer mode_.
-  4. Click _Load unpacked_.
-  5. Select the `./dist/apps/shinkai-visor` folder which contains the output of the building process using commands like `npx nx serve shinkai-visor`.
-
-- shinkai-desktop: For development and building purposes
+- **shinkai-desktop** – for development and building purposes
   - Run as a Desktop App using Vite:
     Run `npx nx serve:tauri shinkai-desktop` and it will automatically launch the Shinkai Desktop application.
   - Run as a Web App:
@@ -107,9 +120,9 @@ Every command, if it's needed, build projects and it's dependencies according to
 
   IE:
 
-  - `npx nx build shinkai-visor`
+  - `npx nx build shinkai-desktop`
   - `npx nx lint shinkai-message-ts`
-  - `npx nx e2e shinkai-visor`
+  - `npx nx test shinkai-ui`
   - `npx nx serve shinkai-desktop`
 
 - Run many tasks
@@ -143,6 +156,7 @@ Every command, if it's needed, build projects and it's dependencies according to
 > When you build a project, NX builds a cache (to make it faster), if you want to skip it just add the parameter `--skip-nx-cache` to the previous commands.
 
 - Create a dev build
+
   - `NODE_OPTIONS="--max_old_space_size=8192" npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json"`
 
 - Update ollama models repository

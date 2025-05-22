@@ -1,6 +1,6 @@
 import { listen } from '@tauri-apps/api/event';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { useAuth } from '../store/auth';
 

@@ -86,8 +86,16 @@ export type ChatMessage = {
   node_api_data: NodeApiData;
   inbox: string;
 };
+
 export type GetLastMessagesResponse = ChatMessage[];
 export type GetLastMessagesWithBranchesResponse = ChatMessage[][];
+
+export type UpdateLLMProviderInJobRequest = {
+  job_id: string;
+  new_agent_id: string;
+};
+export type UpdateLLMProviderInJobResponse = { result: string };
+
 export type CreateFilesInboxResponse = string;
 
 export type AddFileToInboxRequest = {

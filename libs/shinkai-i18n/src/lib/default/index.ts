@@ -69,7 +69,7 @@ export default {
       vectorFs: 'AI Files Explorer',
       vectorSearch: 'AI Files Content Search',
       agents: 'Agents',
-      ais: 'AIs',
+      manageAis: 'Manage AIs',
       settings: 'Settings',
       disconnect: 'Disconnect',
       helpAndSupport: 'Help and Support',
