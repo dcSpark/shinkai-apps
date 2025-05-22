@@ -22,7 +22,7 @@ pub struct ShinkaiNodeProcessHandler {
 
 impl ShinkaiNodeProcessHandler {
     const HEALTH_REQUEST_TIMEOUT_MS: u64 = 250;
-    const HEALTH_TIMEOUT_MS: u64 = 5000;
+    const HEALTH_TIMEOUT_MS: u64 = 10000;
     const PROCESS_NAME: &'static str = "shinkai-node";
     const READY_MATCHER: &'static str = "listening on ";
 
@@ -60,7 +60,7 @@ impl ShinkaiNodeProcessHandler {
     }
 
     async fn health(base_url: &str, timeout_ms: u64) -> Result<bool, ()> {
-        let url = format!("{}/v1/shinkai_health", base_url);
+        let url = format!("{}/v2/health_check", base_url);
         let client = reqwest::Client::new();
         if let Ok(response) = client
         .get(&url)
