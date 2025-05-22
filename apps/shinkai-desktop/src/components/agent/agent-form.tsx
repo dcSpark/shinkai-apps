@@ -61,13 +61,13 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-  Input,
   Label,
   RadioGroup,
   RadioGroupItem,
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
+  SearchInput,
   Select,
   SelectContent,
   SelectItem,
@@ -108,7 +108,6 @@ import {
   HistoryIcon,
   LucideArrowLeft,
   MessageSquare,
-  SearchIcon,
   Trash2,
   XIcon,
 } from 'lucide-react';
@@ -1571,59 +1570,19 @@ function AgentForm({ mode }: AgentFormProps) {
                           </p>
                         </div>
 
-                        {/* <Button
-                          className={cn(
-                            'flex h-auto w-auto items-center gap-2 rounded-lg px-2.5 py-1.5',
-                          )}
-                          onClick={() => {
-                            setSetJobScopeOpen(true);
-                          }}
-                          size="auto"
-                          type="button"
-                          variant="outline"
-                        >
-                          <div className="flex items-center gap-2">
-                            {Object.keys(selectedKeys || {}).length > 0 ? (
-                              <Badge className="bg-official-gray-1000 inline-flex size-4 items-center justify-center rounded-full border-gray-200 p-0 text-center text-[10px] text-gray-50">
-                                {Object.keys(selectedKeys || {}).length}
-                              </Badge>
-                            ) : (
-                              <FilesIcon className="size-4" />
-                            )}
+                        <div className="flex items-center justify-between gap-4 pl-0.5">
+                          <SearchInput
+                            classNames={{
+                              container: 'mx-0.5 h-9 ',
+                              input: 'bg-transparent',
+                            }}
+                            onChange={(e) => {
+                              setSearchQueryKnowledge(e.target.value);
+                            }}
+                            placeholder={'Search folders and files ...'}
+                            value={searchQueryKnowledge}
+                          />
 
-                            <p className="text-xs text-white">
-                              {t('vectorFs.localFiles')}
-                            </p>
-                          </div>
-                        </Button> */}
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="relative flex h-10 w-full items-center">
-                            <Input
-                              className="placeholder-gray-80 !h-full rounded-full bg-transparent py-2 pl-10"
-                              onChange={(e) => {
-                                setSearchQueryKnowledge(e.target.value);
-                              }}
-                              placeholder={'Search folders and files ...'}
-                              value={searchQueryKnowledge}
-                            />
-                            <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
-                            {searchQueryKnowledge && (
-                              <Button
-                                className="hover:bg-official-gray-800 absolute right-1 h-8 w-8 bg-transparent p-2"
-                                onClick={() => {
-                                  setSearchQueryKnowledge('');
-                                }}
-                                size="auto"
-                                type="button"
-                                variant="ghost"
-                              >
-                                <XIcon />
-                                <span className="sr-only">
-                                  {t('common.clearSearch')}
-                                </span>
-                              </Button>
-                            )}
-                          </div>
                           <Button
                             className="shrink-0"
                             onClick={() => {
@@ -1864,13 +1823,13 @@ function AgentForm({ mode }: AgentFormProps) {
                                 Selected Tools
                               </h3>
                               <Button
-                                className="text-official-gray-400 hover:text-official-gray-100 text-xs"
+                                className="text-official-gray-200 text-xs"
                                 onClick={() => {
                                   form.setValue('tools', []);
                                   form.setValue('tools_config_override', {});
                                 }}
                                 size="xs"
-                                variant="ghost"
+                                variant="tertiary"
                               >
                                 Clear
                               </Button>
@@ -2003,33 +1962,17 @@ function AgentForm({ mode }: AgentFormProps) {
                           </div>
                         )}
 
-                        <div className="relative flex h-10 w-full items-center">
-                          <Input
-                            className="placeholder-gray-80 !h-full rounded-lg bg-transparent py-2 pl-10"
-                            onChange={(e) => {
-                              setSearchQuery(e.target.value);
-                            }}
-                            placeholder={t('common.searchPlaceholder')}
-                            value={searchQuery}
-                          />
-                          <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
-                          {searchQuery && (
-                            <Button
-                              className="hover:bg-official-gray-800 absolute right-1 h-8 w-8 bg-transparent p-2"
-                              onClick={() => {
-                                setSearchQuery('');
-                              }}
-                              size="auto"
-                              type="button"
-                              variant="ghost"
-                            >
-                              <XIcon />
-                              <span className="sr-only">
-                                {t('common.clearSearch')}
-                              </span>
-                            </Button>
-                          )}
-                        </div>
+                        <SearchInput
+                          classNames={{
+                            container: 'mx-0.5 h-9 ',
+                            input: 'bg-transparent',
+                          }}
+                          onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                          }}
+                          value={searchQuery}
+                        />
+
                         <div className="flex flex-col gap-5 overflow-auto">
                           {(isPending ||
                             !isSearchQuerySynced ||

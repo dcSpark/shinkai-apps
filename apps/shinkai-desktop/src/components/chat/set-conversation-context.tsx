@@ -16,8 +16,8 @@ import {
   Button,
   Form,
   FormField,
-  Input,
   ScrollArea,
+  SearchInput,
   Sheet,
   SheetContent,
   SheetFooter,
@@ -25,7 +25,7 @@ import {
   SheetTitle,
 } from '@shinkai_network/shinkai-ui';
 import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
-import { SearchIcon, XIcon } from 'lucide-react';
+import { SearchIcon } from 'lucide-react';
 import { Checkbox } from 'primereact/checkbox';
 import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { TreeNode } from 'primereact/treenode';
@@ -359,33 +359,14 @@ export const KnowledgeSearchDrawer = () => {
                 control={searchVectorFSForm.control}
                 name="searchQuery"
                 render={({ field }) => (
-                  <div className="relative flex-1">
-                    <Input
-                      autoFocus
-                      className="placeholder-gray-80 !h-[50px] bg-gray-200 py-2 pl-10"
-                      onChange={field.onChange}
-                      placeholder={t('common.searchPlaceholder')}
-                      value={field.value}
-                    />
-                    <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2 bg-gray-300" />
-                    {currentSearchQuery && (
-                      <Button
-                        className="absolute right-1 top-2 h-8 w-8 bg-gray-200 p-2"
-                        onClick={() => {
-                          searchVectorFSForm.reset({ searchQuery: '' });
-                          setIsSearchEntered(false);
-                        }}
-                        size="auto"
-                        type="button"
-                        variant="ghost"
-                      >
-                        <XIcon />
-                        <span className="sr-only">
-                          {t('common.clearSearch')}
-                        </span>
-                      </Button>
-                    )}
-                  </div>
+                  <SearchInput
+                    classNames={{
+                      container: 'mx-0.5 h-9',
+                      input: 'bg-transparent',
+                    }}
+                    onChange={field.onChange}
+                    value={field.value}
+                  />
                 )}
               />
               <Button

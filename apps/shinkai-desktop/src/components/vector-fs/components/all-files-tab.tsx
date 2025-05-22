@@ -19,9 +19,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Input,
-  // Input,
   ScrollArea,
+  SearchInput,
   Separator,
   Tooltip,
   TooltipContent,
@@ -38,14 +37,7 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import {
-  ChevronRight,
-  FileType2Icon,
-  PlusIcon,
-  SearchIcon,
-  // SearchIcon,
-  XIcon,
-} from 'lucide-react';
+import { ChevronRight, FileType2Icon, PlusIcon, XIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
@@ -239,35 +231,18 @@ const AllFiles = () => {
         </DropdownMenuContent>
       </DropdownMenu>
       <div className="mt-2 flex justify-between gap-3">
-        <div className="relative flex h-10 w-full max-w-[500px] items-center">
-          <Input
-            className="placeholder-gray-80 !h-full bg-transparent py-2 pl-10"
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-            }}
-            placeholder={t('common.searchPlaceholder')}
-            value={searchQuery}
-          />
-          <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
-          {searchQuery && (
-            <Button
-              className="absolute right-1 h-8 w-8 bg-gray-200 p-2"
-              onClick={() => {
-                setSearchQuery('');
-              }}
-              size="auto"
-              type="button"
-              variant="ghost"
-            >
-              <XIcon />
-              <span className="sr-only">{t('common.clearSearch')}</span>
-            </Button>
-          )}
-        </div>
+        <SearchInput
+          classNames={{ container: 'max-w-[500px]', input: 'bg-transparent' }}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+          }}
+          value={searchQuery}
+        />
+
         <div className="flex gap-3">
           <VectorFsToggleSortName />
           <Separator
-            className="bg-gray-300"
+            className="bg-official-gray-780"
             decorative
             orientation="vertical"
           />
@@ -280,18 +255,17 @@ const AllFiles = () => {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <button
-                    className={cn(
-                      'flex items-center gap-2 rounded-full p-2 hover:bg-gray-400',
-                      currentGlobalPath === '/' && 'text-white',
-                    )}
+                  <Button
+                    className={cn(currentGlobalPath === '/' && 'text-white')}
                     onClick={() => {
                       setCurrentGlobalPath('/');
                     }}
+                    size="sm"
+                    variant="tertiary"
                   >
                     <HomeIcon className="h-3.5 w-3.5" />
                     {t('vectorFs.home')}
-                  </button>
+                  </Button>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               {splitCurrentPath.map((path, idx) => (
@@ -305,17 +279,18 @@ const AllFiles = () => {
                     </BreadcrumbPage>
                   ) : (
                     <BreadcrumbLink asChild>
-                      <button
-                        className="flex items-center gap-1 rounded-full bg-transparent p-2 hover:bg-gray-400"
+                      <Button
                         onClick={() => {
                           const buildPath = splitCurrentPath
                             .slice(0, idx + 1)
                             .join('/');
                           setCurrentGlobalPath('/' + buildPath);
                         }}
+                        size="sm"
+                        variant="tertiary"
                       >
                         {path}
-                      </button>
+                      </Button>
                     </BreadcrumbLink>
                   )}
                 </React.Fragment>
@@ -340,7 +315,7 @@ const AllFiles = () => {
             (searchQuery && searchQuery !== debouncedSearchQuery)) &&
             Array.from({ length: 4 }).map((_, idx) => (
               <div
-                className="mb-1 flex h-[69px] items-center justify-between gap-2 rounded-lg bg-gray-400 py-3"
+                className="bg-official-gray-900 mb-2 flex h-[69px] items-center justify-between gap-2 rounded-lg py-3"
                 key={idx}
               />
             ))}
@@ -384,7 +359,7 @@ const AllFiles = () => {
             isVRFilesSuccess &&
             folderList.length === 0 &&
             currentGlobalPath === '/' && (
-              <div className="text-gray-80 mt-4 flex flex-col items-center justify-center gap-4 text-center text-base">
+              <div className="text-official-gray-400 mt-4 flex flex-col items-center justify-center gap-4 text-center text-base">
                 <FileEmptyStateIcon className="h-20 w-20" />
                 <div>
                   <h2 className="font-medium text-white">
@@ -400,14 +375,14 @@ const AllFiles = () => {
             isVRFilesSuccess &&
             itemList.length === 0 &&
             folderList.length === 0 && (
-              <div className="flex h-20 items-center justify-center text-gray-100">
+              <div className="text-official-gray-400 flex h-20 items-center justify-center">
                 {t('vectorFs.emptyState.noFiles')}
               </div>
             )}
           {searchQuery &&
             isSearchVRItemsSuccess &&
             searchVRItems?.length === 0 && (
-              <div className="flex h-20 items-center justify-center text-gray-100">
+              <div className="text-official-gray-400 flex h-20 items-center justify-center">
                 {t('vectorFs.emptyState.noFiles')}
               </div>
             )}
@@ -445,16 +420,7 @@ const AllFiles = () => {
           ))}
         </ContextMenuContent>
       </ContextMenu>
-      {/*<div className="fixed bottom-0 left-0 right-0 flex items-center justify-between rounded-t-md bg-gray-300 py-3">*/}
-      {/*  <span className="flex flex-1 items-center justify-center gap-1">*/}
-      {/*    <FileIcon className="h-4 w-4" />*/}
-      {/*    <span className="font-medium">TODO items</span>*/}
-      {/*  </span>*/}
-      {/*  <span className="flex flex-1 items-center justify-center gap-1">*/}
-      {/*    <DatabaseIcon className="h-4 w-4" />*/}
-      {/*    <span className="font-medium">TODO</span>*/}
-      {/*  </span>*/}
-      {/*</div>*/}
+
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -511,7 +477,7 @@ const AllFiles = () => {
       {isVRSelectionActive && (
         <MotionButton
           animate={{ opacity: 1 }}
-          className="fixed bottom-12 right-[230px] h-[24px] w-[24px] border border-gray-100 bg-gray-300 p-1 text-gray-50 hover:bg-gray-500 hover:text-white"
+          className="border-official-gray-780 bg-official-gray-900 text-official-gray-400 fixed bottom-12 right-[230px] h-[24px] w-[24px] border p-1 hover:text-white"
           initial={{ opacity: 0 }}
           onClick={() => setVRSelectionActive(false)}
           size="icon"

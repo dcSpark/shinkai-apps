@@ -19,6 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  SearchInput,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -27,7 +28,6 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import {
   AIAgentIcon,
-  AisIcon,
   CreateAIIcon,
   ScheduledTasksIcon,
 } from '@shinkai_network/shinkai-ui/assets';
@@ -37,6 +37,7 @@ import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import cronstrue from 'cronstrue';
 import { DownloadIcon, Edit, Plus, TrashIcon } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import React from 'react';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
@@ -52,22 +53,21 @@ function AgentsPage() {
     token: auth?.api_v2_key ?? '',
   });
 
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredAgents = useMemo(() => {
+    return agents?.filter((agent) =>
+      agent.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  }, [agents, searchQuery]);
+
   return (
     <div className="h-full">
-      <div className="container flex h-full flex-col">
+      <div className="container flex flex-col">
         <div className="flex flex-col gap-1 pb-6 pt-10">
           <div className="flex justify-between gap-4">
             <h1 className="font-clash text-3xl font-medium">Agents</h1>
             <div className="flex gap-2">
-              <Button
-                className="min-w-[100px]"
-                onClick={() => navigate('/ais')}
-                size="sm"
-                variant="outline"
-              >
-                <AisIcon className="h-4 w-4" />
-                <span>AIs</span>
-              </Button>
               <ImportAgentModal />
               <Button
                 className="min-w-[100px]"
@@ -87,8 +87,15 @@ function AgentsPage() {
             tackle your goals autonomously.
           </p>
         </div>
+        <SearchInput
+          classNames={{
+            container: 'w-full mb-4',
+          }}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          value={searchQuery}
+        />
         <div className="flex flex-1 flex-col space-y-3 pb-10">
-          {!agents?.length ? (
+          {!filteredAgents?.length ? (
             <div className="flex grow flex-col items-center gap-3 pt-20">
               <div className="bg-official-gray-800 flex size-10 items-center justify-center rounded-lg p-2">
                 <AIAgentIcon className="size-full" name={''} />
@@ -102,7 +109,7 @@ function AgentsPage() {
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              {agents?.map((agent) => (
+              {filteredAgents?.map((agent) => (
                 <AgentCard
                   agentDescription={agent.ui_description}
                   agentId={agent.agent_id}

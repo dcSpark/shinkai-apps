@@ -13,8 +13,8 @@ import {
   buttonVariants,
   Form,
   FormField,
-  Input,
   ScrollArea,
+  SearchInput,
   Sheet,
   SheetClose,
   SheetContent,
@@ -31,7 +31,7 @@ import {
 import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
-import { SearchIcon, XIcon } from 'lucide-react';
+import { SearchIcon } from 'lucide-react';
 import { Checkbox } from 'primereact/checkbox';
 import { TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { useEffect, useRef, useState } from 'react';
@@ -151,32 +151,13 @@ const SearchNodeFiles = () => {
                   control={searchVectorFSForm.control}
                   name="searchQuery"
                   render={({ field }) => (
-                    <div className="relative flex-1">
-                      <Input
-                        autoFocus
-                        className="placeholder-gray-80 !h-[50px] bg-gray-200 py-2 pl-10"
-                        onChange={field.onChange}
-                        placeholder={t('common.searchPlaceholder')}
-                        value={field.value}
-                      />
-                      <SearchIcon className="absolute left-4 top-1/2 -z-[1px] h-4 w-4 -translate-y-1/2" />
-                      {currentSearchQuery && (
-                        <Button
-                          className="absolute right-1 top-2 h-8 w-8 bg-gray-200 p-2"
-                          onClick={() => {
-                            searchVectorFSForm.reset({ searchQuery: '' });
-                          }}
-                          size="auto"
-                          type="button"
-                          variant="ghost"
-                        >
-                          <XIcon />
-                          <span className="sr-only">
-                            {t('common.clearSearch')}
-                          </span>
-                        </Button>
-                      )}
-                    </div>
+                    <SearchInput
+                      classNames={{
+                        input: 'bg-transparent',
+                      }}
+                      onChange={field.onChange}
+                      value={field.value}
+                    />
                   )}
                 />
                 <Button

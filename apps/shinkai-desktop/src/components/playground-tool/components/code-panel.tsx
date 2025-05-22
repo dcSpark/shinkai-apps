@@ -115,14 +115,14 @@ function CodePanelBase({
       } catch (error) {
         console.error('Error detecting language:', error);
       }
-      
+
       return (
         <form
           className="flex size-full flex-col"
           key={resetCounter}
           onSubmit={handleApplyChangesCodeSubmit}
         >
-          <div className="sticky top-0 z-10 flex h-[40px] shrink-0 items-center justify-between rounded-t-sm border-b border-gray-400 px-3 py-2 bg-official-gray-950">
+          <div className="bg-official-gray-950 sticky top-0 z-10 flex h-[40px] shrink-0 items-center justify-between rounded-t-sm border-b border-gray-400 px-3 py-2">
             <span className="text-gray-80 inline-flex items-center gap-2 pl-2 text-xs font-medium">
               {' '}
               {detectedLanguage}{' '}
@@ -140,18 +140,18 @@ function CodePanelBase({
                   transition={{ duration: 0.2 }}
                 >
                   <Button
-                    className="!h-[28px] rounded-lg border-0 bg-transparent"
+                    className="!h-[28px] rounded-lg border-0"
                     onClick={resetToolCode}
                     size="xs"
-                    variant="ghost"
+                    variant="tertiary"
                   >
                     Reset
                   </Button>
                   <Button
-                    className="!h-[28px] rounded-lg border-0 bg-transparent"
+                    className="!h-[28px] rounded-lg border-0"
                     size="xs"
                     type="submit"
-                    variant="ghost"
+                    variant="tertiary"
                   >
                     Apply Changes
                   </Button>
