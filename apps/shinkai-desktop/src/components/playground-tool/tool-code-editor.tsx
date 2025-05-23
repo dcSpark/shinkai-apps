@@ -27,11 +27,6 @@ import {
   jsSnipets,
 } from 'prism-react-editor/autocomplete/javascript';
 import {
-  blockCommentFolding,
-  markdownFolding,
-  useReadOnlyCodeFolding,
-} from 'prism-react-editor/code-folding';
-import {
   useDefaultCommands,
   useEditHistory,
 } from 'prism-react-editor/commands';
@@ -48,20 +43,7 @@ import {
   useSearchWidget,
   useShowInvisibles,
 } from 'prism-react-editor/search';
-import { useReactTooltip } from 'prism-react-editor/tooltips';
-import React, { forwardRef, Suspense } from 'react';
-
-function ReadOnly({ editor }: { editor: PrismEditor }) {
-  const [portal] = useReactTooltip(editor, null, false);
-  useReadOnlyCodeFolding(editor, blockCommentFolding, markdownFolding);
-  
-  try {
-    return portal ? (portal as unknown as React.ReactElement) : null;
-  } catch (error) {
-    console.error('Error in ReadOnly component:', error);
-    return null;
-  }
-}
+import React, { forwardRef } from 'react';
 
 const Extensions = ({ editor }: { editor: PrismEditor }) => {
   useBracketMatcher(editor);
@@ -78,21 +60,7 @@ const Extensions = ({ editor }: { editor: PrismEditor }) => {
     filter: fuzzyFilter,
   });
 
-  try {
-    return (
-      <>
-        {editor.props.readOnly && (
-          <Suspense fallback={null}>
-            <ReadOnly editor={editor} />
-          </Suspense>
-        )}
-        <IndentGuides editor={editor} />
-      </>
-    );
-  } catch (error) {
-    console.error('Error in Extensions component:', error);
-    return null;
-  }
+  return <IndentGuides editor={editor} />;
 };
 
 registerCompletions(['javascript', 'js', 'jsx', 'tsx', 'typescript', 'ts'], {
@@ -116,24 +84,13 @@ const ToolCodeEditor = forwardRef<
     style?: React.CSSProperties;
   }
 >(({ value, onUpdate, language, name, readOnly, style }, ref) => {
-  const safeValue = typeof value === 'string' ? value : '';
   const safeLanguage = language || 'plaintext';
-  
-  const handleUpdate: EditorProps['onUpdate'] = (updatedValue, editor) => {
-    try {
-      if (onUpdate) {
-        onUpdate(updatedValue, editor);
-      }
-    } catch (error) {
-      console.error('Error in editor onUpdate:', error);
-    }
-  };
 
   return (
     <Editor
       insertSpaces={true}
       language={safeLanguage}
-      onUpdate={handleUpdate}
+      onUpdate={onUpdate}
       readOnly={readOnly}
       ref={ref}
       style={{
@@ -147,7 +104,7 @@ const ToolCodeEditor = forwardRef<
         ...style,
       }}
       textareaProps={{ name: name ?? 'editor' }}
-      value={safeValue}
+      value={value}
     >
       {(editor) => <Extensions editor={editor} />}
     </Editor>
