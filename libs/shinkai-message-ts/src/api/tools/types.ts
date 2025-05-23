@@ -275,6 +275,7 @@ export enum CodeLanguage {
   Typescript = 'Typescript',
   Python = 'Python',
   Agent = 'Agent',
+  MCPServer = 'MCPServer',
 }
 
 export type CreateToolCodeRequest = {
@@ -306,6 +307,7 @@ export enum DynamicToolType {
   DenoDynamic = 'denodynamic',
   PythonDynamic = 'pythondynamic',
   AgentDynamic = 'agentdynamic',
+  MCPServerDynamic = 'mcpserverdynamic',
 }
 
 export type ExecuteToolCodeRequest = {
