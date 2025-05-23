@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { PopoverClose } from '@radix-ui/react-popover';
 import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
+  Badge,
   Button,
   FormField,
   FormItem,
@@ -98,12 +99,16 @@ export default function EditToolBasicInfoDialog({
         }}
         open={isOpen}
       >
-        <PopoverTrigger className={cn(
-          "hover:bg-official-gray-900 transtion-colors flex max-w-[400px] items-center gap-2 truncate rounded-lg p-1 text-base font-medium",
-          className
-        )}>
+        <PopoverTrigger
+          className={cn(
+            'hover:bg-official-gray-900 transtion-colors flex max-w-[400px] items-center gap-2 truncate rounded-lg p-1 text-base font-medium',
+            className,
+          )}
+        >
           <span className="truncate">{toolName}</span>
-          <Button className="px-2 h-6" size="xs" variant="ghost">Edit</Button>
+          <Badge className="h-6 px-2" variant="outline">
+            Edit
+          </Badge>
         </PopoverTrigger>
         <PopoverContent
           align="start"
@@ -144,7 +149,10 @@ export default function EditToolBasicInfoDialog({
                 name="description"
                 render={({ field }) => (
                   <FormItem className="space-y-1">
-                    <Label className="text-xs font-medium" htmlFor="description">
+                    <Label
+                      className="text-xs font-medium"
+                      htmlFor="description"
+                    >
                       Description
                     </Label>
                     <Textarea
@@ -184,7 +192,10 @@ export default function EditToolBasicInfoDialog({
           </Form>
         </PopoverContent>
       </Popover>
-      <RemoveToolButton isPlaygroundTool={false} toolKey={initialToolRouterKeyWithVersion} />
+      <RemoveToolButton
+        isPlaygroundTool={false}
+        toolKey={initialToolRouterKeyWithVersion}
+      />
     </div>
   );
 }

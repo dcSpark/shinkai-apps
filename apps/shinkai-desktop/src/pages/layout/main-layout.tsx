@@ -364,26 +364,24 @@ export function MainNav() {
                         arrowPadding={2}
                         side="right"
                       >
-                        <p>
-                          {item.disabled ? (
-                            <>
-                              {item.title} <br />
-                              <span className="text-official-gray-400 text-xs">
-                                {t('common.comingSoon')}
-                              </span>
-                            </>
-                          ) : (
-                            <div className="flex flex-col gap-1">
-                              {item.title}
-                              {item.href === '/home' ? (
-                                <div className="text-official-gray-400 flex items-center justify-center gap-2 text-center">
-                                  <span>⌘</span>
-                                  <span>N</span>
-                                </div>
-                              ) : null}
-                            </div>
-                          )}
-                        </p>
+                        {item.disabled ? (
+                          <>
+                            {item.title} <br />
+                            <span className="text-official-gray-400 text-xs">
+                              {t('common.comingSoon')}
+                            </span>
+                          </>
+                        ) : (
+                          <div className="flex flex-col gap-1">
+                            {item.title}
+                            {item.href === '/home' ? (
+                              <div className="text-official-gray-400 flex items-center justify-center gap-2 text-center">
+                                <span>⌘</span>
+                                <span>N</span>
+                              </div>
+                            ) : null}
+                          </div>
+                        )}
                       </TooltipContent>
                     </TooltipPortal>
                   </Tooltip>
@@ -636,7 +634,6 @@ const MainLayout = () => {
     if (isSuccess && nodeInfo?.status !== 'ok') {
       toast.error(t('errors.nodeUnavailable.title'), {
         description: t('errors.nodeUnavailable.description'),
-        important: true,
         id: 'node-unavailable',
         duration: 20000,
       });

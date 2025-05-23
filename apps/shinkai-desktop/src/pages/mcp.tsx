@@ -483,26 +483,28 @@ const McpCard = ({
         )}
         {!requiredConfig && (
           <Tooltip>
-            <TooltipTrigger className="">
-              <Switch
-                checked={toolMcpEnabled}
-                disabled={!toolEnabled}
-                onCheckedChange={async () => {
-                  if (!auth) return;
-                  if (toolEnabled !== true) {
-                    toast.error(
-                      'Tool must be enabled before changing MCP server mode',
-                    );
-                    return;
-                  }
-                  await setToolMcpEnabled({
-                    toolRouterKey: toolRouterKey,
-                    mcpEnabled: !toolMcpEnabled,
-                    nodeAddress: auth.node_address,
-                    token: auth.api_v2_key,
-                  });
-                }}
-              />
+            <TooltipTrigger asChild>
+              <div>
+                <Switch
+                  checked={toolMcpEnabled}
+                  disabled={!toolEnabled}
+                  onCheckedChange={async () => {
+                    if (!auth) return;
+                    if (toolEnabled !== true) {
+                      toast.error(
+                        'Tool must be enabled before changing MCP server mode',
+                      );
+                      return;
+                    }
+                    await setToolMcpEnabled({
+                      toolRouterKey: toolRouterKey,
+                      mcpEnabled: !toolMcpEnabled,
+                      nodeAddress: auth.node_address,
+                      token: auth.api_v2_key,
+                    });
+                  }}
+                />
+              </div>
             </TooltipTrigger>
             <TooltipPortal>
               <TooltipContent align="center" side="top">
