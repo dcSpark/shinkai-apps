@@ -52,8 +52,13 @@ export const VectorFsItemInfo = ({
         </span>
         {!!file.has_embeddings && (
           <Tooltip>
-            <TooltipTrigger className="rounded-lg border-cyan-600 bg-cyan-900/20 p-1">
-              <EmbeddingsGeneratedIcon className="size-4 text-cyan-400" />
+            <TooltipTrigger
+              asChild
+              className="rounded-lg border-cyan-600 bg-cyan-900/20 p-1"
+            >
+              <div>
+                <EmbeddingsGeneratedIcon className="size-4 text-cyan-400" />
+              </div>
             </TooltipTrigger>
             <TooltipPortal>
               <TooltipContent side="top">

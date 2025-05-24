@@ -448,7 +448,7 @@ const SettingsPage = () => {
                         },
                       }}
                       helperMessage={
-                        <div className="flex items-center justify-start gap-3">
+                        <span className="flex items-center justify-start gap-3">
                           <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
                             {isIdentityLocalhost ? (
                               <a
@@ -504,7 +504,7 @@ const SettingsPage = () => {
                               'settings.shinkaiIdentity.troubleRegisterIdentity',
                             )}
                           </a>
-                        </div>
+                        </span>
                       }
                       label={t('settings.shinkaiIdentity.label')}
                     />
