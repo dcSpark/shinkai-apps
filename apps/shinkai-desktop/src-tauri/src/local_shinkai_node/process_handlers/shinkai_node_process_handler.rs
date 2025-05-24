@@ -24,7 +24,6 @@ impl ShinkaiNodeProcessHandler {
     const HEALTH_REQUEST_TIMEOUT_MS: u64 = 250;
     const HEALTH_TIMEOUT_MS: u64 = 10000;
     const PROCESS_NAME: &'static str = "shinkai-node";
-    const READY_MATCHER: &'static str = "listening on ";
 
     pub fn new(
         app: AppHandle,
@@ -32,10 +31,12 @@ impl ShinkaiNodeProcessHandler {
         app_resource_dir: PathBuf,
         app_data_dir: PathBuf,
     ) -> Self {
-        let ready_matcher = Regex::new(Self::READY_MATCHER).unwrap();
-
         let options =
         ShinkaiNodeOptions::with_app_options(app_resource_dir.clone(), app_data_dir.clone());
+
+        let node_api_ip = options.clone().node_api_ip.unwrap_or_default();
+        let node_api_port = options.clone().node_api_port.unwrap_or_default();
+        let ready_matcher = Regex::new(format!("listening on http://{}:{}", node_api_ip, node_api_port).as_str()).unwrap();
         let process_handler = ProcessHandler::new(
             app.clone(),
             Self::PROCESS_NAME.to_string(),
