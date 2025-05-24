@@ -113,7 +113,14 @@ export const useWebSocketMessageSmooth = ({
 }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
-  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  let socketUrl = `ws://${nodeAddressUrl.hostname}:${nodeAddressUrl.port}/ws`;
+  if (nodeAddressUrl.port === '0' || nodeAddressUrl.port === '') {
+    if (nodeAddressUrl.protocol === 'https:') {
+      socketUrl = `wss://${nodeAddressUrl.hostname}:443/ws`;
+    } else {
+      socketUrl = `ws://${nodeAddressUrl.hostname}:80/ws`;
+    }
+  }
   const queryClient = useQueryClient();
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(
@@ -241,7 +248,14 @@ export const useWebSocketMessage = ({
 }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
-  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  let socketUrl = `ws://${nodeAddressUrl.hostname}:${nodeAddressUrl.port}/ws`;
+  if (nodeAddressUrl.port === '0' || nodeAddressUrl.port === '') {
+    if (nodeAddressUrl.protocol === 'https:') {
+      socketUrl = `wss://${nodeAddressUrl.hostname}:443/ws`;
+    } else {
+      socketUrl = `ws://${nodeAddressUrl.hostname}:80/ws`;
+    }
+  }
   const queryClient = useQueryClient();
   const isStreamSupported = useRef(false);
 
@@ -392,7 +406,14 @@ export const useWebSocketTools = ({
 }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
-  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  let socketUrl = `ws://${nodeAddressUrl.hostname}:${nodeAddressUrl.port}/ws`;
+  if (nodeAddressUrl.port === '0' || nodeAddressUrl.port === '') {
+    if (nodeAddressUrl.protocol === 'https:') {
+      socketUrl = `wss://${nodeAddressUrl.hostname}:443/ws`;
+    } else {
+      socketUrl = `ws://${nodeAddressUrl.hostname}:80/ws`;
+    }
+  }
   const { sendMessage, lastMessage, readyState } = useWebSocket(
     socketUrl,
     { share: true },
