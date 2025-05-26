@@ -1,6 +1,7 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useDeleteMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/deleteMcpServer/useDeleteMcpServer';
+import type { ImportMCPServerFromGithubURLOutput } from '@shinkai_network/shinkai-node-state/v2/mutations/importMCPServerFromGithubURL/types';
 import { useSetEnableMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/setEnableMcpServer/useSetEnableMcpServer';
 import { useGetMcpServers } from '@shinkai_network/shinkai-node-state/v2/queries/getMcpServers/useGetMcpServers';
 import {
@@ -13,6 +14,10 @@ import {
   DialogFooter,
   DialogTitle,
   DialogTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   Input,
   Switch,
   Tooltip,
@@ -25,12 +30,13 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { AddMcpServerModal } from '../components/mcp-servers/add-mcp-server-modal';
+import { AddMcpServerWithGithubModal } from '../components/mcp-servers/add-mcp-server-with-github-modal';
 import { useAuth } from '../store/auth';
 import { SimpleLayout } from './layout/simple-layout';
 
 function DeleteServerButton({
-  serverId,
-  serverName,
+  serverId: id,
+  serverName: name,
 }: {
   serverId: number;
   serverName: string;
@@ -59,7 +65,7 @@ function DeleteServerButton({
       await deleteMcpServer({
         nodeAddress: auth.node_address,
         token: auth.api_v2_key,
-        id: serverId,
+        id,
       });
     } catch (error) {
       console.error('Failed to delete MCP server:', error);
@@ -91,7 +97,7 @@ function DeleteServerButton({
       <DialogContent className="sm:max-w-[425px]">
         <DialogTitle className="pb-0">Delete Server</DialogTitle>
         <DialogDescription>
-          Are you sure you want to delete the server &quot;{serverName}&quot;?
+          Are you sure you want to delete the server &quot;{name}&quot;?
           This action cannot be undone.
         </DialogDescription>
 
@@ -127,7 +133,11 @@ export const McpServers = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const [isAddMcpServerModalOpen, setIsAddMcpServerModalOpen] = useState(false);
+  const [isAddMcpServerWithGithubModalOpen, setIsAddMcpServerWithGithubModalOpen] =
+    useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [initialDataForManualModal, setInitialDataForManualModal] = 
+    useState<ImportMCPServerFromGithubURLOutput | undefined>(undefined);
 
   const { data: mcpServers, isLoading } = useGetMcpServers({
     nodeAddress: auth?.node_address ?? '',
@@ -172,13 +182,24 @@ export const McpServers = () => {
   return (
     <SimpleLayout
       headerRightElement={
-        <Button
-          className="flex items-center gap-2"
-          onClick={() => setIsAddMcpServerModalOpen(true)}
-        >
-          <Plus className="h-4 w-4" />
-          Add Server
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Add Server
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setIsAddMcpServerModalOpen(true)}>
+              Manual Setup
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setIsAddMcpServerWithGithubModalOpen(true)}
+            >
+              Add from GitHub
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       }
       title="MCP Servers"
     >
@@ -280,22 +301,29 @@ export const McpServers = () => {
             <p className="text-official-gray-400 text-sm">
               No MCP servers found. Add a new server to get started.
             </p>
-            <Button
-              className="mt-4"
-              onClick={() => setIsAddMcpServerModalOpen(true)}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Server
-            </Button>
           </div>
         )}
       </div>
 
       <AddMcpServerModal
+        initialData={initialDataForManualModal}
         isOpen={isAddMcpServerModalOpen}
-        onClose={() => setIsAddMcpServerModalOpen(false)}
+        onClose={() => {
+          setIsAddMcpServerModalOpen(false);
+          setInitialDataForManualModal(undefined);
+        }}
         onSuccess={() => {
           setIsAddMcpServerModalOpen(false);
+          setInitialDataForManualModal(undefined);
+        }}
+      />
+      <AddMcpServerWithGithubModal
+        isOpen={isAddMcpServerWithGithubModalOpen}
+        onClose={() => setIsAddMcpServerWithGithubModalOpen(false)}
+        onSuccess={(data) => {
+          setIsAddMcpServerWithGithubModalOpen(false);
+          setInitialDataForManualModal(data);
+          setIsAddMcpServerModalOpen(true);
         }}
       />
     </SimpleLayout>

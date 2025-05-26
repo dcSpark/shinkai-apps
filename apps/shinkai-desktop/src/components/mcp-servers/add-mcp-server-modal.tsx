@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { McpServerType } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
 import { useAddMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/addMcpServer/useAddMcpServer';
+import type { ImportMCPServerFromGithubURLOutput } from '@shinkai_network/shinkai-node-state/v2/mutations/importMCPServerFromGithubURL/types';
 import {
   Button,
   Dialog,
@@ -24,7 +25,7 @@ import {
   SelectValue,
 } from '@shinkai_network/shinkai-ui';
 import { PlusCircle, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -63,12 +64,14 @@ interface AddMcpServerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  initialData?: ImportMCPServerFromGithubURLOutput;
 }
 
 export const AddMcpServerModal = ({
   isOpen,
   onClose,
   onSuccess,
+  initialData,
 }: AddMcpServerModalProps) => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
@@ -79,10 +82,53 @@ export const AddMcpServerModal = ({
     defaultValues: {
       name: '',
       type: McpServerType.Command,
-      command: '',
-      env: [{ key: '', value: '' }],
-    },
+    } as FormSchemaType,
   });
+
+  useEffect(() => {
+    if (initialData && isOpen) {
+      // We expect initialData from GitHub to be McpServerType.Command
+      if (initialData.type === McpServerType.Command) {
+        const { name, command, env: envRecord } = initialData;
+        let envArray: EnvVar[] = [];
+        if (envRecord && typeof envRecord === 'object') {
+          const transformedEnv = Object.entries(envRecord).map(([key, value]) => ({
+            key,
+            value: String(value),
+          }));
+          if (transformedEnv.length > 0) {
+            envArray = transformedEnv;
+          }
+        }
+        if (envArray.length === 0) {
+          envArray.push({ key: '', value: '' });
+        }
+        form.reset({
+          name: name || '',
+          type: McpServerType.Command,
+          command: command || '',
+          env: envArray,
+        });
+      } else {
+        // Fallback: If initialData is present but not Command type (unexpected for GitHub import)
+        // reset to a default Command form. This helps keep the form state consistent.
+        form.reset({
+          name: initialData.name || '', // Can still use name if available
+          type: McpServerType.Command,
+          command: '',
+          env: [{ key: '', value: '' }],
+        });
+      }
+    } else if (!isOpen) {
+      // Reset to a clean default state when modal is closed or opened without initialData
+      form.reset({
+        name: '',
+        type: McpServerType.Command,
+        command: '',
+        env: [{ key: '', value: '' }],
+      });
+    }
+  }, [initialData, isOpen, form]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
