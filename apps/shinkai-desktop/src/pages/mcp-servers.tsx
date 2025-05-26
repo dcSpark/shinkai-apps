@@ -31,103 +31,9 @@ import { toast } from 'sonner';
 
 import { AddMcpServerModal } from '../components/mcp-servers/add-mcp-server-modal';
 import { AddMcpServerWithGithubModal } from '../components/mcp-servers/add-mcp-server-with-github-modal';
+import { McpServerCard } from '../components/mcp-servers/mcp-server-card';
 import { useAuth } from '../store/auth';
 import { SimpleLayout } from './layout/simple-layout';
-
-function DeleteServerButton({
-  serverId: id,
-  serverName: name,
-}: {
-  serverId: number;
-  serverName: string;
-}) {
-  const { t } = useTranslation();
-  const auth = useAuth((state) => state.auth);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const { mutateAsync: deleteMcpServer, isPending: isDeleting } =
-    useDeleteMcpServer({
-      onSuccess: () => {
-        toast.success('MCP server deleted successfully');
-        setIsOpen(false);
-      },
-      onError: (error: Error) => {
-        toast.error('Failed to delete MCP server', {
-          description: error?.message,
-        });
-      },
-    });
-
-  const handleDelete = async () => {
-    if (!auth) return;
-
-    try {
-      await deleteMcpServer({
-        nodeAddress: auth.node_address,
-        token: auth.api_v2_key,
-        id,
-      });
-    } catch (error) {
-      console.error('Failed to delete MCP server:', error);
-    }
-  };
-
-  return (
-    <Dialog onOpenChange={setIsOpen} open={isOpen}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <DialogTrigger asChild>
-            <button
-              className={cn(
-                buttonVariants({
-                  variant: 'outline',
-                  size: 'sm',
-                }),
-                'min-h-auto flex h-auto w-10 justify-center rounded-md py-2',
-              )}
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
-          </DialogTrigger>
-        </TooltipTrigger>
-        <TooltipContent align="center" side="top">
-          Delete Server
-        </TooltipContent>
-      </Tooltip>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogTitle className="pb-0">Delete Server</DialogTitle>
-        <DialogDescription>
-          Are you sure you want to delete the server &quot;{name}&quot;?
-          This action cannot be undone.
-        </DialogDescription>
-
-        <DialogFooter>
-          <div className="flex gap-2 pt-4">
-            <DialogClose asChild className="flex-1">
-              <Button
-                className="min-w-[100px] flex-1"
-                size="sm"
-                type="button"
-                variant="ghost"
-              >
-                Cancel
-              </Button>
-            </DialogClose>
-            <Button
-              className="min-w-[100px] flex-1"
-              isLoading={isDeleting}
-              onClick={handleDelete}
-              size="sm"
-              variant="destructive"
-            >
-              Delete
-            </Button>
-          </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 export const McpServers = () => {
   const { t } = useTranslation();
@@ -258,42 +164,11 @@ export const McpServers = () => {
         ) : filteredServers && filteredServers.length > 0 ? (
           <div className="divide-official-gray-780 grid max-h-[calc(100vh-300px)] grid-cols-1 divide-y overflow-y-auto py-4">
             {filteredServers.map((server) => (
-              <div
-                className={cn(
-                  'grid grid-cols-[1fr_120px_40px_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
-                )}
-                key={server.id}
-              >
-                <div className="flex flex-col gap-2.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-white">
-                      {server.name}{' '}
-                    </span>
-                    <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
-                      {server.type}
-                    </Badge>
-                  </div>
-                  <div className="text-official-gray-400 text-xs">
-                    {server.type === 'Command' ? server.command : server.url}
-                  </div>
-                </div>
-                <div />
-                <div />
-                <div>
-                  <DeleteServerButton
-                    serverId={server.id}
-                    serverName={server.name}
-                  />
-                </div>
-                <div className="flex items-center justify-center">
-                  <Switch
-                    checked={server.is_enabled}
-                    onCheckedChange={() =>
-                      handleToggleEnabled(server.id, server.is_enabled)
-                    }
-                  />
-                </div>
-              </div>
+              <McpServerCard 
+                key={server.id} 
+                onToggleEnabled={handleToggleEnabled} 
+                server={server} 
+              />
             ))}
           </div>
         ) : (
