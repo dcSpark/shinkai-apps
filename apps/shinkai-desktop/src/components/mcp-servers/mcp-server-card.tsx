@@ -2,6 +2,7 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import type { McpServer } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
 import { useDeleteMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/deleteMcpServer/useDeleteMcpServer';
+import { useGetMCPServerTools } from '@shinkai_network/shinkai-node-state/v2/queries/getMCPServerTools/useGetMCPServerTool';
 import {
   Badge,
   Button,
@@ -17,6 +18,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
@@ -33,6 +35,11 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { data: mcpServerTools } = useGetMCPServerTools({
+    nodeAddress: auth?.node_address || '',
+    token: auth?.api_v2_key || '',
+    mcpServerId: server.id,
+  });
 
   const { mutateAsync: deleteMcpServer, isPending: isDeleting } =
     useDeleteMcpServer({
@@ -81,8 +88,16 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
           {server.type === 'Command' ? server.command : server.url}
         </div>
       </div>
-      <div /> {/* Placeholder for potential future content or spacing */}
-      <div /> {/* Placeholder for potential future content or spacing */}
+      <div />
+      <div className="flex items-center justify-center mr-4">
+        <Badge className="text-gray-80 bg-official-gray-750 px-3 text-xs font-normal">
+          <ToolsIcon className="mr-2 size-4 text-white" />
+          {mcpServerTools && mcpServerTools.length > 99
+            ? '99+'
+            : mcpServerTools?.length || '0'}{' '}
+          tools
+        </Badge>
+      </div>
       <div>
         <Dialog onOpenChange={setIsDeleteDialogOpen} open={isDeleteDialogOpen}>
           <Tooltip>
