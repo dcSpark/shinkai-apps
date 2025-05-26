@@ -14,7 +14,7 @@ import 'prism-react-editor/search.css';
 
 import { Editor, EditorProps, PrismEditor } from 'prism-react-editor';
 import {
-  completeSnippets,
+  completeFromList,
   fuzzyFilter,
   registerCompletions,
   useAutoComplete,
@@ -32,7 +32,7 @@ import {
 } from 'prism-react-editor/commands';
 import { useCursorPosition } from 'prism-react-editor/cursor';
 import { IndentGuides } from 'prism-react-editor/guides';
-import { useHightlightBracketPairs } from 'prism-react-editor/highlight-brackets';
+import { useHighlightBracketPairs } from 'prism-react-editor/highlight-brackets';
 import { useBracketMatcher } from 'prism-react-editor/match-brackets';
 import {
   useHighlightMatchingTags,
@@ -47,7 +47,7 @@ import React, { forwardRef } from 'react';
 
 const Extensions = ({ editor }: { editor: PrismEditor }) => {
   useBracketMatcher(editor);
-  useHightlightBracketPairs(editor);
+  useHighlightBracketPairs(editor);
   useTagMatcher(editor);
   useHighlightMatchingTags(editor);
   useDefaultCommands(editor);
@@ -69,7 +69,7 @@ registerCompletions(['javascript', 'js', 'jsx', 'tsx', 'typescript', 'ts'], {
     completeIdentifiers(),
     completeKeywords,
     jsDocCompletion,
-    completeSnippets(jsSnipets),
+    completeFromList(jsSnipets),
   ],
 });
 
