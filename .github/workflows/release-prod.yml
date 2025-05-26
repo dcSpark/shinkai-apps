@@ -85,14 +85,14 @@ jobs:
     strategy:
       matrix:
         include:
-          # - arch: x86_64-unknown-linux-gnu
-          #   os: ubuntu-22.04
-          #   build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_amd64.AppImage
-          #   build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz
-          #   build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz.sig
-          #   distributable_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage
-          #   distributable_update_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz
-          #   distributable_update_signature_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz.sig
+          - arch: x86_64-unknown-linux-gnu
+            os: ubuntu-22.04
+            build_output_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_amd64.AppImage
+            build_output_update_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz
+            build_output_update_signature_file_path: apps/shinkai-desktop/src-tauri/target/release/bundle/appimage/Shinkai Desktop_${{ needs.prebuild.outputs.version }}_amd64.AppImage.tar.gz.sig
+            distributable_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage
+            distributable_update_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz
+            distributable_update_signature_file_name: Shinkai-Desktop-${{ needs.prebuild.outputs.version }}.${{ github.run_number }}_x86_64-unknown-linux-gnu.AppImage.tar.gz.sig
 
           - arch: aarch64-apple-darwin
             os: macos-14
@@ -215,7 +215,7 @@ jobs:
       - name: Download side binaries
         env:
           ARCH: ${{ matrix.arch }}
-          SHINKAI_NODE_VERSION: v1.0.5
+          SHINKAI_NODE_VERSION: v1.0.7
           OLLAMA_VERSION: v0.6.8
         run: |
           npx ts-node ./ci-scripts/download-side-binaries.ts
