@@ -2,7 +2,7 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { GetToolsCategory } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDisableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/disableAllTools/useDisableAllTools';
 import { useEnableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/enableAllTools/useEnableAllTools';
-import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
+import { useGetDockerStatus } from '@shinkai_network/shinkai-node-state/v2/queries/getDockerStatus/useGetDockerStatus';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
 import {
@@ -14,7 +14,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Input,
   SearchInput,
   ToggleGroup,
   ToggleGroupItem,
@@ -24,7 +23,7 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Eye, EyeOff, MoreVerticalIcon, SearchIcon, XIcon } from 'lucide-react';
+import { Eye, EyeOff, MoreVerticalIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -259,7 +258,8 @@ export const ToolCollection = () => {
 
 export function DockerStatus() {
   const auth = useAuth((state) => state.auth);
-  const { data: health } = useGetHealth({
+
+  const { data, refetch } = useGetDockerStatus({
     nodeAddress: auth?.node_address ?? '',
   });
 
@@ -290,11 +290,16 @@ export function DockerStatus() {
     },
   };
 
-  const config = statusConfig[health?.docker_status ?? 'not-installed'];
+  const config = statusConfig[data?.docker_status ?? 'not-installed'];
 
   return (
     <Tooltip>
-      <TooltipTrigger className="flex items-center gap-2 px-1">
+      <TooltipTrigger
+        className="flex items-center gap-2 px-1"
+        onClick={() => {
+          refetch();
+        }}
+      >
         <span
           className={`h-2 w-2 rounded-full ${config.color} ${config.borderColor}`}
         />
