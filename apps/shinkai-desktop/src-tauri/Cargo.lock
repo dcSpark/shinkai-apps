@@ -180,18 +180,6 @@ dependencies = [
  "zbus 4.1.2",
 ]
 
-[[package]]
-name = "asio-sys"
-version = "0.2.2"
-source = "git+https://github.com/RustAudio/cpal.git#2ec761d30b35dbbacfecb41a2f5985781a7d52d1"
-dependencies = [
- "bindgen 0.69.4",
- "cc",
- "num-derive",
- "num-traits",
- "parse_cfg",
- "walkdir",
-]
 
 [[package]]
 name = "async-broadcast"
@@ -1040,29 +1028,6 @@ dependencies = [
  "bindgen 0.69.4",
 ]
 
-[[package]]
-name = "cpal"
-version = "0.15.3"
-source = "git+https://github.com/RustAudio/cpal.git#2ec761d30b35dbbacfecb41a2f5985781a7d52d1"
-dependencies = [
- "alsa",
- "asio-sys",
- "core-foundation-sys",
- "coreaudio-rs",
- "dasp_sample",
- "jni",
- "js-sys",
- "libc",
- "mach2",
- "ndk 0.8.0",
- "ndk-context",
- "num-traits",
- "oboe",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
- "windows 0.54.0",
-]
 
 [[package]]
 name = "cpufeatures"
@@ -2343,12 +2308,6 @@ checksum = "e3d1354bf6b7235cb4a0576c2619fd4ed18183f689b12b006a0ee7329eeff9a5"
 dependencies = [
  "windows-sys 0.52.0",
 ]
-
-[[package]]
-name = "hound"
-version = "3.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62adaabb884c94955b19907d60019f4e145d091c75345379e70d1ee696f7854f"
 
 [[package]]
 name = "html5ever"
@@ -5093,12 +5052,10 @@ dependencies = [
  "base64 0.22.1",
  "blake3",
  "chrono",
- "cpal",
  "ed25519-dalek",
  "fix-path-env",
  "futures-util",
  "hex",
- "hound",
  "kill_tree",
  "lazy_static",
  "listeners",
@@ -5129,9 +5086,7 @@ dependencies = [
  "time",
  "tokio",
  "uuid",
- "webrtc-vad",
  "wgpu",
- "whisper-rs",
 ]
 
 [[package]]
@@ -6815,14 +6770,6 @@ dependencies = [
  "rustls-pki-types",
 ]
 
-[[package]]
-name = "webrtc-vad"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5777afdabaa79362aeabe21662fe873d7c020b8199d6855fede5ade0167badfb"
-dependencies = [
- "cc",
-]
 
 [[package]]
 name = "webview2-com"
@@ -6981,26 +6928,6 @@ dependencies = [
  "rustix 0.38.37",
 ]
 
-[[package]]
-name = "whisper-rs"
-version = "0.14.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6b6dca51a101d32fa551d66d34fef899a39d5c8b68b6ea5adf4080b9ec37bb58"
-dependencies = [
- "whisper-rs-sys",
-]
-
-[[package]]
-name = "whisper-rs-sys"
-version = "0.12.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7c6b8157262ff9e4239549db921ed40ba758e03f565893d4e700380286c643b"
-dependencies = [
- "bindgen 0.71.1",
- "cfg-if",
- "cmake",
- "fs_extra",
-]
 
 [[package]]
 name = "widestring"

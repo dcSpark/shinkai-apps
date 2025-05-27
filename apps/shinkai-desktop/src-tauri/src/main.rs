@@ -37,7 +37,6 @@ use tauri::{Manager, RunEvent};
 use tokio::sync::{RwLock};
 use tray::create_tray;
 use windows::{recreate_window, Window};
-mod audio;
 mod commands;
 mod deep_links;
 mod galxe;
