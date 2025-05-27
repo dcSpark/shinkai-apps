@@ -13,7 +13,7 @@ edition = "2021"
 tauri-build = { version = "2.1.1", features = [] }
 
 [dependencies]
-tauri = { version = "2.4", features = [ "macos-private-api", "tray-icon", "image-png", "devtools"] }
+tauri = { version = "2.5.1", features = [ "macos-private-api", "tray-icon", "image-png", "devtools"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 whisper-rs = "0.14.2"
@@ -44,18 +44,18 @@ kill_tree = { version = "0.2", features = ["tokio"] }
 semver = "1.0"
 sha2 = "0.10"
 
-tauri-plugin-global-shortcut = "2.2"
-tauri-plugin-shell = "2.2"
-tauri-plugin-single-instance = { version = "2.2", features = ["deep-link"] }
-tauri-plugin-updater = "2.6"  
-tauri-plugin-dialog = "2.2"
-tauri-plugin-fs ="2.2"
-tauri-plugin-os = "2.2"
-tauri-plugin-process = "2.2"
-tauri-plugin-log = "2.3"
-tauri-plugin-deep-link = "2.2.0"
-tauri-plugin-opener = "2.2.6"
-tauri-plugin-notification = "2.2"
+tauri-plugin-global-shortcut = "2.6"
+tauri-plugin-shell = "2.6"
+tauri-plugin-single-instance = { version = "2.6", features = ["deep-link"] }
+tauri-plugin-updater = "2.6"
+tauri-plugin-dialog = "2.6"
+tauri-plugin-fs = "2.6"
+tauri-plugin-os = "2.6"
+tauri-plugin-process = "2.6"
+tauri-plugin-log = "2.6"
+tauri-plugin-deep-link = "2.6"
+tauri-plugin-opener = "2.6"
+tauri-plugin-notification = "2.6"
 
 fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs" }
 
