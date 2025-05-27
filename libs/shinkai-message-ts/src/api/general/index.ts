@@ -2,6 +2,7 @@ import { httpClient } from '../../http-client';
 import { urlJoin } from '../../utils/url-join';
 import {
   CheckHealthResponse,
+  DockerStatusResponse,
   GetNodeStorageLocationResponse,
   GetPreferencesResponse,
   GetShinkaiFreeModelQuotaResponse,
@@ -17,6 +18,14 @@ export const checkHealth = async (nodeAddress: string) => {
     { responseType: 'json' },
   );
   return response.data as CheckHealthResponse;
+};
+
+export const getDockerStatus = async (nodeAddress: string) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/docker_status'),
+    { responseType: 'json' },
+  );
+  return response.data as DockerStatusResponse;
 };
 
 export const getNodeStorageLocation = async (
