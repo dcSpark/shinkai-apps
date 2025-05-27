@@ -173,17 +173,18 @@ impl ProcessHandler {
         let process_mutex = self.process.clone();
         let process_name = self.process_name.clone();
         tauri::async_runtime::spawn(async move {
-            while std::time::Instant::now().duration_since(start_time)
-                < std::time::Duration::from_millis(Self::MIN_MS_ALIVE)
-            {
+            let mut ready = false;
+            loop {
+                let elapsed = std::time::Instant::now().duration_since(start_time);
                 let process = process_mutex.read().await;
                 let is_ready = is_ready_mutex_clone.lock().await;
+                ready = ready || *is_ready;
                 log::debug!(
-                    "[{}] alive-check: process.is_none={}, is_ready={}, elapsed={:?}",
+                    "[{}] alive-check: process.is_none={}, is_ready={}, elapsed:{:?}",
                     process_name,
                     process.is_none(),
-                    *is_ready,
-                    std::time::Instant::now().duration_since(start_time)
+                    ready,
+                    elapsed
                 );
 
                 if process.is_none() {
@@ -191,14 +192,25 @@ impl ProcessHandler {
                         "Process ended before min time alive (this may be normal if it completed its task)"
                     );
                     log::warn!("[{}] {}", process_name, message);
-                    return Err(message.to_string());
-                } else if *is_ready {
-                    log::info!(
-                        "[{}] process passed minimum alive time check after {:?}",
-                        process_name,
-                        std::time::Instant::now().duration_since(start_time)
-                    );
-                    break;
+                    return Err(message);
+                }
+
+                if elapsed >= std::time::Duration::from_millis(Self::MIN_MS_ALIVE) {
+                    if ready {
+                        log::info!(
+                            "[{}] process passed minimum alive time check after {:?}",
+                            process_name,
+                            elapsed
+                        );
+                        break;
+                    } else {
+                        let message = format!(
+                            "Process did not become ready within {:?}",
+                            elapsed
+                        );
+                        log::warn!("[{}] {}", process_name, message);
+                        return Err(message);
+                    }
                 }
                 drop(process);
                 drop(is_ready);
