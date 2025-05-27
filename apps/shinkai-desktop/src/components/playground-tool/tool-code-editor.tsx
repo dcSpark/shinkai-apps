@@ -14,7 +14,7 @@ import 'prism-react-editor/search.css';
 
 import { Editor, EditorProps, PrismEditor } from 'prism-react-editor';
 import {
-  completeSnippets,
+  completeFromList,
   fuzzyFilter,
   registerCompletions,
   useAutoComplete,
@@ -69,7 +69,7 @@ registerCompletions(['javascript', 'js', 'jsx', 'tsx', 'typescript', 'ts'], {
     completeIdentifiers(),
     completeKeywords,
     jsDocCompletion,
-    completeSnippets(jsSnipets),
+    completeFromList(jsSnipets),
   ],
 });
 
