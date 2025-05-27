@@ -13,7 +13,7 @@ const TooltipPortal = TooltipPrimitive.Portal;
 const TooltipArrow = TooltipPrimitive.TooltipArrow;
 
 const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
+  React.ComponentRef<typeof TooltipPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content> & {
     showArrow?: boolean;
   }
