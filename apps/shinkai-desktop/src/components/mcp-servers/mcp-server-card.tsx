@@ -1,6 +1,7 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import type { McpServer } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
+import type { McpServerTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDeleteMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/deleteMcpServer/useDeleteMcpServer';
 import { useGetMCPServerTools } from '@shinkai_network/shinkai-node-state/v2/queries/getMCPServerTools/useGetMCPServerTool';
 import {
@@ -11,6 +12,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
   Switch,
@@ -22,6 +24,7 @@ import { ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth';
@@ -35,6 +38,7 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isToolsDialogOpen, setIsToolsDialogOpen] = useState(false);
   const { data: mcpServerTools } = useGetMCPServerTools({
     nodeAddress: auth?.node_address || '',
     token: auth?.api_v2_key || '',
@@ -90,13 +94,72 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
       </div>
       <div />
       <div className="flex items-center justify-center mr-4">
-        <Badge className="text-gray-80 bg-official-gray-750 px-3 text-xs font-normal">
-          <ToolsIcon className="mr-2 size-4 text-white" />
-          {mcpServerTools && mcpServerTools.length > 99
-            ? '99+'
-            : mcpServerTools?.length || '0'}{' '}
-          tools
-        </Badge>
+        <Dialog onOpenChange={setIsToolsDialogOpen} open={isToolsDialogOpen}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DialogTrigger asChild>
+                <Badge
+                  className="text-gray-80 bg-official-gray-750 hover:bg-official-gray-700 cursor-pointer px-3 text-xs font-normal transition-colors"
+                  onClick={() => setIsToolsDialogOpen(true)}
+                >
+                  <ToolsIcon className="mr-2 size-4 text-white" />
+                  {mcpServerTools && mcpServerTools.length > 99
+                    ? '99+'
+                    : mcpServerTools?.length || '0'}{' '}
+                  tools
+                </Badge>
+              </DialogTrigger>
+            </TooltipTrigger>
+            <TooltipContent align="center" side="top">
+              View Available Tools
+            </TooltipContent>
+          </Tooltip>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Tools for {server.name}</DialogTitle>
+              <DialogDescription>
+                List of tools available from this MCP server.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[400px] overflow-y-auto py-4">
+              {mcpServerTools && mcpServerTools.length > 0 ? (
+                <ul className="space-y-2">
+                  {mcpServerTools.map((tool: McpServerTool) => (
+                    <li className="text-sm" key={tool.id}>
+                      {tool.tool_router_key ? (
+                        <Link
+                          className="text-official-green-400 hover:text-official-green-300 hover:underline"
+                          onClick={() => setIsToolsDialogOpen(false)}
+                          to={`/tools/${tool.tool_router_key}`}
+                        >
+                          {tool.name}
+                        </Link>
+                      ) : (
+                        <span className="text-official-gray-100">{tool.name}</span>
+                      )}
+                      {tool.description && (
+                        <p className="text-xs text-official-gray-500">
+                          {tool.description}
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-gray-400">
+                  No tools available for this server.
+                </p>
+              )}
+            </div>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button type="button" variant="outline">
+                  Close
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
       <div>
         <Dialog onOpenChange={setIsDeleteDialogOpen} open={isDeleteDialogOpen}>
