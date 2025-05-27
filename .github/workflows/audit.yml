@@ -26,6 +26,10 @@ jobs:
           cache: "npm"
           cache-dependency-path: package-lock.json
 
+      - name: Ensure lockfile
+        run: |
+          npm i --package-lock-only
+
       - name: Audit
         run: |
           npm audit --omit=dev
