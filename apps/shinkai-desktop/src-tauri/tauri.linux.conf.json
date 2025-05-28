@@ -2,7 +2,7 @@
   "bundle": {
     "linux": {
       "appimage": {
-        "bundleMediaFramework": false
+        "bundleMediaFramework": true
       }
     }
   }
