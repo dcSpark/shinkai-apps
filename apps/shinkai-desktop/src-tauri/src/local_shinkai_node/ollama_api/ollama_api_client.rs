@@ -1,12 +1,15 @@
 use futures_util::{Stream, StreamExt};
 use log::{error, info};
 use reqwest;
-use sha2::{Sha256, Digest};
-use std::collections::HashMap;
 use reqwest::header::HeaderValue;
-use semver::{ Version, VersionReq };
+use semver::{Version, VersionReq};
+use sha2::{Digest, Sha256};
+use std::collections::HashMap;
 
-use super::ollama_api_types::{OllamaApiPullRequest, OllamaApiPullResponse, OllamaApiTagsResponse, OllamaApiCreateRequest, OllamaApiCreateResponse, OllamaApiBlobResponse, OllamaApiVersionResponse};
+use super::ollama_api_types::{
+    OllamaApiBlobResponse, OllamaApiCreateRequest, OllamaApiCreateResponse, OllamaApiPullRequest,
+    OllamaApiPullResponse, OllamaApiTagsResponse, OllamaApiVersionResponse,
+};
 
 pub struct OllamaApiClient {
     base_url: String,
@@ -33,9 +36,11 @@ impl OllamaApiClient {
         let response = client
             .get(&url)
             .send()
-            .await?
+            .await
+            .inspect_err(|e| error!("failed to get tags from api: {}", e))?
             .json::<OllamaApiTagsResponse>()
-            .await?;
+            .await
+            .inspect_err(|e| error!("failed to parse tags from api: {}", e))?;
         Ok(response)
     }
 
@@ -145,10 +150,10 @@ impl OllamaApiClient {
         let mut hasher = Sha256::new();
         hasher.update(data);
         let digest = format!("sha256:{:x}", hasher.finalize());
-        
+
         let url = format!("{}/api/blobs/{}", self.base_url, digest);
         let client = reqwest::Client::new();
-        
+
         let response = client
             .post(&url)
             .body(data.to_vec())
@@ -161,22 +166,24 @@ impl OllamaApiClient {
         Ok(digest)
     }
 
-    pub async fn create_model_from_gguf(&self, model_name: &str, gguf_data: &[u8]) -> Result<(), String> {
+    pub async fn create_model_from_gguf(
+        &self,
+        model_name: &str,
+        gguf_data: &[u8],
+    ) -> Result<(), String> {
         info!("creating model {} from GGUF data", model_name);
         // Check if ollama version is 0.5.7 or higher
         let version = self.get_ollama_version().await?;
-        let parsed_version = Version::parse(&version)
-            .map_err(|e| {
-                let message = format!("failed to parse Ollama version: {}", e);
-                error!("{}", message);
-                message
-            })?;
-        let requirement = VersionReq::parse(">=0.5.7")
-            .map_err(|e| {
-                let message = format!("failed to parse version requirement: {}", e);
-                error!("{}", message);
-                message
-            })?;
+        let parsed_version = Version::parse(&version).map_err(|e| {
+            let message = format!("failed to parse Ollama version: {}", e);
+            error!("{}", message);
+            message
+        })?;
+        let requirement = VersionReq::parse(">=0.5.7").map_err(|e| {
+            let message = format!("failed to parse version requirement: {}", e);
+            error!("{}", message);
+            message
+        })?;
 
         if !requirement.matches(&parsed_version) {
             let message = format!("ollama version must be 0.5.7 or higher (found {})", version);
@@ -189,7 +196,7 @@ impl OllamaApiClient {
             error!("{}", message);
             return Err(message);
         }
-        
+
         let magic = &gguf_data[0..4];
         if magic != b"GGUF" {
             let message = "Invalid GGUF magic number";
@@ -201,7 +208,7 @@ impl OllamaApiClient {
         // Check if blob exists on server before creating model
         let check_url = format!("{}/api/blobs/{}", self.base_url, digest);
         let client = reqwest::Client::new();
-        
+
         let head_response = client
             .head(&check_url)
             .send()
@@ -217,11 +224,11 @@ impl OllamaApiClient {
         // Create a map for the files parameter
         let mut files = HashMap::new();
         files.insert("arctic.gguf".to_string(), digest);
-        
+
         // Create the model using the uploaded blob
         let url = format!("{}/api/create", self.base_url);
         let client = reqwest::Client::new();
-        
+
         let create_request = OllamaApiCreateRequest {
             model: model_name.to_string(),
             files,
@@ -233,7 +240,7 @@ impl OllamaApiClient {
             .send()
             .await
             .map_err(|e| e.to_string())?;
-        
+
         if !response.status().is_success() {
             let status = response.status();
             let text = response.text().await.unwrap_or_default();
@@ -249,26 +256,26 @@ impl OllamaApiClient {
         })?;
 
         let mut final_status = String::new();
-        
+
         // Split the response text by newlines and parse each line as a JSON object
         for line in response_text.lines() {
             if line.trim().is_empty() {
                 continue;
             }
-            
+
             if let Ok(json_value) = serde_json::from_str::<serde_json::Value>(line) {
                 if let Some(status) = json_value.get("status").and_then(|s| s.as_str()) {
                     final_status = status.to_string();
                 }
             }
         }
-        
+
         if final_status != "success" {
             let message = format!("failed to create model: {}", final_status);
             error!("{}", message);
             return Err(message);
         }
-        
+
         Ok(())
     }
 }
