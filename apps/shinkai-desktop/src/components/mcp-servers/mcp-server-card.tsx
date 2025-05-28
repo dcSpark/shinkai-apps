@@ -50,11 +50,11 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
   const { mutateAsync: deleteMcpServer, isPending: isDeleting } =
     useDeleteMcpServer({
       onSuccess: () => {
-        toast.success('MCP server deleted successfully');
+        toast.success(t('mcpServers.deleteSuccess'));
         setIsDeleteDialogOpen(false);
       },
       onError: (error: Error) => {
-        toast.error('Failed to delete MCP server', {
+        toast.error(t('mcpServers.deleteFailed'), {
           description: error?.message,
         });
       },
@@ -70,7 +70,9 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
         id: server.id,
       });
     } catch (error) {
-      console.error('Failed to delete MCP server:', error);
+      toast.error(t('mcpServers.deleteFailed'), {
+        description: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   };
 
@@ -108,19 +110,19 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
                     {mcpServerTools && mcpServerTools.length > 99
                       ? '99+'
                       : mcpServerTools?.length || '0'}{' '}
-                    tools
+                    {t('mcpServers.tools')}
                   </Badge>
                 </DialogTrigger>
               </TooltipTrigger>
               <TooltipContent align="center" side="top">
-                View Available Tools
+                {t('mcpServers.viewAvailableTools')}
               </TooltipContent>
             </Tooltip>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Tools for {server.name}</DialogTitle>
+                <DialogTitle>{t('mcpServers.toolsFor', { name: server.name })}</DialogTitle>
                 <DialogDescription>
-                  List of tools available from this MCP server.
+                  {t('mcpServers.listOfToolsAvailableFromThisMcpServer')}
                 </DialogDescription>
               </DialogHeader>
               <div className="max-h-[400px] overflow-y-auto py-4">
@@ -149,7 +151,7 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
                   </ul>
                 ) : (
                   <p className="text-sm text-gray-400">
-                    No tools available for this server.
+                    {t('mcpServers.noToolsAvailableForThisServer')}
                   </p>
                 )}
               </div>
@@ -180,7 +182,7 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
               </button>
             </TooltipTrigger>
             <TooltipContent align="center" side="top">
-              Configure Server
+              {t('mcpServers.configure')}
             </TooltipContent>
           </Tooltip>
         </div>
@@ -203,14 +205,13 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
                 </DialogTrigger>
               </TooltipTrigger>
               <TooltipContent align="center" side="top">
-                Delete Server
+                {t('mcpServers.delete')}
               </TooltipContent>
             </Tooltip>
             <DialogContent className="sm:max-w-[425px]">
-              <DialogTitle className="pb-0">Delete Server</DialogTitle>
+              <DialogTitle className="pb-0">{t('mcpServers.delete')}</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete the server &quot;{server.name}&quot;?
-                This action cannot be undone.
+                {t('mcpServers.deleteDescription', { name: server.name })}
               </DialogDescription>
               <DialogFooter>
                 <div className="flex gap-2 pt-4">
@@ -221,7 +222,7 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
                       type="button"
                       variant="ghost"
                     >
-                      Cancel
+                      {t('common.cancel')}
                     </Button>
                   </DialogClose>
                   <Button
@@ -231,7 +232,7 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
                     size="sm"
                     variant="destructive"
                   >
-                    Delete
+                    {t('common.delete')}
                   </Button>
                 </div>
               </DialogFooter>

@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { PlusCircle, Trash2 } from 'lucide-react';
+import { AlertTriangle, PlusCircle, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -184,13 +184,13 @@ export const AddMcpServerModal = ({
 
   const { mutateAsync: addMcpServer } = useAddMcpServer({
     onSuccess: () => {
-      toast.success('MCP Server added successfully');
+      toast.success(t('mcpServers.addSuccess'));
       onSuccess();
       setIsSubmitting(false);
       form.reset();
     },
     onError: (error: Error) => {
-      toast.error('Failed to add MCP Server', {
+      toast.error(t('mcpServers.addFailed'), {
         description: error?.message,
       });
       setIsSubmitting(false);
@@ -199,13 +199,13 @@ export const AddMcpServerModal = ({
 
   const { mutateAsync: updateMcpServer } = useUpdateMcpServer({
     onSuccess: () => {
-      toast.success('MCP Server updated successfully');
+      toast.success(t('mcpServers.updateSuccess'));
       onSuccess();
       setIsSubmitting(false);
       form.reset();
     },
     onError: (error: Error) => {
-      toast.error('Failed to update MCP Server', {
+      toast.error(t('mcpServers.updateFailed'), {
         description: error?.message,
       });
       setIsSubmitting(false);
@@ -279,16 +279,24 @@ export const AddMcpServerModal = ({
 
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open={isOpen}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            {mode === 'Create' ? 'Add MCP Server' : 'Update MCP Server'}
+            {mode === 'Create' ? t('mcpServers.add') : t('mcpServers.update')}
           </DialogTitle>
           <DialogDescription>
             {mode === 'Create'
-              ? 'Configure a new MCP server to connect with your Shinkai Node'
-              : `Updating configuration for MCP server: ${initialData?.name}`}
+              ? t('mcpServers.addDescription')
+              : t('mcpServers.updateDescription', { name: initialData?.name })}
           </DialogDescription>
+          {mode === 'Update' && (
+            <div className="mt-2 flex items-start rounded-md border border-yellow-500/50 bg-yellow-500/10 p-3 text-sm text-yellow-200">
+              <AlertTriangle className="mr-2 h-5 w-5 flex-shrink-0 text-yellow-400" />
+              <div>
+                {t('mcpServers.updateWarningDescription')}
+              </div>
+            </div>
+          )}
         </DialogHeader>
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
@@ -297,9 +305,9 @@ export const AddMcpServerModal = ({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t('mcpServers.name')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="My MCP Server" {...field} />
+                    <Input placeholder={t('mcpServers.namePlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -311,7 +319,7 @@ export const AddMcpServerModal = ({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Type</FormLabel>
+                  <FormLabel>{t('mcpServers.type')}</FormLabel>
                   <Select
                     defaultValue={field.value}
                     onValueChange={(value) => {
@@ -336,7 +344,7 @@ export const AddMcpServerModal = ({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select server type" />
+                        <SelectValue placeholder={t('mcpServers.selectServerType')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -370,7 +378,7 @@ export const AddMcpServerModal = ({
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="text-sm font-medium">
-                      Environment Variables
+                      {t('mcpServers.environmentVariables')}
                     </div>
                     <Button
                       className="h-8 gap-1"
@@ -380,13 +388,13 @@ export const AddMcpServerModal = ({
                       variant="outline"
                     >
                       <PlusCircle className="h-3.5 w-3.5" />
-                      <span>Add</span>
+                      <span>{t('mcpServers.addVariable')}</span>
                     </Button>
                   </div>
 
                   {fields.length === 0 && (
                     <p className="text-muted-foreground text-sm">
-                      No environment variables added.
+                      {t('mcpServers.noEnvironmentVariablesAdded')}
                     </p>
                   )}
 
@@ -470,7 +478,7 @@ export const AddMcpServerModal = ({
                 type="button"
                 variant="outline"
               >
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button
                 disabled={isSubmitting || (form.formState.isSubmitted && !form.formState.isValid)}
@@ -478,8 +486,8 @@ export const AddMcpServerModal = ({
                 type="submit"
               >
                 {isSubmitting
-                  ? mode === 'Create' ? 'Adding...' : 'Updating...'
-                  : mode === 'Create' ? 'Add' : 'Update'}
+                  ? mode === 'Create' ? t('common.adding') : t('common.updating')
+                  : mode === 'Create' ? t('mcpServers.add') : t('mcpServers.update')}
               </Button>
             </DialogFooter>
           </form>

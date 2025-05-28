@@ -37,10 +37,10 @@ export const McpServers = () => {
 
   const { mutateAsync: setEnableMcpServer } = useSetEnableMcpServer({
     onSuccess: () => {
-      toast.success('MCP server status updated successfully');
+      toast.success(t('mcpServers.statusUpdated'));
     },
     onError: (error: Error) => {
-      toast.error('Failed to update MCP server status', {
+      toast.error(t('mcpServers.statusUpdateFailed'), {
         description: error?.message,
       });
     },
@@ -60,7 +60,9 @@ export const McpServers = () => {
         isEnabled: !currentEnabled,
       });
     } catch (error) {
-      console.error('Failed to update MCP server status:', error);
+      toast.error(t('mcpServers.statusUpdateFailed'), {
+        description: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   };
 
@@ -77,12 +79,12 @@ export const McpServers = () => {
           <DropdownMenuTrigger asChild>
             <Button className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
-              Add Server
+              {t('mcpServers.add')}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => setIsAddMcpServerModalOpen(true)}>
-              Manual Setup
+              {t('mcpServers.manualSetup')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => setIsAddMcpServerWithGithubModalOpen(true)}
@@ -92,16 +94,16 @@ export const McpServers = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       }
-      title="MCP Servers"
+      title={t('mcpServers.title')}
     >
       <div className="mx-auto flex max-w-[956px] flex-col gap-8">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <h2 className="text-lg font-semibold tracking-tight">
-              MCP Servers
+              {t('mcpServers.title')}
             </h2>
             <p className="text-muted-foreground text-sm">
-              List of MCP servers connected to your Shinkai Node
+              {t('mcpServers.listDescription')}
             </p>
           </div>
           <div className="shadow-official-gray-950 focus-within:shadow-official-gray-700 relative flex h-10 items-center rounded-lg shadow-[0_0_0_1px_currentColor] transition-shadow">
@@ -110,7 +112,7 @@ export const McpServers = () => {
               onChange={(e) => {
                 setSearchQuery(e.target.value);
               }}
-              placeholder="Search..."
+              placeholder={t('common.searchPlaceholder')}
               spellCheck={false}
               value={searchQuery}
             />
@@ -159,7 +161,7 @@ export const McpServers = () => {
         ) : (
           <div className="flex flex-col items-center justify-center gap-2 py-8">
             <p className="text-official-gray-400 text-sm">
-              No MCP servers found. Add a new server to get started.
+              {t('mcpServers.noServersFound')}
             </p>
           </div>
         )}

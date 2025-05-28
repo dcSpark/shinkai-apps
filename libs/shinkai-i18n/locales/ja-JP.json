@@ -1,6 +1,4 @@
 {
-  "": {
-  },
   "agents": {
     "systemInstructions": "システムの指示"
   },
@@ -90,6 +88,7 @@
   },
   "common": {
     "about": "について",
+    "adding": "追加中...",
     "alreadyHaveNode": "すでにノードをお持ちですか？",
     "back": "戻る",
     "cancel": "キャンセル",
@@ -153,6 +152,7 @@
     "tryItOut": "試してみる",
     "unselectAll": "すべて選択解除",
     "update": "更新",
+    "updating": "更新中...",
     "upload": "アップロード",
     "uploadAFileDescription": "画像、PDF、CSV、TXT、XLSXなどの形式をサポートしています",
     "uploadFile": "ファイルをアップロード",
@@ -336,6 +336,42 @@
     "customDescriptionPrimary": "外部クライアントを接続する推奨方法は、サーバー送信イベント（SSE）を使用することです。",
     "customDescriptionSecondary": "クライアントがSSEをサポートしていない場合は、次のコマンドを使用してShinkai MCPサーバーを別のプロセスとして実行できます：",
     "customTitle": "カスタム外部クライアント設定"
+  },
+  "mcpServers": {
+    "add": "MCPサーバーを追加",
+    "addDescription": "Shinkaiノードに接続する新しいMCPサーバーを設定します",
+    "addFailed": "MCPサーバーの追加に失敗しました",
+    "addFromGitHub": "GitHubから追加",
+    "addSuccess": "MCPサーバーが正常に追加されました",
+    "addVariable": "追加",
+    "configure": "サーバーを設定",
+    "delete": "サーバーを削除",
+    "deleteDescription": "本当にサーバー「{{name}}」を削除してもよろしいですか？この操作は元に戻せません。",
+    "deleteFailed": "MCPサーバーの削除に失敗しました",
+    "deleteSuccess": "MCPサーバーが正常に削除されました",
+    "environmentVariables": "環境変数",
+    "label": "MCPサーバー",
+    "listDescription": "あなたのShinkaiノードに接続されているMCPサーバーのリスト",
+    "listOfToolsAvailableFromThisMcpServer": "このMCPサーバーから利用可能なツールのリスト。",
+    "manualSetup": "手動設定",
+    "name": "名前",
+    "namePlaceholder": "私のMCPサーバー",
+    "noEnvironmentVariablesAdded": "環境変数は追加されていません。",
+    "noServersFound": "MCPサーバーが見つかりません。新しいサーバーを追加して始めましょう。",
+    "noToolsAvailableForThisServer": "このサーバーに利用可能なツールはありません。",
+    "selectServerType": "サーバータイプを選択",
+    "statusUpdateFailed": "ステータスの更新に失敗しました",
+    "statusUpdated": "ステータスが正常に更新されました",
+    "title": "MCPサーバー",
+    "tools": "ツール",
+    "toolsFor": "{{name}}のツール",
+    "type": "タイプ",
+    "update": "MCPサーバーを更新",
+    "updateDescription": "MCPサーバーの設定を更新: {{name}}",
+    "updateFailed": "MCPサーバーの更新に失敗しました",
+    "updateSuccess": "MCPサーバーが正常に更新されました",
+    "updateWarningDescription": "このサーバーを更新すると、関連するツールがリセットされます。",
+    "viewAvailableTools": "利用可能なツールを表示"
   },
   "notifications": {
     "messageReceived": {
