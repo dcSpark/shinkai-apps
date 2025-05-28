@@ -24,7 +24,7 @@ import { useInView } from 'react-intersection-observer';
 import { Message } from './message';
 
 function useScrollToBottom(
-  scrollRef: RefObject<HTMLDivElement>,
+  scrollRef: RefObject<HTMLDivElement | null>,
   detach = false,
 ) {
   const [autoScroll, setAutoScroll] = useState(true);
