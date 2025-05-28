@@ -48,7 +48,7 @@ const CommandInput = ({
       {...props}
     />
   </div>
-));
+);
 
 CommandInput.displayName = CommandPrimitive.Input.displayName;
 
@@ -68,10 +68,7 @@ const CommandEmpty = ({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Empty>) => (
-  <CommandPrimitive.Empty
-    className="py-6 text-center text-sm"
-    {...props}
-  />
+  <CommandPrimitive.Empty className="py-6 text-center text-sm" {...props} />
 );
 
 CommandEmpty.displayName = CommandPrimitive.Empty.displayName;

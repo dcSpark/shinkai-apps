@@ -14,7 +14,7 @@ import React, {
   useContext,
   useMemo,
 } from 'react';
-import ReactMarkdown, { type Options } from 'react-markdown';
+import ReactMarkdown, { Components, type Options } from 'react-markdown';
 import {
   PrismAsyncLight,
   SyntaxHighlighterProps as SHP,
@@ -58,8 +58,8 @@ const makeMakeSyntaxHighlighter =
     }) => {
       return (
         <SyntaxHighlighter
-          CodeTag={Code}
-          PreTag={Pre}
+          CodeTag={Code as any}
+          PreTag={Pre as any}
           {...config}
           language={language}
         >
@@ -265,9 +265,14 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   SyntaxHighlighter: SyntaxHighlighterBase,
 };
 
-export type PreComponent = NonNullable<
-  NonNullable<Options['components']>['pre']
->;
+type ComponentProps = {
+  node?: any;
+  className?: string;
+  [key: string]: any;
+};
+
+export type PreComponent = ComponentType<ComponentPropsWithoutRef<'pre'>>;
+export type CodeComponent = ComponentType<ComponentPropsWithoutRef<'code'>>;
 
 export const PreContext = createContext<Omit<
   ComponentPropsWithoutRef<PreComponent>,
@@ -282,16 +287,16 @@ export const PreOverride: PreComponent = ({ children, ...rest }) => {
   return <PreContext.Provider value={rest}>{children}</PreContext.Provider>;
 };
 
-export type CodeComponent = NonNullable<
-  NonNullable<Options['components']>['code']
->;
+export const DefaultPre: PreComponent = ({
+  className,
+  ...rest
+}: ComponentPropsWithoutRef<'pre'>) => <pre className={className} {...rest} />;
 
-export const DefaultPre: PreComponent = ({ node, ...rest }) => (
-  <pre {...rest} />
-);
-
-export const DefaultCode: CodeComponent = ({ node, ...rest }) => (
-  <code {...rest} />
+export const DefaultCode: CodeComponent = ({
+  className,
+  ...rest
+}: ComponentPropsWithoutRef<'code'>) => (
+  <code className={className} {...rest} />
 );
 
 export const DefaultCodeBlockContent: ComponentType<{
@@ -314,7 +319,7 @@ export type MarkdownTextPrimitiveProps = Omit<
 > & {
   containerProps?: Omit<PrimitiveDivProps, 'children' | 'asChild'>;
   containerComponent?: ElementType;
-  components?: NonNullable<Options['components']> & {
+  components?: Partial<Components> & {
     SyntaxHighlighter?: ComponentType<SyntaxHighlighterProps>;
     CodeHeader?: ComponentType<CodeHeaderProps>;
     by_language?: Record<
@@ -528,7 +533,7 @@ export const MarkdownTextBase = ({
     ...Object.fromEntries(
       Object.entries(userComponents ?? {}).filter(([_, v]) => v !== undefined),
     ),
-  };
+  } as MarkdownTextPrimitiveProps['components'];
 
   return (
     <MarkdownTextPrimitive
@@ -536,7 +541,6 @@ export const MarkdownTextBase = ({
       remarkPlugins={[remarkGfm]}
       {...rest}
       className={cn(isRunning && 'md-running', className)}
-      // rehypePlugins={[rehypeRaw]} // enable when needed to render raw html
     />
   );
 };
