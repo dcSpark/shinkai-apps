@@ -6,7 +6,7 @@ import { GetMcpServersInput } from './types';
 
 export const useGetMcpServers = (input: GetMcpServersInput) => {
   const response = useQuery({
-    queryKey: [FunctionKeyV2.GET_MCP_SERVERS, input],
+    queryKey: [FunctionKeyV2.GET_MCP_SERVERS],
     queryFn: () => getMcpServers(input),
   });
   return response;

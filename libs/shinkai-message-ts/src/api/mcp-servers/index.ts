@@ -1,6 +1,15 @@
 import { httpClient } from '../../http-client';
 import { urlJoin } from '../../utils/url-join';
-import { AddMcpServerRequest, DeleteMcpServerRequest, GetMcpServersResponse, GetMcpServerToolsRequest, GetMcpServerToolsResponse, ImportMcpServerFromGithubUrlRequest, McpServer } from './types';
+import {
+  AddMcpServerRequest,
+  DeleteMcpServerRequest,
+  GetMcpServersResponse,
+  GetMcpServerToolsRequest,
+  GetMcpServerToolsResponse,
+  ImportMcpServerFromGithubUrlRequest,
+  McpServer,
+  UpdateMcpServerRequest,
+} from './types';
 
 export const getMcpServers = async (
   nodeAddress: string,
@@ -38,6 +47,22 @@ export const addMcpServer = async (
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/add_mcp_server'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as McpServer;
+};
+
+export const updateMcpServer = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: UpdateMcpServerRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/update_mcp_server'),
     payload,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },

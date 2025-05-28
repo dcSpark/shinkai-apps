@@ -46,6 +46,22 @@ export type AddMcpServerRequest =
       url: string;
     };
 
+export type UpdateMcpServerRequest = {
+  id: number;
+  name?: string;
+  is_enabled?: boolean;
+  env?: Record<string, string>;
+} & (
+    {
+      type: McpServerType.Command;
+      command: string;
+    }
+  | {
+      type: McpServerType.Sse;
+      url: string;
+    }
+);
+
 export type DeleteMcpServerRequest = {
   id: number;
 };

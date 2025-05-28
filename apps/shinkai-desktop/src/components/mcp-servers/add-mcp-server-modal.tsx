@@ -1,8 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { McpServerType } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
+import { type McpServer,McpServerType } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
+import type { AddMcpServerInput } from '@shinkai_network/shinkai-node-state/v2/mutations/addMcpServer/types';
 import { useAddMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/addMcpServer/useAddMcpServer';
 import type { ImportMCPServerFromGithubURLOutput } from '@shinkai_network/shinkai-node-state/v2/mutations/importMCPServerFromGithubURL/types';
+import { UpdateMcpServerInput } from '@shinkai_network/shinkai-node-state/v2/mutations/updateMcpServer/types';
+import { useUpdateMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/updateMcpServer/useUpdateMcpServer';
 import {
   Button,
   Dialog,
@@ -64,7 +67,8 @@ interface AddMcpServerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  initialData?: ImportMCPServerFromGithubURLOutput;
+  initialData?: ImportMCPServerFromGithubURLOutput | McpServer;
+  mode: 'Create' | 'Update';
 }
 
 export const AddMcpServerModal = ({
@@ -72,6 +76,7 @@ export const AddMcpServerModal = ({
   onClose,
   onSuccess,
   initialData,
+  mode,
 }: AddMcpServerModalProps) => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
@@ -141,6 +146,7 @@ export const AddMcpServerModal = ({
     onSuccess: () => {
       toast.success('MCP Server added successfully');
       onSuccess();
+      setIsSubmitting(false);
       form.reset();
     },
     onError: (error: Error) => {
@@ -150,47 +156,77 @@ export const AddMcpServerModal = ({
     },
   });
 
+  const { mutateAsync: updateMcpServer } = useUpdateMcpServer({
+    onSuccess: () => {
+      toast.success('MCP Server updated successfully');
+      onSuccess();
+      setIsSubmitting(false);
+      form.reset();
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to update MCP Server', {
+        description: error?.message,
+      });
+    },
+  });
+
   const onSubmit = async (values: FormSchemaType) => {
     if (!auth) return;
-
     setIsSubmitting(true);
     try {
-      // Format the payload based on the server type
+      // Base structure for the payload, common to add and potentially update
+      const commonPayload = {
+        name: values.name,
+        // Retain is_enabled from initialData if available (for updates or GitHub import),
+        // otherwise default to true for new creations.
+        is_enabled: typeof initialData?.is_enabled === 'boolean' ? initialData.is_enabled : true,
+      };
+
+      let specificPayload;
       if (values.type === McpServerType.Command) {
         const envRecord: Record<string, string> = {};
-
-        // Convert the array of key-value pairs into a Record
         if (values.env && values.env.length > 0) {
-          values.env.forEach(({ key, value }: EnvVar) => {
+          values.env.forEach(({ key, value }) => {
             if (key.trim()) {
               envRecord[key.trim()] = value;
             }
           });
         }
-
-        await addMcpServer({
-          nodeAddress: auth.node_address,
-          token: auth.api_v2_key,
-          name: values.name,
-          type: McpServerType.Command,
+        specificPayload = {
+          ...commonPayload,
+          type: McpServerType.Command as const, // Add 'as const' for stricter type
           command: values.command,
           env: envRecord,
-          is_enabled: true,
-        });
+        };
       } else {
-        await addMcpServer({
+        specificPayload = {
+          ...commonPayload,
+          type: McpServerType.Sse as const, // Add 'as const' for stricter type
+          url: values.url,
+        };
+      }
+      
+      // Construct the full payload for the mutation hook
+      const mutationInput: AddMcpServerInput = {
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
+        ...specificPayload,
+      };
+
+      if (mode === 'Create') {
+        await addMcpServer(mutationInput);
+      } else { // Update mode
+        const serverId = (initialData as McpServer)?.id;
+        const updateInput: UpdateMcpServerInput = {
           nodeAddress: auth.node_address,
           token: auth.api_v2_key,
-          name: values.name,
-          type: McpServerType.Sse,
-          url: values.url,
-          is_enabled: true,
-        });
+          id: serverId,
+          ...specificPayload,
+        };
+        await updateMcpServer(updateInput);
       }
     } catch (error) {
-      console.error('Failed to add MCP server:', error);
-    } finally {
-      setIsSubmitting(false);
+      console.error(mode === 'Create' ? 'Failed to add MCP server:' : 'Failed to update MCP server:', error);
     }
   };
 
@@ -198,9 +234,13 @@ export const AddMcpServerModal = ({
     <Dialog onOpenChange={(open) => !open && onClose()} open={isOpen}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add MCP Server</DialogTitle>
+          <DialogTitle>
+            {mode === 'Create' ? 'Add MCP Server' : 'Update MCP Server'}
+          </DialogTitle>
           <DialogDescription>
-            Configure a new MCP server to connect with your Shinkai Node
+            {mode === 'Create'
+              ? 'Configure a new MCP server to connect with your Shinkai Node'
+              : `Updating configuration for MCP server: ${initialData?.name}`}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -366,7 +406,9 @@ export const AddMcpServerModal = ({
                 Cancel
               </Button>
               <Button disabled={isSubmitting} type="submit">
-                {isSubmitting ? 'Adding...' : 'Add'}
+                {isSubmitting
+                  ? mode === 'Create' ? 'Adding...' : 'Updating...'
+                  : mode === 'Create' ? 'Add' : 'Update'}
               </Button>
             </DialogFooter>
           </form>

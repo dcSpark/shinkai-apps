@@ -1,31 +1,16 @@
-import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { useDeleteMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/deleteMcpServer/useDeleteMcpServer';
 import type { ImportMCPServerFromGithubURLOutput } from '@shinkai_network/shinkai-node-state/v2/mutations/importMCPServerFromGithubURL/types';
 import { useSetEnableMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/setEnableMcpServer/useSetEnableMcpServer';
 import { useGetMcpServers } from '@shinkai_network/shinkai-node-state/v2/queries/getMcpServers/useGetMcpServers';
 import {
-  Badge,
   Button,
-  buttonVariants,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogTitle,
-  DialogTrigger,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   Input,
-  Switch,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Plus, Search as SearchIcon, Trash2, X as XIcon } from 'lucide-react';
+import { Plus, Search as SearchIcon, X as XIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -183,6 +168,7 @@ export const McpServers = () => {
       <AddMcpServerModal
         initialData={initialDataForManualModal}
         isOpen={isAddMcpServerModalOpen}
+        mode="Create"
         onClose={() => {
           setIsAddMcpServerModalOpen(false);
           setInitialDataForManualModal(undefined);
