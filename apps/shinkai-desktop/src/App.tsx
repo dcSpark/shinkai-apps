@@ -4,7 +4,7 @@ import { Toaster, TooltipProvider } from '@shinkai_network/shinkai-ui';
 import { info } from '@tauri-apps/plugin-log';
 import { useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router';
 
 import FullPageErrorFallback from './components/error-boundary';
 import { OAuthConnect } from './components/oauth/oauth-connect';

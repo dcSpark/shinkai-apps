@@ -56,7 +56,7 @@ import {
 } from 'lucide-react';
 import React, { Fragment, memo, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';

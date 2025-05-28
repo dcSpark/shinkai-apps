@@ -41,7 +41,7 @@ import cronstrue from 'cronstrue';
 import { ChevronDownIcon } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -126,7 +126,8 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
       initialValues &&
       'CreateJobWithConfigAndMessage' in initialValues.action
     ) {
-      const initialConfig = initialValues.action.CreateJobWithConfigAndMessage.config;
+      const initialConfig =
+        initialValues.action.CreateJobWithConfigAndMessage.config;
       form.reset({
         cronExpression: initialValues.cron,
         description: initialValues.description,
@@ -255,15 +256,14 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
       <Form {...form}>
         <form
           className="flex grid grid-cols-2 flex-col justify-between gap-8 pt-4"
-          onSubmit={form.handleSubmit(
-            submit,
-            (errors) => {
-              console.error('Form validation errors:', errors);
-              toast.error("Validation failed. Please check the form fields.", {
-                description: Object.values(errors).map(e => e.message).join('\n'),
-              });
-            }
-          )}
+          onSubmit={form.handleSubmit(submit, (errors) => {
+            console.error('Form validation errors:', errors);
+            toast.error('Validation failed. Please check the form fields.', {
+              description: Object.values(errors)
+                .map((e) => e.message)
+                .join('\n'),
+            });
+          })}
         >
           <div className="space-y-4">
             <FormField
@@ -277,9 +277,9 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
               control={form.control}
               name="description"
               render={({ field }) => (
-                <TextField 
-                  field={field} 
-                  helperMessage="Briefly describe your agent's purpose (not used by the agent)." 
+                <TextField
+                  field={field}
+                  helperMessage="Briefly describe your agent's purpose (not used by the agent)."
                   label="Task Description"
                 />
               )}
@@ -299,7 +299,9 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>e.g. Give me top hacker news stories</FormDescription>
+                  <FormDescription>
+                    e.g. Give me top hacker news stories
+                  </FormDescription>
                 </FormItem>
               )}
             />
@@ -445,210 +447,208 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                     </DropdownMenu>
                   </div>
                 </div>
-                
+
                 <Collapsible className="space-y-4">
-                  <CollapsibleTrigger
-                    className="text-official-gray-400 hover:text-official-gray-300 flex items-center gap-1 text-sm [&[data-state=open]>svg]:rotate-90"
-                  >
+                  <CollapsibleTrigger className="text-official-gray-400 hover:text-official-gray-300 flex items-center gap-1 text-sm [&[data-state=open]>svg]:rotate-90">
                     Advanced
                     <ChevronDownIcon className="h-3 w-3" />
                   </CollapsibleTrigger>
                   <CollapsibleContent className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="jobConfig.custom_system_prompt"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>System Prompt</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            className="!min-h-[130px] text-sm"
-                            resize="vertical"
-                            spellCheck={false}
-                            {...field}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="jobConfig.custom_system_prompt"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>System Prompt</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              className="!min-h-[130px] text-sm"
+                              resize="vertical"
+                              spellCheck={false}
+                              {...field}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="jobConfig.stream"
-                    render={({ field }) => (
-                      <FormItem className="flex w-full flex-col gap-3">
-                        <div className="flex gap-3">
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel className="static space-y-1.5 text-sm text-white">
-                              Enable Stream
-                            </FormLabel>
+                    <FormField
+                      control={form.control}
+                      name="jobConfig.stream"
+                      render={({ field }) => (
+                        <FormItem className="flex w-full flex-col gap-3">
+                          <div className="flex gap-3">
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="static space-y-1.5 text-sm text-white">
+                                Enable Stream
+                              </FormLabel>
+                            </div>
                           </div>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="jobConfig.use_tools"
-                    render={({ field }) => (
-                      <FormItem className="flex w-full flex-col gap-3">
-                        <div className="flex gap-3">
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel className="static space-y-1.5 text-sm text-white">
-                              Enable Tools
-                            </FormLabel>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="jobConfig.use_tools"
+                      render={({ field }) => (
+                        <FormItem className="flex w-full flex-col gap-3">
+                          <div className="flex gap-3">
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="static space-y-1.5 text-sm text-white">
+                                Enable Tools
+                              </FormLabel>
+                            </div>
                           </div>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="jobConfig.temperature"
-                    render={({ field }) => (
-                      <FormItem className="flex gap-2.5">
-                        <FormControl>
-                          <HoverCard openDelay={200}>
-                            <HoverCardTrigger asChild>
-                              <div className="grid w-full gap-4">
-                                <div className="flex items-center justify-between">
-                                  <Label htmlFor="temperature">
-                                    Temperature
-                                  </Label>
-                                  <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
-                                    {field.value}
-                                  </span>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="jobConfig.temperature"
+                      render={({ field }) => (
+                        <FormItem className="flex gap-2.5">
+                          <FormControl>
+                            <HoverCard openDelay={200}>
+                              <HoverCardTrigger asChild>
+                                <div className="grid w-full gap-4">
+                                  <div className="flex items-center justify-between">
+                                    <Label htmlFor="temperature">
+                                      Temperature
+                                    </Label>
+                                    <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                                      {field.value}
+                                    </span>
+                                  </div>
+                                  <Slider
+                                    aria-label="Temperature"
+                                    className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
+                                    id="temperature"
+                                    max={1}
+                                    onValueChange={(vals) => {
+                                      field.onChange(vals[0]);
+                                    }}
+                                    step={0.1}
+                                    value={[field.value]}
+                                  />
                                 </div>
-                                <Slider
-                                  aria-label="Temperature"
-                                  className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
-                                  id="temperature"
-                                  max={1}
-                                  onValueChange={(vals) => {
-                                    field.onChange(vals[0]);
-                                  }}
-                                  step={0.1}
-                                  value={[field.value]}
-                                />
-                              </div>
-                            </HoverCardTrigger>
-                            <HoverCardContent
-                              align="start"
-                              className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
-                              side="left"
-                            >
-                              Temperature is a parameter that affects the
-                              randomness of AI outputs. Higher temp = more
-                              unexpected, lower temp = more predictable.
-                            </HoverCardContent>
-                          </HoverCard>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="jobConfig.top_p"
-                    render={({ field }) => (
-                      <FormItem className="flex gap-2.5">
-                        <FormControl>
-                          <HoverCard openDelay={200}>
-                            <HoverCardTrigger asChild>
-                              <div className="grid w-full gap-4">
-                                <div className="flex items-center justify-between">
-                                  <Label htmlFor="topP">Top P</Label>
-                                  <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
-                                    {field.value}
-                                  </span>
+                              </HoverCardTrigger>
+                              <HoverCardContent
+                                align="start"
+                                className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
+                                side="left"
+                              >
+                                Temperature is a parameter that affects the
+                                randomness of AI outputs. Higher temp = more
+                                unexpected, lower temp = more predictable.
+                              </HoverCardContent>
+                            </HoverCard>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="jobConfig.top_p"
+                      render={({ field }) => (
+                        <FormItem className="flex gap-2.5">
+                          <FormControl>
+                            <HoverCard openDelay={200}>
+                              <HoverCardTrigger asChild>
+                                <div className="grid w-full gap-4">
+                                  <div className="flex items-center justify-between">
+                                    <Label htmlFor="topP">Top P</Label>
+                                    <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                                      {field.value}
+                                    </span>
+                                  </div>
+                                  <Slider
+                                    aria-label="Top P"
+                                    className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
+                                    id="topP"
+                                    max={1}
+                                    min={0}
+                                    onValueChange={(vals) => {
+                                      field.onChange(vals[0]);
+                                    }}
+                                    step={0.1}
+                                    value={[field.value]}
+                                  />
                                 </div>
-                                <Slider
-                                  aria-label="Top P"
-                                  className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
-                                  id="topP"
-                                  max={1}
-                                  min={0}
-                                  onValueChange={(vals) => {
-                                    field.onChange(vals[0]);
-                                  }}
-                                  step={0.1}
-                                  value={[field.value]}
-                                />
-                              </div>
-                            </HoverCardTrigger>
-                            <HoverCardContent
-                              align="start"
-                              className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
-                              side="left"
-                            >
-                              Adjust the probability threshold to increase the
-                              relevance of results. For example, a threshold of
-                              0.9 could be optimal for targeted, specific
-                              applications, whereas a threshold of 0.95 or 0.97
-                              might be preferred for tasks that require broader,
-                              more creative responses.
-                            </HoverCardContent>
-                          </HoverCard>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="jobConfig.top_k"
-                    render={({ field }) => (
-                      <FormItem className="flex gap-2.5">
-                        <FormControl>
-                          <HoverCard openDelay={200}>
-                            <HoverCardTrigger asChild>
-                              <div className="grid w-full gap-4">
-                                <div className="flex items-center justify-between">
-                                  <Label htmlFor="topK">Top K</Label>
-                                  <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
-                                    {field.value}
-                                  </span>
+                              </HoverCardTrigger>
+                              <HoverCardContent
+                                align="start"
+                                className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
+                                side="left"
+                              >
+                                Adjust the probability threshold to increase the
+                                relevance of results. For example, a threshold
+                                of 0.9 could be optimal for targeted, specific
+                                applications, whereas a threshold of 0.95 or
+                                0.97 might be preferred for tasks that require
+                                broader, more creative responses.
+                              </HoverCardContent>
+                            </HoverCard>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="jobConfig.top_k"
+                      render={({ field }) => (
+                        <FormItem className="flex gap-2.5">
+                          <FormControl>
+                            <HoverCard openDelay={200}>
+                              <HoverCardTrigger asChild>
+                                <div className="grid w-full gap-4">
+                                  <div className="flex items-center justify-between">
+                                    <Label htmlFor="topK">Top K</Label>
+                                    <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
+                                      {field.value}
+                                    </span>
+                                  </div>
+                                  <Slider
+                                    aria-label="Top K"
+                                    className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
+                                    id="topK"
+                                    max={100}
+                                    onValueChange={(vals) => {
+                                      field.onChange(vals[0]);
+                                    }}
+                                    step={1}
+                                    value={[field.value]}
+                                  />
                                 </div>
-                                <Slider
-                                  aria-label="Top K"
-                                  className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
-                                  id="topK"
-                                  max={100}
-                                  onValueChange={(vals) => {
-                                    field.onChange(vals[0]);
-                                  }}
-                                  step={1}
-                                  value={[field.value]}
-                                />
-                              </div>
-                            </HoverCardTrigger>
-                            <HoverCardContent
-                              align="start"
-                              className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
-                              side="left"
-                            >
-                              Adjust the count of key words for creating
-                              sequences. This parameter governs the extent of
-                              the generated passage, forestalling too much
-                              repetition. Selecting a higher figure yields
-                              longer narratives, whereas a smaller figure keeps
-                              the text brief.
-                            </HoverCardContent>
-                          </HoverCard>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                              </HoverCardTrigger>
+                              <HoverCardContent
+                                align="start"
+                                className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
+                                side="left"
+                              >
+                                Adjust the count of key words for creating
+                                sequences. This parameter governs the extent of
+                                the generated passage, forestalling too much
+                                repetition. Selecting a higher figure yields
+                                longer narratives, whereas a smaller figure
+                                keeps the text brief.
+                              </HoverCardContent>
+                            </HoverCard>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
                   </CollapsibleContent>
                 </Collapsible>
               </div>

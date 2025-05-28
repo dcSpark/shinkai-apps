@@ -10,7 +10,7 @@ import {
   Routes,
   useLocation,
   useNavigate,
-} from 'react-router-dom';
+} from 'react-router';
 
 import AddAgentPage from '../components/agent/add-agent';
 import EditAgentPage from '../components/agent/edit-agent';
@@ -58,6 +58,7 @@ import HomePage from '../pages/home';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
+import { McpRegistryPage } from '../pages/mcp';
 import { McpServers } from '../pages/mcp-servers';
 import { PromptLibrary } from '../pages/prompt-library';
 import { PublicKeys } from '../pages/public-keys';
@@ -391,6 +392,7 @@ const AppRoutes = () => {
             />
             <Route element={<EditToolPage />} path={'edit/:toolRouterKey'} />
           </Route>
+          <Route element={<McpRegistryPage />} path={'mcp'} />
           <Route
             element={
               <ProtectedRoute>

@@ -7,7 +7,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ErrorBoundary } from 'react-error-boundary';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router';
 
 import { ToolsProvider } from '../../components/chat/context/tools-context';
 import FullPageErrorFallback from '../../components/error-boundary';

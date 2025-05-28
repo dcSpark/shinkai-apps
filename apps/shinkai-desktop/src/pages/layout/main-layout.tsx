@@ -32,6 +32,7 @@ import {
   FilesIcon,
   HomeIcon,
   InboxIcon,
+  MCPIcon,
   ScheduledTasksIcon,
   ShinkaiCombinationMarkIcon,
   ToolsIcon,
@@ -48,13 +49,7 @@ import {
   ServerIcon,
 } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
-import {
-  Link,
-  Outlet,
-  useLocation,
-  useMatch,
-  useNavigate,
-} from 'react-router-dom';
+import { Link, Outlet, useLocation, useMatch, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { ResourcesBanner } from '../../components/hardware-capabilities/resources-banner';
@@ -247,6 +242,33 @@ export function MainNav() {
       },
   ].filter(Boolean) as NavigationLink[];
 
+  const secondaryNavigationLinks = [
+    {
+      title: 'Tools',
+      href: '/tools',
+      icon: <ToolsIcon className="size-[18px]" />,
+    },
+    {
+      title: 'MCPs',
+      href: '/mcp',
+      icon: <MCPIcon className="size-[18px]" />,
+    },
+    {
+      title: 'MCP Servers',
+      href: '/mcp-servers',
+      icon: <MCPIcon className="size-[18px]" />,
+    },
+    {
+      title: t('layout.menuItems.vectorFs'),
+      href: '/vector-fs',
+      icon: <FilesIcon className="size-[18px]" />,
+    },
+    {
+      title: 'Scheduled Tasks',
+      href: '/tasks',
+      icon: <ScheduledTasksIcon className="size-[18px]" />,
+    },
+  ];
   const footerNavigationLinks = [
     {
       title: t('layout.menuItems.manageAis'),
@@ -424,38 +446,18 @@ export function MainNav() {
               sideOffset={8}
             >
               <div className="flex flex-col gap-1">
-                <PopoverClose asChild>
-                  <NavLink
-                    href="/tools"
-                    icon={<ToolsIcon className="size-[18px]" />}
-                    isPopover
-                    title={t('tools.label')}
-                  />
-                </PopoverClose>
-                <PopoverClose asChild>
-                  <NavLink
-                    href="/mcp-servers"
-                    icon={<ServerIcon className="size-[18px]" />}
-                    isPopover
-                    title="MCP Servers"
-                  />
-                </PopoverClose>
-                <PopoverClose asChild>
-                  <NavLink
-                    href="/vector-fs"
-                    icon={<FilesIcon className="size-[18px]" />}
-                    isPopover
-                    title={t('layout.menuItems.vectorFs')}
-                  />
-                </PopoverClose>
-                <PopoverClose asChild>
-                  <NavLink
-                    href="/tasks"
-                    icon={<ScheduledTasksIcon className="size-[18px]" />}
-                    isPopover
-                    title="Scheduled Tasks"
-                  />
-                </PopoverClose>
+                {secondaryNavigationLinks.map((item) => {
+                  return (
+                    <PopoverClose asChild key={item.title}>
+                      <NavLink
+                        href={item.href}
+                        icon={item.icon}
+                        isPopover
+                        title={item.title}
+                      />
+                    </PopoverClose>
+                  );
+                })}
               </div>
             </PopoverContent>
           </Popover>

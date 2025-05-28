@@ -37,7 +37,7 @@ import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { memo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { UseFormReturn } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { toast } from 'sonner';
 import { z } from 'zod';
 

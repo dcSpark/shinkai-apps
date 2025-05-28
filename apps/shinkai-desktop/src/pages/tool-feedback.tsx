@@ -20,7 +20,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LoaderIcon, LogOut } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router';
 
 import { MessageList } from '../components/chat/components/message-list';
 import { getRandomWidth } from '../components/playground-tool/components/code-panel';

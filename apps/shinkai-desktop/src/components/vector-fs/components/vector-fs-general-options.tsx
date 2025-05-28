@@ -35,7 +35,7 @@ import { FileType2Icon } from 'lucide-react';
 import { PrismEditor } from 'prism-react-editor';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import { toast } from 'sonner';
 
 import { useAnalytics } from '../../../lib/posthog-provider';

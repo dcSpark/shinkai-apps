@@ -45,12 +45,21 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { AlertTriangleIcon, ArrowRight, ArrowUpRight, BoltIcon, EllipsisIcon, Loader2, Plus, X } from 'lucide-react';
+import {
+  AlertTriangleIcon,
+  ArrowRight,
+  ArrowUpRight,
+  BoltIcon,
+  EllipsisIcon,
+  Loader2,
+  Plus,
+  X,
+} from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
@@ -98,8 +107,7 @@ const PROMPT_SUGGESTIONS = [
   {
     agentId: 'negotiation_expert',
     text: 'Negotiate My Salary Like a Pro',
-    prompt:
-      'Help me negotiate my salary. Explain the tactics in detail.',
+    prompt: 'Help me negotiate my salary. Explain the tactics in detail.',
     use_tools: false,
   },
   {
@@ -112,8 +120,7 @@ const PROMPT_SUGGESTIONS = [
   {
     agentId: 'twitter_expert___read_only',
     text: 'Find the latest news on X / Twitter',
-    prompt:
-      'Find the latest news on X / Twitter.',
+    prompt: 'Find the latest news on X / Twitter.',
     use_tools: true,
   },
 ];
@@ -194,7 +201,7 @@ const EmptyMessage = () => {
   });
 
   const [isPolling, setIsPolling] = useState(true);
-  
+
   useEffect(() => {
     const checkDefaultTools = async () => {
       const auth = useAuth.getState().auth;
@@ -203,13 +210,16 @@ const EmptyMessage = () => {
           console.error('Missing node address or API key');
           return;
         }
-        
-        const response = await axios.get(`${auth.node_address}/v2/check_default_tools_sync`, {
-          headers: {
-            'Authorization': `Bearer ${auth.api_v2_key}`
-          }
-        });
-        
+
+        const response = await axios.get(
+          `${auth.node_address}/v2/check_default_tools_sync`,
+          {
+            headers: {
+              Authorization: `Bearer ${auth.api_v2_key}`,
+            },
+          },
+        );
+
         if (response.data.is_synced) {
           setIsPolling(false);
         }
@@ -217,30 +227,36 @@ const EmptyMessage = () => {
         console.error('Error checking default tools sync:', error);
       }
     };
-    
+
     checkDefaultTools();
   }, []);
-  
-  const { data: recentlyUsedAgents } = useGetAgents({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-    categoryFilter: 'recently_used',
-  }, {
-    refetchInterval: isPolling ? 2000 : false,
-  });
 
-  const { data: agents } = useGetAgents({
-    nodeAddress: auth?.node_address ?? '',
-    token: auth?.api_v2_key ?? '',
-  }, {
-    refetchInterval: isPolling ? 2000 : false,
-  });
-  
+  const { data: recentlyUsedAgents } = useGetAgents(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+      categoryFilter: 'recently_used',
+    },
+    {
+      refetchInterval: isPolling ? 2000 : false,
+    },
+  );
+
+  const { data: agents } = useGetAgents(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    },
+    {
+      refetchInterval: isPolling ? 2000 : false,
+    },
+  );
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setIsPolling(false);
     }, 60000);
-    
+
     return () => clearTimeout(timeoutId);
   }, []);
 
@@ -495,9 +511,8 @@ const EmptyMessage = () => {
     (state) => state.mainLayoutContainerRef,
   );
 
-  const { requiresConfiguration } = useAgentRequiresToolConfigurations(
-    selectedAgent,
-  );
+  const { requiresConfiguration } =
+    useAgentRequiresToolConfigurations(selectedAgent);
 
   return (
     <motion.div
@@ -531,19 +546,24 @@ const EmptyMessage = () => {
         </div>
 
         {requiresConfiguration && (
-          <div className="flex flex-row items-center justify-between p-3 border border-yellow-500/30 bg-yellow-500/10 rounded-lg">
+          <div className="flex flex-row items-center justify-between rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-3">
             <div className="flex flex-col items-start text-left">
               <div className="flex items-center gap-2 text-yellow-400">
                 <AlertTriangleIcon className="h-4 w-4" />
                 <span className="font-medium">Configuration Required</span>
               </div>
               <p className="text-xs text-yellow-300/80">
-                {selectedAgent?.name} requires some configurations to work properly.
+                {selectedAgent?.name} requires some configurations to work
+                properly.
               </p>
             </div>
-            <Button 
-              className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/20 text-sm py-1" 
-              onClick={() => navigate(`/agents/edit/${selectedAgent?.agent_id}?defaultTab=tools`)}
+            <Button
+              className="border-yellow-500/50 py-1 text-sm text-yellow-400 hover:bg-yellow-500/20"
+              onClick={() =>
+                navigate(
+                  `/agents/edit/${selectedAgent?.agent_id}?defaultTab=tools`,
+                )
+              }
               size="sm"
               variant="outline"
             >
@@ -929,7 +949,7 @@ const EmptyMessage = () => {
         <div className="mx-auto grid w-full max-w-6xl grid-cols-4 justify-center gap-3">
           {PROMPT_SUGGESTIONS.map((suggestion) => (
             <Badge
-              className="hover:bg-official-gray-900 hover:text-official-gray-100 text-official-gray-200 cursor-pointer justify-between text-balance rounded-xl px-2 py-1.5 text-left text-sm font-normal normal-case transition-colors pl-4"
+              className="hover:bg-official-gray-900 hover:text-official-gray-100 text-official-gray-200 cursor-pointer justify-between text-balance rounded-xl px-2 py-1.5 pl-4 text-left text-sm font-normal normal-case transition-colors"
               key={suggestion.text}
               onClick={() => {
                 chatForm.setValue('message', suggestion.prompt);
@@ -990,59 +1010,54 @@ const EmptyMessage = () => {
             </div>
           </div>
         )}
-        {(agents ?? []).length > 0 &&
-          (recentlyUsedAgents ?? []).length < 4 && (
-            <div className="flex flex-col gap-5">
-              <SectionHeading
-                action={{
-                  label: 'New Agent',
-                  onClick: () => navigate('/add-agent'),
-                }}
-                title="Recommended Agents"
-              />
-              <div className="grid grid-cols-1 gap-4">
-                {agents?.map((agent, idx) => (
-                  <Card
-                    action={{
-                      label: 'Chat with Agent',
-                      onClick: () => {
-                        chatForm.setValue('agent', agent.agent_id);
-                        if (agent.tools?.length > 0) {
-                          chatConfigForm.setValue('useTools', true);
-                        } else {
-                          chatConfigForm.setValue('useTools', false);
-                        }
-                        mainLayoutContainerRef?.current?.scrollTo({
-                          top: 0,
-                          behavior: 'smooth',
-                        });
-                      },
-                    }}
-                    delay={idx * 0.1}
-                    description={agent.ui_description}
-                    icon={
-                      <AIAgentIcon className="size-full" name={agent.name} />
-                    }
-                    key={agent.agent_id}
-                    secondaryAction={{
-                      label: 'Chat History',
-                      onClick: () => {
-                        navigate(`/inboxes?agentId=${agent.agent_id}`);
-                      },
-                    }}
-                    title={agent.name}
-                  />
-                ))}
-              </div>
+        {(agents ?? []).length > 0 && (recentlyUsedAgents ?? []).length < 4 && (
+          <div className="flex flex-col gap-5">
+            <SectionHeading
+              action={{
+                label: 'New Agent',
+                onClick: () => navigate('/add-agent'),
+              }}
+              title="Recommended Agents"
+            />
+            <div className="grid grid-cols-1 gap-4">
+              {agents?.map((agent, idx) => (
+                <Card
+                  action={{
+                    label: 'Chat with Agent',
+                    onClick: () => {
+                      chatForm.setValue('agent', agent.agent_id);
+                      if (agent.tools?.length > 0) {
+                        chatConfigForm.setValue('useTools', true);
+                      } else {
+                        chatConfigForm.setValue('useTools', false);
+                      }
+                      mainLayoutContainerRef?.current?.scrollTo({
+                        top: 0,
+                        behavior: 'smooth',
+                      });
+                    },
+                  }}
+                  delay={idx * 0.1}
+                  description={agent.ui_description}
+                  icon={<AIAgentIcon className="size-full" name={agent.name} />}
+                  key={agent.agent_id}
+                  secondaryAction={{
+                    label: 'Chat History',
+                    onClick: () => {
+                      navigate(`/inboxes?agentId=${agent.agent_id}`);
+                    },
+                  }}
+                  title={agent.name}
+                />
+              ))}
             </div>
-          )}
+          </div>
+        )}
         {(agents ?? []).length === 0 &&
           (recentlyUsedAgents ?? []).length === 0 &&
           isPolling && (
             <div className="flex flex-col gap-5">
-              <SectionHeading
-                title="Recommended Agents"
-              />
+              <SectionHeading title="Recommended Agents" />
               <div className="flex flex-col items-center justify-center gap-4 py-8">
                 <div className="flex items-center gap-2 text-lg text-white">
                   <Loader2 className="h-6 w-6 animate-spin" />

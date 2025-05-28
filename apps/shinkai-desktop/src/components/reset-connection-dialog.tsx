@@ -12,7 +12,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { XIcon } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import {
   useShinkaiNodeKillMutation,

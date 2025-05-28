@@ -18,7 +18,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { LoaderIcon } from 'lucide-react';
 import { useCallback, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';

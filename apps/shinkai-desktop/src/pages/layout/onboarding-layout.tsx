@@ -1,6 +1,6 @@
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import React, { useContext } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router';
 
 import { UpdateBanner } from '../../components/hardware-capabilities/update-banner';
 import { LogoTapContext } from '../terms-conditions';
@@ -10,7 +10,8 @@ export type OnboardingLayoutProps = React.PropsWithChildren<
 >;
 
 const OnboardingLayout = ({ className, ...props }: OnboardingLayoutProps) => {
-  const { tapCount, setTapCount, setShowLocalNodeOption } = useContext(LogoTapContext);
+  const { tapCount, setTapCount, setShowLocalNodeOption } =
+    useContext(LogoTapContext);
 
   const handleLogoTap = () => {
     const newCount = tapCount + 1;

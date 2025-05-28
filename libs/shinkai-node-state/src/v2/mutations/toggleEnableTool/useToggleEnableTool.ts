@@ -24,20 +24,9 @@ export const useToggleEnableTool = (options?: Options) => {
       queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
       });
-
       queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_SEARCH_TOOLS],
       });
-
-      queryClient.invalidateQueries({
-        queryKey: [
-          FunctionKeyV2.GET_TOOL,
-          {
-            toolKey: variables.toolKey,
-          },
-        ],
-      });
-
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);
       }

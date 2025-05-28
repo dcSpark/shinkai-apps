@@ -1,5 +1,5 @@
 import { useGetRecurringTask } from '@shinkai_network/shinkai-node-state/v2/queries/getRecurringTask/useGetRecurringTask';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 import CronTask from '../components/cron-task/component/cron-task';
 import { useAuth } from '../store/auth';

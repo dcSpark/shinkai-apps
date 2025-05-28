@@ -28,7 +28,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { partial } from 'filesize';
 import { CopyIcon, Edit2Icon, FileInputIcon, TrashIcon } from 'lucide-react';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { useVectorFsStore, VectorFSLayout } from '../context/vector-fs-context';
 import { VectorFsItemAction } from './vector-fs-drawer';

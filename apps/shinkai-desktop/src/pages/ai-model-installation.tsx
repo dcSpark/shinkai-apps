@@ -18,7 +18,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ArrowRight, Plus, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 
 import { ModelProvider } from '../components/ais/constants';
 import ProviderIcon from '../components/ais/provider-icon';

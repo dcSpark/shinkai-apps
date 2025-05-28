@@ -1,4 +1,5 @@
 import { DialogClose } from '@radix-ui/react-dialog';
+import { Slot } from '@radix-ui/react-slot';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useRemoveTool } from '@shinkai_network/shinkai-node-state/v2/mutations/removeTool/useRemoveTool';
@@ -19,16 +20,12 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 
-export default function RemoveToolButton({
-  toolKey,
-}: {
-  toolKey: string;
-}) {
+export default function RemoveToolButton({ toolKey }: { toolKey: string }) {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
@@ -44,7 +41,7 @@ export default function RemoveToolButton({
         queryClient.invalidateQueries({
           queryKey: [FunctionKeyV2.GET_SEARCH_TOOLS],
         });
-        
+
         toast.success('Tool has been removed successfully');
         setIsOpen(false);
         navigate('/tools');
@@ -75,7 +72,7 @@ export default function RemoveToolButton({
                   variant: 'outline',
                   size: 'sm',
                 }),
-                'min-h-auto h-auto w-10 rounded-md py-2 flex justify-center'
+                'min-h-auto flex h-auto w-10 justify-center rounded-md py-2',
               )}
             >
               <Trash2 className="h-4 w-4" />

@@ -22,7 +22,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, To, useNavigate } from 'react-router-dom';
+import { Link, To, useNavigate } from 'react-router';
 
 import { useAuth } from '../store/auth';
 

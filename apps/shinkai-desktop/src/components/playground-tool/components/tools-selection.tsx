@@ -20,7 +20,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BoltIcon } from 'lucide-react';
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { useFormContext } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';

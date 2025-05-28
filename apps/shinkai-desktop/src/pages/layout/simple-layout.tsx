@@ -2,7 +2,7 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { LucideArrowLeft } from 'lucide-react';
 import React from 'react';
-import { Link, To } from 'react-router-dom';
+import { Link, To } from 'react-router';
 
 export const SubpageLayout = ({
   title,
