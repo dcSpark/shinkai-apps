@@ -48,7 +48,7 @@ function PlaygroundHeaderBase({
   }[];
   toolName: string;
   toolDescription: string;
-  baseToolCodeRef: React.MutableRefObject<string>;
+  baseToolCodeRef: React.RefObject<string>;
   initialToolRouterKeyWithVersion: string;
 }) {
   const auth = useAuth((state) => state.auth);

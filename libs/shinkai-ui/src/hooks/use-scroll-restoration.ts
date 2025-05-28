@@ -6,8 +6,8 @@ export const useScrollRestoration = ({
   scrollTopStateRef,
 }: {
   key: string;
-  containerRef: React.RefObject<HTMLElement>;
-  scrollTopStateRef: React.MutableRefObject<{ [key: string]: number } | null>;
+  containerRef: React.RefObject<HTMLElement | null>;
+  scrollTopStateRef: React.RefObject<{ [key: string]: number } | null>;
 }): void => {
   const saveScroll = React.useCallback(() => {
     if (scrollTopStateRef.current) {

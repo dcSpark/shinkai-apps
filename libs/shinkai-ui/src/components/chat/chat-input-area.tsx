@@ -38,7 +38,9 @@ export const ChatInputArea = ({
   className,
   ref,
 }: ChatInputAreaProps) => {
-  const textareaRef = useCombinedRefs<HTMLTextAreaElement>(ref);
+  const textareaRef = useCombinedRefs<HTMLTextAreaElement>(
+    ref as React.RefObject<HTMLTextAreaElement>,
+  );
 
   return (
     <div

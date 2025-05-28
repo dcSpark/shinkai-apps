@@ -21,7 +21,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AppWindow, LoaderIcon, TerminalIcon } from 'lucide-react';
-import { memo, MutableRefObject, useEffect, useRef, useState } from 'react';
+import { memo, RefObject, useEffect, useRef, useState } from 'react';
 
 import { useAuth } from '../../../store/auth';
 import { ExecutionFiles } from '../../tools/components/execution-files';
@@ -44,7 +44,7 @@ function ExecutionPanelBase({
   isExecutionToolCodeError: boolean;
   isExecutionToolCodePending: boolean;
   executionToolCodeError?: string;
-  mountTimestampRef: MutableRefObject<Date>;
+  mountTimestampRef: RefObject<Date>;
   toolResultFiles: string[];
   handleRunCode: FormProps['onSubmit'];
   regenerateToolMetadata: () => void;

@@ -6,7 +6,7 @@ import { ModelProviderKey, providerMappings } from './constants';
 export interface ProviderIconProps {
   className?: string;
   provider?: ModelProviderKey | string;
-  ref?: React.RefObject<HTMLDivElement>;
+  ref?: React.RefObject<HTMLDivElement | null>;
 }
 
 const ProviderIcon = ({

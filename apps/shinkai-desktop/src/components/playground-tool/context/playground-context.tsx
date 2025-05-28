@@ -73,12 +73,12 @@ type PlaygroundStore = {
 
   resetPlaygroundStore: () => void;
 
-  metadataEditorRef: React.MutableRefObject<PrismEditor | null>;
-  codeEditorRef: React.MutableRefObject<PrismEditor | null>;
-  forceGenerateCode: React.MutableRefObject<boolean | null>;
-  forceGenerateMetadata: React.MutableRefObject<boolean | null>;
-  forceAutoSave: React.MutableRefObject<boolean | null>;
-  toolHomepageScrollPositionRef: React.MutableRefObject<{
+  metadataEditorRef: React.RefObject<PrismEditor | null>;
+  codeEditorRef: React.RefObject<PrismEditor | null>;
+  forceGenerateCode: React.RefObject<boolean | null>;
+  forceGenerateMetadata: React.RefObject<boolean | null>;
+  forceAutoSave: React.RefObject<boolean | null>;
+  toolHomepageScrollPositionRef: React.RefObject<{
     [key: string]: number;
   } | null>;
 
@@ -90,7 +90,7 @@ type PlaygroundStore = {
 
 export const toolHomepageScrollPositionRef = createRef<{
   [key: string]: number;
-}>() as React.MutableRefObject<{
+}>() as React.RefObject<{
   [key: string]: number;
 }>;
 toolHomepageScrollPositionRef.current = {};
