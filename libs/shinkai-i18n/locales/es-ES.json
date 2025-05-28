@@ -269,7 +269,18 @@
     },
     "sidebar": {
       "toggle": "Alternar barra lateral"
-    }
+    },
+    "analytics": "Analíticas",
+    "appearance": "Apariencia",
+    "createRegistrationCode": "Crear Código de Registro",
+    "cryptoWallet": "Billetera Cripto",
+    "exportConnection": "Exportar Conexión",
+    "galxe": "Misión Galxe",
+    "general": "General",
+    "internetAccess": "Acceso a Internet",
+    "promptLibrary": "Biblioteca de Prompts",
+    "publicKeys": "Claves Públicas",
+    "shinkaiNode": "Administrador de Nodo Shinkai"
   },
   "llmProviders": {
     "add": "Añadir IA",
@@ -382,7 +393,7 @@
     "uploadAFileDescription": "Guarda tus notas, sitios web, documentos y otros de forma segura en un solo lugar."
   },
   "quickAsk": {
-    "emptyStateDescription": "Prueba con “¿Cómo hacer una solicitud HTTP en JavaScript?”, “Dame las 10 mejores canciones de rock de los 80”, “Explícame cómo funciona Internet”",
+    "emptyStateDescription": "Prueba con \"¿Cómo hacer una solicitud HTTP en JavaScript?\", \"Dame las 10 mejores canciones de rock de los 80\", \"Explícame cómo funciona Internet\"",
     "emptyStateTitle": "Pregunta a Shinkai AI"
   },
   "quickConnection": {
@@ -460,6 +471,7 @@
       "exportConnection": "Exportar Conexión",
       "galxe": "Misión Galxe",
       "general": "General",
+      "internetAccess": "Acceso a Internet",
       "promptLibrary": "Biblioteca de Prompts",
       "publicKeys": "Claves Públicas",
       "shinkaiNode": "Administrador de Nodo Shinkai"
@@ -522,6 +534,33 @@
         "title": "Incluir opción de Resumen de 1 clic"
       },
       "label": "Barra lateral"
+    },
+    "internetAccess": {
+      "title": "Configuración de Acceso a Internet",
+      "description": "Gestiona las preferencias de configuración de acceso a internet.",
+      "overview": {
+        "title": "Resumen",
+        "description": "Esta función te permite acceder a tu nodo Shinkai desde internet usando un túnel ngrok. Hay un nivel gratuito disponible, y solo necesitas un token de autenticación ngrok para comenzar. Puedes registrarte para una cuenta ngrok",
+        "signUpLink": "aquí"
+      },
+      "form": {
+        "authToken": "Token de Autenticación",
+        "authTokenPlaceholder": "Ingresa tu token de autenticación ngrok",
+        "startInternetAccess": "Iniciar Acceso a Internet",
+        "stopInternetAccess": "Detener Acceso a Internet"
+      },
+      "status": {
+        "title": "Estado del Acceso a Internet",
+        "statusLabel": "Estado",
+        "tunnelUrlLabel": "URL del Túnel",
+        "enabled": "Habilitado",
+        "notEnabled": "No habilitado"
+      },
+      "errors": {
+        "failedToStart": "Error al iniciar el túnel",
+        "failedToStop": "Error al detener el túnel",
+        "failedToGetStatus": "Error al obtener el estado del túnel"
+      }
     }
   },
   "shinkaiNode": {

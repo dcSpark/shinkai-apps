@@ -55,6 +55,7 @@ import EditToolPage from '../pages/edit-tool';
 import { ExportConnection } from '../pages/export-connection';
 import { GalxeValidation } from '../pages/galxe-validation';
 import HomePage from '../pages/home';
+import InternetAccessPage from '../pages/internet-access';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
@@ -431,6 +432,7 @@ const AppRoutes = () => {
               }
               path={'crypto-wallet'}
             />
+            <Route element={<InternetAccessPage />} path={'internet-access'} />
           </Route>
         </Route>
         <Route

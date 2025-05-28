@@ -269,7 +269,18 @@
     },
     "sidebar": {
       "toggle": "切换侧边栏"
-    }
+    },
+    "analytics": "分析",
+    "appearance": "外观",
+    "createRegistrationCode": "创建注册码",
+    "cryptoWallet": "加密钱包",
+    "exportConnection": "导出连接",
+    "galxe": "Galxe任务",
+    "general": "常规",
+    "internetAccess": "互联网访问",
+    "promptLibrary": "提示库",
+    "publicKeys": "公钥",
+    "shinkaiNode": "深海节点管理器"
   },
   "llmProviders": {
     "add": "添加人工智能",
@@ -382,7 +393,7 @@
     "uploadAFileDescription": "将您的笔记、网站、文档等安全存储在一个地方。"
   },
   "quickAsk": {
-    "emptyStateDescription": "试试“如何在 JavaScript 中发起 HTTP 请求”，“给我 80 年代的十大摇滚音乐”，“给我解释一下互联网是如何工作的”",
+    "emptyStateDescription": "试试\"如何在 JavaScript 中发起 HTTP 请求\"，\"给我 80 年代的十大摇滚音乐\"，\"给我解释一下互联网是如何工作的\"",
     "emptyStateTitle": "询问 Shinkai AI"
   },
   "quickConnection": {
@@ -460,6 +471,7 @@
       "exportConnection": "导出连接",
       "galxe": "Galxe任务",
       "general": "常规",
+      "internetAccess": "互联网访问",
       "promptLibrary": "提示库",
       "publicKeys": "公钥",
       "shinkaiNode": "深海节点管理器"
@@ -522,6 +534,33 @@
         "title": "包括一键摘要选项"
       },
       "label": "侧边栏"
+    },
+    "internetAccess": {
+      "title": "互联网访问配置",
+      "description": "管理您的互联网访问设置偏好。",
+      "overview": {
+        "title": "概述",
+        "description": "此功能允许您使用ngrok隧道从互联网访问您的Shinkai节点。有免费层可用，您只需要一个ngrok认证令牌即可开始。您可以注册ngrok账户",
+        "signUpLink": "这里"
+      },
+      "form": {
+        "authToken": "认证令牌",
+        "authTokenPlaceholder": "输入您的ngrok认证令牌",
+        "startInternetAccess": "启动互联网访问",
+        "stopInternetAccess": "停止互联网访问"
+      },
+      "status": {
+        "title": "互联网访问状态",
+        "statusLabel": "状态",
+        "tunnelUrlLabel": "隧道URL",
+        "enabled": "已启用",
+        "notEnabled": "未启用"
+      },
+      "errors": {
+        "failedToStart": "启动隧道失败",
+        "failedToStop": "停止隧道失败",
+        "failedToGetStatus": "获取隧道状态失败"
+      }
     }
   },
   "shinkaiNode": {
@@ -654,7 +693,7 @@
     "emptyState": {
       "noFiles": "未找到文件",
       "noFilesAndFolders": "这将成为您所有文件的主页。",
-      "noFilesAndFoldersDescription": "使用“+”按钮开始上传文件。",
+      "noFilesAndFoldersDescription": "使用\"+\"按钮开始上传文件。",
       "noSharedFolders": "您的共享文件夹将显示在这里。"
     },
     "errors": {

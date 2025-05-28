@@ -173,7 +173,7 @@ export default {
       shareFolderText:
         'You can share folders that you store in AI Files with anyone.',
       unshareFolderText:
-        'Everyone will be removed from this folder. You’ll still keep a copy of this folder in your AI Files. <br /> Note: Removed members will keep a copy of this shared folder.',
+        'Everyone will be removed from this folder. You\'ll still keep a copy of this folder in your AI Files. <br /> Note: Removed members will keep a copy of this shared folder.',
     },
     forms: {
       folderName: 'Folder Name',
@@ -320,6 +320,7 @@ export default {
     layout: {
       general: 'General',
       appearance: 'Appearance',
+      internetAccess: 'Internet Access',
       shinkaiNode: 'Shinkai Node Manager',
       exportConnection: 'Export Connection',
       createRegistrationCode: 'Create Registration Code',
@@ -433,6 +434,33 @@ export default {
         medium: 'Medium',
         large: 'Large',
         extraLarge: 'Extra Large',
+      },
+    },
+    internetAccess: {
+      title: 'Internet Access Configuration',
+      description: 'Manage your internet access settings preferences.',
+      overview: {
+        title: 'Overview',
+        description: 'This feature allows you to access your Shinkai node from the internet using a ngrok tunnel. There is a free tier available, and you only need a ngrok auth token to get started. You can sign up for a ngrok account',
+        signUpLink: 'here',
+      },
+      form: {
+        authToken: 'Auth Token',
+        authTokenPlaceholder: 'Enter your ngrok auth token',
+        startInternetAccess: 'Start Internet Access',
+        stopInternetAccess: 'Stop Internet Access',
+      },
+      status: {
+        title: 'Internet Access Status',
+        statusLabel: 'Status',
+        tunnelUrlLabel: 'Tunnel URL',
+        enabled: 'Enabled',
+        notEnabled: 'Not enabled',
+      },
+      errors: {
+        failedToStart: 'Failed to start tunnel',
+        failedToStop: 'Failed to stop tunnel',
+        failedToGetStatus: 'Failed to get tunnel status',
       },
     },
   },

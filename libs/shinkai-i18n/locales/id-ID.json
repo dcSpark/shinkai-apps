@@ -269,7 +269,18 @@
     },
     "sidebar": {
       "toggle": "Alihkan Sidebar"
-    }
+    },
+    "analytics": "Analitika",
+    "appearance": "Tampilan",
+    "createRegistrationCode": "Buat Kode Registrasi",
+    "cryptoWallet": "Dompet Kripto",
+    "exportConnection": "Ekspor Koneksi",
+    "galxe": "Pertualangan Galxe",
+    "general": "Umum",
+    "internetAccess": "Akses Internet",
+    "promptLibrary": "Perpustakaan Prompt",
+    "publicKeys": "Kunci Publik",
+    "shinkaiNode": "Manajer Node Shinkai"
   },
   "llmProviders": {
     "add": "Tambahkan AI",
@@ -382,7 +393,7 @@
     "uploadAFileDescription": "Simpan catatan, situs web, dokumen, dan lainnya dengan aman di satu tempat."
   },
   "quickAsk": {
-    "emptyStateDescription": "Coba tanyakan “Bagaimana cara membuat permintaan HTTP di JavaScript”, “Berikan saya 10 lagu rock terbaik di tahun 80-an”, “Jelaskan bagaimana internet bekerja”",
+    "emptyStateDescription": "Coba tanyakan \\\"Bagaimana cara membuat permintaan HTTP di JavaScript\\\", \\\"Berikan saya 10 lagu rock terbaik di tahun 80-an\\\", \\\"Jelaskan bagaimana internet bekerja\\\"",
     "emptyStateTitle": "Tanya Shinkai AI"
   },
   "quickConnection": {
@@ -460,6 +471,7 @@
       "exportConnection": "Ekspor Koneksi",
       "galxe": "Pertualangan Galxe",
       "general": "Umum",
+      "internetAccess": "Akses Internet",
       "promptLibrary": "Perpustakaan Prompt",
       "publicKeys": "Kunci Publik",
       "shinkaiNode": "Manajer Node Shinkai"
@@ -522,6 +534,33 @@
         "title": "Sertakan Opsi Ringkasan 1-Klik"
       },
       "label": "Sidebar"
+    },
+    "internetAccess": {
+      "title": "Konfigurasi Akses Internet",
+      "description": "Kelola preferensi pengaturan akses internet Anda.",
+      "overview": {
+        "title": "Ikhtisar",
+        "description": "Fitur ini memungkinkan Anda mengakses node Shinkai dari internet menggunakan terowongan ngrok. Tersedia tingkat gratis, dan Anda hanya memerlukan token autentikasi ngrok untuk memulai. Anda dapat mendaftar akun ngrok",
+        "signUpLink": "di sini"
+      },
+      "form": {
+        "authToken": "Token Autentikasi",
+        "authTokenPlaceholder": "Masukkan token autentikasi ngrok Anda",
+        "startInternetAccess": "Mulai Akses Internet",
+        "stopInternetAccess": "Hentikan Akses Internet"
+      },
+      "status": {
+        "title": "Status Akses Internet",
+        "statusLabel": "Status",
+        "tunnelUrlLabel": "URL Terowongan",
+        "enabled": "Diaktifkan",
+        "notEnabled": "Tidak diaktifkan"
+      },
+      "errors": {
+        "failedToStart": "Gagal memulai terowongan",
+        "failedToStop": "Gagal menghentikan terowongan",
+        "failedToGetStatus": "Gagal mendapatkan status terowongan"
+      }
     }
   },
   "shinkaiNode": {

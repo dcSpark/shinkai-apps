@@ -1,6 +1,5 @@
 {
-  "": {
-  },
+  "": {},
   "agents": {
     "systemInstructions": "システムの指示"
   },
@@ -271,6 +270,33 @@
     },
     "sidebar": {
       "toggle": "サイドバーの切り替え"
+    },
+    "internetAccess": {
+      "title": "インターネットアクセス設定",
+      "description": "インターネットアクセス設定の設定を管理します。",
+      "overview": {
+        "title": "概要",
+        "description": "この機能により、ngrokトンネルを使用してインターネットからShinkaiノードにアクセスできます。無料プランが利用可能で、開始するにはngrok認証トークンのみが必要です。ngrokアカウントにサインアップできます",
+        "signUpLink": "こちら"
+      },
+      "form": {
+        "authToken": "認証トークン",
+        "authTokenPlaceholder": "ngrok認証トークンを入力してください",
+        "startInternetAccess": "インターネットアクセスを開始",
+        "stopInternetAccess": "インターネットアクセスを停止"
+      },
+      "status": {
+        "title": "インターネットアクセス状態",
+        "statusLabel": "状態",
+        "tunnelUrlLabel": "トンネルURL",
+        "enabled": "有効",
+        "notEnabled": "無効"
+      },
+      "errors": {
+        "failedToStart": "トンネルの開始に失敗しました",
+        "failedToStop": "トンネルの停止に失敗しました",
+        "failedToGetStatus": "トンネル状態の取得に失敗しました"
+      }
     }
   },
   "llmProviders": {
@@ -458,13 +484,14 @@
       "analytics": "分析",
       "appearance": "外観",
       "createRegistrationCode": "登録コードの作成",
-      "cryptoWallet": "暗号通貨ウォレット",
-      "exportConnection": "接続のエクスポート",
-      "galxe": "ガルクス・クエスト",
+      "cryptoWallet": "暗号ウォレット",
+      "exportConnection": "接続をエクスポート",
+      "galxe": "Galxeクエスト",
       "general": "一般",
+      "internetAccess": "インターネットアクセス",
       "promptLibrary": "プロンプトライブラリ",
       "publicKeys": "公開鍵",
-      "shinkaiNode": "シンカイ・ノード・マネージャー"
+      "shinkaiNode": "Shinkaiノードマネージャー"
     },
     "maxChatIterations": {
       "description": "チャットメッセージを処理するための最大反復回数",
@@ -514,14 +541,14 @@
       "label": "ショートカットキー"
     },
     "sidebar": {
-      "blacklistedWebsites": "ブラックリストに登録されたウェブサイト",
+      "blacklistedWebsites": "ブラックリストウェブサイト",
       "includeClickImageCapture": {
-        "text": "クイックアクセスホバーメニューに画像キャプチャーボタンを追加します。",
-        "title": "1-クリック画像キャプチャーオプションを含める"
+        "text": "クイックアクセスホバーメニューに画像キャプチャボタンを追加します。",
+        "title": "ワンクリック画像キャプチャオプションを含める"
       },
       "includeClickSummary": {
-        "text": "クイックアクセスホバーメニューにサマリーボタンを追加します。",
-        "title": "1-クリックサマリーオプションを含める"
+        "text": "クイックアクセスホバーメニューに要約ボタンを追加します。",
+        "title": "ワンクリック要約オプションを含める"
       },
       "label": "サイドバー"
     }

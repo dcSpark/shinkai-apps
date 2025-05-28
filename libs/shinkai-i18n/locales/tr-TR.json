@@ -269,7 +269,18 @@
     },
     "sidebar": {
       "toggle": "Yan Çubuğunu Aç/Kapat"
-    }
+    },
+    "analytics": "Analitik",
+    "appearance": "Görünüm",
+    "createRegistrationCode": "Kayıt Kodu Oluştur",
+    "cryptoWallet": "Kripto Cüzdanı",
+    "exportConnection": "Bağlantıyı Dışa Aktar",
+    "galxe": "Galxe Görevi",
+    "general": "Genel",
+    "internetAccess": "İnternet Erişimi",
+    "promptLibrary": "İpucu Kütüphanesi",
+    "publicKeys": "Açık Anahtarlar",
+    "shinkaiNode": "Shinkai Düğüm Yöneticisi"
   },
   "llmProviders": {
     "add": "Yapay Zeka Ekle",
@@ -382,7 +393,7 @@
     "uploadAFileDescription": "Notlarınızı, web sitelerinizi, belgelerinizi ve diğerlerini güvenli bir şekilde tek bir yerde saklayın."
   },
   "quickAsk": {
-    "emptyStateDescription": "Şunu deneyin: “JavaScript'te HTTP isteği nasıl yapılır?”, “80'lerdeki en iyi 10 rock müziği nedir?”, “İnternet nasıl çalışır, açıkla”",
+    "emptyStateDescription": "Şunu deneyin: \\\"JavaScript'te HTTP isteği nasıl yapılır?\\\", \\\"80'lerdeki en iyi 10 rock müziği nedir?\\\", \\\"İnternet nasıl çalışır, açıkla\\\"",
     "emptyStateTitle": "Shinkai AI'ye Sor"
   },
   "quickConnection": {
@@ -460,6 +471,7 @@
       "exportConnection": "Bağlantıyı Dışa Aktar",
       "galxe": "Galxe Görevi",
       "general": "Genel",
+      "internetAccess": "İnternet Erişimi",
       "promptLibrary": "İpucu Kütüphanesi",
       "publicKeys": "Açık Anahtarlar",
       "shinkaiNode": "Shinkai Düğüm Yöneticisi"
@@ -522,6 +534,33 @@
         "title": "1-Tık Özeti Seçeneğini Dahil Et"
       },
       "label": "Yan Menü"
+    },
+    "internetAccess": {
+      "title": "İnternet Erişimi Yapılandırması",
+      "description": "İnternet erişimi ayar tercihlerinizi yönetin.",
+      "overview": {
+        "title": "Genel Bakış",
+        "description": "Bu özellik, ngrok tüneli kullanarak Shinkai düğümünüze internetten erişmenizi sağlar. Ücretsiz bir katman mevcuttur ve başlamak için sadece bir ngrok kimlik doğrulama belirtecine ihtiyacınız vardır. Ngrok hesabı için kaydolabilirsiniz",
+        "signUpLink": "buradan"
+      },
+      "form": {
+        "authToken": "Kimlik Doğrulama Belirteci",
+        "authTokenPlaceholder": "Ngrok kimlik doğrulama belirtecinizi girin",
+        "startInternetAccess": "İnternet Erişimini Başlat",
+        "stopInternetAccess": "İnternet Erişimini Durdur"
+      },
+      "status": {
+        "title": "İnternet Erişimi Durumu",
+        "statusLabel": "Durum",
+        "tunnelUrlLabel": "Tünel URL'si",
+        "enabled": "Etkin",
+        "notEnabled": "Etkin değil"
+      },
+      "errors": {
+        "failedToStart": "Tünel başlatılamadı",
+        "failedToStop": "Tünel durdurulamadı",
+        "failedToGetStatus": "Tünel durumu alınamadı"
+      }
     }
   },
   "shinkaiNode": {

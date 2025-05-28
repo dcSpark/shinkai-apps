@@ -15,6 +15,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   BarChart2,
   CodesandboxIcon,
+  NetworkIcon,
   PaintbrushIcon,
   SettingsIcon,
   WalletMinimal,
@@ -121,6 +122,11 @@ export function MainNav() {
         openShinkaiNodeManagerWindow();
       },
       icon: <CodesandboxIcon className="text-gray-80 h-4 w-4" />,
+    },
+    {
+      title: t('settings.layout.internetAccess'),
+      href: '/settings/internet-access',
+      icon: <NetworkIcon className="text-gray-80 h-4 w-4" />,
     },
     {
       title: t('settings.layout.analytics'),
