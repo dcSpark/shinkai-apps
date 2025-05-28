@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 
 function useCombinedRefs<T>(
   ...refs: React.ForwardedRef<T>[]
-): React.MutableRefObject<T | null> {
+): React.RefObject<T | null> {
   const targetRef = useRef<T>(null);
   useEffect(() => {
     refs.forEach((ref) => {

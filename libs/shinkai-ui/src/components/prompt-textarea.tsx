@@ -20,10 +20,7 @@ export interface PromptTextareaProps
   };
 }
 
-const PromptTextarea = React.forwardRef<
-  HTMLTextAreaElement,
-  PromptTextareaProps
->(({ className, ...props }, ref) => {
+const PromptTextarea = ({ className, ...props }: PromptTextareaProps) => {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   React.useLayoutEffect(() => {
@@ -70,7 +67,7 @@ const PromptTextarea = React.forwardRef<
       <FormLabel className="sr-only">{props.label}</FormLabel>
     </>
   );
-});
+};
 PromptTextarea.displayName = 'PromptTextarea';
 
 export { PromptTextarea };

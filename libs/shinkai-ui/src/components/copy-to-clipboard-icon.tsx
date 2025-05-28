@@ -7,7 +7,10 @@ import { Button } from './button';
 
 type CopyToClipboardIconProps = {
   string?: string;
-  children?: ReactElement;
+  children?: ReactElement<{
+    className?: string;
+    onClick?: () => void;
+  }>;
   className?: string;
   onCopyClipboard?: () => void;
   asChild?: boolean;
@@ -41,7 +44,7 @@ const CopyToClipboardIcon = ({
   if (asChild && children) {
     return cloneElement(children, {
       onClick: onCopy,
-      className: cn(children.props.className, className),
+      className: cn(children.props?.className, className),
     });
   }
 

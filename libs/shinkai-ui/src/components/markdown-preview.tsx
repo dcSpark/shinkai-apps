@@ -9,11 +9,8 @@ import React, {
   ElementRef,
   ElementType,
   FC,
-  forwardRef,
-  ForwardRefExoticComponent,
   memo,
   ReactNode,
-  RefAttributes,
   useContext,
   useMemo,
 } from 'react';
@@ -329,6 +326,7 @@ export type MarkdownTextPrimitiveProps = Omit<
     >;
   };
   content: string;
+  ref?: React.RefObject<HTMLDivElement>;
 };
 
 export type CodeOverrideProps = ComponentPropsWithoutRef<CodeComponent> & {
@@ -464,62 +462,54 @@ export const CodeOverride: FC<CodeOverrideProps> = ({
   return <CodeBlockOverride components={components} {...props} />;
 };
 
-export const MarkdownTextPrimitive: ForwardRefExoticComponent<MarkdownTextPrimitiveProps> &
-  RefAttributes<MarkdownTextPrimitiveElement> = forwardRef<
-  MarkdownTextPrimitiveElement,
-  MarkdownTextPrimitiveProps
->(
-  (
-    {
-      components: userComponents,
-      className,
-      containerProps,
-      containerComponent: Container = 'div',
-      content,
-      ...rest
-    },
-    forwardedRef,
-  ) => {
-    const {
-      pre = DefaultPre,
-      code = DefaultCode,
-      SyntaxHighlighter = DefaultCodeBlockContent,
-      CodeHeader = DefaultCodeHeader,
-      by_language,
-      ...componentsRest
-    } = userComponents ?? {};
+export const MarkdownTextPrimitive = ({
+  components: userComponents,
+  className,
+  containerProps,
+  containerComponent: Container = 'div',
+  content,
+  ref,
+  ...rest
+}: MarkdownTextPrimitiveProps) => {
+  const {
+    pre = DefaultPre,
+    code = DefaultCode,
+    SyntaxHighlighter = DefaultCodeBlockContent,
+    CodeHeader = DefaultCodeHeader,
+    by_language,
+    ...componentsRest
+  } = userComponents ?? {};
 
-    const components: typeof userComponents = {
-      ...componentsRest,
-      pre: PreOverride,
-      code: useCallbackRef((props) => (
-        <CodeOverride
-          components={{
-            Pre: pre,
-            Code: code,
-            SyntaxHighlighter,
-            CodeHeader,
-            by_language,
-          }}
-          {...props}
-        />
-      )),
-    };
+  const components: typeof userComponents = {
+    ...componentsRest,
+    pre: PreOverride,
+    code: useCallbackRef((props) => (
+      <CodeOverride
+        components={{
+          Pre: pre,
+          Code: code,
+          SyntaxHighlighter,
+          CodeHeader,
+          by_language,
+        }}
+        {...props}
+      />
+    )),
+  };
 
-    return (
-      <Container
-        // data-status={status.type}
-        {...containerProps}
-        className={cn(className, containerProps?.className)}
-        ref={forwardedRef}
-      >
-        <ReactMarkdown components={components} {...rest}>
-          {content}
-        </ReactMarkdown>
-      </Container>
-    );
-  },
-);
+  return (
+    <Container
+      // data-status={status.type}
+      {...containerProps}
+      className={cn(className, containerProps?.className)}
+      ref={ref}
+    >
+      <ReactMarkdown components={components} {...rest}>
+        {content}
+      </ReactMarkdown>
+    </Container>
+  );
+};
 
 MarkdownTextPrimitive.displayName = 'MarkdownTextPrimitive';
 

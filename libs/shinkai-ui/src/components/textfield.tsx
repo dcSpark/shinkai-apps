@@ -37,7 +37,7 @@ const TextField = ({
     value: any;
     disabled?: boolean;
     name?: string;
-    ref?: React.ForwardedRef<HTMLInputElement>;
+    ref?: React.RefObject<HTMLInputElement | null>;
     placeholder?: string;
     readOnly?: boolean;
   };

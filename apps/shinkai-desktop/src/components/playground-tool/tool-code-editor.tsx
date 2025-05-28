@@ -43,7 +43,7 @@ import {
   useSearchWidget,
   useShowInvisibles,
 } from 'prism-react-editor/search';
-import React, { forwardRef } from 'react';
+import React from 'react';
 
 const Extensions = ({ editor }: { editor: PrismEditor }) => {
   useBracketMatcher(editor);
@@ -73,17 +73,23 @@ registerCompletions(['javascript', 'js', 'jsx', 'tsx', 'typescript', 'ts'], {
   ],
 });
 
-const ToolCodeEditor = forwardRef<
-  PrismEditor,
-  {
-    value: EditorProps['value'];
-    onUpdate?: EditorProps['onUpdate'];
-    language: EditorProps['language'];
-    name?: string;
-    readOnly?: boolean;
-    style?: React.CSSProperties;
-  }
->(({ value, onUpdate, language, name, readOnly, style }, ref) => {
+const ToolCodeEditor = ({
+  value,
+  onUpdate,
+  language,
+  name,
+  readOnly,
+  style,
+  ref,
+}: {
+  value: EditorProps['value'];
+  onUpdate?: EditorProps['onUpdate'];
+  language: EditorProps['language'];
+  name?: string;
+  readOnly?: boolean;
+  style?: React.CSSProperties;
+  ref?: React.RefObject<PrismEditor | null>;
+}) => {
   const safeLanguage = language || 'plaintext';
 
   return (
@@ -109,7 +115,7 @@ const ToolCodeEditor = forwardRef<
       {(editor) => <Extensions editor={editor} />}
     </Editor>
   );
-});
+};
 
 ToolCodeEditor.displayName = 'ToolCodeEditor';
 export default ToolCodeEditor;
