@@ -27,8 +27,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@shinkai_network/shinkai-ui';
+import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { PlusCircle, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -63,6 +64,24 @@ const formSchema = z.discriminatedUnion('type', [
 
 type FormSchemaType = z.infer<typeof formSchema>;
 
+// Props for the Input component from shinkai-ui
+type ShinkaiInputProps = React.ComponentProps<typeof Input>;
+
+const PasswordToggleInput: React.FC<ShinkaiInputProps> = (props) => {
+  const [showPassword] = useState(false);
+
+  return (
+    <div className="relative flex w-full items-center">
+      <Input
+        {...props}
+        className={cn(props.className, 'pr-10')} // Ensure space for the icon button
+        type={showPassword ? 'text' : 'password'}
+      />
+
+    </div>
+  );
+};
+
 interface AddMcpServerModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -91,41 +110,62 @@ export const AddMcpServerModal = ({
   });
 
   useEffect(() => {
-    if (initialData && isOpen) {
-      // We expect initialData from GitHub to be McpServerType.Command
-      if (initialData.type === McpServerType.Command) {
-        const { name, command, env: envRecord } = initialData;
-        let envArray: EnvVar[] = [];
-        if (envRecord && typeof envRecord === 'object') {
-          const transformedEnv = Object.entries(envRecord).map(([key, value]) => ({
-            key,
-            value: String(value),
-          }));
-          if (transformedEnv.length > 0) {
-            envArray = transformedEnv;
+    if (isOpen) {
+      if (initialData) {
+        // Branch for Command types (either Import or McpServer variant)
+        if (initialData.type === McpServerType.Command) {
+          const name = initialData.name || '';
+          const command = (initialData as { command?: string }).command || '';
+          const envRecord = (initialData as { env?: Record<string, any> }).env;
+
+          let envArray: EnvVar[] = [];
+          if (envRecord && typeof envRecord === 'object') {
+            const transformedEnv = Object.entries(envRecord).map(([key, value]) => ({
+              key,
+              value: String(value),
+            }));
+            if (transformedEnv.length > 0) {
+              envArray = transformedEnv;
+            }
           }
+          if (envArray.length === 0) {
+            envArray.push({ key: '', value: '' });
+          }
+          form.reset({
+            name,
+            type: McpServerType.Command,
+            command,
+            env: envArray,
+          });
+        } else if (initialData.type === McpServerType.Sse) {
+          // initialData is Extract<McpServer, { type: McpServerType.Sse }>
+          const sseData = initialData as Extract<McpServer, { type: McpServerType.Sse }>; // Cast for clarity and safety
+          form.reset({
+            name: sseData.name || '',
+            type: McpServerType.Sse,
+            url: sseData.url || '',
+          });
+        } else {
+          // Fallback to a default command form, trying to preserve name if possible.
+          const name = (initialData as any).name || '';
+          form.reset({
+            name: name,
+            type: McpServerType.Command,
+            command: '',
+            env: [{ key: '', value: '' }],
+          });
         }
-        if (envArray.length === 0) {
-          envArray.push({ key: '', value: '' });
-        }
-        form.reset({
-          name: name || '',
-          type: McpServerType.Command,
-          command: command || '',
-          env: envArray,
-        });
       } else {
-        // Fallback: If initialData is present but not Command type (unexpected for GitHub import)
-        // reset to a default Command form. This helps keep the form state consistent.
+        // No initialData, reset to a clean command form
         form.reset({
-          name: initialData.name || '', // Can still use name if available
+          name: '',
           type: McpServerType.Command,
           command: '',
           env: [{ key: '', value: '' }],
         });
       }
-    } else if (!isOpen) {
-      // Reset to a clean default state when modal is closed or opened without initialData
+    } else {
+      // Modal is closed, reset to a clean default state
       form.reset({
         name: '',
         type: McpServerType.Command,
@@ -153,6 +193,7 @@ export const AddMcpServerModal = ({
       toast.error('Failed to add MCP Server', {
         description: error?.message,
       });
+      setIsSubmitting(false);
     },
   });
 
@@ -167,6 +208,7 @@ export const AddMcpServerModal = ({
       toast.error('Failed to update MCP Server', {
         description: error?.message,
       });
+      setIsSubmitting(false);
     },
   });
 
@@ -187,36 +229,41 @@ export const AddMcpServerModal = ({
         const envRecord: Record<string, string> = {};
         if (values.env && values.env.length > 0) {
           values.env.forEach(({ key, value }) => {
-            if (key.trim()) {
+            if (key.trim()) { // Ensure key is not empty or just whitespace
               envRecord[key.trim()] = value;
             }
           });
         }
         specificPayload = {
           ...commonPayload,
-          type: McpServerType.Command as const, // Add 'as const' for stricter type
+          type: McpServerType.Command as const,
           command: values.command,
-          env: envRecord,
+          env: Object.keys(envRecord).length > 0 ? envRecord : undefined,
         };
       } else {
         specificPayload = {
           ...commonPayload,
-          type: McpServerType.Sse as const, // Add 'as const' for stricter type
+          type: McpServerType.Sse as const,
           url: values.url,
         };
       }
       
       // Construct the full payload for the mutation hook
-      const mutationInput: AddMcpServerInput = {
+      const mutationInput = {
         nodeAddress: auth.node_address,
         token: auth.api_v2_key,
         ...specificPayload,
-      };
+      } as AddMcpServerInput;
 
       if (mode === 'Create') {
         await addMcpServer(mutationInput);
       } else { // Update mode
         const serverId = (initialData as McpServer)?.id;
+        if (serverId === undefined) {
+          toast.error('Failed to update MCP server: Server ID is missing.');
+          setIsSubmitting(false);
+          return;
+        }
         const updateInput: UpdateMcpServerInput = {
           nodeAddress: auth.node_address,
           token: auth.api_v2_key,
@@ -268,16 +315,24 @@ export const AddMcpServerModal = ({
                   <Select
                     defaultValue={field.value}
                     onValueChange={(value) => {
-                      field.onChange(value as McpServerType);
+                      const newType = value as McpServerType;
+                      field.onChange(newType);
+                      form.setValue('type', newType, { shouldValidate: true });
 
-                      // Reset form fields based on type
-                      if (value === McpServerType.Command) {
-                        form.setValue('command', '');
-                        form.setValue('env', [{ key: '', value: '' }]);
-                      } else {
-                        form.setValue('url', '');
+                      if (newType === McpServerType.Command) {
+                        form.setValue('command', form.getValues('command') || '');
+                        form.setValue('env', form.getValues('env') || [{ key: '', value: '' }]);
+                        form.clearErrors('url');
+                        form.unregister('url');
+                      } else if (newType === McpServerType.Sse) {
+                        form.setValue('url', form.getValues('url') || '');
+                        form.clearErrors('command');
+                        form.clearErrors('env');
+                        form.unregister('command');
+                        form.unregister('env');
                       }
                     }}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -335,47 +390,59 @@ export const AddMcpServerModal = ({
                     </p>
                   )}
 
-                  {fields.map((field, index) => (
-                    <div className="flex items-center gap-2" key={field.id}>
-                      <FormField
-                        control={form.control}
-                        name={`env.${index}.key`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>Key</FormLabel>
-                            <FormControl>
-                              <Input placeholder="KEY" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <div className="px-2">=</div>
-                      <FormField
-                        control={form.control}
-                        name={`env.${index}.value`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>Value</FormLabel>
-                            <FormControl>
-                              <Input placeholder="value" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button
-                        className="h-9 w-9 shrink-0"
-                        disabled={fields.length === 1}
-                        onClick={() => remove(index)}
-                        size="icon"
-                        type="button"
-                        variant="ghost"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
+                  {fields.map((item, index) => {
+                    const currentEnvKey = form.watch(`env.${index}.key`) || '';
+                    const sensitiveKeywords = ['secret', 'key', 'password'];
+                    const isSensitive = sensitiveKeywords.some(keyword =>
+                      currentEnvKey.toLowerCase().includes(keyword)
+                    );
+
+                    return (
+                      <div className="flex items-end gap-2" key={item.id}>
+                        <FormField
+                          control={form.control}
+                          name={`env.${index}.key`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormLabel>Key</FormLabel>
+                              <FormControl>
+                                <Input placeholder="KEY" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="px-2 pb-2.5">=</div>
+                        <FormField
+                          control={form.control}
+                          name={`env.${index}.value`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormLabel>Value</FormLabel>
+                              <FormControl>
+                                {isSensitive ? (
+                                  <PasswordToggleInput placeholder="Value" {...field} />
+                                ) : (
+                                  <Input placeholder="Value" type="text" {...field} />
+                                )}
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button
+                          className="mb-1.5 h-9 w-9 shrink-0"
+                          disabled={fields.length === 1 && (!form.getValues(`env.${index}.key`) && !form.getValues(`env.${index}.value`))}
+                          onClick={() => remove(index)}
+                          size="icon"
+                          type="button"
+                          variant="ghost"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    );
+                  })}
                 </div>
               </>
             )}
@@ -405,7 +472,11 @@ export const AddMcpServerModal = ({
               >
                 Cancel
               </Button>
-              <Button disabled={isSubmitting} type="submit">
+              <Button
+                disabled={isSubmitting || (form.formState.isSubmitted && !form.formState.isValid)}
+                isLoading={isSubmitting}
+                type="submit"
+              >
                 {isSubmitting
                   ? mode === 'Create' ? 'Adding...' : 'Updating...'
                   : mode === 'Create' ? 'Add' : 'Update'}
