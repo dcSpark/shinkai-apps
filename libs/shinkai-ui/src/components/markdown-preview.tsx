@@ -6,7 +6,6 @@ import React, {
   ComponentPropsWithoutRef,
   ComponentType,
   createContext,
-  ElementRef,
   ElementType,
   FC,
   memo,
@@ -310,7 +309,6 @@ export const DefaultCodeBlockContent: ComponentType<{
 
 export const DefaultCodeHeader: ComponentType<CodeHeaderProps> = () => null;
 
-type MarkdownTextPrimitiveElement = ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = ComponentPropsWithoutRef<typeof Primitive.div>;
 
 export type MarkdownTextPrimitiveProps = Omit<
