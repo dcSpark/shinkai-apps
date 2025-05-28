@@ -192,10 +192,7 @@ export default function EditToolBasicInfoDialog({
           </Form>
         </PopoverContent>
       </Popover>
-      <RemoveToolButton
-        isPlaygroundTool={false}
-        toolKey={initialToolRouterKeyWithVersion}
-      />
+      <RemoveToolButton toolKey={initialToolRouterKeyWithVersion} />
     </div>
   );
 }
