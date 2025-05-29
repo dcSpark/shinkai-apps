@@ -1,6 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { type McpServer,McpServerType } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
+import {
+  type McpServer,
+  McpServerType,
+} from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
 import type { AddMcpServerInput } from '@shinkai_network/shinkai-node-state/v2/mutations/addMcpServer/types';
 import { useAddMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/addMcpServer/useAddMcpServer';
 import type { ImportMCPServerFromGithubURLOutput } from '@shinkai_network/shinkai-node-state/v2/mutations/importMCPServerFromGithubURL/types';
@@ -26,6 +29,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  TextField,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AlertTriangle, PlusCircle, Trash2 } from 'lucide-react';
@@ -77,7 +81,6 @@ const PasswordToggleInput: React.FC<ShinkaiInputProps> = (props) => {
         className={cn(props.className, 'pr-10')} // Ensure space for the icon button
         type={showPassword ? 'text' : 'password'}
       />
-
     </div>
   );
 };
@@ -120,10 +123,12 @@ export const AddMcpServerModal = ({
 
           let envArray: EnvVar[] = [];
           if (envRecord && typeof envRecord === 'object') {
-            const transformedEnv = Object.entries(envRecord).map(([key, value]) => ({
-              key,
-              value: String(value),
-            }));
+            const transformedEnv = Object.entries(envRecord).map(
+              ([key, value]) => ({
+                key,
+                value: String(value),
+              }),
+            );
             if (transformedEnv.length > 0) {
               envArray = transformedEnv;
             }
@@ -139,7 +144,10 @@ export const AddMcpServerModal = ({
           });
         } else if (initialData.type === McpServerType.Sse) {
           // initialData is Extract<McpServer, { type: McpServerType.Sse }>
-          const sseData = initialData as Extract<McpServer, { type: McpServerType.Sse }>; // Cast for clarity and safety
+          const sseData = initialData as Extract<
+            McpServer,
+            { type: McpServerType.Sse }
+          >; // Cast for clarity and safety
           form.reset({
             name: sseData.name || '',
             type: McpServerType.Sse,
@@ -221,7 +229,10 @@ export const AddMcpServerModal = ({
         name: values.name,
         // Retain is_enabled from initialData if available (for updates or GitHub import),
         // otherwise default to true for new creations.
-        is_enabled: typeof initialData?.is_enabled === 'boolean' ? initialData.is_enabled : true,
+        is_enabled:
+          typeof initialData?.is_enabled === 'boolean'
+            ? initialData.is_enabled
+            : true,
       };
 
       let specificPayload;
@@ -229,7 +240,8 @@ export const AddMcpServerModal = ({
         const envRecord: Record<string, string> = {};
         if (values.env && values.env.length > 0) {
           values.env.forEach(({ key, value }) => {
-            if (key.trim()) { // Ensure key is not empty or just whitespace
+            if (key.trim()) {
+              // Ensure key is not empty or just whitespace
               envRecord[key.trim()] = value;
             }
           });
@@ -247,7 +259,7 @@ export const AddMcpServerModal = ({
           url: values.url,
         };
       }
-      
+
       // Construct the full payload for the mutation hook
       const mutationInput = {
         nodeAddress: auth.node_address,
@@ -257,7 +269,8 @@ export const AddMcpServerModal = ({
 
       if (mode === 'Create') {
         await addMcpServer(mutationInput);
-      } else { // Update mode
+      } else {
+        // Update mode
         const serverId = (initialData as McpServer)?.id;
         if (serverId === undefined) {
           toast.error('Failed to update MCP server: Server ID is missing.');
@@ -273,44 +286,41 @@ export const AddMcpServerModal = ({
         await updateMcpServer(updateInput);
       }
     } catch (error) {
-      console.error(mode === 'Create' ? 'Failed to add MCP server:' : 'Failed to update MCP server:', error);
+      console.error(
+        mode === 'Create'
+          ? 'Failed to add MCP server:'
+          : 'Failed to update MCP server:',
+        error,
+      );
     }
   };
 
   return (
     <Dialog onOpenChange={(open) => !open && onClose()} open={isOpen}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className="max-w-xl" showCloseButton>
+        <DialogHeader className="flex flex-col gap-2">
           <DialogTitle>
             {mode === 'Create' ? t('mcpServers.add') : t('mcpServers.update')}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="sr-only">
             {mode === 'Create'
               ? t('mcpServers.addDescription')
               : t('mcpServers.updateDescription', { name: initialData?.name })}
           </DialogDescription>
-          {mode === 'Update' && (
-            <div className="mt-2 flex items-start rounded-md border border-yellow-500/50 bg-yellow-500/10 p-3 text-sm text-yellow-200">
-              <AlertTriangle className="mr-2 h-5 w-5 flex-shrink-0 text-yellow-400" />
-              <div>
-                {t('mcpServers.updateWarningDescription')}
-              </div>
-            </div>
-          )}
         </DialogHeader>
+        {mode === 'Update' && (
+          <div className="mt-2 flex items-start rounded-md border border-yellow-500/50 bg-yellow-500/10 p-3 text-sm text-yellow-200">
+            <AlertTriangle className="mr-2 h-5 w-5 flex-shrink-0 text-yellow-400" />
+            <div>{t('mcpServers.updateWarningDescription')}</div>
+          </div>
+        )}
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('mcpServers.name')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t('mcpServers.namePlaceholder')} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                <TextField field={field} label="Server Name" type="text" />
               )}
             />
 
@@ -319,7 +329,7 @@ export const AddMcpServerModal = ({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('mcpServers.type')}</FormLabel>
+                  <FormLabel>Connection Type</FormLabel>
                   <Select
                     defaultValue={field.value}
                     onValueChange={(value) => {
@@ -328,8 +338,14 @@ export const AddMcpServerModal = ({
                       form.setValue('type', newType, { shouldValidate: true });
 
                       if (newType === McpServerType.Command) {
-                        form.setValue('command', form.getValues('command') || '');
-                        form.setValue('env', form.getValues('env') || [{ key: '', value: '' }]);
+                        form.setValue(
+                          'command',
+                          form.getValues('command') || '',
+                        );
+                        form.setValue(
+                          'env',
+                          form.getValues('env') || [{ key: '', value: '' }],
+                        );
                         form.clearErrors('url');
                         form.unregister('url');
                       } else if (newType === McpServerType.Sse) {
@@ -344,14 +360,18 @@ export const AddMcpServerModal = ({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('mcpServers.selectServerType')} />
+                        <SelectValue
+                          placeholder={t('mcpServers.selectServerType')}
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectItem value={McpServerType.Command}>
-                        Command
+                        Standard IO
                       </SelectItem>
-                      <SelectItem value={McpServerType.Sse}>SSE</SelectItem>
+                      <SelectItem value={McpServerType.Sse}>
+                        Server-Sent Events (SSE)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -365,13 +385,7 @@ export const AddMcpServerModal = ({
                   control={form.control}
                   name="command"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Command</FormLabel>
-                      <FormControl>
-                        <Input placeholder="python -m server" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                    <TextField field={field} label="Command" type="text" />
                   )}
                 />
 
@@ -401,46 +415,37 @@ export const AddMcpServerModal = ({
                   {fields.map((item, index) => {
                     const currentEnvKey = form.watch(`env.${index}.key`) || '';
                     const sensitiveKeywords = ['secret', 'key', 'password'];
-                    const isSensitive = sensitiveKeywords.some(keyword =>
-                      currentEnvKey.toLowerCase().includes(keyword)
+                    const isSensitive = sensitiveKeywords.some((keyword) =>
+                      currentEnvKey.toLowerCase().includes(keyword),
                     );
 
                     return (
-                      <div className="flex items-end gap-2" key={item.id}>
+                      <div className="flex items-center gap-2" key={item.id}>
                         <FormField
                           control={form.control}
                           name={`env.${index}.key`}
                           render={({ field }) => (
-                            <FormItem className="flex-1">
-                              <FormLabel>Key</FormLabel>
-                              <FormControl>
-                                <Input placeholder="KEY" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
+                            <TextField field={field} label="Key" type="text" />
                           )}
                         />
-                        <div className="px-2 pb-2.5">=</div>
                         <FormField
                           control={form.control}
                           name={`env.${index}.value`}
                           render={({ field }) => (
-                            <FormItem className="flex-1">
-                              <FormLabel>Value</FormLabel>
-                              <FormControl>
-                                {isSensitive ? (
-                                  <PasswordToggleInput placeholder="Value" {...field} />
-                                ) : (
-                                  <Input placeholder="Value" type="text" {...field} />
-                                )}
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
+                            <TextField
+                              field={field}
+                              label="Value"
+                              type={isSensitive ? 'password' : 'text'}
+                            />
                           )}
                         />
                         <Button
                           className="mb-1.5 h-9 w-9 shrink-0"
-                          disabled={fields.length === 1 && (!form.getValues(`env.${index}.key`) && !form.getValues(`env.${index}.value`))}
+                          disabled={
+                            fields.length === 1 &&
+                            !form.getValues(`env.${index}.key`) &&
+                            !form.getValues(`env.${index}.value`)
+                          }
                           onClick={() => remove(index)}
                           size="icon"
                           type="button"
@@ -460,34 +465,39 @@ export const AddMcpServerModal = ({
                 control={form.control}
                 name="url"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>URL</FormLabel>
-                    <FormControl>
-                      <Input placeholder="https://example.com/sse" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                  <TextField field={field} label="Server URL" type="text" />
                 )}
               />
             )}
 
             <DialogFooter className="mt-6">
               <Button
+                className="min-w-[120px]"
                 disabled={isSubmitting}
                 onClick={onClose}
+                size="md"
                 type="button"
                 variant="outline"
               >
                 {t('common.cancel')}
               </Button>
               <Button
-                disabled={isSubmitting || (form.formState.isSubmitted && !form.formState.isValid)}
+                className="min-w-[140px]"
+                disabled={
+                  isSubmitting ||
+                  (form.formState.isSubmitted && !form.formState.isValid)
+                }
                 isLoading={isSubmitting}
+                size="md"
                 type="submit"
               >
                 {isSubmitting
-                  ? mode === 'Create' ? t('common.adding') : t('common.updating')
-                  : mode === 'Create' ? t('mcpServers.add') : t('mcpServers.update')}
+                  ? mode === 'Create'
+                    ? t('common.adding')
+                    : t('common.updating')
+                  : mode === 'Create'
+                    ? t('mcpServers.add')
+                    : t('mcpServers.update')}
               </Button>
             </DialogFooter>
           </form>

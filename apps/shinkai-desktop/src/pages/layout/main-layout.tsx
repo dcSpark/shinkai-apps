@@ -46,7 +46,6 @@ import {
   ArrowRightToLine,
   Ellipsis,
   HelpCircleIcon,
-  ServerIcon,
 } from 'lucide-react';
 import React, { Fragment, useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useMatch, useNavigate } from 'react-router';
@@ -253,11 +252,7 @@ export function MainNav() {
       href: '/mcp',
       icon: <MCPIcon className="size-[18px]" />,
     },
-    {
-      title: 'MCP Servers',
-      href: '/mcp-servers',
-      icon: <MCPIcon className="size-[18px]" />,
-    },
+
     {
       title: t('layout.menuItems.vectorFs'),
       href: '/vector-fs',

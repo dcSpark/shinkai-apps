@@ -15,6 +15,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   Switch,
   Tooltip,
   TooltipContent,
@@ -22,9 +26,9 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { BoltIcon, Trash2 } from 'lucide-react';
+import { BoltIcon, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth';
@@ -35,7 +39,10 @@ interface McpServerCardProps {
   onToggleEnabled: (serverId: number, currentEnabled: boolean) => Promise<void>;
 }
 
-export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) => {
+export const McpServerCard = ({
+  server,
+  onToggleEnabled,
+}: McpServerCardProps) => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -46,6 +53,8 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
     token: auth?.api_v2_key || '',
     mcpServerId: server.id,
   });
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const { mutateAsync: deleteMcpServer, isPending: isDeleting } =
     useDeleteMcpServer({
@@ -63,33 +72,29 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
   const handleDelete = async () => {
     if (!auth) return;
 
-    try {
-      await deleteMcpServer({
-        nodeAddress: auth.node_address,
-        token: auth.api_v2_key,
-        id: server.id,
-      });
-    } catch (error) {
-      toast.error(t('mcpServers.deleteFailed'), {
-        description: error instanceof Error ? error.message : 'Unknown error',
-      });
-    }
+    await deleteMcpServer({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      id: server.id,
+    });
   };
 
   return (
     <>
       <div
         className={cn(
-          'grid grid-cols-[1fr_auto_min-content_min-content_auto] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
+          'grid grid-cols-[1fr_auto_40px_auto] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
         )}
-        key={server.id} // key is typically used in the parent map, but won't harm here
       >
         <div className="flex flex-col gap-2.5">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-white">
               {server.name}{' '}
             </span>
-            <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
+            <Badge
+              className="text-official-gray-300 text-xs font-normal"
+              variant="outline"
+            >
               {server.type}
             </Badge>
           </div>
@@ -103,7 +108,13 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
               <TooltipTrigger asChild>
                 <DialogTrigger asChild>
                   <Badge
-                    className="text-gray-80 bg-official-gray-750 hover:bg-official-gray-700 cursor-pointer px-3 py-2 text-xs font-normal transition-colors"
+                    className={cn(
+                      buttonVariants({
+                        variant: 'outline',
+                        size: 'xs',
+                      }),
+                      'cursor-pointer',
+                    )}
                     onClick={() => setIsToolsDialogOpen(true)}
                   >
                     <ToolsIcon className="mr-2 size-4 text-white" />
@@ -118,31 +129,33 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
                 {t('mcpServers.viewAvailableTools')}
               </TooltipContent>
             </Tooltip>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-xl" showCloseButton>
               <DialogHeader>
-                <DialogTitle>{t('mcpServers.toolsFor', { name: server.name })}</DialogTitle>
+                <DialogTitle>
+                  {t('mcpServers.toolsFor', { name: server.name })}
+                </DialogTitle>
                 <DialogDescription>
                   {t('mcpServers.listOfToolsAvailableFromThisMcpServer')}
                 </DialogDescription>
               </DialogHeader>
-              <div className="max-h-[400px] overflow-y-auto py-4">
+              <div className="max-h-[60vh] overflow-y-auto py-1">
                 {mcpServerTools && mcpServerTools.length > 0 ? (
-                  <ul className="space-y-2">
+                  <ul className="divide-official-gray-780 divide-y">
                     {mcpServerTools.map((tool: McpServerTool) => (
-                      <li className="text-sm" key={tool.id}>
+                      <li className="py-2.5 text-sm" key={tool.id}>
                         {tool.tool_router_key ? (
                           <Link
-                            className="text-official-green-400 hover:text-official-green-300 hover:underline"
+                            className="text-white hover:underline"
                             onClick={() => setIsToolsDialogOpen(false)}
                             to={`/tools/${tool.tool_router_key}`}
                           >
                             {tool.name}
                           </Link>
                         ) : (
-                          <span className="text-official-gray-100">{tool.name}</span>
+                          <span className="text-white">{tool.name}</span>
                         )}
                         {tool.description && (
-                          <p className="text-xs text-official-gray-500">
+                          <p className="text-official-gray-400 text-sm">
                             {tool.description}
                           </p>
                         )}
@@ -157,7 +170,7 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
               </div>
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button type="button" variant="outline">
+                  <Button size="md" type="button" variant="outline">
                     Close
                   </Button>
                 </DialogClose>
@@ -165,89 +178,83 @@ export const McpServerCard = ({ server, onToggleEnabled }: McpServerCardProps) =
             </DialogContent>
           </Dialog>
         </div>
-        <div>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                className={cn(
-                  buttonVariants({
-                    variant: 'outline',
-                    size: 'sm',
-                  }),
-                  'min-h-auto flex h-auto w-10 justify-center rounded-md py-2',
-                )}
-                onClick={() => setIsConfigureModalOpen(true)}
-              >
-                <BoltIcon className="h-4 w-4" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent align="center" side="top">
-              {t('mcpServers.configure')}
-            </TooltipContent>
-          </Tooltip>
-        </div>
-        <div>
-          <Dialog onOpenChange={setIsDeleteDialogOpen} open={isDeleteDialogOpen}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DialogTrigger asChild>
-                  <button
-                    className={cn(
-                      buttonVariants({
-                        variant: 'outline',
-                        size: 'sm',
-                      }),
-                      'min-h-auto flex h-auto w-10 justify-center rounded-md py-2',
-                    )}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </DialogTrigger>
-              </TooltipTrigger>
-              <TooltipContent align="center" side="top">
-                {t('mcpServers.delete')}
-              </TooltipContent>
-            </Tooltip>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogTitle className="pb-0">{t('mcpServers.delete')}</DialogTitle>
-              <DialogDescription>
-                {t('mcpServers.deleteDescription', { name: server.name })}
-              </DialogDescription>
-              <DialogFooter>
-                <div className="flex gap-2 pt-4">
-                  <DialogClose asChild className="flex-1">
-                    <Button
-                      className="min-w-[100px] flex-1"
-                      size="sm"
-                      type="button"
-                      variant="ghost"
-                    >
-                      {t('common.cancel')}
-                    </Button>
-                  </DialogClose>
-                  <Button
-                    className="min-w-[100px] flex-1"
-                    isLoading={isDeleting}
-                    onClick={handleDelete}
-                    size="sm"
-                    variant="destructive"
-                  >
-                    {t('common.delete')}
-                  </Button>
-                </div>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-        <div className="flex items-center justify-center">
-          <Switch
-            checked={server.is_enabled}
-            onCheckedChange={() =>
-              onToggleEnabled(server.id, server.is_enabled)
-            }
-          />
-        </div>
+
+        <Tooltip>
+          <TooltipTrigger>
+            <Switch
+              checked={server.is_enabled}
+              onCheckedChange={() =>
+                onToggleEnabled(server.id, server.is_enabled)
+              }
+            />
+          </TooltipTrigger>
+          <TooltipContent>
+            {server.is_enabled ? 'MCP Server Enabled' : 'MCP Server Disabled'}
+          </TooltipContent>
+        </Tooltip>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              className="size-8 p-2"
+              rounded="lg"
+              size="auto"
+              variant="outline"
+            >
+              <MoreVertical className="size-full" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="bg-official-gray-950 border-official-gray-780 border p-2.5"
+          >
+            <DropdownMenuItem
+              className="flex items-center gap-2.5 text-xs"
+              onClick={() => setIsConfigureModalOpen(true)}
+            >
+              <BoltIcon className="h-4 w-4" />
+              Configure
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="flex items-center gap-2 text-xs"
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
+      <Dialog onOpenChange={setIsDeleteDialogOpen} open={isDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogTitle className="pb-0">{t('mcpServers.delete')}</DialogTitle>
+          <DialogDescription>
+            {t('mcpServers.deleteDescription', { name: server.name })}
+          </DialogDescription>
+          <DialogFooter>
+            <div className="flex gap-2 pt-4">
+              <DialogClose asChild className="flex-1">
+                <Button
+                  className="min-w-[100px] flex-1"
+                  size="sm"
+                  type="button"
+                  variant="ghost"
+                >
+                  {t('common.cancel')}
+                </Button>
+              </DialogClose>
+              <Button
+                className="min-w-[100px] flex-1"
+                isLoading={isDeleting}
+                onClick={handleDelete}
+                size="sm"
+                variant="destructive"
+              >
+                {t('common.delete')}
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <AddMcpServerModal
         initialData={server}
         isOpen={isConfigureModalOpen}
