@@ -1,7 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useSetToolMcpEnabled } from '@shinkai_network/shinkai-node-state/v2/mutations/setToolMcpEnabled/useSetToolMcpEnabled';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
-import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +20,10 @@ import {
   DropdownMenuTrigger,
   SearchInput,
   Switch,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   ToggleGroup,
   ToggleGroupItem,
   Tooltip,
@@ -28,16 +31,17 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { TFunction } from 'i18next';
-import { BoltIcon, MoreVertical, Plus } from 'lucide-react';
+import { BoltIcon, MoveRightIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
 
+import { McpServers } from '../components/mcp-servers/mcp-servers';
 import { handleConfigureClaude } from '../lib/external-clients/claude-desktop';
-import { ConfigError, getDenoBinPath } from '../lib/external-clients/common';
+import { getDenoBinPath } from '../lib/external-clients/common';
+import { ConfigError } from '../lib/external-clients/common';
 import { handleConfigureCursor } from '../lib/external-clients/cursor';
 import { useAuth } from '../store/auth';
 
@@ -45,24 +49,85 @@ export const MCP_SERVER_ID = 'shinkai-mcp-server';
 
 type GetMCPCategory = 'all' | 'agent' | 'tool';
 
+export const tabTriggerClassnames = cn(
+  'rounded-xs relative flex size-full min-w-[120px] p-0 pt-0.5 text-sm',
+  'data-[state=active]:bg-official-gray-950 data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#1a1a1d]',
+  'before:absolute before:left-0 before:right-0 before:top-0 before:h-0.5',
+);
+
 export const McpRegistryPage = () => {
+  const [selectedTab, setSelectedTab] = useState<
+    'mcp_servers' | 'expose_tools'
+  >('mcp_servers');
+
+  return (
+    <Tabs
+      className="flex size-full flex-col"
+      defaultValue="mcp_servers"
+      onValueChange={(value) => {
+        setSelectedTab(value as 'mcp_servers' | 'expose_tools');
+      }}
+    >
+      <div className="container max-w-screen-lg">
+        <div className="flex flex-col gap-5 pb-6 pt-10">
+          <div className="flex justify-between gap-4">
+            <div className="font-clash inline-flex items-center gap-5 text-3xl font-medium">
+              <h1>MCPs</h1>
+              <TabsList className="bg-official-gray-950/80 flex h-10 w-fit items-center gap-2 rounded-full px-1 py-1">
+                <TabsTrigger
+                  className={cn(
+                    'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
+                    'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
+                    'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
+                    'focus-visible:outline-none',
+                  )}
+                  value="mcp_servers"
+                >
+                  MCP Servers
+                  <span className="text-official-gray-400 inline-flex items-center gap-1 text-xs">
+                    MCP <MoveRightIcon className="size-2.5" /> Shinkai
+                  </span>
+                </TabsTrigger>
+                <TabsTrigger
+                  className={cn(
+                    'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
+                    'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
+                    'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
+                    'focus-visible:outline-none',
+                  )}
+                  value="expose_tools"
+                >
+                  Expose Tools
+                  <span className="text-official-gray-400 inline-flex items-center gap-1 text-xs">
+                    Shinkai <MoveRightIcon className="size-2.5" /> MCP
+                  </span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+          </div>
+          <p className="text-official-gray-400 whitespace-pre-wrap text-sm">
+            {selectedTab === 'mcp_servers'
+              ? 'Connect to MCP server to access external data sources  and tools,  enhancing \nits capabilities with real-time information.'
+              : 'Expose your AI Tools through MCP to enable seamless integration with other MCP Clients \nand expand their capabilities.'}
+          </p>
+        </div>
+        <TabsContent value="mcp_servers">
+          <McpServers />
+        </TabsContent>
+        <TabsContent value="expose_tools">
+          <ExposeToolsAsMcp />
+        </TabsContent>
+      </div>
+    </Tabs>
+  );
+};
+
+const ExposeToolsAsMcp = () => {
   const auth = useAuth((state) => state.auth);
-  const { t } = useTranslation();
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const debouncedSearchQuery = useDebounce(searchQuery, 600);
-  const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
-
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogTitle, setDialogTitle] = useState('');
-  const [dialogDescription, setDialogDescription] = useState('');
-  const [dialogHelpText, setDialogHelpText] = useState('');
-  const [jsonConfigToCopy, setJsonConfigToCopy] = useState('');
-  const [customDialogOpen, setCustomDialogOpen] = useState(false);
-  const [customSseUrl, setCustomSseUrl] = useState('');
-  const [customCommand, setCustomCommand] = useState('');
   const [selectedMCCategory, setSelectedMCCategory] =
     useState<GetMCPCategory>('all');
+
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { data: toolsList, isPending } = useGetTools({
     nodeAddress: auth?.node_address ?? '',
@@ -70,28 +135,36 @@ export const McpRegistryPage = () => {
     category: 'mcp_servers',
   });
 
-  const filteredToolsList = useMemo(() => {
-    if (selectedMCCategory === 'all') return toolsList;
-    if (selectedMCCategory === 'agent') {
-      return toolsList?.filter((tool) => tool.tool_type === 'Agent');
-    }
-    if (selectedMCCategory === 'tool') {
-      return toolsList?.filter((tool) => tool.tool_type !== 'Agent');
-    }
-  }, [toolsList, selectedMCCategory]);
+  const { t } = useTranslation();
 
-  const {
-    data: searchToolList,
-    isLoading: isSearchToolListPending,
-    isSuccess: isSearchToolListSuccess,
-  } = useGetSearchTools(
-    {
-      nodeAddress: auth?.node_address ?? '',
-      token: auth?.api_v2_key ?? '',
-      search: debouncedSearchQuery,
-    },
-    { enabled: isSearchQuerySynced && !!searchQuery },
-  );
+  const [customDialogOpen, setCustomDialogOpen] = useState(false);
+  const [customSseUrl, setCustomSseUrl] = useState('');
+  const [customCommand, setCustomCommand] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogTitle, setDialogTitle] = useState('');
+  const [dialogDescription, setDialogDescription] = useState('');
+  const [dialogHelpText, setDialogHelpText] = useState('');
+  const [jsonConfigToCopy, setJsonConfigToCopy] = useState('');
+
+  const filteredToolsList = useMemo(() => {
+    let filtered = toolsList ?? [];
+
+    if (selectedMCCategory === 'agent') {
+      filtered = filtered?.filter((tool) => tool.tool_type === 'Agent');
+    } else if (selectedMCCategory === 'tool') {
+      filtered = filtered?.filter((tool) => tool.tool_type !== 'Agent');
+    }
+
+    if (searchQuery) {
+      filtered = filtered?.filter(
+        (tool) =>
+          tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          tool.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+    }
+
+    return filtered;
+  }, [toolsList, selectedMCCategory, searchQuery]);
 
   const handleConfigureClick = async (
     configureFn: (serverId: string, tFunc: TFunction) => Promise<void>,
@@ -139,64 +212,8 @@ export const McpRegistryPage = () => {
   };
 
   return (
-    <div className="container">
-      <div className="flex flex-col gap-1 pb-6 pt-10">
-        <div className="flex justify-between gap-4">
-          <h1 className="font-clash text-3xl font-medium">MCPs</h1>
-          <div className="flex gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline">
-                  Connect External MCP Client
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" className="p-1 px-2">
-                <DropdownMenuItem
-                  onClick={() =>
-                    handleConfigureClick(
-                      (serverId, tFunc) =>
-                        handleConfigureClaude(serverId, tFunc),
-                      'Claude Desktop',
-                    )
-                  }
-                >
-                  Claude Desktop
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() =>
-                    handleConfigureClick(
-                      (serverId, tFunc) =>
-                        handleConfigureCursor(serverId, tFunc),
-                      'Cursor',
-                    )
-                  }
-                >
-                  Cursor
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleShowCustomInstructions}>
-                  Custom
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button
-              className="min-w-[100px]"
-              onClick={() => {
-                // navigate('/add-agent');
-              }}
-              size="sm"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Add MCP Server</span>
-            </Button>
-          </div>
-        </div>
-        <p className="text-official-gray-400 text-sm">
-          Connect to MCP server to access external data sources <br /> and
-          tools, enhancing its capabilities with real-time information.
-        </p>
-      </div>
-
-      <div className="flex justify-between gap-10">
+    <>
+      <div className="flex justify-between gap-4">
         <div className="flex flex-1 items-center justify-between gap-4">
           <SearchInput
             classNames={{
@@ -208,9 +225,9 @@ export const McpRegistryPage = () => {
             value={searchQuery}
           />
         </div>
-        <div className="flex justify-start">
+        <div className="flex items-center justify-start gap-2">
           <ToggleGroup
-            className="border-official-gray-780 flex justify-start rounded-full border bg-transparent px-0.5 py-1"
+            className="border-official-gray-780 flex justify-start rounded-full border bg-transparent px-0.5 py-0.5"
             onValueChange={(value) => {
               if (!value) return;
               setSelectedMCCategory(value as GetMCPCategory);
@@ -246,16 +263,41 @@ export const McpRegistryPage = () => {
               </ToggleGroupItem>
             ))}
           </ToggleGroup>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="md" variant="outline">
+                Connect External MCP Client
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" className="p-1 px-2">
+              <DropdownMenuItem
+                onClick={() =>
+                  handleConfigureClick(
+                    (serverId, tFunc) => handleConfigureClaude(serverId, tFunc),
+                    'Claude Desktop',
+                  )
+                }
+              >
+                Claude Desktop
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  handleConfigureClick(
+                    (serverId, tFunc) => handleConfigureCursor(serverId, tFunc),
+                    'Cursor',
+                  )
+                }
+              >
+                Cursor
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleShowCustomInstructions}>
+                Custom
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       <div className="mx-auto flex flex-col gap-2">
-        {searchQuery && isSearchQuerySynced && searchToolList?.length === 0 && (
-          <div className="flex h-20 items-center justify-center">
-            <p className="text-official-gray-400 text-sm">
-              {t('tools.emptyState.search.text')}
-            </p>
-          </div>
-        )}
         <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
           {filteredToolsList?.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 py-8">
@@ -285,32 +327,8 @@ export const McpRegistryPage = () => {
             ))
           )}
         </div>
-        {searchQuery &&
-          isSearchQuerySynced &&
-          isSearchToolListSuccess &&
-          searchToolList?.length > 0 && (
-            <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
-              {searchToolList?.map((tool) => (
-                <McpCard
-                  key={tool.tool_router_key}
-                  requiredConfig={(tool.config ?? []).some(
-                    (config) =>
-                      config.BasicConfig?.required &&
-                      !config.BasicConfig?.key_value,
-                  )}
-                  toolAuthor={tool.author}
-                  toolDescription={tool.description}
-                  toolEnabled={tool.enabled}
-                  toolMcpEnabled={tool.mcp_enabled ?? false}
-                  toolName={tool.name}
-                  toolRouterKey={tool.tool_router_key}
-                  toolType={tool.tool_type === 'Agent' ? 'Agent' : 'Tool'}
-                />
-              ))}
-            </div>
-          )}
 
-        {(isPending || !isSearchQuerySynced || isSearchToolListPending) && (
+        {isPending && (
           <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
             {Array.from({ length: 8 }).map((_, idx) => (
               <div
@@ -402,7 +420,7 @@ export const McpRegistryPage = () => {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -515,28 +533,6 @@ const McpCard = ({
             </TooltipPortal>
           </Tooltip>
         )}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              className="size-8 p-2"
-              rounded="lg"
-              size="auto"
-              variant="outline"
-            >
-              <MoreVertical className="size-full" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
-            <DropdownMenuItem asChild className="text-xs">
-              <Link
-                className={cn('min-h-auto h-auto rounded-md py-2 text-sm')}
-                to={`/tools/${toolRouterKey}`}
-              >
-                View Details
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
     </div>
   );

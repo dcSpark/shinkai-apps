@@ -252,6 +252,7 @@ export function MainNav() {
       href: '/mcp',
       icon: <MCPIcon className="size-[18px]" />,
     },
+
     {
       title: t('layout.menuItems.vectorFs'),
       href: '/vector-fs',

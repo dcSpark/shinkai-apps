@@ -12,5 +12,5 @@
   "rust-analyzer.linkedProjects": [
     "apps/shinkai-desktop/src-tauri/Cargo.toml"
   ],
-  "rust-analyzer.check.command": "clippy"
+  "rust-analyzer.check.command": "check"
 }
