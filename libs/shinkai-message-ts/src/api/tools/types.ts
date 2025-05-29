@@ -143,13 +143,48 @@ export type AgentShinkaiTool = {
   author?: string;
 };
 
-export type ShinkaiToolType = 'Deno' | 'Python' | 'Rust' | 'Network' | 'Agent';
+export type McpServerTool = {
+  id: number;
+  name: string;
+  description: string;
+  tool_router_key?: string;
+  mcp_server_ref: string;
+  mcp_server_tool: string;
+  activated: boolean;
+  author?: string;
+  config?: Record<string, unknown>;
+  embedding?: number[];
+  input_args: ToolArgument;
+  keywords?: string[];
+  mcp_enabled: boolean;
+  mcp_server_url: string;
+  output_arg: {
+    json: string;
+  };
+  result?: {
+    type: string;
+    properties: Record<string, unknown>;
+    required: string[];
+  };
+  tool_set: string;
+  version: string;
+};
+
+export type ShinkaiToolType =
+  | 'Deno'
+  | 'Python'
+  | 'Rust'
+  | 'Network'
+  | 'Agent'
+  | 'MCPServer';
+
 export type ShinkaiTool =
   | DenoShinkaiTool
   | PythonShinkaiTool
   | RustShinkaiTool
   | NetworkShinkaiTool
-  | AgentShinkaiTool;
+  | AgentShinkaiTool
+  | McpServerTool;
 
 export type GetToolResponse = {
   content: [ShinkaiTool, boolean];
@@ -265,6 +300,7 @@ export enum CodeLanguage {
   Typescript = 'Typescript',
   Python = 'Python',
   Agent = 'Agent',
+  MCPServer = 'MCPServer',
 }
 
 export type CreateToolCodeRequest = {
@@ -296,6 +332,7 @@ export enum DynamicToolType {
   DenoDynamic = 'denodynamic',
   PythonDynamic = 'pythondynamic',
   AgentDynamic = 'agentdynamic',
+  MCPServerDynamic = 'mcpserverdynamic',
 }
 
 export type ExecuteToolCodeRequest = {
