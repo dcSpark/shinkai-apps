@@ -7,7 +7,7 @@ import dts from 'vite-plugin-dts';
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/shinkai-node-state',
-
+  root: __dirname,
   plugins: [
     react(),
     nxViteTsPaths(),
