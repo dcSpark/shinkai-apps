@@ -150,9 +150,34 @@ export type McpServerTool = {
   tool_router_key?: string;
   mcp_server_ref: string;
   mcp_server_tool: string;
+  activated: boolean;
+  author?: string;
+  config?: Record<string, unknown>;
+  embedding?: number[];
+  input_args: ToolArgument;
+  keywords?: string[];
+  mcp_enabled: boolean;
+  mcp_server_url: string;
+  output_arg: {
+    json: string;
+  };
+  result?: {
+    type: string;
+    properties: Record<string, unknown>;
+    required: string[];
+  };
+  tool_set: string;
+  version: string;
 };
 
-export type ShinkaiToolType = 'Deno' | 'Python' | 'Rust' | 'Network' | 'Agent' | 'MCPServer';
+export type ShinkaiToolType =
+  | 'Deno'
+  | 'Python'
+  | 'Rust'
+  | 'Network'
+  | 'Agent'
+  | 'MCPServer';
+
 export type ShinkaiTool =
   | DenoShinkaiTool
   | PythonShinkaiTool

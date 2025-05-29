@@ -1,13 +1,15 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import type { McpServer } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
-import type { McpServerTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDeleteMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/deleteMcpServer/useDeleteMcpServer';
 import { useGetMCPServerTools } from '@shinkai_network/shinkai-node-state/v2/queries/getMCPServerTools/useGetMCPServerTool';
 import {
   Badge,
   Button,
   buttonVariants,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -26,7 +28,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { BoltIcon, MoreVertical, Trash2 } from 'lucide-react';
+import { BoltIcon, ChevronDown, MoreVertical, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
@@ -142,24 +144,62 @@ export const McpServerCard = ({
                 </DialogHeader>
                 <div className="max-h-[60vh] overflow-y-auto py-1">
                   {mcpServerTools && mcpServerTools.length > 0 ? (
-                    <ul className="divide-official-gray-780 divide-y">
-                      {mcpServerTools.map((tool: McpServerTool) => (
-                        <li className="py-2.5 text-sm" key={tool.id}>
-                          {tool.tool_router_key ? (
-                            <Link
-                              className="text-white hover:underline"
-                              onClick={() => setIsToolsDialogOpen(false)}
-                              to={`/tools/${tool.tool_router_key}`}
-                            >
-                              {tool.name}
-                            </Link>
-                          ) : (
-                            <span className="text-white">{tool.name}</span>
-                          )}
-                          {tool.description && (
-                            <p className="text-official-gray-400 whitespace-pre-wrap text-sm">
-                              {tool.description}
-                            </p>
+                    <ul className="space-y-3">
+                      {mcpServerTools.map((tool) => (
+                        <li
+                          className="border-official-gray-780 bg-official-gray-900 rounded-lg border p-3 py-2.5 text-sm"
+                          key={tool.id}
+                        >
+                          <div>
+                            {tool.tool_router_key ? (
+                              <Link
+                                className="text-white hover:underline"
+                                onClick={() => setIsToolsDialogOpen(false)}
+                                to={`/tools/${tool.tool_router_key}`}
+                              >
+                                {tool.name}
+                              </Link>
+                            ) : (
+                              <span className="text-white">{tool.name}</span>
+                            )}
+                            {tool.description && (
+                              <p className="text-official-gray-400 whitespace-pre-wrap text-sm">
+                                {tool.description}
+                              </p>
+                            )}
+                          </div>
+                          {Object.keys((tool.input_args || {}).properties || {})
+                            .length > 0 && (
+                            <Collapsible>
+                              <CollapsibleTrigger className="text-official-gray-400 mt-1 flex w-full cursor-pointer items-center justify-between py-1 text-left underline hover:text-white">
+                                <span className="text-xs">
+                                  View Input Parameters
+                                </span>
+                                <ChevronDown className="ml-auto size-4" />
+                              </CollapsibleTrigger>
+                              <CollapsibleContent className="pt-0">
+                                <div className="grid gap-2 rounded-lg p-3 py-1">
+                                  {Object.keys(
+                                    (tool.input_args || {}).properties || {},
+                                  ).map((key) => (
+                                    <div
+                                      className="flex flex-col gap-0.5"
+                                      key={key}
+                                    >
+                                      <span className="text-sm font-medium text-white">
+                                        {key}
+                                      </span>
+                                      <span className="text-official-gray-400 text-xs">
+                                        {
+                                          tool.input_args?.properties?.[key]
+                                            ?.description
+                                        }
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </CollapsibleContent>
+                            </Collapsible>
                           )}
                         </li>
                       ))}
