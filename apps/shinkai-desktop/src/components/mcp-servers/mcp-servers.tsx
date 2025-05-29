@@ -21,7 +21,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { TFunction } from 'i18next';
-import { Plus, Search as SearchIcon, X as XIcon } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 

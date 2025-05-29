@@ -26,7 +26,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { BoltIcon, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { BoltIcon, MoreVertical, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';

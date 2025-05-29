@@ -99,7 +99,6 @@ export const McpRegistryPage = () => {
 
 const ExposeToolsAsMcp = () => {
   const auth = useAuth((state) => state.auth);
-  const { t } = useTranslation();
   const [selectedMCCategory, setSelectedMCCategory] =
     useState<GetMCPCategory>('all');
 
