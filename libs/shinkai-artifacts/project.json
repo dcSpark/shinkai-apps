@@ -10,7 +10,8 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/libs/shinkai-artifacts"
+        "outputPath": "dist/libs/shinkai-artifacts",
+        "tsConfig": "libs/shinkai-artifacts/tsconfig.lib.json"
       },
       "configurations": {
         "development": {
