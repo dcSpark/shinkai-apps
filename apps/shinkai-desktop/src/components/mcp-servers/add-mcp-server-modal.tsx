@@ -11,6 +11,9 @@ import { UpdateMcpServerInput } from '@shinkai_network/shinkai-node-state/v2/mut
 import { useUpdateMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/updateMcpServer/useUpdateMcpServer';
 import {
   Button,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -32,7 +35,7 @@ import {
   TextField,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { AlertTriangle, PlusCircle, Trash2 } from 'lucide-react';
+import { AlertTriangle, ChevronDown, PlusCircle, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -47,8 +50,8 @@ interface EnvVar {
 }
 
 const envVarSchema = z.object({
-  key: z.string().min(1, { message: 'Key is required' }),
-  value: z.string().min(1, { message: 'Value is required' }),
+  key: z.string(),
+  value: z.string(),
 });
 
 // Define the form schema based on the McpServerType
@@ -57,7 +60,7 @@ const formSchema = z.discriminatedUnion('type', [
     name: z.string().min(1, { message: 'Name is required' }),
     type: z.literal(McpServerType.Command),
     command: z.string().min(1, { message: 'Command is required' }),
-    env: z.array(envVarSchema).optional(),
+    env: z.array(envVarSchema).optional().default([]),
   }),
   z.object({
     name: z.string().min(1, { message: 'Name is required' }),
@@ -67,23 +70,6 @@ const formSchema = z.discriminatedUnion('type', [
 ]);
 
 type FormSchemaType = z.infer<typeof formSchema>;
-
-// Props for the Input component from shinkai-ui
-type ShinkaiInputProps = React.ComponentProps<typeof Input>;
-
-const PasswordToggleInput: React.FC<ShinkaiInputProps> = (props) => {
-  const [showPassword] = useState(false);
-
-  return (
-    <div className="relative flex w-full items-center">
-      <Input
-        {...props}
-        className={cn(props.className, 'pr-10')} // Ensure space for the icon button
-        type={showPassword ? 'text' : 'password'}
-      />
-    </div>
-  );
-};
 
 interface AddMcpServerModalProps {
   isOpen: boolean;
@@ -133,9 +119,7 @@ export const AddMcpServerModal = ({
               envArray = transformedEnv;
             }
           }
-          if (envArray.length === 0) {
-            envArray.push({ key: '', value: '' });
-          }
+
           form.reset({
             name,
             type: McpServerType.Command,
@@ -160,7 +144,7 @@ export const AddMcpServerModal = ({
             name: name,
             type: McpServerType.Command,
             command: '',
-            env: [{ key: '', value: '' }],
+            env: [],
           });
         }
       } else {
@@ -169,7 +153,7 @@ export const AddMcpServerModal = ({
           name: '',
           type: McpServerType.Command,
           command: '',
-          env: [{ key: '', value: '' }],
+          env: [],
         });
       }
     } else {
@@ -178,7 +162,7 @@ export const AddMcpServerModal = ({
         name: '',
         type: McpServerType.Command,
         command: '',
-        env: [{ key: '', value: '' }],
+        env: [],
       });
     }
   }, [initialData, isOpen, form]);
@@ -389,77 +373,94 @@ export const AddMcpServerModal = ({
                   )}
                 />
 
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-medium">
+                <Collapsible>
+                  <CollapsibleTrigger className="flex w-full items-center justify-between py-2 [&[data-state=open]>svg]:rotate-180">
+                    <span className="text-sm font-medium">
                       {t('mcpServers.environmentVariables')}
-                    </div>
-                    <Button
-                      className="h-8 gap-1"
-                      onClick={() => append({ key: '', value: '' })}
-                      size="sm"
-                      type="button"
-                      variant="outline"
-                    >
-                      <PlusCircle className="h-3.5 w-3.5" />
-                      <span>{t('mcpServers.addVariable')}</span>
-                    </Button>
-                  </div>
+                    </span>
+                    <ChevronDown className="h-4 w-4" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="space-y-3 pt-2">
+                      {fields.map((item, index) => {
+                        console.log(item, 'item');
+                        const currentEnvKey =
+                          form.watch(`env.${index}.key`) || '';
+                        const sensitiveKeywords = ['secret', 'key', 'password'];
+                        const isSensitive = sensitiveKeywords.some((keyword) =>
+                          currentEnvKey.toLowerCase().includes(keyword),
+                        );
 
-                  {fields.length === 0 && (
-                    <p className="text-muted-foreground text-sm">
-                      {t('mcpServers.noEnvironmentVariablesAdded')}
-                    </p>
-                  )}
-
-                  {fields.map((item, index) => {
-                    const currentEnvKey = form.watch(`env.${index}.key`) || '';
-                    const sensitiveKeywords = ['secret', 'key', 'password'];
-                    const isSensitive = sensitiveKeywords.some((keyword) =>
-                      currentEnvKey.toLowerCase().includes(keyword),
-                    );
-
-                    return (
-                      <div className="flex items-center gap-2" key={item.id}>
-                        <FormField
-                          control={form.control}
-                          name={`env.${index}.key`}
-                          render={({ field }) => (
-                            <TextField field={field} label="Key" type="text" />
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name={`env.${index}.value`}
-                          render={({ field }) => (
-                            <TextField
-                              field={field}
-                              label="Value"
-                              type={isSensitive ? 'password' : 'text'}
+                        return (
+                          <div
+                            className="flex items-center gap-2 [&>div]:flex-1"
+                            key={item.id}
+                          >
+                            <FormField
+                              control={form.control}
+                              name={`env.${index}.key`}
+                              render={({ field }) => (
+                                <TextField
+                                  field={field}
+                                  label="Key"
+                                  type="text"
+                                />
+                              )}
                             />
-                          )}
-                        />
+                            <FormField
+                              control={form.control}
+                              name={`env.${index}.value`}
+                              render={({ field }) => (
+                                <TextField
+                                  field={field}
+                                  label="Value"
+                                  type={isSensitive ? 'password' : 'text'}
+                                />
+                              )}
+                            />
+                            <Button
+                              className="mb-1.5 h-9 w-9 shrink-0"
+                              disabled={
+                                !form.getValues(`env.${index}.key`) &&
+                                !form.getValues(`env.${index}.value`)
+                              }
+                              onClick={() => remove(index)}
+                              size="icon"
+                              type="button"
+                              variant="tertiary"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        );
+                      })}
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        {fields.length === 0 && (
+                          <p className="text-muted-foreground text-sm">
+                            {t('mcpServers.noEnvironmentVariablesAdded')}
+                          </p>
+                        )}
                         <Button
-                          className="mb-1.5 h-9 w-9 shrink-0"
-                          disabled={
-                            fields.length === 1 &&
-                            !form.getValues(`env.${index}.key`) &&
-                            !form.getValues(`env.${index}.value`)
-                          }
-                          onClick={() => remove(index)}
-                          size="icon"
+                          className="min-w-20"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            append({ key: '', value: '' });
+                          }}
+                          size="sm"
                           type="button"
-                          variant="ghost"
+                          variant="outline"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <PlusCircle className="h-3.5 w-3.5" />
+                          <span>{t('mcpServers.addVariable')}</span>
                         </Button>
                       </div>
-                    );
-                  })}
-                </div>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
               </>
             )}
 
+            {console.log(form.watch('env'), 'form.watch')}
             {serverType === McpServerType.Sse && (
               <FormField
                 control={form.control}

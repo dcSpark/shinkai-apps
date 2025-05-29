@@ -155,7 +155,7 @@ export const McpServerCard = ({
                           <span className="text-white">{tool.name}</span>
                         )}
                         {tool.description && (
-                          <p className="text-official-gray-400 text-sm">
+                          <p className="text-official-gray-400 whitespace-pre-wrap text-sm">
                             {tool.description}
                           </p>
                         )}
