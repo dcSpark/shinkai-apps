@@ -33,7 +33,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { TFunction } from 'i18next';
-import { BoltIcon } from 'lucide-react';
+import { ArrowRightFromLine, BoltIcon, MoveRightIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
@@ -69,14 +69,14 @@ export const McpRegistryPage = () => {
       }}
     >
       <div className="container max-w-screen-lg">
-        <div className="flex flex-col gap-3 pb-6 pt-10">
+        <div className="flex flex-col gap-5 pb-6 pt-10">
           <div className="flex justify-between gap-4">
-            <div className="font-clash inline-flex items-center gap-4 text-3xl font-medium">
+            <div className="font-clash inline-flex items-center gap-5 text-3xl font-medium">
               <h1>MCPs</h1>
               <TabsList className="bg-official-gray-950/80 flex h-10 w-fit items-center gap-2 rounded-full px-1 py-1">
                 <TabsTrigger
                   className={cn(
-                    'rounded-full px-4 py-1.5 text-base font-medium transition-colors',
+                    'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
                     'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
                     'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
                     'focus-visible:outline-none',
@@ -84,10 +84,13 @@ export const McpRegistryPage = () => {
                   value="mcp_servers"
                 >
                   MCP Servers
+                  <span className="text-official-gray-400 inline-flex items-center gap-1 text-xs">
+                    MCP <MoveRightIcon className="size-2.5" /> Shinkai
+                  </span>
                 </TabsTrigger>
                 <TabsTrigger
                   className={cn(
-                    'rounded-full px-4 py-1.5 text-base font-medium transition-colors',
+                    'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
                     'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
                     'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
                     'focus-visible:outline-none',
@@ -95,6 +98,9 @@ export const McpRegistryPage = () => {
                   value="expose_tools"
                 >
                   Expose Tools
+                  <span className="text-official-gray-400 inline-flex items-center gap-1 text-xs">
+                    Shinkai <MoveRightIcon className="size-2.5" /> MCP
+                  </span>
                 </TabsTrigger>
               </TabsList>
             </div>
