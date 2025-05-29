@@ -11,9 +11,6 @@ import { UpdateMcpServerInput } from '@shinkai_network/shinkai-node-state/v2/mut
 import { useUpdateMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/updateMcpServer/useUpdateMcpServer';
 import {
   Button,
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -26,7 +23,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
   Select,
   SelectContent,
   SelectItem,
@@ -34,9 +30,8 @@ import {
   SelectValue,
   TextField,
 } from '@shinkai_network/shinkai-ui';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { AlertTriangle, ChevronDown, PlusCircle, Trash2 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { AlertTriangle, PlusCircle, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';

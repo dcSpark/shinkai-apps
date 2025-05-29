@@ -54,8 +54,6 @@ export const McpServerCard = ({
     mcpServerId: server.id,
   });
 
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-
   const { mutateAsync: deleteMcpServer, isPending: isDeleting } =
     useDeleteMcpServer({
       onSuccess: () => {
@@ -83,7 +81,7 @@ export const McpServerCard = ({
     <>
       <div
         className={cn(
-          'grid grid-cols-[1fr_auto_40px_auto] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
+          'grid grid-cols-[1fr_120px_40px_auto] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
         )}
       >
         <div className="flex flex-col gap-2.5">
@@ -102,82 +100,89 @@ export const McpServerCard = ({
             {server.type === 'Command' ? server.command : server.url}
           </div>
         </div>
-        <div className="flex items-center justify-center">
-          <Dialog onOpenChange={setIsToolsDialogOpen} open={isToolsDialogOpen}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DialogTrigger asChild>
-                  <Badge
-                    className={cn(
-                      buttonVariants({
-                        variant: 'outline',
-                        size: 'xs',
-                      }),
-                      'cursor-pointer',
-                    )}
-                    onClick={() => setIsToolsDialogOpen(true)}
-                  >
-                    <ToolsIcon className="mr-2 size-4 text-white" />
-                    {mcpServerTools && mcpServerTools.length > 99
-                      ? '99+'
-                      : mcpServerTools?.length || '0'}{' '}
-                    {t('mcpServers.tools')}
-                  </Badge>
-                </DialogTrigger>
-              </TooltipTrigger>
-              <TooltipContent align="center" side="top">
-                {t('mcpServers.viewAvailableTools')}
-              </TooltipContent>
-            </Tooltip>
-            <DialogContent className="sm:max-w-xl" showCloseButton>
-              <DialogHeader>
-                <DialogTitle>
-                  {t('mcpServers.toolsFor', { name: server.name })}
-                </DialogTitle>
-                <DialogDescription>
-                  {t('mcpServers.listOfToolsAvailableFromThisMcpServer')}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="max-h-[60vh] overflow-y-auto py-1">
-                {mcpServerTools && mcpServerTools.length > 0 ? (
-                  <ul className="divide-official-gray-780 divide-y">
-                    {mcpServerTools.map((tool: McpServerTool) => (
-                      <li className="py-2.5 text-sm" key={tool.id}>
-                        {tool.tool_router_key ? (
-                          <Link
-                            className="text-white hover:underline"
-                            onClick={() => setIsToolsDialogOpen(false)}
-                            to={`/tools/${tool.tool_router_key}`}
-                          >
-                            {tool.name}
-                          </Link>
-                        ) : (
-                          <span className="text-white">{tool.name}</span>
-                        )}
-                        {tool.description && (
-                          <p className="text-official-gray-400 whitespace-pre-wrap text-sm">
-                            {tool.description}
-                          </p>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-gray-400">
-                    {t('mcpServers.noToolsAvailableForThisServer')}
-                  </p>
-                )}
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button size="md" type="button" variant="outline">
-                    Close
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
+        {mcpServerTools && mcpServerTools.length > 0 ? (
+          <div className="flex items-center justify-center">
+            <Dialog
+              onOpenChange={setIsToolsDialogOpen}
+              open={isToolsDialogOpen}
+            >
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DialogTrigger asChild>
+                    <Badge
+                      className={cn(
+                        buttonVariants({
+                          variant: 'outline',
+                          size: 'xs',
+                        }),
+                        'cursor-pointer',
+                      )}
+                      onClick={() => setIsToolsDialogOpen(true)}
+                    >
+                      <ToolsIcon className="mr-2 size-4 text-white" />
+                      {mcpServerTools && mcpServerTools.length > 99
+                        ? '99+'
+                        : mcpServerTools?.length || '0'}{' '}
+                      {t('mcpServers.tools')}
+                    </Badge>
+                  </DialogTrigger>
+                </TooltipTrigger>
+                <TooltipContent align="center" side="top">
+                  {t('mcpServers.viewAvailableTools')}
+                </TooltipContent>
+              </Tooltip>
+              <DialogContent className="sm:max-w-xl" showCloseButton>
+                <DialogHeader>
+                  <DialogTitle>
+                    {t('mcpServers.toolsFor', { name: server.name })}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {t('mcpServers.listOfToolsAvailableFromThisMcpServer')}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="max-h-[60vh] overflow-y-auto py-1">
+                  {mcpServerTools && mcpServerTools.length > 0 ? (
+                    <ul className="divide-official-gray-780 divide-y">
+                      {mcpServerTools.map((tool: McpServerTool) => (
+                        <li className="py-2.5 text-sm" key={tool.id}>
+                          {tool.tool_router_key ? (
+                            <Link
+                              className="text-white hover:underline"
+                              onClick={() => setIsToolsDialogOpen(false)}
+                              to={`/tools/${tool.tool_router_key}`}
+                            >
+                              {tool.name}
+                            </Link>
+                          ) : (
+                            <span className="text-white">{tool.name}</span>
+                          )}
+                          {tool.description && (
+                            <p className="text-official-gray-400 whitespace-pre-wrap text-sm">
+                              {tool.description}
+                            </p>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-gray-400">
+                      {t('mcpServers.noToolsAvailableForThisServer')}
+                    </p>
+                  )}
+                </div>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button size="md" type="button" variant="outline">
+                      Close
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        ) : (
+          <div />
+        )}
 
         <Tooltip>
           <TooltipTrigger>
