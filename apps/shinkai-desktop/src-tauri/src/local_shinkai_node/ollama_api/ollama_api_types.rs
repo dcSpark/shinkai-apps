@@ -15,7 +15,7 @@ pub struct ModelDetails {
     pub parent_model: String,
     pub format: String,
     pub family: String,
-    pub families: Vec<String>,
+    pub families: Option<Vec<String>>,
     pub parameter_size: String,
     pub quantization_level: String,
 }

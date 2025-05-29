@@ -1,5 +1,5 @@
-use std::path::PathBuf;
 use std::fs;
+use std::path::PathBuf;
 
 use super::ollama_api::ollama_api_client::OllamaApiClient;
 use super::ollama_api::ollama_api_types::OllamaApiPullResponse;
@@ -11,8 +11,8 @@ use anyhow::Result;
 use futures_util::StreamExt;
 use log::error;
 use serde::{Deserialize, Serialize};
-use tauri::AppHandle;
 use tauri::path::BaseDirectory;
+use tauri::AppHandle;
 use tauri::Manager;
 use tokio::sync::broadcast;
 use tokio::sync::mpsc::channel;
@@ -59,7 +59,10 @@ impl ShinkaiNodeManager {
         let (ollama_sender, _ollama_receiver) = channel(100);
         let (shinkai_node_sender, _shinkai_node_receiver) = channel(100);
         let (event_broadcaster, _) = broadcast::channel(10);
-        let llm_models_path = app.path().resolve("llm-models", BaseDirectory::Resource).unwrap();
+        let llm_models_path = app
+            .path()
+            .resolve("llm-models", BaseDirectory::Resource)
+            .unwrap();
         ShinkaiNodeManager {
             ollama_process: OllamaProcessHandler::new(
                 app.clone(),
@@ -104,27 +107,25 @@ impl ShinkaiNodeManager {
         let ollama_api_url = self.ollama_process.get_ollama_api_base_url();
         let ollama_api = OllamaApiClient::new(ollama_api_url);
 
-        let installed_models_response = ollama_api.tags().await;
-        if let Err(e) = installed_models_response {
-            log::info!("failed spawning ollama process api tags {:?}", e);
-            self.kill().await;
-            self.emit_event(ShinkaiNodeManagerEvent::OllamaStartError {
-                error: "unable to list installed models".to_string(),
-            });
-            return Err(e.to_string());
-        }
-        let installed_models: Vec<String> = installed_models_response
-            .unwrap()
-            .models
-            .iter()
-            .map(|m| m.model.clone())
-            .collect();
+        let installed_models = match ollama_api.tags().await {
+            Ok(response) => response.models.iter().map(|m| m.model.clone()).collect(),
+            Err(e) => {
+                log::warn!("ollama api tags request failed, fallback asuming there are not local models {:?}", e);
+                vec![]
+            }
+        };
+
         let default_embedding_model = self
             .shinkai_node_process
             .get_options()
             .default_embedding_model
             .unwrap();
-        if !installed_models.contains(&default_embedding_model.to_string()) { // ***
+        if !installed_models.contains(&default_embedding_model.to_string()) {
+            log::info!(
+                "default embedding model {} not found in local models list [{}], creating it",
+                default_embedding_model,
+                installed_models.join(", ")
+            );
             self.emit_event(ShinkaiNodeManagerEvent::CreatingModelStart {
                 model: default_embedding_model.to_string(),
             });
@@ -132,7 +133,10 @@ impl ShinkaiNodeManager {
             // Use the embedded GGUF model
             let gguf_data = embedding_model::get_model_data(&self.llm_models_path);
 
-            match ollama_api.create_model_from_gguf(&default_embedding_model, gguf_data).await {
+            match ollama_api
+                .create_model_from_gguf(&default_embedding_model, gguf_data)
+                .await
+            {
                 Ok(_) => {
                     self.emit_event(ShinkaiNodeManagerEvent::CreatingModelDone {
                         model: default_embedding_model.to_string(),
@@ -149,7 +153,6 @@ impl ShinkaiNodeManager {
                 }
             }
         }
-
 
         self.emit_event(ShinkaiNodeManagerEvent::StartingShinkaiNode);
         match self.shinkai_node_process.spawn().await {
@@ -187,11 +190,17 @@ impl ShinkaiNodeManager {
     }
 
     pub fn open_storage_location_with_path(&self, relative_path: &str) -> Result<(), String> {
-        self.shinkai_node_process.open_storage_location_with_path(relative_path)
+        self.shinkai_node_process
+            .open_storage_location_with_path(relative_path)
     }
 
-    pub fn open_chat_folder(&self, storage_location: &str, chat_folder_name: &str) -> Result<(), String> {
-        self.shinkai_node_process.open_chat_folder(storage_location, chat_folder_name)
+    pub fn open_chat_folder(
+        &self,
+        storage_location: &str,
+        chat_folder_name: &str,
+    ) -> Result<(), String> {
+        self.shinkai_node_process
+            .open_chat_folder(storage_location, chat_folder_name)
     }
 
     pub async fn set_default_shinkai_node_options(&mut self) -> ShinkaiNodeOptions {
