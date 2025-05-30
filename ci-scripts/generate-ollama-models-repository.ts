@@ -55,7 +55,10 @@ const modelHtmlToObject = async (
     )
       .toArray()
       .map((el) => {
-        const name = modelTagsApi(el).find('div > div:nth-child(1) a').text().trim();
+        const name = modelTagsApi(el)
+          .find('div > div:nth-child(1) a')
+          .text()
+          .trim();
         const hash = modelTagsApi(el)
           .find('div > div:nth-child(2) > span')
           .text()

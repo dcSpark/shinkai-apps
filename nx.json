@@ -7,11 +7,8 @@
       "cache": true
     },
     "lint": {
-      "inputs": [
-        "default",
-        "{workspaceRoot}/.eslintrc.json",
-        "{workspaceRoot}/.eslintignore"
-      ],
+      "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"],
+      "outputs": ["{workspaceRoot}/reports/{projectName}/lint-results"],
       "cache": true
     },
     "test": {

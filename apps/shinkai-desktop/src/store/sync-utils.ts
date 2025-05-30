@@ -5,7 +5,7 @@ import { debug } from '@tauri-apps/plugin-log';
 import { useEffect } from 'react';
 
 import { isLocalShinkaiNode } from '../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
-import { Auth, useAuth } from './auth';
+import { type Auth, useAuth } from './auth';
 import { useExperimental } from './experimental';
 import { useSettings } from './settings';
 import { useShinkaiNodeManager } from './shinkai-node-manager';
