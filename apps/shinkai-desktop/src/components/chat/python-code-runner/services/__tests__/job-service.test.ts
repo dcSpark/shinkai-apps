@@ -1,28 +1,74 @@
-import  { type AddFileToInboxResponse, type AddFileToJobRequest, type DirectoryContent  } from '../__mocks__/shinkai-message-ts';
-import { type FileSystemEntry, type IFileSystemService } from '../file-system-service';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import {
+  type AddFileToInboxResponse,
+  type AddFileToJobRequest,
+  type DirectoryContent,
+} from '../__mocks__/shinkai-message-ts';
+import {
+  type FileSystemEntry,
+  type IFileSystemService,
+} from '../file-system-service';
 import { JobService } from '../job-service';
 
+type DownloadFileFn = (params: {
+  nodeAddress: string;
+  token: string;
+  path: string;
+}) => Promise<string>;
+type AddFileToJobFn = (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: AddFileToJobRequest,
+) => Promise<AddFileToInboxResponse>;
+
 describe('JobService', () => {
-  let mockFileSystemService: jest.Mocked<IFileSystemService>;
-  let mockDownloadFile: jest.Mock;
-  let mockAddFileToJob: jest.Mock;
+  let mockFileSystemService: IFileSystemService & {
+    initialize: ReturnType<typeof vi.fn>;
+    readContents: ReturnType<typeof vi.fn>;
+    readContentsWithMtime: ReturnType<typeof vi.fn>;
+    writeFile: ReturnType<typeof vi.fn>;
+    readFile: ReturnType<typeof vi.fn>;
+    ensureDirectory: ReturnType<typeof vi.fn>;
+    removeStaleItems: ReturnType<typeof vi.fn>;
+    syncToIndexedDB: ReturnType<typeof vi.fn>;
+    syncFromIndexedDB: ReturnType<typeof vi.fn>;
+  };
+  let mockDownloadFile: ReturnType<typeof vi.fn> & DownloadFileFn;
+  let mockAddFileToJob: ReturnType<typeof vi.fn> & AddFileToJobFn;
   let jobService: JobService;
 
   beforeEach(() => {
     mockFileSystemService = {
-      initialize: jest.fn(),
-      readContents: jest.fn(),
-      readContentsWithMtime: jest.fn(),
-      writeFile: jest.fn(),
-      readFile: jest.fn(),
-      ensureDirectory: jest.fn(),
-      removeStaleItems: jest.fn(),
-      syncToIndexedDB: jest.fn(),
-      syncFromIndexedDB: jest.fn(),
+      initialize: vi.fn(),
+      readContents: vi.fn(),
+      readContentsWithMtime: vi.fn(),
+      writeFile: vi.fn(),
+      readFile: vi.fn(),
+      ensureDirectory: vi.fn(),
+      removeStaleItems: vi.fn(),
+      syncToIndexedDB: vi.fn(),
+      syncFromIndexedDB: vi.fn(),
+    } as IFileSystemService & {
+      initialize: ReturnType<typeof vi.fn>;
+      readContents: ReturnType<typeof vi.fn>;
+      readContentsWithMtime: ReturnType<typeof vi.fn>;
+      writeFile: ReturnType<typeof vi.fn>;
+      readFile: ReturnType<typeof vi.fn>;
+      ensureDirectory: ReturnType<typeof vi.fn>;
+      removeStaleItems: ReturnType<typeof vi.fn>;
+      syncToIndexedDB: ReturnType<typeof vi.fn>;
+      syncFromIndexedDB: ReturnType<typeof vi.fn>;
     };
 
-    mockDownloadFile = jest.fn();
-    mockAddFileToJob = jest.fn();
+    mockDownloadFile = vi.fn().mockImplementation(async () => '') as ReturnType<
+      typeof vi.fn
+    > &
+      DownloadFileFn;
+    mockAddFileToJob = vi
+      .fn()
+      .mockImplementation(
+        async () => ({}) as AddFileToInboxResponse,
+      ) as ReturnType<typeof vi.fn> & AddFileToJobFn;
 
     jobService = new JobService({
       fileSystemService: mockFileSystemService,
@@ -76,7 +122,9 @@ describe('JobService', () => {
       await jobService.syncJobFilesToIDBFS(mockContents);
 
       expect(mockFileSystemService.removeStaleItems).toHaveBeenCalled();
-      expect(mockFileSystemService.ensureDirectory).toHaveBeenCalledWith('/home/pyodide/dir1');
+      expect(mockFileSystemService.ensureDirectory).toHaveBeenCalledWith(
+        '/home/pyodide/dir1',
+      );
       expect(mockDownloadFile).toHaveBeenCalledWith({
         nodeAddress: 'test-node',
         token: 'test-token',
@@ -109,7 +157,10 @@ describe('JobService', () => {
     it('should handle empty contents', async () => {
       await jobService.syncJobFilesToIDBFS(null);
 
-      expect(mockFileSystemService.removeStaleItems).toHaveBeenCalledWith('/home/pyodide', new Set());
+      expect(mockFileSystemService.removeStaleItems).toHaveBeenCalledWith(
+        '/home/pyodide',
+        new Set(),
+      );
       expect(mockFileSystemService.syncToIndexedDB).toHaveBeenCalled();
     });
 
@@ -118,7 +169,9 @@ describe('JobService', () => {
         throw new Error('Sync failed');
       });
 
-      await expect(jobService.syncJobFilesToIDBFS(mockContents)).rejects.toThrow('Sync failed');
+      await expect(
+        jobService.syncJobFilesToIDBFS(mockContents),
+      ).rejects.toThrow('Sync failed');
     });
   });
 
@@ -145,10 +198,12 @@ describe('JobService', () => {
     ];
 
     it('should upload changed files', async () => {
-      mockFileSystemService.readContentsWithMtime.mockReturnValue(mockIDBFSContents);
+      mockFileSystemService.readContentsWithMtime.mockReturnValue(
+        mockIDBFSContents,
+      );
       mockAddFileToJob.mockResolvedValue({
         message: 'File uploaded successfully',
-        filename: 'file1.txt'
+        filename: 'file1.txt',
       } as AddFileToInboxResponse);
 
       const timeBefore = Date.now();
@@ -160,7 +215,7 @@ describe('JobService', () => {
         expect.objectContaining({
           filename: 'file1.txt',
           job_id: 'test-job',
-        } as AddFileToJobRequest)
+        } as AddFileToJobRequest),
       );
     });
 
@@ -189,7 +244,9 @@ describe('JobService', () => {
     });
 
     it('should handle upload errors', async () => {
-      mockFileSystemService.readContentsWithMtime.mockReturnValue(mockIDBFSContents);
+      mockFileSystemService.readContentsWithMtime.mockReturnValue(
+        mockIDBFSContents,
+      );
       mockAddFileToJob.mockRejectedValue(new Error('Upload failed'));
 
       const timeBefore = Date.now();
@@ -216,7 +273,7 @@ describe('JobService', () => {
       });
       expect(mockFileSystemService.writeFile).toHaveBeenCalledWith(
         '/home/pyodide/test.txt',
-        'file content'
+        'file content',
       );
     });
 
@@ -227,7 +284,7 @@ describe('JobService', () => {
         jobService.syncFileToIDBFS({
           path: 'test.txt',
           name: 'test.txt',
-        })
+        }),
       ).rejects.toThrow('Download failed');
     });
 
@@ -241,8 +298,8 @@ describe('JobService', () => {
         jobService.syncFileToIDBFS({
           path: 'test.txt',
           name: 'test.txt',
-        })
+        }),
       ).rejects.toThrow('Write failed');
     });
   });
-}); 
+});

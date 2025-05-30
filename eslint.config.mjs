@@ -236,19 +236,19 @@ export default defineConfig([
     },
   },
   // react testing library
-  // {
-  //   files: testFiles,
-  //   ignores: [...playwrightFiles],
-  //   plugins: {
-  //     'testing-library': (await import('eslint-plugin-testing-library'))
-  //       .default,
-  //   },
-  //   rules: {
-  //     'testing-library/no-unnecessary-act': [ERROR, { isStrict: false }],
-  //     'testing-library/no-wait-for-side-effects': ERROR,
-  //     'testing-library/prefer-find-by': ERROR,
-  //   },
-  // },
+  {
+    files: testFiles,
+    ignores: [...playwrightFiles],
+    plugins: {
+      'testing-library': (await import('eslint-plugin-testing-library'))
+        .default,
+    },
+    rules: {
+      'testing-library/no-unnecessary-act': [ERROR, { isStrict: false }],
+      'testing-library/no-wait-for-side-effects': ERROR,
+      'testing-library/prefer-find-by': ERROR,
+    },
+  },
 
   // jest dom
   // {
