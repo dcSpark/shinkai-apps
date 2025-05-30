@@ -484,6 +484,25 @@ const McpCard = ({
         <p className="text-official-gray-400 text-xs">{toolAuthor}</p>
       </div>
       <div className="text-official-gray-400 flex items-center gap-4 text-xs">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              className={cn(
+                buttonVariants({
+                  variant: 'outline',
+                  size: 'sm',
+                }),
+                'min-h-auto flex h-auto w-10 justify-center rounded-md py-2',
+              )}
+              to={`/tools/${toolRouterKey}#try-it-out`}
+            >
+              <PlayCircle className="h-4 w-4" />
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent align="center" side="top">
+            {t('common.tryItOut', 'Try it out')}
+          </TooltipContent>
+        </Tooltip>
         {requiredConfig && (
           <Link
             className={cn(
