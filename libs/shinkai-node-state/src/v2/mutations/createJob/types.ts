@@ -1,7 +1,7 @@
-import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import {
-  JobConfig,
-  ShinkaiPath,
+  type JobConfig,
+  type ShinkaiPath,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 
 export type CreateJobInput = Token & {

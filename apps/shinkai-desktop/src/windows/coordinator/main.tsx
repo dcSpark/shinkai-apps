@@ -13,7 +13,7 @@ import {
 
 const App = () => {
   useEffect(() => {
-    info('initializing coordinator');
+    void info('initializing coordinator');
   }, []);
   useSyncStorageMain();
   useSyncStorageSecondary();

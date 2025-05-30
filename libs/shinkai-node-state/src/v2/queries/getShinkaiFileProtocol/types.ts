@@ -1,6 +1,6 @@
-import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
 
-import { Attachment } from '../getChatConversation/types';
+import { type Attachment } from '../getChatConversation/types';
 
 export type GetShinkaiFileProtocolInput = Token & {
   nodeAddress: string;

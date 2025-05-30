@@ -1,18 +1,18 @@
 import {
-  QueryObserverOptions,
+  type QueryObserverOptions,
   useMutation,
-  UseMutationOptions,
-  UseMutationResult,
+  type UseMutationOptions,
+  type UseMutationResult,
   useQuery,
-  UseQueryResult,
+  type UseQueryResult,
 } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
-import { BaseDirectory } from '@tauri-apps/api/path';
+
 import { save } from '@tauri-apps/plugin-dialog';
-import { writeFile } from '@tauri-apps/plugin-fs';
+
 import { info } from '@tauri-apps/plugin-log';
 
-import { LogEntry } from './log-entry';
+import { type LogEntry } from './log-entry';
 
 export const useRetrieveLogsQuery = (
   options?: Omit<QueryObserverOptions, 'queryKey'>,
@@ -36,7 +36,7 @@ export const useDownloadTauriLogsMutation = (
     mutationFn: async (): Promise<{ savePath: string; fileName: string }> => {
       const fileName = `shinkai-logs-${new Date().toISOString().replace(/:/g, '-')}.log`;
 
-      info('opening save dialog for logs download');
+      void info('opening save dialog for logs download');
       const savePath = await save({
         defaultPath: fileName,
         filters: [
@@ -48,13 +48,13 @@ export const useDownloadTauriLogsMutation = (
       });
 
       if (!savePath) {
-        info('logs save dialog cancelled by user');
+        void info('logs save dialog cancelled by user');
         throw new Error('logs saving cancelled');
       }
 
-      info(`writing logs to file at path: ${savePath}`);
+      void info(`writing logs to file at path: ${savePath}`);
       await invoke('download_logs', { savePath });
-      info(`successfully wrote logs to file at path: ${savePath}`);
+      void info(`successfully wrote logs to file at path: ${savePath}`);
 
       return { savePath, fileName };
     },

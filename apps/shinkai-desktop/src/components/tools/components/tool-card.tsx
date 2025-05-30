@@ -1,5 +1,5 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import {
@@ -148,7 +148,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
                   },
                 );
 
-                queryClient.invalidateQueries({
+                await queryClient.invalidateQueries({
                   queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
                   refetchType: 'none',
                 });

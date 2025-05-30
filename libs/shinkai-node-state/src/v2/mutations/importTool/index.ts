@@ -1,6 +1,6 @@
 import { importTool as importToolApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { ImportToolInput } from './types';
+import { type ImportToolInput } from './types';
 
 export const importTool = async ({
   nodeAddress,

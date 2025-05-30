@@ -7,7 +7,7 @@ import { useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { CheckCircle, Download, Loader2, Minus } from 'lucide-react';
-import { ModelResponse, ProgressResponse } from 'ollama/browser';
+import { type ModelResponse, type ProgressResponse } from 'ollama/browser';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -31,7 +31,7 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
   const { data: pullingModelsMap } = useOllamaPullingQuery();
   const { mutateAsync: ollamaPull } = useOllamaPullMutation(ollamaConfig, {
     onSuccess: (data, input) => {
-      handlePullProgress(input.model, data);
+      void handlePullProgress(input.model, data);
     },
   });
   const { mutateAsync: syncOllamaModels } = useSyncOllamaModels();
@@ -77,7 +77,7 @@ export const OllamaModelInstallButton = ({ model }: { model: string }) => {
             }),
           );
           if (auth) {
-            syncOllamaModels({
+            await syncOllamaModels({
               nodeAddress: auth?.node_address ?? '',
               token: auth?.api_v2_key ?? '',
               allowedModels: ALLOWED_OLLAMA_MODELS,

@@ -1,5 +1,5 @@
-import { ShinkaiPath } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
-import { TreeCheckboxSelectionKeys } from 'primereact/tree';
+import { type ShinkaiPath } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { type TreeCheckboxSelectionKeys } from 'primereact/tree';
 import React, { createContext, useContext, useState } from 'react';
 import { createStore, useStore } from 'zustand';
 

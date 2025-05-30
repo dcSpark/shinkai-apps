@@ -1,9 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { LLMProviderInterface } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { type LLMProviderInterface } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import {
   addAiModelFormDefault,
-  AddAiModelFormSchema,
+  type AddAiModelFormSchema,
   addAiModelSchema,
 } from '@shinkai_network/shinkai-node-state/forms/agents/add-ai';
 import {
@@ -144,7 +144,7 @@ const AddAIPage = () => {
 
   const { mutateAsync: addLLMProvider, isPending } = useAddLLMProvider({
     onSuccess: (_, variables) => {
-      navigate('/ais', {
+      void navigate('/ais', {
         state: {
           agentName: variables.agent.id,
         },

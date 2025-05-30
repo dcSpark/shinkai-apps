@@ -1,6 +1,6 @@
 import { moveFsItem as moveFsItemApi } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 
-import { MoveFsItemInput } from './types';
+import { type MoveFsItemInput } from './types';
 
 export const moveFsItem = async ({
   nodeAddress,

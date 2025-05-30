@@ -10,7 +10,7 @@ export const useReverseVideoPlayback = () => {
     const reversePlayback = () => {
       if (video.currentTime <= 0) {
         setIsReversing(false);
-        video.play();
+        void video.play();
         return;
       }
       video.currentTime -= 0.023;
@@ -26,7 +26,7 @@ export const useReverseVideoPlayback = () => {
         if (isReversing) {
           setIsReversing(false);
           videoElement.currentTime = 0;
-          videoElement.play();
+          void videoElement.play();
         } else {
           setIsReversing(true);
           playReverse();

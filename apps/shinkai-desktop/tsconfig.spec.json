@@ -6,12 +6,15 @@
       "vitest/globals",
       "vitest/importMeta",
       "vite/client",
-      "jest",
-      "node"
+      "node",
+      "vitest"
     ]
   },
   "include": [
     "vite.config.ts",
+    "vite.config.mts",
+    "vitest.config.ts",
+    "vitest.config.mts",
     "src/**/*.test.ts",
     "src/**/*.spec.ts",
     "src/**/*.test.tsx",
@@ -22,5 +25,5 @@
     "src/**/*.spec.jsx",
     "src/**/*.d.ts"
   ],
-  "types": ["@nx/react/typings/cssmodule.d.ts", "@nx/react/typings/image.d.ts"]
+  "files": ["src/test-setup.ts"]
 }

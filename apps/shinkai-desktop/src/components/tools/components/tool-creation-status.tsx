@@ -6,7 +6,7 @@ import { LoaderIcon } from 'lucide-react';
 import { memo } from 'react';
 
 import { ToolCreationState } from '../../playground-tool/context/playground-context';
-import { ToolCreationStepStatus } from '../../playground-tool/hooks/use-tool-flow';
+import { type ToolCreationStepStatus } from '../../playground-tool/hooks/use-tool-flow';
 import ToolCodeEditor from '../../playground-tool/tool-code-editor';
 
 export const getRandomWidth = () => {

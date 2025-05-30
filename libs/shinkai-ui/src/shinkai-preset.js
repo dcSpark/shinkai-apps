@@ -1,8 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 const tailwindTypography = require('@tailwindcss/typography');
-const tailwindAnimate = require('tailwindcss-animate');
 const defaultTheme = require('tailwindcss/defaultTheme');
 const plugin = require('tailwindcss/plugin');
+const tailwindAnimate = require('tailwindcss-animate');
 
 module.exports = {
   content: [],

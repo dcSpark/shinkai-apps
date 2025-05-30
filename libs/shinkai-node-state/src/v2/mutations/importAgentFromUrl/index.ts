@@ -1,6 +1,6 @@
 import { importAgentFromUrl as importAgentFromUrlApi } from '@shinkai_network/shinkai-message-ts/api/agents/index';
 
-import { ImportAgentFromUrlInput } from './types';
+import { type ImportAgentFromUrlInput } from './types';
 
 export const importAgentFromUrl = async ({
   nodeAddress,

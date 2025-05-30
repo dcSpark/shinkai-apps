@@ -2,7 +2,7 @@ name: PR CI Health checks
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 defaults:
   run:
@@ -24,13 +24,12 @@ jobs:
       - name: Use nx set shas
         uses: nrwl/nx-set-shas@v3
 
-
       - name: Setup Node version
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           check-latest: false
-          cache: "npm"
+          cache: 'npm'
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
@@ -55,9 +54,9 @@ jobs:
         env:
           OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
         run: |
-          npx nx run-many -t lint,test --parallel=3 --skip-nx-cache --verbose --exclude=shinkai-desktop,shinkai-visor
-          npx nx run-many -t build --parallel=3 --skip-nx-cache --verbose --exclude=shinkai-desktop,shinkai-visor
-          npx nx lint shinkai-desktop
+          npx nx run-many -t lint,test --parallel=3 --skip-nx-cache --verbose
+          npx nx run-many -t build --parallel=3 --skip-nx-cache --verbose --exclude=shinkai-desktop
+          npx nx cargo-check shinkai-desktop
 
 #      - name: Run E2E for Visor
 #        id: visor-e2e-tests

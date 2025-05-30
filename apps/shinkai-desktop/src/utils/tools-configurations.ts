@@ -1,4 +1,4 @@
-import { ToolConfigBase } from "@shinkai_network/shinkai-message-ts/api/tools/types";
+import { type ToolConfigBase } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
 export const getToolRequiresConfigurations = (configs: ToolConfigBase[]) => {
   return !configs

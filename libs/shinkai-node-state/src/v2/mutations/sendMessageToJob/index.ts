@@ -3,7 +3,7 @@ import {
   uploadFilesToJob,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import { SendMessageToJobInput } from './types';
+import { type SendMessageToJobInput } from './types';
 
 export const sendMessageToJob = async ({
   nodeAddress,

@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx . --ignore-path .gitignore",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "tauri": "tauri",
     "tauri:dev": "tauri dev"
   }

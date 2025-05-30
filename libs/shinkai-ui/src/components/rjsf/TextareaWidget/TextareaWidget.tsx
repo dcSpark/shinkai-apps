@@ -1,11 +1,11 @@
 import {
   ariaDescribedByIds,
-  FormContextType,
-  RJSFSchema,
-  StrictRJSFSchema,
-  WidgetProps,
+  type FormContextType,
+  type RJSFSchema,
+  type StrictRJSFSchema,
+  type WidgetProps,
 } from '@rjsf/utils';
-import { ChangeEvent, FocusEvent } from 'react';
+import { type ChangeEvent, type FocusEvent } from 'react';
 
 type CustomWidgetProps<
   T = any,

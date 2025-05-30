@@ -3,7 +3,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@shinkai_network/shinkai-ui';
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 import { useSettings } from '../../store/settings';
 

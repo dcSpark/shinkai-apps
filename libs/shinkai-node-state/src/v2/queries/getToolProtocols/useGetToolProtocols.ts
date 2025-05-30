@@ -1,8 +1,8 @@
-import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
+import { type QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetToolProtocolsOutput } from './types';
 import { getToolProtocols } from './index';
-import { GetToolProtocolsOutput } from './types';
 
 export type UseGetToolProtocols = [FunctionKeyV2.GET_TOOL_PROTOCOLS];
 

@@ -1,25 +1,24 @@
 import { FunctionKey } from '@shinkai_network/shinkai-node-state/lib/constants';
 import {
-  QueryObserverOptions,
+  type QueryObserverOptions,
   useMutation,
-  UseMutationOptions,
+  type UseMutationOptions,
   useQuery,
   useQueryClient,
-  UseQueryResult,
+  type UseQueryResult,
 } from '@tanstack/react-query';
 import {
-  Config as OllamaConfig,
-  ListResponse,
+  type Config as OllamaConfig,
+  type ListResponse,
   Ollama,
-  ProgressResponse,
-  StatusResponse,
+  type ProgressResponse,
+  type StatusResponse,
 } from 'ollama/browser';
 
 const removeForbiddenHeadersInOllamaCors = async (
   input: RequestInfo | URL,
   init?: RequestInit | undefined,
 ): Promise<Response> => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   delete (init?.headers as any)?.['User-Agent'];
   return fetch(input, init);
 };
@@ -84,11 +83,11 @@ export const useOllamaPullMutation = (
         for await (const progress of generator) {
           pullingModelsMap.set(input.model, progress);
           if (progress.status === 'success') {
-            queryClient.invalidateQueries({
+            await queryClient.invalidateQueries({
               queryKey: ['ollama_list'],
             });
           }
-          queryClient.invalidateQueries({
+          await queryClient.invalidateQueries({
             queryKey: ['ollama_pulling_models'],
           });
           yield progress;
@@ -104,10 +103,10 @@ export const useOllamaPullMutation = (
     },
     ...options,
     onSuccess: (...onSuccessParameters) => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [FunctionKey.SCAN_OLLAMA_MODELS],
       });
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [
           'shinkai_node_set_default_options',
           'ollama_list',
@@ -137,11 +136,11 @@ export const useOllamaRemoveMutation = (
       return response;
     },
     ...options,
-    onSuccess: (...onSuccessParameters) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (...onSuccessParameters) => {
+      await queryClient.invalidateQueries({
         queryKey: ['ollama_list', 'ollama_pulling_models'],
       });
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKey.SCAN_OLLAMA_MODELS],
       });
       if (options?.onSuccess) {

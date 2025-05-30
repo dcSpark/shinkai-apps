@@ -5,9 +5,9 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type RemovePromptInput, type RemovePromptOutput } from './types';
 import { removePrompt } from './index';
-import { RemovePromptInput, RemovePromptOutput } from './types';
 
 type Options = UseMutationOptions<
   RemovePromptOutput,
@@ -20,8 +20,8 @@ export const useRemovePrompt = (options?: Options) => {
   return useMutation({
     mutationFn: removePrompt,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [
           FunctionKeyV2.GET_LIST_PROMPTS,
           {

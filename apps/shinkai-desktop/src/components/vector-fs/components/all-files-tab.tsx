@@ -1,6 +1,6 @@
 import { HomeIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
+import { type DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
 import { useGetSearchDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getSearchDirectoryContents/useGetSearchDirectoryContents';
 import {
@@ -434,7 +434,7 @@ const AllFiles = () => {
                 if (!isVRSelectionActive) {
                   setVRSelectionActive(true);
                 } else {
-                  navigate('/home', {
+                  void navigate('/home', {
                     state: {
                       selectedVRFiles: selectedFiles.map((file) => file.path),
                       selectedVRFolders: selectedFolders.map(

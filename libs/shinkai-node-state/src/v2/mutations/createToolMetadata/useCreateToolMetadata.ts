@@ -1,8 +1,8 @@
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type CreateToolMetadataInput, type CreateToolMetadataOutput } from './types';
 import { createToolMetadata } from '.';
-import { CreateToolMetadataInput, CreateToolMetadataOutput } from './types';
 
 type Options = UseMutationOptions<
   CreateToolMetadataOutput,

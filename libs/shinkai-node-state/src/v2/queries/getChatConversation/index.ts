@@ -4,20 +4,20 @@ import {
   getJobFolderName,
   getLastMessagesWithBranches,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
-import { ChatMessage } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { type ChatMessage } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { getShinkaiFileProtocol } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 
 import { generateFilePreview } from '../../utils/file-preview';
 import {
-  Artifact,
-  AssistantMessage,
-  Attachment,
+  type Artifact,
+  type AssistantMessage,
+  type Attachment,
   FileTypeSupported,
-  FormattedMessage,
-  GetChatConversationInput,
-  GetChatConversationOutput,
-  UserMessage,
+  type FormattedMessage,
+  type GetChatConversationInput,
+  type GetChatConversationOutput,
+  type UserMessage,
 } from './types';
 import { CONVERSATION_PAGINATION_LIMIT } from './useGetChatConversationWithPagination';
 

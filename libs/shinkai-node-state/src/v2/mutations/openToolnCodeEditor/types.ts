@@ -1,7 +1,7 @@
-import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import {
-  CodeLanguage,
-  OpenToolInCodeEditorResponse,
+  type CodeLanguage,
+  type OpenToolInCodeEditorResponse,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
 export type OpenToolInCodeEditorInput = Token & {

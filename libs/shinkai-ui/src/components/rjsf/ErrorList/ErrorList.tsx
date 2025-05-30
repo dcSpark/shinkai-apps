@@ -1,8 +1,8 @@
 import {
-  ErrorListProps,
-  FormContextType,
-  RJSFSchema,
-  StrictRJSFSchema,
+  type ErrorListProps,
+  type FormContextType,
+  type RJSFSchema,
+  type StrictRJSFSchema,
   TranslatableString,
 } from '@rjsf/utils';
 

@@ -1,5 +1,5 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { Prompt } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type Prompt } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useRemovePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/removePrompt/useRemovePrompt';
@@ -485,7 +485,7 @@ export const PromptTryOut = ({
         action: {
           label: 'Choose',
           onClick: () => {
-            navigate('/settings');
+            void navigate('/settings');
           },
         },
       });

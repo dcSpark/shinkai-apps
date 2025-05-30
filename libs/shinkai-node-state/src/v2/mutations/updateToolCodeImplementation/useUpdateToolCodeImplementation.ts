@@ -5,12 +5,12 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../../lib/constants';
-import { APIError } from '../../types';
-import { updateToolCodeImplementation } from '.';
+import { type APIError } from '../../types';
 import {
-  UpdateToolCodeImplementationInput,
-  UpdateToolCodeImplementationOutput,
+  type UpdateToolCodeImplementationInput,
+  type UpdateToolCodeImplementationOutput,
 } from './types';
+import { updateToolCodeImplementation } from '.';
 
 type Options = UseMutationOptions<
   UpdateToolCodeImplementationOutput,
@@ -24,8 +24,8 @@ export const useUpdateToolCodeImplementation = (options?: Options) => {
   return useMutation({
     mutationFn: updateToolCodeImplementation,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKey.GET_CHAT_CONVERSATION_PAGINATION],
       });
       if (options?.onSuccess) {

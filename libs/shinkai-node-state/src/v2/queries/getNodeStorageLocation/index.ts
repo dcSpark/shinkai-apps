@@ -1,6 +1,6 @@
 import { getNodeStorageLocation as getNodeStorageLocationApi } from "@shinkai_network/shinkai-message-ts/api/general/index";
 
-import { GetNodeStorageLocationInput } from "./types";
+import { type GetNodeStorageLocationInput } from "./types";
 
 export const getNodeStorageLocation = async ({
   nodeAddress,

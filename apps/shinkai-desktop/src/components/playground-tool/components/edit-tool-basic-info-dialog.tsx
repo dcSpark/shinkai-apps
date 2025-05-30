@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PopoverClose } from '@radix-ui/react-popover';
-import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
+  Badge,
   Button,
   FormField,
   FormItem,
@@ -12,8 +13,8 @@ import {
   PopoverContent,
   PopoverTrigger,
   Textarea,
+  Form,
 } from '@shinkai_network/shinkai-ui';
-import { Form } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useEffect, useState } from 'react';
 import { useForm, useFormContext } from 'react-hook-form';
@@ -21,7 +22,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { usePlaygroundStore } from '../context/playground-context';
-import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
+import { type CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 import { useToolSave } from '../hooks/use-tool-save';
 import RemoveToolButton from './remove-tool-button';
 
@@ -63,8 +64,8 @@ export default function EditToolBasicInfoDialog({
     toolBasicInfoForm.setValue('description', toolDescription);
   }, [toolDescription, toolName, toolBasicInfoForm]);
 
-  const onSubmit = (data: ToolBasicInfoFormSchema) => {
-    handleSaveTool({
+  const onSubmit = async (data: ToolBasicInfoFormSchema) => {
+    await handleSaveTool({
       toolMetadata: toolMetadata as ToolMetadata,
       toolCode: toolCode ?? '',
       toolDescription: data.description,
@@ -98,12 +99,16 @@ export default function EditToolBasicInfoDialog({
         }}
         open={isOpen}
       >
-        <PopoverTrigger className={cn(
-          "hover:bg-official-gray-900 transtion-colors flex max-w-[400px] items-center gap-2 truncate rounded-lg p-1 text-base font-medium",
-          className
-        )}>
+        <PopoverTrigger
+          className={cn(
+            'hover:bg-official-gray-900 transtion-colors flex max-w-[400px] items-center gap-2 truncate rounded-lg p-1 text-base font-medium',
+            className,
+          )}
+        >
           <span className="truncate">{toolName}</span>
-          <Button className="px-2 h-6" size="xs" variant="ghost">Edit</Button>
+          <Badge className="h-6 px-2" variant="outline">
+            Edit
+          </Badge>
         </PopoverTrigger>
         <PopoverContent
           align="start"
@@ -144,7 +149,10 @@ export default function EditToolBasicInfoDialog({
                 name="description"
                 render={({ field }) => (
                   <FormItem className="space-y-1">
-                    <Label className="text-xs font-medium" htmlFor="description">
+                    <Label
+                      className="text-xs font-medium"
+                      htmlFor="description"
+                    >
                       Description
                     </Label>
                     <Textarea
@@ -184,7 +192,7 @@ export default function EditToolBasicInfoDialog({
           </Form>
         </PopoverContent>
       </Popover>
-      <RemoveToolButton isPlaygroundTool={false} toolKey={initialToolRouterKeyWithVersion} />
+      <RemoveToolButton toolKey={initialToolRouterKeyWithVersion} />
     </div>
   );
 }

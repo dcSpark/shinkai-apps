@@ -1,6 +1,6 @@
 import { getAllPrompts as getPromptListAPI } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { GetPromptListInput } from './types';
+import { type GetPromptListInput } from './types';
 
 export const getPromptList = async ({
   nodeAddress,

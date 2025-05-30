@@ -1,7 +1,7 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { RecurringTask } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/types';
+import { type RecurringTask } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/types';
 import { useExportAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/exportAgent/useExportAgent';
 import { useRemoveAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/removeAgent/useRemoveAgent';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
@@ -37,8 +37,7 @@ import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import cronstrue from 'cronstrue';
 import { DownloadIcon, Edit, Plus, TrashIcon } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
@@ -72,7 +71,7 @@ function AgentsPage() {
               <Button
                 className="min-w-[100px]"
                 onClick={() => {
-                  navigate('/add-agent');
+                  void navigate('/add-agent');
                 }}
                 size="sm"
               >
@@ -253,7 +252,7 @@ const AgentCard = ({
               <TooltipTrigger asChild>
                 <Button
                   onClick={() => {
-                    navigate(`/home`, { state: { agentName: agentId } });
+                    void navigate(`/home`, { state: { agentName: agentId } });
                   }}
                   size="sm"
                   variant="outline"
@@ -303,14 +302,14 @@ const AgentCard = ({
                   name: t('common.edit'),
                   icon: <Edit className="mr-3 h-4 w-4" />,
                   onClick: () => {
-                    navigate(`/agents/edit/${agentId}`);
+                    void navigate(`/agents/edit/${agentId}`);
                   },
                 },
                 {
                   name: 'Export',
                   icon: <DownloadIcon className="mr-3 h-4 w-4" />,
                   onClick: () => {
-                    exportAgent({
+                    void exportAgent({
                       agentId,
                       nodeAddress: auth?.node_address ?? '',
                       token: auth?.api_v2_key ?? '',

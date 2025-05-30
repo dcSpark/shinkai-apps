@@ -3,10 +3,9 @@ import {
   updateChatConfig,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 import { toolImplementation as createToolCodeApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
-import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
 import { DEFAULT_CHAT_CONFIG } from '../../constants';
-import { CreateToolCodeInput } from './types';
+import { type CreateToolCodeInput } from './types';
 
 export const createToolCode = async ({
   nodeAddress,

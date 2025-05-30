@@ -1,7 +1,7 @@
 import {
-  AssistantMessage,
-  Attachment,
-  UserMessage,
+  type AssistantMessage,
+  type Attachment,
+  type UserMessage,
 } from './queries/getChatConversation/types';
 
 export enum FunctionKeyV2 {

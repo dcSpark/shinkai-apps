@@ -8,13 +8,12 @@ import 'prism-react-editor/languages/yaml';
 import 'prism-react-editor/layout.css';
 import 'prism-react-editor/code-folding.css';
 import 'prism-react-editor/autocomplete.css';
-import 'prism-react-editor/cursor';
 import 'prism-react-editor/themes/github-dark.css';
 import 'prism-react-editor/search.css';
 
-import { Editor, EditorProps, PrismEditor } from 'prism-react-editor';
+import { Editor, type EditorProps, type PrismEditor } from 'prism-react-editor';
 import {
-  completeSnippets,
+  completeFromList,
   fuzzyFilter,
   registerCompletions,
   useAutoComplete,
@@ -27,17 +26,12 @@ import {
   jsSnipets,
 } from 'prism-react-editor/autocomplete/javascript';
 import {
-  blockCommentFolding,
-  markdownFolding,
-  useReadOnlyCodeFolding,
-} from 'prism-react-editor/code-folding';
-import {
   useDefaultCommands,
   useEditHistory,
 } from 'prism-react-editor/commands';
 import { useCursorPosition } from 'prism-react-editor/cursor';
 import { IndentGuides } from 'prism-react-editor/guides';
-import { useHightlightBracketPairs } from 'prism-react-editor/highlight-brackets';
+import { useHighlightBracketPairs } from 'prism-react-editor/highlight-brackets';
 import { useBracketMatcher } from 'prism-react-editor/match-brackets';
 import {
   useHighlightMatchingTags,
@@ -48,24 +42,11 @@ import {
   useSearchWidget,
   useShowInvisibles,
 } from 'prism-react-editor/search';
-import { useReactTooltip } from 'prism-react-editor/tooltips';
-import React, { forwardRef, Suspense } from 'react';
-
-function ReadOnly({ editor }: { editor: PrismEditor }) {
-  const [portal] = useReactTooltip(editor, null, false);
-  useReadOnlyCodeFolding(editor, blockCommentFolding, markdownFolding);
-  
-  try {
-    return portal ? (portal as unknown as React.ReactElement) : null;
-  } catch (error) {
-    console.error('Error in ReadOnly component:', error);
-    return null;
-  }
-}
+import React from 'react';
 
 const Extensions = ({ editor }: { editor: PrismEditor }) => {
   useBracketMatcher(editor);
-  useHightlightBracketPairs(editor);
+  useHighlightBracketPairs(editor);
   useTagMatcher(editor);
   useHighlightMatchingTags(editor);
   useDefaultCommands(editor);
@@ -78,21 +59,7 @@ const Extensions = ({ editor }: { editor: PrismEditor }) => {
     filter: fuzzyFilter,
   });
 
-  try {
-    return (
-      <>
-        {editor.props.readOnly && (
-          <Suspense fallback={null}>
-            <ReadOnly editor={editor} />
-          </Suspense>
-        )}
-        <IndentGuides editor={editor} />
-      </>
-    );
-  } catch (error) {
-    console.error('Error in Extensions component:', error);
-    return null;
-  }
+  return <IndentGuides editor={editor} />;
 };
 
 registerCompletions(['javascript', 'js', 'jsx', 'tsx', 'typescript', 'ts'], {
@@ -101,39 +68,34 @@ registerCompletions(['javascript', 'js', 'jsx', 'tsx', 'typescript', 'ts'], {
     completeIdentifiers(),
     completeKeywords,
     jsDocCompletion,
-    completeSnippets(jsSnipets),
+    completeFromList(jsSnipets),
   ],
 });
 
-const ToolCodeEditor = forwardRef<
-  PrismEditor,
-  {
-    value: EditorProps['value'];
-    onUpdate?: EditorProps['onUpdate'];
-    language: EditorProps['language'];
-    name?: string;
-    readOnly?: boolean;
-    style?: React.CSSProperties;
-  }
->(({ value, onUpdate, language, name, readOnly, style }, ref) => {
-  const safeValue = typeof value === 'string' ? value : '';
+const ToolCodeEditor = ({
+  value,
+  onUpdate,
+  language,
+  name,
+  readOnly,
+  style,
+  ref,
+}: {
+  value: EditorProps['value'];
+  onUpdate?: EditorProps['onUpdate'];
+  language: EditorProps['language'];
+  name?: string;
+  readOnly?: boolean;
+  style?: React.CSSProperties;
+  ref?: React.RefObject<PrismEditor | null>;
+}) => {
   const safeLanguage = language || 'plaintext';
-  
-  const handleUpdate: EditorProps['onUpdate'] = (updatedValue, editor) => {
-    try {
-      if (onUpdate) {
-        onUpdate(updatedValue, editor);
-      }
-    } catch (error) {
-      console.error('Error in editor onUpdate:', error);
-    }
-  };
 
   return (
     <Editor
       insertSpaces={true}
       language={safeLanguage}
-      onUpdate={handleUpdate}
+      onUpdate={onUpdate}
       readOnly={readOnly}
       ref={ref}
       style={{
@@ -147,12 +109,12 @@ const ToolCodeEditor = forwardRef<
         ...style,
       }}
       textareaProps={{ name: name ?? 'editor' }}
-      value={safeValue}
+      value={value}
     >
       {(editor) => <Extensions editor={editor} />}
     </Editor>
   );
-});
+};
 
 ToolCodeEditor.displayName = 'ToolCodeEditor';
 export default ToolCodeEditor;

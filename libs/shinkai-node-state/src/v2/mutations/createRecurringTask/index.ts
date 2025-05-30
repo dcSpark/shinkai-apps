@@ -1,10 +1,7 @@
-import {
-  createJob as createJobApi,
-  updateChatConfig,
-} from '@shinkai_network/shinkai-message-ts/api/jobs/index';
+import { createJob as createJobApi } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 import { createRecurringTask as createRecurringTaskApi } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/index';
 
-import { CreateRecurringTaskInput } from './types';
+import { type CreateRecurringTaskInput } from './types';
 
 export const createRecurringTask = async ({
   nodeAddress,

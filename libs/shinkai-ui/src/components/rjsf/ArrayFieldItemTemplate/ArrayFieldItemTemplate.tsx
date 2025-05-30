@@ -1,10 +1,10 @@
 import {
-  ArrayFieldTemplateItemType,
-  FormContextType,
-  RJSFSchema,
-  StrictRJSFSchema,
+  type ArrayFieldTemplateItemType,
+  type FormContextType,
+  type RJSFSchema,
+  type StrictRJSFSchema,
 } from '@rjsf/utils';
-import { CSSProperties } from 'react';
+import { type CSSProperties } from 'react';
 
 export default function ArrayFieldItemTemplate<
   T = any,

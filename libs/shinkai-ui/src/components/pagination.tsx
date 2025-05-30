@@ -1,14 +1,8 @@
-import {
-  ChevronLeft,
-  ChevronRight,
-  MoreHorizontal,
-  RedoIcon,
-  UndoIcon,
-} from 'lucide-react';
+import { MoreHorizontal, RedoIcon, UndoIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { cn } from '../utils';
-import { ButtonProps, buttonVariants } from './button';
+import { type ButtonProps, buttonVariants } from './button';
 
 const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => (
   <nav
@@ -20,24 +14,23 @@ const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => (
 );
 Pagination.displayName = 'Pagination';
 
-const PaginationContent = React.forwardRef<
-  HTMLUListElement,
-  React.ComponentProps<'ul'>
->(({ className, ...props }, ref) => (
+const PaginationContent = ({
+  className,
+  ...props
+}: React.ComponentProps<'ul'>) => (
   <ul
     className={cn('flex flex-row items-center gap-1', className)}
-    ref={ref}
     {...props}
   />
-));
+);
 PaginationContent.displayName = 'PaginationContent';
 
-const PaginationItem = React.forwardRef<
-  HTMLLIElement,
-  React.ComponentProps<'li'>
->(({ className, ...props }, ref) => (
-  <li className={cn('', className)} ref={ref} {...props} />
-));
+const PaginationItem = ({
+  className,
+  ...props
+}: React.ComponentProps<'li'>) => (
+  <li className={cn('', className)} {...props} />
+);
 PaginationItem.displayName = 'PaginationItem';
 
 type PaginationLinkProps = {
@@ -51,6 +44,7 @@ const PaginationLink = ({
   size = 'icon',
   ...props
 }: PaginationLinkProps) => (
+   
   <a
     aria-current={isActive ? 'page' : undefined}
     className={cn(

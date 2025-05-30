@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 // import { scan } from 'react-scan'; // import this BEFORE react
 import './globals.css';
 

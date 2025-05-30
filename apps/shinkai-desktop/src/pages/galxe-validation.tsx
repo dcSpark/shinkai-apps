@@ -8,12 +8,10 @@ import {
   AlertTitle,
   Button,
   Skeleton,
-} from '@shinkai_network/shinkai-ui';
-import {
   Card,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@shinkai_network/shinkai-ui';
 import { Check, CircleIcon, Info, RefreshCw } from 'lucide-react';
 import { useMemo } from 'react';

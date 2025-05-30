@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetJobContentsInput, type Options } from './types';
 import { getJobContents } from './index';
-import { GetJobContentsInput, Options } from './types';
 
 export const useGetJobContents = (
   input: GetJobContentsInput,

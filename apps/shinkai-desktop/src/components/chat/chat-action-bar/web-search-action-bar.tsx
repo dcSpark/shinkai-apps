@@ -1,4 +1,3 @@
-import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   Tooltip,
   TooltipContent,
@@ -25,8 +24,6 @@ export function WebSearchActionBar({
   disabled,
   checked,
 }: OpenChatFolderActionBarProps) {
-  const { t } = useTranslation();
-
   return (
     <>
       <Tooltip>

@@ -1,10 +1,10 @@
 import {
-  Token,
-  ToolArgs,
-  ToolStatusType,
+  type Token,
+  type ToolArgs,
+  type ToolStatusType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { InfiniteData } from '@tanstack/react-query';
-import { ReactNode } from 'react';
+import { type InfiniteData } from '@tanstack/react-query';
+import { type ReactNode } from 'react';
 
 export type GetChatConversationInput = Token & {
   nodeAddress: string;

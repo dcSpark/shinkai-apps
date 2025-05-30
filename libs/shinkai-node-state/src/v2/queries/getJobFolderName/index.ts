@@ -1,6 +1,6 @@
 import { getJobFolderName as getJobFolderNameApi } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import type { GetJobFolderNameInput } from './types';
+import  { type GetJobFolderNameInput } from './types';
 
 export const getJobFolderName = async ({
   nodeAddress,

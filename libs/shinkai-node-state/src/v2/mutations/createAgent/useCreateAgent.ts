@@ -5,9 +5,9 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type CreateAgentInput, type CreateAgentOutput } from './types';
 import { createAgent } from './index';
-import { CreateAgentInput, CreateAgentOutput } from './types';
 
 type Options = UseMutationOptions<
   CreateAgentOutput,
@@ -20,8 +20,8 @@ export const useCreateAgent = (options?: Options) => {
   return useMutation({
     mutationFn: createAgent,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_AGENTS],
       });
 

@@ -4,16 +4,16 @@ import { PlusIcon } from '@radix-ui/react-icons';
 import * as SelectPrimitive from '@radix-ui/react-select'; // <-- Import SelectPrimitive
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  ShinkaiTool,
-  ShinkaiToolHeader,
-  ShinkaiToolType,
+  type ShinkaiTool,
+  type ShinkaiToolHeader,
+  type ShinkaiToolType,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   buildInboxIdFromJobId,
   extractJobIdFromInbox,
 } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
-  UploadVRFilesFormSchema,
+  type UploadVRFilesFormSchema,
   uploadVRFilesFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/vector-fs/folder';
 import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
@@ -111,13 +111,13 @@ import {
   Trash2,
   XIcon,
 } from 'lucide-react';
-import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
-import { TreeNode } from 'primereact/treenode';
+import { Tree, type TreeCheckboxSelectionKeys } from 'primereact/tree';
+import { type TreeNode } from 'primereact/treenode';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Link,
-  To,
+  type To,
   useNavigate,
   useParams,
   useSearchParams,
@@ -743,6 +743,7 @@ function AgentForm({ mode }: AgentFormProps) {
           });
           isCronValidForQuickSave = !readable.toLowerCase().includes('error');
         } catch (e) {
+          console.error('Error parsing cron expression', e);
           isCronValidForQuickSave = false;
         }
       } else if (scheduleType === 'normal') {
@@ -850,7 +851,7 @@ function AgentForm({ mode }: AgentFormProps) {
   const { mutateAsync: removeTask, isPending: isRemovingTask } =
     useRemoveRecurringTask({
       onSuccess: () => {
-        queryClient.invalidateQueries({
+        void queryClient.invalidateQueries({
           queryKey: [
             FunctionKeyV2.GET_AGENT,
             {
@@ -882,7 +883,7 @@ function AgentForm({ mode }: AgentFormProps) {
   const { mutateAsync: createTask, isPending: isCreatingTask } =
     useCreateRecurringTask({
       onSuccess: () => {
-        queryClient.invalidateQueries({
+        void queryClient.invalidateQueries({
           queryKey: [
             FunctionKeyV2.GET_AGENT,
             {
@@ -1027,7 +1028,7 @@ function AgentForm({ mode }: AgentFormProps) {
 
         // Step 3: Show success and navigate ONLY if all above steps succeeded
         toast.success('Agent updated successfully!');
-        navigate('/agents');
+        await navigate('/agents');
       } else {
         // --- Create New Agent ---
         const cronToPass =
@@ -1043,9 +1044,9 @@ function AgentForm({ mode }: AgentFormProps) {
         // Show success and navigate after creation succeeds
         toast.success('Agent created successfully!');
         if (options?.openChat) {
-          navigate(`/agents/edit/${agentIdToUse}?openChat=true`);
+          await navigate(`/agents/edit/${agentIdToUse}?openChat=true`);
         } else {
-          navigate('/agents');
+          await navigate('/agents');
         }
       }
     } catch (error: any) {
@@ -1083,6 +1084,7 @@ function AgentForm({ mode }: AgentFormProps) {
       }
       return readableCron;
     } catch (e) {
+      console.error('Error parsing cron expression', e);
       return null; // Invalid cron expression
     }
   }, [currentCronExpression]);
@@ -1806,7 +1808,7 @@ function AgentForm({ mode }: AgentFormProps) {
                           </div>
                           <Button
                             onClick={() => {
-                              navigate('/tools');
+                              void navigate('/tools');
                             }}
                             size="xs"
                             variant="outline"
@@ -2505,7 +2507,7 @@ function AgentForm({ mode }: AgentFormProps) {
                     disabled={isPending}
                     onClick={() => {
                       if (currentTab === 'persona') {
-                        navigate(-1);
+                        void navigate(-1);
                       } else if (currentTab === 'knowledge') {
                         setCurrentTab('persona');
                       } else if (currentTab === 'tools') {
@@ -2578,7 +2580,7 @@ function AgentForm({ mode }: AgentFormProps) {
                       isLoading={isPending}
                       onClick={() => {
                         // Trigger form validation and submission with the openChat option
-                        form.handleSubmit((values) =>
+                        void form.handleSubmit((values) =>
                           submit(values, { openChat: true }),
                         )();
                       }}
@@ -2688,7 +2690,11 @@ const ToolConfigModal = ({
   const toolType = data?.type as ShinkaiToolType;
 
   const hasAllRequiredFields = useMemo(() => {
-    if (isSuccess && 'config' in tool && tool.configurations?.properties) {
+    if (
+      isSuccess &&
+      'configurations' in tool &&
+      tool.configurations?.properties
+    ) {
       const requiredFields = tool.configurations.required || [];
       const configFormData = tool.configFormData || {};
       const hasAllRequiredFields = requiredFields.every(

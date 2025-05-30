@@ -1,6 +1,6 @@
 import { setToolMcpEnabled as setToolMcpEnabledApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { SetToolMcpEnabledInput } from './types';
+import { type SetToolMcpEnabledInput } from './types';
 
 export const setToolMcpEnabled = async ({
   nodeAddress,

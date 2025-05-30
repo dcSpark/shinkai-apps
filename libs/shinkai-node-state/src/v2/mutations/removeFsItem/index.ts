@@ -1,6 +1,6 @@
 import { removeFsItem as removeFsItemApi } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 
-import { RemoveFsItemInput } from './types';
+import { type RemoveFsItemInput } from './types';
 
 export const removeFsItem = async ({
   nodeAddress,

@@ -1,12 +1,12 @@
 import {
   ADDITIONAL_PROPERTY_FLAG,
-  FormContextType,
-  RJSFSchema,
-  StrictRJSFSchema,
+  type FormContextType,
+  type RJSFSchema,
+  type StrictRJSFSchema,
   TranslatableString,
-  WrapIfAdditionalTemplateProps,
+  type WrapIfAdditionalTemplateProps,
 } from '@rjsf/utils';
-import { FocusEvent } from 'react';
+import { type FocusEvent } from 'react';
 
 export default function WrapIfAdditionalTemplate<
   T = any,

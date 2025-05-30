@@ -66,8 +66,9 @@ import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
 import { TaskLogs } from '../pages/task-logs';
 import { Tasks } from '../pages/tasks';
-import TermsAndConditionsPage from '../pages/terms-conditions';
-import { LogoTapProvider } from '../pages/terms-conditions';
+import TermsAndConditionsPage, {
+  LogoTapProvider,
+} from '../pages/terms-conditions';
 import ToolFeedbackPrompt from '../pages/tool-feedback';
 import { ToolsHomepage } from '../pages/tools-homepage';
 import { useAuth } from '../store/auth';
@@ -103,7 +104,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     Node auto start process probably should be in rust side
   */
   useEffect(() => {
-    debug(
+    void debug(
       `initializing autoStartShinkaiNodeTried.current:${autoStartShinkaiNodeTried.current} isInUse:${isInUse} shinkaiNodeIsRunning:${shinkaiNodeIsRunning}`,
     );
     if (
@@ -112,7 +113,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       !shinkaiNodeIsRunning
     ) {
       autoStartShinkaiNodeTried.current = true;
-      Promise.resolve().then(async () => {
+      void Promise.resolve().then(async () => {
         if (shinkaiNodeOptions) {
           await shinkaiNodeSetOptions(shinkaiNodeOptions);
         }
@@ -140,11 +141,11 @@ const useGlobalAppShortcuts = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const unlisten = listen('create-chat', () => {
-      navigate('/home');
+      void navigate('/home');
     });
 
     return () => {
-      unlisten.then((fn) => fn());
+      void unlisten.then((fn) => fn());
     };
   }, []);
 };
@@ -200,12 +201,12 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
     }
 
     if (!auth && location.pathname !== '/terms-conditions') {
-      navigate('/terms-conditions');
+      void navigate('/terms-conditions');
       return;
     }
 
     if (isOnboardingComplete() && !!auth) {
-      navigate(COMPLETION_DESTINATION);
+      void navigate(COMPLETION_DESTINATION);
       return;
     }
 
@@ -223,7 +224,7 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
       isRootPath ||
       !isValidPath
     ) {
-      navigate(nextIncompleteStep.path);
+      void navigate(nextIncompleteStep.path);
     }
   }, [
     auth,

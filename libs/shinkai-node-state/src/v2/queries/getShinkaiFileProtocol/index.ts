@@ -1,9 +1,9 @@
 import { getShinkaiFileProtocol as getShinkaiFileProtocolApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
 import { generateFilePreview } from '../../utils/file-preview';
-import type {
-  GetShinkaiFileProtocolInput,
-  GetShinkaiFilesProtocolInput,
+import  {
+  type GetShinkaiFileProtocolInput,
+  type GetShinkaiFilesProtocolInput,
 } from './types';
 
 export const getShinkaiFileProtocol = async ({

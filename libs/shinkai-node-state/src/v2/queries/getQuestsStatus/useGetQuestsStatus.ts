@@ -1,8 +1,8 @@
-import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
+import { type QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetQuestsStatusInput, type GetQuestsStatusOutput } from './types';
 import { getQuestsStatus } from './index';
-import { GetQuestsStatusInput, GetQuestsStatusOutput } from './types';
 
 export type UseGetQuestsStatus = [
   FunctionKeyV2.GET_QUESTS_STATUS,

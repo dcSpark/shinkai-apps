@@ -5,9 +5,9 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type UpdatePromptInput, type UpdatePromptOutput } from './types';
 import { updatePrompt } from './index';
-import { UpdatePromptInput, UpdatePromptOutput } from './types';
 
 type Options = UseMutationOptions<
   UpdatePromptOutput,
@@ -20,8 +20,8 @@ export const useUpdatePrompt = (options?: Options) => {
   return useMutation({
     mutationFn: updatePrompt,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [
           FunctionKeyV2.GET_LIST_PROMPTS,
           {

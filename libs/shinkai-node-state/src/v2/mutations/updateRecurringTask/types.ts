@@ -1,6 +1,6 @@
-import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
-import { CreateRecurringTaskResponse } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/types';
+import { type Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { type CreateRecurringTaskResponse } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/types';
 
 export type UpdateRecurringTaskOutput = CreateRecurringTaskResponse;
 

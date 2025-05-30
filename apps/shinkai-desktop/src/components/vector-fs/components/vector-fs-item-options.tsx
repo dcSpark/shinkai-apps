@@ -66,8 +66,7 @@ export const VectorFsItemMoveAction = () => {
               nodeAddress: auth?.node_address ?? '',
               token: auth?.api_v2_key ?? '',
               originPath: selectedFile?.path ?? '',
-              destinationPath:
-                `${destinationFolderPath}/${selectedFile?.name}` ?? '/',
+              destinationPath: `${destinationFolderPath}/${selectedFile?.name}`,
             });
           }}
           size="sm"
@@ -176,8 +175,7 @@ export const VectorFsItemCopyAction = () => {
               nodeAddress: auth?.node_address ?? '',
               token: auth?.api_v2_key ?? '',
               originPath: selectedFile?.path ?? '',
-              destinationPath:
-                `${destinationFolderPath}/${selectedFile?.name}` ?? '/',
+              destinationPath: `${destinationFolderPath}/${selectedFile?.name}`,
             });
           }}
           size="sm"
@@ -229,7 +227,7 @@ export const VectorFsItemEditTextFileAction = () => {
       }
     };
 
-    fetchFileContent();
+    void fetchFileContent();
   }, [selectedFile, auth, downloadFile]);
 
   return <CreateTextFileAction initialValues={initialValues} mode="edit" />;

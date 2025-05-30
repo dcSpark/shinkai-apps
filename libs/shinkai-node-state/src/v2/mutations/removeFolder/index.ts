@@ -1,6 +1,6 @@
 import { removeFolder as removeFolderApi } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 
-import { RemoveFolderInput } from './types';
+import { type RemoveFolderInput } from './types';
 
 export const removeFolder = async ({
   nodeAddress,

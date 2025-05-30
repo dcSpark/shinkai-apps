@@ -2,13 +2,13 @@ import { isJobInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
-import { getChatConversation } from '.';
+import { type APIError } from '../../types';
 import {
-  ChatConversationInfiniteData,
-  GetChatConversationInput,
-  GetChatConversationOutput,
+  type ChatConversationInfiniteData,
+  type GetChatConversationInput,
+  type GetChatConversationOutput,
 } from './types';
+import { getChatConversation } from '.';
 
 export const CONVERSATION_PAGINATION_LIMIT = 20;
 export const CONVERSATION_PAGINATION_REFETCH = 5000;

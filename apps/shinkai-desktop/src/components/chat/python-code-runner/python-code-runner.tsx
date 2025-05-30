@@ -1,19 +1,19 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { addFileToJob } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
-import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
+import { type DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import { useGetDownloadFile } from '@shinkai_network/shinkai-node-state/v2/queries/getDownloadFile/useGetDownloadFile';
 import { useGetJobContents } from '@shinkai_network/shinkai-node-state/v2/queries/getJobContents/useGetJobContents';
 import { Button } from '@shinkai_network/shinkai-ui';
-import { useMutation, UseMutationOptions } from '@tanstack/react-query';
+import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 import { usePyodideInstance } from './hooks/usePyodideInstance';
 import { OutputRender } from './output-render';
-import { RunResult } from './python-code-runner-web-worker';
+import { type RunResult } from './python-code-runner-web-worker';
 import PythonRunnerWorker from './python-code-runner-web-worker?worker';
-import { FileSystemEntry } from './services/file-system-service';
+import { type FileSystemEntry } from './services/file-system-service';
 import { JobService } from './services/job-service';
 
 // Utility function to create a delay

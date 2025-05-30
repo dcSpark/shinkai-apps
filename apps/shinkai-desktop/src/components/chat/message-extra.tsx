@@ -1,7 +1,7 @@
 import {
-  PaymentRequest,
-  WidgetToolData,
-  WidgetToolType,
+  type PaymentRequest,
+  type WidgetToolData,
+  type WidgetToolType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { usePayInvoice } from '@shinkai_network/shinkai-node-state/v2/mutations/payInvoice/usePayInvoice';
 import {

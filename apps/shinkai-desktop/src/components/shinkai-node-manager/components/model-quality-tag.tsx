@@ -3,7 +3,7 @@ import { Badge } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { Sparkles } from 'lucide-react';
 
-import { OllamaModelQuality } from '../../../lib/shinkai-node-manager/ollama-models';
+import { type OllamaModelQuality } from '../../../lib/shinkai-node-manager/ollama-models';
 
 export const ModelQuailityTag = ({
   className,

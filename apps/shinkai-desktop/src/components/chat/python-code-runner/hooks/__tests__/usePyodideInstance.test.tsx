@@ -1,41 +1,42 @@
 import { renderHook } from '@testing-library/react';
-import { loadPyodide, PyodideInterface } from 'pyodide';
+import { loadPyodide, type PyodideInterface } from 'pyodide';
+import { vi } from 'vitest';
 
 import { usePyodideInstance } from '../usePyodideInstance';
 
 // Mock pyodide
-jest.mock('pyodide', () => ({
-  loadPyodide: jest.fn(),
+vi.mock('pyodide', () => ({
+  loadPyodide: vi.fn(),
 }));
 
 describe('usePyodideInstance', () => {
-  let mockPyodide: jest.Mocked<PyodideInterface>;
+  let mockPyodide: PyodideInterface;
 
   beforeEach(() => {
     // Reset mocks
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Create mock Pyodide instance
     mockPyodide = {
       FS: {
-        mount: jest.fn(),
-        readdir: jest.fn(),
-        stat: jest.fn(),
-        isDir: jest.fn(),
-        readFile: jest.fn(),
-        writeFile: jest.fn(),
-        unlink: jest.fn(),
-        mkdir: jest.fn(),
-        rmdir: jest.fn(),
-        syncfs: jest.fn(),
+        mount: vi.fn(),
+        readdir: vi.fn(),
+        stat: vi.fn(),
+        isDir: vi.fn(),
+        readFile: vi.fn(),
+        writeFile: vi.fn(),
+        unlink: vi.fn(),
+        mkdir: vi.fn(),
+        rmdir: vi.fn(),
+        syncfs: vi.fn(),
         filesystems: {
           IDBFS: 'IDBFS',
         },
       },
-    } as unknown as jest.Mocked<PyodideInterface>;
+    } as unknown as PyodideInterface;
 
     // Mock loadPyodide to return our mock instance
-    (loadPyodide as jest.Mock).mockResolvedValue(mockPyodide);
+    (loadPyodide as ReturnType<typeof vi.fn>).mockResolvedValue(mockPyodide);
   });
 
   it('should initialize Pyodide and file system service', async () => {
@@ -95,7 +96,7 @@ describe('usePyodideInstance', () => {
   });
 
   it('should handle initialization errors', async () => {
-    (loadPyodide as jest.Mock).mockRejectedValue(
+    (loadPyodide as ReturnType<typeof vi.fn>).mockRejectedValue(
       new Error('Failed to load Pyodide'),
     );
 

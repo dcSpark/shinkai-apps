@@ -1,7 +1,7 @@
 import { toolMetadataImplementation as createToolMetadataApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
-import { CreateToolMetadataInput, CreateToolMetadataOutput } from './types';
+import { type CreateToolMetadataInput, type CreateToolMetadataOutput } from './types';
 
 export const createToolMetadata = async ({
   nodeAddress,

@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetInboxesInput } from './types';
 import { getInboxes } from '.';
-import { GetInboxesInput } from './types';
 
 export const useGetInboxes = (input: GetInboxesInput) => {
   const response = useQuery({

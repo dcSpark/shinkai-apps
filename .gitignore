@@ -39,11 +39,9 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-apps/shinkai-visor-e2e/src/shinkai-node/db
-!apps/shinkai-visor-e2e/src/shinkai-node/db/.secret
-apps/shinkai-visor-e2e/src/shinkai-node/qr_code_device_0.png
+
 qr_code_device_0.png
-apps/shinkai-visor-e2e/test-report
+
 apps/shinkai-desktop/src-tauri/storage
 apps/shinkai-desktop/src-tauri/node_storage
 
@@ -53,3 +51,6 @@ temp
 apps/shinkai-app/android/.gradle
 apps/shinkai-desktop/src-tauri/gen
 output.txt
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*

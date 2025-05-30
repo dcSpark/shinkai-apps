@@ -1,6 +1,6 @@
 import { copyFsItem as copyFsItemApi } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 
-import { CopyVRItemInput } from './types';
+import { type CopyVRItemInput } from './types';
 
 export const copyFsItem = async ({
   nodeAddress,

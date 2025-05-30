@@ -1,6 +1,6 @@
 import { setPreferences } from '@shinkai_network/shinkai-message-ts/api/general/index';
 
-import { SetMaxChatIterationsInput } from './types';
+import { type SetMaxChatIterationsInput } from './types';
 
 export const setMaxChatIterations = async ({
   nodeAddress,

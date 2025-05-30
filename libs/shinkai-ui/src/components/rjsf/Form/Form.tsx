@@ -1,6 +1,6 @@
-import { FormProps, withTheme } from '@rjsf/core';
-import { FormContextType, RJSFSchema, StrictRJSFSchema } from '@rjsf/utils';
-import { ComponentType } from 'react';
+import { type FormProps, withTheme } from '@rjsf/core';
+import { type FormContextType, type RJSFSchema, type StrictRJSFSchema } from '@rjsf/utils';
+import { type ComponentType } from 'react';
 
 import { generateTheme } from '../Theme';
 

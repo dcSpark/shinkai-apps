@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetLLMProvidersInput, type Options } from './types';
 import { getLLMProviders } from './index';
-import { GetLLMProvidersInput, Options } from './types';
 
 export const useGetLLMProviders = (
   input: GetLLMProvidersInput,

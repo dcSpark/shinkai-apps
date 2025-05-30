@@ -1,8 +1,8 @@
 import {
-  DescriptionFieldProps,
-  FormContextType,
-  RJSFSchema,
-  StrictRJSFSchema,
+  type DescriptionFieldProps,
+  type FormContextType,
+  type RJSFSchema,
+  type StrictRJSFSchema,
 } from '@rjsf/utils';
 
 export default function DescriptionField<

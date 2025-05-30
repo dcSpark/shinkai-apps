@@ -1,13 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  CreateFolderFormSchema,
+  type CreateFolderFormSchema,
   createFolderFormSchema,
-  CreateTextFileFormSchema,
+  type CreateTextFileFormSchema,
   createTextFileFormSchema,
-  SaveWebpageToVectorFsFormSchema,
+  type SaveWebpageToVectorFsFormSchema,
   saveWebpageToVectorFsFormSchema,
-  UploadVRFilesFormSchema,
+  type UploadVRFilesFormSchema,
   uploadVRFilesFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/vector-fs/folder';
 import { useCreateFolder } from '@shinkai_network/shinkai-node-state/v2/mutations/createFolder/useCreateFolder';
@@ -32,7 +32,7 @@ import {
   FileTypeIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { FileType2Icon } from 'lucide-react';
-import { PrismEditor } from 'prism-react-editor';
+import { type PrismEditor } from 'prism-react-editor';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation } from 'react-router';
@@ -117,7 +117,7 @@ export const AddNewFolderAction = () => {
                       event.key === 'Enter' &&
                       (event.metaKey || event.ctrlKey)
                     ) {
-                      createFolderForm.handleSubmit(onSubmit)();
+                      void createFolderForm.handleSubmit(onSubmit)();
                     }
                   },
                 }}
@@ -467,7 +467,7 @@ export const CreateTextFileAction = ({
                       event.key === 'Enter' &&
                       (event.metaKey || event.ctrlKey)
                     ) {
-                      createTextFileForm.handleSubmit(onSubmit)();
+                      void createTextFileForm.handleSubmit(onSubmit)();
                     }
                   },
                 }}

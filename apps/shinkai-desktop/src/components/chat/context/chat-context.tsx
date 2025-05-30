@@ -1,7 +1,6 @@
-import { Artifact } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { type Artifact } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { createContext, useContext, useState } from 'react';
-import { createStore } from 'zustand';
-import { useStore } from 'zustand/index';
+import { createStore, useStore  } from 'zustand';
 
 export type ToolView = 'form' | 'raw';
 

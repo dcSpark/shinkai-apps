@@ -1,15 +1,15 @@
 import { httpClient } from '../../http-client';
 import { urlJoin } from '../../utils/url-join';
 import {
-  CheckHealthResponse,
-  DockerStatusResponse,
-  GetNodeStorageLocationResponse,
-  GetPreferencesResponse,
-  GetShinkaiFreeModelQuotaResponse,
-  InitialRegistrationRequest,
-  InitialRegistrationResponse,
-  SetPreferencesRequest,
-  SetPreferencesResponse,
+  type CheckHealthResponse,
+  type DockerStatusResponse,
+  type GetNodeStorageLocationResponse,
+  type GetPreferencesResponse,
+  type GetShinkaiFreeModelQuotaResponse,
+  type InitialRegistrationRequest,
+  type InitialRegistrationResponse,
+  type SetPreferencesRequest,
+  type SetPreferencesResponse,
 } from './types';
 
 export const checkHealth = async (nodeAddress: string) => {

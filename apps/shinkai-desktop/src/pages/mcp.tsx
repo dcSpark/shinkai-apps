@@ -32,16 +32,15 @@ import {
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { TFunction } from 'i18next';
-import { BoltIcon, MoveRightIcon } from 'lucide-react';
+import { type TFunction } from 'i18next';
+import { BoltIcon, MoveRightIcon, Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
 
 import { McpServers } from '../components/mcp-servers/mcp-servers';
 import { handleConfigureClaude } from '../lib/external-clients/claude-desktop';
-import { getDenoBinPath } from '../lib/external-clients/common';
-import { ConfigError } from '../lib/external-clients/common';
+import { getDenoBinPath, ConfigError } from '../lib/external-clients/common';
 import { handleConfigureCursor } from '../lib/external-clients/cursor';
 import { useAuth } from '../store/auth';
 
@@ -369,7 +368,7 @@ const ExposeToolsAsMcp = () => {
                 disabled={!jsonConfigToCopy}
                 onClick={() => {
                   if (jsonConfigToCopy) {
-                    navigator.clipboard.writeText(jsonConfigToCopy);
+                    void navigator.clipboard.writeText(jsonConfigToCopy);
                     toast.success(t('mcpClients.copyJsonSuccess'));
                     setDialogOpen(false);
                   }
@@ -501,26 +500,28 @@ const McpCard = ({
         )}
         {!requiredConfig && (
           <Tooltip>
-            <TooltipTrigger className="">
-              <Switch
-                checked={toolMcpEnabled}
-                disabled={!toolEnabled}
-                onCheckedChange={async () => {
-                  if (!auth) return;
-                  if (toolEnabled !== true) {
-                    toast.error(
-                      'Tool must be enabled before changing MCP server mode',
-                    );
-                    return;
-                  }
-                  await setToolMcpEnabled({
-                    toolRouterKey: toolRouterKey,
-                    mcpEnabled: !toolMcpEnabled,
-                    nodeAddress: auth.node_address,
-                    token: auth.api_v2_key,
-                  });
-                }}
-              />
+            <TooltipTrigger asChild>
+              <div>
+                <Switch
+                  checked={toolMcpEnabled}
+                  disabled={!toolEnabled}
+                  onCheckedChange={async () => {
+                    if (!auth) return;
+                    if (toolEnabled !== true) {
+                      toast.error(
+                        'Tool must be enabled before changing MCP server mode',
+                      );
+                      return;
+                    }
+                    await setToolMcpEnabled({
+                      toolRouterKey: toolRouterKey,
+                      mcpEnabled: !toolMcpEnabled,
+                      nodeAddress: auth.node_address,
+                      token: auth.api_v2_key,
+                    });
+                  }}
+                />
+              </div>
             </TooltipTrigger>
             <TooltipPortal>
               <TooltipContent align="center" side="top">

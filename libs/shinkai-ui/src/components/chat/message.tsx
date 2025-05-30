@@ -1,11 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  ToolArgs,
+  type ToolArgs,
   ToolStatusType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { Artifact } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
-import { FormattedMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { type Artifact, type FormattedMessage  } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { format } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Edit3, Loader2, RotateCcw, XCircle } from 'lucide-react';

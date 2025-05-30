@@ -126,7 +126,7 @@ export const VectorFileDetails = () => {
       }
     };
 
-    fetchFileContent();
+    void fetchFileContent();
   }, [selectedFile, auth, downloadFile]);
 
   const handleDownloadFile = async () => {
@@ -188,7 +188,7 @@ export const VectorFileDetails = () => {
             onDownload={handleDownloadFile}
           />
         </div>
-        <div className="flex min-w-[350px] flex-1 shrink-0 flex-col rounded-r-xl border-l border-gray-200 bg-gray-300 p-5 pl-4">
+        <div className="bg-official-gray-950 border-official-gray-780 flex min-w-[350px] flex-1 shrink-0 flex-col rounded-r-xl border-l p-5 pl-4">
           <DialogHeader>
             <DialogTitle className={'sr-only'}>File Information</DialogTitle>
           </DialogHeader>
@@ -199,13 +199,13 @@ export const VectorFileDetails = () => {
                 type={getFileExt(selectedFile?.name ?? '')}
               />
             </div>
-            <p className="break-words text-lg font-medium text-white">
+            <div className="break-words text-lg font-medium text-white">
               {selectedFile?.name}
-              <Badge className="text-gray-80 ml-2 bg-gray-400 text-xs uppercase">
+              <Badge className="text-official-gray-400 ml-2 bg-gray-400 text-xs uppercase">
                 {getFileExt(selectedFile?.name ?? '') ?? '-'}
               </Badge>
-            </p>
-            <p className="text-gray-100">
+            </div>
+            <p className="text-official-gray-400">
               <span className="text-sm">
                 {formatDateToUSLocaleString(
                   new Date(selectedFile?.created_time ?? ''),
@@ -242,7 +242,9 @@ export const VectorFileDetails = () => {
                   className="flex items-center justify-between py-2 text-xs font-medium"
                   key={item.label}
                 >
-                  <span className="text-sm text-gray-100">{item.label}</span>
+                  <span className="text-official-gray-400 text-sm">
+                    {item.label}
+                  </span>
                   <span className="text-sm text-white">
                     {formatDateToLocaleStringWithTime(
                       new Date(item.value ?? ''),

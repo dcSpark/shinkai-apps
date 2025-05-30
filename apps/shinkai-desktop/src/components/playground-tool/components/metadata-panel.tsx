@@ -1,5 +1,5 @@
 import { ReloadIcon } from '@radix-ui/react-icons';
-import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   Button,
   Skeleton,
@@ -19,7 +19,7 @@ import { z } from 'zod';
 import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
 import { ToolErrorFallback } from '../error-boundary';
-import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
+import { type CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 import { useToolSave } from '../hooks/use-tool-save';
 import { ToolMetadataRawSchema } from '../schemas';
 import ToolCodeEditor from '../tool-code-editor';
@@ -71,7 +71,6 @@ function MetadataPanelBase({
     try {
       const parsedValue = JSON.parse(value);
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { author, name, description, ...metadataWithoutBasicInfo } =
         toolMetadata ?? {};
       const formattedMetadataWithoutBasicInfo = ToolMetadataRawSchema.parse(
@@ -92,7 +91,7 @@ function MetadataPanelBase({
         author: auth?.shinkai_identity ?? '',
       });
 
-      handleSaveTool({
+      void handleSaveTool({
         toolName: initialToolName,
         toolDescription: initialToolDescription,
         toolMetadata: parseValue as unknown as ToolMetadata,

@@ -1,6 +1,6 @@
 import { getPlaygroundTool as getPlaygroundToolApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { GetPlaygroundToolInput } from './types';
+import { type GetPlaygroundToolInput } from './types';
 
 export const getPlaygroundTool = async ({
   nodeAddress,

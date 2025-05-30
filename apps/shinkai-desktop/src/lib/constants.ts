@@ -1,7 +1,7 @@
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
-  TreePassThroughMethodOptions,
-  TreePassThroughOptions,
+  type TreePassThroughMethodOptions,
+  type TreePassThroughOptions,
 } from 'primereact/tree';
 
 export const allowedFileExtensions = [

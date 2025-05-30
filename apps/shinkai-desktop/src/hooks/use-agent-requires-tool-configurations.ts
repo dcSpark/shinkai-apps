@@ -1,4 +1,4 @@
-import { Agent } from '@shinkai_network/shinkai-message-ts/api/agents/types';
+import { type Agent } from '@shinkai_network/shinkai-message-ts/api/agents/types';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useMemo } from 'react';
 

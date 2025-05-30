@@ -1,6 +1,6 @@
 import { getToolsFromToolset as getToolsFromToolsetApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { GetToolsFromToolsetInput, GetToolsFromToolsetOutput } from './types';
+import { type GetToolsFromToolsetInput, type GetToolsFromToolsetOutput } from './types';
 
 export const getToolsFromToolset = async ({
   nodeAddress,

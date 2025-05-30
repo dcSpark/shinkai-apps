@@ -1,5 +1,13 @@
-import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
-import { TreeNode } from 'primereact/treenode';
+import { type DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
+
+type TreeNode = {
+  key: string;
+  label: string;
+  data: DirectoryContent;
+  icon: string;
+  children?: TreeNode[];
+  className?: string;
+};
 
 export function transformDataToTreeNodes(
   data: DirectoryContent[],
@@ -28,6 +36,7 @@ export function transformDataToTreeNodes(
 
   return result;
 }
+
 export function flattenDirectoryContents(
   data: DirectoryContent[],
 ): DirectoryContent[] {

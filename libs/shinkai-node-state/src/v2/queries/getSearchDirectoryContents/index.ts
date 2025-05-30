@@ -1,6 +1,6 @@
 import { getSearchDirectoryContents as getSearchDirectoryContentsApi } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 
-import { GetSearchDirectoryContentsInput } from './types';
+import { type GetSearchDirectoryContentsInput } from './types';
 
 export const getSearchDirectoryContents = async ({
   nodeAddress,

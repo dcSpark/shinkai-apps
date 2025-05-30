@@ -1,6 +1,6 @@
 import { updatePrompt as updatePromptApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { UpdatePromptInput } from './types';
+import { type UpdatePromptInput } from './types';
 
 export const updatePrompt = async ({
   nodeAddress,

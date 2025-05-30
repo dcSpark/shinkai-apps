@@ -1,6 +1,6 @@
 import { uploadFilesToVR } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 
-import { UploadVRFilesInput } from './types';
+import { type UploadVRFilesInput } from './types';
 
 export const uploadVRFiles = async ({
   nodeAddress,

@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
-  ChatMessageFormSchema,
+  type ChatMessageFormSchema,
   chatMessageFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
@@ -65,7 +65,7 @@ import { toast } from 'sonner';
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import {
   chatConfigFormSchema,
-  ChatConfigFormSchemaType,
+  type ChatConfigFormSchemaType,
   CreateChatConfigActionBar,
 } from '../components/chat/chat-action-bar/chat-config-action-bar';
 import { FileSelectionActionBar } from '../components/chat/chat-action-bar/file-selection-action-bar';
@@ -76,7 +76,7 @@ import { useChatStore } from '../components/chat/context/chat-context';
 // import { WebSearchActionBar } from '../components/chat/chat-action-bar/web-search-action-bar';
 import { useSetJobScope } from '../components/chat/context/set-job-scope-context';
 import {
-  ChatConversationLocationState,
+  type ChatConversationLocationState,
   DropFileActive,
   FileList,
   SelectedToolChat,
@@ -228,7 +228,7 @@ const EmptyMessage = () => {
       }
     };
 
-    checkDefaultTools();
+    void checkDefaultTools();
   }, []);
 
   const { data: recentlyUsedAgents } = useGetAgents(
@@ -323,7 +323,7 @@ const EmptyMessage = () => {
       });
     },
     onSuccess: async (data, variables) => {
-      navigate(
+      await navigate(
         `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
       );
 
@@ -589,7 +589,7 @@ const EmptyMessage = () => {
                         description={selectedTool.description}
                         name={formatText(selectedTool.name)}
                         onSubmit={() => {
-                          chatForm.handleSubmit(onSubmit)();
+                          void chatForm.handleSubmit(onSubmit)();
                         }}
                         onToolFormChange={setToolFormData}
                         remove={() => {
@@ -1001,7 +1001,7 @@ const EmptyMessage = () => {
                   secondaryAction={{
                     label: 'Chat History',
                     onClick: () => {
-                      navigate(`/inboxes?agentId=${agent.agent_id}`);
+                      void navigate(`/inboxes?agentId=${agent.agent_id}`);
                     },
                   }}
                   title={agent.name}
@@ -1044,7 +1044,7 @@ const EmptyMessage = () => {
                   secondaryAction={{
                     label: 'Chat History',
                     onClick: () => {
-                      navigate(`/inboxes?agentId=${agent.agent_id}`);
+                      void navigate(`/inboxes?agentId=${agent.agent_id}`);
                     },
                   }}
                   title={agent.name}

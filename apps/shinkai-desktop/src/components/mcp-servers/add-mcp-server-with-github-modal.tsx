@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import type { ImportMCPServerFromGithubURLOutput } from '@shinkai_network/shinkai-node-state/v2/mutations/importMCPServerFromGithubURL/types';
+import  { type ImportMCPServerFromGithubURLOutput } from '@shinkai_network/shinkai-node-state/v2/mutations/importMCPServerFromGithubURL/types';
 import { useImportMCPServerFromGithubURL } from '@shinkai_network/shinkai-node-state/v2/mutations/importMCPServerFromGithubURL/useImportMCPServerFromGithubURL';
 import {
   Button,

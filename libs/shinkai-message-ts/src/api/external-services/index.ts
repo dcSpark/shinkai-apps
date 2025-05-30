@@ -1,5 +1,5 @@
 import { httpClient } from '../../http-client';
-import { SubmitFeedbackRequest } from './types';
+import { type SubmitFeedbackRequest } from './types';
 
 export const submitFeedback = async (payload: SubmitFeedbackRequest) => {
   const response = await httpClient.post('https://formspree.io/f/mgvawbkv', {

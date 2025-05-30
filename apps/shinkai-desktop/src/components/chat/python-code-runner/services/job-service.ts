@@ -1,7 +1,7 @@
-import type { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
+import  { type DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 
-import type { AddFileToInboxResponse, AddFileToJobRequest } from './__mocks__/shinkai-message-ts';
-import { FileSystemEntry, IFileSystemService } from './file-system-service';
+import  { type AddFileToInboxResponse, type AddFileToJobRequest } from './__mocks__/shinkai-message-ts';
+import { type FileSystemEntry, type IFileSystemService } from './file-system-service';
 
 export interface IJobService {
   syncJobFilesToIDBFS(contents: DirectoryContent[] | null): Promise<void>;

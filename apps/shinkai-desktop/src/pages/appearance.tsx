@@ -1,10 +1,13 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { Card } from '@shinkai_network/shinkai-ui';
-import { RadioGroup, RadioGroupItem } from '@shinkai_network/shinkai-ui';
-import { Label } from '@shinkai_network/shinkai-ui';
+import {
+  Card,
+  RadioGroup,
+  RadioGroupItem,
+  Label,
+} from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 
-import { ChatFontSize, useSettings } from '../store/settings';
+import { type ChatFontSize, useSettings } from '../store/settings';
 import { SimpleLayout } from './layout/simple-layout';
 
 const AppearancePage = () => {

@@ -1,6 +1,6 @@
 import { updateNodeName as updateNodeNameApi } from '@shinkai_network/shinkai-message-ts/api/general/index';
 
-import { UpdateNodeNameInput, UpdateNodeNameOutput } from './types';
+import { type UpdateNodeNameInput, type UpdateNodeNameOutput } from './types';
 
 export const updateNodeName = async ({
   nodeAddress,

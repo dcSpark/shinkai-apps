@@ -1,6 +1,6 @@
 import { openToolInCodeEditor as openToolInCodeEditorApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { OpenToolInCodeEditorInput, OpenToolInCodeEditorOutput } from './types';
+import { type OpenToolInCodeEditorInput, type OpenToolInCodeEditorOutput } from './types';
 
 export const openToolInCodeEditor = async ({
   nodeAddress,

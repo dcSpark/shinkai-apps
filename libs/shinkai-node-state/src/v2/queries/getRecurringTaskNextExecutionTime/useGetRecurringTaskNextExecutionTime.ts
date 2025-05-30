@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetRecurringTasksNextExecutionTimeInput } from './types';
 import { getRecurringTasksExecutionTime } from './index';
-import { GetRecurringTasksNextExecutionTimeInput } from './types';
 
 export const useGetRecurringTaskNextExecutionTime = (
   input: GetRecurringTasksNextExecutionTimeInput,

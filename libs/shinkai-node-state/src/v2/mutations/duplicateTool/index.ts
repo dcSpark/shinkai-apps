@@ -1,6 +1,6 @@
 import { duplicateTool as duplicateToolApi } from "@shinkai_network/shinkai-message-ts/api/tools/index";
 
-import { DuplicateToolInput, DuplicateToolOutput } from "./types";
+import { type DuplicateToolInput, type DuplicateToolOutput } from "./types";
 
 export const duplicateTool = async ({
   nodeAddress,

@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  QuickConnectFormSchema,
+  type QuickConnectFormSchema,
   quickConnectFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/auth/quick-connection';
 import { useInitialRegistration } from '@shinkai_network/shinkai-node-state/v2/mutations/initialRegistration/useInitialRegistration';
@@ -9,7 +9,7 @@ import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/v2/que
 import { useGetHealth } from '@shinkai_network/shinkai-node-state/v2/queries/getHealth/useGetHealth';
 import {
   Button,
-  ButtonProps,
+  type ButtonProps,
   buttonVariants,
   ErrorMessage,
   Form,
@@ -24,7 +24,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ArrowLeft } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, To, useLocation, useNavigate } from 'react-router';
+import { Link, type To, useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { OnboardingStep } from '../components/onboarding/constants';
@@ -106,7 +106,7 @@ const QuickConnectionPage = () => {
         });
         completeStep(OnboardingStep.TERMS_CONDITIONS, true);
         completeStep(OnboardingStep.ANALYTICS, false);
-        navigate(HOME_PATH);
+        void navigate(HOME_PATH);
       } else if (response.status === 'non-pristine') {
         submitRegistrationNoCodeNonPristineError();
       } else {
@@ -129,7 +129,7 @@ const QuickConnectionPage = () => {
       toast.loading(t('quickConnection.connectingToNode'), {
         id: 'auto-connect-shinkai-private',
       });
-      setupDataForm.handleSubmit(onSubmit)();
+      void setupDataForm.handleSubmit(onSubmit)();
     }
   }, [isNodeInfoSuccess, isShinkaiPrivate, nodeInfo, setupDataForm]);
 
@@ -202,7 +202,7 @@ const QuickConnectionPage = () => {
             </span>
           }
           onClick={() => {
-            navigate('/restore');
+            void navigate('/restore');
           }}
           title={t('restoreConnection.restore')}
         />

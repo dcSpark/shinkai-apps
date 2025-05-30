@@ -3,7 +3,7 @@ import { Button, Skeleton } from '@shinkai_network/shinkai-ui';
 import { debounce } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { memo, MutableRefObject, useCallback } from 'react';
+import { memo, useCallback } from 'react';
 
 // import { useFormContext } from 'react-hook-form';
 import { usePlaygroundStore } from '../context/playground-context';
@@ -40,7 +40,7 @@ function CodePanelBase({
   resetToolCode: () => void;
   isDirtyCodeEditor: boolean;
   setIsDirtyCodeEditor: (isDirty: boolean) => void;
-  baseToolCodeRef: MutableRefObject<string>;
+  baseToolCodeRef: React.RefObject<string>;
 }) {
   const codeEditorRef = usePlaygroundStore((state) => state.codeEditorRef);
   const resetCounter = usePlaygroundStore((state) => state.resetCounter);

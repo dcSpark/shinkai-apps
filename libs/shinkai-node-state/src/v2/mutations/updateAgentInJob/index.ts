@@ -1,6 +1,6 @@
 import { updateLLMProviderInJob } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import { UpdateAgentInJobInput } from './types';
+import { type UpdateAgentInJobInput } from './types';
 
 export const updateAgentInJob = async ({
   nodeAddress,

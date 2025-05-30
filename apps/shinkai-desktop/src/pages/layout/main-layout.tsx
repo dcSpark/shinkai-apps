@@ -365,26 +365,24 @@ export function MainNav() {
                         arrowPadding={2}
                         side="right"
                       >
-                        <p>
-                          {item.disabled ? (
-                            <>
-                              {item.title} <br />
-                              <span className="text-official-gray-400 text-xs">
-                                {t('common.comingSoon')}
-                              </span>
-                            </>
-                          ) : (
-                            <div className="flex flex-col gap-1">
-                              {item.title}
-                              {item.href === '/home' ? (
-                                <div className="text-official-gray-400 flex items-center justify-center gap-2 text-center">
-                                  <span>⌘</span>
-                                  <span>N</span>
-                                </div>
-                              ) : null}
-                            </div>
-                          )}
-                        </p>
+                        {item.disabled ? (
+                          <>
+                            {item.title} <br />
+                            <span className="text-official-gray-400 text-xs">
+                              {t('common.comingSoon')}
+                            </span>
+                          </>
+                        ) : (
+                          <div className="flex flex-col gap-1">
+                            {item.title}
+                            {item.href === '/home' ? (
+                              <div className="text-official-gray-400 flex items-center justify-center gap-2 text-center">
+                                <span>⌘</span>
+                                <span>N</span>
+                              </div>
+                            ) : null}
+                          </div>
+                        )}
                       </TooltipContent>
                     </TooltipPortal>
                   </Tooltip>
@@ -572,11 +570,11 @@ const MainLayout = () => {
         action: {
           label: 'View',
           onClick: () => {
-            navigate(`/tools/${data.tool_key}`);
+            void navigate(`/tools/${data.tool_key}`);
           },
         },
       });
-      navigate('/tools');
+      void navigate('/tools');
     },
     onError: (error) => {
       toast.error('Failed to install tool', {
@@ -587,7 +585,7 @@ const MainLayout = () => {
 
   const { mutateAsync: importAgentFromUrl } = useImportAgentFromUrl({
     onSuccess: () => {
-      navigate('/agents');
+      void navigate('/agents');
       toast.success('Agent imported successfully', {
         description: 'Your agent is now ready to use in the app.',
       });
@@ -604,14 +602,14 @@ const MainLayout = () => {
       if (!auth) return;
       const payload = event.payload as { tool_type: string; tool_url: string };
       if (payload.tool_type.toLowerCase() === 'tool') {
-        importTool({
+        void importTool({
           nodeAddress: auth?.node_address ?? '',
           token: auth?.api_v2_key ?? '',
           url: payload.tool_url,
         });
       } else if (payload.tool_type.toLowerCase() === 'agent') {
         try {
-          importAgentFromUrl({
+          void importAgentFromUrl({
             nodeAddress: auth?.node_address ?? '',
             token: auth?.api_v2_key ?? '',
             url: payload.tool_url,
@@ -627,9 +625,9 @@ const MainLayout = () => {
         }
       }
     });
-    getCurrentWindow().emit('shinkai-app-ready');
+    void getCurrentWindow().emit('shinkai-app-ready');
     return () => {
-      unlisten.then((fn) => fn());
+      void unlisten.then((fn) => fn());
     };
   }, [importTool, importAgentFromUrl, auth]);
 
@@ -637,7 +635,6 @@ const MainLayout = () => {
     if (isSuccess && nodeInfo?.status !== 'ok') {
       toast.error(t('errors.nodeUnavailable.title'), {
         description: t('errors.nodeUnavailable.description'),
-        important: true,
         id: 'node-unavailable',
         duration: 20000,
       });

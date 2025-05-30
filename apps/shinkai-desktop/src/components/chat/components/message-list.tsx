@@ -1,4 +1,4 @@
-import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { type ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { Skeleton } from '@shinkai_network/shinkai-ui';
 import {
   getRelativeDateLabel,
@@ -6,13 +6,13 @@ import {
 } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
-  FetchPreviousPageOptions,
-  InfiniteQueryObserverResult,
+  type FetchPreviousPageOptions,
+  type InfiniteQueryObserverResult,
 } from '@tanstack/react-query';
 import React, {
   Fragment,
   memo,
-  RefObject,
+  type RefObject,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -24,7 +24,7 @@ import { useInView } from 'react-intersection-observer';
 import { Message } from './message';
 
 function useScrollToBottom(
-  scrollRef: RefObject<HTMLDivElement>,
+  scrollRef: RefObject<HTMLDivElement | null>,
   detach = false,
 ) {
   const [autoScroll, setAutoScroll] = useState(true);
@@ -103,12 +103,14 @@ export const MessageList = memo(
     const fetchPreviousMessages = useCallback(async () => {
       setAutoScroll(false);
       await fetchPreviousPage();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetchPreviousPage]);
 
     useEffect(() => {
       if (hasPreviousPage && inView) {
-        fetchPreviousMessages();
+        void fetchPreviousMessages();
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [hasPreviousPage, inView]);
 
     // adjust the scroll position of a chat container after new messages are fetched
@@ -128,6 +130,7 @@ export const MessageList = memo(
 
         chatContainerElement.scrollTop = currentHeight - previousHeight;
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [paginatedMessages, isFetchingPreviousPage, inView]);
 
     useEffect(() => {
@@ -155,6 +158,7 @@ export const MessageList = memo(
       return () => {
         chatContainerElement.removeEventListener('scroll', handleScroll);
       };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
       fetchPreviousMessages,
       hasPreviousPage,
@@ -167,12 +171,14 @@ export const MessageList = memo(
       if (messageList?.length % 2 === 1) {
         scrollDomToBottom();
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [messageList?.length]);
 
     useEffect(() => {
       if (isSuccess) {
         scrollDomToBottom();
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess]);
 
     return (

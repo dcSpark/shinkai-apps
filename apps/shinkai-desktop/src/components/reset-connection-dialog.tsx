@@ -63,7 +63,7 @@ export const ResetConnectionDialog = ({
   const { mutateAsync: submitRegistrationNoCode } = useInitialRegistration({
     onSuccess: (response, setupPayload) => {
       if (response.status !== 'success') {
-        shinkaiNodeKill();
+        void shinkaiNodeKill();
       }
       if (response.status === 'success' && encryptionKeys) {
         setAuth({
@@ -75,7 +75,7 @@ export const ResetConnectionDialog = ({
           identity_pk: response.data?.identity_public_key ?? '',
         });
 
-        navigate('/ai-model-installation');
+        void navigate('/ai-model-installation');
         onOpenChange(false);
       } else {
         submitRegistrationNoCodeError();

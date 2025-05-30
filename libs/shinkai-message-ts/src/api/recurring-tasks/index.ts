@@ -1,18 +1,18 @@
 import { httpClient } from '../../http-client';
 import { urlJoin } from '../../utils/url-join';
 import {
-  CreateRecurringTaskRequest,
-  CreateRecurringTaskResponse,
-  GetRecurringTaskLogsRequest,
-  GetRecurringTaskLogsResponse,
-  GetRecurringTaskRequest,
-  GetRecurringTaskResponse,
-  GetRecurringTasksNextExecutionTimeResponse,
-  GetRecurringTasksResponse,
-  RemoveRecurringTaskRequest,
-  RemoveRecurringTaskResponse,
-  SetRecurringTaskRequest,
-  SetRecurringTaskResponse,
+  type CreateRecurringTaskRequest,
+  type CreateRecurringTaskResponse,
+  type GetRecurringTaskLogsRequest,
+  type GetRecurringTaskLogsResponse,
+  type GetRecurringTaskRequest,
+  type GetRecurringTaskResponse,
+  type GetRecurringTasksNextExecutionTimeResponse,
+  type GetRecurringTasksResponse,
+  type RemoveRecurringTaskRequest,
+  type RemoveRecurringTaskResponse,
+  type SetRecurringTaskRequest,
+  type SetRecurringTaskResponse,
 } from './types';
 
 export const createRecurringTask = async (
@@ -125,7 +125,11 @@ export const getRecurringTaskLogs = async (
   return response.data as GetRecurringTaskLogsResponse;
 };
 
-export const runTaskNowApi = async (nodeAddress: string, token: string, taskId: string) => {
+export const runTaskNowApi = async (
+  nodeAddress: string,
+  token: string,
+  taskId: string,
+) => {
   const response = await httpClient.post(
     `${nodeAddress}/v2/force_execute_cron_task`,
     null, // No body needed for this request
@@ -136,7 +140,7 @@ export const runTaskNowApi = async (nodeAddress: string, token: string, taskId: 
       params: {
         cron_task_id: taskId,
       },
-    }
+    },
   );
 
   return response.data;

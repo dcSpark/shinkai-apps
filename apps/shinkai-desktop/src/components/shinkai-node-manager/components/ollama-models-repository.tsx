@@ -20,24 +20,24 @@ import {
 import { useDebounce, useMap } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
-  ColumnDef,
+  type ColumnDef,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  OnChangeFn,
-  Row,
-  SortingState,
+  type OnChangeFn,
+  type Row,
+  type SortingState,
   useReactTable,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { ModelResponse } from 'ollama/browser';
+import { type ModelResponse } from 'ollama/browser';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import {
   FILTERED_OLLAMA_MODELS_REPOSITORY,
-  OllamaModelDefinition,
+  type OllamaModelDefinition,
 } from '../../..//lib/shinkai-node-manager/ollama-models';
 import {
   useOllamaListQuery,
@@ -110,7 +110,7 @@ export const OllamaModelsRepository = ({
               <div className="flex flex-row items-center gap-3">
                 <span className="font-medium">{model.name}</span>
                 {isDefaultModel(
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                   
                   getFullName(model.name, selectedTagMap.get(model.name)!),
                 ) && (
                   <Badge
@@ -182,7 +182,7 @@ export const OllamaModelsRepository = ({
               <OllamaModelInstallButton
                 model={getFullName(
                   '',
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                   
                   selectedTagMap.get(model.name)!,
                 )}
               />

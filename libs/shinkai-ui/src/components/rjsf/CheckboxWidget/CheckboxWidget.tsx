@@ -1,15 +1,15 @@
 import {
   ariaDescribedByIds,
   descriptionId,
-  FormContextType,
+  type FormContextType,
   getTemplate,
   labelValue,
-  RJSFSchema,
+  type RJSFSchema,
   schemaRequiresTrueValue,
-  StrictRJSFSchema,
-  WidgetProps,
+  type StrictRJSFSchema,
+  type WidgetProps,
 } from '@rjsf/utils';
-import React, { FocusEvent } from 'react';
+import React, { type FocusEvent } from 'react';
 
 import { cn } from '../../../utils';
 

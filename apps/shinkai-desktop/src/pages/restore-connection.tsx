@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { decryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
 import {
-  RestoreConnectionFormSchema,
+  type RestoreConnectionFormSchema,
   restoreConnectionFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/settings/restore-connection';
 import {
@@ -22,7 +22,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, To, useNavigate } from 'react-router';
+import { Link, type To, useNavigate } from 'react-router';
 
 import { useAuth } from '../store/auth';
 
@@ -50,7 +50,7 @@ const RestoreConnectionPage = () => {
         const decryptedSetupData = JSON.parse(decryptedValue);
         setAuth(decryptedSetupData);
         // TODO: Add logic to test if setup data is valid to create an authenticated connection with Shinkai Node
-        navigate('/');
+        void navigate('/');
       }
     } catch (_) {
       setError(true);
@@ -120,7 +120,7 @@ const RestoreConnectionPage = () => {
                           descriptionText="Eg: shinkai.key"
                           maxFiles={1}
                           onChange={(acceptedFiles) => {
-                            onConnectionFileSelected(acceptedFiles);
+                            void onConnectionFileSelected(acceptedFiles);
                             field.onChange(acceptedFiles);
                           }}
                           value={field.value}

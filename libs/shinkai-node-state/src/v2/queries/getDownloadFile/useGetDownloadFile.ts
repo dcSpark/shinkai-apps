@@ -1,7 +1,7 @@
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 
+import { type DownloadFileOutput, type GetDownloadFileInput } from './types';
 import { downloadFile } from './index';
-import { DownloadFileOutput, GetDownloadFileInput } from './types';
 
 type Options = UseMutationOptions<
   DownloadFileOutput,

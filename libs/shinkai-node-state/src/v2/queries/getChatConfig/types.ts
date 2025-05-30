@@ -1,5 +1,5 @@
-import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { GetChatConfigResponse } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { type Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type GetChatConfigResponse } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 
 export type GetChatConfigInput = Token & {
   nodeAddress: string;

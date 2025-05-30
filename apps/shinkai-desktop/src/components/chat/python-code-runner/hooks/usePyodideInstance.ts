@@ -1,7 +1,7 @@
-import { loadPyodide, PyodideInterface } from 'pyodide';
+import { loadPyodide, type PyodideInterface } from 'pyodide';
 import { useCallback, useRef } from 'react';
 
-import { IFileSystemService, PyodideFileSystemService } from '../services/file-system-service';
+import { type IFileSystemService, PyodideFileSystemService } from '../services/file-system-service';
 
 export function usePyodideInstance() {
   const pyodideRef = useRef<PyodideInterface | null>(null);

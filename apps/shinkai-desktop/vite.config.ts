@@ -1,7 +1,8 @@
+import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
+import { resolve } from 'path';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import legacy from '@vitejs/plugin-legacy';
 import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import wasm from 'vite-plugin-wasm';
 // https://vitejs.dev/config/
@@ -15,6 +16,7 @@ export default defineConfig(() => ({
       polyfills: ['es.array.at', 'es.object.has-own'],
       modernPolyfills: ['es.array.at', 'es.object.has-own'],
     }),
+    nxCopyAssetsPlugin(['*.md']),
   ],
   esbuild: {
     // Important for wasm plugin
@@ -69,6 +71,19 @@ export default defineConfig(() => ({
           'src/windows/shinkai-artifacts/index.html',
         ),
       },
+    },
+  },
+  test: {
+    watch: false,
+    setupFiles: './src/test-setup.ts',
+    globals: true,
+    cache: { dir: '../../node_modules/.vitest/apps/shinkai-desktop' },
+    environment: 'jsdom',
+    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    reporters: ['default'],
+    coverage: {
+      reportsDirectory: '../../coverage/libs/shinkai-message-ts',
+      provider: 'v8',
     },
   },
   worker: {

@@ -279,7 +279,7 @@ const TaskCard = ({
                   name: t('common.edit'),
                   icon: <Edit className="mr-3 h-4 w-4" />,
                   onClick: () => {
-                    navigate(`/tasks/edit/${taskId}`);
+                    void navigate(`/tasks/edit/${taskId}`);
                   },
                 },
                 {
@@ -374,10 +374,10 @@ const RemoveTaskDrawer = ({
   const auth = useAuth((state) => state.auth);
   const navigate = useNavigate();
   const { mutateAsync: removeTask, isPending } = useRemoveRecurringTask({
-    onSuccess: () => {
+    onSuccess: async () => {
       onOpenChange(false);
       toast.success('Delete task successfully');
-      navigate('/tasks');
+      await navigate('/tasks');
     },
     onError: (error) => {
       toast.error('Failed remove task', {

@@ -1,6 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
-import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { type CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import {
   Button,
   ChatInputArea,
@@ -11,14 +11,16 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { SendIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { InfiniteQueryObserverResult } from '@tanstack/react-query';
-import { FetchPreviousPageOptions } from '@tanstack/react-query';
+import {
+  type InfiniteQueryObserverResult,
+  type FetchPreviousPageOptions,
+} from '@tanstack/react-query';
 import { memo } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { MessageList } from '../../chat/components/message-list';
 import { usePlaygroundStore } from '../context/playground-context';
-import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
+import { type CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 import { AIModelSelectorTools } from './ai-update-selection-tool';
 import { LanguageToolSelector } from './language-tool-selector';
 import { ToolsSelection } from './tools-selection';

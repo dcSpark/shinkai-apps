@@ -1,6 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PopoverClose } from '@radix-ui/react-popover';
-import { ShinkaiTool, ShinkaiToolType } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import {
+  type ShinkaiTool,
+  type ShinkaiToolType,
+} from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import {
   Button,
@@ -24,11 +27,17 @@ import { z } from 'zod';
 import { useAuth } from '../../../store/auth';
 
 const toolDetailsSchema = z.object({
-  description: z.string().min(1, "Description is required"),
+  description: z.string().min(1, 'Description is required'),
   keywords: z.string().optional(),
-  previewUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
-  iconUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
-  version: z.string().regex(/^\d+\.\d+\.\d+$/, "Version must be in x.x.x format"),
+  previewUrl: z
+    .string()
+    .url('Must be a valid URL')
+    .optional()
+    .or(z.literal('')),
+  iconUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  version: z
+    .string()
+    .regex(/^\d+\.\d+\.\d+$/, 'Version must be in x.x.x format'),
 });
 
 type ToolDetailsFormSchema = z.infer<typeof toolDetailsSchema>;
@@ -73,35 +82,50 @@ export default function EditToolDetailsDialog({
   const form = useForm<ToolDetailsFormSchema>({
     resolver: zodResolver(toolDetailsSchema),
     defaultValues: {
-      description: fieldName === 'description' ? currentValue : tool.description,
-      keywords: fieldName === 'keywords' ? currentValue : ('keywords' in tool ? tool.keywords.join(', ') : ''),
+      description:
+        fieldName === 'description' ? currentValue : tool.description,
+      keywords:
+        fieldName === 'keywords'
+          ? currentValue
+          : 'keywords' in tool
+            ? tool.keywords.join(', ')
+            : '',
       previewUrl: fieldName === 'previewUrl' ? currentValue : '',
       iconUrl: fieldName === 'iconUrl' ? currentValue : '',
-      version: fieldName === 'version' ? currentValue : ('version' in tool ? tool.version : '1.0.0'),
+      version:
+        fieldName === 'version'
+          ? currentValue
+          : 'version' in tool
+            ? tool.version
+            : '1.0.0',
     },
   });
 
   const onSubmit = async (data: ToolDetailsFormSchema) => {
     if (fieldName === 'previewUrl' || fieldName === 'iconUrl') {
-      toast.info(`${fieldName} update functionality requires backend implementation`);
+      toast.info(
+        `${fieldName} update functionality requires backend implementation`,
+      );
       setIsOpen(false);
       return;
     }
-    
+
     const toolPayload: Partial<ShinkaiTool> = {};
-    
+
     if (fieldName === 'description') {
       toolPayload.description = data.description;
     } else if (fieldName === 'keywords') {
       if ('keywords' in tool) {
-        (toolPayload as any).keywords = data.keywords ? data.keywords.split(',').map(k => k.trim()) : [];
+        (toolPayload as any).keywords = data.keywords
+          ? data.keywords.split(',').map((k) => k.trim())
+          : [];
       }
     } else if (fieldName === 'version') {
       if ('version' in tool) {
         (toolPayload as any).version = data.version;
       }
     }
-    
+
     await updateTool({
       toolKey: toolKey,
       toolType: toolType,
@@ -234,23 +258,39 @@ export default function EditToolDetailsDialog({
       onOpenChange={(open) => {
         if (open) {
           form.reset({
-            description: fieldName === 'description' ? currentValue : tool.description,
-            keywords: fieldName === 'keywords' ? currentValue : ('keywords' in tool ? tool.keywords.join(', ') : ''),
+            description:
+              fieldName === 'description' ? currentValue : tool.description,
+            keywords:
+              fieldName === 'keywords'
+                ? currentValue
+                : 'keywords' in tool
+                  ? tool.keywords.join(', ')
+                  : '',
             previewUrl: fieldName === 'previewUrl' ? currentValue : '',
             iconUrl: fieldName === 'iconUrl' ? currentValue : '',
-            version: fieldName === 'version' ? currentValue : ('version' in tool ? tool.version : '1.0.0'),
+            version:
+              fieldName === 'version'
+                ? currentValue
+                : 'version' in tool
+                  ? tool.version
+                  : '1.0.0',
           });
         }
         setIsOpen(open);
       }}
       open={isOpen}
     >
-      <PopoverTrigger className={cn(
-        "hover:bg-official-gray-900 transition-colors flex items-center gap-1 rounded-lg p-1 text-xs font-medium",
-        className
-      )}>
-        <span className="sr-only">Edit {fieldName}</span>
-        <Button className="px-2 h-6" size="xs" variant="ghost">Edit</Button>
+      <PopoverTrigger
+        asChild
+        className={cn(
+          'hover:bg-official-gray-900 flex items-center gap-1 rounded-lg p-1 text-xs font-medium transition-colors',
+          className,
+        )}
+      >
+        <Button className="h-6 px-2" size="xs" variant="ghost">
+          Edit
+          <span className="sr-only">{fieldName}</span>
+        </Button>
       </PopoverTrigger>
       <PopoverContent
         align="start"
@@ -262,10 +302,7 @@ export default function EditToolDetailsDialog({
           Edit {fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}
         </h1>
         <Form {...form}>
-          <form
-            className="space-y-4"
-            onSubmit={form.handleSubmit(onSubmit)}
-          >
+          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             {renderFormField()}
 
             <div className="ml-auto flex max-w-[200px] items-center justify-end gap-2">

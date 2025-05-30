@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { encryptMessageWithPassphrase } from '@shinkai_network/shinkai-message-ts/cryptography';
 import {
-  ExportConnectionFormSchema,
+  type ExportConnectionFormSchema,
   exportConnectionFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/settings/export-connection';
 import {
@@ -21,7 +21,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useAuth } from '../store/auth';
-import { SimpleLayout, SubpageLayout } from './layout/simple-layout';
+import { SimpleLayout } from './layout/simple-layout';
 
 export const ExportConnection = () => {
   const { t } = useTranslation();

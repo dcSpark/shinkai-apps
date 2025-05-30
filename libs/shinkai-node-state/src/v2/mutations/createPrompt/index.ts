@@ -1,6 +1,6 @@
 import { createPrompt as createPromptApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { CreatePromptInput } from './types';
+import { type CreatePromptInput } from './types';
 
 export const createPrompt = async ({
   nodeAddress,

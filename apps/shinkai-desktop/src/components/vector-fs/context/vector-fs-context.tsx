@@ -1,8 +1,8 @@
-import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
+import { type DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import React, { createContext, useContext, useState } from 'react';
 import { createStore, useStore } from 'zustand';
 
-import { VectorFsActions } from '../components/vector-fs-drawer';
+import { type VectorFsActions } from '../components/vector-fs-drawer';
 
 export enum VectorFSLayout {
   Grid = 'grid',

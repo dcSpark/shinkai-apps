@@ -1,6 +1,6 @@
 import { updateChatConfig as updateChatConfigApi } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import { UpdateChatConfigInput } from './types';
+import { type UpdateChatConfigInput } from './types';
 
 export const updateChatConfig = async ({
   nodeAddress,

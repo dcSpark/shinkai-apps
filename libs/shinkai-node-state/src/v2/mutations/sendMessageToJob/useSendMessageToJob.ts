@@ -7,13 +7,16 @@ import {
 
 import { FunctionKeyV2, generateOptimisticUserMessage } from '../../constants';
 import {
-  ChatConversationInfiniteData,
+  type ChatConversationInfiniteData,
   FileTypeSupported,
 } from '../../queries/getChatConversation/types';
-import { useGetChatConversationWithPagination } from '../../queries/getChatConversation/useGetChatConversationWithPagination';
-import { APIError } from '../../types';
+import { type useGetChatConversationWithPagination } from '../../queries/getChatConversation/useGetChatConversationWithPagination';
+import { type APIError } from '../../types';
+import {
+  type SendMessageToJobInput,
+  type SendMessageToJobOutput,
+} from './types';
 import { sendMessageToJob } from '.';
-import { SendMessageToJobInput, SendMessageToJobOutput } from './types';
 
 type Options = UseMutationOptions<
   SendMessageToJobOutput,
@@ -76,18 +79,18 @@ export const useSendMessageToJob = (options?: Options) => {
         queryClient.setQueryData(queryKey, snapshot);
       };
     },
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_JOB_SCOPE],
       });
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_VR_FILES],
       });
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);
       }
     },
-    onError: (error, variables, rollback) => {
+    onError: async (error, variables, rollback) => {
       rollback?.();
       const queryKey = [
         FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
@@ -95,7 +98,7 @@ export const useSendMessageToJob = (options?: Options) => {
           inboxId: buildInboxIdFromJobId(variables.jobId),
         },
       ];
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: queryKey,
       });
       if (options?.onError) {

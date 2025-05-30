@@ -1,6 +1,6 @@
 import { uploadAssetsToTool as uploadAssetsToToolApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { UploadAssetsToToolInput } from './types';
+import { type UploadAssetsToToolInput } from './types';
 
 export const uploadAssetsToTool = async ({
   nodeAddress,

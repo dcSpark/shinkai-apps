@@ -9,24 +9,16 @@ import {
   TooltipPortal,
   TooltipProvider,
   TooltipTrigger,
-} from '@shinkai_network/shinkai-ui';
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@shinkai_network/shinkai-ui';
-import {
-  GoogleIcon,
-  MetaIcon,
-  MicrosoftIcon,
-  MistralIcon,
-  OpenBMBIcon,
-} from '@shinkai_network/shinkai-ui/assets';
+
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { BookOpenText, Database, Sparkles, StarIcon } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 import { OLLAMA_MODELS } from '../../lib/shinkai-node-manager/ollama-models';
@@ -68,16 +60,6 @@ export const OllamaModels = ({
     return defaultModel === model;
   };
 
-  const providerLogoMap = useMemo(() => {
-    return {
-      Microsoft: <MicrosoftIcon className="h-6 w-6" />,
-      Google: <GoogleIcon className="h-6 w-6" />,
-      Meta: <MetaIcon className="h-6 w-6" />,
-      Mistral: <MistralIcon className="h-6 w-6" />,
-      OpenBMB: <OpenBMBIcon className="h-6 w-6" />,
-    };
-  }, []);
-
   if (!isShinkaiNodeRunning) {
     return (
       <div className="flex h-full w-full flex-row items-center justify-center">
@@ -88,7 +70,7 @@ export const OllamaModels = ({
               if (isShinkaiNodeRunning) {
                 return;
               }
-              shinkaiNodeSpawn();
+              void shinkaiNodeSpawn();
             }}
           >
             Start

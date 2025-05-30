@@ -1,4 +1,4 @@
-import { WidgetToolState } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type WidgetToolState } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import React, { createContext, useContext, useState } from 'react';
 import { createStore, useStore } from 'zustand';
 

@@ -1,8 +1,8 @@
-import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
+import { type QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
 import { DEFAULT_CHAT_CONFIG, FunctionKeyV2 } from '../../constants';
+import { type GetChatConfigInput, type GetChatConfigOutput } from './types';
 import { getChatConfig } from './index';
-import { GetChatConfigInput, GetChatConfigOutput } from './types';
 
 export type UseGetChatConfig = [
   FunctionKeyV2.GET_CHAT_CONFIG,

@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 
+import { type RefCallBack } from 'react-hook-form';
 import { cn } from '../utils';
 import {
   FormControl,
@@ -37,7 +37,7 @@ const TextField = ({
     value: any;
     disabled?: boolean;
     name?: string;
-    ref?: React.ForwardedRef<HTMLInputElement>;
+    ref?: React.RefObject<HTMLInputElement | null> | RefCallBack;
     placeholder?: string;
     readOnly?: boolean;
   };

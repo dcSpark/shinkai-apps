@@ -1,6 +1,6 @@
 import { getPreferences as getPreferencesApi } from '@shinkai_network/shinkai-message-ts/api/general/index';
 
-import { GetPreferencesInput } from './types';
+import { type GetPreferencesInput } from './types';
 
 export const getPreferences = async ({
   nodeAddress,

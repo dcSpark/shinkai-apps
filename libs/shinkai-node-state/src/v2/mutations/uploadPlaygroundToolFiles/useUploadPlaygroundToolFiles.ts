@@ -1,13 +1,16 @@
-import type { UseMutationOptions } from '@tanstack/react-query';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  type UseMutationOptions,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
-import { uploadPlaygroundToolFiles } from '.';
+import { type APIError } from '../../types';
 import {
-  UploadPlaygroundToolFilesInput,
-  UploadPlaygroundToolFilesOutput,
+  type UploadPlaygroundToolFilesInput,
+  type UploadPlaygroundToolFilesOutput,
 } from './types';
+import { uploadPlaygroundToolFiles } from '.';
 
 type Options = UseMutationOptions<
   UploadPlaygroundToolFilesOutput,
@@ -20,8 +23,8 @@ export const useUploadPlaygroundToolFiles = (options?: Options) => {
   return useMutation({
     mutationFn: uploadPlaygroundToolFiles,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_ALL_TOOL_ASSETS],
       });
 

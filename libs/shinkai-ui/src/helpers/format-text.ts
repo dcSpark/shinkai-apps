@@ -1,4 +1,4 @@
-import { ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
 export const formatText = (text: string) => {
   const camelToSpaces = text.replace(/([a-z])([A-Z])/g, '$1 $2');

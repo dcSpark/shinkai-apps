@@ -5,9 +5,9 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type DisableAllToolsInput, type DisableAllToolsOutput } from './types';
 import { disableAllTools } from '.';
-import { DisableAllToolsInput, DisableAllToolsOutput } from './types';
 
 type Options = UseMutationOptions<
   DisableAllToolsOutput,
@@ -21,8 +21,8 @@ export const useDisableAllTools = (options?: Options) => {
   return useMutation({
     mutationFn: disableAllTools,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
       });
       if (options?.onSuccess) {

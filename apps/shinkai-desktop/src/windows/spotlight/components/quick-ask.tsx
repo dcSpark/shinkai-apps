@@ -1,9 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
-  CreateJobFormSchema,
+  type CreateJobFormSchema,
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
@@ -115,7 +115,7 @@ function QuickAsk() {
   useHotkeys(
     ['esc'],
     () => {
-      hideSpotlightWindow();
+      void hideSpotlightWindow();
     },
     {
       preventDefault: true,
@@ -128,7 +128,7 @@ function QuickAsk() {
     () => {
       if (!messageResponse) return;
       const string_ = messageResponse.trim();
-      copyToClipboard(string_);
+      void copyToClipboard(string_);
       setClipboard(true);
       clearTimeout(timeout);
       timeout = setTimeout(() => setClipboard(false), 1000);
@@ -153,7 +153,7 @@ function QuickAsk() {
     });
 
     return () => {
-      unlisten.then((fn) => fn());
+      void unlisten.then((fn) => fn());
     };
   }, []);
 
@@ -245,7 +245,7 @@ function QuickAsk() {
                   {...chatForm.register('message')}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
-                      chatForm.handleSubmit(onSubmit)();
+                      void chatForm.handleSubmit(onSubmit)();
                     }
 
                     if (e.key === 'Backspace' && !chatForm.watch('message')) {
@@ -533,7 +533,5 @@ ${lastMessage?.content}
 
 const QuickAskBodyWithResponse = memo(
   QuickAskBodyWithResponseBase,
-  (prevProps, nextProps) =>
-    prevProps.inboxId === nextProps.inboxId &&
-    prevProps.aiModel === nextProps.aiModel,
+  (prevProps, nextProps) => prevProps.inboxId === nextProps.inboxId,
 );

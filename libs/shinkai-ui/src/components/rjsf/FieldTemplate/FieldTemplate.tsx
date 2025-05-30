@@ -1,10 +1,10 @@
 import {
-  FieldTemplateProps,
-  FormContextType,
+  type FieldTemplateProps,
+  type FormContextType,
   getTemplate,
   getUiOptions,
-  RJSFSchema,
-  StrictRJSFSchema,
+  type RJSFSchema,
+  type StrictRJSFSchema,
 } from '@rjsf/utils';
 
 import { formatText } from '../../../helpers/format-text';

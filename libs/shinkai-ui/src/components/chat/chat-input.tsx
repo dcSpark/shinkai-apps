@@ -5,16 +5,17 @@ import { cn } from '../../utils';
 export interface ChatInputProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   onSend?: () => void;
+  ref: React.RefObject<HTMLTextAreaElement | null>;
 }
 
 export const useAutoResizeTextarea = (
-  ref: React.ForwardedRef<HTMLTextAreaElement>,
+  ref: React.RefObject<HTMLTextAreaElement | null>,
   value: string | number | readonly string[] | undefined,
   autoResize = true, //later to unify
 ) => {
   const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+   
   React.useImperativeHandle(ref, () => textAreaRef.current!);
 
   React.useEffect(() => {
@@ -37,31 +38,35 @@ export const useAutoResizeTextarea = (
   return { textAreaRef };
 };
 
-const ChatInputBase = React.forwardRef<HTMLTextAreaElement, ChatInputProps>(
-  ({ className, onSend, onKeyDown, ...props }, ref) => {
-    const { textAreaRef } = useAutoResizeTextarea(ref, props.value);
+const ChatInputBase = ({
+  className,
+  onSend,
+  onKeyDown,
+  ref,
+  ...props
+}: ChatInputProps) => {
+  const { textAreaRef } = useAutoResizeTextarea(ref, props.value);
 
-    return (
-      <textarea
-        className={cn(
-          'placeholder:text-official-gray-500 flex max-h-[40vh] min-h-[80px] w-full resize-none overflow-y-auto break-words border-none bg-transparent px-3 py-2 text-base leading-normal focus:outline-none focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50',
-          className,
-        )}
-        id="chat-input"
-        onKeyDown={(event) => {
-          onKeyDown?.(event);
-          if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
-            onSend?.();
-          }
-        }}
-        ref={textAreaRef}
-        spellCheck={false}
-        {...props}
-      />
-    );
-  },
-);
+  return (
+    <textarea
+      className={cn(
+        'placeholder:text-official-gray-500 flex max-h-[40vh] min-h-[80px] w-full resize-none overflow-y-auto break-words border-none bg-transparent px-3 py-2 text-base leading-normal focus:outline-none focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50',
+        className,
+      )}
+      id="chat-input"
+      onKeyDown={(event) => {
+        onKeyDown?.(event);
+        if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault();
+          onSend?.();
+        }
+      }}
+      ref={textAreaRef}
+      spellCheck={false}
+      {...props}
+    />
+  );
+};
 
 ChatInputBase.displayName = 'ChatInput';
 export const ChatInput = React.memo(ChatInputBase);

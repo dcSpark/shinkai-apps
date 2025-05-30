@@ -5,9 +5,12 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import {
+  type RemoveRecurringTaskInput,
+  type RemoveRecurringTaskOutput,
+} from './types';
 import { removeRecurringTask } from './index';
-import { RemoveRecurringTaskInput, RemoveRecurringTaskOutput } from './types';
 
 type Options = UseMutationOptions<
   RemoveRecurringTaskOutput,
@@ -20,8 +23,8 @@ export const useRemoveRecurringTask = (options?: Options) => {
   return useMutation({
     mutationFn: removeRecurringTask,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_RECURRING_TASKS],
       });
 

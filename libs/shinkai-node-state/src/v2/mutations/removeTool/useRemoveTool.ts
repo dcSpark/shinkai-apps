@@ -5,9 +5,9 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type RemoveToolInput, type RemoveToolOutput } from './types';
 import { removeTool } from './index';
-import { RemoveToolInput, RemoveToolOutput } from './types';
 
 type Options = UseMutationOptions<RemoveToolOutput, APIError, RemoveToolInput>;
 
@@ -16,8 +16,8 @@ export const useRemoveTool = (options?: Options) => {
   return useMutation({
     mutationFn: removeTool,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [
           FunctionKeyV2.GET_PLAYGROUND_TOOLS,
           {

@@ -1,6 +1,6 @@
 import { setRecurringTask as setRecurringTaskApi } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/index';
 
-import { UpdateRecurringTaskInput } from './types';
+import { type UpdateRecurringTaskInput } from './types';
 
 export const updateRecurringTask = async ({
   nodeAddress,

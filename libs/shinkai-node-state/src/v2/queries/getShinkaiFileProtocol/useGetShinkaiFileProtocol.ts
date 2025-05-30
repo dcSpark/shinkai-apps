@@ -1,11 +1,11 @@
-import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
+import { type QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { getShinkaiFileProtocol } from './index';
 import {
-  GetShinkaiFileProtocolInput,
-  GetShinkaiFileProtocolOutput,
+  type GetShinkaiFileProtocolInput,
+  type GetShinkaiFileProtocolOutput,
 } from './types';
+import { getShinkaiFileProtocol } from './index';
 
 export type UseGetShinkaiFileProtocol = [
   FunctionKeyV2.GET_SHINKAI_FILE_PROTOCOL,

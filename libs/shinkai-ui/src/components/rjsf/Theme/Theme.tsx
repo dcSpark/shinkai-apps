@@ -1,5 +1,5 @@
-import { ThemeProps } from '@rjsf/core';
-import { FormContextType, RJSFSchema, StrictRJSFSchema } from '@rjsf/utils';
+import { type ThemeProps } from '@rjsf/core';
+import { type FormContextType, type RJSFSchema, type StrictRJSFSchema } from '@rjsf/utils';
 
 import { generateTemplates } from '../Templates';
 import { generateWidgets } from '../Widgets';

@@ -1,8 +1,8 @@
-import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
+import { type QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetSearchToolsInput, type GetSearchToolsOutput } from './types';
 import { searchTools } from './index';
-import { GetSearchToolsInput, GetSearchToolsOutput } from './types';
 
 export type UseGetSearchTools = [
   FunctionKeyV2.GET_SEARCH_TOOLS,

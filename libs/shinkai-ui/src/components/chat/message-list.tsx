@@ -1,12 +1,12 @@
-import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { type ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import {
-  FetchPreviousPageOptions,
-  InfiniteQueryObserverResult,
+  type FetchPreviousPageOptions,
+  type InfiniteQueryObserverResult,
 } from '@tanstack/react-query';
 import React, {
   Fragment,
   memo,
-  RefObject,
+  type RefObject,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -21,7 +21,7 @@ import { Skeleton } from '../skeleton';
 import { Message } from './message';
 
 function useScrollToBottom(
-  scrollRef: RefObject<HTMLDivElement>,
+  scrollRef: RefObject<HTMLDivElement | null>,
   detach = false,
 ) {
   const [autoScroll, setAutoScroll] = useState(true);
@@ -99,7 +99,7 @@ export const MessageList = ({
 
   useEffect(() => {
     if (hasPreviousPage && inView) {
-      fetchPreviousMessages();
+      void fetchPreviousMessages();
     }
   }, [hasPreviousPage, inView]);
 
@@ -265,7 +265,7 @@ export const MessageList = ({
                     <div className="flex flex-col">
                       {messages.map((message, messageIndex) => {
                         const previousMessage = messages[messageIndex - 1];
-      
+
                         const disabledRetryAndEditValue =
                           disabledRetryAndEdit ?? messageIndex === 0;
 

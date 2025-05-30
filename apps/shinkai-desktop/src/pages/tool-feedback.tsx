@@ -73,7 +73,7 @@ function ToolFeedbackPrompt() {
   useEffect(() => {
     if (error) {
       resetPlaygroundStore();
-      navigate('/tools');
+      void navigate('/tools');
     }
   }, [error, resetPlaygroundStore, navigate]);
 
@@ -131,7 +131,7 @@ function ToolFeedbackPrompt() {
                           className="min-w-[100px] flex-1"
                           onClick={() => {
                             resetPlaygroundStore();
-                            navigate('/tools');
+                            void navigate('/tools');
                             setIsExitDialogOpen(false);
                           }}
                           size="sm"
@@ -235,7 +235,7 @@ function ToolFeedbackPrompt() {
                                 }
                                 onChange={field.onChange}
                                 onSubmit={() => {
-                                  startToolCreation(form.getValues());
+                                  void startToolCreation(form.getValues());
                                 }}
                                 placeholder="Send message..."
                                 value={field.value}
@@ -319,7 +319,7 @@ function ToolFeedbackPrompt() {
                                     disabled
                                     onChange={field.onChange}
                                     onSubmit={() => {
-                                      startToolCreation(form.getValues());
+                                      void startToolCreation(form.getValues());
                                     }}
                                     placeholder="Send message..."
                                     value={field.value}

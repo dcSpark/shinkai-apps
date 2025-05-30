@@ -1,8 +1,8 @@
 import {
-  FormContextType,
-  RegistryWidgetsType,
-  RJSFSchema,
-  StrictRJSFSchema,
+  type FormContextType,
+  type RegistryWidgetsType,
+  type RJSFSchema,
+  type StrictRJSFSchema,
 } from '@rjsf/utils';
 
 import CheckboxesWidget from '../CheckboxesWidget/CheckboxesWidget';
