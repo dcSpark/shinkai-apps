@@ -113,7 +113,9 @@ export const useWebSocketMessageSmooth = ({
 }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
-  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  const socketUrl = ['localhost', '0.0.0.0', '127.0.0.1'].includes(nodeAddressUrl.hostname)
+    ? `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`
+    : `ws://${nodeAddressUrl.hostname}${Number(nodeAddressUrl.port) !== 0 ? `:${Number(nodeAddressUrl.port)}` : ''}/ws`;
   const queryClient = useQueryClient();
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(
@@ -241,7 +243,9 @@ export const useWebSocketMessage = ({
 }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
-  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  const socketUrl = ['localhost', '0.0.0.0', '127.0.0.1'].includes(nodeAddressUrl.hostname)
+    ? `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`
+    : `ws://${nodeAddressUrl.hostname}${Number(nodeAddressUrl.port) !== 0 ? `:${Number(nodeAddressUrl.port)}` : ''}/ws`;
   const queryClient = useQueryClient();
   const isStreamSupported = useRef(false);
 
@@ -392,7 +396,9 @@ export const useWebSocketTools = ({
 }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
-  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  const socketUrl = ['localhost', '0.0.0.0', '127.0.0.1'].includes(nodeAddressUrl.hostname)
+    ? `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`
+    : `ws://${nodeAddressUrl.hostname}${Number(nodeAddressUrl.port) !== 0 ? `:${Number(nodeAddressUrl.port)}` : ''}/ws`;
   const { sendMessage, lastMessage, readyState } = useWebSocket(
     socketUrl,
     { share: true },
