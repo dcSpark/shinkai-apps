@@ -40,6 +40,7 @@ export default defineConfig([
     '!**/.vscode/extensions.json',
     '**/*.config.{js,mjs,cjs,ts}',
     '**/scripts/translations.ts',
+    '**/scripts/setupTests.ts',
   ]),
 
   { plugins: { '@nx': nx, 'jsx-a11y': jsxA11y } },
