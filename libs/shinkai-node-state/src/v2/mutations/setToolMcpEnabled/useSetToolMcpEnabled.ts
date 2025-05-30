@@ -1,13 +1,16 @@
 import {
-  MutationOptions,
+  type MutationOptions,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import {
+  type SetToolMcpEnabledInput,
+  type SetToolMcpEnabledOutput,
+} from './types';
 import { setToolMcpEnabled } from './index';
-import { SetToolMcpEnabledInput, SetToolMcpEnabledOutput } from './types';
 
 type Options = MutationOptions<
   SetToolMcpEnabledOutput,
@@ -21,16 +24,16 @@ export const useSetToolMcpEnabled = (options?: Options) => {
   return useMutation({
     mutationFn: setToolMcpEnabled,
     ...options,
-    onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (data, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
       });
 
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_SEARCH_TOOLS],
       });
 
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: [
           FunctionKeyV2.GET_TOOL,
           {

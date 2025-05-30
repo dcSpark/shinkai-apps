@@ -1,6 +1,6 @@
 import { publishTool as publishToolApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { PublishToolInput } from './types';
+import { type PublishToolInput } from './types';
 
 export const publishTool = async ({
   nodeAddress,

@@ -5,9 +5,12 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import {
+  type UpdateChatConfigInput,
+  type UpdateChatConfigOutput,
+} from './types';
 import { updateJobScope } from './index';
-import { UpdateChatConfigInput, UpdateChatConfigOutput } from './types';
 
 type Options = UseMutationOptions<
   UpdateChatConfigOutput,
@@ -20,8 +23,8 @@ export const useUpdateJobScope = (options?: Options) => {
   return useMutation({
     mutationFn: updateJobScope,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [
           FunctionKeyV2.GET_JOB_SCOPE,
           {

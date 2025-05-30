@@ -5,13 +5,12 @@ import {
   uploadFilesToJob,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import { CreateJobInput } from './types';
+import { type CreateJobInput } from './types';
 
 export const createJob = async ({
   nodeAddress,
   token,
   llmProvider,
-  sheetId,
   content,
   toolKey,
   isHidden,

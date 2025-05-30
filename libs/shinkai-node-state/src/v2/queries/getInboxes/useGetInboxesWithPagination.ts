@@ -1,21 +1,21 @@
-import { GetAllInboxesWithPaginationRequest } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
-import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
+import { type GetAllInboxesWithPaginationRequest } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { type InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
-import { getInboxesWithPagination } from '.';
+import { type APIError } from '../../types';
 import {
-  GetInboxesInput,
-  GetInboxesOutput,
-  Options,
-  UseGetInboxes,
+  type GetInboxesInput,
+  type GetInboxesOutput,
+  // type Options,
+  type UseGetInboxes,
 } from './types';
+import { getInboxesWithPagination } from '.';
 
 const DEFAULT_LIMIT = 20;
 
 export const useGetInboxesWithPagination = (
   input: GetInboxesInput,
-  options?: Omit<Options, 'queryKey' | 'queryFn'>,
+  // options?: Omit<Options, 'queryKey' | 'queryFn'>,
 ) => {
   const response = useInfiniteQuery<
     GetInboxesOutput,

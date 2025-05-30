@@ -1,6 +1,6 @@
 import { restoreCoinbaseMPCWallet as restoreCoinbaseMPCWalletApi } from '@shinkai_network/shinkai-message-ts/api/wallets';
 
-import { RestoreCoinbaseMpcWalletInput } from './types';
+import { type RestoreCoinbaseMpcWalletInput } from './types';
 
 export const restoreCoinbaseMPCWallet = async ({
   nodeAddress,

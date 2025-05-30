@@ -4,14 +4,13 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { FunctionKey } from '../../../lib/constants';
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
-import { restoreToolConversation } from '.';
+import { type APIError } from '../../types';
 import {
-  RestoreToolConversationInput,
-  RestoreToolConversationOutput,
+  type RestoreToolConversationInput,
+  type RestoreToolConversationOutput,
 } from './types';
+import { restoreToolConversation } from '.';
 
 type Options = UseMutationOptions<
   RestoreToolConversationOutput,
@@ -25,9 +24,9 @@ export const useRestoreToolConversation = (options?: Options) => {
   return useMutation({
     mutationFn: restoreToolConversation,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
-        queryKey: [FunctionKey.GET_CHAT_CONVERSATION_PAGINATION],
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
+        queryKey: [FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION],
       });
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);

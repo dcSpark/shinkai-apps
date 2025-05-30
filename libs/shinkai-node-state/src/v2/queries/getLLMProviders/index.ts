@@ -1,6 +1,6 @@
 import { getLLMProviders as getLLMProvidersAPI } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import type { GetLLMProvidersInput } from './types';
+import  { type GetLLMProvidersInput } from './types';
 
 const EMBEDDING_MODEL = 'ollama:snowflake-arctic-embed:xs';
 

@@ -1,5 +1,5 @@
-import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { CreatePromptResponse } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type CreatePromptResponse } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
 export type CreatePromptOutput = CreatePromptResponse;
 

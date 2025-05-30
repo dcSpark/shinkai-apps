@@ -1,6 +1,6 @@
 import { uploadPlaygroundToolFiles as uploadPlaygroundToolFilesApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { UploadPlaygroundToolFilesInput } from './types';
+import { type UploadPlaygroundToolFilesInput } from './types';
 
 export const uploadPlaygroundToolFiles = async ({
   nodeAddress,

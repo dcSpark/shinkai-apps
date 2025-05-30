@@ -5,9 +5,9 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type RemoveFolderInput, type RemoveFolderOutput } from './types';
 import { removeFolder } from './index';
-import { RemoveFolderInput, RemoveFolderOutput } from './types';
 
 type Options = UseMutationOptions<
   RemoveFolderOutput,
@@ -20,8 +20,8 @@ export const useRemoveFolder = (options?: Options) => {
   return useMutation({
     mutationFn: removeFolder,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_VR_FILES],
       });
 

@@ -1,6 +1,6 @@
 import { removeLLMProvider as removeLLMProviderApi } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import { RemoveLLMProviderInput } from './types';
+import { type RemoveLLMProviderInput } from './types';
 
 export const removeLLMProvider = async ({
   nodeAddress,

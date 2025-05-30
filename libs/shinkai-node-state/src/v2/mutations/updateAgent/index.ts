@@ -1,6 +1,6 @@
 import { updateAgent as updateAgentApi } from '@shinkai_network/shinkai-message-ts/api/agents/index';
 
-import { UpdateAgentInput } from './types';
+import { type UpdateAgentInput } from './types';
 
 export const updateAgent = async ({
   nodeAddress,

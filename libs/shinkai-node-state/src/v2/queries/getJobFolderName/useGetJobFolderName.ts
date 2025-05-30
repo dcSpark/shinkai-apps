@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetJobFolderNameInput, type Options } from './types';
 import { getJobFolderName } from './index';
-import { GetJobFolderNameInput, Options } from './types';
 
 export const useGetJobFolderName = (
   input: GetJobFolderNameInput,

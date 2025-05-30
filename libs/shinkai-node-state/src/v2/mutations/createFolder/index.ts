@@ -1,6 +1,6 @@
 import { createFolder as createFolderApi } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 
-import { CreateFolderInput, CreateFolderOutput } from './types';
+import { type CreateFolderInput, type CreateFolderOutput } from './types';
 
 export const createFolder = async ({
   nodeAddress,

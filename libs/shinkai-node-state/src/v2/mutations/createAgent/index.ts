@@ -1,7 +1,7 @@
 import { createAgent as createAgentApi } from '@shinkai_network/shinkai-message-ts/api/agents/index';
 
 import { createRecurringTask } from '../createRecurringTask';
-import { CreateAgentInput } from './types';
+import { type CreateAgentInput } from './types';
 
 export const createAgent = async ({
   nodeAddress,

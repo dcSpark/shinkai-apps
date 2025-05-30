@@ -1,6 +1,6 @@
 import { scanOllamaModels as scanOllamaModelsApi } from '@shinkai_network/shinkai-message-ts/api/ollama';
 
-import { ScanOllamaModelsInput } from './types';
+import { type ScanOllamaModelsInput } from './types';
 
 export const scanOllamaModels = async ({
   nodeAddress,

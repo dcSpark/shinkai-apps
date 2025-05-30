@@ -1,8 +1,8 @@
-import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
+import { type QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetPlaygroundToolInput, type GetPlaygroundToolOutput } from './types';
 import { getPlaygroundTool } from './index';
-import { GetPlaygroundToolInput, GetPlaygroundToolOutput } from './types';
 
 export type UseGetPlaygroundTool = [
   FunctionKeyV2.GET_PLAYGROUND_TOOL,

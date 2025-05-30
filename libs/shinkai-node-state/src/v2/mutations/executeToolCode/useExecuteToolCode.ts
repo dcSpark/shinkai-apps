@@ -1,8 +1,8 @@
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type ExecuteToolCodeInput, type ExecuteToolCodeOutput } from './types';
 import { executeToolCode } from '.';
-import { ExecuteToolCodeInput, ExecuteToolCodeOutput } from './types';
 
 type Options = UseMutationOptions<
   ExecuteToolCodeOutput,

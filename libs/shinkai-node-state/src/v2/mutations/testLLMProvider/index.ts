@@ -1,9 +1,6 @@
-import {
-  addLLMProvider as addLLMProviderAPI,
-  testLLMProvider as testLLMProviderApi,
-} from '@shinkai_network/shinkai-message-ts/api/jobs/index';
+import { testLLMProvider as testLLMProviderApi } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import { TestLLMProviderInput } from './types';
+import { type TestLLMProviderInput } from './types';
 
 export const testLLMProvider = async ({
   nodeAddress,

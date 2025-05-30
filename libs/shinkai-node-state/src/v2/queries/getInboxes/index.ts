@@ -4,7 +4,7 @@ import {
   getAllInboxesWithPagination as getAllInboxesWithPaginationApi,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import type { GetAgentInboxesInput, GetInboxesInput } from './types';
+import  { type GetAgentInboxesInput, type GetInboxesInput } from './types';
 
 export const getInboxes = async ({ nodeAddress, token }: GetInboxesInput) => {
   const inboxes = await getAllInboxesApi(nodeAddress, token);

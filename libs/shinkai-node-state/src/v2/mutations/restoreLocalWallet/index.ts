@@ -1,9 +1,9 @@
 import {
   restoreLocalWallet as restoreLocalWalletapi,
-  WalletSource,
+  type WalletSource,
 } from '@shinkai_network/shinkai-message-ts/api/wallets';
 
-import { RestoreLocalWalletInput } from './types';
+import { type RestoreLocalWalletInput } from './types';
 
 export const restoreLocalWallet = async ({
   nodeAddress,

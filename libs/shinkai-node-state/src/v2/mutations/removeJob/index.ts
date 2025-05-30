@@ -1,6 +1,6 @@
 import { removeJob as removeJobApi } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import { RemoveJobInput } from './types';
+import { type RemoveJobInput } from './types';
 
 export const removeJob = async ({
   nodeAddress,

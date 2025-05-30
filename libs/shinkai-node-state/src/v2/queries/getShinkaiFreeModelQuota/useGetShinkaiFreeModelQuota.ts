@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetShinkaiFreeModelQuotaInput, type Options } from './types';
 import { getShinkaiFreeModelQuota } from '.';
-import { GetShinkaiFreeModelQuotaInput, Options } from './types';
 
 export const useGetShinkaiFreeModelQuota = (
   input: GetShinkaiFreeModelQuotaInput,

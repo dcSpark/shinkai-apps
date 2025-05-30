@@ -5,8 +5,8 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKey } from '../../../lib/constants';
+import { type UploadVRFilesInput, type UploadVRFilesOutput } from './types';
 import { uploadVRFiles } from '.';
-import { UploadVRFilesInput, UploadVRFilesOutput } from './types';
 
 type Options = UseMutationOptions<
   UploadVRFilesOutput,
@@ -19,8 +19,8 @@ export const useUploadVRFiles = (options?: Options) => {
   return useMutation({
     mutationFn: uploadVRFiles,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKey.GET_VR_FILES],
       });
 

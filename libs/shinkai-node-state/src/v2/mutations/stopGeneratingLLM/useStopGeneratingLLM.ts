@@ -5,8 +5,11 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import {
+  type StopGeneratingLLMInput,
+  type StopGeneratingLLMOutput,
+} from './types';
 import { stopGeneratingLLM } from './index';
-import { StopGeneratingLLMInput, StopGeneratingLLMOutput } from './types';
 
 type Options = UseMutationOptions<
   StopGeneratingLLMOutput,
@@ -19,12 +22,10 @@ export const useStopGeneratingLLM = (options?: Options) => {
   return useMutation({
     mutationFn: stopGeneratingLLM,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_CHAT_CONFIG],
       });
-
-      // Invalidate the chat conversation query using ws
 
       if (options?.onSuccess) {
         options.onSuccess(response, variables, context);

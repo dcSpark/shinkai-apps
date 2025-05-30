@@ -1,11 +1,19 @@
-import { useMutation, type UseMutationOptions, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  type UseMutationOptions,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type ImportAgentInput, type ImportAgentOutput } from './types';
 import { importAgent } from '.';
-import { ImportAgentInput, ImportAgentOutput } from './types';
 
-type Options = UseMutationOptions<ImportAgentOutput, APIError, ImportAgentInput>;
+type Options = UseMutationOptions<
+  ImportAgentOutput,
+  APIError,
+  ImportAgentInput
+>;
 
 export const useImportAgent = (options?: Options) => {
   const queryClient = useQueryClient();
@@ -13,8 +21,8 @@ export const useImportAgent = (options?: Options) => {
   return useMutation({
     mutationFn: importAgent,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_AGENTS],
       });
 

@@ -1,6 +1,6 @@
 import { exportAgent as exportAgentApi } from '@shinkai_network/shinkai-message-ts/api/agents/index';
 
-import { ExportAgentInput } from './types';
+import { type ExportAgentInput } from './types';
 
 export const exportAgent = async ({
   nodeAddress,

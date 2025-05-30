@@ -1,6 +1,6 @@
 import { moveFolder as moveFolderApi } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 
-import { MoveVRFolderInput } from './types';
+import { type MoveVRFolderInput } from './types';
 
 export const moveFolder = async ({
   nodeAddress,

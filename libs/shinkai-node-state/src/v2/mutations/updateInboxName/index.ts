@@ -1,6 +1,6 @@
 import { updateInboxName as updateInboxNameApi } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import { UpdateInboxNameInput } from './types';
+import { type UpdateInboxNameInput } from './types';
 
 export const updateInboxName = async ({
   nodeAddress,

@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: 'shinkai-node-state',
   preset: '../../jest.preset.js',

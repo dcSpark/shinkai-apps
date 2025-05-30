@@ -5,9 +5,12 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import {
+  type ToggleEnableToolInput,
+  type ToggleEnableToolOutput,
+} from './types';
 import { toggleEnableTool } from './index';
-import { ToggleEnableToolInput, ToggleEnableToolOutput } from './types';
 
 type Options = UseMutationOptions<
   ToggleEnableToolOutput,
@@ -20,11 +23,11 @@ export const useToggleEnableTool = (options?: Options) => {
   return useMutation({
     mutationFn: toggleEnableTool,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
       });
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_SEARCH_TOOLS],
       });
       if (options?.onSuccess) {

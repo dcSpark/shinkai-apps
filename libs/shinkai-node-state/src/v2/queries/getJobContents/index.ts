@@ -1,6 +1,6 @@
 import { retrieveFilesForJob as retrieveFilesForJobApi } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 
-import { GetJobContentsInput } from './types';
+import { type GetJobContentsInput } from './types';
 
 export const getJobContents = async ({
   nodeAddress,

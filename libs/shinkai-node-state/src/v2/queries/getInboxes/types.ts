@@ -1,11 +1,11 @@
-import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import {
-  GetAllInboxesWithPaginationRequest,
-  GetAllInboxesWithPaginationResponse,
+  type GetAllInboxesWithPaginationRequest,
+  type GetAllInboxesWithPaginationResponse,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
-import { QueryObserverOptions } from '@tanstack/react-query';
+import { type QueryObserverOptions } from '@tanstack/react-query';
 
-import { FunctionKeyV2 } from '../../constants';
+import { type FunctionKeyV2 } from '../../constants';
 
 export type GetInboxesInput = Token & {
   nodeAddress: string;

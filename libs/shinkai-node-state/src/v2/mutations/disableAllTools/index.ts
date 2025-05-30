@@ -1,6 +1,6 @@
 import { disableAllTools as disableAllToolsApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { DisableAllToolsInput } from './types';
+import { type DisableAllToolsInput } from './types';
 
 export const disableAllTools = async ({
   nodeAddress,

@@ -1,6 +1,6 @@
 import { getJobScope as getJobScopeApi } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import type { GetJobScopeInput } from './types';
+import  { type GetJobScopeInput } from './types';
 
 export const getJobScope = async ({
   nodeAddress,

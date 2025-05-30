@@ -1,7 +1,7 @@
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 
+import { type PayInvoiceInput, type PayInvoiceOutput } from './types';
 import { payInvoice } from './index';
-import { PayInvoiceInput, PayInvoiceOutput } from './types';
 
 type Options = UseMutationOptions<PayInvoiceOutput, Error, PayInvoiceInput>;
 

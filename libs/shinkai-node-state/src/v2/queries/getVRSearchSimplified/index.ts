@@ -1,8 +1,8 @@
 import { searchVectorFs } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 
 import {
-  GetVRSearchSimplifiedInput,
-  GetVRSearchSimplifiedOutput,
+  type GetVRSearchSimplifiedInput,
+  type GetVRSearchSimplifiedOutput,
 } from './types';
 
 export const getVRSearchSimplified = async ({

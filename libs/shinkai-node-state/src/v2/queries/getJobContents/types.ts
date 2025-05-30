@@ -1,8 +1,8 @@
-import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
-import { QueryObserverOptions } from '@tanstack/react-query';
+import { type Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
+import { type QueryObserverOptions } from '@tanstack/react-query';
 
-import { FunctionKeyV2 } from '../../constants';
+import { type FunctionKeyV2 } from '../../constants';
 
 export type GetJobContentsInput = Token & {
   nodeAddress: string;

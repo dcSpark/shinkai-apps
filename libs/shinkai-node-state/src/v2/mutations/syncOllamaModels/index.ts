@@ -3,7 +3,7 @@ import {
   scanOllamaModels,
 } from '@shinkai_network/shinkai-message-ts/api/ollama';
 
-import { SyncOllamaModelsInput } from './types';
+import { type SyncOllamaModelsInput } from './types';
 
 export const syncOllamaModels = async ({
   nodeAddress,

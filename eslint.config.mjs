@@ -38,6 +38,7 @@ export default defineConfig([
     '**/.idea/**',
     '**/.vscode/**',
     '!**/.vscode/extensions.json',
+    '**/vite.config.ts',
   ]),
 
   { plugins: { '@nx': nx, 'jsx-a11y': jsxA11y } },

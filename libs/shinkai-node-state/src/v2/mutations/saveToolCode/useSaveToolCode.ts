@@ -6,9 +6,9 @@ import {
 
 import { FunctionKeyV2 } from '../../constants';
 import { getPlaygroundTool } from '../../queries/getPlaygroundTool';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type SaveToolCodeInput, type SaveToolCodeOutput } from './types';
 import { saveToolCode } from '.';
-import { SaveToolCodeInput, SaveToolCodeOutput } from './types';
 
 type Options = UseMutationOptions<
   SaveToolCodeOutput,
@@ -23,7 +23,7 @@ export const useSaveToolCode = (options?: Options) => {
     ...options,
     onSuccess: async (response, variables, context) => {
       if (!variables.shouldPrefetchPlaygroundTool) {
-        queryClient.invalidateQueries({
+        await queryClient.invalidateQueries({
           queryKey: [
             FunctionKeyV2.GET_PLAYGROUND_TOOL,
             {

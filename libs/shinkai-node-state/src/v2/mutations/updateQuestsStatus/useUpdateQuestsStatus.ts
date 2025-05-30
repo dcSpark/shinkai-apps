@@ -1,13 +1,16 @@
 import {
   useMutation,
-  UseMutationOptions,
+  type UseMutationOptions,
   useQueryClient,
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import {
+  type UpdateQuestsStatusInput,
+  type UpdateQuestsStatusOutput,
+} from './types';
 import { updateQuestsStatus } from './index';
-import { UpdateQuestsStatusInput, UpdateQuestsStatusOutput } from './types';
 
 export type UseGetQuestsStatus = [
   FunctionKeyV2.GET_QUESTS_STATUS,
@@ -27,8 +30,8 @@ export const useUpdateQuestsStatus = (
   return useMutation({
     mutationFn: updateQuestsStatus,
     ...options,
-    onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (data, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_QUESTS_STATUS, variables],
       });
       if (options?.onSuccess) {

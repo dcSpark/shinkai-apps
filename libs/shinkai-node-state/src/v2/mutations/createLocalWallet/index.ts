@@ -1,6 +1,6 @@
 import { createLocalWallet as createLocalWalletApi } from '@shinkai_network/shinkai-message-ts/api/wallets';
 
-import { CreateLocalWalletInput } from './types';
+import { type CreateLocalWalletInput } from './types';
 
 export const createLocalWallet = async ({
   nodeAddress,

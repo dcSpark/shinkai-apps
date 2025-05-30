@@ -5,9 +5,9 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type CreateToolCodeInput, type CreateToolCodeOutput } from './types';
 import { createToolCode } from '.';
-import { CreateToolCodeInput, CreateToolCodeOutput } from './types';
 
 type Options = UseMutationOptions<
   CreateToolCodeOutput,
@@ -20,8 +20,8 @@ export const useCreateToolCode = (options?: Options) => {
   return useMutation({
     mutationFn: createToolCode,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [
           FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
           { inboxId: response.inbox },

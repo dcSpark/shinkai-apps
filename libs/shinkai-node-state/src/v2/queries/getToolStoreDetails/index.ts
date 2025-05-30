@@ -1,6 +1,6 @@
 import { getToolStoreDetails as getToolStoreDetailsApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { GetToolStoreDetailsInput } from './types';
+import { type GetToolStoreDetailsInput } from './types';
 
 export const getToolStoreDetails = async ({
   nodeAddress,

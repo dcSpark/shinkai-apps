@@ -5,9 +5,9 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type RetryMessageInput, type RetryMessageOutput } from './types';
 import { retryMessage } from './index';
-import { RetryMessageInput, RetryMessageOutput } from './types';
 
 type Options = UseMutationOptions<
   RetryMessageOutput,
@@ -20,8 +20,8 @@ export const useRetryMessage = (options?: Options) => {
   return useMutation({
     mutationFn: retryMessage,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [
           FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
           { inboxId: variables.inboxId },

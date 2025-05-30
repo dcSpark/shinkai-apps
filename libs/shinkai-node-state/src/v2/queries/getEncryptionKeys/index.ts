@@ -3,7 +3,7 @@ import {
   generateSignatureKeys,
 } from '@shinkai_network/shinkai-message-ts/utils';
 
-import { Encryptionkeys } from './types';
+import { type Encryptionkeys } from './types';
 
 export const generateMyEncryptionKeys = async (): Promise<Encryptionkeys> => {
   let seed = crypto.getRandomValues(new Uint8Array(32));
