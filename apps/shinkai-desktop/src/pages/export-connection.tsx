@@ -21,7 +21,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useAuth } from '../store/auth';
-import { SimpleLayout, SubpageLayout } from './layout/simple-layout';
+import { SimpleLayout } from './layout/simple-layout';
 
 export const ExportConnection = () => {
   const { t } = useTranslation();

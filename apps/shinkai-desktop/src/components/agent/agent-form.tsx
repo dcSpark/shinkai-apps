@@ -743,6 +743,7 @@ function AgentForm({ mode }: AgentFormProps) {
           });
           isCronValidForQuickSave = !readable.toLowerCase().includes('error');
         } catch (e) {
+          console.error('Error parsing cron expression', e);
           isCronValidForQuickSave = false;
         }
       } else if (scheduleType === 'normal') {
@@ -1083,6 +1084,7 @@ function AgentForm({ mode }: AgentFormProps) {
       }
       return readableCron;
     } catch (e) {
+      console.error('Error parsing cron expression', e);
       return null; // Invalid cron expression
     }
   }, [currentCronExpression]);

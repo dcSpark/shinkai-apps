@@ -55,6 +55,7 @@ const EmptyMessage = () => {
   useEffect(() => {
     resetJobScope();
     setPromptSelected(undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onCreateJob = async (message: string) => {

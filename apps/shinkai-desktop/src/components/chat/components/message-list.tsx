@@ -103,12 +103,14 @@ export const MessageList = memo(
     const fetchPreviousMessages = useCallback(async () => {
       setAutoScroll(false);
       await fetchPreviousPage();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetchPreviousPage]);
 
     useEffect(() => {
       if (hasPreviousPage && inView) {
         void fetchPreviousMessages();
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [hasPreviousPage, inView]);
 
     // adjust the scroll position of a chat container after new messages are fetched
@@ -128,6 +130,7 @@ export const MessageList = memo(
 
         chatContainerElement.scrollTop = currentHeight - previousHeight;
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [paginatedMessages, isFetchingPreviousPage, inView]);
 
     useEffect(() => {
@@ -155,6 +158,7 @@ export const MessageList = memo(
       return () => {
         chatContainerElement.removeEventListener('scroll', handleScroll);
       };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
       fetchPreviousMessages,
       hasPreviousPage,
@@ -167,12 +171,14 @@ export const MessageList = memo(
       if (messageList?.length % 2 === 1) {
         scrollDomToBottom();
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [messageList?.length]);
 
     useEffect(() => {
       if (isSuccess) {
         scrollDomToBottom();
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSuccess]);
 
     return (

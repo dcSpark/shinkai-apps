@@ -31,7 +31,8 @@ import {
   Tooltip,
   TooltipContent,
   TooltipPortal,
-  TooltipTrigger, PrettyJsonPrint 
+  TooltipTrigger,
+  PrettyJsonPrint,
 } from '@shinkai_network/shinkai-ui';
 import {
   appIcon,
@@ -216,6 +217,7 @@ export const MessageBase = ({
     if (message.role === 'user') {
       editMessageForm.reset({ message: message.content });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editMessageForm, message.content]);
 
   const pythonCode = useMemo(() => {
