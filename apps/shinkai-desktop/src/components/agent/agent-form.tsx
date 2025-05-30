@@ -2688,7 +2688,11 @@ const ToolConfigModal = ({
   const toolType = data?.type as ShinkaiToolType;
 
   const hasAllRequiredFields = useMemo(() => {
-    if (isSuccess && 'config' in tool && tool.configurations?.properties) {
+    if (
+      isSuccess &&
+      'configurations' in tool &&
+      tool.configurations?.properties
+    ) {
       const requiredFields = tool.configurations.required || [];
       const configFormData = tool.configFormData || {};
       const hasAllRequiredFields = requiredFields.every(

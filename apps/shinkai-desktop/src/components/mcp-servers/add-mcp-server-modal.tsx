@@ -4,10 +4,10 @@ import {
   type McpServer,
   McpServerType,
 } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
-import type { AddMcpServerInput } from '@shinkai_network/shinkai-node-state/v2/mutations/addMcpServer/types';
+import { type AddMcpServerInput } from '@shinkai_network/shinkai-node-state/v2/mutations/addMcpServer/types';
 import { useAddMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/addMcpServer/useAddMcpServer';
-import type { ImportMCPServerFromGithubURLOutput } from '@shinkai_network/shinkai-node-state/v2/mutations/importMCPServerFromGithubURL/types';
-import { UpdateMcpServerInput } from '@shinkai_network/shinkai-node-state/v2/mutations/updateMcpServer/types';
+import { type ImportMCPServerFromGithubURLOutput } from '@shinkai_network/shinkai-node-state/v2/mutations/importMCPServerFromGithubURL/types';
+import { type UpdateMcpServerInput } from '@shinkai_network/shinkai-node-state/v2/mutations/updateMcpServer/types';
 import { useUpdateMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/updateMcpServer/useUpdateMcpServer';
 import {
   Button,
@@ -55,7 +55,7 @@ const formSchema = z.discriminatedUnion('type', [
     name: z.string().min(1, { message: 'Name is required' }),
     type: z.literal(McpServerType.Command),
     command: z.string().min(1, { message: 'Command is required' }),
-    env: z.array(envVarSchema).optional().default([]),
+    env: z.array(envVarSchema),
   }),
   z.object({
     name: z.string().min(1, { message: 'Name is required' }),
@@ -90,7 +90,9 @@ export const AddMcpServerModal = ({
     defaultValues: {
       name: '',
       type: McpServerType.Command,
-    } as FormSchemaType,
+      command: '',
+      env: [],
+    },
   });
 
   useEffect(() => {
@@ -404,10 +406,6 @@ export const AddMcpServerModal = ({
                         />
                         <Button
                           className="mb-1.5 h-9 w-9 shrink-0"
-                          disabled={
-                            !form.getValues(`env.${index}.key`) &&
-                            !form.getValues(`env.${index}.value`)
-                          }
                           onClick={() => remove(index)}
                           size="icon"
                           type="button"
