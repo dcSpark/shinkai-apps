@@ -24,10 +24,10 @@ pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
 
     let menu = MenuBuilder::new(app)
         .items(&[
-            &quit_menu_item,
             &show_menu_item,
-            &shinkai_spotlight_menu_item,
             &shinkai_node_manager_menu_item,
+            &shinkai_spotlight_menu_item,
+            &quit_menu_item,
         ])
         .build()?;
     let is_template = cfg!(target_os = "macos");
