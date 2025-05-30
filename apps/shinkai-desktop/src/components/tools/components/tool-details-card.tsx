@@ -523,7 +523,7 @@ export default function ToolDetailsCard({
       (key) => key.toLowerCase().includes('file_path'),
     );
 
-    await executeToolCode({
+    const payload = {
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       code:
@@ -533,6 +533,9 @@ export default function ToolDetailsCard({
             ? tool.js_code
             : '',
       language:
+        toolType === 'MCPServer'
+          ? CodeLanguage.MCPServer
+          :
         toolType === CodeLanguage.Agent
           ? CodeLanguage.Agent
           : toolType === 'Deno'
@@ -547,7 +550,9 @@ export default function ToolDetailsCard({
       ...(selectedFilePathsInParams.length > 0 && {
         mounts: selectedFilePathsInParams.map((key) => sanitizedParams[key]),
       }),
-    });
+    };
+    console.log('payload', payload);
+    await executeToolCode(payload);
   };
 
   const boxContainerClass = cn(

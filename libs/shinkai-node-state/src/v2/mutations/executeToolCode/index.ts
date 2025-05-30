@@ -22,6 +22,7 @@ export const executeToolCode = async ({
   const toolTypeLanguageMap = {
     [CodeLanguage.Python]: DynamicToolType.PythonDynamic,
     [CodeLanguage.Typescript]: DynamicToolType.DenoDynamic,
+    [CodeLanguage.MCPServer]: DynamicToolType.MCPServerDynamic,
     Agent: DynamicToolType.AgentDynamic,
   };
 

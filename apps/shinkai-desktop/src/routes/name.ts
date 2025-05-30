@@ -8,3 +8,4 @@ export const CREATE_CHAT_PATH = '/create-chat';
 export const GENERATE_CODE_PATH = '/generate-code';
 export const EXPORT_CONNECTION = '/export-connection';
 export const INBOXES = '/inboxes';
+export const MCP_SERVERS = '/mcp-servers';
