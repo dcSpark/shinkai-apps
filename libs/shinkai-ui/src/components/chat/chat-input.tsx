@@ -15,7 +15,7 @@ export const useAutoResizeTextarea = (
 ) => {
   const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+   
   React.useImperativeHandle(ref, () => textAreaRef.current!);
 
   React.useEffect(() => {

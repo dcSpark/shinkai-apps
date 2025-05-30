@@ -1,11 +1,11 @@
 import {
-  ArrayFieldTemplateItemType,
-  ArrayFieldTemplateProps,
-  FormContextType,
+  type ArrayFieldTemplateItemType,
+  type ArrayFieldTemplateProps,
+  type FormContextType,
   getTemplate,
   getUiOptions,
-  RJSFSchema,
-  StrictRJSFSchema,
+  type RJSFSchema,
+  type StrictRJSFSchema,
 } from '@rjsf/utils';
 
 import { cn } from '../../../utils';

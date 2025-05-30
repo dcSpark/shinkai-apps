@@ -1,6 +1,6 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import {
-  Attachment,
+  type Attachment,
   FileTypeSupported,
 } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { save } from '@tauri-apps/plugin-dialog';
@@ -9,8 +9,7 @@ import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import { partial } from 'filesize';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CircleSlashIcon, XIcon } from 'lucide-react';
-import { useState } from 'react';
-import React from 'react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
 
 import { fileIconMap, FileTypeIcon, PaperClipIcon } from '../../assets/icons';

@@ -1,8 +1,8 @@
 import {
-  FormContextType,
-  IconButtonProps,
-  RJSFSchema,
-  StrictRJSFSchema,
+  type FormContextType,
+  type IconButtonProps,
+  type RJSFSchema,
+  type StrictRJSFSchema,
   TranslatableString,
 } from '@rjsf/utils';
 import { ArrowDownIcon, ArrowUpIcon, CopyIcon, TrashIcon } from 'lucide-react';

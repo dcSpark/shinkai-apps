@@ -13,9 +13,9 @@ const loadTableData = async (
   db: sqljs.Database,
   tableName: string,
 ): Promise<{ values: sqljs.SqlValue[][] }> => {
-  debug(`loading table data for ${tableName}`);
+  void debug(`loading table data for ${tableName}`);
   const dataResult = db.exec(`SELECT * FROM ${tableName}`);
-  debug(`found ${dataResult[0].values.length} rows for ${tableName}`);
+  void debug(`found ${dataResult[0].values.length} rows for ${tableName}`);
   return { values: dataResult[0].values };
 };
 
@@ -25,7 +25,7 @@ const loadDatabase = async (
   db: sqljs.Database;
   tables: { name: string; columns: sqljs.SqlValue[]; count: number }[];
 }> => {
-  debug(`loading database from ${url}`);
+  void debug(`loading database from ${url}`);
   const SQL = await sqljs.default({
     locateFile: (file: string) => '/sqljs/sql-wasm.wasm',
   });
@@ -39,14 +39,14 @@ const loadDatabase = async (
     "SELECT name FROM sqlite_master WHERE type='table'",
   );
   const tableNames = tablesResult[0].values.map((v) => v[0] as string);
-  debug(`found ${tableNames.length} tables`);
-  debug(`tables: ${tableNames.join(', ')}`);
+  void debug(`found ${tableNames.length} tables`);
+  void debug(`tables: ${tableNames.join(', ')}`);
   const tables = tableNames.map((table) => {
     const columnsResult = db.exec(`PRAGMA table_info(${table})`);
     const columnNames = columnsResult[0].values.map((v) => v[1]);
     const countResult = db.exec(`SELECT COUNT(*) FROM ${table}`);
     const count = countResult[0].values[0][0] as number;
-    debug(
+    void debug(
       `found columns ${columnNames.join(', ')} and ${count} rows for ${table}`,
     );
     return {
@@ -92,7 +92,7 @@ export const SqlitePreview: React.FC<SqlitePreviewProps> = ({ url }) => {
         setLoading(false);
       }
     };
-    init();
+    void init();
   }, [url]);
 
   useEffect(() => {
@@ -128,7 +128,7 @@ export const SqlitePreview: React.FC<SqlitePreviewProps> = ({ url }) => {
   useEffect(() => {
     return () => {
       if (db) {
-        debug('closing database connection');
+        void debug('closing database connection');
         db.close();
       }
     };
@@ -157,7 +157,7 @@ export const SqlitePreview: React.FC<SqlitePreviewProps> = ({ url }) => {
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-lg bg-gray-600 p-4 overflow-y-hidden">
+    <div className="flex flex-col gap-4 overflow-y-hidden rounded-lg bg-gray-600 p-4">
       <div className="flex flex-wrap gap-2">
         {tables.map((table) => (
           <Button

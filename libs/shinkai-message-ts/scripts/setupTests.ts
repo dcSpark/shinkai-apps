@@ -5,7 +5,6 @@
 import * as matchers from '@testing-library/jest-dom/matchers';
 
 // Mock matchmedia
-// @ts-expect-error matchMedia
 window.matchMedia =
   window.matchMedia ||
   function () {

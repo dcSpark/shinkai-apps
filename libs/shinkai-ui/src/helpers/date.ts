@@ -1,4 +1,4 @@
-import { FormattedMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { type FormattedMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 
 export type ChatConversationMessage = {
   hash: string;

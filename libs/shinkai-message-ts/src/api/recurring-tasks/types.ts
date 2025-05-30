@@ -1,4 +1,4 @@
-import { JobConfig, JobMessage } from '../jobs/types';
+import { type JobConfig, type JobMessage } from '../jobs/types';
 
 export type RecurringTaskAction =
   | {

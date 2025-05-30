@@ -1,13 +1,13 @@
 import {
   ariaDescribedByIds,
-  BaseInputTemplateProps,
+  type BaseInputTemplateProps,
   examplesId,
-  FormContextType,
+  type FormContextType,
   getInputProps,
-  RJSFSchema,
-  StrictRJSFSchema,
+  type RJSFSchema,
+  type StrictRJSFSchema,
 } from '@rjsf/utils';
-import { ChangeEvent, FocusEvent } from 'react';
+import { type ChangeEvent, type FocusEvent } from 'react';
 
 export default function BaseInputTemplate<
   T = any,

@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: 'shinkai-message-ts',
   preset: '../../jest.preset.js',

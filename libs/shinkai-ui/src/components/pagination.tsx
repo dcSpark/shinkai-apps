@@ -2,7 +2,7 @@ import { MoreHorizontal, RedoIcon, UndoIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { cn } from '../utils';
-import { ButtonProps, buttonVariants } from './button';
+import { type ButtonProps, buttonVariants } from './button';
 
 const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => (
   <nav
@@ -44,7 +44,7 @@ const PaginationLink = ({
   size = 'icon',
   ...props
 }: PaginationLinkProps) => (
-  // eslint-disable-next-line jsx-a11y/anchor-has-content
+   
   <a
     aria-current={isActive ? 'page' : undefined}
     className={cn(

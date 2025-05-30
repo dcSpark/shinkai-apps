@@ -1,8 +1,8 @@
 import {
-  FormContextType,
-  RJSFSchema,
-  StrictRJSFSchema,
-  TemplatesType,
+  type FormContextType,
+  type RJSFSchema,
+  type StrictRJSFSchema,
+  type TemplatesType,
 } from '@rjsf/utils';
 
 import AddButton from '../AddButton';

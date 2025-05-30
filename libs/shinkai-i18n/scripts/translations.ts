@@ -5,9 +5,8 @@ import { resolve } from 'node:path';
 import { consola } from 'consola';
 import { colors } from 'consola/utils';
 import { diff } from 'just-diff';
-import { unset } from 'lodash';
+import unset from 'lodash/unset';
 
-// @ts-expect-error i18nrc
 import i18nConfig from '../.i18nrc';
 import { divider, readJSON, tagWhite, writeJSON } from '../src/lib/utils';
 

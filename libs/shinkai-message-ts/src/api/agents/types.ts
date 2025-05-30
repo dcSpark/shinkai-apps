@@ -1,5 +1,5 @@
-import { JobConfig } from '../jobs/types';
-import { RecurringTask } from '../recurring-tasks/types';
+import { type JobConfig } from '../jobs/types';
+import { type RecurringTask } from '../recurring-tasks/types';
 
 export type Agent = {
   name: string;

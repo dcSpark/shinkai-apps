@@ -1,22 +1,22 @@
-/* eslint-disable jsx-a11y/anchor-has-content */
-/* eslint-disable jsx-a11y/heading-has-content */
-import { Primitive } from '@radix-ui/react-primitive';
+ 
+ 
+import { type Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import React, {
-  ComponentPropsWithoutRef,
-  ComponentType,
+  type ComponentPropsWithoutRef,
+  type ComponentType,
   createContext,
-  ElementType,
-  FC,
+  type ElementType,
+  type FC,
   memo,
-  ReactNode,
+  type ReactNode,
   useContext,
   useMemo,
 } from 'react';
-import ReactMarkdown, { Components, type Options } from 'react-markdown';
+import ReactMarkdown, { type Components, type Options } from 'react-markdown';
 import {
   PrismAsyncLight,
-  SyntaxHighlighterProps as SHP,
+  type SyntaxHighlighterProps as SHP,
 } from 'react-syntax-highlighter';
 import python from 'react-syntax-highlighter/dist/esm/languages/prism/python';
 import tsx from 'react-syntax-highlighter/dist/esm/languages/prism/tsx';

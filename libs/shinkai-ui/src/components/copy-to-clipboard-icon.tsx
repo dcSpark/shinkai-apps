@@ -1,5 +1,5 @@
 import { CheckCircle2, CopyIcon } from 'lucide-react';
-import React, { cloneElement, ReactElement, useState } from 'react';
+import React, { cloneElement, type ReactElement, useState } from 'react';
 
 import { copyToClipboard } from '../helpers/copy-to-clipboard';
 import { cn } from '../utils';

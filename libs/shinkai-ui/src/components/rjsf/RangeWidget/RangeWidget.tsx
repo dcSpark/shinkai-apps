@@ -1,10 +1,10 @@
 import {
-  FormContextType,
+  type FormContextType,
   getTemplate,
   labelValue,
-  RJSFSchema,
-  StrictRJSFSchema,
-  WidgetProps,
+  type RJSFSchema,
+  type StrictRJSFSchema,
+  type WidgetProps,
 } from "@rjsf/utils"
 
 export default function RangeWidget<
