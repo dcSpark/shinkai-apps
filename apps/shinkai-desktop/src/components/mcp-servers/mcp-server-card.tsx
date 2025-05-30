@@ -1,6 +1,6 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import type { McpServer } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
+import  { type McpServer } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
 import { useDeleteMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/deleteMcpServer/useDeleteMcpServer';
 import { useGetMCPServerTools } from '@shinkai_network/shinkai-node-state/v2/queries/getMCPServerTools/useGetMCPServerTool';
 import {
