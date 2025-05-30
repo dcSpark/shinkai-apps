@@ -68,6 +68,11 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
           <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
             {getVersionFromTool(tool)}
           </Badge>
+          {tool.tool_type === 'MCPServer' && (
+            <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
+              MCP
+            </Badge>
+          )}
           {tool.author !== '@@official.shinkai' && (
             <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
               {tool.author}
