@@ -1,5 +1,5 @@
 import validator from '@rjsf/validator-ajv8';
-import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useGetPlaygroundTool } from '@shinkai_network/shinkai-node-state/v2/queries/getPlaygroundTool/useGetPlaygroundTool';
 import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';

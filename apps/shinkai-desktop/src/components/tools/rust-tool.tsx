@@ -1,4 +1,4 @@
-import { RustShinkaiTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type RustShinkaiTool } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
 import ToolDetailsCard from './components/tool-details-card';
 

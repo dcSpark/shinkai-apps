@@ -3,8 +3,7 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useRemoveAssetTool } from '@shinkai_network/shinkai-node-state/v2/mutations/removeAssetTool/useRemoveAssetTool';
 import { useUploadAssetsTool } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadAssetsTool/useUploadAssetsTool';
 import { useGetAllToolAssets } from '@shinkai_network/shinkai-node-state/v2/queries/getAllToolAssets/useGetAllToolAssets';
-import { Badge, Button, Separator } from '@shinkai_network/shinkai-ui';
-import {
+import { Badge, Button, Separator,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -14,8 +13,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipPortal,
-  TooltipTrigger,
-} from '@shinkai_network/shinkai-ui';
+  TooltipTrigger } from '@shinkai_network/shinkai-ui';
 import {
   fileIconMap,
   FileTypeIcon,

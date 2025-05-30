@@ -1,4 +1,4 @@
-import { PyodideInterface } from 'pyodide';
+import { type PyodideInterface } from 'pyodide';
 
 import { PyodideFileSystemService } from '../file-system-service';
 

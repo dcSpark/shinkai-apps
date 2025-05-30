@@ -1,15 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  ToolArgs,
+  type ToolArgs,
   ToolStatusType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import {
-  AssistantMessage,
-  FormattedMessage,
-  TextStatus,
-  ToolCall,
+  type AssistantMessage,
+  type FormattedMessage,
+  type TextStatus,
+  type ToolCall,
 } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import {
   Accordion,
@@ -31,9 +31,8 @@ import {
   Tooltip,
   TooltipContent,
   TooltipPortal,
-  TooltipTrigger,
+  TooltipTrigger, PrettyJsonPrint 
 } from '@shinkai_network/shinkai-ui';
-import { PrettyJsonPrint } from '@shinkai_network/shinkai-ui';
 import {
   appIcon,
   ReactJsIcon,

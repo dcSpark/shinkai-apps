@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PopoverClose } from '@radix-ui/react-popover';
 import {
-  ShinkaiTool,
-  ShinkaiToolType,
+  type ShinkaiTool,
+  type ShinkaiToolType,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useUpdateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/updateTool/useUpdateTool';
 import {

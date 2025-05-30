@@ -1,7 +1,7 @@
 import { AisIcon } from '@shinkai_network/shinkai-ui/assets';
 import { useMemo } from 'react';
 
-import { ModelProviderKey, providerMappings } from './constants';
+import { type ModelProviderKey, providerMappings } from './constants';
 
 export interface ProviderIconProps {
   className?: string;

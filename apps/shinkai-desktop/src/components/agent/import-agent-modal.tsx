@@ -52,7 +52,7 @@ export default function ImportAgentModal() {
         action: {
           label: 'View',
           onClick: () => {
-            navigate(`/agents/edit/${data.agent_id}`);
+            void navigate(`/agents/edit/${data.agent_id}`);
           },
         },
       });

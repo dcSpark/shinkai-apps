@@ -1,7 +1,7 @@
+import { resolve } from 'path';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import legacy from '@vitejs/plugin-legacy';
 import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import wasm from 'vite-plugin-wasm';
 // https://vitejs.dev/config/

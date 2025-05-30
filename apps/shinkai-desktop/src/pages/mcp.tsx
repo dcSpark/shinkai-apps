@@ -30,7 +30,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { useDebounce } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { TFunction } from 'i18next';
+import { type TFunction } from 'i18next';
 import { BoltIcon, MoreVertical, Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
@@ -351,7 +351,7 @@ export const McpRegistryPage = () => {
                 disabled={!jsonConfigToCopy}
                 onClick={() => {
                   if (jsonConfigToCopy) {
-                    navigator.clipboard.writeText(jsonConfigToCopy);
+                    void navigator.clipboard.writeText(jsonConfigToCopy);
                     toast.success(t('mcpClients.copyJsonSuccess'));
                     setDialogOpen(false);
                   }

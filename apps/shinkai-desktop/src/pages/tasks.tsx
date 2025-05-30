@@ -1,7 +1,7 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { type JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
 import { useRunTaskNow } from '@shinkai_network/shinkai-node-state/v2/mutations/runTaskNow/useRunTaskNow';
 import { useUpdateRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/updateRecurringTask/useUpdateRecurringTask';
@@ -377,7 +377,7 @@ const TaskCard = ({
               name: t('common.edit'),
               icon: <Edit className="mr-3 h-4 w-4" />,
               onClick: () => {
-                navigate(`/tasks/edit/${taskId}`);
+                void navigate(`/tasks/edit/${taskId}`);
               },
             },
             {

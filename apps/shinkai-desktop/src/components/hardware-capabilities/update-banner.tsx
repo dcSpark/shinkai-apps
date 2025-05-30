@@ -15,7 +15,7 @@ import { Download, Loader2, Rocket } from 'lucide-react';
 import React, { useCallback, useMemo } from 'react';
 
 import {
-  UpdateState,
+  type UpdateState,
   useCheckUpdateQuery,
   useDownloadUpdateMutation,
   useUpdateStateQuery,
@@ -87,9 +87,9 @@ const UpdateBanner: React.FC<{
     refetchInterval: CHECK_UPDATE_INTERVAL_MS,
   });
 
-  const downloadAndInstall = useCallback((): void => {
+  const downloadAndInstall = useCallback(async (): Promise<void> => {
     if (updateState?.state === 'available') {
-      downloadUpdate();
+      await downloadUpdate();
     }
   }, [updateState?.state, downloadUpdate]);
 

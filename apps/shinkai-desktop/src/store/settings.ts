@@ -1,15 +1,15 @@
-import { LocaleMode, switchLanguage } from '@shinkai_network/shinkai-i18n';
+import { type LocaleMode, switchLanguage } from '@shinkai_network/shinkai-i18n';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
 import {
   ONBOARDING_STEPS,
-  OnboardingStep,
-  OnboardingStepConfig,
-  StepChoiceMap,
+  type OnboardingStep,
+  type OnboardingStepConfig,
+  type StepChoiceMap,
   validateChoice,
+  type OnboardingState,
 } from '../components/onboarding/constants';
-import { OnboardingState } from '../components/onboarding/constants';
 
 export enum TutorialBanner {
   SHINKAI_TOOLS = 'shinkai-tools',

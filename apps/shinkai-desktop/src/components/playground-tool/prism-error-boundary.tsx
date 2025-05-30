@@ -1,4 +1,4 @@
-import { ComponentProps, ReactNode } from 'react';
+import { type ComponentProps, type ReactNode } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 /**

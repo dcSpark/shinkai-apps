@@ -126,7 +126,7 @@ export const VectorFileDetails = () => {
       }
     };
 
-    fetchFileContent();
+    void fetchFileContent();
   }, [selectedFile, auth, downloadFile]);
 
   const handleDownloadFile = async () => {

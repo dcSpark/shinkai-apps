@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { type RefCallBack } from 'react-hook-form';
 import { cn } from '../utils';
 
 const DEFAULT_MIN_TEXTAREA_HEIGHT = 32;
@@ -10,7 +11,7 @@ export type TextareaProps =
     minHeight?: number;
     maxHeight?: number;
     resize?: 'none' | 'both' | 'horizontal' | 'vertical';
-    ref?: React.RefObject<HTMLTextAreaElement | null>;
+    ref?: React.RefObject<HTMLTextAreaElement | null> | RefCallBack;
   };
 
 const Textarea = ({

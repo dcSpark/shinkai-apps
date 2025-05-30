@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { RecurringTask } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/types';
+import { type RecurringTask } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/types';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/createRecurringTask/useCreateRecurringTask';
 import { useUpdateRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/updateRecurringTask/useUpdateRecurringTask';
@@ -169,7 +169,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
   const { mutateAsync: createRecurringTask, isPending } =
     useCreateRecurringTask({
       onSuccess: () => {
-        navigate('/tasks');
+        void navigate('/tasks');
       },
       onError: (error) => {
         toast.error('Failed to create task', {
@@ -183,7 +183,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
   } = useUpdateRecurringTask({
     onSuccess: () => {
       toast.success('Task updated successfully');
-      navigate('/tasks');
+      void navigate('/tasks');
     },
     onError: (error) => {
       toast.error('Failed to updated task', {

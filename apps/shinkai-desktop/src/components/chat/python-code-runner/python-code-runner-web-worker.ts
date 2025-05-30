@@ -1,5 +1,5 @@
-/* eslint-disable no-restricted-globals */
-import { loadPyodide, PyodideInterface } from 'pyodide';
+ 
+import { loadPyodide, type PyodideInterface } from 'pyodide';
 
 export type CodeOutput = {
   rawOutput: string;

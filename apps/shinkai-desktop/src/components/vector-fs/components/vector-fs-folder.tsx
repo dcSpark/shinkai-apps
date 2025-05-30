@@ -1,6 +1,6 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
+import { type DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import {
   buttonVariants,
   Checkbox,
@@ -137,7 +137,7 @@ const VectorFsFolder = ({
               )}
               onClick={(event) => {
                 event.stopPropagation();
-                navigate('/home', {
+                void navigate('/home', {
                   state: {
                     selectedVRFolders: [folder.path],
                   },
@@ -199,7 +199,7 @@ const VectorFsFolder = ({
               name: t('vectorFs.actions.searchWithinFolder'),
               icon: <AISearchContentIcon className="mr-3 h-4 w-4" />,
               onClick: () => {
-                navigate('/vector-search', {
+                void navigate('/vector-search', {
                   state: {
                     folderPath: folder.path,
                   },

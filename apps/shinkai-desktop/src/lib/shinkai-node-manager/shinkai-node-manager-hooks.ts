@@ -1,10 +1,10 @@
-import { Event, EventCallback, listen } from '@tauri-apps/api/event';
+import { type Event, type EventCallback, listen } from '@tauri-apps/api/event';
 import { warn } from '@tauri-apps/plugin-log';
 import { useEffect, useState } from 'react';
 
 import {
   ShinkaiNodeManagerEvent,
-  ShinkaiNodeManagerEventMap,
+  type ShinkaiNodeManagerEventMap,
 } from './shinkai-node-manager-client-types';
 import {
   // ollamaStartedToast,
@@ -40,7 +40,7 @@ const useTauriEvent = <T>(eventName: string, callback: EventCallback<T>) => {
 
     // Cleanup subscription on component unmount
     return () => {
-      unsubscribe.then((unsub) => unsub());
+      void unsubscribe.then((unsub) => unsub());
     };
   }, [eventName, callback]);
 };
@@ -58,13 +58,11 @@ export const mapEvent = (
   event: object | string,
 ): ShinkaiNodeManagerEventMap => {
   if (typeof event === 'object') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return {
       type: Object.keys(event)[0] as ShinkaiNodeManagerEvent,
       payload: Object.values(event)[0],
     } as any;
   } else {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return { type: event as ShinkaiNodeManagerEvent } as any;
   }
 };
@@ -134,7 +132,9 @@ export const useShinkaiNodeEventsToast = () => {
         pullingModelErrorToast(shinkaiNodeEvent.payload.model);
         break;
       default:
-        warn(`unhandled shinkai node state change:${shinkaiNodeEvent.type}`);
+        void warn(
+          `unhandled shinkai node state change:${shinkaiNodeEvent.type}`,
+        );
     }
   });
   return shinkaiNodeEventState;

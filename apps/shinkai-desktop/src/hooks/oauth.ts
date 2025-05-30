@@ -6,9 +6,9 @@ import { useAuth } from '../store/auth';
 
 export const useOAuthDeepLinkSet = () => {
   const { mutateAsync: setOAuthToken } = useSetOAuthToken({
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       console.log('oauth-success', data);
-      emit('oauth-success', { state: data.state, code: data.code });
+      await emit('oauth-success', { state: data.state, code: data.code });
     },
   });
   const auth = useAuth((s) => s.auth);
@@ -18,7 +18,7 @@ export const useOAuthDeepLinkSet = () => {
       if (!auth) return;
 
       const payload = event.payload as { state: string; code: string };
-      setOAuthToken({
+      void setOAuthToken({
         state: payload.state,
         code: payload.code,
         nodeAddress: auth.node_address ?? '',
@@ -27,7 +27,7 @@ export const useOAuthDeepLinkSet = () => {
     });
 
     return () => {
-      unlisten.then((fn) => fn());
+      void unlisten.then((fn) => fn());
     };
   }, [setOAuthToken, auth]);
 };
@@ -42,7 +42,7 @@ export const useOAuthSuccess = (
     });
 
     return () => {
-      unlisten.then((fn) => fn());
+      void unlisten.then((fn) => fn());
     };
   }, [callback]);
 };

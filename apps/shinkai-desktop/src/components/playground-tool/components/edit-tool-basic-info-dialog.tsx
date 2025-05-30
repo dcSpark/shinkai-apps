@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PopoverClose } from '@radix-ui/react-popover';
-import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   Badge,
   Button,
@@ -13,8 +13,8 @@ import {
   PopoverContent,
   PopoverTrigger,
   Textarea,
+  Form,
 } from '@shinkai_network/shinkai-ui';
-import { Form } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useEffect, useState } from 'react';
 import { useForm, useFormContext } from 'react-hook-form';
@@ -22,7 +22,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { usePlaygroundStore } from '../context/playground-context';
-import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
+import { type CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 import { useToolSave } from '../hooks/use-tool-save';
 import RemoveToolButton from './remove-tool-button';
 
@@ -64,8 +64,8 @@ export default function EditToolBasicInfoDialog({
     toolBasicInfoForm.setValue('description', toolDescription);
   }, [toolDescription, toolName, toolBasicInfoForm]);
 
-  const onSubmit = (data: ToolBasicInfoFormSchema) => {
-    handleSaveTool({
+  const onSubmit = async (data: ToolBasicInfoFormSchema) => {
+    await handleSaveTool({
       toolMetadata: toolMetadata as ToolMetadata,
       toolCode: toolCode ?? '',
       toolDescription: data.description,

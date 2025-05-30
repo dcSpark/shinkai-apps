@@ -1,13 +1,13 @@
 import {
-  QueryObserverOptions,
+  type QueryObserverOptions,
   useMutation,
-  UseMutationOptions,
+  type UseMutationOptions,
   useQuery,
-  UseQueryResult,
+  type UseQueryResult,
 } from '@tanstack/react-query';
 import { getName } from '@tauri-apps/api/app';
 import { invoke } from '@tauri-apps/api/core';
-import axios, { AxiosError } from 'axios';
+import axios, { type AxiosError } from 'axios';
 
 // Queries
 export const useGalxeGenerateProofQuery = (
@@ -43,14 +43,11 @@ export const useGalxeRegisterShinkaiDesktopInstallationMutation = (
         appName === 'Shinkai Desktop'
           ? 'https://backend-hosting.shinkai.com'
           : 'https://dev-backend-hosting.shinkai.com';
-      await axios.post(
-        `${baseUrl}/galxe/shinkai-desktop-installation`,
-        {
-          address,
-          signature,
-          combined,
-        },
-      );
+      await axios.post(`${baseUrl}/galxe/shinkai-desktop-installation`, {
+        address,
+        signature,
+        combined,
+      });
     },
     ...options,
   });

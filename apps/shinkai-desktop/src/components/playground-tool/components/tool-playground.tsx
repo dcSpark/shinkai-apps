@@ -1,6 +1,4 @@
-/* eslint-disable react/jsx-sort-props */
-
-import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useCopyToolAssets } from '@shinkai_network/shinkai-node-state/v2/mutations/copyToolAssets/useCopyToolAssets';
 import {
   Form,
@@ -22,7 +20,10 @@ import { useParams } from 'react-router';
 
 import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
-import { CreateToolCodeFormSchema, useToolForm } from '../hooks/use-tool-code';
+import {
+  type CreateToolCodeFormSchema,
+  useToolForm,
+} from '../hooks/use-tool-code';
 import { useToolFlow } from '../hooks/use-tool-flow';
 import PlaygroundToolLayout from '../layout';
 import { detectLanguage } from '../utils/code';
@@ -134,7 +135,7 @@ function PlaygroundToolEditor({
 
   const handleCreateToolCode = useCallback(
     (data: CreateToolCodeFormSchema) => {
-      handleContinueConversation(data.message);
+      void handleContinueConversation(data.message);
     },
     [handleContinueConversation],
   );
@@ -154,7 +155,7 @@ function PlaygroundToolEditor({
   // When opening a playground, we need to copy the tool's real assets into the new execution environment
   const { mutateAsync: copyToolAssets } = useCopyToolAssets();
   useEffect(() => {
-    copyToolAssets({
+    void copyToolAssets({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       xShinkaiAppId,

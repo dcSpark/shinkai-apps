@@ -8,11 +8,10 @@ import 'prism-react-editor/languages/yaml';
 import 'prism-react-editor/layout.css';
 import 'prism-react-editor/code-folding.css';
 import 'prism-react-editor/autocomplete.css';
-import 'prism-react-editor/cursor';
 import 'prism-react-editor/themes/github-dark.css';
 import 'prism-react-editor/search.css';
 
-import { Editor, EditorProps, PrismEditor } from 'prism-react-editor';
+import { Editor, type EditorProps, type PrismEditor } from 'prism-react-editor';
 import {
   completeFromList,
   fuzzyFilter,

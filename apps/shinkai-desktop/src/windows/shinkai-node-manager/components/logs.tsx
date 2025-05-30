@@ -44,7 +44,7 @@ export const Logs = () => {
           action: {
             label: 'Open',
             onClick: async () => {
-              openPath(result.savePath);
+              await openPath(result.savePath);
             },
           },
         });
@@ -72,8 +72,8 @@ export const Logs = () => {
     }
   }, [filteredLogs, virtualizer]);
 
-  const refetchLogs = (): void => {
-    refetchTauriLogs();
+  const refetchLogs = async (): Promise<void> => {
+    await refetchTauriLogs();
   };
 
   return (

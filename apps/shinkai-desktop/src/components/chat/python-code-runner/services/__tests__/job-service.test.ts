@@ -1,6 +1,5 @@
-import type { AddFileToInboxResponse, AddFileToJobRequest } from '../__mocks__/shinkai-message-ts';
-import type { DirectoryContent } from '../__mocks__/shinkai-message-ts';
-import { FileSystemEntry, IFileSystemService } from '../file-system-service';
+import  { type AddFileToInboxResponse, type AddFileToJobRequest, type DirectoryContent  } from '../__mocks__/shinkai-message-ts';
+import { type FileSystemEntry, type IFileSystemService } from '../file-system-service';
 import { JobService } from '../job-service';
 
 describe('JobService', () => {

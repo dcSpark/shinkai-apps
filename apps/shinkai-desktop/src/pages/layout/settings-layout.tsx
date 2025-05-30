@@ -118,7 +118,7 @@ export function MainNav() {
       title: t('settings.layout.shinkaiNode'),
       href: '#',
       onClick: () => {
-        openShinkaiNodeManagerWindow();
+        void openShinkaiNodeManagerWindow();
       },
       icon: <CodesandboxIcon className="text-gray-80 h-4 w-4" />,
     },

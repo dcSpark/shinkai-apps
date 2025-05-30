@@ -2,7 +2,7 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { Badge } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { ALargeSmall, Images } from 'lucide-react';
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 import { OllamaModelCapability } from '../../../lib/shinkai-node-manager/ollama-models';
 

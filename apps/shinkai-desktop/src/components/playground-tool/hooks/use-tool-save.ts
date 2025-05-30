@@ -1,6 +1,6 @@
 import {
-  CodeLanguage,
-  ToolMetadata,
+  type CodeLanguage,
+  type ToolMetadata,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useSaveToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/saveToolCode/useSaveToolCode';
@@ -12,7 +12,10 @@ import { z } from 'zod';
 
 import { useAuth } from '../../../store/auth';
 import { usePlaygroundStore } from '../context/playground-context';
-import { ToolMetadataRawSchema, ToolMetadataRawSchemaType } from '../schemas';
+import {
+  ToolMetadataRawSchema,
+  type ToolMetadataRawSchemaType,
+} from '../schemas';
 
 export interface SaveToolParams {
   previousToolRouterKeyWithVersion?: string;
@@ -115,11 +118,11 @@ export function useToolSave() {
           onSuccess: async (data) => {
             if (shouldPrefetchPlaygroundTool) {
               setTimeout(() => {
-                navigate(`/tools/edit/${data.metadata.tool_router_key}`);
+                void navigate(`/tools/edit/${data.metadata.tool_router_key}`);
                 onSuccess?.();
               }, 1000);
             } else {
-              navigate(`/tools/edit/${data.metadata.tool_router_key}`);
+              await navigate(`/tools/edit/${data.metadata.tool_router_key}`);
               onSuccess?.();
             }
           },

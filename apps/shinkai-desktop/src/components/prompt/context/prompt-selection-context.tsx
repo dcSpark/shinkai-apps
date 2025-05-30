@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Prompt } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type Prompt } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useCreatePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/createPrompt/useCreatePrompt';
 import { useRemovePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/removePrompt/useRemovePrompt';
 import { useUpdatePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/updatePrompt/useUpdatePrompt';
@@ -369,7 +369,7 @@ export function CreatePromptDrawer({
                                 event.key === 'Enter' &&
                                 (event.metaKey || event.ctrlKey)
                               ) {
-                                createPromptForm.handleSubmit(onSubmit)();
+                                void createPromptForm.handleSubmit(onSubmit)();
                                 return;
                               }
                             }}
@@ -503,7 +503,7 @@ function UpdatePromptDrawer({
                                 event.key === 'Enter' &&
                                 (event.metaKey || event.ctrlKey)
                               ) {
-                                createPromptForm.handleSubmit(onSubmit)();
+                                void createPromptForm.handleSubmit(onSubmit)();
                                 return;
                               }
                             }}

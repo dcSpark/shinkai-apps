@@ -47,7 +47,7 @@ const EmptyMessage = () => {
       });
     },
     onSuccess: async (data) => {
-      navigate(
+      void navigate(
         `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
       );
     },

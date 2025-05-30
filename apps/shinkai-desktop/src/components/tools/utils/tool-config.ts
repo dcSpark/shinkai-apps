@@ -1,6 +1,6 @@
-import { RJSFSchema } from '@rjsf/utils';
-import { ToolConfig } from '@shinkai_network/shinkai-message-ts/api/tools/types';
-import { JSONSchema7TypeName } from 'json-schema';
+import { type RJSFSchema } from '@rjsf/utils';
+import { type ToolConfig } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type JSONSchema7TypeName } from 'json-schema';
 
 type ToolConfigSchema = {
   type: 'object';

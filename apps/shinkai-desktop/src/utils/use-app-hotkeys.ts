@@ -27,7 +27,7 @@ const useAppHotkeys = () => {
   useHotkeys(
     ['mod+n', 'ctrl+n'],
     () => {
-      navigate('/home');
+      void navigate('/home');
     },
     {
       enableOnContentEditable: true,

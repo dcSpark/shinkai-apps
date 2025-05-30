@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react';
-import { loadPyodide, PyodideInterface } from 'pyodide';
+import { loadPyodide, type PyodideInterface } from 'pyodide';
 
 import { usePyodideInstance } from '../usePyodideInstance';
 

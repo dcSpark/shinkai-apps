@@ -16,8 +16,6 @@ import {
   TooltipPortal,
   TooltipProvider,
   TooltipTrigger,
-} from '@shinkai_network/shinkai-ui';
-import {
   FormControl,
   FormField,
   FormItem,
@@ -32,11 +30,10 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { ChatSettingsIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Settings2 } from 'lucide-react';
+
 import { InfoCircleIcon } from 'primereact/icons/infocircle';
 import { memo, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { UseFormReturn } from 'react-hook-form';
+import { useForm, type UseFormReturn } from 'react-hook-form';
 import { useParams } from 'react-router';
 import { toast } from 'sonner';
 import { z } from 'zod';

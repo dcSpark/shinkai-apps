@@ -2,13 +2,12 @@ import {
   AlertCircle,
   AlertTriangle,
   Bug,
-  ChevronRight,
   Circle,
   CircleDot,
   Info,
 } from 'lucide-react';
 
-import { LogEntry } from '../../../lib/shinkai-logs/log-entry';
+import { type LogEntry } from '../../../lib/shinkai-logs/log-entry';
 
 interface LogEntryProps {
   log: LogEntry;
@@ -58,10 +57,10 @@ export const LogIcon = ({ level }: { level: string }) => {
 export const LogItem = ({ log, onLogClick }: LogEntryProps) => {
   return (
     <div
-      className="h-full flex cursor-pointer items-start gap-2"
+      className="flex h-full cursor-pointer items-start gap-2"
       onClick={() => onLogClick?.(log.message)}
     >
-      <div className="h-full flex w-full min-w-0 items-center gap-1.5">
+      <div className="flex h-full w-full min-w-0 items-center gap-1.5">
         <LogIcon level={log.level} />
         <span className="shrink-0 text-white/40">[{log.timestamp}]</span>
         <span className="shrink-0 text-white/40">[{log.target}]</span>

@@ -1,4 +1,4 @@
-import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { type ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { Skeleton } from '@shinkai_network/shinkai-ui';
 import {
   getRelativeDateLabel,
@@ -6,13 +6,13 @@ import {
 } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
-  FetchPreviousPageOptions,
-  InfiniteQueryObserverResult,
+  type FetchPreviousPageOptions,
+  type InfiniteQueryObserverResult,
 } from '@tanstack/react-query';
 import React, {
   Fragment,
   memo,
-  RefObject,
+  type RefObject,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -107,7 +107,7 @@ export const MessageList = memo(
 
     useEffect(() => {
       if (hasPreviousPage && inView) {
-        fetchPreviousMessages();
+        void fetchPreviousMessages();
       }
     }, [hasPreviousPage, inView]);
 

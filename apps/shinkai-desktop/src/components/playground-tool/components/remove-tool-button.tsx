@@ -34,17 +34,17 @@ export default function RemoveToolButton({ toolKey }: { toolKey: string }) {
 
   const { mutateAsync: removeTool, isPending: isRemoveToolPending } =
     useRemoveTool({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
           queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
         });
-        queryClient.invalidateQueries({
+        await queryClient.invalidateQueries({
           queryKey: [FunctionKeyV2.GET_SEARCH_TOOLS],
         });
 
         toast.success('Tool has been removed successfully');
         setIsOpen(false);
-        navigate('/tools');
+        await navigate('/tools');
       },
       onError: (error) => {
         toast.error('Failed to remove tool', {

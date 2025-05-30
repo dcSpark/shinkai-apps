@@ -19,7 +19,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, PlusIcon, Sparkles, XIcon } from 'lucide-react';
-import { ReactNode, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { showAnimation } from '../../pages/layout/main-layout';
@@ -66,7 +66,7 @@ export default function OnboardingStepper() {
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
-                  navigate('/agents');
+                  void navigate('/agents');
                 }}
                 size="sm"
                 variant="outline"
@@ -91,7 +91,7 @@ export default function OnboardingStepper() {
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
-                  navigate('/home');
+                  void navigate('/home');
                 }}
                 size="sm"
                 variant="outline"
@@ -114,7 +114,7 @@ export default function OnboardingStepper() {
               <Button
                 className="h-auto gap-1 px-3 py-2"
                 onClick={() => {
-                  navigate('/tools');
+                  void navigate('/tools');
                 }}
                 size="sm"
                 variant="outline"

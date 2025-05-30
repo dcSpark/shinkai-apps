@@ -1,10 +1,10 @@
 import {
-  AgentShinkaiTool,
-  DenoShinkaiTool,
-  NetworkShinkaiTool,
-  PythonShinkaiTool,
-  RustShinkaiTool,
-  ShinkaiTool,
+  type AgentShinkaiTool,
+  type DenoShinkaiTool,
+  type NetworkShinkaiTool,
+  type PythonShinkaiTool,
+  type RustShinkaiTool,
+  type ShinkaiTool,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useGetPlaygroundTools } from '@shinkai_network/shinkai-node-state/v2/queries/getPlaygroundTools/useGetPlaygroundTools';
 import { useGetTool } from '@shinkai_network/shinkai-node-state/v2/queries/getTool/useGetTool';

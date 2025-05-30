@@ -20,9 +20,9 @@ const AnalyticsPage = () => {
     completeStep(OnboardingStep.ANALYTICS, true);
     const nextStep = getNextStep();
     if (nextStep) {
-      navigate(nextStep.path);
+      void navigate(nextStep.path);
     } else {
-      navigate(COMPLETION_DESTINATION);
+      void navigate(COMPLETION_DESTINATION);
     }
   };
 
@@ -30,9 +30,9 @@ const AnalyticsPage = () => {
     completeStep(OnboardingStep.ANALYTICS, false);
     const nextStep = getNextStep();
     if (nextStep) {
-      navigate(nextStep.path);
+      void navigate(nextStep.path);
     } else {
-      navigate(COMPLETION_DESTINATION);
+      void navigate(COMPLETION_DESTINATION);
     }
   };
 

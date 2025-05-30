@@ -40,8 +40,8 @@ export const ShinkaiNodeRunningOverlay = ({
         description: `You can find the logs file in your downloads folder`,
         action: {
           label: 'Open',
-          onClick: () => {
-            openPath(result.savePath);
+          onClick: async () => {
+            await openPath(result.savePath);
           },
         },
       });
@@ -132,8 +132,8 @@ export const ShinkaiNodeRunningOverlay = ({
       </div>
       {isInUse && !isShinkaiNodeRunning && (
         <Button
-          onClick={() => {
-            openShinkaiNodeManagerWindow();
+          onClick={async () => {
+            await openShinkaiNodeManagerWindow();
           }}
         >
           Launch Shinkai Node

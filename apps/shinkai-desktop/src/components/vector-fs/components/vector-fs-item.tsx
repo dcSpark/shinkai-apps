@@ -1,6 +1,6 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
+import { type DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import {
   buttonVariants,
   Checkbox,
@@ -157,7 +157,7 @@ const VectorFsItem = ({
               )}
               onClick={(event) => {
                 event.stopPropagation();
-                navigate('/home', {
+                void navigate('/home', {
                   state: {
                     selectedVRFiles: [file.path],
                   },

@@ -7,7 +7,7 @@ import {
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
-  ChatMessageFormSchema,
+  type ChatMessageFormSchema,
   chatMessageFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
@@ -71,7 +71,7 @@ import { usePromptSelectionStore } from '../prompt/context/prompt-selection-cont
 import { AiUpdateSelectionActionBar } from './chat-action-bar/ai-update-selection-action-bar';
 import {
   chatConfigFormSchema,
-  ChatConfigFormSchemaType,
+  type ChatConfigFormSchemaType,
   UpdateChatConfigActionBar,
 } from './chat-action-bar/chat-config-action-bar';
 import { FileSelectionActionBar } from './chat-action-bar/file-selection-action-bar';
@@ -425,7 +425,7 @@ function ConversationChatFooter({
                       description={selectedTool.description}
                       name={formatText(selectedTool.name)}
                       onSubmit={() => {
-                        chatForm.handleSubmit(onSubmit)();
+                        void chatForm.handleSubmit(onSubmit)();
                       }}
                       onToolFormChange={setToolFormData}
                       remove={() => {

@@ -1,11 +1,10 @@
 import {
-  GetToolsCategory,
-  ToolMetadata,
+  type GetToolsCategory,
+  type ToolMetadata,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
-import { PrismEditor } from 'prism-react-editor';
+import { type PrismEditor } from 'prism-react-editor';
 import { createContext, createRef, useContext, useState } from 'react';
-import { createStore } from 'zustand';
-import { useStore } from 'zustand/index';
+import { createStore, useStore  } from 'zustand';
 
 type Status = 'idle' | 'pending' | 'success' | 'error';
 

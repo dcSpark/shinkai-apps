@@ -569,11 +569,11 @@ const MainLayout = () => {
         action: {
           label: 'View',
           onClick: () => {
-            navigate(`/tools/${data.tool_key}`);
+            void navigate(`/tools/${data.tool_key}`);
           },
         },
       });
-      navigate('/tools');
+      void navigate('/tools');
     },
     onError: (error) => {
       toast.error('Failed to install tool', {
@@ -584,7 +584,7 @@ const MainLayout = () => {
 
   const { mutateAsync: importAgentFromUrl } = useImportAgentFromUrl({
     onSuccess: () => {
-      navigate('/agents');
+      void navigate('/agents');
       toast.success('Agent imported successfully', {
         description: 'Your agent is now ready to use in the app.',
       });
@@ -601,14 +601,14 @@ const MainLayout = () => {
       if (!auth) return;
       const payload = event.payload as { tool_type: string; tool_url: string };
       if (payload.tool_type.toLowerCase() === 'tool') {
-        importTool({
+        void importTool({
           nodeAddress: auth?.node_address ?? '',
           token: auth?.api_v2_key ?? '',
           url: payload.tool_url,
         });
       } else if (payload.tool_type.toLowerCase() === 'agent') {
         try {
-          importAgentFromUrl({
+          void importAgentFromUrl({
             nodeAddress: auth?.node_address ?? '',
             token: auth?.api_v2_key ?? '',
             url: payload.tool_url,
@@ -624,9 +624,9 @@ const MainLayout = () => {
         }
       }
     });
-    getCurrentWindow().emit('shinkai-app-ready');
+    void getCurrentWindow().emit('shinkai-app-ready');
     return () => {
-      unlisten.then((fn) => fn());
+      void unlisten.then((fn) => fn());
     };
   }, [importTool, importAgentFromUrl, auth]);
 

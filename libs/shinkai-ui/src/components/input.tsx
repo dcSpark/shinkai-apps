@@ -2,16 +2,17 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useImperativeHandle, useRef } from 'react';
 
+import { type RefCallBack } from 'react-hook-form';
 import { cn } from '../utils';
-import { Button } from '.';
 import { Badge } from './badge';
+import { Button } from '.';
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   startAdornment?: React.ReactNode;
   endAdornment?: React.ReactNode;
   hidePasswordToggle?: boolean;
-  ref?: React.RefObject<HTMLInputElement | null>;
+  ref?: React.RefObject<HTMLInputElement | null> | RefCallBack;
 }
 
 const Input = ({
