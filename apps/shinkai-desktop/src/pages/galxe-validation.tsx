@@ -11,7 +11,7 @@ import {
   Card,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@shinkai_network/shinkai-ui';
 import { Check, CircleIcon, Info, RefreshCw } from 'lucide-react';
 import { useMemo } from 'react';
@@ -140,7 +140,7 @@ export const GalxeValidation = () => {
       title={t('galxe.label')}
     >
       <div className="space-y-4 py-2 pb-10">
-        <Alert className="rounded-sm border-none bg-cyan-900/20 p-3.5 shadow-none">
+        <Alert className="rounded-xs border-none bg-cyan-900/20 p-3.5 shadow-none">
           <Info className="mt-1 size-4 text-cyan-400" />
           <AlertTitle className="text-sm">
             Setup Your Shinkai Identity

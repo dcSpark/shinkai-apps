@@ -1,4 +1,3 @@
- 
 import * as React from 'react';
 
 import { cn } from '../utils';
@@ -45,7 +44,7 @@ const PromptTextarea = ({ className, ...props }: PromptTextareaProps) => {
     <>
       <textarea
         className={cn(
-          'flex w-full break-words rounded-md border border-gray-200 bg-gray-400 px-4 py-2 pt-4 text-sm placeholder-gray-100 placeholder:text-base focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-gray-100 disabled:cursor-not-allowed disabled:opacity-50',
+          'flex w-full rounded-md border border-gray-200 bg-gray-400 px-4 py-2 pt-4 text-sm break-words placeholder-gray-100 placeholder:text-base focus-visible:ring-1 focus-visible:ring-gray-100 focus-visible:outline-hidden focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-50',
           className,
         )}
         style={{
@@ -62,7 +61,7 @@ const PromptTextarea = ({ className, ...props }: PromptTextareaProps) => {
       />
 
       {props.isLoading ? (
-        <DotsLoader className="absolute left-4 top-6" />
+        <DotsLoader className="absolute top-6 left-4" />
       ) : null}
       <FormLabel className="sr-only">{props.label}</FormLabel>
     </>

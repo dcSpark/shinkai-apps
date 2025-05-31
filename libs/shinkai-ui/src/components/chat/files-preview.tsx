@@ -46,13 +46,13 @@ const ImagePreview = ({
   onFullscreen: (open: boolean) => void;
 }) => (
   <button
-    className="flex h-14 w-full min-w-[210px] max-w-[210px] shrink-0 cursor-pointer items-center gap-2 rounded-md border border-gray-100/40 py-1.5 pl-2 pr-1.5 text-left hover:bg-gray-300/30"
+    className="flex h-14 w-full max-w-[210px] min-w-[210px] shrink-0 cursor-pointer items-center gap-2 rounded-md border border-gray-100/40 py-1.5 pr-1.5 pl-2 text-left hover:bg-gray-300/30"
     onClick={() => onFullscreen(true)}
   >
-    <Avatar className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-gray-300 text-gray-100 transition-colors">
+    <Avatar className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xs bg-gray-300 text-gray-100 transition-colors">
       <AvatarImage
         alt={name}
-        className="aspect-square h-full w-full rounded-sm border border-gray-400 object-cover"
+        className="aspect-square h-full w-full rounded-xs border border-gray-400 object-cover"
         src={url}
       />
       <AvatarFallback>
@@ -71,7 +71,7 @@ const FileInfo = ({
   fileName: string;
 }) => (
   <div className="text-official-gray-400 text-em-sm grid flex-1 -translate-x-px gap-1 py-0.5 leading-none">
-    <div className="text-official-gray-100 overflow-hidden truncate font-medium">
+    <div className="text-official-gray-100 truncate overflow-hidden font-medium">
       {decodeURIComponent(fileName.split('/').at(-1) ?? '')}
     </div>
     {fileSize && (
@@ -96,7 +96,7 @@ export const FileContentViewer: React.FC<FileContentViewerProps> = ({
   switch (type) {
     case FileTypeSupported.Text: {
       return (
-        <pre className="h-full overflow-auto whitespace-pre-wrap break-words bg-gray-600 p-4 pt-10 font-mono text-xs">
+        <pre className="h-full overflow-auto bg-gray-600 p-4 pt-10 font-mono text-xs break-words whitespace-pre-wrap">
           {content}
         </pre>
       );
@@ -202,10 +202,10 @@ const FileButton = ({
   onFullscreen: (open: boolean) => void;
 }) => (
   <button
-    className="flex h-14 w-full min-w-[210px] max-w-[210px] shrink-0 cursor-pointer items-center gap-2 rounded-md border border-gray-100/40 py-1.5 pl-2 pr-1.5 text-left hover:bg-gray-300/30"
+    className="flex h-14 w-full max-w-[210px] min-w-[210px] shrink-0 cursor-pointer items-center gap-2 rounded-md border border-gray-100/40 py-1.5 pr-1.5 pl-2 text-left hover:bg-gray-300/30"
     onClick={() => onFullscreen(true)}
   >
-    <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-gray-300 text-gray-100 transition-colors">
+    <span className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xs bg-gray-300 text-gray-100 transition-colors">
       {fileIconMap[getFileExt(name)] ? (
         <FileTypeIcon
           className="text-official-gray-400 h-5 w-5"

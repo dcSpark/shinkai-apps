@@ -40,7 +40,7 @@ const DrawerContent = ({
     <DrawerOverlay />
     <DrawerPrimitive.Content
       className={cn(
-        'fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-gray-500 px-6 pb-6 focus:outline-none',
+        'fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-gray-500 px-6 pb-6 focus:outline-hidden',
         className,
       )}
       {...props}
@@ -56,7 +56,7 @@ const DrawerHeader = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn('pb-0 pt-5', className)} {...props} />
+  <div className={cn('pt-5 pb-0', className)} {...props} />
 );
 DrawerHeader.displayName = 'DrawerHeader';
 
@@ -77,7 +77,7 @@ const DrawerTitle = ({
 }: React.ComponentProps<typeof DrawerPrimitive.Title>) => (
   <DrawerPrimitive.Title
     className={cn(
-      'text-lg font-semibold leading-none tracking-tight',
+      'text-lg leading-none font-semibold tracking-tight',
       className,
     )}
     {...props}

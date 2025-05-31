@@ -18,8 +18,8 @@ const SelectTrigger = ({
 }: React.ComponentProps<typeof SelectPrimitive.Trigger>) => (
   <SelectPrimitive.Trigger
     className={cn(
-      'h-input border-official-gray-750 bg-official-gray-900 relative flex w-full items-center justify-between rounded-md border px-4 py-2 text-sm shadow-sm',
-      'focus:ring-official-gray-700 placeholder:text-gray-100 focus:outline-none focus:ring-1 focus:ring-inset disabled:cursor-not-allowed disabled:opacity-50',
+      'h-input border-official-gray-750 bg-official-gray-900 relative flex w-full items-center justify-between rounded-md border px-4 py-2 text-sm shadow-xs',
+      'focus:ring-official-gray-700 placeholder:text-gray-100 focus:ring-1 focus:outline-hidden focus:ring-inset disabled:cursor-not-allowed disabled:opacity-50',
       'peer/select [&[data-placeholder]>svg]:mt-0',
       'pt-6 data-[placeholder]:pt-2',
       'aria-expanded:ring-official-gray-700 aria-expanded:ring-1 aria-expanded:ring-inset',
@@ -29,7 +29,7 @@ const SelectTrigger = ({
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="absolute right-3 top-[23px] h-4 w-4 opacity-50" />
+      <ChevronDown className="absolute top-[23px] right-3 h-4 w-4 opacity-50" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 );
@@ -84,7 +84,7 @@ const SelectItem = ({
 }: React.ComponentProps<typeof SelectPrimitive.Item>) => (
   <SelectPrimitive.Item
     className={cn(
-      'focus:bg-official-gray-750 relative flex w-full cursor-default select-none items-center rounded-sm py-2 pl-2 pr-8 text-sm outline-none focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      'focus:bg-official-gray-750 relative flex w-full cursor-default items-center rounded-xs py-2 pr-8 pl-2 text-sm outline-hidden select-none focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       className,
     )}
     {...props}

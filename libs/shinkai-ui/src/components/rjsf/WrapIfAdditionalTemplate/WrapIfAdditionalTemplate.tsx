@@ -55,7 +55,7 @@ export default function WrapIfAdditionalTemplate<
           {keyLabel}
         </label>
         <input
-          className="mt-1 w-full border p-2 shadow-sm"
+          className="mt-1 w-full border p-2 shadow-xs"
           defaultValue={label}
           disabled={disabled || readonly}
           id={keyId}

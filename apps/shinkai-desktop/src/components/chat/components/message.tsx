@@ -350,7 +350,7 @@ export const MessageBase = ({
                   message.role === 'assistant' &&
                     isPending &&
                     'relative overflow-hidden pb-4 before:absolute before:right-0 before:bottom-0 before:left-0 before:h-10 before:animate-pulse before:bg-gradient-to-l before:from-gray-200 before:to-gray-200/10',
-                  minimalistMode && 'rounded-sm px-2 pt-1.5 pb-1.5',
+                  minimalistMode && 'rounded-xs px-2 pt-1.5 pb-1.5',
                 )}
               >
                 {message.role === 'assistant' && message.reasoning != null && (

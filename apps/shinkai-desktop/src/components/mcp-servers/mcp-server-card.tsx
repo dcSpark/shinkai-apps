@@ -1,6 +1,6 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import  { type McpServer } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
+import { type McpServer } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
 import { useDeleteMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/deleteMcpServer/useDeleteMcpServer';
 import { useGetMCPServerTools } from '@shinkai_network/shinkai-node-state/v2/queries/getMCPServerTools/useGetMCPServerTool';
 import {
@@ -83,7 +83,7 @@ export const McpServerCard = ({
     <>
       <div
         className={cn(
-          'grid grid-cols-[1fr_120px_40px_auto] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
+          'grid grid-cols-[1fr_120px_40px_auto] items-center gap-5 rounded-xs px-2 py-4 pr-4 text-left text-sm',
         )}
       >
         <div className="flex flex-col gap-2.5">
@@ -163,7 +163,7 @@ export const McpServerCard = ({
                               <span className="text-white">{tool.name}</span>
                             )}
                             {tool.description && (
-                              <p className="text-official-gray-400 whitespace-pre-wrap text-sm">
+                              <p className="text-official-gray-400 text-sm whitespace-pre-wrap">
                                 {tool.description}
                               </p>
                             )}

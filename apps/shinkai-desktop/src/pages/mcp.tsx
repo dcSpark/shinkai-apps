@@ -49,9 +49,9 @@ export const MCP_SERVER_ID = 'shinkai-mcp-server';
 type GetMCPCategory = 'all' | 'agent' | 'tool';
 
 export const tabTriggerClassnames = cn(
-  'rounded-xs relative flex size-full min-w-[120px] p-0 pt-0.5 text-sm',
+  'relative flex size-full min-w-[120px] rounded-xs p-0 pt-0.5 text-sm',
   'data-[state=active]:bg-official-gray-950 data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#1a1a1d]',
-  'before:absolute before:left-0 before:right-0 before:top-0 before:h-0.5',
+  'before:absolute before:top-0 before:right-0 before:left-0 before:h-0.5',
 );
 
 export const McpRegistryPage = () => {
@@ -68,7 +68,7 @@ export const McpRegistryPage = () => {
       }}
     >
       <div className="container max-w-screen-lg">
-        <div className="flex flex-col gap-5 pb-6 pt-10">
+        <div className="flex flex-col gap-5 pt-10 pb-6">
           <div className="flex justify-between gap-4">
             <div className="font-clash inline-flex items-center gap-5 text-3xl font-medium">
               <h1>MCPs</h1>
@@ -78,7 +78,7 @@ export const McpRegistryPage = () => {
                     'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
                     'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
                     'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
-                    'focus-visible:outline-none',
+                    'focus-visible:outline-hidden',
                   )}
                   value="mcp_servers"
                 >
@@ -92,7 +92,7 @@ export const McpRegistryPage = () => {
                     'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
                     'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
                     'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
-                    'focus-visible:outline-none',
+                    'focus-visible:outline-hidden',
                   )}
                   value="expose_tools"
                 >
@@ -104,7 +104,7 @@ export const McpRegistryPage = () => {
               </TabsList>
             </div>
           </div>
-          <p className="text-official-gray-400 whitespace-pre-wrap text-sm">
+          <p className="text-official-gray-400 text-sm whitespace-pre-wrap">
             {selectedTab === 'mcp_servers'
               ? 'Connect to MCP server to access external data sources  and tools,  enhancing \nits capabilities with real-time information.'
               : 'Expose your AI Tools through MCP to enable seamless integration with other MCP Clients \nand expand their capabilities.'}
@@ -332,15 +332,15 @@ const ExposeToolsAsMcp = () => {
             {Array.from({ length: 8 }).map((_, idx) => (
               <div
                 className={cn(
-                  'grid animate-pulse items-center gap-5 rounded-sm px-2 py-3 pr-4 text-left text-sm',
+                  'grid animate-pulse items-center gap-5 rounded-xs px-2 py-3 pr-4 text-left text-sm',
                 )}
                 key={idx}
               >
                 <div className="flex w-full flex-1 flex-col gap-3">
-                  <span className="bg-official-gray-800 h-4 w-36 rounded-sm" />
+                  <span className="bg-official-gray-800 h-4 w-36 rounded-xs" />
                   <div className="flex flex-col gap-1">
-                    <span className="bg-official-gray-800 h-3 w-full rounded-sm" />
-                    <span className="bg-official-gray-800 h-3 w-2/4 rounded-sm" />
+                    <span className="bg-official-gray-800 h-3 w-full rounded-xs" />
+                    <span className="bg-official-gray-800 h-3 w-2/4 rounded-xs" />
                   </div>
                 </div>
                 <span className="bg-official-gray-800 h-5 w-[36px] rounded-full" />
@@ -357,7 +357,7 @@ const ExposeToolsAsMcp = () => {
                 {dialogDescription}
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <div className="bg-official-gray-800 my-4 max-h-[60vh] overflow-y-auto rounded p-3 text-sm">
+            <div className="bg-official-gray-800 my-4 max-h-[60vh] overflow-y-auto rounded-sm p-3 text-sm">
               <pre>
                 <code>{dialogHelpText}</code>
               </pre>
@@ -388,12 +388,12 @@ const ExposeToolsAsMcp = () => {
                 {t('mcpClients.customDescriptionPrimary')}
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <div className="bg-official-gray-800 relative my-2 rounded p-3">
-              <pre className="mt-1 whitespace-pre-wrap text-sm">
+            <div className="bg-official-gray-800 relative my-2 rounded-sm p-3">
+              <pre className="mt-1 text-sm whitespace-pre-wrap">
                 <code>{customSseUrl}</code>
                 <CopyToClipboardIcon
                   className={cn(
-                    'text-official-gray-400 absolute right-2 top-2 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                    'text-official-gray-400 absolute top-2 right-2 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
                   )}
                   string={customSseUrl}
                 />
@@ -402,12 +402,12 @@ const ExposeToolsAsMcp = () => {
             <AlertDialogDescription className="mt-4">
               {t('mcpClients.customDescriptionSecondary')}
             </AlertDialogDescription>
-            <div className="bg-official-gray-800 relative my-2 rounded p-3">
-              <pre className="mt-1 whitespace-pre-wrap text-sm">
+            <div className="bg-official-gray-800 relative my-2 rounded-sm p-3">
+              <pre className="mt-1 text-sm whitespace-pre-wrap">
                 <code>{customCommand}</code>
                 <CopyToClipboardIcon
                   className={cn(
-                    'text-official-gray-400 absolute right-2 top-2 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                    'text-official-gray-400 absolute top-2 right-2 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
                   )}
                   string={customCommand}
                 />
@@ -457,7 +457,7 @@ const McpCard = ({
   return (
     <div
       className={cn(
-        'flex items-center justify-between gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
+        'flex items-center justify-between gap-5 rounded-xs px-2 py-4 pr-4 text-left text-sm',
       )}
     >
       <div className="flex flex-col gap-2.5">
@@ -490,7 +490,7 @@ const McpCard = ({
                 variant: 'outline',
                 size: 'sm',
               }),
-              'min-h-auto h-auto rounded-md py-2',
+              'h-auto min-h-auto rounded-md py-2',
             )}
             to={`/tools/${toolRouterKey}`}
           >

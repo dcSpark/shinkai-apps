@@ -4,7 +4,24 @@
 
 @config '../../tailwind.config.js';
 
+@theme {
+  --color-official-gray-780: #313336;
+}
+
 @layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-official-gray-780, currentcolor);
+  }
+
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+
   html,
   body,
   #root {

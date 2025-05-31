@@ -1,5 +1,3 @@
- 
- 
 import { type Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import React, {
@@ -97,7 +95,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h1: ({ node, className, ...props }) => (
     <h1
       className={cn(
-        'mb-[0.7em] mt-[1em] scroll-m-20 text-[1.375rem] font-bold last:mb-0',
+        'mt-[1em] mb-[0.7em] scroll-m-20 text-[1.375rem] font-bold last:mb-0',
         className,
       )}
       {...props}
@@ -106,7 +104,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h2: ({ node, className, ...props }) => (
     <h2
       className={cn(
-        'text-em-xl mb-[0.4em] mt-[0.8em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
+        'text-em-xl mt-[0.8em] mb-[0.4em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -115,7 +113,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h3: ({ node, className, ...props }) => (
     <h3
       className={cn(
-        'text-em-lg mb-[0.5em] mt-[1em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
+        'text-em-lg mt-[1em] mb-[0.5em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -124,7 +122,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h4: ({ node, className, ...props }) => (
     <h4
       className={cn(
-        'text-em-base mb-[0.5em] mt-[1em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
+        'text-em-base mt-[1em] mb-[0.5em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -133,7 +131,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h5: ({ node, className, ...props }) => (
     <h5
       className={cn(
-        'text-em-base mb-[0.5em] mt-[1em] font-semibold first:mt-0 last:mb-0',
+        'text-em-base mt-[1em] mb-[0.5em] font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -142,7 +140,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h6: ({ node, className, ...props }) => (
     <h6
       className={cn(
-        'text-em-base mb-[0.5em] mt-[1em] font-semibold first:mt-0 last:mb-0',
+        'text-em-base mt-[1em] mb-[0.5em] font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -253,7 +251,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       <code
         className={cn(
           !isCodeBlock &&
-            'bg-official-gray-1000 text-em-sm rounded border p-[0.25em] font-semibold',
+            'bg-official-gray-1000 text-em-sm border-official-gray-780 rounded-sm border p-[0.25em] font-semibold',
           className,
         )}
         {...props}
@@ -262,12 +260,6 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   },
   CodeHeader,
   SyntaxHighlighter: SyntaxHighlighterBase,
-};
-
-type ComponentProps = {
-  node?: any;
-  className?: string;
-  [key: string]: any;
 };
 
 export type PreComponent = ComponentType<ComponentPropsWithoutRef<'pre'>>;

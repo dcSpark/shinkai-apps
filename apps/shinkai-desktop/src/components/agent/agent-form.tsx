@@ -1983,15 +1983,15 @@ function AgentForm({ mode }: AgentFormProps) {
                               {Array.from({ length: 4 }).map((_, idx) => (
                                 <div
                                   className={cn(
-                                    'grid animate-pulse grid-cols-[1fr_40px] items-center justify-between gap-5 rounded-sm py-3 text-left text-sm',
+                                    'grid animate-pulse grid-cols-[1fr_40px] items-center justify-between gap-5 rounded-xs py-3 text-left text-sm',
                                   )}
                                   key={idx}
                                 >
                                   <div className="flex w-full flex-1 flex-col gap-3">
-                                    <span className="h-4 w-36 rounded-sm bg-gray-300" />
+                                    <span className="h-4 w-36 rounded-xs bg-gray-300" />
                                     <div className="flex flex-col gap-1">
-                                      <span className="h-3 w-full rounded-sm bg-gray-300" />
-                                      <span className="h-3 w-2/4 rounded-sm bg-gray-300" />
+                                      <span className="h-3 w-full rounded-xs bg-gray-300" />
+                                      <span className="h-3 w-2/4 rounded-xs bg-gray-300" />
                                     </div>
                                   </div>
                                   <span className="h-5 w-[36px] rounded-full bg-gray-300" />

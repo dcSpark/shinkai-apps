@@ -241,7 +241,7 @@ function QuickAsk() {
               <div className="w-full">
                 <input
                   autoFocus
-                  className="placeholder:text-gray-80/70 w-full bg-transparent text-lg text-white focus:outline-none"
+                  className="placeholder:text-gray-80/70 w-full bg-transparent text-lg text-white focus:outline-hidden"
                   {...chatForm.register('message')}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
@@ -494,7 +494,7 @@ const QuickAskBodyWithResponseBase = ({ inboxId }: { inboxId: string }) => {
 
           <ChevronRight className="text-gray-80 h-4 w-4 shrink-0" />
         </CollapsibleTrigger>
-        <CollapsibleContent className="max-h-[150px] overflow-y-auto px-5 pb-2 pt-0.5">
+        <CollapsibleContent className="max-h-[150px] overflow-y-auto px-5 pt-0.5 pb-2">
           <MarkdownText
             className="prose-h1:!text-gray-50 prose-h1:!text-sm !text-sm !text-gray-50"
             content={inputMessage?.content ?? ''}
@@ -504,7 +504,7 @@ const QuickAskBodyWithResponseBase = ({ inboxId }: { inboxId: string }) => {
       <div className="p-5 pb-4">
         {lastMessage?.role === 'assistant' &&
           lastMessage?.status.type === 'running' &&
-          lastMessage?.content === '' && <DotsLoader className="pl-1 pt-1" />}
+          lastMessage?.content === '' && <DotsLoader className="pt-1 pl-1" />}
 
         {lastMessage?.role === 'assistant' && (
           <MarkdownText

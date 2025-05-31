@@ -648,7 +648,7 @@ function ConversationChatFooter({
                             <span className="line-clamp-1 text-white">
                               {formatText(tool.name)}
                             </span>
-                            <span className="text-gray-80 line-clamp-3 whitespace-pre-wrap text-xs">
+                            <span className="text-gray-80 line-clamp-3 text-xs whitespace-pre-wrap">
                               {tool.description}
                             </span>
                           </div>
@@ -664,7 +664,7 @@ function ConversationChatFooter({
         <motion.div
           animate={{ opacity: 1 }}
           className={cn(
-            'bg-official-gray-850 absolute inset-x-2 bottom-1.5 z-0 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pb-1 pt-2.5 shadow-white',
+            'bg-official-gray-850 absolute inset-x-2 bottom-1.5 z-0 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pt-2.5 pb-1 shadow-white',
           )}
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
@@ -850,7 +850,7 @@ const FileListBase = ({
             </div>
             <button
               className={cn(
-                'bg-official-gray-850 hover:bg-official-gray-800 text-gray-80 border-official-gray-780 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
+                'bg-official-gray-850 hover:bg-official-gray-800 text-gray-80 border-official-gray-780 absolute -top-2 -right-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
               )}
               onClick={(event) => {
                 event.stopPropagation();
@@ -1020,9 +1020,9 @@ export const SelectedToolChat = ({
           </div>
         )}
       </div>
-      <div className="absolute right-3 top-3 flex items-center gap-6 text-gray-100 hover:text-white">
+      <div className="absolute top-3 right-3 flex items-center gap-6 text-gray-100 hover:text-white">
         <ToggleGroup
-          className="bg-background inline-flex gap-0 -space-x-px rounded-lg shadow-sm shadow-black/5 rtl:space-x-reverse"
+          className="bg-background inline-flex gap-0 -space-x-px rounded-lg shadow-xs shadow-black/5 rtl:space-x-reverse"
           onValueChange={(value) => {
             if (value) {
               let text = '';

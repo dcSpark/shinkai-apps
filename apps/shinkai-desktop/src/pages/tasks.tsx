@@ -170,15 +170,15 @@ export const Tasks = () => {
           Array.from({ length: 8 }).map((_, idx) => (
             <div
               className={cn(
-                'grid animate-pulse grid-cols-[1fr_115px_36px] items-center gap-5 rounded-sm bg-gray-500 px-2 py-4 text-left text-sm',
+                'grid animate-pulse grid-cols-[1fr_115px_36px] items-center gap-5 rounded-xs bg-gray-500 px-2 py-4 text-left text-sm',
               )}
               key={idx}
             >
               <div className="flex w-full flex-1 flex-col gap-3">
-                <span className="h-4 w-36 rounded-sm bg-gray-300" />
+                <span className="h-4 w-36 rounded-xs bg-gray-300" />
                 <div className="flex flex-col gap-1">
-                  <span className="h-3 w-full rounded-sm bg-gray-300" />
-                  <span className="h-3 w-2/4 rounded-sm bg-gray-300" />
+                  <span className="h-3 w-full rounded-xs bg-gray-300" />
+                  <span className="h-3 w-2/4 rounded-xs bg-gray-300" />
                 </div>
               </div>
               <span className="h-7 w-full rounded-md bg-gray-300" />
@@ -292,7 +292,7 @@ const TaskCard = ({
     >
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium capitalize text-white">
+          <span className="text-sm font-medium text-white capitalize">
             {name}
           </span>
         </div>

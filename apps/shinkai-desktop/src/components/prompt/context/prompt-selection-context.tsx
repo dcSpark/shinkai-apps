@@ -158,7 +158,7 @@ const PromptSearchDrawer = () => {
               promptList?.map((prompt) => (
                 <div
                   className={cn(
-                    'group relative flex min-h-[40px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm hover:bg-gray-300',
+                    'group relative flex min-h-[40px] w-full flex-col gap-1 rounded-xs px-3 py-2.5 pr-8 text-left text-sm hover:bg-gray-300',
                   )}
                   key={prompt.name}
                   onClick={() => {
@@ -168,7 +168,7 @@ const PromptSearchDrawer = () => {
                   role="button"
                   tabIndex={0}
                 >
-                  <div className="absolute right-1 top-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
+                  <div className="absolute top-1 right-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
                     <button
                       className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
                       onClick={(event) => {
@@ -203,7 +203,7 @@ const PromptSearchDrawer = () => {
               searchPromptList?.map((prompt) => (
                 <div
                   className={cn(
-                    'group relative flex min-h-[40px] w-full flex-col gap-1 rounded-sm px-3 py-2.5 pr-8 text-left text-sm hover:bg-gray-300',
+                    'group relative flex min-h-[40px] w-full flex-col gap-1 rounded-xs px-3 py-2.5 pr-8 text-left text-sm hover:bg-gray-300',
                   )}
                   key={prompt.name}
                   onClick={() => {
@@ -213,7 +213,7 @@ const PromptSearchDrawer = () => {
                   role="button"
                   tabIndex={0}
                 >
-                  <div className="absolute right-1 top-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
+                  <div className="absolute top-1 right-1 flex translate-x-[150%] items-center gap-0.5 transition duration-200 group-hover:translate-x-0">
                     <button
                       className="text-gray-80 rounded-full p-2 transition-colors hover:bg-gray-400 hover:text-white"
                       onClick={(event) => {
@@ -330,7 +330,7 @@ export function CreatePromptDrawer({
       <DialogTrigger asChild>
         {children ?? (
           <button
-            className="bg-brand absolute right-12 top-2 rounded-full p-2"
+            className="bg-brand absolute top-2 right-12 rounded-full p-2"
             type="button"
           >
             <PlusIcon className="h-4 w-4" />

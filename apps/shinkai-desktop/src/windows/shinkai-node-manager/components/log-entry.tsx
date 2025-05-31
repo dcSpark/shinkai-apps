@@ -33,7 +33,7 @@ export const LogIcon = ({ level }: { level: string }) => {
   };
 
   return (
-    <span className={`rounded p-1 ${getLogStyle()}`}>
+    <span className={`rounded-sm p-1 ${getLogStyle()}`}>
       {(() => {
         switch (level) {
           case 'ERROR':
