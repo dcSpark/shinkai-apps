@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import  { type ImportMCPServerFromGithubURLOutput } from '@shinkai_network/shinkai-node-state/v2/mutations/importMCPServerFromGithubURL/types';
+import { type ImportMCPServerFromGithubURLOutput } from '@shinkai_network/shinkai-node-state/v2/mutations/importMCPServerFromGithubURL/types';
 import { useImportMCPServerFromGithubURL } from '@shinkai_network/shinkai-node-state/v2/mutations/importMCPServerFromGithubURL/useImportMCPServerFromGithubURL';
 import {
   Button,
@@ -54,7 +54,7 @@ export const AddMcpServerWithGithubModal = ({
     },
   });
 
-  const { mutateAsync: importMcpServer, isPending: isImporting } = 
+  const { mutateAsync: importMcpServer, isPending: isImporting } =
     useImportMCPServerFromGithubURL({
       onSuccess: (data) => {
         toast.success('MCP Server details fetched successfully from GitHub');
@@ -93,7 +93,9 @@ export const AddMcpServerWithGithubModal = ({
         <DialogHeader>
           <DialogTitle>Add MCP Server from GitHub</DialogTitle>
           <DialogDescription>
-            Enter the GitHub URL of the MCP server repository. After fetching, you will be prompted to review the proposed MCP server configuration before it is added to your node.
+            Enter the GitHub URL of the MCP server repository. After fetching,
+            you will be prompted to review the proposed MCP server configuration
+            before it is added to your node.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -105,7 +107,10 @@ export const AddMcpServerWithGithubModal = ({
                 <FormItem>
                   <FormLabel>GitHub Repository URL</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://github.com/user/repo" {...field} />
+                    <Input
+                      placeholder="https://github.com/user/repo"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -113,6 +118,7 @@ export const AddMcpServerWithGithubModal = ({
             />
             <DialogFooter className="mt-6">
               <Button
+                size="md"
                 disabled={isSubmitting || isImporting}
                 onClick={onClose}
                 type="button"
@@ -120,8 +126,14 @@ export const AddMcpServerWithGithubModal = ({
               >
                 Cancel
               </Button>
-              <Button disabled={isSubmitting || isImporting} type="submit">
-                {isSubmitting || isImporting ? 'Fetching...' : 'Fetch and Continue'}
+              <Button
+                disabled={isSubmitting || isImporting}
+                type="submit"
+                size="md"
+              >
+                {isSubmitting || isImporting
+                  ? 'Fetching...'
+                  : 'Fetch and Continue'}
               </Button>
             </DialogFooter>
           </form>
@@ -129,4 +141,4 @@ export const AddMcpServerWithGithubModal = ({
       </DialogContent>
     </Dialog>
   );
-}; 
+};

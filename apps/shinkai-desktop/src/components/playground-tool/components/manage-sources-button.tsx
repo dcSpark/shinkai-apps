@@ -3,7 +3,10 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useRemoveAssetTool } from '@shinkai_network/shinkai-node-state/v2/mutations/removeAssetTool/useRemoveAssetTool';
 import { useUploadAssetsTool } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadAssetsTool/useUploadAssetsTool';
 import { useGetAllToolAssets } from '@shinkai_network/shinkai-node-state/v2/queries/getAllToolAssets/useGetAllToolAssets';
-import { Badge, Button, Separator,
+import {
+  Badge,
+  Button,
+  Separator,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -13,7 +16,8 @@ import { Badge, Button, Separator,
   Tooltip,
   TooltipContent,
   TooltipPortal,
-  TooltipTrigger } from '@shinkai_network/shinkai-ui';
+  TooltipTrigger,
+} from '@shinkai_network/shinkai-ui';
 import {
   fileIconMap,
   FileTypeIcon,
@@ -94,7 +98,7 @@ function ManageSourcesButtonBase() {
         </Button>
       </DialogTrigger>
       <DialogContent className="flex h-[60vh] max-w-[500px] flex-col gap-4">
-        <DialogClose className="absolute right-4 top-4">
+        <DialogClose className="absolute top-4 right-4">
           <XIcon className="text-gray-80 h-5 w-5" />
         </DialogClose>
         <div className="space-y-2">
@@ -111,7 +115,7 @@ function ManageSourcesButtonBase() {
           })}
         >
           <div className="flex flex-col items-center justify-center space-y-1 px-2">
-            <div className="bg-gray-350 rounded-full p-2 shadow-sm">
+            <div className="bg-gray-350 rounded-full p-2 shadow-xs">
               <Upload className="h-4 w-4" />
             </div>
             <p className="text-sm text-white">{t('common.clickToUpload')}</p>
@@ -150,7 +154,7 @@ function ManageSourcesButtonBase() {
                 key={asset}
               >
                 <div className="flex items-center gap-2 overflow-hidden text-gray-50">
-                  <div className="w-4.5 flex aspect-square shrink-0 items-center justify-center">
+                  <div className="flex aspect-square w-4.5 shrink-0 items-center justify-center">
                     {getFileExt(asset) && fileIconMap[getFileExt(asset)] ? (
                       <FileTypeIcon
                         className="text-gray-80 h-[18px] w-[18px] shrink-0"
@@ -162,7 +166,7 @@ function ManageSourcesButtonBase() {
                   </div>
                   <Tooltip delayDuration={1000}>
                     <TooltipTrigger>
-                      <span className="overflow-hidden text-ellipsis text-sm">
+                      <span className="overflow-hidden text-sm text-ellipsis">
                         {decodeURIComponent(asset)}
                       </span>
                     </TooltipTrigger>

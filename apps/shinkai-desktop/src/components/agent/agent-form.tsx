@@ -179,7 +179,7 @@ const TabNavigation = () => {
   return (
     <TabsList className="border-official-gray-780 flex h-auto justify-start gap-4 rounded-full bg-transparent px-0.5 py-1">
       <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-official-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
         value="persona"
       >
         <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
@@ -188,7 +188,7 @@ const TabNavigation = () => {
         <span>Persona</span>
       </TabsTrigger>
       <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-official-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
         value="knowledge"
       >
         <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
@@ -197,7 +197,7 @@ const TabNavigation = () => {
         <span>Knowledge</span>
       </TabsTrigger>
       <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-official-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
         value="tools"
       >
         <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
@@ -206,7 +206,7 @@ const TabNavigation = () => {
         <span>Tools</span>
       </TabsTrigger>
       <TabsTrigger
-        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+        className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-official-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
         value="schedule"
       >
         <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
@@ -1131,7 +1131,7 @@ function AgentForm({ mode }: AgentFormProps) {
         minSize={50}
       >
         <div className="container flex h-full min-h-0 max-w-3xl flex-col">
-          <div className="flex items-center justify-between pb-6 pt-10">
+          <div className="flex items-center justify-between pt-10 pb-6">
             <div className="flex items-center gap-5">
               <Link to={isSideChatOpen ? '/agents' : (-1 as To)}>
                 <LucideArrowLeft />
@@ -1821,7 +1821,7 @@ function AgentForm({ mode }: AgentFormProps) {
                         {form.watch('tools')?.length > 0 && (
                           <div className="bg-official-gray-850 mr-2 rounded-lg p-3">
                             <div className="flex items-center justify-between">
-                              <h3 className="text-official-gray-200 mb-2 text-xs font-medium uppercase tracking-wide">
+                              <h3 className="text-official-gray-200 mb-2 text-xs font-medium tracking-wide uppercase">
                                 Selected Tools
                               </h3>
                               <Button
@@ -1983,15 +1983,15 @@ function AgentForm({ mode }: AgentFormProps) {
                               {Array.from({ length: 4 }).map((_, idx) => (
                                 <div
                                   className={cn(
-                                    'grid animate-pulse grid-cols-[1fr_40px] items-center justify-between gap-5 rounded-sm py-3 text-left text-sm',
+                                    'grid animate-pulse grid-cols-[1fr_40px] items-center justify-between gap-5 rounded-xs py-3 text-left text-sm',
                                   )}
                                   key={idx}
                                 >
                                   <div className="flex w-full flex-1 flex-col gap-3">
-                                    <span className="h-4 w-36 rounded-sm bg-gray-300" />
+                                    <span className="h-4 w-36 rounded-xs bg-gray-300" />
                                     <div className="flex flex-col gap-1">
-                                      <span className="h-3 w-full rounded-sm bg-gray-300" />
-                                      <span className="h-3 w-2/4 rounded-sm bg-gray-300" />
+                                      <span className="h-3 w-full rounded-xs bg-gray-300" />
+                                      <span className="h-3 w-2/4 rounded-xs bg-gray-300" />
                                     </div>
                                   </div>
                                   <span className="h-5 w-[36px] rounded-full bg-gray-300" />
@@ -2290,7 +2290,7 @@ function AgentForm({ mode }: AgentFormProps) {
                             }}
                             value={scheduleType}
                           >
-                            <div className="flex items-start space-x-3 rounded-lg border p-3">
+                            <div className="border-official-gray-780 flex items-start space-x-3 rounded-lg border p-3">
                               <RadioGroupItem
                                 className="mt-1"
                                 id="schedule-always-on"
@@ -2310,7 +2310,7 @@ function AgentForm({ mode }: AgentFormProps) {
                               </div>
                             </div>
 
-                            <div className="flex items-start space-x-3 rounded-lg border p-3">
+                            <div className="border-official-gray-780 flex items-start space-x-3 rounded-lg border p-3">
                               <RadioGroupItem
                                 className="mt-1"
                                 id="schedule-recurring"
@@ -2719,7 +2719,7 @@ const ToolConfigModal = ({
       >
         <DialogClose asChild>
           <Button
-            className="absolute right-4 top-4"
+            className="absolute top-4 right-4"
             size="icon"
             variant="tertiary"
           >
@@ -2842,7 +2842,7 @@ const UploadFileDialog = ({
               variant: 'tertiary',
               size: 'icon',
             }),
-            'absolute right-3 top-3 p-1',
+            'absolute top-3 right-3 p-1',
           )}
           onClick={() => {
             onOpenChange(false);

@@ -44,7 +44,7 @@ export default function PlaygroundToolLayout({
       <div className="flex h-full" style={{ contain: 'strict' }}>
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
-            className="flex h-full flex-col rounded-sm pb-3"
+            className="flex h-full flex-col rounded-xs pb-3"
             defaultSize={playgroundChatPanelSize}
             minSize={10}
             onResize={(size) => {
@@ -55,7 +55,7 @@ export default function PlaygroundToolLayout({
           </ResizablePanel>
           <ResizableHandle className="bg-official-gray-1000 w-2" />
           <ResizablePanel
-            className="flex h-full flex-col overflow-hidden rounded-sm pb-3"
+            className="flex h-full flex-col overflow-hidden rounded-xs pb-3"
             minSize={10}
           >
             {rightElement ?? (

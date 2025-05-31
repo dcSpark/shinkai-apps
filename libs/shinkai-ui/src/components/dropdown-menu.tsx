@@ -26,7 +26,7 @@ const DropdownMenuSubTrigger = ({
 }) => (
   <DropdownMenuPrimitive.SubTrigger
     className={cn(
-      'focus:bg-accent data-[state=open]:bg-accent flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none',
+      'focus:bg-accent data-[state=open]:bg-accent flex cursor-default items-center rounded-xs px-2 py-1.5 text-sm outline-hidden select-none',
       inset && 'pl-8',
       className,
     )}
@@ -62,7 +62,7 @@ const DropdownMenuContent = ({
   <DropdownMenuPrimitive.Portal>
     <DropdownMenuPrimitive.Content
       className={cn(
-        'font-inter data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-[2000000000] min-w-[8rem] overflow-hidden rounded-lg bg-gray-300 px-4 py-6 text-white shadow-md',
+        'font-inter border-official-gray-780 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 bg-official-gray-950 z-[2000000000] min-w-[8rem] overflow-hidden rounded-lg border px-4 py-6 text-white shadow-md',
         className,
       )}
       sideOffset={sideOffset}
@@ -81,7 +81,7 @@ const DropdownMenuItem = ({
 }) => (
   <DropdownMenuPrimitive.Item
     className={cn(
-      'relative flex cursor-default select-none items-center rounded-lg px-2 py-2 text-sm outline-none transition-colors focus:bg-gray-200 data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      'relative flex cursor-default items-center rounded-lg px-2 py-2 text-sm outline-hidden transition-colors select-none focus:bg-gray-200 data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       inset && 'pl-8',
       className,
     )}
@@ -99,12 +99,12 @@ const DropdownMenuCheckboxItem = ({
   <DropdownMenuPrimitive.CheckboxItem
     checked={checked}
     className={cn(
-      'focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      'focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-xs py-1.5 pr-2 pl-8 text-sm outline-hidden transition-colors select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       className,
     )}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center rounded-sm bg-gray-300">
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center rounded-xs bg-gray-300">
       <DropdownMenuPrimitive.ItemIndicator>
         <Check className="h-3 w-3" />
       </DropdownMenuPrimitive.ItemIndicator>
@@ -122,7 +122,7 @@ const DropdownMenuRadioItem = ({
 }: React.ComponentProps<typeof DropdownMenuPrimitive.RadioItem>) => (
   <DropdownMenuPrimitive.RadioItem
     className={cn(
-      'focus:bg-official-gray-800 relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      'focus:bg-official-gray-800 relative flex cursor-default items-center rounded-xs py-1.5 pr-2 pl-8 text-sm outline-hidden transition-colors select-none focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       className,
     )}
     {...props}
@@ -146,7 +146,7 @@ const DropdownMenuLabel = ({
 }) => (
   <DropdownMenuPrimitive.Label
     className={cn(
-      'text-official-gray-400 text-xs uppercase tracking-[2px]',
+      'text-official-gray-400 text-xs tracking-[2px] uppercase',
       inset && 'pl-8',
       className,
     )}

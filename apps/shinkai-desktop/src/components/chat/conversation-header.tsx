@@ -118,10 +118,10 @@ const ConversationHeaderWithInboxId = () => {
           </TooltipPortal>
         </Tooltip>
 
-        <div className="inline w-full flex-1 truncate whitespace-nowrap text-sm font-medium capitalize text-white">
+        <div className="inline w-full flex-1 truncate text-sm font-medium whitespace-nowrap text-white capitalize">
           {isAgentInbox && selectedAgent ? (
             <div className="flex flex-col gap-0.5">
-              <span className="inline-flex items-center gap-2 text-sm font-medium capitalize text-white">
+              <span className="inline-flex items-center gap-2 text-sm font-medium text-white capitalize">
                 {selectedAgent?.name}{' '}
                 {selectedAgent?.cron_tasks?.length &&
                   selectedAgent?.cron_tasks?.length > 0 && (
@@ -148,7 +148,7 @@ const ConversationHeaderWithInboxId = () => {
                     <SheetHeader className="">
                       <div className="flex items-center gap-4">
                         <AgentIcon className="size-5" />
-                        <SheetTitle className="font-clash inline-flex items-center gap-2 text-xl font-medium capitalize tracking-wide">
+                        <SheetTitle className="font-clash inline-flex items-center gap-2 text-xl font-medium tracking-wide capitalize">
                           {selectedAgent.name}
                           {selectedAgent?.cron_tasks?.length &&
                             selectedAgent?.cron_tasks?.length > 0 && (
@@ -211,8 +211,8 @@ const ConversationHeaderWithInboxId = () => {
                               </div>
                             </AccordionTrigger>
                             <AccordionContent>
-                              <div className="bg-official-gray-850 rounded-lg border p-4">
-                                <p className="whitespace-pre-wrap text-sm">
+                              <div className="bg-official-gray-850 border-official-gray-780 rounded-lg border p-4">
+                                <p className="text-sm whitespace-pre-wrap">
                                   {selectedAgent.config?.custom_system_prompt ||
                                     'No system instructions found.'}
                                 </p>
@@ -242,7 +242,7 @@ const ConversationHeaderWithInboxId = () => {
                                 )}
                                 {selectedAgent.tools.map((tool, index) => (
                                   <div
-                                    className="bg-official-gray-850 relative flex cursor-default items-center gap-2 rounded-lg border p-2 pr-8 text-sm transition-colors"
+                                    className="bg-official-gray-850 border-official-gray-780 relative flex cursor-default items-center gap-2 rounded-lg border p-2 pr-8 text-sm transition-colors"
                                     key={index}
                                   >
                                     <ToolsIcon className="h-4 w-4" />
@@ -309,7 +309,7 @@ const ConversationHeaderWithInboxId = () => {
                                 {selectedAgent.scope?.vector_fs_folders?.map(
                                   (item, index) => (
                                     <div
-                                      className="bg-official-gray-850 flex items-center justify-start gap-2 rounded-lg border p-2 capitalize"
+                                      className="bg-official-gray-850 border-official-gray-780 flex items-center justify-start gap-2 rounded-lg border p-2 capitalize"
                                       key={index}
                                     >
                                       <FolderIcon className="h-4 w-4" />
@@ -322,7 +322,7 @@ const ConversationHeaderWithInboxId = () => {
                                 {selectedAgent.scope?.vector_fs_items?.map(
                                   (item, index) => (
                                     <div
-                                      className="bg-official-gray-850 flex items-center justify-start gap-2 rounded-lg border p-2 capitalize"
+                                      className="bg-official-gray-850 border-official-gray-780 flex items-center justify-start gap-2 rounded-lg border p-2 capitalize"
                                       key={index}
                                     >
                                       <FileIcon className="h-4 w-4" />
@@ -354,7 +354,7 @@ const ConversationHeaderWithInboxId = () => {
                                 )}
                                 {selectedAgent.cron_tasks?.map((task) => (
                                   <div
-                                    className="bg-official-gray-850 relative flex items-start gap-2 rounded-lg border p-2 pr-6 capitalize"
+                                    className="bg-official-gray-850 border-official-gray-780 relative flex items-start gap-2 rounded-lg border p-2 pr-6 capitalize"
                                     key={task.task_id}
                                   >
                                     <ScheduledTasksIcon className="mt-1 h-4 w-4" />
@@ -368,7 +368,7 @@ const ConversationHeaderWithInboxId = () => {
                                       </p>
                                     </div>
                                     <Link
-                                      className="text-official-gray-400 absolute right-2 top-2 hover:text-white"
+                                      className="text-official-gray-400 absolute top-2 right-2 hover:text-white"
                                       to={`/tasks/${task.task_id}`}
                                     >
                                       <ExternalLinkIcon className="h-4 w-4" />

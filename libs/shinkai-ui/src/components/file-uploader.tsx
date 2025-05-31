@@ -120,7 +120,7 @@ export const FileUploader = ({
         })}
       >
         <div className="flex flex-col items-center justify-center space-y-1 px-2">
-          <div className="bg-gray-350 rounded-full p-2 shadow-sm">
+          <div className="bg-gray-350 rounded-full p-2 shadow-xs">
             <Upload className="h-4 w-4" />
           </div>
           <p className="text-sm text-white">{t('common.clickToUpload')}</p>

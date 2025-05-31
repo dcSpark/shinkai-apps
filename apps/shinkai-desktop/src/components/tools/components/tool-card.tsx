@@ -56,7 +56,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
   return (
     <div
       className={cn(
-        'grid grid-cols-[1fr_40px_40px_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
+        'grid grid-cols-[1fr_40px_40px_115px_36px] items-center gap-5 rounded-xs px-2 py-4 pr-4 text-left text-sm',
       )}
       key={tool.tool_router_key}
     >
@@ -79,7 +79,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
             </Badge>
           )}
         </div>
-        <p className="text-gray-80 line-clamp-2 whitespace-pre-wrap text-xs">
+        <p className="text-gray-80 line-clamp-2 text-xs whitespace-pre-wrap">
           {tool.description}
         </p>
       </div>
@@ -92,7 +92,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
                 variant: 'outline',
                 size: 'sm',
               }),
-              'min-h-auto flex h-auto w-10 justify-center rounded-md py-2',
+              'flex h-auto min-h-auto w-10 justify-center rounded-md py-2',
             )}
             to={`/tools/${tool.tool_router_key}#try-it-out`}
           >
@@ -114,7 +114,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
             variant: 'outline',
             size: 'sm',
           }),
-          'min-h-auto h-auto rounded-md py-2',
+          'h-auto min-h-auto rounded-md py-2',
         )}
         to={`/tools/${tool.tool_router_key}`}
       >

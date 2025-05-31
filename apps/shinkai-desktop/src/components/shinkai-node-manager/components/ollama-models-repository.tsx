@@ -110,7 +110,6 @@ export const OllamaModelsRepository = ({
               <div className="flex flex-row items-center gap-3">
                 <span className="font-medium">{model.name}</span>
                 {isDefaultModel(
-                   
                   getFullName(model.name, selectedTagMap.get(model.name)!),
                 ) && (
                   <Badge
@@ -125,7 +124,7 @@ export const OllamaModelsRepository = ({
                 )}
               </div>
 
-              <span className="text-gray-80 line-clamp-3 text-ellipsis text-xs">
+              <span className="text-gray-80 line-clamp-3 text-xs text-ellipsis">
                 {model.description}
               </span>
             </div>
@@ -182,7 +181,7 @@ export const OllamaModelsRepository = ({
               <OllamaModelInstallButton
                 model={getFullName(
                   '',
-                   
+
                   selectedTagMap.get(model.name)!,
                 )}
               />
@@ -249,7 +248,7 @@ export const OllamaModelsRepository = ({
 
   return (
     <div
-      className={cn('w-full overflow-auto rounded pb-10', className)}
+      className={cn('w-full overflow-auto rounded-sm pb-10', className)}
       ref={tableContainerRef}
       {...props}
     >
