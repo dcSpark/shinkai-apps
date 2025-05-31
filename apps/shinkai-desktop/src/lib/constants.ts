@@ -19,33 +19,33 @@ export const treeOptions: TreePassThroughOptions = {
   root: {
     className: cn(
       '',
-      'my-0 w-full rounded-md border border-gray-400 bg-transparent p-0 p-2 text-white',
+      '!bg-official-gray-950 !border-official-gray-780 my-0 w-full rounded-md border !px-1 !py-1.5 text-white',
     ),
   },
   label: { className: 'text-white text-sm line-clamp-1 break-all' },
   container: {
-    className: 'm-0 p-0 list-none overflow-auto',
+    className: 'm-0 !p-0 list-none overflow-auto',
   },
-  node: { className: 'p-0 outline-none' },
+  node: { className: 'p-0 outline-hidden' },
   content: {
     className: cn(
-      'text-gray-80 mb-1 rounded-lg bg-transparent p-1 py-1.5 shadow-none hover:bg-gray-400 hover:text-white',
+      'text-official-gray-400 hover:bg-official-gray-850 mb-1 rounded-lg !bg-transparent p-1 !py-0 shadow-none hover:text-white',
       'cursor-pointer select-none',
     ),
   },
   toggler: ({ context }: TreePassThroughMethodOptions) => ({
     className: cn(
-      'relative inline-flex shrink-0 cursor-pointer select-none items-center justify-center overflow-hidden',
-      'mr-2.5 h-4 w-4 rounded-full border-0 bg-transparent transition duration-200',
+      'relative inline-flex shrink-0 cursor-pointer items-center justify-center overflow-hidden select-none',
+      'mr-2.5 h-4 w-4 rounded-full border-0 !bg-transparent transition duration-200',
       context.selected
-        ? 'text-blue-600 hover:bg-white/30'
-        : 'hover:text-gray-80 text-white hover:bg-gray-400',
+        ? 'hover:bg-official-gray-850 text-brand'
+        : 'hover:text-gray-80 hover:bg-official-gray-850 text-white',
       // @ts-expect-error - TS doesn't know about the isLeaf property
       context.isLeaf && 'invisible',
     ),
   }),
 
-  nodeIcon: { className: 'mr-2 text-gray-50' },
+  nodeIcon: { className: 'mr-2 ' },
   subgroup: {
     className: cn('m-0 list-none', 'space-y-1 p-0 pl-4'),
   },

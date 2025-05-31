@@ -6,7 +6,9 @@ import { cn } from '../utils';
 
 const Accordion = AccordionPrimitive.Root;
 
-type AccordionItemProps = React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item> & {
+type AccordionItemProps = React.ComponentPropsWithoutRef<
+  typeof AccordionPrimitive.Item
+> & {
   ref?: React.RefObject<React.ComponentRef<typeof AccordionPrimitive.Item>>;
 };
 
@@ -15,12 +17,20 @@ const AccordionItem = ({ className, ref, ...props }: AccordionItemProps) => (
 );
 AccordionItem.displayName = 'AccordionItem';
 
-type AccordionTriggerProps = React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger> & {
+type AccordionTriggerProps = React.ComponentPropsWithoutRef<
+  typeof AccordionPrimitive.Trigger
+> & {
   hideArrow?: boolean;
   ref?: React.RefObject<React.ComponentRef<typeof AccordionPrimitive.Trigger>>;
 };
 
-const AccordionTrigger = ({ className, children, hideArrow = false, ref, ...props }: AccordionTriggerProps) => (
+const AccordionTrigger = ({
+  className,
+  children,
+  hideArrow = false,
+  ref,
+  ...props
+}: AccordionTriggerProps) => (
   <AccordionPrimitive.Header className="flex">
     <AccordionPrimitive.Trigger
       className={cn(
@@ -39,17 +49,24 @@ const AccordionTrigger = ({ className, children, hideArrow = false, ref, ...prop
 );
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName;
 
-type AccordionContentProps = React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content> & {
+type AccordionContentProps = React.ComponentPropsWithoutRef<
+  typeof AccordionPrimitive.Content
+> & {
   ref?: React.RefObject<React.ComponentRef<typeof AccordionPrimitive.Content>>;
 };
 
-const AccordionContent = ({ className, children, ref, ...props }: AccordionContentProps) => (
+const AccordionContent = ({
+  className,
+  children,
+  ref,
+  ...props
+}: AccordionContentProps) => (
   <AccordionPrimitive.Content
     className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down w-full overflow-hidden text-sm transition-all"
     ref={ref}
     {...props}
   >
-    <div className={cn('pb-4 pt-0', className)}>{children}</div>
+    <div className={cn('pt-0 pb-4', className)}>{children}</div>
   </AccordionPrimitive.Content>
 );
 AccordionContent.displayName = AccordionPrimitive.Content.displayName;
