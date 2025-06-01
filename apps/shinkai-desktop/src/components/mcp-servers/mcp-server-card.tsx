@@ -36,6 +36,11 @@ import { toast } from 'sonner';
 import { useAuth } from '../../store/auth';
 import { AddMcpServerModal } from './add-mcp-server-modal';
 
+const getToolDisplayName = (name: string) => {
+  const index = name.indexOf(' - ');
+  return index !== -1 ? name.slice(index + 3) : name;
+};
+
 interface McpServerCardProps {
   server: McpServer;
   onToggleEnabled: (serverId: number, currentEnabled: boolean) => Promise<void>;
@@ -157,10 +162,12 @@ export const McpServerCard = ({
                                 onClick={() => setIsToolsDialogOpen(false)}
                                 to={`/tools/${tool.tool_router_key}`}
                               >
-                                {tool.name}
+                                {getToolDisplayName(tool.name)}
                               </Link>
                             ) : (
-                              <span className="text-white">{tool.name}</span>
+                              <span className="text-white">
+                                {getToolDisplayName(tool.name)}
+                              </span>
                             )}
                             {tool.description && (
                               <p className="text-official-gray-400 text-sm whitespace-pre-wrap">
