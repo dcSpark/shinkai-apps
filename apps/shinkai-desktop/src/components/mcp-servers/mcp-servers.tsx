@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { useAuth } from '../../store/auth';
 import { AddMcpServerModal } from './add-mcp-server-modal';
 import { AddMcpServerWithGithubModal } from './add-mcp-server-with-github-modal';
+import { AddMcpServerSearchModal } from './add-mcp-server-search-modal';
 import { McpServerCard } from './mcp-server-card';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
@@ -29,6 +30,8 @@ export const McpServers = () => {
     isAddMcpServerWithGithubModalOpen,
     setIsAddMcpServerWithGithubModalOpen,
   ] = useState(false);
+  const [isAddMcpServerSearchModalOpen, setIsAddMcpServerSearchModalOpen] =
+    useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [initialDataForManualModal, setInitialDataForManualModal] = useState<
     ImportMCPServerFromGithubURLOutput | undefined
@@ -109,6 +112,11 @@ export const McpServers = () => {
               >
                 Add from GitHub
               </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setIsAddMcpServerSearchModalOpen(true)}
+              >
+                Search and Install
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -164,6 +172,15 @@ export const McpServers = () => {
         onClose={() => setIsAddMcpServerWithGithubModalOpen(false)}
         onSuccess={(data) => {
           setIsAddMcpServerWithGithubModalOpen(false);
+          setInitialDataForManualModal(data);
+          setIsAddMcpServerModalOpen(true);
+        }}
+      />
+      <AddMcpServerSearchModal
+        isOpen={isAddMcpServerSearchModalOpen}
+        onClose={() => setIsAddMcpServerSearchModalOpen(false)}
+        onSuccess={(data) => {
+          setIsAddMcpServerSearchModalOpen(false);
           setInitialDataForManualModal(data);
           setIsAddMcpServerModalOpen(true);
         }}

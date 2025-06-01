@@ -602,6 +602,7 @@
     "updateFailed": "Failed to update MCP server",
     "manualSetup": "Manual Setup",
     "addFromGitHub": "Add from GitHub",
+    "searchAndInstall": "Search and Install",
     "tools": "tools",
     "toolsFor": "Tools for {{name}}",
     "listOfToolsAvailableFromThisMcpServer": "List of tools available from this MCP server.",
