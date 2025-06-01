@@ -581,3 +581,19 @@ export const forkJobMessages = async (
   );
   return response.data as ForkJobMessagesResponse;
 };
+
+export const exportMessagesFromInbox = async (
+  nodeAddress: string,
+  bearerToken: string,
+  inboxId: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/export_messages_from_inbox'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      params: { inbox_id: inboxId },
+      responseType: 'blob',
+    },
+  );
+  return response.data as Blob;
+};
