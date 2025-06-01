@@ -648,8 +648,7 @@ export default {
     configure: 'Configure Server',
     updateWarningDescription:
       'Updating this server will reset its associated tools.',
-    updateDescription:
-      'Updating configuration for MCP server: {{name}}',
+    updateDescription: 'Updating configuration for MCP server: {{name}}',
     statusUpdated: 'Status updated successfully',
     statusUpdateFailed: 'Failed to update status',
     deleteDescription:
@@ -664,6 +663,7 @@ export default {
     updateFailed: 'Failed to update MCP server',
     manualSetup: 'Manual Setup',
     addFromGitHub: 'Add from GitHub',
+    searchAndInstall: 'Search and Install',
     tools: 'tools',
     toolsFor: 'Tools for {{name}}',
     listOfToolsAvailableFromThisMcpServer:
