@@ -91,26 +91,47 @@ export const McpServers = () => {
             value={searchQuery}
           />
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="min-w-[100px]" size="md">
-                <Plus className="h-4 w-4" />
-                <span>Add MCP Server</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="p-1.5 px-2">
-              <DropdownMenuItem
-                onClick={() => setIsAddMcpServerModalOpen(true)}
-              >
-                {t('mcpServers.manualSetup')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setIsAddMcpServerWithGithubModalOpen(true)}
-              >
-                Add from GitHub
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="min-w-[100px]" size="md">
+                  <Plus className="h-4 w-4" />
+                  <span>Add MCP Server</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="p-1.5 px-2">
+                <DropdownMenuItem
+                  onClick={() => setIsAddMcpServerModalOpen(true)}
+                >
+                  {t('mcpServers.manualSetup')}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setIsAddMcpServerWithGithubModalOpen(true)}
+                >
+                  Add from GitHub
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="min-w-[100px]" size="md">
+                  <span>{t('mcpServers.find')}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="p-1.5 px-2">
+                <DropdownMenuItem
+                  onClick={() => window.open('http://smithery.ai', '_blank')}
+                >
+                  smithery.ai
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => window.open('http://composio.dev', '_blank')}
+                >
+                  composio.dev
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         {isLoading ? (

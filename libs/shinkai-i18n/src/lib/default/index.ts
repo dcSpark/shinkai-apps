@@ -664,6 +664,7 @@ export default {
     updateFailed: 'Failed to update MCP server',
     manualSetup: 'Manual Setup',
     addFromGitHub: 'Add from GitHub',
+    find: 'Find MCPs',
     tools: 'tools',
     toolsFor: 'Tools for {{name}}',
     listOfToolsAvailableFromThisMcpServer:
