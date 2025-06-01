@@ -48,6 +48,7 @@ import {
   type UpdateLLMProviderInJobResponse,
   type UpdateLLMProviderRequest,
   type UpdateLLMProviderResponse,
+  type ExportInboxMessagesRequest,
 } from './types';
 
 export const createJob = async (
@@ -580,4 +581,23 @@ export const forkJobMessages = async (
     },
   );
   return response.data as ForkJobMessagesResponse;
+};
+
+export const exportMessagesFromInbox = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: ExportInboxMessagesRequest,
+): Promise<Blob> => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/export_messages_from_inbox'),
+    {
+      inbox_name: payload.inbox_name,
+      format: payload.format,
+    },
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'blob',
+    },
+  );
+  return response.data as Blob;
 };

@@ -22,6 +22,10 @@ import {
   TooltipContent,
   TooltipPortal,
   TooltipTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
   AgentIcon,
@@ -37,7 +41,14 @@ import {
   FolderIcon,
   PanelRightClose,
   PanelRightOpen,
+  DownloadIcon,
 } from 'lucide-react';
+import { DotsVerticalIcon } from '@radix-ui/react-icons';
+import { save } from '@tauri-apps/plugin-dialog';
+import * as fs from '@tauri-apps/plugin-fs';
+import { BaseDirectory } from '@tauri-apps/plugin-fs';
+import { useExportMessagesFromInbox } from '@shinkai_network/shinkai-node-state/v2/mutations/exportMessagesFromInbox/useExportMessagesFromInbox';
+import { ExportInboxMessagesFormat } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { memo } from 'react';
 import { Link, useParams } from 'react-router';
 
@@ -45,6 +56,14 @@ import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import ProviderIcon from '../ais/provider-icon';
+import { toast } from 'sonner';
+
+function sanitizeFileName(name: string): string {
+  let sanitized = name.replace(/[^a-zA-Z0-9_]/g, '_');
+  sanitized = sanitized.replace(/_+/g, '_');
+  sanitized = sanitized.replace(/^_+|_+$/g, '');
+  return sanitized || 'chat';
+}
 
 const ConversationHeaderWithInboxId = () => {
   const currentInbox = useGetCurrentInbox();
@@ -86,9 +105,44 @@ const ConversationHeaderWithInboxId = () => {
     (provider) => provider.id === selectedAgent?.llm_provider_id,
   );
 
+  const { mutateAsync: exportMessages } = useExportMessagesFromInbox({
+    onSuccess: async (response, variables) => {
+      const sanitizedName = sanitizeFileName(
+        currentInbox?.custom_name || inboxId,
+      );
+      const file = new Blob([response ?? ''], {
+        type: 'application/octet-stream',
+      });
+      const arrayBuffer = await file.arrayBuffer();
+      const content = new Uint8Array(arrayBuffer);
+
+      const extension = variables.format.toLowerCase();
+      const savePath = await save({
+        defaultPath: `${sanitizedName}.${extension}`,
+        filters: [{ name: `${variables.format} File`, extensions: [extension] }],
+      });
+
+      if (!savePath) {
+        toast.info('File saving cancelled');
+        return;
+      }
+
+      await fs.writeFile(savePath, content, {
+        baseDir: BaseDirectory.Download,
+      });
+
+      toast.success('Chat exported successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to export chat', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+  });
+
   return (
     <div className="border-official-gray-780 flex h-[58px] items-center justify-between border-b px-4 py-2">
-      <div className="flex w-full items-center gap-2">
+      <div className="flex flex-1 items-center gap-2">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -404,6 +458,45 @@ const ConversationHeaderWithInboxId = () => {
             currentInbox?.custom_name || currentInbox?.inbox_id
           )}
         </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <div
+              className={cn(
+                buttonVariants({ variant: 'tertiary', size: 'icon' }),
+                'border-0 hover:bg-gray-500/40',
+              )}
+              onClick={(e) => e.stopPropagation()}
+              role="button"
+              tabIndex={0}
+            >
+              <span className="sr-only">{t('common.moreOptions')}</span>
+              <DotsVerticalIcon className="text-gray-100" />
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="w-[160px] border bg-gray-500 px-2.5 py-2"
+          >
+            {[ExportInboxMessagesFormat.CSV, ExportInboxMessagesFormat.JSON, ExportInboxMessagesFormat.TXT].map((format) => (
+              <DropdownMenuItem
+                key={format}
+                onClick={async () => {
+                  await exportMessages({
+                    inbox_name: inboxId,
+                    format,
+                    nodeAddress: auth?.node_address ?? '',
+                    token: auth?.api_v2_key ?? '',
+                  });
+                }}
+              >
+                <DownloadIcon className="mr-3 h-4 w-4" />
+                Export as {format}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
