@@ -315,3 +315,12 @@ export type ForkJobMessagesRequest = {
 export type ForkJobMessagesResponse = {
   job_id: string;
 };
+
+export type ExportInboxMessagesFormat = 'csv' | 'json' | 'txt';
+
+export type ExportMessagesFromInboxRequest = {
+  inbox_name: string;
+  format: ExportInboxMessagesFormat;
+};
+
+export type ExportMessagesFromInboxResponse = Blob;
