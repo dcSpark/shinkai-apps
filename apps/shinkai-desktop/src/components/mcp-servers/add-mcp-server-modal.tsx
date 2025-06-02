@@ -178,9 +178,9 @@ export const AddMcpServerModal = ({
       setIsSubmitting(false);
       form.reset();
     },
-    onError: (error: Error) => {
+    onError: (error) => {
       toast.error(t('mcpServers.addFailed'), {
-        description: error?.message,
+        description: error.response?.data?.message ?? error.message,
       });
       setIsSubmitting(false);
     },

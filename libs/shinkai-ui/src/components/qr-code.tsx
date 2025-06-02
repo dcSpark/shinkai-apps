@@ -1,7 +1,7 @@
 import { DownloadIcon } from '@radix-ui/react-icons';
 import { Check } from 'lucide-react';
 import React, { useState } from 'react';
-import  { type IProps, QRCode as ReactQRCode  } from 'react-qrcode-logo';
+import { type IProps, QRCode as ReactQRCode } from 'react-qrcode-logo';
 
 import shinkaiLogo from '../assets/images/app-icon.png';
 import { Button } from './button';

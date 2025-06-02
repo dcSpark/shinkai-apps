@@ -21,6 +21,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  MarkdownText,
   Switch,
   Tooltip,
   TooltipContent,
@@ -138,7 +139,7 @@ export const McpServerCard = ({
                   {t('mcpServers.viewAvailableTools')}
                 </TooltipContent>
               </Tooltip>
-              <DialogContent className="sm:max-w-xl" showCloseButton>
+              <DialogContent className="sm:max-w-3xl" showCloseButton>
                 <DialogHeader>
                   <DialogTitle>
                     {t('mcpServers.toolsFor', { name: server.name })}
@@ -152,59 +153,64 @@ export const McpServerCard = ({
                     <ul className="space-y-3">
                       {mcpServerTools.map((tool) => (
                         <li
-                          className="border-official-gray-780 bg-official-gray-900 rounded-lg border p-3 py-2.5 text-sm"
+                          className="border-official-gray-780 rounded-lg border p-3 py-2.5 text-sm"
                           key={tool.id}
+                          style={{
+                            fontSize: '14px',
+                          }}
                         >
-                          <div>
-                            {tool.tool_router_key ? (
-                              <Link
-                                className="text-white hover:underline"
-                                onClick={() => setIsToolsDialogOpen(false)}
-                                to={`/tools/${tool.tool_router_key}`}
-                              >
-                                {getToolDisplayName(tool.name)}
-                              </Link>
-                            ) : (
-                              <span className="text-white">
-                                {getToolDisplayName(tool.name)}
-                              </span>
-                            )}
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-2 text-base font-medium">
+                              <ToolsIcon className="h-4 w-4" />
+
+                              {tool.tool_router_key ? (
+                                <Link
+                                  className="text-white hover:underline"
+                                  onClick={() => setIsToolsDialogOpen(false)}
+                                  to={`/tools/${tool.tool_router_key}`}
+                                >
+                                  {getToolDisplayName(tool.name)}
+                                </Link>
+                              ) : (
+                                <span className="text-white">
+                                  {getToolDisplayName(tool.name)}
+                                </span>
+                              )}
+                            </div>
                             {tool.description && (
-                              <p className="text-official-gray-400 text-sm whitespace-pre-wrap">
-                                {tool.description}
-                              </p>
+                              <MarkdownText
+                                className="text-official-gray-400"
+                                content={tool.description}
+                              />
                             )}
                           </div>
                           {Object.keys((tool.input_args || {}).properties || {})
                             .length > 0 && (
                             <Collapsible>
-                              <CollapsibleTrigger className="text-official-gray-400 mt-1 flex w-full cursor-pointer items-center justify-between py-1 text-left underline hover:text-white">
-                                <span className="text-xs">
+                              <CollapsibleTrigger className="text-official-gray-400 bg-official-gray-900 mt-2 flex w-full cursor-pointer items-center justify-between rounded-lg p-2 text-left hover:text-white [&[data-state=open]]:rounded-b-none [&[data-state=open]>svg]:rotate-180">
+                                <span className="text-sm">
                                   View Input Parameters
                                 </span>
                                 <ChevronDown className="ml-auto size-4" />
                               </CollapsibleTrigger>
-                              <CollapsibleContent className="pt-0">
-                                <div className="grid gap-2 rounded-lg p-3 py-1">
+                              <CollapsibleContent className="bg-official-gray-900 rounded-b-lg p-1 pt-0">
+                                <ul className="grid list-disc gap-2 rounded-lg px-1 py-1 pl-6">
                                   {Object.keys(
                                     (tool.input_args || {}).properties || {},
                                   ).map((key) => (
-                                    <div
-                                      className="flex flex-col gap-0.5"
-                                      key={key}
-                                    >
-                                      <span className="text-sm font-medium text-white">
+                                    <li className="" key={key}>
+                                      <span className="mr-2 text-sm text-white">
                                         {key}
                                       </span>
-                                      <span className="text-official-gray-400 text-xs">
+                                      <span className="text-official-gray-400 text-sm">
                                         {
                                           tool.input_args?.properties?.[key]
                                             ?.description
                                         }
                                       </span>
-                                    </div>
+                                    </li>
                                   ))}
-                                </div>
+                                </ul>
                               </CollapsibleContent>
                             </Collapsible>
                           )}
