@@ -6,11 +6,12 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type APIError } from '../../types';
 import { type AddMcpServerInput } from './types';
 import { addMcpServer } from './index';
 
 export const useAddMcpServer = (
-  options?: UseMutationOptions<McpServer, Error, AddMcpServerInput>,
+  options?: UseMutationOptions<McpServer, APIError, AddMcpServerInput>,
 ) => {
   const queryClient = useQueryClient();
 
