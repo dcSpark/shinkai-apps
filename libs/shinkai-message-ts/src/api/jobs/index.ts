@@ -11,6 +11,8 @@ import {
   type CreateJobResponse,
   type ForkJobMessagesRequest,
   type ForkJobMessagesResponse,
+  type ExportMessagesFromInboxRequest,
+  type ExportMessagesFromInboxResponse,
   type GetAllAgentInboxesRequest,
   type GetAllInboxesResponse,
   type GetAllInboxesWithPaginationRequest,
@@ -580,4 +582,20 @@ export const forkJobMessages = async (
     },
   );
   return response.data as ForkJobMessagesResponse;
+};
+
+export const exportMessagesFromInbox = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: ExportMessagesFromInboxRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/export_messages_from_inbox'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'blob',
+    },
+  );
+  return response.data as ExportMessagesFromInboxResponse;
 };
