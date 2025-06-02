@@ -1,16 +1,16 @@
 {
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit"
-    },
-    "editor.tabSize": 2,
-    "json.schemas": [
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.tabSize": 2,
+  "json.schemas": [
     {
       "fileMatch": ["manifest.json"],
       "url": "https://json.schemastore.org/chrome-manifest.json"
     }
   ],
-  "rust-analyzer.linkedProjects": [
-    "apps/shinkai-desktop/src-tauri/Cargo.toml"
-  ],
-  "rust-analyzer.check.command": "check"
+  "rust-analyzer.linkedProjects": ["apps/shinkai-desktop/src-tauri/Cargo.toml"],
+  "rust-analyzer.check.command": "check",
+  "tailwindCSS.classFunctions": ["cva", "cn"],
+  "tailwindCSS.experimental.configFile": "libs/shinkai-ui/src/styles/styles.css"
 }
