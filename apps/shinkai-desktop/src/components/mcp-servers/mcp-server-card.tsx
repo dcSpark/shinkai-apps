@@ -138,39 +138,44 @@ export const McpServerCard = ({
                   {t('mcpServers.viewAvailableTools')}
                 </TooltipContent>
               </Tooltip>
-              <DialogContent className="sm:max-w-xl" showCloseButton>
-                <DialogHeader>
-                  <DialogTitle>
+              <DialogContent
+                className="w-[580px] space-y-6 rounded-xl bg-official-gray-950 text-official-gray-100 shadow-xl"
+                showCloseButton
+              >
+                <DialogHeader className="p-0">
+                  <DialogTitle className="text-lg font-semibold">
                     {t('mcpServers.toolsFor', { name: server.name })}
                   </DialogTitle>
-                  <DialogDescription>
+                  <DialogDescription className="text-base text-official-gray-300">
                     {t('mcpServers.listOfToolsAvailableFromThisMcpServer')}
                   </DialogDescription>
                 </DialogHeader>
-                <div className="max-h-[60vh] overflow-y-auto py-1">
+                <div className="max-h-[60vh] overflow-y-auto">
                   {mcpServerTools && mcpServerTools.length > 0 ? (
-                    <ul className="space-y-3">
+                    <ul className="list-disc list-outside space-y-6 pl-5">
                       {mcpServerTools.map((tool) => (
                         <li
-                          className="border-official-gray-780 bg-official-gray-900 rounded-lg border p-3 py-2.5 text-sm"
+                          className="border-b border-official-gray-780 pb-4 last:border-none"
                           key={tool.id}
                         >
-                          <div>
+                          <div className="space-y-1">
                             {tool.tool_router_key ? (
                               <Link
                                 className="text-white hover:underline"
                                 onClick={() => setIsToolsDialogOpen(false)}
                                 to={`/tools/${tool.tool_router_key}`}
                               >
-                                {getToolDisplayName(tool.name)}
+                                <h3 className="text-base font-semibold">
+                                  {getToolDisplayName(tool.name)}
+                                </h3>
                               </Link>
                             ) : (
-                              <span className="text-white">
+                              <h3 className="text-base font-semibold text-white">
                                 {getToolDisplayName(tool.name)}
-                              </span>
+                              </h3>
                             )}
                             {tool.description && (
-                              <p className="text-official-gray-400 text-sm whitespace-pre-wrap">
+                              <p className="text-official-gray-400 whitespace-pre-wrap">
                                 {tool.description}
                               </p>
                             )}
@@ -178,28 +183,22 @@ export const McpServerCard = ({
                           {Object.keys((tool.input_args || {}).properties || {})
                             .length > 0 && (
                             <Collapsible>
-                              <CollapsibleTrigger className="text-official-gray-400 mt-1 flex w-full cursor-pointer items-center justify-between py-1 text-left underline hover:text-white">
-                                <span className="text-xs">
-                                  View Input Parameters
-                                </span>
-                                <ChevronDown className="ml-auto size-4" />
-                              </CollapsibleTrigger>
-                              <CollapsibleContent className="pt-0">
-                                <div className="grid gap-2 rounded-lg p-3 py-1">
+                            <CollapsibleTrigger className="group mt-3 flex w-full cursor-pointer items-center justify-between text-sm text-white underline">
+                                <span>View input parameters</span>
+                                <ChevronDown className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                            </CollapsibleTrigger>
+                              <CollapsibleContent className="pt-2">
+                                <div className="bg-official-gray-900 grid gap-2 rounded-lg p-3">
                                   {Object.keys(
                                     (tool.input_args || {}).properties || {},
                                   ).map((key) => (
-                                    <div
-                                      className="flex flex-col gap-0.5"
-                                      key={key}
-                                    >
+                                    <div className="grid grid-cols-[auto_1fr] gap-x-2" key={key}>
                                       <span className="text-sm font-medium text-white">
                                         {key}
                                       </span>
                                       <span className="text-official-gray-400 text-xs">
                                         {
-                                          tool.input_args?.properties?.[key]
-                                            ?.description
+                                          tool.input_args?.properties?.[key]?.description
                                         }
                                       </span>
                                     </div>
@@ -212,14 +211,14 @@ export const McpServerCard = ({
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-sm text-gray-400">
+                    <p className="text-official-gray-300 text-base">
                       {t('mcpServers.noToolsAvailableForThisServer')}
                     </p>
                   )}
                 </div>
                 <DialogFooter>
                   <DialogClose asChild>
-                    <Button size="md" type="button" variant="outline">
+                    <Button className="mt-2 text-base" size="lg" type="button" variant="outline">
                       Close
                     </Button>
                   </DialogClose>
