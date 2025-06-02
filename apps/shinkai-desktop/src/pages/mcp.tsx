@@ -109,6 +109,29 @@ export const McpRegistryPage = () => {
               ? 'Connect to an MCP server to instantly tap into external data sources and tools—like live weather updates, stock prices, or translation services—without building custom integrations.\nThis expands your system\'s capabilities with real-time information and easy access to new resources as your needs grow.'
               : 'Expose your AI Tools through MCP to enable seamless integration with other MCP Clients \nand expand their capabilities.'}
           </p>
+          {selectedTab === 'mcp_servers' && (
+            <p className="text-official-gray-400 text-sm">
+              You can find helpful MCPs to connect with Shinkai at{' '}
+              <a
+                href="http://smithery.ai"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                smithery.ai
+              </a>{' '}
+              and{' '}
+              <a
+                href="http://composio.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                composio.dev
+              </a>
+              .
+            </p>
+          )}
         </div>
         <TabsContent value="mcp_servers">
           <McpServers />
