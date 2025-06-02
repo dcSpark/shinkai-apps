@@ -534,18 +534,15 @@ export const MessageBase = ({
                   <div className="mt-4 flex flex-col items-start rounded-lg bg-gray-950 p-6 shadow-lg">
                     <p className="text-em-base mb-3 font-semibold text-white">
                       <div className="flex items-center">
-                        <ToolsIcon className="mr-3 h-6 w-6 text-blue-400" />
+                        <ToolsIcon className="text-brand mr-3 size-4" />
                         {t('tools.setupRequired')}
                       </div>
                     </p>
-                    <p className="text-em-sm mb-5 leading-relaxed text-white">
+                    <p className="text-em-base text-official-gray-400 mb-5 leading-relaxed">
                       {t('tools.setupDescription')}
                     </p>
                     <Link to={`/tools/${configDeepLinkToolRouterKey}`}>
-                      <Button
-                        className="group flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white transition-all duration-300 hover:bg-blue-700"
-                        variant="default"
-                      >
+                      <Button variant="default" size="sm">
                         <ToolsIcon className="h-4 w-4 transition-transform group-hover:rotate-12" />
                         {t('tools.setupNow')}
                       </Button>
