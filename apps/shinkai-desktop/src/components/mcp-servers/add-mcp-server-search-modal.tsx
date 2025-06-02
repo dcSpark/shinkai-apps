@@ -47,9 +47,14 @@ export const AddMcpServerSearchModal = ({
         onSuccess(data);
         setSearch('');
       },
-      onError: (error: Error) => {
+      onError: (error: any) => {
+        // Try to extract a detailed error message from the response, fallback to generic message
+        const detailedMessage =
+          error?.response?.data?.message ||
+          error?.message ||
+          'Unknown error occurred';
         toast.error('Failed to fetch MCP Server', {
-          description: error?.message,
+          description: detailedMessage,
         });
       },
     });
