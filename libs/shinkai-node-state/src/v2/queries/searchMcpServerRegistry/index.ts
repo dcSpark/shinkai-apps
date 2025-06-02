@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/tauri';
+import { invoke } from '@tauri-apps/api/core';
 import type {
   SearchMcpServerRegistryInput,
   SearchMcpServerRegistryResponse,
@@ -29,5 +29,10 @@ export const searchMcpServerRegistry = async (
     throw new Error(`Failed to search MCP servers: ${response.status}`);
   }
 
-  return JSON.parse(response.body) as SearchMcpServerRegistryResponse;
+  const parsedResponse = JSON.parse(response.body) as SearchMcpServerRegistryResponse;
+  const filteredServers = parsedResponse.servers.filter(server => server.qualifiedName.includes('/'));
+  return {
+    ...parsedResponse,
+    servers: filteredServers,
+  };
 };
