@@ -21,6 +21,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  MarkdownText,
   Switch,
   Tooltip,
   TooltipContent,
@@ -154,6 +155,9 @@ export const McpServerCard = ({
                         <li
                           className="border-official-gray-780 rounded-lg border p-3 py-2.5 text-sm"
                           key={tool.id}
+                          style={{
+                            fontSize: '14px',
+                          }}
                         >
                           <div className="flex flex-col gap-2">
                             <div className="flex items-center gap-2 text-base font-medium">
@@ -174,9 +178,10 @@ export const McpServerCard = ({
                               )}
                             </div>
                             {tool.description && (
-                              <p className="text-official-gray-400 text-sm whitespace-pre-wrap">
-                                {tool.description}
-                              </p>
+                              <MarkdownText
+                                className="text-official-gray-400"
+                                content={tool.description}
+                              />
                             )}
                           </div>
                           {Object.keys((tool.input_args || {}).properties || {})
