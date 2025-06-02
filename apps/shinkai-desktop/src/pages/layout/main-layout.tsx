@@ -125,7 +125,7 @@ const NavLink = ({
           {sidebarExpanded && (
             <motion.div
               animate="show"
-              className="flex items-center gap-3 overflow-hidden whitespace-nowrap text-xs"
+              className="flex items-center gap-3 overflow-hidden text-xs whitespace-nowrap"
               exit="hidden"
               initial="hidden"
               variants={showAnimation}
@@ -160,7 +160,7 @@ const NavLink = ({
         {(sidebarExpanded || isPopover) && (
           <motion.div
             animate="show"
-            className="overflow-hidden whitespace-nowrap text-sm"
+            className="overflow-hidden text-sm whitespace-nowrap"
             exit="hidden"
             initial="hidden"
             variants={showAnimation}
@@ -295,7 +295,7 @@ export function MainNav() {
         width: sidebarExpanded ? '230px' : '70px',
         opacity: 1,
       }}
-      className="bg-official-gray-900 border-official-gray-850 relative z-30 flex w-auto shrink-0 flex-col gap-2 overflow-y-auto overflow-x-hidden border-r px-2 py-6 pt-9 shadow-xl"
+      className="bg-official-gray-900 border-official-gray-850 relative z-30 flex w-auto shrink-0 flex-col gap-2 overflow-x-hidden overflow-y-auto border-r px-2 py-6 pt-9 shadow-xl"
       exit={{ width: 0, opacity: 0 }}
       initial={{ width: 0, opacity: 0 }}
       transition={{ duration: 0.3 }}
