@@ -331,6 +331,10 @@ const EmptyMessage = () => {
       const localFilesCount = (variables.selectedVRFiles ?? [])?.length;
       const localFoldersCount = (variables.selectedVRFolders ?? [])?.length;
 
+      const agentSelected = agents?.find(
+        (agent) => agent.agent_id === variables.llmProvider,
+      );
+
       if (localFilesCount > 0 || localFoldersCount > 0) {
         captureAnalyticEvent('Ask Local Files', {
           foldersCount: localFoldersCount,
@@ -341,8 +345,17 @@ const EmptyMessage = () => {
         captureAnalyticEvent('AI Chat with Files', {
           filesCount: files.length,
         });
-      } else {
-        captureAnalyticEvent('AI Chat', undefined);
+      }
+      if (!agentSelected) {
+        captureAnalyticEvent('Chat with AI Model', undefined);
+      }
+      if (agentSelected && agentSelected.edited === false) {
+        captureAnalyticEvent('Chat with Pre-built Agents', {
+          agentName: agentSelected.name,
+        });
+      }
+      if (agentSelected && agentSelected.edited === true) {
+        captureAnalyticEvent('Chat with Custom Agents', undefined);
       }
     },
   });
@@ -792,7 +805,7 @@ const EmptyMessage = () => {
                                   </div>
                                   <button
                                     className={cn(
-                                      'bg-official-gray-850 hover:bg-official-gray-800 text-gray-80 border-official-gray-780 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
+                                      'bg-official-gray-850 hover:bg-official-gray-800 text-gray-80 border-official-gray-780 absolute -top-2 -right-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
                                     )}
                                     onClick={(event) => {
                                       event.stopPropagation();
@@ -864,7 +877,7 @@ const EmptyMessage = () => {
           <motion.div
             animate={{ opacity: 1 }}
             className={cn(
-              'bg-official-gray-850 absolute inset-x-2 bottom-1.5 z-0 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pb-1 pt-2.5 shadow-white',
+              'bg-official-gray-850 absolute inset-x-2 bottom-1.5 z-0 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pt-2.5 pb-1 shadow-white',
             )}
             exit={{ opacity: 0 }}
             initial={{ opacity: 0 }}
@@ -949,7 +962,7 @@ const EmptyMessage = () => {
         <div className="mx-auto grid w-full max-w-6xl grid-cols-4 justify-center gap-3">
           {PROMPT_SUGGESTIONS.map((suggestion) => (
             <Badge
-              className="hover:bg-official-gray-900 hover:text-official-gray-100 text-official-gray-200 cursor-pointer justify-between text-balance rounded-xl px-2 py-1.5 pl-4 text-left text-sm font-normal normal-case transition-colors"
+              className="hover:bg-official-gray-900 hover:text-official-gray-100 text-official-gray-200 cursor-pointer justify-between rounded-xl px-2 py-1.5 pl-4 text-left text-sm font-normal text-balance normal-case transition-colors"
               key={suggestion.text}
               onClick={() => {
                 chatForm.setValue('message', suggestion.prompt);
@@ -1119,7 +1132,7 @@ const Card: React.FC<CardProps> = ({
           <h3 className="text-left text-base font-medium capitalize">
             {title}
           </h3>
-          <p className="text-official-gray-400 line-clamp-2 h-10 text-balance text-left text-sm">
+          <p className="text-official-gray-400 line-clamp-2 h-10 text-left text-sm text-balance">
             {description || 'No description available'}
           </p>
         </div>
@@ -1178,7 +1191,7 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
       )}
     >
       <div className="animate-fade-in animate-delay-100 text-left">
-        <h2 className="text-balance text-lg font-medium tracking-normal">
+        <h2 className="text-lg font-medium tracking-normal text-balance">
           {title}
         </h2>
         {description && (

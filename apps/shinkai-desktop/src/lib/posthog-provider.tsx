@@ -53,28 +53,53 @@ export const AnalyticsProvider = ({
 };
 
 export type AnalyticEventName =
-  | 'AI Chat'
+  | 'Chat with Pre-built Agents'
+  | 'Chat with Custom Agents'
+  | 'Agent Created'
+  | 'Agent Imported'
+  | 'Custom Tool Created'
+  | 'MCP Server Added'
+  | 'Chat with AI Model'
+  | 'Chat with Files'
+  | 'Scheduled Task Created'
   | 'AI Chat with Files'
   | 'Upload Files'
-  | 'Ask Local Files';
+  | 'Ask Local Files'
+  | 'Edit and Regenerate Message';
 
 export type AnalyticEventProps<TEventName extends AnalyticEventName> =
-  TEventName extends 'AI Chat'
-    ? undefined
-    : TEventName extends 'AI Chat with Files'
-      ? {
-          filesCount: number;
-        }
-      : TEventName extends 'Upload Files'
-        ? {
-            filesCount: number;
-          }
-        : TEventName extends 'Ask Local Files'
-          ? {
-              foldersCount: number;
-              filesCount: number;
-            }
-          : undefined;
+  TEventName extends 'Chat with Pre-built Agents'
+    ? {
+        agentName: string;
+      }
+    : TEventName extends 'Chat with Custom Agents'
+      ? undefined
+      : TEventName extends 'Agent Created'
+        ? undefined
+        : TEventName extends 'Agent Imported'
+          ? undefined
+          : TEventName extends 'Custom Tool Created'
+            ? undefined
+            : TEventName extends 'MCP Server Added'
+              ? undefined
+              : TEventName extends 'Chat with AI Model'
+                ? undefined
+                : TEventName extends 'AI Chat with Files'
+                  ? {
+                      filesCount: number;
+                    }
+                  : TEventName extends 'Upload Files'
+                    ? {
+                        filesCount: number;
+                      }
+                    : TEventName extends 'Ask Local Files'
+                      ? {
+                          foldersCount: number;
+                          filesCount: number;
+                        }
+                      : TEventName extends 'Edit and Regenerate Message'
+                        ? undefined
+                        : undefined;
 
 export const useAnalytics = () => {
   const posthog = usePostHog();

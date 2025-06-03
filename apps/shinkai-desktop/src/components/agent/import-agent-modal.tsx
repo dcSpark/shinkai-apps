@@ -27,6 +27,7 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 
 const importAgentFormSchema = z.object({
@@ -40,6 +41,7 @@ export default function ImportAgentModal() {
   const navigate = useNavigate();
 
   const [isImportModalOpen, setImportModalOpen] = useState(false);
+  const { captureAnalyticEvent } = useAnalytics();
 
   const importAgentForm = useForm<ImportAgentFormSchema>({
     resolver: zodResolver(importAgentFormSchema),
@@ -56,6 +58,7 @@ export default function ImportAgentModal() {
           },
         },
       });
+      captureAnalyticEvent('Agent Imported', undefined);
     },
     onError: (error) => {
       toast.error('Failed to import agent', {
@@ -102,7 +105,7 @@ export default function ImportAgentModal() {
         }}
       >
         <Button
-          className="absolute right-4 top-6"
+          className="absolute top-6 right-4"
           onClick={() => {
             setImportModalOpen(false);
           }}
