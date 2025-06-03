@@ -188,6 +188,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
               </DialogTitle>
             </DialogHeader>
             <div className="mt-8 space-y-3">
+              {/* Temporarily hide Multi-Party Computation Wallet option
               <Button
                 className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
                 onClick={() =>
@@ -206,6 +207,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                   </div>
                 </div>
               </Button>
+              */}
               <Button
                 className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
                 onClick={() =>
