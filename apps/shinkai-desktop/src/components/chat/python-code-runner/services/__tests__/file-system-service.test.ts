@@ -1,4 +1,5 @@
-import { PyodideInterface } from 'pyodide';
+import { type PyodideInterface } from 'pyodide';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { PyodideFileSystemService } from '../file-system-service';
 
@@ -6,28 +7,28 @@ type FSCallback = (error: Error | null) => void;
 type MockStats = { [key: string]: { mode: number } };
 
 describe('PyodideFileSystemService', () => {
-  let mockPyodide: jest.Mocked<PyodideInterface>;
+  let mockPyodide: PyodideInterface;
   let service: PyodideFileSystemService;
 
   beforeEach(() => {
     // Create mock Pyodide instance
     mockPyodide = {
       FS: {
-        mount: jest.fn(),
-        readdir: jest.fn(),
-        stat: jest.fn(),
-        isDir: jest.fn(),
-        readFile: jest.fn(),
-        writeFile: jest.fn(),
-        unlink: jest.fn(),
-        mkdir: jest.fn(),
-        rmdir: jest.fn(),
-        syncfs: jest.fn(),
+        mount: vi.fn(),
+        readdir: vi.fn(),
+        stat: vi.fn(),
+        isDir: vi.fn(),
+        readFile: vi.fn(),
+        writeFile: vi.fn(),
+        unlink: vi.fn(),
+        mkdir: vi.fn(),
+        rmdir: vi.fn(),
+        syncfs: vi.fn(),
         filesystems: {
           IDBFS: 'IDBFS',
         },
       },
-    } as unknown as jest.Mocked<PyodideInterface>;
+    } as unknown as PyodideInterface;
 
     service = new PyodideFileSystemService(mockPyodide);
   });

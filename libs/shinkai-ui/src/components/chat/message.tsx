@@ -1,11 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  ToolArgs,
+  type ToolArgs,
   ToolStatusType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { Artifact } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
-import { FormattedMessage } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import {
+  type Artifact,
+  type FormattedMessage,
+} from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { format } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Edit3, Loader2, RotateCcw, XCircle } from 'lucide-react';
@@ -212,8 +214,8 @@ const MessageBase = ({
         className={cn(
           'relative flex flex-row space-x-2',
           message.role === 'user' &&
-            'ml-auto mr-0 flex-row-reverse space-x-reverse',
-          message.role === 'assistant' && 'ml-0 mr-auto flex-row items-end',
+            'mr-0 ml-auto flex-row-reverse space-x-reverse',
+          message.role === 'assistant' && 'mr-auto ml-0 flex-row items-end',
         )}
       >
         <a href={`#${messageId}`}>
@@ -221,7 +223,7 @@ const MessageBase = ({
             {message.role === 'assistant' ? (
               <img alt="Shinkai AI" src={appIcon} />
             ) : (
-              <AvatarFallback className="h-8 w-8 bg-[#313336] text-xs text-[#b0b0b0]">
+              <AvatarFallback className="bg-official-gray-850 text-official-gray-300 h-8 w-8 text-xs">
                 U
               </AvatarFallback>
             )}
@@ -292,7 +294,7 @@ const MessageBase = ({
                   editing && 'w-full py-1',
                   message.role === 'assistant' &&
                     isPending &&
-                    'relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l before:from-gray-200 before:to-gray-200/10',
+                    'relative overflow-hidden pb-4 before:absolute before:right-0 before:bottom-0 before:left-0 before:h-10 before:animate-pulse before:bg-gradient-to-l before:from-gray-200 before:to-gray-200/10',
                 )}
               >
                 {message.role === 'assistant' &&
@@ -325,7 +327,7 @@ const MessageBase = ({
                                 toolRouterKey={tool.toolRouterKey}
                               />
                             </AccordionTrigger>
-                            <AccordionContent className="bg-gray-450 flex flex-col gap-1 overflow-x-scroll rounded-b-lg px-3 pb-3 pt-2 text-xs">
+                            <AccordionContent className="bg-gray-450 flex flex-col gap-1 overflow-x-scroll rounded-b-lg px-3 pt-2 pb-3 text-xs">
                               {Object.keys(tool.args).length > 0 && (
                                 <span className="font-medium text-white">
                                   {tool.name}(
@@ -340,7 +342,7 @@ const MessageBase = ({
                               {tool.result && (
                                 <div>
                                   <span>Response:</span>
-                                  <span className="text-gray-80 break-all font-mono">
+                                  <span className="text-gray-80 font-mono break-all">
                                     <PrettyJsonPrint json={tool.result} />
                                   </span>
                                 </div>
@@ -370,7 +372,7 @@ const MessageBase = ({
                 {message.role === 'assistant' &&
                   message.status.type === 'running' &&
                   message.content === '' && (
-                    <div className="whitespace-pre-line pt-1.5">
+                    <div className="pt-1.5 whitespace-pre-line">
                       <DotsLoader />
                     </div>
                   )}
@@ -379,7 +381,7 @@ const MessageBase = ({
                 {/*)}*/}
                 {message.role === 'user' && !!message.attachments.length && (
                   <FileList
-                    className="mt-2 min-w-[200px] max-w-[70vw]"
+                    className="mt-2 max-w-[70vw] min-w-[200px]"
                     files={message.attachments}
                   />
                 )}

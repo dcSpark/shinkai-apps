@@ -1,5 +1,5 @@
-import { FormProps } from '@rjsf/core';
-import { FieldProps } from '@rjsf/utils';
+import { type FormProps } from '@rjsf/core';
+import { type FieldProps } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { useUploadPlaygroundToolFiles } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadPlaygroundToolFiles/useUploadPlaygroundToolFiles';
 import { useGetShinkaiFileProtocol } from '@shinkai_network/shinkai-node-state/v2/queries/getShinkaiFileProtocol/useGetShinkaiFileProtocol';
@@ -21,7 +21,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AppWindow, LoaderIcon, TerminalIcon } from 'lucide-react';
-import { memo, MutableRefObject, useEffect, useRef, useState } from 'react';
+import { memo, type RefObject, useEffect, useRef, useState } from 'react';
 
 import { useAuth } from '../../../store/auth';
 import { ExecutionFiles } from '../../tools/components/execution-files';
@@ -44,7 +44,7 @@ function ExecutionPanelBase({
   isExecutionToolCodeError: boolean;
   isExecutionToolCodePending: boolean;
   executionToolCodeError?: string;
-  mountTimestampRef: MutableRefObject<Date>;
+  mountTimestampRef: RefObject<Date>;
   toolResultFiles: string[];
   handleRunCode: FormProps['onSubmit'];
   regenerateToolMetadata: () => void;
@@ -433,7 +433,7 @@ const ToolLogsBase = ({
         const logsFileText = await logsFile.text();
         setLogsFile(logsFileText);
       };
-      handleLogsFile();
+      void handleLogsFile();
     }
   }, [logsFileBlob]);
 

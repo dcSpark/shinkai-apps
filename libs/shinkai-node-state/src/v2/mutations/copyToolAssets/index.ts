@@ -1,6 +1,6 @@
 import { copyToolAssets as copyToolAssetsApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { CopyToolAssetsInput } from './types';
+import { type CopyToolAssetsInput } from './types';
 
 export const copyToolAssets = async ({
   nodeAddress,

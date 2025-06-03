@@ -1,9 +1,9 @@
 import { getShinkaiFreeModelQuota as getShinkaiFreeModelQuotaApi } from '@shinkai_network/shinkai-message-ts/api/general/index';
-import { GetShinkaiFreeModelQuotaResponse } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type GetShinkaiFreeModelQuotaResponse } from '@shinkai_network/shinkai-message-ts/api/general/types';
 
 import {
-  GetShinkaiFreeModelQuotaInput,
-  GetShinkaiFreeModelQuotaOutput,
+  type GetShinkaiFreeModelQuotaInput,
+  type GetShinkaiFreeModelQuotaOutput,
 } from './types';
 
 const TOKENS_PER_MESSAGE = 2000;

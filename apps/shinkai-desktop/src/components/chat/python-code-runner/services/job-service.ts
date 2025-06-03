@@ -1,7 +1,7 @@
-import type { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
+import  { type DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 
-import type { AddFileToInboxResponse, AddFileToJobRequest } from './__mocks__/shinkai-message-ts';
-import { FileSystemEntry, IFileSystemService } from './file-system-service';
+import  { type AddFileToInboxResponse, type AddFileToJobRequest } from './__mocks__/shinkai-message-ts';
+import { type FileSystemEntry, type IFileSystemService } from './file-system-service';
 
 export interface IJobService {
   syncJobFilesToIDBFS(contents: DirectoryContent[] | null): Promise<void>;
@@ -165,10 +165,14 @@ export class JobService implements IJobService {
         path: item.path,
       });
 
-      this.fileSystemService.writeFile(`/home/pyodide/${item.name}`, content);
-      console.log(`Synced file ${item.name} to IDBFS`);
+      const targetPath = `/home/pyodide/${item.path}`;
+      const dirOnly = targetPath.substring(0, targetPath.lastIndexOf('/'));
+      this.fileSystemService.ensureDirectory(dirOnly);
+
+      this.fileSystemService.writeFile(targetPath, content);
+      console.log(`Synced file ${item.path} to IDBFS`);
     } catch (error) {
-      console.error(`Failed to sync file ${item.name}:`, error);
+      console.error(`Failed to sync file ${item.path}:`, error);
       throw error;
     }
   }

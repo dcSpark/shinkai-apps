@@ -220,7 +220,7 @@ export function VectorFsActionBarPreview() {
                     isUpdatingJobScope && 'opacity-50',
                   )}
                   disabled={isUpdatingJobScope}
-                  onClick={() => {
+                  onClick={async () => {
                     const filteredFolders = (
                       jobScope?.vector_fs_folders ?? []
                     ).filter((folder) => folder !== item.name);
@@ -228,7 +228,7 @@ export function VectorFsActionBarPreview() {
                       jobScope?.vector_fs_items ?? []
                     ).filter((file) => file !== item.name);
 
-                    updateJobScope({
+                    await updateJobScope({
                       jobId: extractJobIdFromInbox(inboxId),
                       nodeAddress: auth?.node_address ?? '',
                       token: auth?.api_v2_key ?? '',

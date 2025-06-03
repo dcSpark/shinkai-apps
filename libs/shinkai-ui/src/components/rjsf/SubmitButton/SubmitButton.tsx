@@ -1,9 +1,9 @@
 import {
-  FormContextType,
+  type FormContextType,
   getSubmitButtonOptions,
-  RJSFSchema,
-  StrictRJSFSchema,
-  SubmitButtonProps,
+  type RJSFSchema,
+  type StrictRJSFSchema,
+  type SubmitButtonProps,
 } from '@rjsf/utils';
 
 import { cn } from '../../../utils';

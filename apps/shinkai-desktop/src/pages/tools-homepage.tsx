@@ -1,6 +1,6 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useOpenToolInCodeEditor } from '@shinkai_network/shinkai-node-state/v2/mutations/openToolnCodeEditor/useOpenToolInCodeEditor';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetToolProtocols } from '@shinkai_network/shinkai-node-state/v2/queries/getToolProtocols/useGetToolProtocols';
@@ -40,8 +40,8 @@ import {
   StoreIcon,
   XIcon,
 } from 'lucide-react';
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
-import { UseFormReturn } from 'react-hook-form';
+import { memo, useEffect, useMemo, useState } from 'react';
+import { type UseFormReturn } from 'react-hook-form';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
 
@@ -55,7 +55,7 @@ import {
   usePlaygroundStore,
 } from '../components/playground-tool/context/playground-context';
 import {
-  CreateToolCodeFormSchema,
+  type CreateToolCodeFormSchema,
   useToolForm,
 } from '../components/playground-tool/hooks/use-tool-code';
 import { useToolFlow } from '../components/playground-tool/hooks/use-tool-flow';
@@ -80,9 +80,7 @@ export const ToolsHomepage = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const form = useToolForm();
-  const toolHomepageScrollPositionRef = usePlaygroundStore(
-    (state) => state.toolHomepageScrollPositionRef,
-  );
+
   const resetPlaygroundStore = usePlaygroundStore(
     (state) => state.resetPlaygroundStore,
   );
@@ -565,7 +563,7 @@ function ToolsHome({
                                     isLoading={isOpeningToolInCodeEditor}
                                     onClick={() => {
                                       if (!auth) return;
-                                      openToolInCodeEditor({
+                                      void openToolInCodeEditor({
                                         token: auth?.api_v2_key,
                                         language: form.watch('language'),
                                         nodeAddress: auth?.node_address,

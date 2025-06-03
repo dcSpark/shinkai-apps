@@ -1,8 +1,8 @@
-import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
-import { GetJobFolderNameResponse } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
-import { UseQueryOptions } from '@tanstack/react-query';
+import { type Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type GetJobFolderNameResponse } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { type UseQueryOptions } from '@tanstack/react-query';
 
-import { FunctionKeyV2 } from '../../constants';
+import { type FunctionKeyV2 } from '../../constants';
 
 export type GetJobFolderNameInput = Token & {
   nodeAddress: string;

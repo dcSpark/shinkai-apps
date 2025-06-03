@@ -1,6 +1,6 @@
 import {
-  WidgetToolType,
-  WsMessage,
+  type WidgetToolType,
+  type WsMessage,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import {
   FunctionKeyV2,
@@ -8,8 +8,8 @@ import {
   OPTIMISTIC_ASSISTANT_MESSAGE_ID,
 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import {
-  ChatConversationInfiniteData,
-  ToolCall,
+  type ChatConversationInfiniteData,
+  type ToolCall,
 } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
@@ -192,7 +192,7 @@ export const useWebSocketMessageSmooth = ({
             JSON.parse(parseData.message)?.body.unencrypted.internal_metadata
               .sender_subidentity !== auth.profile)
         ) {
-          queryClient.invalidateQueries({ queryKey: queryKey });
+          void queryClient.invalidateQueries({ queryKey: queryKey });
           return;
         }
 
@@ -202,9 +202,9 @@ export const useWebSocketMessageSmooth = ({
         if (parseData.metadata?.is_done === true) {
           smoothMessageRef.current.stopAnimation();
           if (smoothMessageRef.current.isTokenRemain()) {
-            smoothMessageRef.current.startAnimation(END_ANIMATION_SPEED);
+            void smoothMessageRef.current.startAnimation(END_ANIMATION_SPEED);
           }
-          queryClient.invalidateQueries({ queryKey: queryKey });
+          void queryClient.invalidateQueries({ queryKey: queryKey });
           isStreamingFinished.current = true;
           smoothMessageRef.current?.reset();
         }
@@ -212,7 +212,7 @@ export const useWebSocketMessageSmooth = ({
         smoothMessageRef.current.pushToQueue(parseData.message);
 
         if (!smoothMessageRef.current.isAnimationActive)
-          smoothMessageRef.current.startAnimation();
+          void smoothMessageRef.current.startAnimation();
       } catch (error) {
         console.error('Failed to parse ws message', error);
       }
@@ -317,7 +317,7 @@ export const useWebSocketMessage = ({
         }
 
         if (isAssistantMessage && !isStreamSupported.current) {
-          queryClient.invalidateQueries({ queryKey: queryKey });
+          void queryClient.invalidateQueries({ queryKey: queryKey });
           return;
         }
         isStreamSupported.current = false;
@@ -355,7 +355,7 @@ export const useWebSocketMessage = ({
         );
 
         if (parseData.metadata?.is_done === true) {
-          queryClient.invalidateQueries({ queryKey: queryKey });
+          void queryClient.invalidateQueries({ queryKey: queryKey });
           return;
         }
       } catch (error) {
@@ -429,7 +429,7 @@ export const useWebSocketTools = ({
             FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
             { inboxId: inboxId as string },
           ];
-          queryClient.invalidateQueries({ queryKey: paginationKey });
+          void queryClient.invalidateQueries({ queryKey: paginationKey });
           return;
         }
         if (

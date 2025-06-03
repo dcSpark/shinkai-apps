@@ -6,7 +6,7 @@ import {
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils';
 import {
-  UpdateInboxNameFormSchema,
+  type UpdateInboxNameFormSchema,
   updateInboxNameFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/inbox';
 import { useRemoveJob } from '@shinkai_network/shinkai-node-state/v2/mutations/removeJob/useRemoveJob';
@@ -190,7 +190,7 @@ const InboxMessageButtonBase = ({
       isJobInbox(inboxId) &&
       isJobLastMessage
     ) {
-      handleSendNotification(
+      void handleSendNotification(
         t('notifications.messageReceived.label'),
         t('notifications.messageReceived.description', {
           inboxName: inboxName,
@@ -314,7 +314,7 @@ function RemoveInboxMessageModal({
   const { mutateAsync: removeJob, isPending } = useRemoveJob({
     onSuccess: () => {
       onOpenChange(false);
-      navigate('/inboxes');
+      void navigate('/inboxes');
     },
     onError: (error) => {
       toast.error('Failed to remove chat', {
@@ -446,7 +446,7 @@ const ChatList = () => {
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+      void fetchNextPage();
     }
   }, [inView, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
@@ -463,7 +463,7 @@ const ChatList = () => {
             <button
               className="text-official-gray-300 flex size-8 items-center justify-center rounded-full hover:text-white"
               onClick={() => {
-                navigate(`/home`);
+                void navigate(`/home`);
               }}
             >
               <PlusIcon className="h-4 w-4" />
@@ -560,7 +560,7 @@ const AgentInboxList = ({ agentId }: { agentId?: string }) => {
             <button
               className="text-official-gray-300 flex size-8 items-center justify-center rounded-full hover:text-white"
               onClick={() => {
-                navigate(`/home`, {
+                void navigate(`/home`, {
                   state: { agentName: agentId },
                 });
               }}
@@ -648,7 +648,7 @@ const AgentList = ({
             <button
               className="text-official-gray-300 flex size-8 items-center justify-center rounded-full hover:text-white"
               onClick={() => {
-                navigate(`/add-agent`);
+                void navigate(`/add-agent`);
               }}
             >
               <PlusIcon className="h-4 w-4" />
@@ -690,7 +690,7 @@ const AgentList = ({
                   <button
                     className="inline-flex items-center opacity-0 group-hover:opacity-100"
                     onClick={() => {
-                      navigate(`/home`, {
+                      void navigate(`/home`, {
                         state: { agentName: agent.agent_id },
                       });
                     }}
@@ -712,7 +712,7 @@ const AgentList = ({
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        navigate(`/tasks`);
+                        void navigate(`/tasks`);
                       }}
                     >
                       <ScheduledTasksIcon className="mr-2 h-4 w-4" />

@@ -1,8 +1,8 @@
-import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
+import { type QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetToolsFromToolsetInput, type GetToolsFromToolsetOutput } from './types';
 import { getToolsFromToolset } from './index';
-import { GetToolsFromToolsetInput, GetToolsFromToolsetOutput } from './types';
 
 export type UseGetToolsFromToolset = [
   FunctionKeyV2.GET_TOOLS_FROM_TOOLSET,

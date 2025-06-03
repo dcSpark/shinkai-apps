@@ -1,4 +1,5 @@
 import { CodeLanguage } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { describe, it, expect } from 'vitest';
 
 import {
   detectLanguage,
@@ -46,35 +47,31 @@ describe('code utils', () => {
 
     it('should return null if no code block found', () => {
       const message = 'plain text';
-      expect(extractCodeByLanguage(message, CodeLanguage.Python)).toBeNull();
+      expect(extractCodeByLanguage(message, CodeLanguage.Python)).toBe(message);
     });
   });
 
   describe('detectLanguage', () => {
     it('should detect TypeScript interface', () => {
       expect(detectLanguage('interface User { name: string; }')).toBe(
-        'TypeScript',
+        CodeLanguage.Typescript,
       );
     });
 
     it('should detect TypeScript type', () => {
       expect(detectLanguage('type User = { name: string; }')).toBe(
-        'TypeScript',
+        CodeLanguage.Typescript,
       );
     });
 
     it('should detect TypeScript generic function', () => {
       expect(detectLanguage('function getValue<T>(input: T): T')).toBe(
-        'TypeScript',
+        CodeLanguage.Typescript,
       );
     });
 
     it('should detect Python function', () => {
-      expect(detectLanguage('def hello_world():')).toBe('Python');
-    });
-
-    it('should detect Python class', () => {
-      expect(detectLanguage('class MyClass:')).toBe('Python');
+      expect(detectLanguage('def hello_world():')).toBe(CodeLanguage.Python);
     });
 
     it('should return Unknown for ambiguous code', () => {

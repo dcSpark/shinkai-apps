@@ -1,6 +1,6 @@
 import { restoreToolConversation as restoreToolConversationApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { RestoreToolConversationInput } from './types';
+import { type RestoreToolConversationInput } from './types';
 
 export const restoreToolConversation = async ({
   nodeAddress,

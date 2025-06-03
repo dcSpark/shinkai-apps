@@ -4,72 +4,69 @@ import * as React from 'react';
 
 import { cn } from '../utils';
 
-const Breadcrumb = React.forwardRef<
-  HTMLElement,
-  React.ComponentPropsWithoutRef<'nav'> & {
-    separator?: React.ReactNode;
-  }
->(({ ...props }, ref) => <nav aria-label="breadcrumb" ref={ref} {...props} />);
+const Breadcrumb = ({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'nav'> & {
+  separator?: React.ReactNode;
+}) => <nav aria-label="breadcrumb" {...props} />;
 Breadcrumb.displayName = 'Breadcrumb';
 
-const BreadcrumbList = React.forwardRef<
-  HTMLOListElement,
-  React.ComponentPropsWithoutRef<'ol'>
->(({ className, ...props }, ref) => (
+const BreadcrumbList = ({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'ol'>) => (
   <ol
     className={cn(
       'text-muted-foreground flex flex-wrap items-center gap-1.5 break-words text-sm sm:gap-2.5',
       className,
     )}
-    ref={ref}
     {...props}
   />
-));
+);
 BreadcrumbList.displayName = 'BreadcrumbList';
 
-const BreadcrumbItem = React.forwardRef<
-  HTMLLIElement,
-  React.ComponentPropsWithoutRef<'li'>
->(({ className, ...props }, ref) => (
+const BreadcrumbItem = ({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'li'>) => (
   <li
     className={cn('inline-flex items-center gap-1.5', className)}
-    ref={ref}
     {...props}
   />
-));
+);
 BreadcrumbItem.displayName = 'BreadcrumbItem';
 
-const BreadcrumbLink = React.forwardRef<
-  HTMLAnchorElement,
-  React.ComponentPropsWithoutRef<'a'> & {
-    asChild?: boolean;
-  }
->(({ asChild, className, ...props }, ref) => {
+const BreadcrumbLink = ({
+  asChild,
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'a'> & {
+  asChild?: boolean;
+}) => {
   const Comp = asChild ? Slot : 'a';
 
   return (
     <Comp
       className={cn('hover:text-foreground transition-colors', className)}
-      ref={ref}
       {...props}
     />
   );
-});
+};
 BreadcrumbLink.displayName = 'BreadcrumbLink';
 
-const BreadcrumbPage = React.forwardRef<
-  HTMLSpanElement,
-  React.ComponentPropsWithoutRef<'span'>
->(({ className, ...props }, ref) => (
+const BreadcrumbPage = ({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'span'>) => (
   <span
     aria-current="page"
     aria-disabled="true"
     className={cn('text-foreground font-normal', className)}
-    ref={ref}
     role="link"
     {...props}
   />
-));
+);
 BreadcrumbPage.displayName = 'BreadcrumbPage';
 
 const BreadcrumbSeparator = ({

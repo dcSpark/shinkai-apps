@@ -3,7 +3,7 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
-  SearchVectorFormSchema,
+  type SearchVectorFormSchema,
   searchVectorFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/vector-fs/vector-search';
 import { transformDataToTreeNodes } from '@shinkai_network/shinkai-node-state/lib/utils/files';
@@ -27,8 +27,8 @@ import {
 import { FileTypeIcon } from '@shinkai_network/shinkai-ui/assets';
 import { SearchIcon } from 'lucide-react';
 import { Checkbox } from 'primereact/checkbox';
-import { Tree, TreeCheckboxSelectionKeys } from 'primereact/tree';
-import { TreeNode } from 'primereact/treenode';
+import { Tree, type TreeCheckboxSelectionKeys } from 'primereact/tree';
+import { type TreeNode } from 'primereact/treenode';
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useParams } from 'react-router';
@@ -249,9 +249,9 @@ export const SetJobScopeDrawer = () => {
           <Button
             className="flex-1"
             isLoading={isUpdatingJobScope}
-            onClick={() => {
+            onClick={async () => {
               if (inboxId) {
-                updateJobScope({
+                await updateJobScope({
                   jobId: extractJobIdFromInbox(inboxId),
                   nodeAddress: auth?.node_address ?? '',
                   token: auth?.api_v2_key ?? '',

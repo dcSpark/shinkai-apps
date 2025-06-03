@@ -1,6 +1,6 @@
 import { getAgent as getAgentApi } from '@shinkai_network/shinkai-message-ts/api/agents/index';
 
-import type { GetAgentInput } from './types';
+import  { type GetAgentInput } from './types';
 
 export const getAgent = async ({
   nodeAddress,

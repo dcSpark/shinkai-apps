@@ -1,4 +1,4 @@
-import { AlertDialogProps } from '@radix-ui/react-alert-dialog';
+import { type AlertDialogProps } from '@radix-ui/react-alert-dialog';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   AlertDialog,

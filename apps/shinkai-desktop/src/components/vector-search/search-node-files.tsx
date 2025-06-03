@@ -1,9 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { ShinkaiPath } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
+import { type ShinkaiPath } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { retrieveVectorResource } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 import {
-  SearchVectorFormSchema,
+  type SearchVectorFormSchema,
   searchVectorFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/vector-fs/vector-search';
 import { useGetVRSeachSimplified } from '@shinkai_network/shinkai-node-state/v2/queries/getVRSearchSimplified/useGetSearchVRItems';
@@ -33,7 +33,7 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { motion } from 'framer-motion';
 import { SearchIcon } from 'lucide-react';
 import { Checkbox } from 'primereact/checkbox';
-import { TreeCheckboxSelectionKeys } from 'primereact/tree';
+import { type TreeCheckboxSelectionKeys } from 'primereact/tree';
 import { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { Link, useLocation } from 'react-router';

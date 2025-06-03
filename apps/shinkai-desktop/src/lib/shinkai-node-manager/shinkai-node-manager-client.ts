@@ -1,17 +1,17 @@
 import { setPreferences } from '@shinkai_network/shinkai-message-ts/api/general/index';
 import {
   QueryClient,
-  QueryObserverOptions,
+  type QueryObserverOptions,
   useMutation,
-  UseMutationOptions,
+  type UseMutationOptions,
   useQuery,
   useQueryClient,
-  UseQueryResult,
+  type UseQueryResult,
 } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
 import { relaunch } from '@tauri-apps/plugin-process';
 
-import { ShinkaiNodeOptions } from './shinkai-node-manager-client-types';
+import { type ShinkaiNodeOptions } from './shinkai-node-manager-client-types';
 
 // Client
 
@@ -79,7 +79,7 @@ export const useShinkaiNodeSpawnMutation = (options?: UseMutationOptions) => {
     },
     ...options,
     onSuccess: (...onSuccessParameters) => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ['shinkai_node_is_running'],
       });
       if (options?.onSuccess) {
@@ -98,7 +98,7 @@ export const useShinkaiNodeKillMutation = (options?: UseMutationOptions) => {
     },
     ...options,
     onSuccess: (...onSuccessParameters) => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ['shinkai_node_is_running'],
       });
       if (options?.onSuccess) {
@@ -151,7 +151,7 @@ export const useShinkaiNodeSetOptionsMutation = (
     },
     ...options,
     onSuccess: (...onSuccessParameters) => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ['shinkai_node_get_options'],
       });
       if (options?.onSuccess) {
@@ -172,7 +172,7 @@ export const useShinkaiNodeSetDefaultOptionsMutation = (
     },
     ...options,
     onSuccess: (...onSuccessParameters) => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ['shinkai_node_set_default_options'],
       });
       if (options?.onSuccess) {
@@ -192,7 +192,7 @@ export const useShinkaiNodeRespawnMutation = (options?: UseMutationOptions) => {
     },
     ...options,
     onSuccess: (...onSuccessParameters) => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ['shinkai_node_is_running'],
       });
       if (options?.onSuccess) {

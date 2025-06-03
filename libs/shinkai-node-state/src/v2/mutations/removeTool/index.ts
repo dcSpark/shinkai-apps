@@ -3,7 +3,7 @@ import {
   removeTool as removeToolApi,
 } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { RemoveToolInput } from './types';
+import { type RemoveToolInput } from './types';
 
 export const removeTool = async ({
   nodeAddress,

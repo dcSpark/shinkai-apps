@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetChatConversationInput } from './types';
 import { getChatConversation } from '.';
-import { GetChatConversationInput } from './types';
 
 export const useGetChatConversation = (input: GetChatConversationInput) => {
   const response = useQuery({

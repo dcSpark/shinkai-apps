@@ -1,5 +1,5 @@
-import { JobConfig } from '../jobs/types';
-import { RecurringTask } from '../recurring-tasks/types';
+import { type JobConfig } from '../jobs/types';
+import { type RecurringTask } from '../recurring-tasks/types';
 
 export type Agent = {
   name: string;
@@ -19,6 +19,7 @@ export type Agent = {
     vector_search_mode: string;
   };
   cron_tasks?: RecurringTask[];
+  edited?: boolean;
 };
 
 export type CreateAgentRequest = Agent;

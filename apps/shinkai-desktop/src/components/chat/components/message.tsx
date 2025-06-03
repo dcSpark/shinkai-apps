@@ -1,15 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  ToolArgs,
+  type ToolArgs,
   ToolStatusType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import {
-  AssistantMessage,
-  FormattedMessage,
-  TextStatus,
-  ToolCall,
+  type AssistantMessage,
+  type FormattedMessage,
+  type TextStatus,
+  type ToolCall,
 } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import {
   Accordion,
@@ -32,8 +32,8 @@ import {
   TooltipContent,
   TooltipPortal,
   TooltipTrigger,
+  PrettyJsonPrint,
 } from '@shinkai_network/shinkai-ui';
-import { PrettyJsonPrint } from '@shinkai_network/shinkai-ui';
 import {
   appIcon,
   ReactJsIcon,
@@ -217,6 +217,7 @@ export const MessageBase = ({
     if (message.role === 'user') {
       editMessageForm.reset({ message: message.content });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editMessageForm, message.content]);
 
   const pythonCode = useMemo(() => {
@@ -261,8 +262,8 @@ export const MessageBase = ({
         className={cn(
           'relative flex flex-row space-x-2',
           message.role === 'user' &&
-            'ml-auto mr-0 flex-row-reverse space-x-reverse',
-          message.role === 'assistant' && 'ml-0 mr-auto flex-row items-end',
+            'mr-0 ml-auto flex-row-reverse space-x-reverse',
+          message.role === 'assistant' && 'mr-auto ml-0 flex-row items-end',
         )}
       >
         <Avatar
@@ -273,7 +274,7 @@ export const MessageBase = ({
           ) : (
             <AvatarFallback
               className={cn(
-                'text-em-xs text-official-gray-300 h-8 w-8 border bg-[#313336]',
+                'text-em-xs text-official-gray-300 bg-official-gray-850 border-official-gray-780 h-8 w-8 border',
                 minimalistMode && 'text-em-xs h-5 w-5',
               )}
             >
@@ -348,8 +349,8 @@ export const MessageBase = ({
                   editing && 'w-full py-1',
                   message.role === 'assistant' &&
                     isPending &&
-                    'relative overflow-hidden pb-4 before:absolute before:bottom-0 before:left-0 before:right-0 before:h-10 before:animate-pulse before:bg-gradient-to-l before:from-gray-200 before:to-gray-200/10',
-                  minimalistMode && 'rounded-sm px-2 pb-1.5 pt-1.5',
+                    'relative overflow-hidden pb-4 before:absolute before:right-0 before:bottom-0 before:left-0 before:h-10 before:animate-pulse before:bg-gradient-to-l before:from-gray-200 before:to-gray-200/10',
+                  minimalistMode && 'rounded-xs px-2 pt-1.5 pb-1.5',
                 )}
               >
                 {message.role === 'assistant' && message.reasoning != null && (
@@ -389,7 +390,7 @@ export const MessageBase = ({
                                 toolRouterKey={tool.toolRouterKey}
                               />
                             </AccordionTrigger>
-                            <AccordionContent className="bg-official-gray-950 flex flex-col gap-1 rounded-b-lg px-3 pb-3 pt-2 text-xs">
+                            <AccordionContent className="bg-official-gray-950 flex flex-col gap-1 rounded-b-lg px-3 pt-2 pb-3 text-xs">
                               {Object.keys(tool.args).length > 0 && (
                                 <span className="font-medium text-white">
                                   {tool.name}(
@@ -404,7 +405,7 @@ export const MessageBase = ({
                               {tool.result && (
                                 <div>
                                   <span>Response:</span>
-                                  <span className="text-official-gray-400 break-all font-mono">
+                                  <span className="text-official-gray-400 font-mono break-all">
                                     <PrettyJsonPrint json={tool.result} />
                                   </span>
                                 </div>
@@ -468,7 +469,7 @@ export const MessageBase = ({
                     (tool) => tool.status === 'Running',
                   ) &&
                   message.content === '' && (
-                    <div className="whitespace-pre-line pt-1.5">
+                    <div className="pt-1.5 whitespace-pre-line">
                       <span className="text-official-gray-400 text-xs">
                         Executing tools
                       </span>
@@ -480,7 +481,7 @@ export const MessageBase = ({
                     (tool) => tool.status === 'Complete',
                   ) &&
                   message.content === '' && (
-                    <div className="whitespace-pre-line pt-1.5">
+                    <div className="pt-1.5 whitespace-pre-line">
                       <span className="text-official-gray-400 text-xs">
                         Getting AI response
                       </span>
@@ -489,7 +490,7 @@ export const MessageBase = ({
                 {message.role === 'assistant' &&
                   message.status.type === 'running' &&
                   message.content === '' && (
-                    <div className="whitespace-pre-line pt-1.5">
+                    <div className="pt-1.5 whitespace-pre-line">
                       <DotsLoader />
                     </div>
                   )}
@@ -533,18 +534,15 @@ export const MessageBase = ({
                   <div className="mt-4 flex flex-col items-start rounded-lg bg-gray-950 p-6 shadow-lg">
                     <p className="text-em-base mb-3 font-semibold text-white">
                       <div className="flex items-center">
-                        <ToolsIcon className="mr-3 h-6 w-6 text-blue-400" />
+                        <ToolsIcon className="text-brand mr-3 size-4" />
                         {t('tools.setupRequired')}
                       </div>
                     </p>
-                    <p className="text-em-sm mb-5 leading-relaxed text-white">
+                    <p className="text-em-base text-official-gray-400 mb-5 leading-relaxed">
                       {t('tools.setupDescription')}
                     </p>
                     <Link to={`/tools/${configDeepLinkToolRouterKey}`}>
-                      <Button
-                        className="group flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white transition-all duration-300 hover:bg-blue-700"
-                        variant="default"
-                      >
+                      <Button variant="default" size="sm">
                         <ToolsIcon className="h-4 w-4 transition-transform group-hover:rotate-12" />
                         {t('tools.setupNow')}
                       </Button>
@@ -834,7 +832,7 @@ export function Reasoning({
             </motion.div>
           </AnimatePresence>
         </AccordionTrigger>
-        <AccordionContent className="bg-official-gray-950 flex flex-col gap-1 rounded-b-lg px-3 pb-3 pt-2 text-sm">
+        <AccordionContent className="bg-official-gray-950 flex flex-col gap-1 rounded-b-lg px-3 pt-2 pb-3 text-sm">
           <span className="text-official-gray-400 break-words">
             {reasoning}
           </span>

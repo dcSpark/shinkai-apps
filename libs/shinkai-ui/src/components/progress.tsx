@@ -3,13 +3,13 @@ import * as React from 'react';
 
 import { cn } from '../utils';
 
-const Progress = React.forwardRef<
-  React.ElementRef<typeof ProgressPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>
->(({ className, value, ...props }, ref) => (
+const Progress = ({
+  className,
+  value,
+  ...props
+}: React.ComponentProps<typeof ProgressPrimitive.Root>) => (
   <ProgressPrimitive.Root
     className={cn('relative h-4 w-full overflow-hidden bg-gray-200', className)}
-    ref={ref}
     {...props}
   >
     <ProgressPrimitive.Indicator
@@ -17,7 +17,7 @@ const Progress = React.forwardRef<
       style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
     />
   </ProgressPrimitive.Root>
-));
+);
 Progress.displayName = ProgressPrimitive.Root.displayName;
 
 export { Progress };

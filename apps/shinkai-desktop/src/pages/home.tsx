@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
-  ChatMessageFormSchema,
+  type ChatMessageFormSchema,
   chatMessageFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
@@ -65,7 +65,7 @@ import { toast } from 'sonner';
 import { AIModelSelector } from '../components/chat/chat-action-bar/ai-update-selection-action-bar';
 import {
   chatConfigFormSchema,
-  ChatConfigFormSchemaType,
+  type ChatConfigFormSchemaType,
   CreateChatConfigActionBar,
 } from '../components/chat/chat-action-bar/chat-config-action-bar';
 import { FileSelectionActionBar } from '../components/chat/chat-action-bar/file-selection-action-bar';
@@ -76,7 +76,7 @@ import { useChatStore } from '../components/chat/context/chat-context';
 // import { WebSearchActionBar } from '../components/chat/chat-action-bar/web-search-action-bar';
 import { useSetJobScope } from '../components/chat/context/set-job-scope-context';
 import {
-  ChatConversationLocationState,
+  type ChatConversationLocationState,
   DropFileActive,
   FileList,
   SelectedToolChat,
@@ -228,7 +228,7 @@ const EmptyMessage = () => {
       }
     };
 
-    checkDefaultTools();
+    void checkDefaultTools();
   }, []);
 
   const { data: recentlyUsedAgents } = useGetAgents(
@@ -323,13 +323,17 @@ const EmptyMessage = () => {
       });
     },
     onSuccess: async (data, variables) => {
-      navigate(
+      await navigate(
         `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
       );
 
       const files = variables?.files ?? [];
       const localFilesCount = (variables.selectedVRFiles ?? [])?.length;
       const localFoldersCount = (variables.selectedVRFolders ?? [])?.length;
+
+      const agentSelected = agents?.find(
+        (agent) => agent.agent_id === variables.llmProvider,
+      );
 
       if (localFilesCount > 0 || localFoldersCount > 0) {
         captureAnalyticEvent('Ask Local Files', {
@@ -341,8 +345,17 @@ const EmptyMessage = () => {
         captureAnalyticEvent('AI Chat with Files', {
           filesCount: files.length,
         });
-      } else {
-        captureAnalyticEvent('AI Chat', undefined);
+      }
+      if (!agentSelected) {
+        captureAnalyticEvent('Chat with AI Model', undefined);
+      }
+      if (agentSelected && agentSelected.edited === false) {
+        captureAnalyticEvent('Chat with Pre-built Agents', {
+          agentName: agentSelected.name,
+        });
+      }
+      if (agentSelected && agentSelected.edited === true) {
+        captureAnalyticEvent('Chat with Custom Agents', undefined);
       }
     },
   });
@@ -589,7 +602,7 @@ const EmptyMessage = () => {
                         description={selectedTool.description}
                         name={formatText(selectedTool.name)}
                         onSubmit={() => {
-                          chatForm.handleSubmit(onSubmit)();
+                          void chatForm.handleSubmit(onSubmit)();
                         }}
                         onToolFormChange={setToolFormData}
                         remove={() => {
@@ -792,7 +805,7 @@ const EmptyMessage = () => {
                                   </div>
                                   <button
                                     className={cn(
-                                      'bg-official-gray-850 hover:bg-official-gray-800 text-gray-80 border-official-gray-780 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
+                                      'bg-official-gray-850 hover:bg-official-gray-800 text-gray-80 border-official-gray-780 absolute -top-2 -right-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
                                     )}
                                     onClick={(event) => {
                                       event.stopPropagation();
@@ -864,7 +877,7 @@ const EmptyMessage = () => {
           <motion.div
             animate={{ opacity: 1 }}
             className={cn(
-              'bg-official-gray-850 absolute inset-x-2 bottom-1.5 z-0 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pb-1 pt-2.5 shadow-white',
+              'bg-official-gray-850 absolute inset-x-2 bottom-1.5 z-0 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pt-2.5 pb-1 shadow-white',
             )}
             exit={{ opacity: 0 }}
             initial={{ opacity: 0 }}
@@ -949,7 +962,7 @@ const EmptyMessage = () => {
         <div className="mx-auto grid w-full max-w-6xl grid-cols-4 justify-center gap-3">
           {PROMPT_SUGGESTIONS.map((suggestion) => (
             <Badge
-              className="hover:bg-official-gray-900 hover:text-official-gray-100 text-official-gray-200 cursor-pointer justify-between text-balance rounded-xl px-2 py-1.5 pl-4 text-left text-sm font-normal normal-case transition-colors"
+              className="hover:bg-official-gray-900 hover:text-official-gray-100 text-official-gray-200 cursor-pointer justify-between rounded-xl px-2 py-1.5 pl-4 text-left text-sm font-normal text-balance normal-case transition-colors"
               key={suggestion.text}
               onClick={() => {
                 chatForm.setValue('message', suggestion.prompt);
@@ -1001,7 +1014,7 @@ const EmptyMessage = () => {
                   secondaryAction={{
                     label: 'Chat History',
                     onClick: () => {
-                      navigate(`/inboxes?agentId=${agent.agent_id}`);
+                      void navigate(`/inboxes?agentId=${agent.agent_id}`);
                     },
                   }}
                   title={agent.name}
@@ -1044,7 +1057,7 @@ const EmptyMessage = () => {
                   secondaryAction={{
                     label: 'Chat History',
                     onClick: () => {
-                      navigate(`/inboxes?agentId=${agent.agent_id}`);
+                      void navigate(`/inboxes?agentId=${agent.agent_id}`);
                     },
                   }}
                   title={agent.name}
@@ -1119,7 +1132,7 @@ const Card: React.FC<CardProps> = ({
           <h3 className="text-left text-base font-medium capitalize">
             {title}
           </h3>
-          <p className="text-official-gray-400 line-clamp-2 h-10 text-balance text-left text-sm">
+          <p className="text-official-gray-400 line-clamp-2 h-10 text-left text-sm text-balance">
             {description || 'No description available'}
           </p>
         </div>
@@ -1178,7 +1191,7 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
       )}
     >
       <div className="animate-fade-in animate-delay-100 text-left">
-        <h2 className="text-balance text-lg font-medium tracking-normal">
+        <h2 className="text-lg font-medium tracking-normal text-balance">
           {title}
         </h2>
         {description && (

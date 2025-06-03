@@ -1,6 +1,6 @@
-import { FormProps } from '@rjsf/core';
+import { type FormProps } from '@rjsf/core';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import {
   buildInboxIdFromJobId,
   extractJobIdFromInbox,
@@ -11,11 +11,12 @@ import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutat
 import { useUpdateToolCodeImplementation } from '@shinkai_network/shinkai-node-state/v2/mutations/updateToolCodeImplementation/useUpdateToolCodeImplementation';
 import { debug } from '@tauri-apps/plugin-log';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { UseFormReturn } from 'react-hook-form';
+import { type UseFormReturn } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { handleSendNotification } from '../../../lib/notifications';
+import { useAnalytics } from '../../../lib/posthog-provider';
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
 import { useWebSocketMessage } from '../../chat/websocket-message';
@@ -23,14 +24,14 @@ import {
   ToolCreationState,
   usePlaygroundStore,
 } from '../context/playground-context';
-import { ToolMetadataSchema, ToolMetadataSchemaType } from '../schemas';
+import { ToolMetadataSchema, type ToolMetadataSchemaType } from '../schemas';
 import {
   extractCodeByLanguage,
   extractCodeLanguage,
   parseJsonFromCodeBlock,
   validateCodeSnippet,
 } from '../utils/code';
-import { CreateToolCodeFormSchema } from './use-tool-code';
+import { type CreateToolCodeFormSchema } from './use-tool-code';
 import { useToolSave } from './use-tool-save';
 
 export type ToolCreationStepStatus = 'idle' | 'pending' | 'success' | 'error';
@@ -132,15 +133,17 @@ export const useToolFlow = ({
   const notificationSentRef = useRef(false);
   const feedbackNotificationSentRef = useRef(false);
 
+  const { captureAnalyticEvent } = useAnalytics();
+
   // Helper function to send notification for feedback
   const sendFeedbackNotification = useCallback(() => {
     if (feedbackNotificationSentRef.current) {
-      debug('feedback notification already sent');
+      void debug('feedback notification already sent');
       return;
     }
-    debug('sending feedback notification');
+    void debug('sending feedback notification');
     feedbackNotificationSentRef.current = true;
-    handleSendNotification(
+    void handleSendNotification(
       t('tools.notifications.feedbackRequired.title'),
       t('tools.notifications.feedbackRequired.description'),
     );
@@ -149,12 +152,12 @@ export const useToolFlow = ({
   // Send notifications for generation completion
   const sendCodeGenerationCompleteNotification = useCallback(() => {
     if (notificationSentRef.current) {
-      debug('code generation complete notification already sent');
+      void debug('code generation complete notification already sent');
       return;
     }
-    debug('sending code generation complete notification');
+    void debug('sending code generation complete notification');
     notificationSentRef.current = true;
-    handleSendNotification(
+    void handleSendNotification(
       t('tools.notifications.codeGenerationComplete.title'),
       t('tools.notifications.codeGenerationComplete.description'),
     );
@@ -162,12 +165,12 @@ export const useToolFlow = ({
 
   const sendMetadataGenerationCompleteNotification = useCallback(() => {
     if (notificationSentRef.current) {
-      debug('metadata generation complete notification already sent');
+      void debug('metadata generation complete notification already sent');
       return;
     }
-    debug('sending metadata generation complete notification');
+    void debug('sending metadata generation complete notification');
     notificationSentRef.current = true;
-    handleSendNotification(
+    void handleSendNotification(
       t('tools.notifications.metadataGenerationComplete.title'),
       t('tools.notifications.metadataGenerationComplete.description'),
     );
@@ -226,9 +229,9 @@ export const useToolFlow = ({
           ...message,
           content:
             message.role === 'user'
-              ? message.content
+              ? (message.content
                   .match(/<input_command>([\s\S]*?)<\/input_command>/)?.[1]
-                  ?.trim() ?? ''
+                  ?.trim() ?? '')
               : message.content,
         })),
       ),
@@ -296,7 +299,7 @@ export const useToolFlow = ({
         if (isFeedbackPage) {
           setCurrentStep(ToolCreationState.PLAN_REVIEW);
         } else if (requireFeedbackFlow) {
-          navigate(`/tools/tool-feedback/${data.inbox}`, {
+          void navigate(`/tools/tool-feedback/${data.inbox}`, {
             state: {
               form: form.getValues(),
             },
@@ -483,7 +486,7 @@ export const useToolFlow = ({
       currentStep === ToolCreationState.CREATING_CODE ||
       currentStep === ToolCreationState.CREATING_METADATA
     ) {
-      debug(`resetting notification sent flag, new state ${currentStep}`);
+      void debug(`resetting notification sent flag, new state ${currentStep}`);
       notificationSentRef.current = false;
     }
   }, [currentStep]);
@@ -505,7 +508,7 @@ export const useToolFlow = ({
       });
     };
 
-    generateMetadata();
+    void generateMetadata();
   }, [
     toolCode,
     chatInboxId,
@@ -592,7 +595,7 @@ export const useToolFlow = ({
       forceAutoSave.current = false;
       forceGenerateMetadata.current = false;
       forceGenerateCode.current = false;
-      handleSaveTool({
+      void handleSaveTool({
         toolMetadata: toolMetadata,
         toolCode: toolCode,
         tools: form.getValues('tools'),
@@ -603,9 +606,11 @@ export const useToolFlow = ({
           forceGenerateMetadata.current = false;
           forceGenerateCode.current = false;
           setCurrentStep(ToolCreationState.COMPLETED);
+          captureAnalyticEvent('Custom Tool Created', undefined);
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     toolCode,
     toolMetadata,
@@ -701,7 +706,7 @@ export const useToolFlow = ({
     if (!toolResult) {
       return {};
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     const { __created_files__, ...rest } = toolResult as any;
     return rest;
   }, [toolResult]);

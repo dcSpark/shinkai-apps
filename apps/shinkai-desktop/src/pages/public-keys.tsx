@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  PublicKeysFormSchema,
+  type PublicKeysFormSchema,
   publicKeysSchema,
 } from '@shinkai_network/shinkai-node-state/forms/settings/public-keys';
 import {

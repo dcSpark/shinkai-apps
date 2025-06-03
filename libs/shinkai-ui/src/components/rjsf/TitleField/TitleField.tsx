@@ -1,9 +1,9 @@
 import {
-  FormContextType,
+  type FormContextType,
   getUiOptions,
-  RJSFSchema,
-  StrictRJSFSchema,
-  TitleFieldProps,
+  type RJSFSchema,
+  type StrictRJSFSchema,
+  type TitleFieldProps,
 } from '@rjsf/utils';
 
 import { cn } from '../../../utils';

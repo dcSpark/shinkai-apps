@@ -14,7 +14,7 @@ export const ErrorRender = ({ error }: ErrorRenderProps) => {
           {i18n.t('codeRunner.errorOccurred')}
         </h3>
       </div>
-      <pre className="overflow-x-auto whitespace-pre-wrap rounded border border-red-100 bg-white p-3 text-sm text-red-800">
+      <pre className="overflow-x-auto rounded-sm border border-red-100 bg-white p-3 text-sm whitespace-pre-wrap text-red-800">
         {error}
       </pre>
     </div>

@@ -1,8 +1,8 @@
-import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
+import { type QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetAgentsInput, type GetAgentsOutput } from './types';
 import { getAgents } from './index';
-import { GetAgentsInput, GetAgentsOutput } from './types';
 
 export type UseGetAgents = [FunctionKeyV2.GET_AGENTS, GetAgentsInput];
 

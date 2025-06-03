@@ -5,7 +5,7 @@ import {
 import {} from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { merge } from 'ts-deepmerge';
 
-import { SaveToolCodeInput } from './types';
+import { type SaveToolCodeInput } from './types';
 
 export const saveToolCode = async ({
   nodeAddress,

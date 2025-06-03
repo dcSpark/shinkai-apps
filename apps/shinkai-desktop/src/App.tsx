@@ -14,7 +14,7 @@ import { useSyncStorageSecondary } from './store/sync-utils';
 
 function App() {
   useEffect(() => {
-    info('initializing main');
+    void info('initializing main');
   }, []);
   useSyncStorageSecondary();
   return (

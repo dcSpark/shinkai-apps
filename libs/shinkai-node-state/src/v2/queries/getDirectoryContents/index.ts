@@ -1,6 +1,6 @@
 import { getListDirectoryContents as getListDirectoryContentsApi } from '@shinkai_network/shinkai-message-ts/api/vector-fs/index';
 
-import { GetVRPathSimplifiedInput } from './types';
+import { type GetVRPathSimplifiedInput } from './types';
 
 export const getListDirectoryContents = async ({
   nodeAddress,

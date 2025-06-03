@@ -1,11 +1,11 @@
-import { FormProps } from '@rjsf/core';
+import { type FormProps } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   CodeLanguage,
-  OAuth,
-  ShinkaiTool,
-  ShinkaiToolType,
+  type OAuth,
+  type ShinkaiTool,
+  type ShinkaiToolType,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDuplicateTool } from '@shinkai_network/shinkai-node-state/v2/mutations/duplicateTool/useDuplicateTool';
 import { useExecuteToolCode } from '@shinkai_network/shinkai-node-state/v2/mutations/executeToolCode/useExecuteToolCode';
@@ -157,8 +157,8 @@ export default function ToolDetailsCard({
     data: publishToolData,
     isSuccess: isPublishToolSuccess,
   } = usePublishTool({
-    onSuccess: (response) => {
-      open(
+    onSuccess: async (response) => {
+      await open(
         `${SHINKAI_STORE_URL}/store/revisions/complete?id=${response.response.revisionId}`,
       );
     },
@@ -200,7 +200,7 @@ export default function ToolDetailsCard({
           action: {
             label: 'Edit',
             onClick: () => {
-              navigate(`/tools/edit/${response.tool_router_key}`);
+              void navigate(`/tools/edit/${response.tool_router_key}`);
             },
           },
         });
@@ -415,7 +415,7 @@ export default function ToolDetailsCard({
     });
   };
 
-  const performUpdateThisTool = () => {
+  const performUpdateThisTool = async () => {
     const toolKeyToUpdate = (tool as any).tool_router_key;
     const configToSave = Object.entries(formData ?? {}).map(
       ([key_name, key_value]) => {
@@ -428,7 +428,7 @@ export default function ToolDetailsCard({
         };
       },
     );
-    updateTool({
+    await updateTool({
       toolKey: toolKeyToUpdate ?? '',
       toolType: toolType,
       toolPayload: { config: configToSave } as unknown as ShinkaiTool,
@@ -438,9 +438,9 @@ export default function ToolDetailsCard({
     });
   };
 
-  const performUpdateToolsetForAll = () => {
+  const performUpdateToolsetForAll = async () => {
     if ('tool_set' in tool && tool.tool_set && formData) {
-      handleSaveCommonToolsetConfig(tool.tool_set as string, formData);
+      await handleSaveCommonToolsetConfig(tool.tool_set as string, formData);
     }
   };
 
@@ -467,7 +467,7 @@ export default function ToolDetailsCard({
       setAffectedNamesForDialog(calculatedCommonToolsetConfigNames);
       setIsConfirmDialogOpen(true);
     } else {
-      performUpdateThisTool();
+      await performUpdateThisTool();
     }
   };
 
@@ -638,8 +638,8 @@ export default function ToolDetailsCard({
                   <DropdownMenuItem
                     className="text-xs"
                     disabled={isExportingTool}
-                    onClick={() => {
-                      exportTool({
+                    onClick={async () => {
+                      await exportTool({
                         toolKey: toolKey ?? '',
                         nodeAddress: auth?.node_address ?? '',
                         token: auth?.api_v2_key ?? '',
@@ -653,8 +653,8 @@ export default function ToolDetailsCard({
                     <DropdownMenuItem
                       className="text-xs"
                       disabled={isDuplicatingTool}
-                      onClick={() => {
-                        duplicateTool({
+                      onClick={async () => {
+                        await duplicateTool({
                           toolKey: toolKey ?? '',
                           nodeAddress: auth?.node_address ?? '',
                           token: auth?.api_v2_key ?? '',
@@ -1337,8 +1337,8 @@ export default function ToolDetailsCard({
                     className="min-w-[100px]"
                     disabled={isPublishingTool}
                     isLoading={isPublishingTool}
-                    onClick={() => {
-                      publishTool({
+                    onClick={async () => {
+                      await publishTool({
                         toolKey: toolKey ?? '',
                         nodeAddress: auth?.node_address ?? '',
                         token: auth?.api_v2_key ?? '',

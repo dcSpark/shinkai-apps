@@ -1,6 +1,6 @@
-import { RJSFSchema } from '@rjsf/utils';
+import { type RJSFSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
-import { ShinkaiTool, ToolConfigBase } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type ShinkaiTool, type ToolConfigBase } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useGetTool } from '@shinkai_network/shinkai-node-state/v2/queries/getTool/useGetTool';
 import {
   Button,

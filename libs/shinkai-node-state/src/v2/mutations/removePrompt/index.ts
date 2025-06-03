@@ -1,6 +1,6 @@
 import { removePrompt as removePromptApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { RemovePromptInput } from './types';
+import { type RemovePromptInput } from './types';
 
 export const removePrompt = async ({
   nodeAddress,

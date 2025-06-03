@@ -1,9 +1,9 @@
-import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
+import { type QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type GetPromptSearchInput, type GetPromptSearchOutput } from './types';
 import { getPromptSearch } from './index';
-import { GetPromptSearchInput, GetPromptSearchOutput } from './types';
 
 export type UseGetPromptSearch = [
   FunctionKeyV2.GET_SEARCH_PROMPT,

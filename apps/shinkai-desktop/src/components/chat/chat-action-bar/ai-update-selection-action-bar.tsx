@@ -174,7 +174,7 @@ export function AIModelSelectorBase({
 
                 'w-auto justify-between truncate',
                 variant === 'card' &&
-                  'bg-official-gray-900 border-official-gray-780 hover:bg-official-gray-850 h-auto w-auto min-w-[240px] max-w-md gap-3 rounded-xl border p-1.5 px-2',
+                  'bg-official-gray-900 border-official-gray-780 hover:bg-official-gray-850 h-auto w-auto max-w-md min-w-[240px] gap-3 rounded-xl border p-1.5 px-2',
                 className,
               )}
             >
@@ -193,7 +193,7 @@ export function AIModelSelectorBase({
                 <>
                   {selectedIcon}
                   <div className="flex flex-col items-start justify-start text-left">
-                    <span className="text-base font-medium capitalize text-white">
+                    <span className="text-base font-medium text-white capitalize">
                       {selectedAgentName}
                     </span>
                   </div>
@@ -209,7 +209,7 @@ export function AIModelSelectorBase({
             className="flex flex-col gap-1"
             side="top"
           >
-            <span className="text-center text-xs text-white">
+            <span className="text-center text-sm text-white">
               {t('llmProviders.switch')}
             </span>
             {isRegularChatPage && (
@@ -287,10 +287,10 @@ export function AIModelSelectorBase({
                     <div className="inline-flex items-center gap-3">
                       <AIAgentIcon name={agent.name} size="sm" />
                       <div className="flex flex-col gap-1">
-                        <span className="inline-flex items-center gap-1.5 text-base capitalize">
+                        <span className="inline-flex items-center gap-1.5 text-base font-medium capitalize">
                           {agent.name}
                         </span>
-                        <span className="text-official-gray-400 line-clamp-1 text-xs">
+                        <span className="text-official-gray-400 line-clamp-1 text-sm">
                           {agent.ui_description}
                         </span>
                       </div>
@@ -378,7 +378,7 @@ export function AIModelSelectorBase({
                             </Badge>
                           )}
                       </span>
-                      <span className="text-official-gray-400 line-clamp-2 text-xs">
+                      <span className="text-official-gray-400 line-clamp-2 text-sm">
                         {llmProvider?.description}
                       </span>
                     </div>

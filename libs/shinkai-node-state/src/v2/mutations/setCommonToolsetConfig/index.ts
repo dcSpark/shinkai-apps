@@ -1,6 +1,6 @@
 import { setCommonToolsetConfig as setCommonToolsetConfigApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { SetCommonToolsetConfigInput } from './types';
+import { type SetCommonToolsetConfigInput } from './types';
 
 export const setCommonToolsetConfig = async ({
   nodeAddress,

@@ -1,8 +1,8 @@
-import { QueryObserverOptions, useQuery } from '@tanstack/react-query';
+import { type QueryObserverOptions, useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetWalletListInput, type GetWalletListOutput } from './types';
 import { getWalletList } from './index';
-import { GetWalletListInput, GetWalletListOutput } from './types';
 
 export type UseGetWalletList = [
   FunctionKeyV2.GET_WALLET_LIST,

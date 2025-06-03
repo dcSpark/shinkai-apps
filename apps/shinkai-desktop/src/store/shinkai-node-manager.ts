@@ -2,7 +2,7 @@ import { debug } from '@tauri-apps/plugin-log';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
-import { ShinkaiNodeOptions } from '../lib/shinkai-node-manager/shinkai-node-manager-client-types';
+import { type ShinkaiNodeOptions } from '../lib/shinkai-node-manager/shinkai-node-manager-client-types';
 
 type ShinkaiNodeManagerStore = {
   isInUse: boolean | null;
@@ -20,11 +20,11 @@ export const useShinkaiNodeManager = create<ShinkaiNodeManagerStore>()(
         isInUse: false,
         shinkaiNodeOptions: null,
         setShinkaiNodeOptions: (shinkaiNodeOptions) => {
-          debug('setting shinkai-node options');
+          void debug('setting shinkai-node options');
           set({ shinkaiNodeOptions });
         },
         setIsInUse: (value: boolean) => {
-          debug('setting is in use');
+          void debug('setting is in use');
           set({ isInUse: value });
         },
       }),

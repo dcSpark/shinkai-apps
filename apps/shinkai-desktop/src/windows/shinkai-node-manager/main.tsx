@@ -54,7 +54,7 @@ import {
   useShinkaiNodeSetOptionsMutation,
   useShinkaiNodeSpawnMutation,
 } from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
-import { ShinkaiNodeOptions } from '../../lib/shinkai-node-manager/shinkai-node-manager-client-types';
+import { type ShinkaiNodeOptions } from '../../lib/shinkai-node-manager/shinkai-node-manager-client-types';
 import { useShinkaiNodeEventsToast } from '../../lib/shinkai-node-manager/shinkai-node-manager-hooks';
 import {
   errorOllamaModelsSyncToast,
@@ -76,7 +76,7 @@ import { Logs } from './components/logs';
 
 const App = () => {
   useEffect(() => {
-    info('initializing shinkai-node-manager');
+    void info('initializing shinkai-node-manager');
   }, []);
   useSyncStorageSecondary();
   const auth = useAuth((auth) => auth.auth);
@@ -168,17 +168,17 @@ const App = () => {
       ...shinkaiNodeOptions,
       ...shinkaiNodeOptionsFormWatch,
     };
-    shinkaiNodeSetOptions(options as ShinkaiNodeOptions);
+    void shinkaiNodeSetOptions(options as ShinkaiNodeOptions);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shinkaiNodeOptionsFormWatch, shinkaiNodeSetOptions]);
 
   const handleReset = (): void => {
     setIsConfirmResetDialogOpened(false);
-    shinkaiNodeRemoveStorage({ preserveKeys: true });
+    void shinkaiNodeRemoveStorage({ preserveKeys: true });
   };
 
-  const startSyncOllamaModels = (): void => {
-    syncOllamaModels({
+  const startSyncOllamaModels = async () => {
+    await syncOllamaModels({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       allowedModels: ALLOWED_OLLAMA_MODELS,
@@ -228,7 +228,7 @@ const App = () => {
                   }
                   onClick={() => {
                     console.log('spawning');
-                    shinkaiNodeSpawn();
+                    void shinkaiNodeSpawn();
                   }}
                   variant={'default'}
                 >

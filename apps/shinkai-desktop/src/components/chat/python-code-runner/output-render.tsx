@@ -2,7 +2,7 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import Plot from 'react-plotly.js';
 
 import { ErrorRender } from './error-render';
-import { RunResult } from './python-code-runner-web-worker';
+import { type RunResult } from './python-code-runner-web-worker';
 import { StderrRender } from './stderr-render';
 import { StdoutRender } from './stdout-render';
 

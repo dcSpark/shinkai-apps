@@ -1,6 +1,6 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
+import { type DirectoryContent } from '@shinkai_network/shinkai-message-ts/api/vector-fs/types';
 import {
   buttonVariants,
   Checkbox,
@@ -52,8 +52,13 @@ export const VectorFsItemInfo = ({
         </span>
         {!!file.has_embeddings && (
           <Tooltip>
-            <TooltipTrigger className="rounded-lg border-cyan-600 bg-cyan-900/20 p-1">
-              <EmbeddingsGeneratedIcon className="size-4 text-cyan-400" />
+            <TooltipTrigger
+              asChild
+              className="rounded-lg border-cyan-600 bg-cyan-900/20 p-1"
+            >
+              <div>
+                <EmbeddingsGeneratedIcon className="size-4 text-cyan-400" />
+              </div>
             </TooltipTrigger>
             <TooltipPortal>
               <TooltipContent side="top">
@@ -152,7 +157,7 @@ const VectorFsItem = ({
               )}
               onClick={(event) => {
                 event.stopPropagation();
-                navigate('/home', {
+                void navigate('/home', {
                   state: {
                     selectedVRFiles: [file.path],
                   },

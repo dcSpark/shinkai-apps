@@ -3,7 +3,7 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  EditAIModelFormSchema,
+  type EditAIModelFormSchema,
   editAIModelSchema,
 } from '@shinkai_network/shinkai-node-state/forms/agents/edit-ai';
 import { Models } from '@shinkai_network/shinkai-node-state/lib/utils/models';
@@ -66,10 +66,10 @@ const AIsPage = () => {
 
   const onAddAgentClick = () => {
     if (isLocalShinkaiNodeIsUse) {
-      navigate('/install-ai-models');
+      void navigate('/install-ai-models');
       return;
     }
-    navigate('/add-ai');
+    void navigate('/add-ai');
   };
 
   return (
@@ -188,7 +188,7 @@ function LLMProviderCard({
               <TooltipTrigger asChild>
                 <Button
                   onClick={() => {
-                    navigate(`/home`, { state: { llmProviderId } });
+                    void navigate(`/home`, { state: { llmProviderId } });
                   }}
                   size="xs"
                   variant="outline"

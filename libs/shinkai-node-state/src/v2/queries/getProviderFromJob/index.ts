@@ -1,6 +1,6 @@
 import { getProviderFromJob as getProviderFromJobApi } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import { GetProviderFromJobInput } from './types';
+import { type GetProviderFromJobInput } from './types';
 
 export const getProviderFromJob = async ({
   nodeAddress,

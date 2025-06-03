@@ -1,17 +1,17 @@
 import { httpClient } from '../../http-client';
 import { urlJoin } from '../../utils/url-join';
 import {
-  CreateAgentRequest,
-  CreateAgentResponse,
-  ExportAgentResponse,
-  GetAgentRequest,
-  GetAgentResponse,
-  GetAgentsResponse,
-  ImportAgentResponse,
-  RemoveAgentRequest,
-  RemoveAgentResponse,
-  UpdateAgentRequest,
-  UpdateAgentResponse,
+  type CreateAgentRequest,
+  type CreateAgentResponse,
+  type ExportAgentResponse,
+  type GetAgentRequest,
+  type GetAgentResponse,
+  type GetAgentsResponse,
+  type ImportAgentResponse,
+  type RemoveAgentRequest,
+  type RemoveAgentResponse,
+  type UpdateAgentRequest,
+  type UpdateAgentResponse,
 } from './types';
 
 export const createAgent = async (

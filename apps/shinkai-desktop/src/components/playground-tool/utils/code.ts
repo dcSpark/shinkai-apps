@@ -33,15 +33,33 @@ export function detectLanguage(code: string): string {
     if (!code || typeof code !== 'string') {
       return 'Unknown';
     }
-    
-    const typeScriptRegex =
-      /(interface\s+\w+\s*{)|(type\s+\w+\s*=)|(function\s+\w+\s*<\w+>)/;
-    const pythonRegex = /^\s*async\s+def\s+run\(/m;
+
+    const typeScriptRegex = new RegExp(
+      [
+        '\\binterface\\s+\\w+\\s*{', // interface Foo {
+        '\\btype\\s+\\w+\\s*=\\s*', // type Foo =
+        'function\\s+\\w+\\s*<\\w+>', // function foo<T>
+        '\\bimport\\s+[{\\w\\s,]*}\\s+from', // import { x } from
+        '\\w+\\s*:\\s*(string|number|boolean|any|unknown|never)', // type annotations
+      ].join('|'),
+      'm',
+    );
+
+    const pythonRegex = new RegExp(
+      [
+        '^\\s*def\\s+\\w+\\s*\\(', // def func(
+        '^\\s*async\\s+def\\s+\\w+\\s*\\(', // async def func(
+        '^\\s*from\\s+\\w+\\s+import\\s+\\w+', // from x import y
+        '^\\s*import\\s+\\w+', // import x
+        'print\\s*\\(', // print(
+      ].join('|'),
+      'm',
+    );
 
     if (typeScriptRegex.test(code)) {
-      return 'TypeScript';
+      return CodeLanguage.Typescript;
     } else if (pythonRegex.test(code)) {
-      return 'Python';
+      return CodeLanguage.Python;
     } else {
       return 'Unknown';
     }

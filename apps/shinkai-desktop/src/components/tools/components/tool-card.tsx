@@ -1,5 +1,5 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useToggleEnableTool } from '@shinkai_network/shinkai-node-state/v2/mutations/toggleEnableTool/useToggleEnableTool';
 import {
@@ -56,7 +56,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
   return (
     <div
       className={cn(
-        'grid grid-cols-[1fr_40px_40px_115px_36px] items-center gap-5 rounded-sm px-2 py-4 pr-4 text-left text-sm',
+        'grid grid-cols-[1fr_40px_40px_115px_36px] items-center gap-5 rounded-xs px-2 py-4 pr-4 text-left text-sm',
       )}
       key={tool.tool_router_key}
     >
@@ -68,13 +68,18 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
           <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
             {getVersionFromTool(tool)}
           </Badge>
+          {tool.tool_type === 'MCPServer' && (
+            <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
+              MCP
+            </Badge>
+          )}
           {tool.author !== '@@official.shinkai' && (
             <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
               {tool.author}
             </Badge>
           )}
         </div>
-        <p className="text-gray-80 line-clamp-2 whitespace-pre-wrap text-xs">
+        <p className="text-gray-80 line-clamp-2 text-xs whitespace-pre-wrap">
           {tool.description}
         </p>
       </div>
@@ -87,7 +92,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
                 variant: 'outline',
                 size: 'sm',
               }),
-              'min-h-auto flex h-auto w-10 justify-center rounded-md py-2',
+              'flex h-auto min-h-auto w-10 justify-center rounded-md py-2',
             )}
             to={`/tools/${tool.tool_router_key}#try-it-out`}
           >
@@ -109,7 +114,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
             variant: 'outline',
             size: 'sm',
           }),
-          'min-h-auto h-auto rounded-md py-2',
+          'h-auto min-h-auto rounded-md py-2',
         )}
         to={`/tools/${tool.tool_router_key}`}
       >
@@ -143,7 +148,7 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
                   },
                 );
 
-                queryClient.invalidateQueries({
+                await queryClient.invalidateQueries({
                   queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
                   refetchType: 'none',
                 });

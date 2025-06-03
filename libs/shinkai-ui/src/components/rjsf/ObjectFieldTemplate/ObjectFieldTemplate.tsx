@@ -1,12 +1,12 @@
 import {
   canExpand,
   descriptionId,
-  FormContextType,
+  type FormContextType,
   getTemplate,
   getUiOptions,
-  ObjectFieldTemplateProps,
-  RJSFSchema,
-  StrictRJSFSchema,
+  type ObjectFieldTemplateProps,
+  type RJSFSchema,
+  type StrictRJSFSchema,
   titleId,
 } from '@rjsf/utils';
 

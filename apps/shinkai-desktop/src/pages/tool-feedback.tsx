@@ -73,7 +73,7 @@ function ToolFeedbackPrompt() {
   useEffect(() => {
     if (error) {
       resetPlaygroundStore();
-      navigate('/tools');
+      void navigate('/tools');
     }
   }, [error, resetPlaygroundStore, navigate]);
 
@@ -89,7 +89,7 @@ function ToolFeedbackPrompt() {
           >
             <motion.div
               className={cn(
-                'mx-auto flex h-[84vh] w-full max-w-2xl flex-col items-stretch justify-center rounded-xl border p-1 pb-3 pt-0',
+                'border-official-gray-780 mx-auto flex h-[84vh] w-full max-w-2xl flex-col items-stretch justify-center rounded-xl border p-1 pt-0 pb-3',
               )}
               layoutId={`left-element`}
             >
@@ -131,7 +131,7 @@ function ToolFeedbackPrompt() {
                           className="min-w-[100px] flex-1"
                           onClick={() => {
                             resetPlaygroundStore();
-                            navigate('/tools');
+                            void navigate('/tools');
                             setIsExitDialogOpen(false);
                           }}
                           size="sm"
@@ -193,7 +193,7 @@ function ToolFeedbackPrompt() {
                                 {isLoadingMessage && (
                                   <motion.div
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="absolute inset-x-2 -top-[20px] flex items-center justify-start gap-2 rounded-t-lg bg-cyan-900/20 px-2 py-1 text-xs text-cyan-500"
+                                    className="absolute inset-x-2 -top-[24px] flex items-center justify-start gap-2 rounded-t-lg bg-cyan-900/20 px-2 py-1 text-xs text-cyan-500"
                                     exit={{ opacity: 0, y: 10 }}
                                     initial={{ opacity: 0, y: 10 }}
                                     transition={{ duration: 0.2 }}
@@ -235,7 +235,7 @@ function ToolFeedbackPrompt() {
                                 }
                                 onChange={field.onChange}
                                 onSubmit={() => {
-                                  startToolCreation(form.getValues());
+                                  void startToolCreation(form.getValues());
                                 }}
                                 placeholder="Send message..."
                                 value={field.value}
@@ -319,7 +319,7 @@ function ToolFeedbackPrompt() {
                                     disabled
                                     onChange={field.onChange}
                                     onSubmit={() => {
-                                      startToolCreation(form.getValues());
+                                      void startToolCreation(form.getValues());
                                     }}
                                     placeholder="Send message..."
                                     value={field.value}

@@ -4,13 +4,13 @@ import {
   enumOptionsIsSelected,
   enumOptionsSelectValue,
   enumOptionsValueForIndex,
-  FormContextType,
+  type FormContextType,
   optionId,
-  RJSFSchema,
-  StrictRJSFSchema,
-  WidgetProps,
+  type RJSFSchema,
+  type StrictRJSFSchema,
+  type WidgetProps,
 } from '@rjsf/utils';
-import { ChangeEvent, FocusEvent } from 'react';
+import { type ChangeEvent, type FocusEvent } from 'react';
 
 export default function CheckboxesWidget<
   T = any,

@@ -1,12 +1,17 @@
-import { McpServer } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
-import { useMutation, UseMutationOptions,useQueryClient } from '@tanstack/react-query';
+import { type McpServer } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
+import {
+  useMutation,
+  type UseMutationOptions,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type APIError } from '../../types';
+import { type AddMcpServerInput } from './types';
 import { addMcpServer } from './index';
-import { AddMcpServerInput } from './types';
 
 export const useAddMcpServer = (
-  options?: UseMutationOptions<McpServer, Error, AddMcpServerInput>
+  options?: UseMutationOptions<McpServer, APIError, AddMcpServerInput>,
 ) => {
   const queryClient = useQueryClient();
 
@@ -22,4 +27,4 @@ export const useAddMcpServer = (
       }
     },
   });
-}; 
+};

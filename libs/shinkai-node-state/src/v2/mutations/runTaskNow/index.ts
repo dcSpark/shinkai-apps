@@ -1,6 +1,6 @@
 import { runTaskNowApi } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/index';
 
-import { RunTaskNowInput } from './types';
+import { type RunTaskNowInput } from './types';
 
 export const runTaskNow = async ({
   nodeAddress,

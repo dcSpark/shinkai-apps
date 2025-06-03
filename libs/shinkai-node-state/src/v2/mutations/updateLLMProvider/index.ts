@@ -1,6 +1,6 @@
 import { updateLLMProvider as updateLLMProviderApi } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 
-import { UpdateLLMProviderInput } from './types';
+import { type UpdateLLMProviderInput } from './types';
 
 export const updateLLMProvider = async ({
   nodeAddress,

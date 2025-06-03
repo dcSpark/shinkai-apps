@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetRecurringTaskLogsInput } from './types';
 import { getRecurringTaskLogs } from './index';
-import { GetRecurringTaskLogsInput } from './types';
 
 export const useGetRecurringTaskLogs = (input: GetRecurringTaskLogsInput) => {
   const response = useQuery({

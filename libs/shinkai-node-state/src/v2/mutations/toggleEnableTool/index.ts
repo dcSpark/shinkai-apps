@@ -1,6 +1,6 @@
 import { toggleEnableTool as toggleEnableToolApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { ToggleEnableToolInput } from './types';
+import { type ToggleEnableToolInput } from './types';
 
 export const toggleEnableTool = async ({
   nodeAddress,

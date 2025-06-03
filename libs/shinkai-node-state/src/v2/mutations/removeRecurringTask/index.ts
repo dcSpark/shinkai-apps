@@ -1,6 +1,6 @@
 import { removeRecurringTask as removeRecurringTaskApi } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/index';
 
-import { RemoveRecurringTaskInput } from './types';
+import { type RemoveRecurringTaskInput } from './types';
 
 export const removeRecurringTask = async ({
   nodeAddress,

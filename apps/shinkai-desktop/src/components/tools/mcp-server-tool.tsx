@@ -1,4 +1,4 @@
-import { McpServerTool as McpServerToolType } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type McpServerTool as McpServerToolType } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
 import ToolDetailsCard from './components/tool-details-card';
 

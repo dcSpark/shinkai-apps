@@ -1,6 +1,6 @@
 import { getAllToolAssets as getAllToolAssetsApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import type { GetAllToolAssetsInput } from './types';
+import  { type GetAllToolAssetsInput } from './types';
 
 export const getAllToolAssets = async ({
   nodeAddress,

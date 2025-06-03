@@ -1,9 +1,9 @@
 import { PlusCircledIcon } from '@radix-ui/react-icons';
 import {
-  FormContextType,
-  IconButtonProps,
-  RJSFSchema,
-  StrictRJSFSchema,
+  type FormContextType,
+  type IconButtonProps,
+  type RJSFSchema,
+  type StrictRJSFSchema,
 } from '@rjsf/utils';
 
 import { cn } from '../../../utils';

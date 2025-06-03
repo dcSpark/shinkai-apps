@@ -1,9 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
-  CreateJobFormSchema,
+  type CreateJobFormSchema,
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
@@ -115,7 +115,7 @@ function QuickAsk() {
   useHotkeys(
     ['esc'],
     () => {
-      hideSpotlightWindow();
+      void hideSpotlightWindow();
     },
     {
       preventDefault: true,
@@ -128,7 +128,7 @@ function QuickAsk() {
     () => {
       if (!messageResponse) return;
       const string_ = messageResponse.trim();
-      copyToClipboard(string_);
+      void copyToClipboard(string_);
       setClipboard(true);
       clearTimeout(timeout);
       timeout = setTimeout(() => setClipboard(false), 1000);
@@ -153,7 +153,7 @@ function QuickAsk() {
     });
 
     return () => {
-      unlisten.then((fn) => fn());
+      void unlisten.then((fn) => fn());
     };
   }, []);
 
@@ -241,11 +241,11 @@ function QuickAsk() {
               <div className="w-full">
                 <input
                   autoFocus
-                  className="placeholder:text-gray-80/70 w-full bg-transparent text-lg text-white focus:outline-none"
+                  className="placeholder:text-gray-80/70 w-full bg-transparent text-lg text-white focus:outline-hidden"
                   {...chatForm.register('message')}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
-                      chatForm.handleSubmit(onSubmit)();
+                      void chatForm.handleSubmit(onSubmit)();
                     }
 
                     if (e.key === 'Backspace' && !chatForm.watch('message')) {
@@ -494,7 +494,7 @@ const QuickAskBodyWithResponseBase = ({ inboxId }: { inboxId: string }) => {
 
           <ChevronRight className="text-gray-80 h-4 w-4 shrink-0" />
         </CollapsibleTrigger>
-        <CollapsibleContent className="max-h-[150px] overflow-y-auto px-5 pb-2 pt-0.5">
+        <CollapsibleContent className="max-h-[150px] overflow-y-auto px-5 pt-0.5 pb-2">
           <MarkdownText
             className="prose-h1:!text-gray-50 prose-h1:!text-sm !text-sm !text-gray-50"
             content={inputMessage?.content ?? ''}
@@ -504,7 +504,7 @@ const QuickAskBodyWithResponseBase = ({ inboxId }: { inboxId: string }) => {
       <div className="p-5 pb-4">
         {lastMessage?.role === 'assistant' &&
           lastMessage?.status.type === 'running' &&
-          lastMessage?.content === '' && <DotsLoader className="pl-1 pt-1" />}
+          lastMessage?.content === '' && <DotsLoader className="pt-1 pl-1" />}
 
         {lastMessage?.role === 'assistant' && (
           <MarkdownText
@@ -533,7 +533,5 @@ ${lastMessage?.content}
 
 const QuickAskBodyWithResponse = memo(
   QuickAskBodyWithResponseBase,
-  (prevProps, nextProps) =>
-    prevProps.inboxId === nextProps.inboxId &&
-    prevProps.aiModel === nextProps.aiModel,
+  (prevProps, nextProps) => prevProps.inboxId === nextProps.inboxId,
 );

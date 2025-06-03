@@ -4,16 +4,14 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useSubmitFeedback } from '@shinkai_network/shinkai-node-state/v2/mutations/submitFeedback/useSubmitFeedback';
 import {
   Button,
-  ButtonProps,
+  type ButtonProps,
   DialogTrigger,
   Form,
   FormField,
   FormItem,
   FormLabel,
   TextField,
-} from '@shinkai_network/shinkai-ui';
-import { Textarea } from '@shinkai_network/shinkai-ui';
-import {
+  Textarea,
   Dialog,
   DialogContent,
   DialogDescription,

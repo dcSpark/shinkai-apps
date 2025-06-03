@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetPreferencesInput } from './types';
 import { getPreferences } from './index';
-import { GetPreferencesInput } from './types';
 
 export const useGetPreferences = ({
   nodeAddress,

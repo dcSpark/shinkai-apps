@@ -3,12 +3,12 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import resourcesToBackend from 'i18next-resources-to-backend';
 import { initReactI18next } from 'react-i18next';
 
-import { Locales, normalizeLocale } from './constants';
+import { type Locales, normalizeLocale } from './constants';
 
 const isDev = import.meta.env.DEV;
 
 const initI18n = () => {
-  i18n
+  void i18n
     .use(initReactI18next)
     .use(LanguageDetector)
     .use(
@@ -39,5 +39,5 @@ export type LocaleMode = Locales | 'auto';
 
 export const switchLanguage = (locale: LocaleMode) => {
   const lang = locale === 'auto' ? navigator.language : locale;
-  i18NextInstance.changeLanguage(lang);
+  void i18NextInstance.changeLanguage(lang);
 };

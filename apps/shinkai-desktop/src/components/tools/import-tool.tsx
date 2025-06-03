@@ -24,15 +24,8 @@ import {
 import { ImportIcon } from '@shinkai_network/shinkai-ui/assets';
 import { useMeasure } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { motion } from 'framer-motion';
-import { AnimatePresence } from 'framer-motion';
-import {
-  ArrowLeft,
-  DownloadIcon,
-  Link,
-  Package2Icon,
-  XIcon,
-} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Link, Package2Icon, XIcon } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
@@ -62,7 +55,7 @@ export default function ImportToolModal() {
   const { t } = useTranslation();
 
   const [elementRef, bounds] = useMeasure();
-  const previousHeightRef = useRef<number | null>();
+  const previousHeightRef = useRef<number | null>(null);
 
   const [importToolView, setImportToolView] = useState<ImportToolView>(
     ImportToolView.Main,
@@ -87,7 +80,7 @@ export default function ImportToolModal() {
           action: {
             label: 'View',
             onClick: () => {
-              navigate(`/tools/${data.tool_key}`);
+              void navigate(`/tools/${data.tool_key}`);
             },
           },
         });
@@ -103,7 +96,7 @@ export default function ImportToolModal() {
     useImportToolZip({
       onSuccess: (data) => {
         setImportModalOpen(false);
-        navigate(`/tools/${data.tool_key}`);
+        void navigate(`/tools/${data.tool_key}`);
       },
       onError: (error) => {
         toast.error('Failed to import tool', {

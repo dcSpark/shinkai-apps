@@ -25,7 +25,7 @@ import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import { actionButtonClassnames } from '../../chat/conversation-footer';
-import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
+import { type CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 
 export function ToolsSelection({
   value,

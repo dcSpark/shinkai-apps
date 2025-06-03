@@ -1,12 +1,12 @@
 import {
   ADDITIONAL_PROPERTY_FLAG,
-  FormContextType,
-  RJSFSchema,
-  StrictRJSFSchema,
+  type FormContextType,
+  type RJSFSchema,
+  type StrictRJSFSchema,
   TranslatableString,
-  WrapIfAdditionalTemplateProps,
+  type WrapIfAdditionalTemplateProps,
 } from '@rjsf/utils';
-import { FocusEvent } from 'react';
+import { type FocusEvent } from 'react';
 
 export default function WrapIfAdditionalTemplate<
   T = any,
@@ -55,7 +55,7 @@ export default function WrapIfAdditionalTemplate<
           {keyLabel}
         </label>
         <input
-          className="mt-1 w-full border p-2 shadow-sm"
+          className="mt-1 w-full border p-2 shadow-xs"
           defaultValue={label}
           disabled={disabled || readonly}
           id={keyId}

@@ -14,7 +14,6 @@ export * from './copy-to-clipboard-icon';
 export * from './dialog';
 export * from './dot-pattern';
 export * from './dots-loader';
-export * from './drag-n-drop';
 export * from './drawer';
 export * from './dropdown-menu';
 export * from './error-message';

@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
-  QuickConnectFormSchema,
+  type QuickConnectFormSchema,
   quickConnectFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/auth/quick-connection';
 import { useInitialRegistration } from '@shinkai_network/shinkai-node-state/v2/mutations/initialRegistration/useInitialRegistration';
@@ -16,9 +16,11 @@ import { Link } from 'react-router';
 import { OnboardingStep } from '../components/onboarding/constants';
 import { ResetStorageBeforeConnectConfirmationPrompt } from '../components/reset-storage-before-connect-confirmation-prompt';
 import config from '../config';
-import { useShinkaiNodeRemoveStorageMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
-import { useShinkaiNodeSpawnMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
-import { useShinkaiNodeKillMutation } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
+import {
+  useShinkaiNodeRemoveStorageMutation,
+  useShinkaiNodeSpawnMutation,
+  useShinkaiNodeKillMutation,
+} from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
@@ -129,7 +131,7 @@ const TermsAndConditionsPage = () => {
     mutateAsync: shinkaiNodeSpawn,
   } = useShinkaiNodeSpawnMutation({
     onSuccess: () => {
-      onSubmit(setupDataForm.getValues());
+      void onSubmit(setupDataForm.getValues());
     },
   });
   const { isPending: shinkaiNodeKillIsPending } = useShinkaiNodeKillMutation();
@@ -159,7 +161,7 @@ const TermsAndConditionsPage = () => {
 
   const onResetConfirmation = () => {
     setResetStorageBeforeConnectConfirmationPrompt(false);
-    onSubmit(setupDataForm.getValues());
+    void onSubmit(setupDataForm.getValues());
   };
 
   return (

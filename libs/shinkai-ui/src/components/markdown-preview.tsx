@@ -1,26 +1,20 @@
-/* eslint-disable jsx-a11y/anchor-has-content */
-/* eslint-disable jsx-a11y/heading-has-content */
-import { Primitive } from '@radix-ui/react-primitive';
+import { type Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
 import React, {
-  ComponentPropsWithoutRef,
-  ComponentType,
+  type ComponentPropsWithoutRef,
+  type ComponentType,
   createContext,
-  ElementRef,
-  ElementType,
-  FC,
-  forwardRef,
-  ForwardRefExoticComponent,
+  type ElementType,
+  type FC,
   memo,
-  ReactNode,
-  RefAttributes,
+  type ReactNode,
   useContext,
   useMemo,
 } from 'react';
-import ReactMarkdown, { type Options } from 'react-markdown';
+import ReactMarkdown, { type Components, type Options } from 'react-markdown';
 import {
   PrismAsyncLight,
-  SyntaxHighlighterProps as SHP,
+  type SyntaxHighlighterProps as SHP,
 } from 'react-syntax-highlighter';
 import python from 'react-syntax-highlighter/dist/esm/languages/prism/python';
 import tsx from 'react-syntax-highlighter/dist/esm/languages/prism/tsx';
@@ -61,8 +55,8 @@ const makeMakeSyntaxHighlighter =
     }) => {
       return (
         <SyntaxHighlighter
-          CodeTag={Code}
-          PreTag={Pre}
+          CodeTag={Code as any}
+          PreTag={Pre as any}
           {...config}
           language={language}
         >
@@ -101,7 +95,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h1: ({ node, className, ...props }) => (
     <h1
       className={cn(
-        'mb-[0.7em] mt-[1em] scroll-m-20 text-[1.375rem] font-bold last:mb-0',
+        'mt-[1em] mb-[0.7em] scroll-m-20 text-[1.375rem] font-bold last:mb-0',
         className,
       )}
       {...props}
@@ -110,7 +104,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h2: ({ node, className, ...props }) => (
     <h2
       className={cn(
-        'text-em-xl mb-[0.4em] mt-[0.8em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
+        'text-em-xl mt-[0.8em] mb-[0.4em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -119,7 +113,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h3: ({ node, className, ...props }) => (
     <h3
       className={cn(
-        'text-em-lg mb-[0.5em] mt-[1em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
+        'text-em-lg mt-[1em] mb-[0.5em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -128,7 +122,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h4: ({ node, className, ...props }) => (
     <h4
       className={cn(
-        'text-em-base mb-[0.5em] mt-[1em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
+        'text-em-base mt-[1em] mb-[0.5em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -137,7 +131,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h5: ({ node, className, ...props }) => (
     <h5
       className={cn(
-        'text-em-base mb-[0.5em] mt-[1em] font-semibold first:mt-0 last:mb-0',
+        'text-em-base mt-[1em] mb-[0.5em] font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -146,7 +140,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   h6: ({ node, className, ...props }) => (
     <h6
       className={cn(
-        'text-em-base mb-[0.5em] mt-[1em] font-semibold first:mt-0 last:mb-0',
+        'text-em-base mt-[1em] mb-[0.5em] font-semibold first:mt-0 last:mb-0',
         className,
       )}
       {...props}
@@ -257,7 +251,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       <code
         className={cn(
           !isCodeBlock &&
-            'bg-official-gray-1000 text-em-sm rounded border p-[0.25em] font-semibold',
+            'bg-official-gray-1000 text-em-sm border-official-gray-780 rounded-sm border p-[0.25em] font-semibold',
           className,
         )}
         {...props}
@@ -268,9 +262,8 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   SyntaxHighlighter: SyntaxHighlighterBase,
 };
 
-export type PreComponent = NonNullable<
-  NonNullable<Options['components']>['pre']
->;
+export type PreComponent = ComponentType<ComponentPropsWithoutRef<'pre'>>;
+export type CodeComponent = ComponentType<ComponentPropsWithoutRef<'code'>>;
 
 export const PreContext = createContext<Omit<
   ComponentPropsWithoutRef<PreComponent>,
@@ -285,16 +278,16 @@ export const PreOverride: PreComponent = ({ children, ...rest }) => {
   return <PreContext.Provider value={rest}>{children}</PreContext.Provider>;
 };
 
-export type CodeComponent = NonNullable<
-  NonNullable<Options['components']>['code']
->;
+export const DefaultPre: PreComponent = ({
+  className,
+  ...rest
+}: ComponentPropsWithoutRef<'pre'>) => <pre className={className} {...rest} />;
 
-export const DefaultPre: PreComponent = ({ node, ...rest }) => (
-  <pre {...rest} />
-);
-
-export const DefaultCode: CodeComponent = ({ node, ...rest }) => (
-  <code {...rest} />
+export const DefaultCode: CodeComponent = ({
+  className,
+  ...rest
+}: ComponentPropsWithoutRef<'code'>) => (
+  <code className={className} {...rest} />
 );
 
 export const DefaultCodeBlockContent: ComponentType<{
@@ -308,7 +301,6 @@ export const DefaultCodeBlockContent: ComponentType<{
 
 export const DefaultCodeHeader: ComponentType<CodeHeaderProps> = () => null;
 
-type MarkdownTextPrimitiveElement = ElementRef<typeof Primitive.div>;
 type PrimitiveDivProps = ComponentPropsWithoutRef<typeof Primitive.div>;
 
 export type MarkdownTextPrimitiveProps = Omit<
@@ -317,7 +309,7 @@ export type MarkdownTextPrimitiveProps = Omit<
 > & {
   containerProps?: Omit<PrimitiveDivProps, 'children' | 'asChild'>;
   containerComponent?: ElementType;
-  components?: NonNullable<Options['components']> & {
+  components?: Partial<Components> & {
     SyntaxHighlighter?: ComponentType<SyntaxHighlighterProps>;
     CodeHeader?: ComponentType<CodeHeaderProps>;
     by_language?: Record<
@@ -329,6 +321,7 @@ export type MarkdownTextPrimitiveProps = Omit<
     >;
   };
   content: string;
+  ref?: React.RefObject<HTMLDivElement>;
 };
 
 export type CodeOverrideProps = ComponentPropsWithoutRef<CodeComponent> & {
@@ -464,62 +457,54 @@ export const CodeOverride: FC<CodeOverrideProps> = ({
   return <CodeBlockOverride components={components} {...props} />;
 };
 
-export const MarkdownTextPrimitive: ForwardRefExoticComponent<MarkdownTextPrimitiveProps> &
-  RefAttributes<MarkdownTextPrimitiveElement> = forwardRef<
-  MarkdownTextPrimitiveElement,
-  MarkdownTextPrimitiveProps
->(
-  (
-    {
-      components: userComponents,
-      className,
-      containerProps,
-      containerComponent: Container = 'div',
-      content,
-      ...rest
-    },
-    forwardedRef,
-  ) => {
-    const {
-      pre = DefaultPre,
-      code = DefaultCode,
-      SyntaxHighlighter = DefaultCodeBlockContent,
-      CodeHeader = DefaultCodeHeader,
-      by_language,
-      ...componentsRest
-    } = userComponents ?? {};
+export const MarkdownTextPrimitive = ({
+  components: userComponents,
+  className,
+  containerProps,
+  containerComponent: Container = 'div',
+  content,
+  ref,
+  ...rest
+}: MarkdownTextPrimitiveProps) => {
+  const {
+    pre = DefaultPre,
+    code = DefaultCode,
+    SyntaxHighlighter = DefaultCodeBlockContent,
+    CodeHeader = DefaultCodeHeader,
+    by_language,
+    ...componentsRest
+  } = userComponents ?? {};
 
-    const components: typeof userComponents = {
-      ...componentsRest,
-      pre: PreOverride,
-      code: useCallbackRef((props) => (
-        <CodeOverride
-          components={{
-            Pre: pre,
-            Code: code,
-            SyntaxHighlighter,
-            CodeHeader,
-            by_language,
-          }}
-          {...props}
-        />
-      )),
-    };
+  const components: typeof userComponents = {
+    ...componentsRest,
+    pre: PreOverride,
+    code: useCallbackRef((props) => (
+      <CodeOverride
+        components={{
+          Pre: pre,
+          Code: code,
+          SyntaxHighlighter,
+          CodeHeader,
+          by_language,
+        }}
+        {...props}
+      />
+    )),
+  };
 
-    return (
-      <Container
-        // data-status={status.type}
-        {...containerProps}
-        className={cn(className, containerProps?.className)}
-        ref={forwardedRef}
-      >
-        <ReactMarkdown components={components} {...rest}>
-          {content}
-        </ReactMarkdown>
-      </Container>
-    );
-  },
-);
+  return (
+    <Container
+      // data-status={status.type}
+      {...containerProps}
+      className={cn(className, containerProps?.className)}
+      ref={ref}
+    >
+      <ReactMarkdown components={components} {...rest}>
+        {content}
+      </ReactMarkdown>
+    </Container>
+  );
+};
 
 MarkdownTextPrimitive.displayName = 'MarkdownTextPrimitive';
 
@@ -538,7 +523,7 @@ export const MarkdownTextBase = ({
     ...Object.fromEntries(
       Object.entries(userComponents ?? {}).filter(([_, v]) => v !== undefined),
     ),
-  };
+  } as MarkdownTextPrimitiveProps['components'];
 
   return (
     <MarkdownTextPrimitive
@@ -546,7 +531,6 @@ export const MarkdownTextBase = ({
       remarkPlugins={[remarkGfm]}
       {...rest}
       className={cn(isRunning && 'md-running', className)}
-      // rehypePlugins={[rehypeRaw]} // enable when needed to render raw html
     />
   );
 };

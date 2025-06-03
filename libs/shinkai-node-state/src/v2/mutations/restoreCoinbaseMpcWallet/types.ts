@@ -1,8 +1,8 @@
-import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import {
-  NetworkIdentifier,
-  RestoreCoinbaseMPCWalletResponse,
-  WalletRole,
+  type NetworkIdentifier,
+  type RestoreCoinbaseMPCWalletResponse,
+  type WalletRole,
 } from '@shinkai_network/shinkai-message-ts/api/wallets';
 
 export type RestoreCoinbaseMpcWalletInput = Token & {

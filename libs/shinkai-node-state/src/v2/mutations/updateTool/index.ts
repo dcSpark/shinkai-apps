@@ -1,6 +1,6 @@
 import { updateTool as updateToolApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { UpdateToolInput } from './types';
+import { type UpdateToolInput } from './types';
 
 export const updateTool = async ({
   nodeAddress,

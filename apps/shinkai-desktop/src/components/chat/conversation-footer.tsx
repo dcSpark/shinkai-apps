@@ -7,12 +7,13 @@ import {
   isJobInbox,
 } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
-  ChatMessageFormSchema,
+  type ChatMessageFormSchema,
   chatMessageFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mutations/stopGeneratingLLM/useStopGeneratingLLM';
+import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetJobFolderName } from '@shinkai_network/shinkai-node-state/v2/queries/getJobFolderName/useGetJobFolderName';
 import { useGetNodeStorageLocation } from '@shinkai_network/shinkai-node-state/v2/queries/getNodeStorageLocation/useGetNodeStorageLocation';
@@ -71,7 +72,7 @@ import { usePromptSelectionStore } from '../prompt/context/prompt-selection-cont
 import { AiUpdateSelectionActionBar } from './chat-action-bar/ai-update-selection-action-bar';
 import {
   chatConfigFormSchema,
-  ChatConfigFormSchemaType,
+  type ChatConfigFormSchemaType,
   UpdateChatConfigActionBar,
 } from './chat-action-bar/chat-config-action-bar';
 import { FileSelectionActionBar } from './chat-action-bar/file-selection-action-bar';
@@ -340,14 +341,31 @@ function ConversationChatFooter({
     token: auth?.api_v2_key ?? '',
   });
 
+  const { data: agents } = useGetAgents({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
     onSuccess: (_, variables) => {
       if (variables.files && variables.files.length > 0) {
         captureAnalyticEvent('AI Chat with Files', {
           filesCount: variables.files.length,
         });
-      } else {
-        captureAnalyticEvent('AI Chat', undefined);
+      }
+      const agentSelected = agents?.find(
+        (agent) => agent.agent_id === provider?.agent.id,
+      );
+      if (agentSelected && agentSelected.edited === false) {
+        captureAnalyticEvent('Chat with Pre-built Agents', {
+          agentName: agentSelected.name,
+        });
+      }
+      if (agentSelected && agentSelected.edited === true) {
+        captureAnalyticEvent('Chat with Custom Agents', undefined);
+      }
+      if (!agentSelected) {
+        captureAnalyticEvent('Chat with AI Model', undefined);
       }
     },
     onError: (error) => {
@@ -425,7 +443,7 @@ function ConversationChatFooter({
                       description={selectedTool.description}
                       name={formatText(selectedTool.name)}
                       onSubmit={() => {
-                        chatForm.handleSubmit(onSubmit)();
+                        void chatForm.handleSubmit(onSubmit)();
                       }}
                       onToolFormChange={setToolFormData}
                       remove={() => {
@@ -648,7 +666,7 @@ function ConversationChatFooter({
                             <span className="line-clamp-1 text-white">
                               {formatText(tool.name)}
                             </span>
-                            <span className="text-gray-80 line-clamp-3 whitespace-pre-wrap text-xs">
+                            <span className="text-gray-80 line-clamp-3 text-xs whitespace-pre-wrap">
                               {tool.description}
                             </span>
                           </div>
@@ -664,7 +682,7 @@ function ConversationChatFooter({
         <motion.div
           animate={{ opacity: 1 }}
           className={cn(
-            'bg-official-gray-850 absolute inset-x-2 bottom-1.5 z-0 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pb-1 pt-2.5 shadow-white',
+            'bg-official-gray-850 absolute inset-x-2 bottom-1.5 z-0 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pt-2.5 pb-1 shadow-white',
           )}
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
@@ -850,7 +868,7 @@ const FileListBase = ({
             </div>
             <button
               className={cn(
-                'bg-official-gray-850 hover:bg-official-gray-800 text-gray-80 border-official-gray-780 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
+                'bg-official-gray-850 hover:bg-official-gray-800 text-gray-80 border-official-gray-780 absolute -top-2 -right-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
               )}
               onClick={(event) => {
                 event.stopPropagation();
@@ -1020,9 +1038,9 @@ export const SelectedToolChat = ({
           </div>
         )}
       </div>
-      <div className="absolute right-3 top-3 flex items-center gap-6 text-gray-100 hover:text-white">
+      <div className="absolute top-3 right-3 flex items-center gap-6 text-gray-100 hover:text-white">
         <ToggleGroup
-          className="bg-background inline-flex gap-0 -space-x-px rounded-lg shadow-sm shadow-black/5 rtl:space-x-reverse"
+          className="bg-background inline-flex gap-0 -space-x-px rounded-lg shadow-xs shadow-black/5 rtl:space-x-reverse"
           onValueChange={(value) => {
             if (value) {
               let text = '';

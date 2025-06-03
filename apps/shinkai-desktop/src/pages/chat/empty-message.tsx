@@ -47,7 +47,7 @@ const EmptyMessage = () => {
       });
     },
     onSuccess: async (data) => {
-      navigate(
+      void navigate(
         `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
       );
     },
@@ -55,6 +55,7 @@ const EmptyMessage = () => {
   useEffect(() => {
     resetJobScope();
     setPromptSelected(undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onCreateJob = async (message: string) => {

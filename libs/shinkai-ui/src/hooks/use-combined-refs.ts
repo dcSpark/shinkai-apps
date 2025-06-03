@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import type React from 'react';
+import { useEffect, useRef } from 'react';
 
 function useCombinedRefs<T>(
   ...refs: React.ForwardedRef<T>[]
-): React.MutableRefObject<T | null> {
+): React.RefObject<T | null> {
   const targetRef = useRef<T>(null);
   useEffect(() => {
     refs.forEach((ref) => {
@@ -11,7 +12,7 @@ function useCombinedRefs<T>(
       if (typeof ref === 'function') {
         ref(targetRef.current);
       } else {
-        // eslint-disable-next-line no-param-reassign
+         
         ref.current = targetRef.current;
       }
     });

@@ -1,4 +1,4 @@
-import { JobMessage } from '../jobs/types';
+import { type JobMessage } from '../jobs/types';
 
 export type ShinkaiToolHeader = {
   author: string;

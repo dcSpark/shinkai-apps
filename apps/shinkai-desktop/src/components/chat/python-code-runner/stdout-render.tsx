@@ -12,7 +12,7 @@ export const StdoutRender = ({ stdout }: { stdout: string[] }) => {
   return (
     <div className="mt-4 rounded-md border border-gray-200 bg-gray-50">
       <button
-        className="flex w-full items-center justify-between p-3 text-sm text-gray-700 transition-colors duration-200 hover:bg-gray-100 focus:outline-none"
+        className="flex w-full items-center justify-between p-3 text-sm text-gray-700 transition-colors duration-200 hover:bg-gray-100 focus:outline-hidden"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <span className="flex items-center">
@@ -28,10 +28,10 @@ export const StdoutRender = ({ stdout }: { stdout: string[] }) => {
       </button>
       {isExpanded && (
         <div className="border-t border-gray-200">
-          <pre className="max-h-60 overflow-y-auto whitespace-pre-wrap break-words p-4 text-sm text-gray-800">
+          <pre className="max-h-60 overflow-y-auto p-4 text-sm break-words whitespace-pre-wrap text-gray-800">
             {stdout.map((line, index) => (
               <div className="mb-1 last:mb-0" key={index}>
-                <span className="mr-2 select-none text-gray-500">
+                <span className="mr-2 text-gray-500 select-none">
                   {index + 1}
                 </span>
                 {line}

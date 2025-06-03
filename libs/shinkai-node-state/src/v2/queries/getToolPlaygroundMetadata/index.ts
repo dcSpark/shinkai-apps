@@ -1,6 +1,6 @@
 import { getToolPlaygroundMetadata as getToolPlaygroundMetadataApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { GetToolPlaygroundMetadataInput, GetToolPlaygroundMetadataOutput } from './types';
+import { type GetToolPlaygroundMetadataInput, type GetToolPlaygroundMetadataOutput } from './types';
 
 export const getToolPlaygroundMetadata = async ({
   toolRouterKey,

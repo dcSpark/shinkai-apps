@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  LocaleMode,
+  type LocaleMode,
   localeOptions,
   useTranslation,
 } from '@shinkai_network/shinkai-i18n';
@@ -54,7 +54,7 @@ import {
   useShinkaiNodeRespawnMutation,
 } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { isHostingShinkaiNode } from '../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
-import { Auth, useAuth } from '../store/auth';
+import { type Auth, useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import { SimpleLayout } from './layout/simple-layout';
@@ -108,7 +108,7 @@ const SettingsPage = () => {
 
   const { mutateAsync: setMaxChatIterationsMutation } = useSetMaxChatIterations(
     {
-      onSuccess: (_data, variables) => {
+      onSuccess: (_data) => {
         toast.success(t('settings.maxChatIterations.success'));
       },
       onError: (error) => {
@@ -163,7 +163,7 @@ const SettingsPage = () => {
   );
 
   useEffect(() => {
-    (async () => {
+    void (async () => {
       setAppVersion(await getVersion());
     })();
   }, []);
@@ -191,7 +191,7 @@ const SettingsPage = () => {
     if (!debouncedMaxChatIterations || isNaN(newMaxIterations)) return;
 
     if (newMaxIterations !== currentBackendValue) {
-      setMaxChatIterationsMutation({
+      void setMaxChatIterationsMutation({
         nodeAddress: auth?.node_address ?? '',
         token: auth?.api_v2_key ?? '',
         maxIterations: newMaxIterations,
@@ -223,7 +223,7 @@ const SettingsPage = () => {
   const { mutateAsync: respawnShinkaiNode } = useShinkaiNodeRespawnMutation();
   const { mutateAsync: updateNodeName, isPending: isUpdateNodeNamePending } =
     useUpdateNodeName({
-      onSuccess: () => {
+      onSuccess: async () => {
         toast.success(t('settings.shinkaiIdentity.success'));
         if (!auth) return;
         const newAuth: Auth = { ...auth };
@@ -232,7 +232,7 @@ const SettingsPage = () => {
           shinkai_identity: currentShinkaiIdentity,
         });
         if (isLocalShinkaiNodeInUse) {
-          respawnShinkaiNode();
+          await respawnShinkaiNode();
         } else if (!isHostingShinkaiNode(auth.node_address)) {
           toast.info(t('shinkaiNode.restartNode'));
         }
@@ -443,12 +443,12 @@ const SettingsPage = () => {
                           if (currentShinkaiIdentity === auth?.shinkai_identity)
                             return;
                           if (event.key === 'Enter') {
-                            handleUpdateNodeName();
+                            void handleUpdateNodeName();
                           }
                         },
                       }}
                       helperMessage={
-                        <div className="flex items-center justify-start gap-3">
+                        <span className="flex items-center justify-start gap-3">
                           <span className="text-gray-80 inline-flex items-center gap-1 px-1 py-2.5 hover:text-white">
                             {isIdentityLocalhost ? (
                               <a
@@ -504,7 +504,7 @@ const SettingsPage = () => {
                               'settings.shinkaiIdentity.troubleRegisterIdentity',
                             )}
                           </a>
-                        </div>
+                        </span>
                       }
                       label={t('settings.shinkaiIdentity.label')}
                     />

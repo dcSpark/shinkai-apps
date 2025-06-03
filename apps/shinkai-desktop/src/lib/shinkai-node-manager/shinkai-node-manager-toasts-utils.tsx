@@ -1,7 +1,7 @@
 import { t } from '@shinkai_network/shinkai-i18n';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import React from 'react';
-import { ExternalToast, toast } from 'sonner';
+import { type ExternalToast, toast } from 'sonner';
 
 import { openShinkaiNodeManagerWindow } from './shinkai-node-manager-windows-utils';
 
@@ -20,8 +20,8 @@ const ShinkaiNodeLogsLabel = ({
   return (
     <span
       className={cn('cursor-pointer text-white', className)}
-      onClick={() => {
-        openShinkaiNodeManagerWindow();
+      onClick={async () => {
+        await openShinkaiNodeManagerWindow();
       }}
       {...props}
     >

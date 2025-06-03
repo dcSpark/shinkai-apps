@@ -1,7 +1,7 @@
-import { Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type Token } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import {
-  CopyToolAssetsRequest,
-  CopyToolAssetsResponse,
+  type CopyToolAssetsRequest,
+  type CopyToolAssetsResponse,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
 export type CopyToolAssetsInput = Token & {

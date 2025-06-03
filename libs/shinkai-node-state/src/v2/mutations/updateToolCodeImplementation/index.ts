@@ -1,6 +1,6 @@
 import { updateToolCodeImplementation as updateToolCodeImplementationApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { UpdateToolCodeImplementationInput } from './types';
+import { type UpdateToolCodeImplementationInput } from './types';
 
 export const updateToolCodeImplementation = async ({
   nodeAddress,

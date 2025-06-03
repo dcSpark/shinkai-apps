@@ -17,11 +17,11 @@ export const useConfigDeepLink = () => {
 
       const payload = event.payload as ConfigDeepLinkPayload;
       if (payload.tool_router_key) {
-        navigate(`/tools/${payload.tool_router_key}`);
+        void navigate(`/tools/${payload.tool_router_key}`);
       }
     });
     return () => {
-      unlisten.then((fn) => fn());
+      void unlisten.then((fn) => fn());
     };
   }, [auth, navigate]);
 };

@@ -2,12 +2,12 @@ import {
   ariaDescribedByIds,
   enumOptionsIndexForValue,
   enumOptionsValueForIndex,
-  FormContextType,
-  RJSFSchema,
-  StrictRJSFSchema,
-  WidgetProps,
+  type FormContextType,
+  type RJSFSchema,
+  type StrictRJSFSchema,
+  type WidgetProps,
 } from '@rjsf/utils';
-import { ChangeEvent, FocusEvent } from 'react';
+import { type ChangeEvent, type FocusEvent } from 'react';
 
 export default function SelectWidget<
   T = any,
@@ -53,7 +53,7 @@ export default function SelectWidget<
     <select
       aria-describedby={ariaDescribedByIds<T>(id)}
       autoFocus={autofocus}
-      className={`w-full border border-gray-100 bg-gray-400 p-2 text-white focus:border-gray-100 focus:outline-none ${rawErrors.length > 0 ? 'border-red-500' : 'border-gray-100'} `}
+      className={`w-full border border-gray-100 bg-gray-400 p-2 text-white focus:border-gray-100 focus:outline-hidden ${rawErrors.length > 0 ? 'border-red-500' : 'border-gray-100'} `}
       disabled={disabled || readonly}
       id={id}
       multiple={multiple}

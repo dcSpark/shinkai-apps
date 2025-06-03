@@ -1,4 +1,4 @@
-import { ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { usePublishTool } from '@shinkai_network/shinkai-node-state/v2/mutations/publishTool/usePublishTool';
 import { useRestoreToolConversation } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreToolConversation/useRestoreToolConversation';
@@ -10,8 +10,10 @@ import {
   TooltipContent,
   TooltipPortal,
   TooltipTrigger,
+  Badge,
+  Separator,
+  Tooltip,
 } from '@shinkai_network/shinkai-ui';
-import { Badge, Separator, Tooltip } from '@shinkai_network/shinkai-ui';
 import { StoreIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
@@ -30,7 +32,7 @@ import { useAuth } from '../../../store/auth';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
 import { DockerStatus } from '../../tools/tool-collection';
 import { usePlaygroundStore } from '../context/playground-context';
-import { CreateToolCodeFormSchema } from '../hooks/use-tool-code';
+import { type CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 import { useToolSave } from '../hooks/use-tool-save';
 import EditToolBasicInfoDialog from './edit-tool-basic-info-dialog';
 import { ManageSourcesButton } from './manage-sources-button';
@@ -48,7 +50,7 @@ function PlaygroundHeaderBase({
   }[];
   toolName: string;
   toolDescription: string;
-  baseToolCodeRef: React.MutableRefObject<string>;
+  baseToolCodeRef: React.RefObject<string>;
   initialToolRouterKeyWithVersion: string;
 }) {
   const auth = useAuth((state) => state.auth);
@@ -69,8 +71,8 @@ function PlaygroundHeaderBase({
 
   const { handleSaveTool, isSavingTool } = useToolSave();
 
-  const handleSaveChanges = () => {
-    handleSaveTool({
+  const handleSaveChanges = async () => {
+    await handleSaveTool({
       toolName: toolName,
       toolDescription: toolDescription,
       toolMetadata: toolMetadata as ToolMetadata,
@@ -173,7 +175,7 @@ function PlaygroundHeaderBase({
           className="text-gray-80 border-none"
           onClick={() => {
             resetPlaygroundStore();
-            navigate('/tools');
+            void navigate('/tools');
           }}
           rounded="lg"
           size="xs"
@@ -347,7 +349,7 @@ function PlaygroundHeaderBase({
               <Button
                 className="w-full"
                 onClick={() => {
-                  publishTool({
+                  void publishTool({
                     toolKey: toolRouterKey ?? '',
                     nodeAddress: auth?.node_address ?? '',
                     token: auth?.api_v2_key ?? '',

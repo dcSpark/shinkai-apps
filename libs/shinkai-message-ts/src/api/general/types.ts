@@ -1,4 +1,4 @@
-import { ToolUsageType } from '../tools/types';
+import { type ToolUsageType } from '../tools/types';
 
 export type QRSetupData = {
   registration_code: string;

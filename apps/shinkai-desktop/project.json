@@ -10,9 +10,7 @@
       "defaultConfiguration": "development",
       "options": {
         "cwd": "apps/shinkai-desktop",
-        "commands": [
-          "npx tauri build --verbose"
-        ]
+        "commands": ["npx tauri build --verbose"]
       },
       "configurations": {
         "development": {},
@@ -35,19 +33,29 @@
       }
     },
     "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/shinkai-desktop/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "cargo-check": {
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
         "cwd": "apps/shinkai-desktop",
-        "commands": [
-          "cd src-tauri && cargo check",
-          "npx eslint --ext .js,.jsx,.ts,.tsx . --ignore-path .gitignore"
-        ],
-        "parallel": true
+        "commands": ["cd src-tauri && cargo check"]
       },
       "configurations": {
         "development": {},
         "production": {}
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../coverage/apps/shinkai-desktop"
       }
     }
   }

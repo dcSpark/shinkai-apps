@@ -5,9 +5,9 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type ImportToolInput, type ImportToolOutput } from './types';
 import { importTool } from '.';
-import { ImportToolInput, ImportToolOutput } from './types';
 
 type Options = UseMutationOptions<ImportToolOutput, APIError, ImportToolInput>;
 
@@ -17,8 +17,8 @@ export const useImportTool = (options?: Options) => {
   return useMutation({
     mutationFn: importTool,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
       });
       if (options?.onSuccess) {

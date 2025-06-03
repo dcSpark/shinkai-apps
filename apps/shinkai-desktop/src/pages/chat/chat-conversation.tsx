@@ -10,9 +10,11 @@ import {
 import { useForkJobMessages } from '@shinkai_network/shinkai-node-state/v2/mutations/forkJobMessages/useForkJobMessages';
 import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
+
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
-import { ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { type ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
+
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import { useEffect, useMemo } from 'react';
@@ -84,7 +86,7 @@ export const useChatConversationWithOptimisticUpdates = ({
         { inboxId },
       ];
 
-      queryClient.cancelQueries({ queryKey });
+      void queryClient.cancelQueries({ queryKey });
       queryClient.setQueryData(
         queryKey,
         produce((draft: ChatConversationInfiniteData | undefined) => {
@@ -104,7 +106,7 @@ export const useChatConversationWithOptimisticUpdates = ({
   useEffect(() => {
     if (forceRefetchInterval) {
       setTimeout(() => {
-        queryClient.invalidateQueries({
+        void queryClient.invalidateQueries({
           queryKey: [
             FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
             { inboxId },
@@ -193,8 +195,8 @@ const ChatConversation = () => {
   const { mutateAsync: retryMessage } = useRetryMessage();
 
   const { mutateAsync: forkMessage } = useForkJobMessages({
-    onSuccess: (response) => {
-      navigate(
+    onSuccess: async (response) => {
+      await navigate(
         `/inboxes/${encodeURIComponent(
           buildInboxIdFromJobId(response.job_id),
         )}`,
@@ -209,8 +211,8 @@ const ChatConversation = () => {
 
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
     onSuccess: () => {
-      captureAnalyticEvent('AI Chat', undefined);
-      queryClient.invalidateQueries({
+      captureAnalyticEvent('Edit and Regenerate Message', undefined);
+      void queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION, { inboxId }],
       });
     },

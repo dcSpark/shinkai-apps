@@ -1,10 +1,16 @@
-import { UseMutationOptions, useQueryClient } from '@tanstack/react-query';
-import { useMutation } from '@tanstack/react-query';
+import {
+  type UseMutationOptions,
+  useQueryClient,
+  useMutation,
+} from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import {
+  type UpdateLLMProviderInput,
+  type UpdateLLMProviderOutput,
+} from './types';
 import { updateLLMProvider } from '.';
-import { UpdateLLMProviderInput, UpdateLLMProviderOutput } from './types';
 
 type Options = UseMutationOptions<
   UpdateLLMProviderOutput,
@@ -17,8 +23,8 @@ export const useUpdateLLMProvider = (options?: Options) => {
   return useMutation({
     mutationFn: updateLLMProvider,
     ...options,
-    onSuccess: (...onSuccessParameters) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (...onSuccessParameters) => {
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_LLM_PROVIDERS],
       });
       if (options?.onSuccess) {

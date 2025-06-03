@@ -1,5 +1,5 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { GetToolsCategory } from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type GetToolsCategory } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDisableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/disableAllTools/useDisableAllTools';
 import { useEnableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/enableAllTools/useEnableAllTools';
 import { useGetDockerStatus } from '@shinkai_network/shinkai-node-state/v2/queries/getDockerStatus/useGetDockerStatus';
@@ -184,8 +184,8 @@ const ToolCollectionBase = () => {
               <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
                 <DropdownMenuItem
                   className="text-xs"
-                  onClick={() => {
-                    enableAllTools({
+                  onClick={async () => {
+                    await enableAllTools({
                       nodeAddress: auth?.node_address ?? '',
                       token: auth?.api_v2_key ?? '',
                     });
@@ -196,8 +196,8 @@ const ToolCollectionBase = () => {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-xs"
-                  onClick={() => {
-                    disableAllTools({
+                  onClick={async () => {
+                    await disableAllTools({
                       nodeAddress: auth?.node_address ?? '',
                       token: auth?.api_v2_key ?? '',
                     });
@@ -231,15 +231,15 @@ const ToolCollectionBase = () => {
           {Array.from({ length: 8 }).map((_, idx) => (
             <div
               className={cn(
-                'grid animate-pulse grid-cols-[1fr_40px_115px_36px] items-center gap-5 rounded-sm px-2 py-3 pr-4 text-left text-sm',
+                'grid animate-pulse grid-cols-[1fr_40px_115px_36px] items-center gap-5 rounded-xs px-2 py-3 pr-4 text-left text-sm',
               )}
               key={idx}
             >
               <div className="flex w-full flex-1 flex-col gap-3">
-                <span className="h-4 w-36 rounded-sm bg-gray-300" />
+                <span className="h-4 w-36 rounded-xs bg-gray-300" />
                 <div className="flex flex-col gap-1">
-                  <span className="h-3 w-full rounded-sm bg-gray-300" />
-                  <span className="h-3 w-2/4 rounded-sm bg-gray-300" />
+                  <span className="h-3 w-full rounded-xs bg-gray-300" />
+                  <span className="h-3 w-2/4 rounded-xs bg-gray-300" />
                 </div>
               </div>
               <span className="h-7 w-full rounded-md bg-gray-300" />
@@ -296,8 +296,8 @@ export function DockerStatus() {
     <Tooltip>
       <TooltipTrigger
         className="flex items-center gap-2 px-1"
-        onClick={() => {
-          refetch();
+        onClick={async () => {
+          await refetch();
         }}
       >
         <span

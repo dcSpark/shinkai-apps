@@ -5,7 +5,7 @@ import { debug } from '@tauri-apps/plugin-log';
 import { useEffect } from 'react';
 
 import { isLocalShinkaiNode } from '../lib/shinkai-node-manager/shinkai-node-manager-windows-utils';
-import { Auth, useAuth } from './auth';
+import { type Auth, useAuth } from './auth';
 import { useExperimental } from './experimental';
 import { useSettings } from './settings';
 import { useShinkaiNodeManager } from './shinkai-node-manager';
@@ -32,10 +32,10 @@ export const useSyncStorageSecondary = () => {
   useEffect(() => {
     const currentWindowLabel = getCurrentWindow().label;
 
-    debug('using sync storage secondary');
+    void debug('using sync storage secondary');
 
     const handleRehydrate = (triggeredBy: string, targetStores: string[]) => {
-      debug(
+      void debug(
         `${currentWindowLabel} rehydrating stores:${targetStores?.join(',')} triggeredBy:${triggeredBy}`,
       );
       rehydrateStore(targetStores);
@@ -48,7 +48,7 @@ export const useSyncStorageSecondary = () => {
     );
 
     return () => {
-      unlistenRehydrateStorage.then((fn) => fn());
+      void unlistenRehydrateStorage.then((fn) => fn());
     };
   }, []);
 };
@@ -57,16 +57,16 @@ const handleAuthSideEffect = async (
   auth: Auth | null,
   prevAuth: Auth | null,
 ) => {
-  debug(`prev auth: ${prevAuth} --- new auth ${auth}`);
+  void debug(`prev auth: ${prevAuth} --- new auth ${auth}`);
   const currentWindowLabel = getCurrentWindow().label;
   // SignOut case
   if (prevAuth && !auth) {
-    debug(
+    void debug(
       `setting prevAuth:${JSON.stringify(prevAuth)} auth:${JSON.stringify(auth)}`,
     );
     useSettings.getState().resetSettings();
     useShinkaiNodeManager.getState().setIsInUse(false);
-    emit('rehydrate-storage', {
+    void emit('rehydrate-storage', {
       triggeredBy: currentWindowLabel,
       stores: ['settings', 'shinkai-node-options'],
     });
@@ -76,9 +76,9 @@ const handleAuthSideEffect = async (
   if (!prevAuth) {
     const isLocal = isLocalShinkaiNode(auth?.node_address || '');
     const isRunning: boolean = await invoke('shinkai_node_is_running');
-    debug(`setting is in use isLocal:${isLocal} isRunning:${isRunning}`);
+    void debug(`setting is in use isLocal:${isLocal} isRunning:${isRunning}`);
     useShinkaiNodeManager.getState().setIsInUse(isLocal && isRunning);
-    emit('rehydrate-storage', {
+    void emit('rehydrate-storage', {
       triggeredBy: currentWindowLabel,
       stores: ['settings', 'shinkai-node-options'],
     });
@@ -86,11 +86,11 @@ const handleAuthSideEffect = async (
 };
 
 export const useSyncStorageSideEffects = () => {
-  debug('using useSyncStorageSideEffects');
+  void debug('using useSyncStorageSideEffects');
   useEffect(() => {
     const authUnsubscribe = useAuth.subscribe((state, prevState) => {
-      debug('auth state changed');
-      handleAuthSideEffect(state.auth, prevState.auth);
+      void debug('auth state changed');
+      void handleAuthSideEffect(state.auth, prevState.auth);
     });
     return () => {
       authUnsubscribe();
@@ -101,12 +101,12 @@ export const useSyncStorageSideEffects = () => {
 export const useSyncStorageMain = () => {
   useEffect(() => {
     const currentWindowLabel = getCurrentWindow().label;
-    debug('using sync storage main');
+    void debug('using sync storage main');
     const handleStorageChange = (event: StorageEvent) => {
-      debug(
+      void debug(
         `${currentWindowLabel} storage:${event.key} changed by ${event.url}, emitting rehydrate-storage...`,
       );
-      emit('rehydrate-storage', {
+      void emit('rehydrate-storage', {
         triggeredBy: currentWindowLabel,
         stores: [event.key],
       });

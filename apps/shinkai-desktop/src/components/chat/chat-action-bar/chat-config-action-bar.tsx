@@ -5,7 +5,6 @@ import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils
 import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import {
-  Alert,
   Button,
   Form,
   Popover,
@@ -13,11 +12,8 @@ import {
   PopoverTrigger,
   Tooltip,
   TooltipContent,
-  TooltipPortal,
   TooltipProvider,
   TooltipTrigger,
-} from '@shinkai_network/shinkai-ui';
-import {
   FormControl,
   FormField,
   FormItem,
@@ -31,12 +27,9 @@ import {
   Textarea,
 } from '@shinkai_network/shinkai-ui';
 import { ChatSettingsIcon } from '@shinkai_network/shinkai-ui/assets';
-import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Settings2 } from 'lucide-react';
-import { InfoCircleIcon } from 'primereact/icons/infocircle';
+
 import { memo, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { UseFormReturn } from 'react-hook-form';
+import { useForm, type UseFormReturn } from 'react-hook-form';
 import { useParams } from 'react-router';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -416,7 +409,6 @@ export function CreateChatConfigActionBar({
 
   return (
     <div className="flex items-center gap-2">
-      {/* <ToolsDisabledAlert isToolsDisabled={!form.watch('useTools')} /> */}
       <Popover>
         <TooltipProvider delayDuration={0}>
           <Tooltip>
@@ -428,10 +420,8 @@ export function CreateChatConfigActionBar({
               </TooltipTrigger>
             </PopoverTrigger>
             <PopoverContent
-              // align="end"
               className="max-h-[50vh] min-w-[380px] overflow-auto px-6 py-7 text-xs"
               side="bottom"
-              // side="top"
             >
               <h2 className="leading-1 text-gray-80 mb-5 text-xs uppercase">
                 Chat Settings
@@ -472,47 +462,3 @@ export function CreateChatConfigActionBar({
     </div>
   );
 }
-
-// const useSelectedAIModel = () => {
-//   const defaultAgentId = useSettings((state) => state.defaultAgentId);
-//   const auth = useAuth((state) => state.auth);
-//
-//   const { llmProviders } = useGetLLMProviders({
-//     nodeAddress: auth?.node_address ?? '',
-//     token: auth?.api_v2_key ?? '',
-//   });
-//   const selectedProvider = llmProviders?.find(
-//     (provider) => provider.id === defaultAgentId,
-//   );
-//   return selectedProvider;
-// };
-
-const ToolsDisabledAlert = ({
-  isToolsDisabled,
-}: {
-  isToolsDisabled?: boolean;
-}) => {
-  return isToolsDisabled ? (
-    <TooltipProvider delayDuration={0}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Alert
-            className={cn(
-              'cursor-pointer [&>svg]:static [&>svg~*]:pl-0',
-              'flex w-full items-center gap-2 rounded-lg px-3 py-1.5',
-            )}
-            variant="info"
-          >
-            <InfoCircleIcon className="h-3.5 w-3.5 shrink-0" />
-            <span className="whitespace-nowrap text-xs">Tools disabled</span>
-          </Alert>
-        </TooltipTrigger>
-        <TooltipPortal>
-          <TooltipContent>
-            <p>Turn on Enable Tools in chat settings to allow tool usage.</p>
-          </TooltipContent>
-        </TooltipPortal>
-      </Tooltip>
-    </TooltipProvider>
-  ) : null;
-};

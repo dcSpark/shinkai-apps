@@ -5,9 +5,9 @@ import {
 } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type CopyToolAssetsInput, type CopyToolAssetsOutput } from './types';
 import { copyToolAssets } from './index';
-import { CopyToolAssetsInput, CopyToolAssetsOutput } from './types';
 
 type Options = UseMutationOptions<
   CopyToolAssetsOutput,
@@ -21,8 +21,8 @@ export const useCopyToolAssets = (options?: Options) => {
   return useMutation({
     mutationFn: copyToolAssets,
     ...options,
-    onSuccess: (response, variables, context) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (response, variables, context) => {
+      await queryClient.invalidateQueries({
         queryKey: [
           FunctionKeyV2.GET_ALL_TOOL_ASSETS,
           {
@@ -32,7 +32,7 @@ export const useCopyToolAssets = (options?: Options) => {
           },
         ],
       });
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: [
           FunctionKeyV2.GET_TOOL,
           {

@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { FunctionKeyV2 } from '../../constants';
+import { type GetDockerStatusInput, type Options } from './types';
 import { getDockerStatus } from '.';
-import { GetDockerStatusInput, Options } from './types';
 
 export const useGetDockerStatus = (
   input: GetDockerStatusInput,

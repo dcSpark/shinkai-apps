@@ -6,9 +6,9 @@ import {
 
 import { FunctionKeyV2 } from '../../constants';
 import { getPlaygroundTool } from '../../queries/getPlaygroundTool';
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
+import { type DuplicateToolInput, type DuplicateToolOutput } from './types';
 import { duplicateTool } from '.';
-import { DuplicateToolInput, DuplicateToolOutput } from './types';
 
 type Options = UseMutationOptions<
   DuplicateToolOutput,
@@ -23,7 +23,7 @@ export const useDuplicateTool = (options?: Options) => {
     mutationFn: duplicateTool,
     ...options,
     onSuccess: async (response, variables, context) => {
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_LIST_TOOLS],
       });
 

@@ -2,7 +2,7 @@ import React from 'react';
 
 export function useClickAway<T extends Element>(
   cb: (e: Event) => void,
-): React.MutableRefObject<T | null> {
+): React.RefObject<T | null> {
   const ref = React.useRef<T | null>(null);
   const refCb = React.useRef(cb);
 

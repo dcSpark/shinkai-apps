@@ -1,6 +1,6 @@
 import { searchPrompt as searchPromptApi } from '@shinkai_network/shinkai-message-ts/api/tools/index';
 
-import { GetPromptSearchInput } from './types';
+import { type GetPromptSearchInput } from './types';
 
 export const getPromptSearch = async ({
   nodeAddress,

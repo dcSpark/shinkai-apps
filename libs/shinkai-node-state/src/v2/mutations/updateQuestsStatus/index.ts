@@ -1,6 +1,6 @@
 import { updateQuestsStatus as updateQuestsStatusApi } from '@shinkai_network/shinkai-message-ts/api/quests/index';
 
-import { UpdateQuestsStatusInput } from './types';
+import { type UpdateQuestsStatusInput } from './types';
 
 export const updateQuestsStatus = async ({
   nodeAddress,

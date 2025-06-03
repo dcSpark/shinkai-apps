@@ -1,7 +1,7 @@
 import { setOAuthToken } from '@shinkai_network/shinkai-message-ts/api/tools/index';
-import { useMutation, UseMutationOptions } from '@tanstack/react-query';
+import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 
-import { APIError } from '../../types';
+import { type APIError } from '../../types';
 
 export type SetOAuthTokenInput = {
   nodeAddress: string;

@@ -1,6 +1,6 @@
 import { removeAgent as removeAgentApi } from '@shinkai_network/shinkai-message-ts/api/agents/index';
 
-import { RemoveAgentInput } from './types';
+import { type RemoveAgentInput } from './types';
 
 export const removeAgent = async ({
   nodeAddress,

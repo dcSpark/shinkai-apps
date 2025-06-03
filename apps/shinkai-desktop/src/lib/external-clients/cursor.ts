@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-import { TFunction } from 'i18next';
+import { type TFunction } from 'i18next';
 import { toast } from 'sonner';
 
 import { useAuth } from '../../store/auth'; // Adjust path as needed

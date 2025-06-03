@@ -1,4 +1,4 @@
-import { WidgetProps } from '@rjsf/utils';
+import { type WidgetProps } from '@rjsf/utils';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { useState } from 'react';
 

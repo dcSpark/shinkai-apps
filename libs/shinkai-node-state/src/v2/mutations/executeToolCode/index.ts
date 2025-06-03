@@ -4,7 +4,7 @@ import {
   DynamicToolType,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 
-import { ExecuteToolCodeInput } from './types';
+import { type ExecuteToolCodeInput } from './types';
 
 export const executeToolCode = async ({
   nodeAddress,

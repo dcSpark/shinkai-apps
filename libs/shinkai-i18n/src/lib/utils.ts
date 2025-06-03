@@ -8,7 +8,7 @@ export const readJSON = (filePath: string) => {
   return JSON.parse(data);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export const writeJSON = (filePath: string, data: any) => {
   const jsonStr = JSON.stringify(data, null, 2);
   writeFileSync(filePath, jsonStr, 'utf8');

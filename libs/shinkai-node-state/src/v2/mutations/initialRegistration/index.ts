@@ -1,5 +1,5 @@
 import { initialRegistration as initialRegistrationApi } from '@shinkai_network/shinkai-message-ts/api/general/index';
-import { InitialRegistrationResponse } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type InitialRegistrationResponse } from '@shinkai_network/shinkai-message-ts/api/general/types';
 
 export type InitialRegistrationInput = {
   nodeAddress: string;
