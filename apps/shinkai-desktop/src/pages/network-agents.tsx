@@ -91,9 +91,7 @@ export const NetworkAgentPage = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-base font-medium text-white">
-                    {selectedTab === 'network'
-                      ? 'Connect your wallet to access premium/paid agents'
-                      : null}
+                    Connect your wallet to access premium/paid agents
                   </h3>
                   <p className="text-official-gray-400 mt-1 text-sm">
                     {selectedTab === 'network'
