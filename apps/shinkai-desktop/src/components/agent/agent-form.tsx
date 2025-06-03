@@ -129,6 +129,7 @@ import { z } from 'zod';
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
 import { useURLQueryParams } from '../../hooks/use-url-query-params';
 import { treeOptions } from '../../lib/constants';
+import { useAnalytics } from '../../lib/posthog-provider';
 import { useChatConversationWithOptimisticUpdates } from '../../pages/chat/chat-conversation';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -501,6 +502,7 @@ function AgentSideChat({
 
 function AgentForm({ mode }: AgentFormProps) {
   const { agentId } = useParams();
+  const { captureAnalyticEvent } = useAnalytics();
 
   const defaultAgentId = useSettings((state) => state.defaultAgentId);
   const auth = useAuth((state) => state.auth);
@@ -1033,21 +1035,27 @@ function AgentForm({ mode }: AgentFormProps) {
         // --- Create New Agent ---
         const cronToPass =
           scheduleType === 'scheduled' ? values.cronExpression : undefined;
-        await createAgent({
-          // createAgent handles cron internally
-          nodeAddress: auth.node_address,
-          token: auth.api_v2_key,
-          agent: agentData,
-          cronExpression: cronToPass,
-        });
+        await createAgent(
+          {
+            // createAgent handles cron internally
+            nodeAddress: auth.node_address,
+            token: auth.api_v2_key,
+            agent: agentData,
+            cronExpression: cronToPass,
+          },
+          {
+            onSuccess: async () => {
+              toast.success('Agent created successfully!');
+              captureAnalyticEvent('Agent Created', undefined);
 
-        // Show success and navigate after creation succeeds
-        toast.success('Agent created successfully!');
-        if (options?.openChat) {
-          await navigate(`/agents/edit/${agentIdToUse}?openChat=true`);
-        } else {
-          await navigate('/agents');
-        }
+              if (options?.openChat) {
+                await navigate(`/agents/edit/${agentIdToUse}?openChat=true`);
+              } else {
+                await navigate('/agents');
+              }
+            },
+          },
+        );
       }
     } catch (error: any) {
       // Catch errors from ANY await above

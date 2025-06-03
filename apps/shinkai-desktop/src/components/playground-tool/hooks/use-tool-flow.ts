@@ -16,6 +16,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { handleSendNotification } from '../../../lib/notifications';
+import { useAnalytics } from '../../../lib/posthog-provider';
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
 import { useWebSocketMessage } from '../../chat/websocket-message';
@@ -132,6 +133,8 @@ export const useToolFlow = ({
   const notificationSentRef = useRef(false);
   const feedbackNotificationSentRef = useRef(false);
 
+  const { captureAnalyticEvent } = useAnalytics();
+
   // Helper function to send notification for feedback
   const sendFeedbackNotification = useCallback(() => {
     if (feedbackNotificationSentRef.current) {
@@ -226,9 +229,9 @@ export const useToolFlow = ({
           ...message,
           content:
             message.role === 'user'
-              ? message.content
+              ? (message.content
                   .match(/<input_command>([\s\S]*?)<\/input_command>/)?.[1]
-                  ?.trim() ?? ''
+                  ?.trim() ?? '')
               : message.content,
         })),
       ),
@@ -603,9 +606,11 @@ export const useToolFlow = ({
           forceGenerateMetadata.current = false;
           forceGenerateCode.current = false;
           setCurrentStep(ToolCreationState.COMPLETED);
+          captureAnalyticEvent('Custom Tool Created', undefined);
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     toolCode,
     toolMetadata,

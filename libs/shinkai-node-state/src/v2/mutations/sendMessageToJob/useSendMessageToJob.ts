@@ -83,6 +83,7 @@ export const useSendMessageToJob = (options?: Options) => {
       await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_JOB_SCOPE],
       });
+
       await queryClient.invalidateQueries({
         queryKey: [FunctionKeyV2.GET_VR_FILES],
       });

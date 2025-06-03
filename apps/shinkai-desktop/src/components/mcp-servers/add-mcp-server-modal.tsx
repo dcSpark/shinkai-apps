@@ -36,6 +36,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 
 // Define a schema for environment variable entry
@@ -171,12 +172,15 @@ export const AddMcpServerModal = ({
 
   const serverType = form.watch('type');
 
+  const { captureAnalyticEvent } = useAnalytics();
+
   const { mutateAsync: addMcpServer } = useAddMcpServer({
     onSuccess: () => {
       toast.success(t('mcpServers.addSuccess'));
       onSuccess();
       setIsSubmitting(false);
       form.reset();
+      captureAnalyticEvent('MCP Server Added', undefined);
     },
     onError: (error) => {
       toast.error(t('mcpServers.addFailed'), {

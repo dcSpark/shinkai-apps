@@ -13,6 +13,7 @@ import {
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useStopGeneratingLLM } from '@shinkai_network/shinkai-node-state/v2/mutations/stopGeneratingLLM/useStopGeneratingLLM';
+import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetJobFolderName } from '@shinkai_network/shinkai-node-state/v2/queries/getJobFolderName/useGetJobFolderName';
 import { useGetNodeStorageLocation } from '@shinkai_network/shinkai-node-state/v2/queries/getNodeStorageLocation/useGetNodeStorageLocation';
@@ -340,14 +341,31 @@ function ConversationChatFooter({
     token: auth?.api_v2_key ?? '',
   });
 
+  const { data: agents } = useGetAgents({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
   const { mutateAsync: sendMessageToJob } = useSendMessageToJob({
     onSuccess: (_, variables) => {
       if (variables.files && variables.files.length > 0) {
         captureAnalyticEvent('AI Chat with Files', {
           filesCount: variables.files.length,
         });
-      } else {
-        captureAnalyticEvent('AI Chat', undefined);
+      }
+      const agentSelected = agents?.find(
+        (agent) => agent.agent_id === provider?.agent.id,
+      );
+      if (agentSelected && agentSelected.edited === false) {
+        captureAnalyticEvent('Chat with Pre-built Agents', {
+          agentName: agentSelected.name,
+        });
+      }
+      if (agentSelected && agentSelected.edited === true) {
+        captureAnalyticEvent('Chat with Custom Agents', undefined);
+      }
+      if (!agentSelected) {
+        captureAnalyticEvent('Chat with AI Model', undefined);
       }
     },
     onError: (error) => {

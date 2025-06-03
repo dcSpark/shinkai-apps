@@ -23,6 +23,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 
 // Define the form schema
@@ -44,6 +45,8 @@ export const AddMcpServerWithGithubModal = ({
   onSuccess,
 }: AddMcpServerWithGithubModalProps) => {
   const { t } = useTranslation();
+  const { captureAnalyticEvent } = useAnalytics();
+
   const auth = useAuth((state) => state.auth);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -60,6 +63,7 @@ export const AddMcpServerWithGithubModal = ({
         toast.success('MCP Server details fetched successfully from GitHub');
         onSuccess(data);
         form.reset();
+        captureAnalyticEvent('MCP Server Added', undefined);
       },
       onError: (error: Error) => {
         toast.error('Failed to fetch MCP Server details from GitHub', {
