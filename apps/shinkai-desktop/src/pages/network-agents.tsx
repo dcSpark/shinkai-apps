@@ -83,29 +83,33 @@ export const NetworkAgentPage = () => {
               : 'Publish your AI agents to the network. Each agent operates autonomously and can be integrated into your workflows. Pay per use or deploy agents for others to access.'}
           </p>
 
-          <div className="border-official-gray-800 bg-official-gray-950/80 rounded-lg border p-4">
-            <div className="flex items-start gap-4">
-              <div className="bg-official-gray-800 rounded-full p-2">
-                <Wallet className="text-official-gray-400 h-5 w-5" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-base font-medium text-white">
-                  {selectedTab === 'network' ? (
-                    'Connect your wallet to access premium/paid agents'
-                  ) : (
-                    <Link to="/crypto-wallet">
+          {selectedTab === 'network' && (
+            <div className="border-official-gray-800 bg-official-gray-950/80 rounded-lg border p-4">
+              <div className="flex items-start gap-4">
+                <div className="bg-official-gray-800 rounded-full p-2">
+                  <Wallet className="text-official-gray-400 h-5 w-5" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-base font-medium text-white">
+                    {selectedTab === 'network'
+                      ? 'Connect your wallet to access premium/paid agents'
+                      : null}
+                  </h3>
+                  <p className="text-official-gray-400 mt-1 text-sm">
+                    {selectedTab === 'network'
+                      ? 'Some agents require payment to use. Connect your wallet to access all features.'
+                      : 'Publishing agents requires a connected wallet to receive payments.'}{' '}
+                    <Link
+                      to="/crypto-wallet"
+                      className="text-official-gray-400 hover:text-official-gray-200 underline"
+                    >
                       Connect your wallet to publish agents
                     </Link>
-                  )}
-                </h3>
-                <p className="text-official-gray-400 mt-1 text-sm">
-                  {selectedTab === 'network'
-                    ? 'Some agents require payment to use. Connect your wallet to access all features.'
-                    : 'Publishing agents requires a connected wallet to receive payments.'}
-                </p>
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
         <TabsContent value="network">
           <DiscoverNetworkAgents />
