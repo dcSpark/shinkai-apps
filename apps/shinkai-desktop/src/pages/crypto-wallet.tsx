@@ -120,7 +120,7 @@ const CryptoWalletPage = () => {
 
 const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
   const [elementRef, bounds] = useMeasure();
-  const previousHeightRef = useRef<number | null>();
+  const previousHeightRef = useRef<number | null>(null);
 
   const openWalletCreationModal = useWalletsStore(
     (state) => state.openWalletCreationModal,
@@ -380,7 +380,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
         >
           {walletCreationView !== WalletCreateConnectView.Main && (
             <Button
-              className="absolute left-4 top-6"
+              className="absolute top-6 left-4"
               onClick={handleBack}
               size="icon"
               variant="tertiary"
@@ -390,7 +390,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
           )}
           <DialogClose asChild>
             <Button
-              className="absolute right-4 top-6"
+              className="absolute top-6 right-4"
               size="icon"
               variant="tertiary"
             >

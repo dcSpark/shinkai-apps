@@ -13,25 +13,17 @@ import {
   SearchInput,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { type TFunction } from 'i18next';
 import {
   Star,
   Settings,
   Trash2,
   DollarSign,
   TrendingUp,
-  Users,
-  Calendar,
-  Zap,
-  Shield,
-  Brain,
   Network,
-  BoltIcon,
-  MoveRightIcon,
-  Plus,
-  ChevronDown,
+  Wallet,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
 
@@ -90,6 +82,30 @@ export const NetworkAgentPage = () => {
               ? 'Discover and deploy AI agents from the global network. Each agent operates autonomously and can be integrated into your workflows. Pay per use or deploy agents for others to access.'
               : 'Publish your AI agents to the network. Each agent operates autonomously and can be integrated into your workflows. Pay per use or deploy agents for others to access.'}
           </p>
+
+          <div className="border-official-gray-800 bg-official-gray-950/80 rounded-lg border p-4">
+            <div className="flex items-start gap-4">
+              <div className="bg-official-gray-800 rounded-full p-2">
+                <Wallet className="text-official-gray-400 h-5 w-5" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-base font-medium text-white">
+                  {selectedTab === 'network' ? (
+                    'Connect your wallet to access premium/paid agents'
+                  ) : (
+                    <Link to="/crypto-wallet">
+                      Connect your wallet to publish agents
+                    </Link>
+                  )}
+                </h3>
+                <p className="text-official-gray-400 mt-1 text-sm">
+                  {selectedTab === 'network'
+                    ? 'Some agents require payment to use. Connect your wallet to access all features.'
+                    : 'Publishing agents requires a connected wallet to receive payments.'}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
         <TabsContent value="network">
           <DiscoverNetworkAgents />
@@ -230,27 +246,6 @@ const discoveredAgents = [
   },
 ];
 
-const categoryGroups = [
-  {
-    name: 'use-cases',
-    label: 'Agent Categories',
-    categories: [
-      {
-        name: 'all',
-        label: 'All network agents',
-        count: discoveredAgents.length,
-      },
-      { name: 'Knowledge Management', label: 'Knowledge & Data', count: 3 },
-      { name: 'Development', label: 'Software Development', count: 2 },
-      { name: 'Productivity', label: 'Productivity & Automation', count: 1 },
-      { name: 'Privacy & Security', label: 'Privacy & Security', count: 1 },
-      { name: 'Blockchain & Web3', label: 'Web3 & Blockchain', count: 1 },
-      { name: 'AI Coordination', label: 'AI Orchestration', count: 1 },
-      { name: 'Education & Training', label: 'Learning & Education', count: 1 },
-    ],
-  },
-];
-
 const DiscoverNetworkAgents = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -288,30 +283,7 @@ const DiscoverNetworkAgents = () => {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
-      <div className="space-y-4">
-        <div className="flex flex-wrap gap-2">
-          {categoryGroups.flatMap((group) =>
-            group.categories.map((category) => (
-              <Badge
-                key={category.name}
-                variant={
-                  selectedCategory === category.name ? 'tags' : 'outline'
-                }
-                className={cn(
-                  'cursor-pointer px-3 py-1 text-sm font-normal text-white',
-                  selectedCategory === category.name && 'font-medium',
-                )}
-                onClick={() => setSelectedCategory(category.name)}
-              >
-                {category.label}
-                <span className="text-official-gray-400 ml-1 text-xs">
-                  {category.count}
-                </span>
-              </Badge>
-            )),
-          )}
-        </div>
-      </div>
+
       <h3 className="mb-4 text-lg font-semibold">
         {selectedCategory === 'all' ? 'All network agents' : selectedCategory}
       </h3>
@@ -361,19 +333,6 @@ interface AgentCardProps {
 const AgentCard = ({ agent, type }: AgentCardProps) => {
   const handleAction = () => {
     console.log(`Action for agent ${agent.id} of type ${type}`);
-  };
-
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'Knowledge Management':
-        return <Brain className="h-4 w-4" />;
-      case 'Privacy & Security':
-        return <Shield className="h-4 w-4" />;
-      case 'AI Coordination':
-        return <Zap className="h-4 w-4" />;
-      default:
-        return null;
-    }
   };
 
   const getAppLogo = (app: string) => {
@@ -458,7 +417,7 @@ const AgentCard = ({ agent, type }: AgentCardProps) => {
       case 'discover':
         return {
           priceLabel: isFreePricing ? 'Free to deploy' : 'Network access fee',
-          buttonText: 'Get Agent',
+          buttonText: 'Add Agent',
           statusText: 'Highly rated',
         };
       case 'exposed':
@@ -476,7 +435,7 @@ const AgentCard = ({ agent, type }: AgentCardProps) => {
       default:
         return {
           priceLabel: 'access fee',
-          buttonText: 'Get Agent',
+          buttonText: 'Add Agent',
           statusText: 'Available',
         };
     }
@@ -489,18 +448,6 @@ const AgentCard = ({ agent, type }: AgentCardProps) => {
       <CardHeader className="pb-3">
         <div className="mb-3 flex items-start justify-between">
           <div className="flex items-center gap-2">
-            <Badge
-              variant="secondary"
-              className="flex items-center gap-1 border-0 text-xs font-medium"
-            >
-              {getCategoryIcon(agent.category)}
-              {agent.category}
-            </Badge>
-            {agent.featured && (
-              <div className="flex items-center">
-                <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
-              </div>
-            )}
             {type === 'network' && (
               <Badge
                 variant="outline"
@@ -521,34 +468,24 @@ const AgentCard = ({ agent, type }: AgentCardProps) => {
         </CardDescription>
 
         {agent.provider && type === 'discover' && (
-          <p className="mt-2 text-sm font-medium text-white">
+          <p className="text-official-gray-200 mt-2 text-sm font-medium">
             Published by {agent.provider}
           </p>
         )}
       </CardHeader>
 
       <CardContent className="flex flex-1 flex-col space-y-4 pt-0">
-        {connectedApps.length > 0 && (
-          <div>
-            <p className="text-official-gray-400 mb-3 text-xs font-semibold tracking-wide uppercase">
-              {type === 'network'
-                ? 'Your Integrations'
-                : 'Supported Integrations'}
-            </p>
-            <div className="flex flex-wrap items-center gap-2">
-              {connectedApps.slice(0, 6).map((app, index) => (
-                <div key={index} className="group/app relative" title={app}>
-                  {getAppLogo(app)}
-                </div>
-              ))}
-              {connectedApps.length > 6 && (
-                <div className="bg-official-gray-800 flex h-6 w-6 items-center justify-center rounded">
-                  <span className="text-official-gray-400 text-xs font-bold">
-                    +{connectedApps.length - 6}
-                  </span>
-                </div>
-              )}
+        {type === 'discover' && agent.rating && (
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
+              <span className="text-official-gray-400 text-sm font-semibold">
+                {agent.rating}
+              </span>
             </div>
+            <span className="bg-official-gray-800 rounded-full px-2 py-1 text-xs">
+              {labels.statusText}
+            </span>
           </div>
         )}
 
@@ -586,7 +523,9 @@ const AgentCard = ({ agent, type }: AgentCardProps) => {
           <div className="flex gap-2">
             {type === 'discover' && (
               <Button
-                className="hover:from-brand hover:to-brand-500 to-brand flex-1 border-0 bg-linear-to-r from-orange-200 via-red-400 font-medium text-white"
+                // className="hover:from-brand hover:to-brand-500 to-brand flex-1 border-0 bg-linear-to-r from-orange-200 via-red-400 font-medium text-white"
+                variant="outline"
+                className="w-full"
                 onClick={handleAction}
                 size="md"
               >
