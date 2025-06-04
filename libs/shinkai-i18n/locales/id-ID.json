@@ -661,6 +661,10 @@
         "text": "Tidak ada alat ditemukan untuk kueri pencarian"
       }
     },
+    "searchPlaceholder": "Cari alat...",
+    "commandEmpty": "Tidak ada alat ditemukan.",
+    "commandActiveHeading": "Alat Aktif Anda",
+    "noToolsInCategory": "Tidak ada alat dalam kategori ini. Buat alat baru atau instal dari App Store.",
     "errorDuplicateTool": "Gagal menggandakan alat",
     "errorOpenToolInCodeEditor": "Gagal membuka alat di editor kode",
     "installFromStore": "Instal dari Toko",
@@ -688,7 +692,27 @@
     },
     "successDuplicateTool": "Alat berhasil diduplikasi",
     "successOpenToolInCodeEditor": "Alat dibuka di editor kode",
-    "visitStore": "Kunjungi Toko Shinkai untuk menemukan dan menginstal alat tambahan yang dapat meningkatkan alur kerja Anda"
+    "visitStore": "Kunjungi Toko Shinkai untuk menemukan dan menginstal alat tambahan yang dapat meningkatkan alur kerja Anda",
+    "homepage": {
+      "buildTitle": "Buat Alat AI dalam Hitungan Menit",
+      "buildDescription": "Buat, otomatisasi, dan optimalkan alur kerja Anda dengan alat AI yang kuat.",
+      "step1Label": "Langkah 1",
+      "step1Text": "Pilih model Anda",
+      "step2Label": "Langkah 2",
+      "step2Text": "Tulis kebutuhan Anda",
+      "createInIDE": "Buat di VSCode/Cursor",
+      "messagePlaceholder": "Jelaskan alat yang ingin Anda buat...",
+      "generationError": "Gagal membuat alat. Cobalah menggunakan model AI yang lebih kuat untuk hasil yang lebih baik.",
+      "discoverMoreTitle": "Temukan Lebih Banyak Alat",
+      "discoverMoreDescription": "Jelajahi dan instal alat dari App Store kami untuk meningkatkan produktivitas dan mengotomatiskan alur kerja Anda.",
+      "wellSupportedProtocols": "Protokol yang Didukung Baik",
+      "verifiedProtocolsTitle": "Protokol Terverifikasi",
+      "noProtocols": "Tidak ada protokol ditemukan.",
+      "otherProtocols": "Protokol lain mungkin berfungsi tetapi belum diverifikasi secara resmi.",
+      "requestProtocol": "Minta Protokol",
+      "shiftEnter": "untuk baris baru",
+      "enterToSend": "untuk mengirim"
+    }
   },
   "vectorFs": {
     "actions": {
@@ -759,5 +783,25 @@
       "folderShared": "Folder berhasil dibagikan",
       "folderUnshared": "Folder berhasil tidak dibagikan"
     }
+  },
+  "agentsPage": {
+    "description": "Buat dan jelajahi agen AI dengan instruksi khusus, pengetahuan yang diperkaya, serta kemampuan tugas yang beragam untuk mencapai tujuan Anda secara otomatis.",
+    "notFoundTitle": "Tidak ada agen tersedia",
+    "notFoundDescription": "Buat Agen pertama Anda untuk mulai menjelajahi kekuatan AI.",
+    "addAgent": "Tambah Agen",
+    "goToTaskDetails": "Lihat detail tugas"
+  },
+  "aisPage": {
+    "description": "Kelola model AI lokal dan cloud dengan mudah, beralih di antaranya sesuai kebutuhan alur kerja Anda."
+  },
+  "tasksPage": {
+    "noTasksTitle": "Tidak ada tugas terjadwal",
+    "noTasksDescription": "Buat tugas terjadwal pertama Anda untuk mengotomatiskan pengingat, ringkasan, atau tugas lain yang perlu Anda kelola"
+  },
+  "mcpPage": {
+    "exposeToolsTab": "Ekspose Alat",
+    "mcpServersDescription": "Hubungkan ke server MCP untuk segera mengakses sumber data dan alat eksternal—seperti pembaruan cuaca, harga saham, atau layanan terjemahan—tanpa membuat integrasi khusus.\nIni memperluas kemampuan sistem Anda dengan informasi real-time dan akses mudah ke sumber daya baru saat kebutuhan meningkat.",
+    "exposeToolsDescription": "Ekspose Alat AI Anda melalui MCP untuk integrasi mulus dengan Klien MCP lainnya dan perluas kemampuannya.",
+    "helpfulLinks": "Anda dapat menemukan MCP bermanfaat untuk terhubung dengan Shinkai di smithery.ai dan composio.dev."
   }
 }

@@ -661,6 +661,10 @@
         "text": "検索クエリに一致するツールは見つかりませんでした"
       }
     },
+    "searchPlaceholder": "ツールを検索...",
+    "commandEmpty": "ツールが見つかりません。",
+    "commandActiveHeading": "アクティブなツール",
+    "noToolsInCategory": "このカテゴリにはツールがありません。新しいツールを作成するか、App Storeからインストールしてください。",
     "errorDuplicateTool": "ツールの複製に失敗しました",
     "errorOpenToolInCodeEditor": "コードエディタでツールを開くことに失敗しました",
     "installFromStore": "ストアからインストール",
@@ -688,7 +692,27 @@
     },
     "successDuplicateTool": "ツールが正常に複製されました",
     "successOpenToolInCodeEditor": "ツールがコードエディタで開かれました",
-    "visitStore": "作業を向上させるための追加ツールを発見し、インストールするには新海ストアを訪れてください"
+    "visitStore": "作業を向上させるための追加ツールを発見し、インストールするには新海ストアを訪れてください",
+    "homepage": {
+      "buildTitle": "数分でAIツールを構築",
+      "buildDescription": "強力なAIツールでワークフローを作成、 自動化、最適化します。",
+      "step1Label": "ステップ1",
+      "step1Text": "モデルを選択",
+      "step2Label": "ステップ2",
+      "step2Text": "要件を入力",
+      "createInIDE": "VSCode/Cursorで作成",
+      "messagePlaceholder": "作成したいツールを説明してください...",
+      "generationError": "ツールの生成に失敗しました。より強力なAIモデルを試してみてください。",
+      "discoverMoreTitle": "さらに多くのツールを発見",
+      "discoverMoreDescription": "App Storeからツールをインストールして生産性を高め、ワークフローを自動化しましょう。",
+      "wellSupportedProtocols": "十分にサポートされたプロトコル",
+      "verifiedProtocolsTitle": "検証済みプロトコル",
+      "noProtocols": "プロトコルが見つかりません。",
+      "otherProtocols": "他のプロトコルも動作する可能性がありますが、正式には確認されていません。",
+      "requestProtocol": "プロトコルをリクエスト",
+      "shiftEnter": "で改行",
+      "enterToSend": "で送信"
+    }
   },
   "vectorFs": {
     "actions": {
@@ -759,5 +783,25 @@
       "folderShared": "フォルダが正常に共有されました",
       "folderUnshared": "フォルダが正常に共有解除されました"
     }
+  },
+  "agentsPage": {
+    "description": "パーソナライズされた指示や豊富な知識でAIエージェントを作成し、さまざまなタスクを自律的にこなします。",
+    "notFoundTitle": "利用可能なエージェントはありません",
+    "notFoundDescription": "最初のエージェントを作成してAIの力を体験しましょう。",
+    "addAgent": "エージェントを追加",
+    "goToTaskDetails": "タスクの詳細へ"
+  },
+  "aisPage": {
+    "description": "クラウドとローカルのAIモデルを簡単に管理し、ワークフローに合わせて切り替えられます。"
+  },
+  "tasksPage": {
+    "noTasksTitle": "スケジュールされたタスクがありません",
+    "noTasksDescription": "リマインダーやサマリーなどを自動化する最初のタスクを作成してください"
+  },
+  "mcpPage": {
+    "exposeToolsTab": "ツールを公開",
+    "mcpServersDescription": "MCPサーバーに接続して天気情報、株価、翻訳サービスなどの外部データソースやツールに即座にアクセスします。\nカスタム統合を構築せずとも、リアルタイムの情報と新しいリソースへの簡単なアクセスでシステムの機能を拡張できます。",
+    "exposeToolsDescription": "MCPを通じてAIツールを公開し、他のMCPクライアントとシームレスに統合して機能を拡張します。",
+    "helpfulLinks": "Shinkaiと接続するための便利なMCPは smithery.ai と composio.dev にあります。"
   }
 }
