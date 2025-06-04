@@ -67,7 +67,7 @@ const NavLink = ({
       >
         {icon && <span>{icon}</span>}
 
-        <div className="flex items-center gap-3 whitespace-nowrap text-xs">
+        <div className="flex items-center gap-3 text-xs whitespace-nowrap">
           <span className="max-w-[100px] truncate">{title} </span>
           <Badge className="text-[10px] uppercase" variant="inputAdornment">
             {t('common.soon')}
@@ -92,7 +92,7 @@ const NavLink = ({
     >
       <span>{icon}</span>
 
-      <div className="whitespace-nowrap text-xs">{title}</div>
+      <div className="text-xs whitespace-nowrap">{title}</div>
     </Link>
   );
 };
@@ -113,6 +113,25 @@ export function MainNav() {
       title: t('settings.layout.appearance'),
       href: '/settings/appearance',
       icon: <PaintbrushIcon className="text-gray-80 h-4 w-4" />,
+    },
+    {
+      title: 'Shortcuts',
+      href: '/settings/shortcuts',
+      icon: (
+        <svg
+          className="text-gray-80 h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M9 12h6m-3-3v6m9 0a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      ),
     },
     isLocalShinkaiNodeInUse && {
       title: t('settings.layout.shinkaiNode'),
