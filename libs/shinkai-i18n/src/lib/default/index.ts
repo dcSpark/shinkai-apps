@@ -442,8 +442,8 @@ export default {
         'Easily and securely connect to your Shinkai node from anywhere using ngrok. No complex setup—just  <a>create a free ngrok account</a>, copy your <b>ngrok auth token</b> from the dashboard, and paste it below to enable secure remote access.',
       connected: 'Connected',
       publicAccessUrl: 'Public Access URL',
-      publicAccessUrlDescription:
-        'Share this URL to give others secure access to your Shinkai node',
+      publicAccessURLDescription:
+        'Use this URL to connect to your node from anywhere.',
       form: {
         authToken: 'Ngrok Auth Token',
         authTokenHelperText: 'Enter your ngrok auth token',

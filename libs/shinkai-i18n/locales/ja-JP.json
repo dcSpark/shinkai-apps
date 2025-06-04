@@ -548,8 +548,8 @@
         "enableRemoteAccess": "リモートアクセスを有効にする",
         "stopRemoteAccess": "リモートアクセスを停止する"
       },
+      "publicAccessURLDescription": "このURLを使用して、どこからでもノードに接続できます。",
       "publicAccessUrl": "公開アクセスURL",
-      "publicAccessUrlDescription": "このURLを共有して、他の人にあなたのShinkaiノードへの安全なアクセスを提供します",
       "stopRemoteAccessSuccess": "リモートアクセスは正常に停止されました",
       "success": "接続されました！あなたのShinkaiノードはngrokを介してリモートでアクセス可能です",
       "title": "リモートアクセス"

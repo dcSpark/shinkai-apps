@@ -548,8 +548,8 @@
         "enableRemoteAccess": "Aktifkan Akses Jarak Jauh",
         "stopRemoteAccess": "Hentikan Akses Jarak Jauh"
       },
+      "publicAccessURLDescription": "Gunakan URL ini untuk terhubung ke node Anda dari mana saja.",
       "publicAccessUrl": "URL Akses Publik",
-      "publicAccessUrlDescription": "Bagikan URL ini untuk memberikan akses aman kepada orang lain ke node Shinkai Anda",
       "stopRemoteAccessSuccess": "Akses jarak jauh telah berhasil dihentikan",
       "success": "Terhubung! Node Shinkai Anda sekarang dapat diakses dari jarak jauh melalui ngrok",
       "title": "Akses Jarak Jauh"

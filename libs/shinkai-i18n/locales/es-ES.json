@@ -548,8 +548,8 @@
         "enableRemoteAccess": "Habilitar Acceso Remoto",
         "stopRemoteAccess": "Detener Acceso Remoto"
       },
+      "publicAccessURLDescription": "Utiliza esta URL para conectarte a tu nodo desde cualquier lugar.",
       "publicAccessUrl": "URL de Acceso Público",
-      "publicAccessUrlDescription": "Comparte esta URL para dar acceso seguro a tu nodo Shinkai",
       "stopRemoteAccessSuccess": "El acceso remoto se ha detenido con éxito",
       "success": "¡Conectado! Tu nodo Shinkai ahora es accesible de forma remota a través de ngrok",
       "title": "Acceso Remoto"

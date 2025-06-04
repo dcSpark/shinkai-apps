@@ -548,8 +548,8 @@
         "enableRemoteAccess": "Uzaktan Erişimi Etkinleştir",
         "stopRemoteAccess": "Uzaktan Erişimi Durdur"
       },
+      "publicAccessURLDescription": "Bu URL'yi kullanarak düğümünüze her yerden bağlanabilirsiniz.",
       "publicAccessUrl": "Herkese Açık Erişim URL'si",
-      "publicAccessUrlDescription": "Bu URL'yi paylaşarak başkalarına Shinkai düğümünüze güvenli erişim verin",
       "stopRemoteAccessSuccess": "Uzaktan erişim başarıyla durduruldu",
       "success": "Bağlandı! Shinkai düğümünüz artık ngrok üzerinden uzaktan erişilebilir",
       "title": "Uzaktan Erişim"

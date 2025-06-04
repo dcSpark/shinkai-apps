@@ -187,7 +187,7 @@ const InternetAccessPage = () => {
                           </h3>
                           <p className="text-official-gray-400 text-sm">
                             {t(
-                              'settings.remoteAccess.publicAccessUrlDescription',
+                              'settings.remoteAccess.publicAccessURLDescription',
                             )}
                           </p>
                         </div>

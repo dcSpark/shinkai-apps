@@ -548,8 +548,8 @@
         "enableRemoteAccess": "启用远程访问",
         "stopRemoteAccess": "停止远程访问"
       },
+      "publicAccessURLDescription": "使用此 URL 从任何地方连接到您的节点。",
       "publicAccessUrl": "公共访问 URL",
-      "publicAccessUrlDescription": "分享此 URL 以便他人安全访问您的 Shinkai 节点",
       "stopRemoteAccessSuccess": "远程访问已成功停止",
       "success": "已连接！您的 Shinkai 节点现在可以通过 ngrok 远程访问",
       "title": "远程访问"
