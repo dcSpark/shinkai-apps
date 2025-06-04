@@ -76,6 +76,7 @@ import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import useAppHotkeys from '../utils/use-app-hotkeys';
+import ShortcutsPage from '../pages/shortcuts';
 
 const skipOnboardingRoutes = ['/quick-connection', '/restore', '/connect-qr'];
 
@@ -433,7 +434,8 @@ const AppRoutes = () => {
               }
               path={'crypto-wallet'}
             />
-            <Route element={<InternetAccessPage />} path={'internet-access'} />
+            <Route element={<InternetAccessPage />} path={'remote-access'} />
+            <Route element={<ShortcutsPage />} path={'shortcuts'} />
           </Route>
         </Route>
         <Route
