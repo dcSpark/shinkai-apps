@@ -420,7 +420,7 @@
     "uploadAFileDescription": "Notlarınızı, web sitelerinizi, belgelerinizi ve diğerlerini güvenli bir şekilde tek bir yerde saklayın."
   },
   "quickAsk": {
-    "emptyStateDescription": "Şunu deneyin: “JavaScript'te HTTP isteği nasıl yapılır?”, “80'lerdeki en iyi 10 rock müziği nedir?”, “İnternet nasıl çalışır, açıkla”",
+    "emptyStateDescription": "Şunu deneyin: \\\"JavaScript'te HTTP isteği nasıl yapılır?\\\", \\\"80'lerdeki en iyi 10 rock müziği nedir?\\\", \\\"İnternet nasıl çalışır, açıkla\\\"",
     "emptyStateTitle": "Shinkai AI'ye Sor"
   },
   "quickConnection": {
@@ -500,6 +500,7 @@
       "general": "Genel",
       "promptLibrary": "İpucu Kütüphanesi",
       "publicKeys": "Açık Anahtarlar",
+      "remoteAccess": "Uzaktan Erişim",
       "shinkaiNode": "Shinkai Düğüm Yöneticisi"
     },
     "maxChatIterations": {
@@ -531,6 +532,27 @@
     },
     "registerNewCode": {
       "label": "Yeni cihaz kaydet"
+    },
+    "remoteAccess": {
+      "connected": "Bağlandı",
+      "description": "Ngrok kullanarak Shinkai düğümünüze her yerden kolayca ve güvenli bir şekilde bağlanın. Karmaşık bir kurulum yok—sadece <a>ücretsiz bir ngrok hesabı oluşturun</a>, kontrol panelinden <b>ngrok kimlik doğrulama tokeninizi</b> kopyalayın ve güvenli uzaktan erişimi etkinleştirmek için aşağıya yapıştırın.",
+      "errors": {
+        "failedToGetStatus": "Ngrok durumu alınamadı.",
+        "failedToStart": "Ngrok üzerinden uzaktan erişim bağlantısı kurulamadı.",
+        "failedToStop": "Ngrok üzerinden uzaktan erişim bağlantısı kesilemedi."
+      },
+      "form": {
+        "authToken": "Ngrok Kimlik Doğrulama Tokeni",
+        "authTokenHelperText": "Ngrok kimlik doğrulama tokeninizi girin",
+        "authTokenHelperTextWhenEnabled": "Kimlik doğrulama tokeninizi güncellemek için ngrok'ta uzaktan erişimi durdurun",
+        "enableRemoteAccess": "Uzaktan Erişimi Etkinleştir",
+        "stopRemoteAccess": "Uzaktan Erişimi Durdur"
+      },
+      "publicAccessURLDescription": "Bu URL'yi kullanarak düğümünüze her yerden bağlanabilirsiniz.",
+      "publicAccessUrl": "Herkese Açık Erişim URL'si",
+      "stopRemoteAccessSuccess": "Uzaktan erişim başarıyla durduruldu",
+      "success": "Bağlandı! Shinkai düğümünüz artık ngrok üzerinden uzaktan erişilebilir",
+      "title": "Uzaktan Erişim"
     },
     "shinkaiIdentity": {
       "checkIdentityInSync": "Shinkai Kimliğini doğrula",

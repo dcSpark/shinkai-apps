@@ -494,13 +494,14 @@
       "analytics": "分析",
       "appearance": "外観",
       "createRegistrationCode": "登録コードの作成",
-      "cryptoWallet": "暗号通貨ウォレット",
-      "exportConnection": "接続のエクスポート",
-      "galxe": "ガルクス・クエスト",
+      "cryptoWallet": "暗号ウォレット",
+      "exportConnection": "接続をエクスポート",
+      "galxe": "Galxeクエスト",
       "general": "一般",
       "promptLibrary": "プロンプトライブラリ",
       "publicKeys": "公開鍵",
-      "shinkaiNode": "シンカイ・ノード・マネージャー"
+      "remoteAccess": "リモートアクセス",
+      "shinkaiNode": "Shinkaiノードマネージャー"
     },
     "maxChatIterations": {
       "description": "チャットメッセージを処理するための最大反復回数",
@@ -532,6 +533,27 @@
     "registerNewCode": {
       "label": "新しいデバイスを登録"
     },
+    "remoteAccess": {
+      "connected": "接続されました",
+      "description": "ngrokを使用して、どこからでもあなたのShinkaiノードに簡単かつ安全に接続できます。複雑な設定は不要です—ただ<a>無料のngrokアカウントを作成</a>し、ダッシュボードから<b>ngrok認証トークン</b>をコピーして、下に貼り付けて安全なリモートアクセスを有効にしてください。",
+      "errors": {
+        "failedToGetStatus": "ngrokのステータスを取得するのに失敗しました。",
+        "failedToStart": "ngrokを介してリモートアクセスの接続に失敗しました。",
+        "failedToStop": "ngrokを介してリモートアクセスの切断に失敗しました。"
+      },
+      "form": {
+        "authToken": "Ngrok認証トークン",
+        "authTokenHelperText": "ngrok認証トークンを入力してください",
+        "authTokenHelperTextWhenEnabled": "認証トークンを更新するためにngrokのリモートアクセスを停止してください",
+        "enableRemoteAccess": "リモートアクセスを有効にする",
+        "stopRemoteAccess": "リモートアクセスを停止する"
+      },
+      "publicAccessURLDescription": "このURLを使用して、どこからでもノードに接続できます。",
+      "publicAccessUrl": "公開アクセスURL",
+      "stopRemoteAccessSuccess": "リモートアクセスは正常に停止されました",
+      "success": "接続されました！あなたのShinkaiノードはngrokを介してリモートでアクセス可能です",
+      "title": "リモートアクセス"
+    },
     "shinkaiIdentity": {
       "checkIdentityInSync": "新海アイデンティティを確認",
       "checkIdentityInSyncDescription": "新海のアイデンティティが正確に同期しているかを確認します。",
@@ -550,14 +572,14 @@
       "label": "ショートカットキー"
     },
     "sidebar": {
-      "blacklistedWebsites": "ブラックリストに登録されたウェブサイト",
+      "blacklistedWebsites": "ブラックリストウェブサイト",
       "includeClickImageCapture": {
-        "text": "クイックアクセスホバーメニューに画像キャプチャーボタンを追加します。",
-        "title": "1-クリック画像キャプチャーオプションを含める"
+        "text": "クイックアクセスホバーメニューに画像キャプチャボタンを追加します。",
+        "title": "ワンクリック画像キャプチャオプションを含める"
       },
       "includeClickSummary": {
-        "text": "クイックアクセスホバーメニューにサマリーボタンを追加します。",
-        "title": "1-クリックサマリーオプションを含める"
+        "text": "クイックアクセスホバーメニューに要約ボタンを追加します。",
+        "title": "ワンクリック要約オプションを含める"
       },
       "label": "サイドバー"
     }

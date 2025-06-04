@@ -16,6 +16,8 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
   BarChart2,
   CodesandboxIcon,
+  LaptopMinimal,
+  NetworkIcon,
   PaintbrushIcon,
   SettingsIcon,
   WalletMinimal,
@@ -127,6 +129,11 @@ export function MainNav() {
         void openShinkaiNodeManagerWindow();
       },
       icon: <CodesandboxIcon className="text-official-gray-400 h-4 w-4" />,
+    },
+    {
+      title: t('settings.layout.remoteAccess'),
+      href: '/settings/remote-access',
+      icon: <LaptopMinimal className="text-official-gray-400 h-4 w-4" />,
     },
     {
       title: t('settings.layout.analytics'),
