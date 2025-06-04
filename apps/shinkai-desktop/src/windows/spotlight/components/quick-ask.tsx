@@ -277,10 +277,13 @@ function QuickAsk() {
               sideOffset={5}
             >
               <Command>
-                <CommandInput autoFocus={false} placeholder="Search tools..." />
+                <CommandInput
+                  autoFocus={false}
+                  placeholder={t('tools.searchPlaceholder')}
+                />
                 <CommandList>
-                  <CommandEmpty>No tools found.</CommandEmpty>
-                  <CommandGroup heading="Your Active Tools">
+                  <CommandEmpty>{t('tools.commandEmpty')}</CommandEmpty>
+                  <CommandGroup heading={t('tools.commandActiveHeading')}>
                     {isToolsListSuccess &&
                       toolsList?.map((tool) => (
                         <CommandItem

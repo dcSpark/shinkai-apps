@@ -118,7 +118,9 @@ const ConversationHeaderWithInboxId = () => {
 
       const savePath = await save({
         defaultPath: `${sanitizedName}.${extension}`,
-        filters: [{ name: `${extension.toUpperCase()} File`, extensions: [extension] }],
+        filters: [
+          { name: `${extension.toUpperCase()} File`, extensions: [extension] },
+        ],
       });
 
       if (!savePath) {
@@ -290,7 +292,7 @@ const ConversationHeaderWithInboxId = () => {
                               <div className="space-y-3">
                                 {selectedAgent.tools.length === 0 && (
                                   <p className="text-official-gray-400 text-sm">
-                                    No tools found.
+                                    {t('tools.commandEmpty')}
                                   </p>
                                 )}
                                 {selectedAgent.tools.map((tool, index) => (
@@ -402,7 +404,7 @@ const ConversationHeaderWithInboxId = () => {
                                 {(selectedAgent.cron_tasks ?? []).length ===
                                   0 && (
                                   <p className="text-official-gray-400 text-sm">
-                                    No scheduled tasks found.
+                                    {t('tasksPage.noTasksTitle')}
                                   </p>
                                 )}
                                 {selectedAgent.cron_tasks?.map((task) => (

@@ -491,11 +491,10 @@ function ToolsHome({
             <div className="flex flex-col gap-2">
               <div className="flex flex-col items-center">
                 <h1 className="font-clash text-center text-4xl font-medium text-white">
-                  Build AI Tools in Minutes
+                  {t('tools.homepage.buildTitle')}
                 </h1>
                 <p className="text-official-gray-400 text-center text-sm">
-                  Create, automate, and optimize your workflow with powerful AI
-                  tools.
+                  {t('tools.homepage.buildDescription')}
                 </p>
               </div>
             </div>
@@ -504,10 +503,10 @@ function ToolsHome({
               <div className="flex flex-col gap-2.5">
                 <div className="flex items-center gap-2">
                   <span className="bg-official-gray-900 border-official-gray-700 rounded-full border px-3 py-1 text-xs font-semibold text-white">
-                    Step 1
+                    {t('tools.homepage.step1Label')}
                   </span>
                   <span className="text-base font-medium text-white">
-                    Select your model
+                    {t('tools.homepage.step1Text')}
                   </span>
                 </div>
                 <div className="p-2">
@@ -523,10 +522,10 @@ function ToolsHome({
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2.5">
                   <span className="bg-official-gray-900 border-official-gray-700 rounded-full border px-3 py-1 text-xs font-semibold text-white">
-                    Step 2
+                    {t('tools.homepage.step2Label')}
                   </span>
                   <span className="text-base font-medium text-white">
-                    Write your requirements
+                    {t('tools.homepage.step2Text')}
                   </span>
                 </div>
                 <div className="p-2">
@@ -577,7 +576,7 @@ function ToolsHome({
                                     type="button"
                                     variant="link"
                                   >
-                                    Create in VSCode/Cursor
+                                    {t('tools.homepage.createInIDE')}
                                   </Button>
                                 )}
                                 <Button
@@ -606,9 +605,7 @@ function ToolsHome({
                           onSubmit={() => {
                             startToolCreation(form.getValues());
                           }}
-                          placeholder={
-                            'Describe the tool you want to create...'
-                          }
+                          placeholder={t('tools.homepage.messagePlaceholder')}
                           textareaClassName="max-h-[200px] min-h-[200px] p-4 text-sm"
                           value={form.watch('message')}
                         />
@@ -619,8 +616,7 @@ function ToolsHome({
                           <CircleAlert className="mt-1 size-4 shrink-0" />
                           <div className="flex flex-1 flex-col gap-0.5">
                             <div className="-ml-2.5 w-full shrink-0 truncate rounded-full px-2.5 py-1 text-xs">
-                              Failed to generate tool. You might want to try
-                              using a more powerful AI model for better results.
+                              {t('tools.homepage.generationError')}
                             </div>
                             <div className="text-gray-80 py-1">{error}</div>
                           </div>
@@ -660,11 +656,10 @@ function ToolsHome({
             <div className="relative z-[1] mx-auto flex max-w-[1400px] flex-col items-center gap-8 p-10 text-center">
               <div className="flex flex-col gap-2">
                 <h3 className="font-clash max-w-xl text-2xl font-semibold tracking-normal">
-                  Discover More Tools
+                  {t('tools.homepage.discoverMoreTitle')}
                 </h3>
                 <p className="text-official-gray-400 max-w-xl text-base leading-relaxed tracking-tight">
-                  Explore and install tools from our App Store to boost your
-                  productivity and automate your workflow.
+                  {t('tools.homepage.discoverMoreDescription')}
                 </p>
               </div>
               <div className="isolate flex flex-row gap-4">
@@ -675,7 +670,7 @@ function ToolsHome({
                     rel="noreferrer"
                     target="_blank"
                   >
-                    Visit App Store <ArrowRight className="h-4 w-4" />
+                    {t('tools.visitStore')} <ArrowRight className="h-4 w-4" />
                   </a>
                   <FeedbackModal buttonProps={{ rounded: 'full' }} />
                 </div>
@@ -693,16 +688,18 @@ const ChatBoxFooterBase = () => {
   return (
     <div
       className={cn(
-        'bg-official-gray-850 absolute inset-x-2 bottom-1 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pb-1 pt-2.5 shadow-white',
+        'bg-official-gray-850 absolute inset-x-2 bottom-1 flex h-[40px] justify-between gap-2 rounded-b-xl px-2 pt-2.5 pb-1 shadow-white',
       )}
     >
       <div className="text-official-gray-400 flex w-full items-center justify-between gap-2 px-2">
         <span className="text-xs font-light">
-          <span className="font-medium">Shift + Enter</span> for a new line
+          <span className="font-medium">Shift + Enter</span>{' '}
+          {t('tools.homepage.shiftEnter')}
         </span>
 
         <span className="text-xs font-light">
-          <span className="font-medium">Enter</span> to send
+          <span className="font-medium">Enter</span>{' '}
+          {t('tools.homepage.enterToSend')}
         </span>
       </div>
     </div>
@@ -717,13 +714,14 @@ function SupportedProtocols() {
     <Dialog>
       <DialogTrigger className="text-official-gray-300 hover:text-official-gray-200 flex items-center gap-1 text-sm transition-colors">
         <div className="border-official-gray-300 border-b">
-          Well Supported Protocols
+          {t('tools.homepage.wellSupportedProtocols')}
         </div>
         <ArrowRight className="ml-0.5 h-3 w-3" />
       </DialogTrigger>
 
       <DialogContent className="max-w-xl">
         <DialogClose asChild>
+          {/* prettier-ignore */}
           <Button
             className="absolute right-4 top-4"
             size="icon"
@@ -733,7 +731,9 @@ function SupportedProtocols() {
           </Button>
         </DialogClose>
         <DialogHeader>
-          <DialogTitle className="text-xl">Verified Protocols</DialogTitle>
+          <DialogTitle className="text-xl">
+            {t('tools.homepage.verifiedProtocolsTitle')}
+          </DialogTitle>
         </DialogHeader>
 
         {isPending ? (
@@ -782,18 +782,17 @@ function SupportedProtocols() {
         ) : (
           <div className="py-8 text-center">
             <p className="text-official-gray-400 text-sm">
-              No protocols found .
+              {t('tools.homepage.noProtocols')}
             </p>
           </div>
         )}
 
         <div className="border-official-gray-780 flex flex-col items-start justify-between gap-3 border-t pt-4 sm:flex-row sm:items-center">
           <p className="text-official-gray-400 text-xs">
-            Other protocols may also work but haven&apos;t been officially
-            verified.
+            {t('tools.homepage.otherProtocols')}
           </p>
           <FeedbackModal
-            buttonLabel="Request Protocol"
+            buttonLabel={t('tools.homepage.requestProtocol')}
             buttonProps={{ className: 'shrink-0' }}
           />
         </div>

@@ -63,9 +63,12 @@ function AgentsPage() {
   return (
     <div className="h-full">
       <div className="container flex flex-col">
+        {/* prettier-ignore */}
         <div className="flex flex-col gap-1 pb-6 pt-10">
           <div className="flex justify-between gap-4">
-            <h1 className="font-clash text-3xl font-medium">Agents</h1>
+            <h1 className="font-clash text-3xl font-medium">
+              {t('layout.menuItems.agents')}
+            </h1>
             <div className="flex gap-2">
               <ImportAgentModal />
               <Button
@@ -76,14 +79,12 @@ function AgentsPage() {
                 size="sm"
               >
                 <Plus className="h-4 w-4" />
-                <span>Add Agent</span>
+                <span>{t('agentsPage.addAgent')}</span>
               </Button>
             </div>
           </div>
           <p className="text-official-gray-400 text-sm">
-            Create and explore AI agents with personalized instructions,
-            enriched knowledge, <br /> diverse task capabilities, and more to
-            tackle your goals autonomously.
+            {t('agentsPage.description')}
           </p>
         </div>
         <SearchInput
@@ -100,9 +101,9 @@ function AgentsPage() {
                 <AIAgentIcon className="size-full" name={''} />
               </div>
               <div className="flex flex-col items-center gap-1">
-                <p className="font-medium">No available agents</p>
+                <p className="font-medium">{t('agentsPage.notFoundTitle')}</p>
                 <p className="text-official-gray-400 text-center text-sm font-medium">
-                  Create your first Agent to start exploring the power of AI.
+                  {t('agentsPage.notFoundDescription')}
                 </p>
               </div>
             </div>
@@ -237,7 +238,7 @@ const AgentCard = ({
                         align="center"
                         className="flex flex-col items-center gap-1"
                       >
-                        Go to task details
+                        {t('agentsPage.goToTaskDetails')}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>

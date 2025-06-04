@@ -661,6 +661,10 @@
         "text": "未找到与搜索查询匹配的工具"
       }
     },
+    "searchPlaceholder": "搜索工具...",
+    "commandEmpty": "未找到任何工具。",
+    "commandActiveHeading": "您的活跃工具",
+    "noToolsInCategory": "该类别中没有工具。创建一个新的工具或从应用商店安装。",
     "errorDuplicateTool": "工具复制失败",
     "errorOpenToolInCodeEditor": "无法在代码编辑器中打开工具",
     "installFromStore": "从商店安装",
@@ -688,7 +692,27 @@
     },
     "successDuplicateTool": "工具复制成功",
     "successOpenToolInCodeEditor": "工具已在代码编辑器中打开",
-    "visitStore": "访问深海商店，发现并安装更多工具以增强您的工作流程"
+    "visitStore": "访问深海商店，发现并安装更多工具以增强您的工作流程",
+    "homepage": {
+      "buildTitle": "几分钟内构建 AI 工具",
+      "buildDescription": "使用强大的 AI 工具创建、自动化并优化您的工作流程。",
+      "step1Label": "步骤 1",
+      "step1Text": "选择您的模型",
+      "step2Label": "步骤 2",
+      "step2Text": "编写您的需求",
+      "createInIDE": "在 VSCode/Cursor 中创建",
+      "messagePlaceholder": "描述您想要创建的工具...",
+      "generationError": "生成工具失败。请尝试使用更强大的 AI 模型以获得更好结果。",
+      "discoverMoreTitle": "发现更多工具",
+      "discoverMoreDescription": "在我们的应用商店中探索并安装工具，以提升工作效率并自动化流程。",
+      "wellSupportedProtocols": "良好支持的协议",
+      "verifiedProtocolsTitle": "已验证的协议",
+      "noProtocols": "未找到协议。",
+      "otherProtocols": "其他协议可能也能工作，但尚未正式验证。",
+      "requestProtocol": "请求协议",
+      "shiftEnter": "换行",
+      "enterToSend": "发送"
+    }
   },
   "vectorFs": {
     "actions": {
@@ -759,5 +783,25 @@
       "folderShared": "文件夹分享成功",
       "folderUnshared": "文件夹取消分享成功"
     }
+  },
+  "agentsPage": {
+    "description": "通过个性化指令和丰富的知识创建并探索 AI 代理，自动完成各类任务以实现目标。",
+    "notFoundTitle": "没有可用的代理",
+    "notFoundDescription": "创建您的第一个代理，开始探索 AI 的强大功能。",
+    "addAgent": "添加代理",
+    "goToTaskDetails": "前往任务详情"
+  },
+  "aisPage": {
+    "description": "轻松管理本地和云端 AI 模型，并根据工作流程在它们之间切换。"
+  },
+  "tasksPage": {
+    "noTasksTitle": "没有计划任务",
+    "noTasksDescription": "创建您的第一个计划任务以自动执行提醒、摘要或其他需要管理的任务"
+  },
+  "mcpPage": {
+    "exposeToolsTab": "公开工具",
+    "mcpServersDescription": "连接 MCP 服务器即可即时访问外部数据源和工具，如实时天气、股票价格或翻译服务，而无需构建自定义集成。\n这将通过实时信息和对新资源的轻松访问扩展系统功能。",
+    "exposeToolsDescription": "通过 MCP 公开您的 AI 工具，与其他 MCP 客户端无缝集成并扩展其能力。",
+    "helpfulLinks": "您可以在 smithery.ai 和 composio.dev 找到用于连接 Shinkai 的有用 MCP。"
   }
 }
