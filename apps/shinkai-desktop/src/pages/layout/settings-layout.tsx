@@ -10,6 +10,7 @@ import {
 import {
   ExportIcon,
   PromptLibraryIcon,
+  ShortcutsIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import {
@@ -82,8 +83,8 @@ const NavLink = ({
       className={cn(
         'flex w-full items-center gap-2 rounded-lg px-4 py-3 text-white transition-colors',
         isMatch
-          ? 'bg-gray-300 text-white'
-          : 'opacity-60 hover:bg-gray-500 hover:opacity-100',
+          ? 'bg-official-gray-850 text-white'
+          : 'hover:bg-official-gray-850 opacity-60 hover:opacity-100',
       )}
       onClick={onClick}
       rel={external ? 'noreferrer' : ''}
@@ -92,7 +93,7 @@ const NavLink = ({
     >
       <span>{icon}</span>
 
-      <div className="text-xs whitespace-nowrap">{title}</div>
+      <div className="text-sm whitespace-nowrap">{title}</div>
     </Link>
   );
 };
@@ -107,31 +108,17 @@ export function MainNav() {
     {
       title: t('settings.layout.general'),
       href: '/settings',
-      icon: <SettingsIcon className="text-gray-80 h-4 w-4" />,
+      icon: <SettingsIcon className="text-official-gray-400 h-4 w-4" />,
     },
     {
       title: t('settings.layout.appearance'),
       href: '/settings/appearance',
-      icon: <PaintbrushIcon className="text-gray-80 h-4 w-4" />,
+      icon: <PaintbrushIcon className="text-official-gray-400 h-4 w-4" />,
     },
     {
       title: 'Shortcuts',
       href: '/settings/shortcuts',
-      icon: (
-        <svg
-          className="text-gray-80 h-4 w-4"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M9 12h6m-3-3v6m9 0a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      ),
+      icon: <ShortcutsIcon className="text-official-gray-400 h-4 w-4" />,
     },
     isLocalShinkaiNodeInUse && {
       title: t('settings.layout.shinkaiNode'),
@@ -139,24 +126,24 @@ export function MainNav() {
       onClick: () => {
         void openShinkaiNodeManagerWindow();
       },
-      icon: <CodesandboxIcon className="text-gray-80 h-4 w-4" />,
+      icon: <CodesandboxIcon className="text-official-gray-400 h-4 w-4" />,
     },
     {
       title: t('settings.layout.analytics'),
       href: '/settings/analytics-settings',
-      icon: <BarChart2 className="text-gray-80 h-4 w-4" />,
+      icon: <BarChart2 className="text-official-gray-400 h-4 w-4" />,
     },
     {
       title: t('settings.layout.exportConnection'),
       href: '/settings/export-connection',
-      icon: <ExportIcon className="text-gray-80 h-4 w-4" />,
+      icon: <ExportIcon className="text-official-gray-400 h-4 w-4" />,
     },
     {
       title: t('settings.layout.publicKeys'),
       href: '/settings/public-keys',
       icon: (
         <svg
-          className="text-gray-80 h-4 w-4"
+          className="text-official-gray-400 h-4 w-4"
           fill="currentColor"
           stroke="currentColor"
           strokeWidth="0"
@@ -169,12 +156,12 @@ export function MainNav() {
     {
       title: t('settings.layout.promptLibrary'),
       href: '/settings/prompt-library',
-      icon: <PromptLibraryIcon className="text-gray-80 h-4 w-4" />,
+      icon: <PromptLibraryIcon className="text-official-gray-400 h-4 w-4" />,
     },
     {
       title: t('settings.layout.cryptoWallet'),
       href: '/settings/crypto-wallet',
-      icon: <WalletMinimal className="text-gray-80 h-4 w-4" />,
+      icon: <WalletMinimal className="text-official-gray-400 h-4 w-4" />,
     },
     {
       title: t('settings.layout.galxe'),
