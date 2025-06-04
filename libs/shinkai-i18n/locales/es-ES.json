@@ -271,18 +271,7 @@
     },
     "sidebar": {
       "toggle": "Alternar barra lateral"
-    },
-    "analytics": "Analíticas",
-    "appearance": "Apariencia",
-    "createRegistrationCode": "Crear Código de Registro",
-    "cryptoWallet": "Billetera Cripto",
-    "exportConnection": "Exportar Conexión",
-    "galxe": "Misión Galxe",
-    "general": "General",
-    "internetAccess": "Acceso a Internet",
-    "promptLibrary": "Biblioteca de Prompts",
-    "publicKeys": "Claves Públicas",
-    "shinkaiNode": "Administrador de Nodo Shinkai"
+    }
   },
   "llmProviders": {
     "add": "Añadir IA",
@@ -509,9 +498,9 @@
       "exportConnection": "Exportar Conexión",
       "galxe": "Misión Galxe",
       "general": "General",
-      "internetAccess": "Acceso a Internet",
       "promptLibrary": "Biblioteca de Prompts",
       "publicKeys": "Claves Públicas",
+      "remoteAccess": "Acceso Remoto",
       "shinkaiNode": "Administrador de Nodo Shinkai"
     },
     "maxChatIterations": {
@@ -544,6 +533,27 @@
     "registerNewCode": {
       "label": "Registrar nuevo dispositivo"
     },
+    "remoteAccess": {
+      "connected": "Conectado",
+      "description": "Conéctate de manera fácil y segura a tu nodo Shinkai desde cualquier lugar usando ngrok. Sin configuraciones complejas: solo <a>crea una cuenta gratuita en ngrok</a>, copia tu <b>token de autenticación de ngrok</b> desde el panel de control y pégalo a continuación para habilitar el acceso remoto seguro.",
+      "errors": {
+        "failedToGetStatus": "Error al obtener el estado de ngrok.",
+        "failedToStart": "Error al conectar el acceso remoto a través de ngrok.",
+        "failedToStop": "Error al desconectar el acceso remoto a través de ngrok."
+      },
+      "form": {
+        "authToken": "Token de Autenticación de Ngrok",
+        "authTokenHelperText": "Ingresa tu token de autenticación de ngrok",
+        "authTokenHelperTextWhenEnabled": "Detén el acceso remoto a ngrok para actualizar tu token de autenticación",
+        "enableRemoteAccess": "Habilitar Acceso Remoto",
+        "stopRemoteAccess": "Detener Acceso Remoto"
+      },
+      "publicAccessUrl": "URL de Acceso Público",
+      "publicAccessUrlDescription": "Comparte esta URL para dar acceso seguro a tu nodo Shinkai",
+      "stopRemoteAccessSuccess": "El acceso remoto se ha detenido con éxito",
+      "success": "¡Conectado! Tu nodo Shinkai ahora es accesible de forma remota a través de ngrok",
+      "title": "Acceso Remoto"
+    },
     "shinkaiIdentity": {
       "checkIdentityInSync": "Verificar Identidad de Shinkai",
       "checkIdentityInSyncDescription": "Verifica que tu identidad de shinkai esté sincronizada correctamente.",
@@ -572,33 +582,6 @@
         "title": "Incluir opción de Resumen de 1 clic"
       },
       "label": "Barra lateral"
-    },
-    "internetAccess": {
-      "title": "Configuración de Acceso a Internet",
-      "description": "Gestiona las preferencias de configuración de acceso a internet.",
-      "overview": {
-        "title": "Resumen",
-        "description": "Esta función te permite acceder a tu nodo Shinkai desde internet usando un túnel ngrok. Hay un nivel gratuito disponible, y solo necesitas un token de autenticación ngrok para comenzar. Puedes registrarte para una cuenta ngrok",
-        "signUpLink": "aquí"
-      },
-      "form": {
-        "authToken": "Token de Autenticación",
-        "authTokenPlaceholder": "Ingresa tu token de autenticación ngrok",
-        "startInternetAccess": "Iniciar Acceso a Internet",
-        "stopInternetAccess": "Detener Acceso a Internet"
-      },
-      "status": {
-        "title": "Estado del Acceso a Internet",
-        "statusLabel": "Estado",
-        "tunnelUrlLabel": "URL del Túnel",
-        "enabled": "Habilitado",
-        "notEnabled": "No habilitado"
-      },
-      "errors": {
-        "failedToStart": "Error al iniciar el túnel",
-        "failedToStop": "Error al detener el túnel",
-        "failedToGetStatus": "Error al obtener el estado del túnel"
-      }
     }
   },
   "shinkaiNode": {

@@ -173,7 +173,7 @@ export default {
       shareFolderText:
         'You can share folders that you store in AI Files with anyone.',
       unshareFolderText:
-        'Everyone will be removed from this folder. You\'ll still keep a copy of this folder in your AI Files. <br /> Note: Removed members will keep a copy of this shared folder.',
+        "Everyone will be removed from this folder. You'll still keep a copy of this folder in your AI Files. <br /> Note: Removed members will keep a copy of this shared folder.",
     },
     forms: {
       folderName: 'Folder Name',
@@ -320,7 +320,7 @@ export default {
     layout: {
       general: 'General',
       appearance: 'Appearance',
-      internetAccess: 'Internet Access',
+      remoteAccess: 'Remote Access',
       shinkaiNode: 'Shinkai Node Manager',
       exportConnection: 'Export Connection',
       createRegistrationCode: 'Create Registration Code',
@@ -436,31 +436,29 @@ export default {
         extraLarge: 'Extra Large',
       },
     },
-    internetAccess: {
-      title: 'Internet Access Configuration',
-      description: 'Manage your internet access settings preferences.',
-      overview: {
-        title: 'Overview',
-        description: 'This feature allows you to access your Shinkai node from the internet using a ngrok tunnel. There is a free tier available, and you only need a ngrok auth token to get started. You can sign up for a ngrok account',
-        signUpLink: 'here',
-      },
+    remoteAccess: {
+      title: 'Remote Access',
+      description:
+        'Easily and securely connect to your Shinkai node from anywhere using ngrok. No complex setup—just  <a>create a free ngrok account</a>, copy your <b>ngrok auth token</b> from the dashboard, and paste it below to enable secure remote access.',
+      connected: 'Connected',
+      publicAccessUrl: 'Public Access URL',
+      publicAccessUrlDescription:
+        'Share this URL to give others secure access to your Shinkai node',
       form: {
-        authToken: 'Auth Token',
-        authTokenPlaceholder: 'Enter your ngrok auth token',
-        startInternetAccess: 'Start Internet Access',
-        stopInternetAccess: 'Stop Internet Access',
+        authToken: 'Ngrok Auth Token',
+        authTokenHelperText: 'Enter your ngrok auth token',
+        authTokenHelperTextWhenEnabled:
+          'Stop remote access to ngrok to update your auth token',
+        enableRemoteAccess: 'Enable Remote Access',
+        stopRemoteAccess: 'Stop Remote Access',
       },
-      status: {
-        title: 'Internet Access Status',
-        statusLabel: 'Status',
-        tunnelUrlLabel: 'Tunnel URL',
-        enabled: 'Enabled',
-        notEnabled: 'Not enabled',
-      },
+      success:
+        'Connected! Your Shinkai node is now accessible remotely via ngrok',
+      stopRemoteAccessSuccess: 'Remote access has been stopped successfully',
       errors: {
-        failedToStart: 'Failed to start tunnel',
-        failedToStop: 'Failed to stop tunnel',
-        failedToGetStatus: 'Failed to get tunnel status',
+        failedToStart: 'Failed to connect remote access via ngrok.',
+        failedToStop: 'Failed to disconnect remote access via ngrok.',
+        failedToGetStatus: 'Failed to get ngrok status.',
       },
     },
   },
@@ -676,8 +674,7 @@ export default {
     configure: 'Configure Server',
     updateWarningDescription:
       'Updating this server will reset its associated tools.',
-    updateDescription:
-      'Updating configuration for MCP server: {{name}}',
+    updateDescription: 'Updating configuration for MCP server: {{name}}',
     statusUpdated: 'Status updated successfully',
     statusUpdateFailed: 'Failed to update status',
     deleteDescription:

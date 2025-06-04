@@ -271,18 +271,7 @@
     },
     "sidebar": {
       "toggle": "切换侧边栏"
-    },
-    "analytics": "分析",
-    "appearance": "外观",
-    "createRegistrationCode": "创建注册码",
-    "cryptoWallet": "加密钱包",
-    "exportConnection": "导出连接",
-    "galxe": "Galxe任务",
-    "general": "常规",
-    "internetAccess": "互联网访问",
-    "promptLibrary": "提示库",
-    "publicKeys": "公钥",
-    "shinkaiNode": "深海节点管理器"
+    }
   },
   "llmProviders": {
     "add": "添加人工智能",
@@ -509,9 +498,9 @@
       "exportConnection": "导出连接",
       "galxe": "Galxe任务",
       "general": "常规",
-      "internetAccess": "互联网访问",
       "promptLibrary": "提示库",
       "publicKeys": "公钥",
+      "remoteAccess": "远程访问",
       "shinkaiNode": "深海节点管理器"
     },
     "maxChatIterations": {
@@ -544,6 +533,27 @@
     "registerNewCode": {
       "label": "注册新设备"
     },
+    "remoteAccess": {
+      "connected": "已连接",
+      "description": "使用 ngrok 轻松安全地从任何地方连接到您的 Shinkai 节点。无需复杂的设置——只需 <a>创建一个免费的 ngrok 账户</a>，从仪表板复制您的 <b>ngrok 认证令牌</b>，并将其粘贴到下面以启用安全的远程访问。",
+      "errors": {
+        "failedToGetStatus": "获取 ngrok 状态失败。",
+        "failedToStart": "通过 ngrok 连接远程访问失败。",
+        "failedToStop": "断开远程访问通过 ngrok 失败。"
+      },
+      "form": {
+        "authToken": "Ngrok 认证令牌",
+        "authTokenHelperText": "输入您的 ngrok 认证令牌",
+        "authTokenHelperTextWhenEnabled": "停止远程访问 ngrok 以更新您的认证令牌",
+        "enableRemoteAccess": "启用远程访问",
+        "stopRemoteAccess": "停止远程访问"
+      },
+      "publicAccessUrl": "公共访问 URL",
+      "publicAccessUrlDescription": "分享此 URL 以便他人安全访问您的 Shinkai 节点",
+      "stopRemoteAccessSuccess": "远程访问已成功停止",
+      "success": "已连接！您的 Shinkai 节点现在可以通过 ngrok 远程访问",
+      "title": "远程访问"
+    },
     "shinkaiIdentity": {
       "checkIdentityInSync": "验证Shinkai身份",
       "checkIdentityInSyncDescription": "检查您的Shinkai身份是否准确同步。",
@@ -572,33 +582,6 @@
         "title": "包括一键摘要选项"
       },
       "label": "侧边栏"
-    },
-    "internetAccess": {
-      "title": "互联网访问配置",
-      "description": "管理您的互联网访问设置偏好。",
-      "overview": {
-        "title": "概述",
-        "description": "此功能允许您使用ngrok隧道从互联网访问您的Shinkai节点。有免费层可用，您只需要一个ngrok认证令牌即可开始。您可以注册ngrok账户",
-        "signUpLink": "这里"
-      },
-      "form": {
-        "authToken": "认证令牌",
-        "authTokenPlaceholder": "输入您的ngrok认证令牌",
-        "startInternetAccess": "启动互联网访问",
-        "stopInternetAccess": "停止互联网访问"
-      },
-      "status": {
-        "title": "互联网访问状态",
-        "statusLabel": "状态",
-        "tunnelUrlLabel": "隧道URL",
-        "enabled": "已启用",
-        "notEnabled": "未启用"
-      },
-      "errors": {
-        "failedToStart": "启动隧道失败",
-        "failedToStop": "停止隧道失败",
-        "failedToGetStatus": "获取隧道状态失败"
-      }
     }
   },
   "shinkaiNode": {

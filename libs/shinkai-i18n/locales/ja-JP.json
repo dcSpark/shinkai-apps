@@ -271,33 +271,6 @@
     },
     "sidebar": {
       "toggle": "サイドバーの切り替え"
-    },
-    "internetAccess": {
-      "title": "インターネットアクセス設定",
-      "description": "インターネットアクセス設定の設定を管理します。",
-      "overview": {
-        "title": "概要",
-        "description": "この機能により、ngrokトンネルを使用してインターネットからShinkaiノードにアクセスできます。無料プランが利用可能で、開始するにはngrok認証トークンのみが必要です。ngrokアカウントにサインアップできます",
-        "signUpLink": "こちら"
-      },
-      "form": {
-        "authToken": "認証トークン",
-        "authTokenPlaceholder": "ngrok認証トークンを入力してください",
-        "startInternetAccess": "インターネットアクセスを開始",
-        "stopInternetAccess": "インターネットアクセスを停止"
-      },
-      "status": {
-        "title": "インターネットアクセス状態",
-        "statusLabel": "状態",
-        "tunnelUrlLabel": "トンネルURL",
-        "enabled": "有効",
-        "notEnabled": "無効"
-      },
-      "errors": {
-        "failedToStart": "トンネルの開始に失敗しました",
-        "failedToStop": "トンネルの停止に失敗しました",
-        "failedToGetStatus": "トンネル状態の取得に失敗しました"
-      }
     }
   },
   "llmProviders": {
@@ -525,9 +498,9 @@
       "exportConnection": "接続をエクスポート",
       "galxe": "Galxeクエスト",
       "general": "一般",
-      "internetAccess": "インターネットアクセス",
       "promptLibrary": "プロンプトライブラリ",
       "publicKeys": "公開鍵",
+      "remoteAccess": "リモートアクセス",
       "shinkaiNode": "Shinkaiノードマネージャー"
     },
     "maxChatIterations": {
@@ -559,6 +532,27 @@
     },
     "registerNewCode": {
       "label": "新しいデバイスを登録"
+    },
+    "remoteAccess": {
+      "connected": "接続されました",
+      "description": "ngrokを使用して、どこからでもあなたのShinkaiノードに簡単かつ安全に接続できます。複雑な設定は不要です—ただ<a>無料のngrokアカウントを作成</a>し、ダッシュボードから<b>ngrok認証トークン</b>をコピーして、下に貼り付けて安全なリモートアクセスを有効にしてください。",
+      "errors": {
+        "failedToGetStatus": "ngrokのステータスを取得するのに失敗しました。",
+        "failedToStart": "ngrokを介してリモートアクセスの接続に失敗しました。",
+        "failedToStop": "ngrokを介してリモートアクセスの切断に失敗しました。"
+      },
+      "form": {
+        "authToken": "Ngrok認証トークン",
+        "authTokenHelperText": "ngrok認証トークンを入力してください",
+        "authTokenHelperTextWhenEnabled": "認証トークンを更新するためにngrokのリモートアクセスを停止してください",
+        "enableRemoteAccess": "リモートアクセスを有効にする",
+        "stopRemoteAccess": "リモートアクセスを停止する"
+      },
+      "publicAccessUrl": "公開アクセスURL",
+      "publicAccessUrlDescription": "このURLを共有して、他の人にあなたのShinkaiノードへの安全なアクセスを提供します",
+      "stopRemoteAccessSuccess": "リモートアクセスは正常に停止されました",
+      "success": "接続されました！あなたのShinkaiノードはngrokを介してリモートでアクセス可能です",
+      "title": "リモートアクセス"
     },
     "shinkaiIdentity": {
       "checkIdentityInSync": "新海アイデンティティを確認",

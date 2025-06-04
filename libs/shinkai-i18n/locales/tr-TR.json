@@ -271,18 +271,7 @@
     },
     "sidebar": {
       "toggle": "Yan Çubuğunu Aç/Kapat"
-    },
-    "analytics": "Analitik",
-    "appearance": "Görünüm",
-    "createRegistrationCode": "Kayıt Kodu Oluştur",
-    "cryptoWallet": "Kripto Cüzdanı",
-    "exportConnection": "Bağlantıyı Dışa Aktar",
-    "galxe": "Galxe Görevi",
-    "general": "Genel",
-    "internetAccess": "İnternet Erişimi",
-    "promptLibrary": "İpucu Kütüphanesi",
-    "publicKeys": "Açık Anahtarlar",
-    "shinkaiNode": "Shinkai Düğüm Yöneticisi"
+    }
   },
   "llmProviders": {
     "add": "Yapay Zeka Ekle",
@@ -509,9 +498,9 @@
       "exportConnection": "Bağlantıyı Dışa Aktar",
       "galxe": "Galxe Görevi",
       "general": "Genel",
-      "internetAccess": "İnternet Erişimi",
       "promptLibrary": "İpucu Kütüphanesi",
       "publicKeys": "Açık Anahtarlar",
+      "remoteAccess": "Uzaktan Erişim",
       "shinkaiNode": "Shinkai Düğüm Yöneticisi"
     },
     "maxChatIterations": {
@@ -544,6 +533,27 @@
     "registerNewCode": {
       "label": "Yeni cihaz kaydet"
     },
+    "remoteAccess": {
+      "connected": "Bağlandı",
+      "description": "Ngrok kullanarak Shinkai düğümünüze her yerden kolayca ve güvenli bir şekilde bağlanın. Karmaşık bir kurulum yok—sadece <a>ücretsiz bir ngrok hesabı oluşturun</a>, kontrol panelinden <b>ngrok kimlik doğrulama tokeninizi</b> kopyalayın ve güvenli uzaktan erişimi etkinleştirmek için aşağıya yapıştırın.",
+      "errors": {
+        "failedToGetStatus": "Ngrok durumu alınamadı.",
+        "failedToStart": "Ngrok üzerinden uzaktan erişim bağlantısı kurulamadı.",
+        "failedToStop": "Ngrok üzerinden uzaktan erişim bağlantısı kesilemedi."
+      },
+      "form": {
+        "authToken": "Ngrok Kimlik Doğrulama Tokeni",
+        "authTokenHelperText": "Ngrok kimlik doğrulama tokeninizi girin",
+        "authTokenHelperTextWhenEnabled": "Kimlik doğrulama tokeninizi güncellemek için ngrok'ta uzaktan erişimi durdurun",
+        "enableRemoteAccess": "Uzaktan Erişimi Etkinleştir",
+        "stopRemoteAccess": "Uzaktan Erişimi Durdur"
+      },
+      "publicAccessUrl": "Herkese Açık Erişim URL'si",
+      "publicAccessUrlDescription": "Bu URL'yi paylaşarak başkalarına Shinkai düğümünüze güvenli erişim verin",
+      "stopRemoteAccessSuccess": "Uzaktan erişim başarıyla durduruldu",
+      "success": "Bağlandı! Shinkai düğümünüz artık ngrok üzerinden uzaktan erişilebilir",
+      "title": "Uzaktan Erişim"
+    },
     "shinkaiIdentity": {
       "checkIdentityInSync": "Shinkai Kimliğini doğrula",
       "checkIdentityInSyncDescription": "Shinkai kimliğinizin doğru bir şekilde senkronize olduğunu kontrol edin.",
@@ -572,33 +582,6 @@
         "title": "1-Tık Özeti Seçeneğini Dahil Et"
       },
       "label": "Yan Menü"
-    },
-    "internetAccess": {
-      "title": "İnternet Erişimi Yapılandırması",
-      "description": "İnternet erişimi ayar tercihlerinizi yönetin.",
-      "overview": {
-        "title": "Genel Bakış",
-        "description": "Bu özellik, ngrok tüneli kullanarak Shinkai düğümünüze internetten erişmenizi sağlar. Ücretsiz bir katman mevcuttur ve başlamak için sadece bir ngrok kimlik doğrulama belirtecine ihtiyacınız vardır. Ngrok hesabı için kaydolabilirsiniz",
-        "signUpLink": "buradan"
-      },
-      "form": {
-        "authToken": "Kimlik Doğrulama Belirteci",
-        "authTokenPlaceholder": "Ngrok kimlik doğrulama belirtecinizi girin",
-        "startInternetAccess": "İnternet Erişimini Başlat",
-        "stopInternetAccess": "İnternet Erişimini Durdur"
-      },
-      "status": {
-        "title": "İnternet Erişimi Durumu",
-        "statusLabel": "Durum",
-        "tunnelUrlLabel": "Tünel URL'si",
-        "enabled": "Etkin",
-        "notEnabled": "Etkin değil"
-      },
-      "errors": {
-        "failedToStart": "Tünel başlatılamadı",
-        "failedToStop": "Tünel durdurulamadı",
-        "failedToGetStatus": "Tünel durumu alınamadı"
-      }
     }
   },
   "shinkaiNode": {
