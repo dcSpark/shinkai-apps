@@ -9,6 +9,7 @@ import ReactDOM from 'react-dom/client';
 import { ErrorBoundary } from 'react-error-boundary';
 import { BrowserRouter as Router } from 'react-router';
 
+import { ChatProvider } from '../../components/chat/context/chat-context';
 import { ToolsProvider } from '../../components/chat/context/tools-context';
 import FullPageErrorFallback from '../../components/error-boundary';
 import { shinkaiNodeQueryClient } from '../../lib/shinkai-node-manager/shinkai-node-manager-client';
@@ -28,14 +29,16 @@ const App = () => {
         <QuickAskProvider>
           <ToolsProvider>
             <ShinkaiNodeRunningOverlay>
-              <TooltipProvider delayDuration={0}>
-                <Router>
-                  {/*<Routes>*/}
-                  <QuickAsk />
-                  {/*</Routes>*/}
-                </Router>
-                <Toaster />
-              </TooltipProvider>
+              <ChatProvider>
+                <TooltipProvider delayDuration={0}>
+                  <Router>
+                    {/*<Routes>*/}
+                    <QuickAsk />
+                    {/*</Routes>*/}
+                  </Router>
+                  <Toaster />
+                </TooltipProvider>
+              </ChatProvider>
             </ShinkaiNodeRunningOverlay>
           </ToolsProvider>
         </QuickAskProvider>
