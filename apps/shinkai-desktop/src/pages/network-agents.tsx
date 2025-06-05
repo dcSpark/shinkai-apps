@@ -25,6 +25,7 @@ import {
 import { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import axios from 'axios';
+import { invoke } from '@tauri-apps/api/core';
 import { useAuth } from '../store/auth';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
@@ -203,10 +204,18 @@ const DiscoverNetworkAgents = () => {
   useEffect(() => {
     const fetchAgents = async () => {
       try {
-        const res = await fetch(
-          'https://storage.googleapis.com/network-agents/all_agents.json',
-        );
-        const data = (await res.json()) as ApiNetworkAgent[];
+        const res = await invoke<{
+          status: number;
+          headers: Record<string, string[]>;
+          body: string;
+        }>('get_request', {
+          url: 'https://storage.googleapis.com/network-agents/all_agents.json',
+          customHeaders: JSON.stringify({}),
+        });
+        if (res.status !== 200) {
+          throw new Error(`Request failed: ${res.status}`);
+        }
+        const data = JSON.parse(res.body) as ApiNetworkAgent[];
 
         const parsed = data.map((item, idx): Agent => {
           const usage =
