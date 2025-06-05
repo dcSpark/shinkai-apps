@@ -1,113 +1,202 @@
-import { useState } from 'react';
-import { useApps, useInstallApp } from "../../lib/composio/react-query";
-import { ComposioAppDetailsModal } from './composio-app-details-modal';
-import { App } from '../../lib/composio/composio-api';
+import {
+  type McpServer,
+  McpServerType,
+} from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
+import { useDeleteMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/deleteMcpServer/useDeleteMcpServer';
+import { Button } from '@shinkai_network/shinkai-ui';
 import { WrenchIcon, Loader2Icon } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { type App } from '../../lib/composio/composio-api';
+import { useApps, useInstallApp } from '../../lib/composio/react-query';
 import { useAuth } from '../../store/auth';
+import { ComposioAppDetailsModal } from './composio-app-details-modal';
 
-export const ComposioMcpServers = () => {
+export const ComposioMcpServers = ({
+  installedMcpServers,
+}: {
+  installedMcpServers: McpServer[];
+}) => {
   const { data: composioApps, isLoading: isLoadingComposio } = useApps();
   const [selectedApp, setSelectedApp] = useState<string | null>(null);
-  const [installingAppIds, setInstallingAppIds] = useState<Set<string>>(new Set());
+  const [installingAppIds, setInstallingAppIds] = useState<Set<string>>(
+    new Set(),
+  );
   const auth = useAuth((state) => state.auth);
 
   const handleAppClick = async (app: App) => {
-    setSelectedApp(app.id); 
-  }
+    setSelectedApp(app.id);
+  };
 
   const { mutate: installApp } = useInstallApp();
-  
+  const { mutate: deleteMcpServer, isPending: isLoadingDeleteMcpServer } =
+    useDeleteMcpServer();
+
   const handleInstall = async (app: App) => {
     if (!auth) {
-      toast.error("You must be logged in to install apps");
+      toast.error('You must be logged in to install apps');
       return;
     }
-    setInstallingAppIds(prev => new Set([...prev, app.id]));
-    installApp({
-      appId: app.id,
-      auth: {
-        node_address: auth.node_address,
-        api_v2_key: auth.api_v2_key
-      }
-    }, {
-      onError: (error) => {
-        toast.error("Error installing app from composio");
+    setInstallingAppIds((prev) => new Set([...prev, app.id]));
+    installApp(
+      {
+        appId: app.id,
+        auth: {
+          node_address: auth.node_address,
+          api_v2_key: auth.api_v2_key,
+        },
       },
-      onSettled: () => {
-        setInstallingAppIds(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(app.id);
-          return newSet;
-        });
-      }
+      {
+        onError: (error) => {
+          toast.error('Error installing app from composio');
+        },
+        onSettled: () => {
+          setInstallingAppIds((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(app.id);
+            return newSet;
+          });
+        },
+      },
+    );
+  };
+
+  const handleUninstall = async (app: App) => {
+    if (!auth) {
+      return;
+    }
+    const mcpServerId = installMcpServersIndexedByComposioAppId.get(app.id)?.id;
+    if (!mcpServerId) {
+      return;
+    }
+    deleteMcpServer({
+      id: mcpServerId,
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
     });
-  }
+  };
+
+  const getComposioAppIdFromSseUrl = (url: string) => {
+    let composioAppIdFromSseUrlRegexp = /https:\/\/mcp\.composio\.dev\/partner\/composio\/([a-z0-9]+)\?customerId/;
+    let composioAppIdFromSseUrl = composioAppIdFromSseUrlRegexp.exec(url);
+    if (composioAppIdFromSseUrl) {
+      return composioAppIdFromSseUrl[1];
+    }
+    return null;
+  };
+
+  const installMcpServersIndexedByComposioAppId = useMemo(() => {
+    const indexed = new Map<string, McpServer>();
+    for (const server of installedMcpServers) {
+      if (server.type === McpServerType.Sse) {
+        const key = getComposioAppIdFromSseUrl(server.url);
+        if (key) {
+          indexed.set(key, server);
+        }
+      }
+    }
+    return indexed;
+  }, [installedMcpServers]);
 
   return (
     <div className="mx-auto flex flex-col">
       <h2 className="text-2xl font-bold">Composio Apps</h2>
-      <div className="grid grid-cols-1 gap-4 mt-2">
-        {isLoadingComposio ? (
-          // Loading skeleton
-          [...Array(3)].map((_, i) => (
-            <div 
-              key={i}
-              className="flex items-center justify-between p-4 bg-official-gray-800 rounded-lg border border-official-gray-700"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg bg-official-gray-750 animate-pulse" />
-                <div className="space-y-2">
-                  <div className="h-5 w-32 bg-official-gray-750 rounded animate-pulse" />
-                  <div className="h-4 w-48 bg-official-gray-750 rounded animate-pulse" />
-                </div>
-              </div>
-              <div className="w-20 h-9 bg-official-gray-750 rounded-md animate-pulse" />
-            </div>
-          ))
-        ) : (
-          composioApps?.map((app) => (
-            <div 
-              key={app.id} 
-              className="flex items-center justify-between p-4 bg-official-gray-800 rounded-lg border border-official-gray-700 hover:border-official-gray-600 transition-colors cursor-pointer"
-              onClick={() => handleAppClick(app)}
-            >
-              <div className="flex-1 flex items-center gap-4">
-                <div className="relative">
-                  <img src={app.icon} alt={app.name} className="w-12 h-12 rounded-lg" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-semibold text-white">{app.name}</h3>
-                  </div>
-                  <p className="text-sm text-official-gray-400 mb-2">{app.description}</p>
-                  <div className="flex gap-4 mt-2 text-xs text-official-gray-400">
-                    <span className="inline-flex items-center gap-1"><WrenchIcon className="w-4 h-4" /> {app.meta.tool_count} tools</span>
+      <div className="mt-2 grid grid-cols-1 gap-4">
+        {isLoadingComposio
+          ? // Loading skeleton
+            [...Array(3)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-official-gray-800 border-official-gray-700 flex items-center justify-between rounded-lg border p-4"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="bg-official-gray-750 h-12 w-12 animate-pulse rounded-lg" />
+                  <div className="space-y-2">
+                    <div className="bg-official-gray-750 h-5 w-32 animate-pulse rounded" />
+                    <div className="bg-official-gray-750 h-4 w-48 animate-pulse rounded" />
                   </div>
                 </div>
+                <div className="bg-official-gray-750 h-9 w-20 animate-pulse rounded-md" />
               </div>
-              <div className="ml-4 flex flex-col items-end gap-2">
-                <button 
-                  className="px-4 py-2 bg-official-blue-600 hover:bg-official-blue-700 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleInstall(app);
-                  }}
-                  disabled={installingAppIds.has(app.id)}
-                >
-                  {installingAppIds.has(app.id) ? (
-                    <>
-                      <Loader2Icon className="w-4 h-4 animate-spin" />
-                      Installing...
-                    </>
-                  ) : (
-                    'Install'
+            ))
+          : composioApps?.map((app) => (
+              <div
+                key={app.id}
+                className="bg-official-gray-800 border-official-gray-700 hover:border-official-gray-600 flex cursor-pointer items-center justify-between rounded-lg border p-4 transition-colors"
+                onClick={() => handleAppClick(app)}
+              >
+                <div className="flex flex-1 items-center gap-4">
+                  <div className="relative">
+                    <img
+                      src={app.icon}
+                      alt={app.name}
+                      className="h-12 w-12 rounded-lg"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-semibold text-white">
+                        {app.name}
+                      </h3>
+                    </div>
+                    <p className="text-official-gray-400 mb-2 text-sm">
+                      {app.description}
+                    </p>
+                    <div className="text-official-gray-400 mt-2 flex gap-4 text-xs">
+                      <span className="inline-flex items-center gap-1">
+                        <WrenchIcon className="h-4 w-4" /> {app.meta.tool_count}{' '}
+                        tools
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="ml-4 flex flex-col items-end gap-2">
+                  {!installMcpServersIndexedByComposioAppId.has(app.id) && (
+                    <Button
+                      className="flex items-center gap-2 rounded-md px-4 py-2 text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleInstall(app);
+                      }}
+                      disabled={installingAppIds.has(app.id)}
+                      size="sm"
+                      variant="outline"
+                    >
+                      {installingAppIds.has(app.id) ? (
+                        <>
+                          <Loader2Icon className="h-4 w-4 animate-spin" />
+                          Installing...
+                        </>
+                      ) : (
+                        'Install'
+                      )}
+                    </Button>
                   )}
-                </button>
+
+                  {installMcpServersIndexedByComposioAppId.has(app.id) && (
+                    <Button
+                      className="flex items-center gap-2 rounded-md px-4 py-2 text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleUninstall(app);
+                      }}
+                      disabled={isLoadingDeleteMcpServer}
+                      size="sm"
+                      variant="outline"
+                    >
+                      {isLoadingDeleteMcpServer ? (
+                        <>
+                          <Loader2Icon className="h-4 w-4 animate-spin" />
+                          Uninstalling...
+                        </>
+                      ) : (
+                        'Uninstall'
+                      )}
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))
-        )}
+            ))}
       </div>
 
       {selectedApp && (
