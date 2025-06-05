@@ -1,3 +1,4 @@
+import { type ProviderDetails } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import {
   type AssistantMessage,
   type Attachment,
@@ -83,7 +84,9 @@ export const generateOptimisticUserMessage = (
   attachments: attachments ?? [],
 });
 
-export const generateOptimisticAssistantMessage = (): AssistantMessage => ({
+export const generateOptimisticAssistantMessage = (
+  provider?: ProviderDetails,
+): AssistantMessage => ({
   messageId: OPTIMISTIC_ASSISTANT_MESSAGE_ID,
   createdAt: new Date().toISOString(),
   content: '',
@@ -92,4 +95,5 @@ export const generateOptimisticAssistantMessage = (): AssistantMessage => ({
   metadata: { parentMessageId: '', inboxId: '' },
   toolCalls: [],
   artifacts: [],
+  provider: provider,
 });

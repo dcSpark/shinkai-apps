@@ -3,6 +3,7 @@ import {
   downloadFile,
   getJobFolderName,
   getLastMessagesWithBranches,
+  getProviderFromJob,
 } from '@shinkai_network/shinkai-message-ts/api/jobs/index';
 import { type ChatMessage } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { getShinkaiFileProtocol } from '@shinkai_network/shinkai-message-ts/api/tools/index';
@@ -164,6 +165,10 @@ const createAssistantMessage = async (
     });
   }
 
+  const provider = await getProviderFromJob(nodeAddress, token, {
+    job_id: message.job_message.job_id,
+  });
+
   return {
     messageId: message.node_api_data.node_message_hash,
     createdAt: message.node_api_data.node_timestamp,
@@ -176,6 +181,7 @@ const createAssistantMessage = async (
       .replace(/<antartifact[^>]*>[\s\S]*?<\/antartifact>/g, '')
       .replace(/<think>[\s\S]*?<\/think>/g, ''),
     role: 'assistant',
+    provider,
     status: {
       type: 'complete',
       reason: 'unknown',

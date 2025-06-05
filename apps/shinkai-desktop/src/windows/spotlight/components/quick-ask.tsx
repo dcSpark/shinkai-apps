@@ -1,57 +1,72 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { type ShinkaiToolHeader } from '@shinkai_network/shinkai-message-ts/api/tools/types';
-import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
+import {
+  buildInboxIdFromJobId,
+  extractJobIdFromInbox,
+} from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
   type CreateJobFormSchema,
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
+import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
+import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
+import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
+import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
+  Button,
+  ChatInputArea,
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
-  CopyToClipboardIcon,
-  DotsLoader,
-  MarkdownText,
   Popover,
+  PopoverAnchor,
   PopoverContent,
-  PopoverTrigger,
-  ScrollArea,
-  Separator,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
-import {
-  ShinkaiCombinationMarkIcon,
-  ToolsIcon,
-} from '@shinkai_network/shinkai-ui/assets';
-import {
-  copyToClipboard,
-  formatText,
-} from '@shinkai_network/shinkai-ui/helpers';
+import { SendIcon, ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
+
 import { motion } from 'framer-motion';
-import { CheckCircle2, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import { memo, useEffect, useState } from 'react';
+import { ExternalLinkIcon, PlusIcon } from 'lucide-react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { toast } from 'sonner';
 
-import { AIModelSelector } from '../../../components/chat/chat-action-bar/ai-update-selection-action-bar';
-import { useWebSocketMessage } from '../../../components/chat/websocket-message';
+import {
+  chatConfigFormSchema,
+  UpdateChatConfigActionBar,
+  type ChatConfigFormSchemaType,
+} from '../../../components/chat/chat-action-bar/chat-config-action-bar';
+import { FileSelectionActionBar } from '../../../components/chat/chat-action-bar/file-selection-action-bar';
+import { ToolsSwitchActionBar } from '../../../components/chat/chat-action-bar/tools-switch-action-bar';
+import {
+  DropFileActive,
+  FileList,
+} from '../../../components/chat/conversation-footer';
+import {
+  useWebSocketMessage,
+  useWebSocketTools,
+} from '../../../components/chat/websocket-message';
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import { useQuickAskStore } from '../context/quick-ask';
+import { AIModelSelector, AiUpdateSelection } from './ai-update-selection';
+import { MessageList } from './message-list';
 
 export const hideSpotlightWindow = async () => {
   return invoke('hide_spotlight_window_app');
@@ -84,13 +99,11 @@ export const useDefaultSpotlightAiByDefault = () => {
 
 function QuickAsk() {
   const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
 
   const inboxId = useQuickAskStore((state) => state.inboxId);
   const setInboxId = useQuickAskStore((state) => state.setInboxId);
-  const messageResponse = useQuickAskStore((state) => state.messageResponse);
-  const setMessageResponse = useQuickAskStore(
-    (state) => state.setMessageResponse,
-  );
+
   const isLoadingResponse = useQuickAskStore(
     (state) => state.isLoadingResponse,
   );
@@ -98,8 +111,15 @@ function QuickAsk() {
   const { defaultSpotlightAiId, setDefaultSpotlightAiId } =
     useDefaultSpotlightAiByDefault();
 
-  const [clipboard, setClipboard] = useState(false);
-  let timeout: ReturnType<typeof setTimeout>;
+  const handleOpenInApp = async () => {
+    // await hideSpotlightWindow();
+    await invoke('open_main_window_with_path_app', {
+      path: inboxId ? `/inboxes/${encodeURIComponent(inboxId)}` : '/home',
+    });
+  };
+
+  const chatInputRef = useRef<HTMLTextAreaElement>(null);
+
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const { data: toolsList, isSuccess: isToolsListSuccess } = useGetTools(
     {
@@ -112,6 +132,44 @@ function QuickAsk() {
     },
   );
 
+  const chatForm = useForm<CreateJobFormSchema>({
+    resolver: zodResolver(createJobFormSchema),
+    defaultValues: {
+      message: '',
+      files: [],
+    },
+  });
+
+  const chatConfigForm = useForm<ChatConfigFormSchemaType>({
+    resolver: zodResolver(chatConfigFormSchema),
+    defaultValues: {
+      stream: DEFAULT_CHAT_CONFIG.stream,
+      customPrompt: '',
+      temperature: DEFAULT_CHAT_CONFIG.temperature,
+      topP: DEFAULT_CHAT_CONFIG.top_p,
+      topK: DEFAULT_CHAT_CONFIG.top_k,
+      useTools: DEFAULT_CHAT_CONFIG.use_tools,
+    },
+  });
+
+  const createNewChat = useCallback(() => {
+    setInboxId(null);
+    chatForm.reset({
+      message: '',
+      agent: defaultSpotlightAiId,
+      files: [],
+    });
+    chatConfigForm.reset({
+      stream: DEFAULT_CHAT_CONFIG.stream,
+      customPrompt: '',
+      temperature: DEFAULT_CHAT_CONFIG.temperature,
+      topP: DEFAULT_CHAT_CONFIG.top_p,
+      topK: DEFAULT_CHAT_CONFIG.top_k,
+      useTools: DEFAULT_CHAT_CONFIG.use_tools,
+    });
+    chatInputRef.current?.focus();
+  }, [chatConfigForm, chatForm, defaultSpotlightAiId, setInboxId]);
+
   useHotkeys(
     ['esc'],
     () => {
@@ -122,16 +180,10 @@ function QuickAsk() {
       enableOnFormTags: true,
     },
   );
-
   useHotkeys(
-    ['mod+shift+c', 'ctrl+shift+c'],
+    ['mod+shift+o', 'ctrl+shift+o'],
     () => {
-      if (!messageResponse) return;
-      const string_ = messageResponse.trim();
-      void copyToClipboard(string_);
-      setClipboard(true);
-      clearTimeout(timeout);
-      timeout = setTimeout(() => setClipboard(false), 1000);
+      void handleOpenInApp();
     },
     {
       preventDefault: true,
@@ -139,12 +191,43 @@ function QuickAsk() {
     },
   );
 
-  const chatForm = useForm<CreateJobFormSchema>({
-    resolver: zodResolver(createJobFormSchema),
-    defaultValues: {
-      message: '',
-      files: [],
+  useHotkeys(
+    ['mod+shift+n', 'ctrl+shift+n'],
+    () => {
+      void createNewChat();
     },
+    {
+      enableOnContentEditable: true,
+      preventDefault: true,
+      enableOnFormTags: true,
+    },
+  );
+
+  const selectedTool = chatForm.watch('tool');
+  const currentMessage = chatForm.watch('message');
+  const currentFiles = chatForm.watch('files');
+  const currentAI = chatForm.watch('agent');
+
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const previousFiles = chatForm.getValues('files') ?? [];
+      const newFiles = [...previousFiles, ...acceptedFiles];
+      chatForm.setValue('files', newFiles, { shouldValidate: true });
+      chatInputRef.current?.focus();
+    },
+    [chatForm],
+  );
+
+  const {
+    getRootProps: getRootFileProps,
+    getInputProps: getInputFileProps,
+    isDragActive,
+    open: openFilePicker,
+  } = useDropzone({
+    noClick: true,
+    noKeyboard: true,
+    multiple: true,
+    onDrop,
   });
 
   useEffect(() => {
@@ -157,26 +240,26 @@ function QuickAsk() {
     };
   }, []);
 
-  const messageInput = chatForm.watch('message');
-
   useEffect(() => {
-    chatForm.reset({
-      message: '',
-      agent: defaultSpotlightAiId,
-      files: [],
-    });
-    setInboxId(null);
-    setMessageResponse('');
+    chatInputRef.current?.focus();
   }, []);
 
   const { mutateAsync: createJob } = useCreateJob({
     onSuccess: (data) => {
       const inboxId = buildInboxIdFromJobId(data.jobId);
-      setInboxId(encodeURIComponent(inboxId));
+      setInboxId(inboxId);
       chatForm.reset({
         message: '',
         agent: defaultSpotlightAiId,
         files: [],
+      });
+      chatConfigForm.reset({
+        stream: DEFAULT_CHAT_CONFIG.stream,
+        customPrompt: '',
+        temperature: DEFAULT_CHAT_CONFIG.temperature,
+        topP: DEFAULT_CHAT_CONFIG.top_p,
+        topK: DEFAULT_CHAT_CONFIG.top_k,
+        useTools: DEFAULT_CHAT_CONFIG.use_tools,
       });
     },
     onError: (error) => {
@@ -186,105 +269,276 @@ function QuickAsk() {
     },
   });
 
+  const toolListRef = useRef<HTMLDivElement>(null);
+
+  const scrollUpWhenSearchingTools = useCallback(() => {
+    requestAnimationFrame(() => {
+      toolListRef.current?.scrollTo({ top: 0 });
+    });
+  }, []);
+
+  const { data: agents } = useGetAgents({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const { mutateAsync: sendMessageToJob } = useSendMessageToJob({});
+
+  const selectedAgent = agents?.find((agent) => agent.agent_id === currentAI);
+
   useEffect(() => {
     chatForm.setValue('agent', defaultSpotlightAiId);
   }, [chatForm, defaultSpotlightAiId]);
 
   const onSubmit = async (data: CreateJobFormSchema) => {
-    setMessageResponse('');
-
     if (!auth) return;
-    console.log('spotlight tool key: ', data.tool?.key);
 
-    await createJob({
+    if (!inboxId) {
+      await createJob({
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
+        llmProvider: data.agent,
+        content: data.message,
+        isHidden: false,
+        toolKey: data.tool?.key,
+        chatConfig: {
+          stream: chatConfigForm.getValues('stream'),
+          custom_prompt: chatConfigForm.getValues('customPrompt') ?? '',
+          temperature: chatConfigForm.getValues('temperature'),
+          top_p: chatConfigForm.getValues('topP'),
+          top_k: chatConfigForm.getValues('topK'),
+          use_tools: chatConfigForm.getValues('useTools'),
+        },
+      });
+      return;
+    }
+
+    const jobId = inboxId ? extractJobIdFromInbox(inboxId) : '';
+
+    await sendMessageToJob({
       nodeAddress: auth.node_address,
       token: auth.api_v2_key,
-      llmProvider: data.agent,
-      content: data.message,
-      isHidden: false,
-      toolKey: data.tool?.key,
+      jobId,
+      message: data.message,
+      parent: '',
+    });
+
+    chatForm.reset({
+      message: '',
+      agent: defaultSpotlightAiId,
+      files: [],
+    });
+    chatConfigForm.reset({
+      stream: DEFAULT_CHAT_CONFIG.stream,
+      customPrompt: '',
+      temperature: DEFAULT_CHAT_CONFIG.temperature,
+      topP: DEFAULT_CHAT_CONFIG.top_p,
+      topK: DEFAULT_CHAT_CONFIG.top_k,
+      useTools: DEFAULT_CHAT_CONFIG.use_tools,
     });
   };
 
   return (
-    <div className="relative flex size-full flex-col">
+    <div className="relative flex size-full flex-col gap-2">
       <div
-        className="absolute top-0 z-50 h-8 w-full"
+        className="absolute top-0 z-50 h-4 w-full"
         data-tauri-drag-region={true}
       />
-      <div className="font-lg flex h-[60px] shrink-0 items-center space-x-3 px-5 py-2">
-        {inboxId && (
-          <button
-            className="h-6 w-6 rounded-md bg-gray-200 p-1"
-            onClick={() => {
-              setInboxId(null);
-              setMessageResponse('');
-            }}
-            type="button"
-          >
-            <ChevronLeft className="size-full" />
-          </button>
-        )}
-        <div className="relative flex-grow">
-          <Popover
-            onOpenChange={(open) => {
-              setIsCommandOpen(open);
-              if (!open) {
-                if (chatForm.watch('message') === '/') {
-                  chatForm.setValue('message', '');
+      <div className="font-lg flex h-[50px] items-center justify-between px-3 py-1.5">
+        <span className="pl-1 text-base">{inboxId ? null : 'New Chat'}</span>
+        <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="tertiary"
+                size="icon"
+                onClick={createNewChat}
+                type="button"
+              >
+                <PlusIcon className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="flex flex-col items-center gap-1 text-xs">
+              New Chat <br />
+              <span className="inline-flex gap-1">
+                {['⇧', '⌘', 'N'].map((key, i) => (
+                  <kbd
+                    key={i}
+                    className="border-official-gray-780 bg-official-gray-950 rounded border px-2 py-1 font-mono text-xs text-white shadow-sm"
+                  >
+                    {key}
+                  </kbd>
+                ))}
+              </span>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="tertiary"
+                size="icon"
+                onClick={handleOpenInApp}
+                type="button"
+              >
+                <ExternalLinkIcon className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="flex flex-col items-center gap-1 text-xs">
+              Open in Main Window <br />
+              <span className="inline-flex gap-1">
+                {['⇧', '⌘', 'O'].map((key, i) => (
+                  <kbd
+                    key={i}
+                    className="border-official-gray-780 bg-official-gray-950 rounded border px-2 py-1 font-mono text-xs text-white shadow-sm"
+                  >
+                    {key}
+                  </kbd>
+                ))}
+              </span>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      </div>
+      <QuickAskBody />
+      <div
+        {...getRootFileProps({
+          className: 'relative shrink-0 px-3 pb-3 mx-auto w-full',
+        })}
+      >
+        <div className="relative z-[1]">
+          <Popover onOpenChange={setIsCommandOpen} open={isCommandOpen}>
+            <PopoverAnchor>
+              <ChatInputArea
+                autoFocus
+                ref={chatInputRef}
+                bottomAddons={
+                  <div className="flex items-center justify-between gap-4 px-3 pb-2">
+                    <div className="flex items-center gap-2.5">
+                      {inboxId ? (
+                        <AiUpdateSelection inboxId={inboxId ?? ''} />
+                      ) : (
+                        <AIModelSelector
+                          onValueChange={(value) => {
+                            chatForm.setValue('agent', value);
+                            setDefaultSpotlightAiId(value);
+                          }}
+                          value={chatForm.watch('agent')}
+                        />
+                      )}
+
+                      {!selectedTool && (
+                        <FileSelectionActionBar
+                          disabled={!!selectedTool}
+                          inputProps={{
+                            ...chatForm.register('files'),
+                            ...getInputFileProps(),
+                          }}
+                          onClick={openFilePicker}
+                        />
+                      )}
+
+                      {!selectedTool && !selectedAgent && !inboxId && (
+                        <ToolsSwitchActionBar
+                          checked={chatConfigForm.watch('useTools')}
+                          onClick={() => {
+                            chatConfigForm.setValue(
+                              'useTools',
+                              !chatConfigForm.watch('useTools'),
+                            );
+                          }}
+                        />
+                      )}
+                      {!selectedTool && !selectedAgent && inboxId && (
+                        <UpdateChatConfigActionBar />
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        className={cn('size-[36px] p-2')}
+                        disabled={isLoadingResponse}
+                        isLoading={isLoadingResponse}
+                        onClick={chatForm.handleSubmit(onSubmit)}
+                        size="icon"
+                      >
+                        <SendIcon className="h-full w-full" />
+                        <span className="sr-only">{t('chat.sendMessage')}</span>
+                      </Button>
+                    </div>
+                  </div>
                 }
-              }
-            }}
-            open={isCommandOpen}
-          >
-            <PopoverTrigger asChild>
-              <div className="w-full">
-                <input
-                  autoFocus
-                  className="placeholder:text-gray-80/70 w-full bg-transparent text-lg text-white focus:outline-hidden"
-                  {...chatForm.register('message')}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      void chatForm.handleSubmit(onSubmit)();
+                className="rounded-xl"
+                disabled={isLoadingResponse}
+                onChange={(value) => {
+                  chatForm.setValue('message', value);
+                }}
+                onKeyDown={(e) => {
+                  if (
+                    e.key === '/' &&
+                    !e.shiftKey &&
+                    !e.ctrlKey &&
+                    !e.metaKey &&
+                    !currentMessage.trim()
+                  ) {
+                    e.preventDefault();
+                    setIsCommandOpen(true);
+                  }
+                }}
+                onPaste={(event) => {
+                  const items = event.clipboardData?.items;
+                  if (items) {
+                    for (let i = 0; i < items.length; i++) {
+                      if (items[i].type.indexOf('image') !== -1) {
+                        const file = items[i].getAsFile();
+                        if (file) {
+                          onDrop([file]);
+                        }
+                      }
                     }
-
-                    if (e.key === 'Backspace' && !chatForm.watch('message')) {
-                      setInboxId(null);
-                      setMessageResponse('');
-                    }
-
-                    if (
-                      e.key === '/' &&
-                      !e.shiftKey &&
-                      !e.ctrlKey &&
-                      !e.metaKey &&
-                      !chatForm.watch('message').trim()
-                    ) {
-                      e.preventDefault();
-                      setIsCommandOpen(true);
-                      chatForm.setValue('message', '/');
-                    }
-                  }}
-                  placeholder="Ask a question..."
-                  spellCheck={false}
-                />
-              </div>
-            </PopoverTrigger>
+                  }
+                }}
+                onSubmit={chatForm.handleSubmit(onSubmit)}
+                textareaClassName={cn('max-h-[60vh] min-h-[60px] p-3 text-sm')}
+                topAddons={
+                  <>
+                    {isDragActive && <DropFileActive />}
+                    {!isDragActive &&
+                      currentFiles &&
+                      currentFiles.length > 0 && (
+                        <FileList
+                          currentFiles={currentFiles}
+                          isPending={isLoadingResponse}
+                          onRemoveFile={(index) => {
+                            const newFiles = [...currentFiles];
+                            newFiles.splice(index, 1);
+                            chatForm.setValue('files', newFiles, {
+                              shouldValidate: true,
+                            });
+                          }}
+                        />
+                      )}
+                  </>
+                }
+                value={chatForm.watch('message')}
+              />
+            </PopoverAnchor>
             <PopoverContent
               align="start"
-              className="w-[500px] bg-gray-300 p-0"
-              side="bottom"
-              sideOffset={5}
+              className="w-[500px] p-0"
+              side="top"
+              sideOffset={-200}
             >
               <Command>
-                <CommandInput autoFocus={false} placeholder="Search tools..." />
-                <CommandList>
+                <CommandInput
+                  onValueChange={scrollUpWhenSearchingTools}
+                  placeholder="Search tools..."
+                />
+                <CommandList ref={toolListRef}>
                   <CommandEmpty>No tools found.</CommandEmpty>
                   <CommandGroup heading="Your Active Tools">
                     {isToolsListSuccess &&
                       toolsList?.map((tool) => (
                         <CommandItem
-                          className="data-[selected='true']:bg-gray-200"
                           key={tool.tool_router_key}
                           onSelect={() => {
                             chatForm.setValue('tool', {
@@ -295,7 +549,8 @@ function QuickAsk() {
                                 tool.input_args.properties ?? {},
                               ),
                             });
-                            chatForm.setValue('message', `/${tool.name} `);
+                            chatConfigForm.setValue('useTools', true);
+                            chatForm.setValue('message', 'Tool Used');
                             setIsCommandOpen(false);
                             const input = document.querySelector('input');
                             if (input) {
@@ -304,11 +559,11 @@ function QuickAsk() {
                           }}
                         >
                           <ToolsIcon className="mr-2 h-4 w-4" />
-                          <div className="flex flex-col">
+                          <div className="flex flex-col gap-0.5 text-xs">
                             <span className="line-clamp-1 text-white">
                               {formatText(tool.name)}
                             </span>
-                            <span className="text-gray-80 line-clamp-3 text-xs">
+                            <span className="text-gray-80 line-clamp-2 text-xs">
                               {tool.description}
                             </span>
                           </div>
@@ -320,87 +575,6 @@ function QuickAsk() {
             </PopoverContent>
           </Popover>
         </div>
-        <AIModelSelector
-          onValueChange={(value) => {
-            chatForm.setValue('agent', value);
-            setDefaultSpotlightAiId(value);
-          }}
-          value={chatForm.watch('agent')}
-        />
-      </div>
-      <Separator className="bg-gray-350" />
-      <QuickAskBody />
-
-      <Separator className="bg-gray-350" />
-      <div className="flex h-10 w-full items-center justify-between px-4 py-1.5 text-xs">
-        <div>
-          {isLoadingResponse ? (
-            <div className="flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center text-gray-100 transition-colors hover:bg-gray-300">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Getting AI response...</span>
-            </div>
-          ) : (
-            // TODO: Support for full longer text
-            // <button
-            //   className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
-            //   disabled
-            // >
-            //   <span>Full Text Input </span>
-            //   <span className="flex items-center gap-1">
-            //     <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
-            //       ⌘
-            //     </kbd>
-            //     <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
-            //       N
-            //     </kbd>
-            //   </span>
-            // </button>
-            <ShinkaiCombinationMarkIcon className="h-auto w-[60px] text-gray-100" />
-          )}
-        </div>
-        <div className="flex items-center gap-1">
-          {messageInput ? (
-            <button
-              className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
-              onClick={chatForm.handleSubmit(onSubmit)}
-            >
-              <span>Submit</span>
-              <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
-                ↵
-              </kbd>
-            </button>
-          ) : messageResponse ? (
-            <CopyToClipboardIcon asChild string={messageResponse}>
-              <button className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300">
-                {clipboard && (
-                  <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
-                )}
-                <span>{clipboard ? 'Copied' : 'Copy'} Answer</span>
-                <span className="flex items-center gap-1">
-                  <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
-                    ⌘
-                  </kbd>
-                  <kbd className="text-gray-1100 flex h-5 w-8 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
-                    Shift
-                  </kbd>
-                  <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
-                    C
-                  </kbd>
-                </span>
-              </button>
-            </CopyToClipboardIcon>
-          ) : isLoadingResponse ? null : (
-            <button
-              className="text-gray-80 flex items-center justify-center gap-2 rounded-md px-1.5 py-0.5 text-center transition-colors hover:bg-gray-300"
-              onClick={chatForm.handleSubmit(onSubmit)}
-            >
-              <span>Submit</span>
-              <kbd className="text-gray-1100 flex h-5 w-5 items-center justify-center rounded-md bg-gray-300 px-1 font-sans">
-                ↵
-              </kbd>
-            </button>
-          )}
-        </div>
       </div>
     </div>
   );
@@ -409,13 +583,12 @@ function QuickAsk() {
 export default QuickAsk;
 
 const QuickAskBody = () => {
-  const { t } = useTranslation();
   const inboxId = useQuickAskStore((state) => state.inboxId);
 
   const decodedInboxId = decodeURIComponent(inboxId ?? '');
   if (!decodedInboxId) {
     return (
-      <div className="flex h-full w-full flex-1 items-center justify-center p-6">
+      <div className="flex h-full w-full flex-1 items-center justify-center px-2.5 py-6">
         <motion.div
           animate={{ opacity: 1 }}
           className="flex max-w-lg flex-col items-center gap-2 text-center"
@@ -423,16 +596,9 @@ const QuickAskBody = () => {
           initial={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <span aria-hidden={true} className="text-4xl">
-            🤖
-          </span>
-
-          <h1 className="text-xl font-bold text-white">
-            {t('quickAsk.emptyStateTitle')}
+          <h1 className="font-clash text-2xl font-semibold text-white">
+            How can I help you today?
           </h1>
-          <p className="text-gray-80 text-xs">
-            {t('quickAsk.emptyStateDescription')}
-          </p>
         </motion.div>
       </div>
     );
@@ -441,6 +607,8 @@ const QuickAskBody = () => {
 };
 
 const QuickAskBodyWithResponseBase = ({ inboxId }: { inboxId: string }) => {
+  const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
   const setLoadingResponse = useQuickAskStore(
     (state) => state.setLoadingResponse,
   );
@@ -448,15 +616,55 @@ const QuickAskBodyWithResponseBase = ({ inboxId }: { inboxId: string }) => {
     (state) => state.setMessageResponse,
   );
 
-  const { data } = useChatConversationWithOptimisticUpdates({ inboxId });
+  const { mutateAsync: sendMessageToJob } = useSendMessageToJob({});
+  const { mutateAsync: retryMessage } = useRetryMessage();
+
+  const {
+    data,
+    fetchPreviousPage,
+    hasPreviousPage,
+    isChatConversationLoading,
+    isFetchingPreviousPage,
+    isChatConversationSuccess,
+  } = useChatConversationWithOptimisticUpdates({
+    inboxId,
+  });
 
   useWebSocketMessage({
     enabled: !!inboxId,
     inboxId: inboxId,
   });
 
-  const lastMessage = data?.pages?.at(-1)?.at(-1);
-  const inputMessage = data?.pages?.at(-1)?.at(0);
+  useWebSocketTools({ inboxId: inboxId ?? '', enabled: !!inboxId });
+
+  const editAndRegenerateMessage = async (
+    content: string,
+    parentHash: string,
+  ) => {
+    if (!auth) return;
+    const decodedInboxId = decodeURIComponent(inboxId ?? '');
+    const jobId = extractJobIdFromInbox(decodedInboxId);
+
+    await sendMessageToJob({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      jobId,
+      message: content,
+      parent: parentHash,
+    });
+  };
+
+  const regenerateMessage = async (messageId: string) => {
+    if (!auth) return;
+    const decodedInboxId = decodeURIComponent(inboxId ?? '');
+
+    await retryMessage({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      inboxId: decodedInboxId,
+      messageId: messageId,
+    });
+  };
 
   useEffect(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
@@ -475,59 +683,18 @@ const QuickAskBodyWithResponseBase = ({ inboxId }: { inboxId: string }) => {
   }, [data, setLoadingResponse, setMessageResponse]);
 
   return (
-    <ScrollArea className="flex-1 text-sm [&>div>div]:!block">
-      <Collapsible className="bg-official-gray-850 border-official-gray-780 border-b">
-        <CollapsibleTrigger
-          className={cn(
-            'flex w-full max-w-full items-center justify-between gap-6 px-5 py-2',
-            '[&[data-state=open]>svg]:rotate-90',
-            '[&[data-state=open]>span.input]:block',
-            '[&[data-state=open]>span.content]:hidden',
-          )}
-        >
-          <span className="input text-gray-80 hidden flex-1 items-center gap-1 truncate text-left text-xs">
-            Input Message
-          </span>
-          <span className="content flex-1 truncate text-left text-gray-50">
-            {inputMessage?.content}
-          </span>
-
-          <ChevronRight className="text-gray-80 h-4 w-4 shrink-0" />
-        </CollapsibleTrigger>
-        <CollapsibleContent className="max-h-[150px] overflow-y-auto px-5 pt-0.5 pb-2">
-          <MarkdownText
-            className="prose-h1:!text-gray-50 prose-h1:!text-sm !text-sm !text-gray-50"
-            content={inputMessage?.content ?? ''}
-          />
-        </CollapsibleContent>
-      </Collapsible>
-      <div className="p-5 pb-4">
-        {lastMessage?.role === 'assistant' &&
-          lastMessage?.status.type === 'running' &&
-          lastMessage?.content === '' && <DotsLoader className="pt-1 pl-1" />}
-
-        {lastMessage?.role === 'assistant' && (
-          <MarkdownText
-            className={cn(
-              'prose-h1:!text-white prose-h1:!text-sm !text-sm !text-white',
-            )}
-            content={
-              lastMessage?.content?.startsWith('{') &&
-              lastMessage?.content?.endsWith('}')
-                ? `
-\`\`\`json
-${lastMessage?.content}
-\`\`\`
-`
-                : lastMessage?.content
-            }
-            isRunning={
-              !!lastMessage?.content && lastMessage?.status.type === 'running'
-            }
-          />
-        )}
-      </div>
-    </ScrollArea>
+    <MessageList
+      containerClassName="px-4 py-2"
+      editAndRegenerateMessage={editAndRegenerateMessage}
+      fetchPreviousPage={fetchPreviousPage}
+      hasPreviousPage={hasPreviousPage}
+      isFetchingPreviousPage={isFetchingPreviousPage}
+      isLoading={isChatConversationLoading}
+      isSuccess={isChatConversationSuccess}
+      noMoreMessageLabel={t('chat.allMessagesLoaded')}
+      paginatedMessages={data}
+      regenerateMessage={regenerateMessage}
+    />
   );
 };
 
