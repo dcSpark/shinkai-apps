@@ -22,8 +22,10 @@ import {
   Network,
   Wallet,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router';
+import axios from 'axios';
+import { useAuth } from '../store/auth';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
 
@@ -155,98 +157,35 @@ const myExposedAgents = [
   },
 ];
 
-const discoveredAgents = [
-  {
-    id: '3',
-    name: 'Research Paper Analyzer',
-    description: 'Extracts insights and summaries from academic papers',
-    price: 'Free',
-    category: 'Knowledge Management',
-    provider: 'ResearchAI',
-    rating: 4.8,
-    reviews: 156,
-    featured: true,
-    capabilities: ['PDF Analysis', 'Citation Extraction', 'Summary Generation'],
-    connectedApps: ['Notion', 'Google Sheets'],
-  },
-  {
-    id: '4',
-    name: 'Smart Contract Auditor',
-    description: 'AI-powered smart contract security analysis and optimization',
-    price: '$45.00',
-    category: 'Blockchain & Web3',
-    provider: 'Web3Security',
-    rating: 4.9,
-    reviews: 203,
-    featured: false,
-    capabilities: [
-      'Security Analysis',
-      'Gas Optimization',
-      'Vulnerability Detection',
-    ],
-    connectedApps: ['GitHub', 'Slack'],
-  },
-  {
-    id: '5',
-    name: 'Personal Data Guardian',
-    description: 'Privacy-first personal data management and encryption',
-    price: '$30.00',
-    category: 'Privacy & Security',
-    provider: 'PrivacyPro',
-    rating: 4.7,
-    reviews: 89,
-    featured: true,
-    capabilities: ['Data Encryption', 'Privacy Analysis', 'Access Control'],
-    connectedApps: ['Linear', 'Discord'],
-  },
-  {
-    id: '6',
-    name: 'Multi-Model Orchestrator',
-    description: 'Coordinates multiple AI models for complex tasks',
-    price: '$20.00',
-    category: 'AI Coordination',
-    provider: 'ModelMesh',
-    rating: 4.6,
-    reviews: 134,
-    featured: false,
-    capabilities: ['Model Routing', 'Task Decomposition', 'Result Synthesis'],
-    connectedApps: ['Slack', 'Trello'],
-  },
-  {
-    id: '7',
-    name: 'Learning Path Designer',
-    description: 'Creates personalized learning curricula and tracks progress',
-    price: 'Free',
-    category: 'Education & Training',
-    provider: 'EduAI',
-    rating: 4.8,
-    reviews: 267,
-    featured: true,
-    capabilities: [
-      'Curriculum Design',
-      'Progress Tracking',
-      'Adaptive Learning',
-    ],
-    connectedApps: ['Notion', 'Google Sheets', 'Linear'],
-  },
-  {
-    id: '8',
-    name: 'Workflow Automation Engine',
-    description: 'Automates complex business processes and workflows',
-    price: '$35.00',
-    category: 'Productivity',
-    provider: 'FlowAI',
-    rating: 4.5,
-    reviews: 198,
-    featured: false,
-    capabilities: [
-      'Process Mining',
-      'Task Automation',
-      'Integration Management',
-    ],
-    connectedApps: ['Slack', 'Google Sheets', 'Trello', 'Linear', 'Figma'],
-  },
-];
+interface ApiPayment {
+  maxAmountRequired?: string;
+  extra?: { name?: string };
+}
+
+interface ApiUsageType {
+  PerUse?: {
+    Payment?: ApiPayment[];
+  };
+}
+
+interface ApiNetworkTool {
+  name?: string;
+  description?: string;
+  provider?: string;
+  author?: string;
+  tool_router_key?: string;
+  usage_type?: ApiUsageType;
+}
+
+interface ApiToolOffering {
+  meta_description?: string;
+  usage_type?: ApiUsageType;
+}
+
+interface ApiNetworkAgent {
+  network_tool?: ApiNetworkTool;
+  tool_offering?: ApiToolOffering;
+}
 
 const DiscoverNetworkAgents = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -257,8 +196,74 @@ const DiscoverNetworkAgents = () => {
   const [expandedCategories, setExpandedCategories] = useState<string[]>([
     'use-cases',
   ]);
+  const [networkAgents, setNetworkAgents] = useState<Agent[]>([]);
+  const auth = useAuth((state) => state.auth);
+  const [installedKeys, setInstalledKeys] = useState<Set<string>>(new Set());
 
-  const filteredAgents = discoveredAgents.filter((agent) => {
+  useEffect(() => {
+    const fetchAgents = async () => {
+      try {
+        const res = await fetch(
+          'https://storage.googleapis.com/network-agents/all_agents.json',
+        );
+        const data = (await res.json()) as ApiNetworkAgent[];
+
+        const parsed = data.map((item, idx): Agent => {
+          const usage =
+            item.network_tool?.usage_type ?? item.tool_offering?.usage_type;
+          const payment = usage?.PerUse?.Payment?.[0];
+
+          let price = 'Free';
+          if (payment?.maxAmountRequired) {
+            const currency = payment.extra?.name ?? '';
+            price = `${payment.maxAmountRequired} ${currency}`.trim();
+          }
+
+          return {
+            id: item.network_tool?.tool_router_key ?? String(idx),
+            name: item.network_tool?.name ?? 'Unknown',
+            description: item.network_tool?.description ?? '',
+            price,
+            category: item.tool_offering?.meta_description ?? 'Network Agent',
+            provider: item.network_tool?.provider ?? item.network_tool?.author,
+            toolRouterKey: item.network_tool?.tool_router_key,
+            apiData: item,
+          };
+        });
+
+        setNetworkAgents(parsed);
+      } catch (e) {
+        console.error('Failed to fetch network agents', e);
+      }
+    };
+    void fetchAgents();
+  }, []);
+
+  useEffect(() => {
+    const fetchInstalled = async () => {
+      if (!auth?.node_address || !auth?.api_v2_key) {
+        return;
+      }
+      try {
+        const resp = await axios.post(
+          `${auth.node_address}/v2/list_all_network_shinkai_tools`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${auth.api_v2_key}` },
+          },
+        );
+        const keys = (resp.data as { tool_router_key?: string }[])
+          .map((t) => t.tool_router_key)
+          .filter(Boolean) as string[];
+        setInstalledKeys(new Set(keys));
+      } catch (e) {
+        console.error('Failed to fetch installed network tools', e);
+      }
+    };
+    void fetchInstalled();
+  }, [auth]);
+
+  const filteredAgents = networkAgents.filter((agent) => {
     const matchesSearch =
       agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       agent.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -269,6 +274,35 @@ const DiscoverNetworkAgents = () => {
       selectedCategory === 'all' || agent.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const handleAddAgent = async (agent: Agent) => {
+    if (
+      !auth?.node_address ||
+      !auth?.api_v2_key ||
+      !agent.apiData?.network_tool
+    ) {
+      console.error('Missing auth or agent data');
+      return;
+    }
+    try {
+      await axios.post(
+        `${auth.node_address}/v2/add_shinkai_tool`,
+        {
+          assets: [],
+          tool: {
+            type: 'Network',
+            content: [agent.apiData.network_tool, true],
+          },
+        },
+        {
+          headers: { Authorization: `Bearer ${auth.api_v2_key}` },
+        },
+      );
+      setInstalledKeys((prev) => new Set(prev).add(agent.toolRouterKey ?? ''));
+    } catch (e) {
+      console.error('Failed to add network agent', e);
+    }
+  };
 
   const toggleCategory = (categoryName: string) => {
     setExpandedCategories((prev) =>
@@ -292,7 +326,13 @@ const DiscoverNetworkAgents = () => {
 
       <div className="grid grid-cols-1 gap-6 pb-10 md:grid-cols-2 lg:grid-cols-3">
         {filteredAgents.map((agent) => (
-          <AgentCard key={agent.id} agent={agent} type="discover" />
+          <AgentCard
+            key={agent.id}
+            agent={agent}
+            type="discover"
+            isInstalled={installedKeys.has(agent.toolRouterKey ?? '')}
+            onAdd={handleAddAgent}
+          />
         ))}
       </div>
     </div>
@@ -316,6 +356,8 @@ interface Agent {
   price: string;
   category: string;
   provider?: string;
+  toolRouterKey?: string;
+  apiData?: ApiNetworkAgent;
   rating?: number;
   reviews?: number;
   featured?: boolean;
@@ -330,11 +372,13 @@ interface Agent {
 interface AgentCardProps {
   agent: Agent;
   type: 'discover' | 'exposed' | 'network';
+  isInstalled?: boolean;
+  onAdd?: (agent: Agent) => void;
 }
 
-const AgentCard = ({ agent, type }: AgentCardProps) => {
+const AgentCard = ({ agent, type, isInstalled, onAdd }: AgentCardProps) => {
   const handleAction = () => {
-    console.log(`Action for agent ${agent.id} of type ${type}`);
+    onAdd?.(agent);
   };
 
   const getAppLogo = (app: string) => {
@@ -419,7 +463,7 @@ const AgentCard = ({ agent, type }: AgentCardProps) => {
       case 'discover':
         return {
           priceLabel: isFreePricing ? 'Free to deploy' : 'Network access fee',
-          buttonText: 'Add Agent',
+          buttonText: isInstalled ? 'Added' : 'Add',
           statusText: 'Highly rated',
         };
       case 'exposed':
@@ -525,10 +569,10 @@ const AgentCard = ({ agent, type }: AgentCardProps) => {
           <div className="flex gap-2">
             {type === 'discover' && (
               <Button
-                // className="hover:from-brand hover:to-brand-500 to-brand flex-1 border-0 bg-linear-to-r from-orange-200 via-red-400 font-medium text-white"
-                variant="outline"
+                variant={isInstalled ? 'secondary' : 'outline'}
                 className="w-full"
-                onClick={handleAction}
+                onClick={isInstalled ? undefined : handleAction}
+                disabled={isInstalled}
                 size="md"
               >
                 {labels.buttonText}
