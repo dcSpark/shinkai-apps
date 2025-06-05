@@ -1,5 +1,7 @@
+import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { TooltipProvider } from '@shinkai_network/shinkai-ui';
+import { useQueryClient } from '@tanstack/react-query';
 import { listen } from '@tauri-apps/api/event';
 import { debug } from '@tauri-apps/plugin-log';
 import React, { useEffect, useRef } from 'react';
@@ -65,6 +67,7 @@ import { PublicKeys } from '../pages/public-keys';
 import QuickConnectionPage from '../pages/quick-connection';
 import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
+import ShortcutsPage from '../pages/shortcuts';
 import { TaskLogs } from '../pages/task-logs';
 import { Tasks } from '../pages/tasks';
 import TermsAndConditionsPage, {
@@ -76,7 +79,6 @@ import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import useAppHotkeys from '../utils/use-app-hotkeys';
-import ShortcutsPage from '../pages/shortcuts';
 
 const skipOnboardingRoutes = ['/quick-connection', '/restore', '/connect-qr'];
 
@@ -245,11 +247,35 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+const useNavigateToPathFromSpotlight = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    const unlisten = listen('navigate-to-path', (event) => {
+      const inboxId = event.payload as string;
+      void queryClient.invalidateQueries({
+        queryKey: [
+          FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+          {
+            inboxId: decodeURIComponent(inboxId),
+          },
+        ],
+      });
+      void navigate(inboxId);
+    });
+
+    return () => {
+      void unlisten.then((fn) => fn());
+    };
+  }, [navigate, queryClient]);
+};
+
 const AppRoutes = () => {
   useAppHotkeys();
   useGlobalAppShortcuts();
   useDefaultAgentByDefault();
   useConfigDeepLink();
+  useNavigateToPathFromSpotlight();
 
   const defaultAgentId = useSettings((state) => state.defaultAgentId);
 

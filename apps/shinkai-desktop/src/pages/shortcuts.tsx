@@ -40,10 +40,17 @@ const shortcuts = [
         keys: [['⇧', '⌘', 'J']],
       },
       {
-        label: 'Copy to clipboard (Quick Ask)',
+        label: 'New Chat',
         keys: [
-          ['⇧', '⌘', 'C'],
-          ['⇧', 'Ctrl', 'C'],
+          ['⇧', '⌘', 'N'],
+          ['⇧', 'Ctrl', 'N'],
+        ],
+      },
+      {
+        label: 'Open in Main Window',
+        keys: [
+          ['⇧', '⌘', 'O'],
+          ['⇧', 'Ctrl', 'O'],
         ],
       },
     ],

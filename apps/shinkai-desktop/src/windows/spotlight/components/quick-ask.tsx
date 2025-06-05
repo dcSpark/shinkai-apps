@@ -24,7 +24,6 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  Form,
   Popover,
   PopoverAnchor,
   PopoverContent,
@@ -37,9 +36,10 @@ import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
+
 import { motion } from 'framer-motion';
-import { PlusIcon } from 'lucide-react';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ExternalLinkIcon, PlusIcon } from 'lucide-react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -102,8 +102,21 @@ function QuickAsk() {
   const inboxId = useQuickAskStore((state) => state.inboxId);
   const setInboxId = useQuickAskStore((state) => state.setInboxId);
 
+  const isLoadingResponse = useQuickAskStore(
+    (state) => state.isLoadingResponse,
+  );
+
   const { defaultSpotlightAiId, setDefaultSpotlightAiId } =
     useDefaultSpotlightAiByDefault();
+
+  const handleOpenInApp = async () => {
+    // await hideSpotlightWindow();
+    await invoke('open_main_window_with_path_app', {
+      path: inboxId ? `/inboxes/${encodeURIComponent(inboxId)}` : '/home',
+    });
+  };
+
+  const chatInputRef = useRef<HTMLTextAreaElement>(null);
 
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const { data: toolsList, isSuccess: isToolsListSuccess } = useGetTools(
@@ -114,17 +127,6 @@ function QuickAsk() {
     {
       select: (data: ShinkaiToolHeader[]) =>
         data.filter((tool) => tool.enabled),
-    },
-  );
-
-  useHotkeys(
-    ['esc'],
-    () => {
-      void hideSpotlightWindow();
-    },
-    {
-      preventDefault: true,
-      enableOnFormTags: true,
     },
   );
 
@@ -148,6 +150,49 @@ function QuickAsk() {
     },
   });
 
+  const createNewChat = useCallback(() => {
+    setInboxId(null);
+    chatForm.reset({
+      message: '',
+      agent: defaultSpotlightAiId,
+      files: [],
+    });
+    chatInputRef.current?.focus();
+  }, [chatForm, defaultSpotlightAiId, setInboxId]);
+
+  useHotkeys(
+    ['esc'],
+    () => {
+      void hideSpotlightWindow();
+    },
+    {
+      preventDefault: true,
+      enableOnFormTags: true,
+    },
+  );
+  useHotkeys(
+    ['mod+shift+o', 'ctrl+shift+o'],
+    () => {
+      void handleOpenInApp();
+    },
+    {
+      preventDefault: true,
+      enableOnFormTags: true,
+    },
+  );
+
+  useHotkeys(
+    ['mod+shift+n', 'ctrl+shift+n'],
+    () => {
+      void createNewChat();
+    },
+    {
+      enableOnContentEditable: true,
+      preventDefault: true,
+      enableOnFormTags: true,
+    },
+  );
+
   const selectedTool = chatForm.watch('tool');
   const currentMessage = chatForm.watch('message');
   const currentFiles = chatForm.watch('files');
@@ -158,7 +203,7 @@ function QuickAsk() {
       const previousFiles = chatForm.getValues('files') ?? [];
       const newFiles = [...previousFiles, ...acceptedFiles];
       chatForm.setValue('files', newFiles, { shouldValidate: true });
-      // textareaRef.current?.focus();
+      chatInputRef.current?.focus();
     },
     [chatForm],
   );
@@ -186,12 +231,7 @@ function QuickAsk() {
   }, []);
 
   useEffect(() => {
-    chatForm.reset({
-      message: '',
-      agent: defaultSpotlightAiId,
-      files: [],
-    });
-    setInboxId(null);
+    chatInputRef.current?.focus();
   }, []);
 
   const { mutateAsync: createJob } = useCreateJob({
@@ -255,10 +295,12 @@ function QuickAsk() {
       return;
     }
 
+    const jobId = inboxId ? extractJobIdFromInbox(inboxId) : '';
+
     await sendMessageToJob({
       nodeAddress: auth.node_address,
       token: auth.api_v2_key,
-      jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+      jobId,
       message: data.message,
       parent: '',
     });
@@ -284,61 +326,50 @@ function QuickAsk() {
               <Button
                 variant="tertiary"
                 size="icon"
-                onClick={() => {
-                  setInboxId(null);
-                  chatForm.reset({
-                    message: '',
-                    agent: defaultSpotlightAiId,
-                    files: [],
-                  });
-                }}
+                onClick={createNewChat}
                 type="button"
               >
                 <PlusIcon className="size-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>New Chat</TooltipContent>
+            <TooltipContent className="flex flex-col items-center gap-1 text-xs">
+              New Chat <br />
+              <span className="inline-flex gap-1">
+                {['⇧', '⌘', 'N'].map((key, i) => (
+                  <kbd
+                    key={i}
+                    className="border-official-gray-780 bg-official-gray-950 rounded border px-2 py-1 font-mono text-xs text-white shadow-sm"
+                  >
+                    {key}
+                  </kbd>
+                ))}
+              </span>
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="tertiary"
                 size="icon"
-                onClick={() => {
-                  setInboxId(null);
-                }}
+                onClick={handleOpenInApp}
                 type="button"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  width="24"
-                  height="24"
-                  className="size-4"
-                >
-                  <path
-                    d="M12.5667 7.93408L15.3088 8.03416C15.7163 8.04903 16.0391 8.38374 16.0391 8.79156V11.4064M10.5391 13.4341L15.5828 8.41565"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></path>
-                  <path
-                    d="M2 17C2 15.1144 2 14.1716 2.58579 13.5858C3.17157 13 4.11438 13 6 13H7C8.88562 13 9.82843 13 10.4142 13.5858C11 14.1716 11 15.1144 11 17V18C11 19.8856 11 20.8284 10.4142 21.4142C9.82843 22 8.88562 22 7 22H6C4.11438 22 3.17157 22 2.58579 21.4142C2 20.8284 2 19.8856 2 18V17Z"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></path>
-                  <path
-                    d="M2 8.5V10.5M14 2H10M22 14V10M13.5 22H15.5M2.05986 5.5C2.21387 4.43442 2.51347 3.67903 3.09625 3.09625C3.67903 2.51347 4.43442 2.21387 5.5 2.05986M18.5 2.05986C19.5656 2.21387 20.321 2.51347 20.9037 3.09625C21.4865 3.67903 21.7861 4.43442 21.9401 5.5M21.9401 18.5C21.7861 19.5656 21.4865 20.321 20.9037 20.9037C20.321 21.4865 19.5656 21.7861 18.5 21.9401"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                  ></path>
-                </svg>
+                <ExternalLinkIcon className="size-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Open in App</TooltipContent>
+            <TooltipContent className="flex flex-col items-center gap-1 text-xs">
+              Open in Main Window <br />
+              <span className="inline-flex gap-1">
+                {['⇧', '⌘', 'O'].map((key, i) => (
+                  <kbd
+                    key={i}
+                    className="border-official-gray-780 bg-official-gray-950 rounded border px-2 py-1 font-mono text-xs text-white shadow-sm"
+                  >
+                    {key}
+                  </kbd>
+                ))}
+              </span>
+            </TooltipContent>
           </Tooltip>
         </div>
       </div>
@@ -353,6 +384,7 @@ function QuickAsk() {
             <PopoverAnchor>
               <ChatInputArea
                 autoFocus
+                ref={chatInputRef}
                 bottomAddons={
                   <div className="flex items-center justify-between gap-4 px-3 pb-2">
                     <div className="flex items-center gap-2.5">
@@ -395,8 +427,8 @@ function QuickAsk() {
                     <div className="flex items-center gap-2">
                       <Button
                         className={cn('size-[36px] p-2')}
-                        // disabled={isPending || (!selectedTool && !currentMessage)}
-                        // isLoading={isPending}
+                        disabled={isLoadingResponse}
+                        isLoading={isLoadingResponse}
                         onClick={chatForm.handleSubmit(onSubmit)}
                         size="icon"
                       >
@@ -407,7 +439,7 @@ function QuickAsk() {
                   </div>
                 }
                 className="rounded-xl"
-                // disabled={isPending}
+                disabled={isLoadingResponse}
                 onChange={(value) => {
                   chatForm.setValue('message', value);
                 }}
@@ -446,7 +478,7 @@ function QuickAsk() {
                       currentFiles.length > 0 && (
                         <FileList
                           currentFiles={currentFiles}
-                          // isPending={isPending}
+                          isPending={isLoadingResponse}
                           onRemoveFile={(index) => {
                             const newFiles = [...currentFiles];
                             newFiles.splice(index, 1);
@@ -464,8 +496,8 @@ function QuickAsk() {
             <PopoverContent
               align="start"
               className="w-[500px] p-0"
-              side="bottom"
-              sideOffset={0}
+              side="top"
+              sideOffset={-200}
             >
               <Command>
                 <CommandInput
