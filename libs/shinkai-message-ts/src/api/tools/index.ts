@@ -63,6 +63,7 @@ import {
   type UpdateToolCodeImplementationResponse,
   type UpdateToolRequest,
   type UpdateToolResponse,
+  type GetToolsWithOfferingsResponse,
 } from './types';
 
 export const createTool = async (
@@ -819,6 +820,20 @@ export const copyToolAssets = async (
     },
   );
   return response.data as CopyToolAssetsResponse;
+};
+
+export const getToolsWithOfferings = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/get_tools_with_offerings'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetToolsWithOfferingsResponse;
 };
 
 export const setToolMcpEnabled = async (

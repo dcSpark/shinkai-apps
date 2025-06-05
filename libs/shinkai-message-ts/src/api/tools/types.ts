@@ -578,6 +578,19 @@ export type CopyToolAssetsResponse = {
   message: string;
 };
 
+export type ToolOffering = {
+  meta_description: string;
+  tool_key: string;
+  usage_type: ToolUsageType;
+};
+
+export type NetworkToolWithOffering = {
+  network_tool: NetworkShinkaiTool;
+  tool_offering: ToolOffering;
+};
+
+export type GetToolsWithOfferingsResponse = NetworkToolWithOffering[];
+
 export type GetToolProtocolsResponse = {
   created: string;
   supported: {
