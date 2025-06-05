@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   Dialog,
   DialogContent,
@@ -62,6 +63,7 @@ export const ComposioAppDetailsModal = ({
 }: ComposioAppDetailsModalProps) => {
   const { data: app, isLoading } = useApp(appId);
   const [imageError, setImageError] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <Dialog onOpenChange={(open: boolean) => !open && onClose()} open={isOpen}>
@@ -95,10 +97,10 @@ export const ComposioAppDetailsModal = ({
 
             <div className="mt-6 space-y-8 overflow-y-auto pr-2">
               <section aria-labelledby="details-title">
-                <SectionTitle>Details</SectionTitle>
+                <SectionTitle>{t('mcpServers.composio.details')}</SectionTitle>
                 <div className="grid grid-cols-2 gap-4">
                   <DetailItem
-                    label="Created"
+                    label={t('mcpServers.composio.created')}
                     value={
                       app?.meta.created_at
                         ? new Date(app.meta.created_at).toLocaleDateString(
@@ -113,7 +115,7 @@ export const ComposioAppDetailsModal = ({
                     }
                   />
                   <DetailItem
-                    label="Last Updated"
+                    label={t('mcpServers.composio.lastUpdated')}
                     value={
                       app?.meta.updated_at
                         ? new Date(app.meta.updated_at).toLocaleDateString(
@@ -128,13 +130,13 @@ export const ComposioAppDetailsModal = ({
                     }
                   />
                   <DetailItem
-                    label="Categories"
+                    label={t('mcpServers.composio.categories')}
                     value={app?.meta.categories
                       .map((cat) => cat.name)
                       .join(', ')}
                   />
                   <DetailItem
-                    label="Tools Count"
+                    label={t('mcpServers.composio.toolsCount')}
                     value={app?.meta.tools_count.toString()}
                   />
                 </div>
@@ -142,18 +144,22 @@ export const ComposioAppDetailsModal = ({
 
               {app?.actions && app.actions.length > 0 && (
                 <section aria-labelledby="actions-title">
-                  <SectionTitle>Available Actions</SectionTitle>
+                  <SectionTitle>
+                    {t('mcpServers.composio.availableActions')}
+                  </SectionTitle>
                   <div className="space-y-2">
                     {app.actions.map((action, index) => (
                       <div
                         key={index}
                         className="bg-official-gray-800/50 hover:bg-official-gray-800/70 rounded-lg p-3 transition-colors"
                       >
-                        <p className="text-official-gray-100 text-sm font-medium">
+                        <p className="text-official-gray-100 font-semibold">
                           {action.name}
                         </p>
                         {action.description && (
-                          <MarkdownText content={action.description} />
+                          <div className="text-official-gray-300 mt-2 text-sm">
+                            <MarkdownText content={action.description} />
+                          </div>
                         )}
                       </div>
                     ))}
@@ -163,22 +169,24 @@ export const ComposioAppDetailsModal = ({
 
               {app?.metadata && (
                 <section aria-labelledby="statistics-title" className="pb-4">
-                  <SectionTitle>Statistics</SectionTitle>
+                  <SectionTitle>
+                    {t('mcpServers.composio.statistics')}
+                  </SectionTitle>
                   <div className="grid grid-cols-2 gap-4">
                     <DetailItem
-                      label="Total Downloads"
+                      label={t('mcpServers.composio.totalDownloads')}
                       value={app.metadata.totalDownloads}
                     />
                     <DetailItem
-                      label="Active Users"
+                      label={t('mcpServers.composio.activeUsers')}
                       value={app.metadata.activeUsers}
                     />
                     <DetailItem
-                      label="Latest Version"
+                      label={t('mcpServers.composio.latestVersion')}
                       value={app.metadata.latestVersion}
                     />
                     <DetailItem
-                      label="Last Updated"
+                      label={t('mcpServers.composio.updatedAt')}
                       value={app.metadata.lastUpdated}
                     />
                   </div>

@@ -1,8 +1,12 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { ComposioApi } from './composio-api';
 import { McpServerType } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
 import { useAddMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/addMcpServer/useAddMcpServer';
+import {
+  useMutation,
+  type UseMutationOptions,
+  useQuery,
+} from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { ComposioApi } from './composio-api';
 
 const api = new ComposioApi();
 
@@ -39,39 +43,28 @@ type InstallAppParams = {
 };
 
 // Mutation to get client ID and install app
-export const useInstallApp = () => {
-  const { mutateAsync: addMcpServer } = useAddMcpServer({
-    onSuccess: () => {
-      toast.success("MCP Server added successfully");
-    },
-    onError: (error) => {
-      toast.error("Failed to add MCP server", {
-        description: error.message
-      });
-    }
-  });
+export const useInstallApp = (
+  options: UseMutationOptions<any, any, InstallAppParams, any>,
+) => {
+  const { mutateAsync: addMcpServer } = useAddMcpServer();
 
   return useMutation({
+    ...options,
     mutationFn: async ({ appId, auth }: InstallAppParams) => {
       const clientId = await api.generateClientId(appId);
       const data = await api.getAppForClientId(appId, clientId);
-      if (data.sseUrl) {
-        try {
-          await addMcpServer({
-            nodeAddress: auth.node_address,
-            token: auth.api_v2_key,
-            name: data.name,
-            type: McpServerType.Sse,
-            url: data.sseUrl,
-            is_enabled: true
-          });
-        } catch (error) {
-          toast.error("Error adding MCP server");
-        }
-      } else {
-        throw new Error("Composio SSE url not found");
+      if (!data.sseUrl) {
+        throw new Error('Composio SSE url not found');
       }
+      await addMcpServer({
+        nodeAddress: auth.node_address,
+        token: auth.api_v2_key,
+        name: data.name,
+        type: McpServerType.Sse,
+        url: data.sseUrl,
+        is_enabled: true,
+      });
       return data;
-    }
+    },
   });
 };

@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   type McpServer,
   McpServerType,
@@ -19,6 +20,7 @@ export const ComposioMcpServers = ({
   installedMcpServers: McpServer[];
   search?: string;
 }) => {
+  const { t } = useTranslation();
   const { data: composioApps, isLoading: isLoadingComposio } = useApps();
   const [selectedApp, setSelectedApp] = useState<string | null>(null);
   const [installingAppIds, setInstallingAppIds] = useState<Set<string>>(
@@ -30,7 +32,18 @@ export const ComposioMcpServers = ({
     setSelectedApp(app.id);
   };
 
-  const { mutate: installApp } = useInstallApp();
+  const { mutate: installApp } = useInstallApp({
+    onSuccess: (data) => {
+      toast.success(
+        t('mcpServers.composio.installSuccess', {
+          appName: data.name,
+        }),
+      );
+    },
+    onError: (error) => {
+      toast.error(t('mcpServers.composio.installFailed'));
+    },
+  });
   const { mutate: deleteMcpServer, isPending: isLoadingDeleteMcpServer } =
     useDeleteMcpServer();
 
@@ -47,7 +60,7 @@ export const ComposioMcpServers = ({
 
   const handleInstall = async (app: App) => {
     if (!auth) {
-      toast.error('You must be logged in to install apps');
+      toast.error(t('mcpServers.composio.loginRequired'));
       return;
     }
     setInstallingAppIds((prev) => new Set([...prev, app.id]));
@@ -61,7 +74,7 @@ export const ComposioMcpServers = ({
       },
       {
         onError: (error) => {
-          toast.error('Error installing app from composio');
+          toast.error(t('mcpServers.composio.installFailed'));
         },
         onSettled: () => {
           setInstallingAppIds((prev) => {
@@ -114,7 +127,7 @@ export const ComposioMcpServers = ({
 
   return (
     <div className="mx-auto flex flex-col">
-      <h2 className="text-2xl font-bold">Composio Apps</h2>
+      <h2 className="text-2xl font-bold">{t('mcpServers.composio.title')}</h2>
       <div className="divide-official-gray-780 grid grid-cols-1 gap-2 divide-y overflow-y-auto py-4 pr-2">
         {isLoadingComposio
           ? [...Array(3)].map((_, i) => (
@@ -135,7 +148,7 @@ export const ComposioMcpServers = ({
           : filteredApps?.map((app) => (
               <div
                 key={app.id}
-                className="bg-official-gray-800 border-official-gray-700 hover:border-official-gray-600 flex h-24 cursor-pointer items-center justify-between rounded-lg border p-2 transition-colors"
+                className="bg-official-gray-800 border-official-gray-700 hover:border-official-gray-600 flex h-20 cursor-pointer items-center justify-between rounded-lg border p-2 transition-colors"
                 onClick={() => handleAppClick(app)}
               >
                 <div className="flex flex-1 items-center gap-4">
@@ -146,13 +159,13 @@ export const ComposioMcpServers = ({
                       className="h-12 w-12 rounded-lg object-cover"
                     />
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-semibold text-white truncate">
+                      <h3 className="truncate text-lg font-semibold text-white">
                         {app.name}
                       </h3>
                     </div>
-                    <p className="text-official-gray-400 text-sm line-clamp-2">
+                    <p className="text-official-gray-400 line-clamp-2 text-sm">
                       {app.description}
                     </p>
                   </div>
@@ -172,10 +185,10 @@ export const ComposioMcpServers = ({
                       {installingAppIds.has(app.id) ? (
                         <>
                           <Loader2Icon className="h-4 w-4 animate-spin" />
-                          Installing...
+                          {t('mcpServers.composio.installing')}
                         </>
                       ) : (
-                        'Install'
+                        t('mcpServers.composio.install')
                       )}
                     </Button>
                   )}
@@ -194,10 +207,10 @@ export const ComposioMcpServers = ({
                       {isLoadingDeleteMcpServer ? (
                         <>
                           <Loader2Icon className="h-4 w-4 animate-spin" />
-                          Uninstalling...
+                          {t('mcpServers.composio.uninstalling')}
                         </>
                       ) : (
-                        'Uninstall'
+                        t('mcpServers.composio.uninstall')
                       )}
                     </Button>
                   )}

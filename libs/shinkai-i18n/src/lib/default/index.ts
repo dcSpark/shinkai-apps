@@ -689,7 +689,7 @@ export default {
     updateFailed: 'Failed to update MCP server',
     manualSetup: 'Manual Setup',
     addFromGitHub: 'Add from GitHub',
-    tools: 'tools',
+    tools: 'Tools',
     toolsFor: 'Tools for {{name}}',
     listOfToolsAvailableFromThisMcpServer:
       'List of tools available from this MCP server.',
@@ -698,6 +698,27 @@ export default {
     noServersFound: 'No MCP servers found. Add a new server to get started.',
     title: 'MCP Servers',
     listDescription: 'List of MCP servers connected to your Shinkai Node',
+    composio: {
+      title: 'Composio MCP Servers',
+      details: 'Details',
+      created: 'Created',
+      lastUpdated: 'Last Updated',
+      categories: 'Categories',
+      toolsCount: 'Tools Count',
+      availableActions: 'Available Actions',
+      statistics: 'Statistics',
+      totalDownloads: 'Total Downloads',
+      activeUsers: 'Active Users',
+      latestVersion: 'Latest Version',
+      updatedAt: 'Last Updated',
+      installing: 'Installing...',
+      uninstalling: 'Uninstalling...',
+      install: 'Install',
+      uninstall: 'Uninstall',
+      loginRequired: 'You must be logged in to install apps',
+      installSuccess: '{{appName}} installed successfully',
+      installFailed: 'Error installing app from composio'
+    }
   },
   tools: {
     label: 'Shinkai Tools',
