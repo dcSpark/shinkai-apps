@@ -37,7 +37,10 @@ const shortcuts = [
     items: [
       {
         label: 'Open Quick Ask',
-        keys: [['⇧', '⌘', 'J']],
+        keys: [
+          ['⇧', '⌘', 'J'],
+          ['⇧', 'Ctrl', 'J'],
+        ],
       },
       {
         label: 'New Chat',
