@@ -79,7 +79,7 @@ npx ts-node ./ci-scripts/download-side-binaries.ts
 
 ```
 $ENV:OLLAMA_VERSION="v0.7.1";
-$ENV:SHINKAI_NODE_VERSION="v1.0.9";
+$ENV:SHINKAI_NODE_VERSION="v1.0.10";
 $ENV:ARCH="x86_64-pc-windows-msvc";
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```

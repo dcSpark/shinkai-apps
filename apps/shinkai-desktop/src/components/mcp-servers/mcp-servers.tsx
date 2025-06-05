@@ -18,6 +18,7 @@ import { useAuth } from '../../store/auth';
 import { AddMcpServerModal } from './add-mcp-server-modal';
 import { AddMcpServerWithGithubModal } from './add-mcp-server-with-github-modal';
 import { McpServerCard } from './mcp-server-card';
+import { ComposioMcpServers } from './composio-mcp-servers';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
 
@@ -38,6 +39,7 @@ export const McpServers = () => {
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
+
 
   const { mutateAsync: setEnableMcpServer } = useSetEnableMcpServer({
     onSuccess: () => {
@@ -145,6 +147,8 @@ export const McpServers = () => {
           </div>
         )}
       </div>
+
+      <ComposioMcpServers />
 
       <AddMcpServerModal
         initialData={initialDataForManualModal}
