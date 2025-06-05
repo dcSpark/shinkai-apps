@@ -159,8 +159,16 @@ function QuickAsk() {
       agent: defaultSpotlightAiId,
       files: [],
     });
+    chatConfigForm.reset({
+      stream: DEFAULT_CHAT_CONFIG.stream,
+      customPrompt: '',
+      temperature: DEFAULT_CHAT_CONFIG.temperature,
+      topP: DEFAULT_CHAT_CONFIG.top_p,
+      topK: DEFAULT_CHAT_CONFIG.top_k,
+      useTools: DEFAULT_CHAT_CONFIG.use_tools,
+    });
     chatInputRef.current?.focus();
-  }, [chatForm, defaultSpotlightAiId, setInboxId]);
+  }, [chatConfigForm, chatForm, defaultSpotlightAiId, setInboxId]);
 
   useHotkeys(
     ['esc'],
@@ -245,6 +253,14 @@ function QuickAsk() {
         agent: defaultSpotlightAiId,
         files: [],
       });
+      chatConfigForm.reset({
+        stream: DEFAULT_CHAT_CONFIG.stream,
+        customPrompt: '',
+        temperature: DEFAULT_CHAT_CONFIG.temperature,
+        topP: DEFAULT_CHAT_CONFIG.top_p,
+        topK: DEFAULT_CHAT_CONFIG.top_k,
+        useTools: DEFAULT_CHAT_CONFIG.use_tools,
+      });
     },
     onError: (error) => {
       toast.error('Failed to send message', {
@@ -311,6 +327,14 @@ function QuickAsk() {
       message: '',
       agent: defaultSpotlightAiId,
       files: [],
+    });
+    chatConfigForm.reset({
+      stream: DEFAULT_CHAT_CONFIG.stream,
+      customPrompt: '',
+      temperature: DEFAULT_CHAT_CONFIG.temperature,
+      topP: DEFAULT_CHAT_CONFIG.top_p,
+      topK: DEFAULT_CHAT_CONFIG.top_k,
+      useTools: DEFAULT_CHAT_CONFIG.use_tools,
     });
   };
 
@@ -572,7 +596,7 @@ const QuickAskBody = () => {
           initial={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <h1 className="font-clash text-2xl text-white">
+          <h1 className="font-clash text-2xl font-semibold text-white">
             How can I help you today?
           </h1>
         </motion.div>
