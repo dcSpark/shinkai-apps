@@ -23,6 +23,8 @@ import {
   Wallet,
 } from 'lucide-react';
 import { useMemo, useState, useEffect } from 'react';
+import { useAuth } from '../store/auth';
+import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
 import { Link } from 'react-router';
 import axios from 'axios';
 import { invoke } from '@tauri-apps/api/core';
@@ -131,32 +133,6 @@ export const NetworkAgentPage = () => {
   );
 };
 
-const myExposedAgents = [
-  {
-    id: '1',
-    name: 'Knowledge Synthesizer',
-    description:
-      'Advanced knowledge extraction and synthesis from documents, accessible to other network participants',
-    price: '$15.00 per request',
-    category: 'Knowledge Management',
-    status: 'active',
-    requests: 1247,
-    revenue: '$1,855.00',
-    connectedApps: ['Notion', 'Google Sheets', 'Slack'],
-  },
-  {
-    id: '2',
-    name: 'Code Review Assistant',
-    description:
-      'Automated code review and suggestions with security analysis, monetized through network usage',
-    price: '$8.00 per request',
-    category: 'Development',
-    status: 'active',
-    requests: 892,
-    revenue: '$7,136.00',
-    connectedApps: ['GitHub', 'Slack', 'Linear'],
-  },
-];
 
 interface ApiPayment {
   maxAmountRequired?: string;
@@ -349,9 +325,34 @@ const DiscoverNetworkAgents = () => {
 };
 
 const PublishedAgents = () => {
+  const auth = useAuth((state) => state.auth);
+  const { data } = useGetToolsWithOfferings({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const publishedAgents = useMemo<Agent[]>(() => {
+    if (!data) return [];
+    return data.map((item) => {
+      const payment =
+        item.tool_offering.usage_type?.PerUse?.Payment?.[0];
+      const price = payment
+        ? `${payment.maxAmountRequired} ${payment.extra?.name ?? ''}`
+        : 'Free';
+      return {
+        id: item.tool_offering.tool_key,
+        name: item.network_tool.name,
+        description: item.network_tool.description,
+        price,
+        category: item.network_tool.toolkit_name ?? '',
+        provider: item.network_tool.provider,
+      };
+    });
+  }, [data]);
+
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {myExposedAgents.map((agent) => (
+      {publishedAgents.map((agent) => (
         <AgentCard key={agent.id} agent={agent} type="exposed" />
       ))}
     </div>
