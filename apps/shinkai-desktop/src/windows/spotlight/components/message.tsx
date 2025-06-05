@@ -34,20 +34,18 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import {
   AIAgentIcon,
-  appIcon,
   ReactJsIcon,
   ReasoningIcon,
   ToolsIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { format } from 'date-fns';
+
 import equal from 'fast-deep-equal';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   BotIcon,
   Edit3,
-  GitFork,
   InfoIcon,
   Loader2,
   RotateCcw,
@@ -84,80 +82,12 @@ type MessageProps = {
   isPending?: boolean;
   message: FormattedMessage;
   handleRetryMessage?: () => void;
-  handleForkMessage?: () => void;
+
   disabledRetry?: boolean;
   disabledEdit?: boolean;
   handleEditMessage?: (message: string) => void;
   messageExtra?: React.ReactNode;
 };
-
-const actionBar = {
-  rest: {
-    opacity: 1,
-    scale: 0.8,
-    transition: {
-      type: 'spring',
-      bounce: 0,
-      duration: 0.3,
-    },
-  },
-  hover: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      type: 'spring',
-      duration: 0.3,
-      bounce: 0,
-    },
-  },
-};
-
-type ArtifactProps = {
-  title: string;
-  type: string;
-  identifier: string;
-  loading?: boolean;
-  isSelected?: boolean;
-  onArtifactClick?: () => void;
-};
-const ArtifactCard = ({
-  title,
-  loading = true,
-  onArtifactClick,
-  isSelected,
-  // identifier,
-}: ArtifactProps) => (
-  <Card
-    className={cn(
-      'w-full max-w-sm border border-gray-100',
-      isSelected && 'border-gray-50 bg-gray-300',
-    )}
-    onClick={() => {
-      onArtifactClick?.();
-    }}
-    role="button"
-  >
-    <CardContent className="flex items-center gap-1 p-1 py-1.5">
-      <div className="rounded-md p-2">
-        {loading ? (
-          <Loader2 className="text-gray-80 h-5 w-5 animate-spin" />
-        ) : (
-          <ReactJsIcon
-            className={cn(isSelected ? 'text-gray-50' : 'text-gray-80')}
-          />
-        )}
-      </div>
-      <div className="flex flex-1 flex-col gap-0.5">
-        <p className="text-em-sm text-official-gray-50 !mb-0 line-clamp-1 font-medium">
-          {title}
-        </p>
-        <p className="text-gray-80 !mb-0 text-xs">
-          {loading ? 'Generating...' : 'Click to preview'}
-        </p>
-      </div>
-    </CardContent>
-  </Card>
-);
 
 export const editMessageFormSchema = z.object({
   message: z.string().min(1),
@@ -167,11 +97,10 @@ type EditMessageFormSchema = z.infer<typeof editMessageFormSchema>;
 
 export const MessageBase = ({
   message,
-  // messageId,
-
+  // messageId
   isPending,
   handleRetryMessage,
-  handleForkMessage,
+
   disabledRetry,
   disabledEdit,
   handleEditMessage,
@@ -255,7 +184,7 @@ export const MessageBase = ({
       id={message.messageId}
       initial="rest"
       style={{ fontSize: `${getChatFontSizeInPts()}px` }}
-      whileHover="hover"
+      // whileHover="hover"
     >
       <div
         className={cn(
@@ -515,114 +444,82 @@ export const MessageBase = ({
                     <GeneratedFiles toolCalls={message.toolCalls} />
                   )}
               </div>
-              {message.role === 'assistant' &&
-                message.status.type !== 'running' && (
-                  <div
-                    className={cn('flex items-center justify-start gap-3 py-3')}
-                  >
-                    <div className="flex items-center gap-1.5">
-                      {!disabledEdit && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              className={cn(
-                                'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
-                              )}
-                              onClick={() => {
-                                setEditing(true);
-                              }}
-                            >
-                              <Edit3 />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipPortal>
-                            <TooltipContent>
-                              <p>{t('common.editMessage')}</p>
-                            </TooltipContent>
-                          </TooltipPortal>
-                        </Tooltip>
-                      )}
-                      {message.role === 'assistant' && !disabledRetry && (
-                        <>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                className={cn(
-                                  'text-official-gray-400 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
-                                )}
-                                onClick={handleForkMessage}
-                              >
-                                <GitFork />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipPortal>
-                              <TooltipContent>
-                                <p>Fork</p>
-                              </TooltipContent>
-                            </TooltipPortal>
-                          </Tooltip>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                className={cn(
-                                  'text-official-gray-400 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
-                                )}
-                                onClick={handleRetryMessage}
-                              >
-                                <RotateCcw />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipPortal>
-                              <TooltipContent>
-                                <p>{t('common.retry')}</p>
-                              </TooltipContent>
-                            </TooltipPortal>
-                          </Tooltip>
-                        </>
-                      )}
 
+              <div
+                className={cn(
+                  'flex items-center justify-start gap-3 py-3',
+                  message.role === 'user' && 'flex-row-reverse',
+                  message.role === 'assistant' &&
+                    message.status.type === 'running' &&
+                    'hidden',
+                )}
+              >
+                <div className="flex items-center gap-1.5">
+                  {message.role === 'user' && !disabledEdit && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className={cn(
+                            'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                          )}
+                          onClick={() => {
+                            setEditing(true);
+                          }}
+                        >
+                          <Edit3 />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent>
+                          <p>{t('common.editMessage')}</p>
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </Tooltip>
+                  )}
+                  {message.role === 'assistant' && !disabledRetry && (
+                    <>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div>
-                            <CopyToClipboardIcon
-                              className={cn(
-                                'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
-                              )}
-                              string={extractErrorPropertyOrContent(
-                                message.content,
-                                'error_message',
-                              )}
-                            />
-                          </div>
+                          <button
+                            className={cn(
+                              'text-official-gray-400 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                            )}
+                            onClick={handleRetryMessage}
+                          >
+                            <RotateCcw />
+                          </button>
                         </TooltipTrigger>
                         <TooltipPortal>
                           <TooltipContent>
-                            <p>{t('common.copy')}</p>
+                            <p>{t('common.retry')}</p>
                           </TooltipContent>
                         </TooltipPortal>
                       </Tooltip>
-                    </div>
-                    <div
-                      className={cn('flex items-center gap-1.5 text-gray-100')}
-                    >
-                      <span>
-                        {format(new Date(message?.createdAt ?? ''), 'p')}
-                      </span>
-                      {message.role === 'assistant' &&
-                        message?.metadata?.tps && (
-                          <>
-                            {' '}
-                            ⋅
-                            <span>
-                              {Math.round(Number(message?.metadata?.tps) * 10) /
-                                10}{' '}
-                              tokens/s
-                            </span>
-                          </>
-                        )}
-                    </div>
-                  </div>
-                )}
+                    </>
+                  )}
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <CopyToClipboardIcon
+                          className={cn(
+                            'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                          )}
+                          string={extractErrorPropertyOrContent(
+                            message.content,
+                            'error_message',
+                          )}
+                        />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipPortal>
+                      <TooltipContent>
+                        <p>{t('common.copy')}</p>
+                      </TooltipContent>
+                    </TooltipPortal>
+                  </Tooltip>
+                </div>
+              </div>
             </Fragment>
           )}
         </div>

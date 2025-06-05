@@ -11,6 +11,7 @@ import {
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
+import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
@@ -47,6 +48,7 @@ import { toast } from 'sonner';
 
 import {
   chatConfigFormSchema,
+  UpdateChatConfigActionBar,
   type ChatConfigFormSchemaType,
 } from '../../../components/chat/chat-action-bar/chat-config-action-bar';
 import { FileSelectionActionBar } from '../../../components/chat/chat-action-bar/file-selection-action-bar';
@@ -388,7 +390,9 @@ function QuickAsk() {
                 bottomAddons={
                   <div className="flex items-center justify-between gap-4 px-3 pb-2">
                     <div className="flex items-center gap-2.5">
-                      {!inboxId ? (
+                      {inboxId ? (
+                        <AiUpdateSelection inboxId={inboxId ?? ''} />
+                      ) : (
                         <AIModelSelector
                           onValueChange={(value) => {
                             chatForm.setValue('agent', value);
@@ -396,8 +400,6 @@ function QuickAsk() {
                           }}
                           value={chatForm.watch('agent')}
                         />
-                      ) : (
-                        <AiUpdateSelection inboxId={inboxId ?? ''} />
                       )}
 
                       {!selectedTool && (
@@ -411,7 +413,7 @@ function QuickAsk() {
                         />
                       )}
 
-                      {!selectedTool && !selectedAgent && (
+                      {!selectedTool && !selectedAgent && !inboxId && (
                         <ToolsSwitchActionBar
                           checked={chatConfigForm.watch('useTools')}
                           onClick={() => {
@@ -421,6 +423,9 @@ function QuickAsk() {
                             );
                           }}
                         />
+                      )}
+                      {!selectedTool && !selectedAgent && inboxId && (
+                        <UpdateChatConfigActionBar />
                       )}
                     </div>
 
@@ -579,12 +584,16 @@ const QuickAskBody = () => {
 
 const QuickAskBodyWithResponseBase = ({ inboxId }: { inboxId: string }) => {
   const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
   const setLoadingResponse = useQuickAskStore(
     (state) => state.setLoadingResponse,
   );
   const setMessageResponse = useQuickAskStore(
     (state) => state.setMessageResponse,
   );
+
+  const { mutateAsync: sendMessageToJob } = useSendMessageToJob({});
+  const { mutateAsync: retryMessage } = useRetryMessage();
 
   const {
     data,
@@ -603,6 +612,35 @@ const QuickAskBodyWithResponseBase = ({ inboxId }: { inboxId: string }) => {
   });
 
   useWebSocketTools({ inboxId: inboxId ?? '', enabled: !!inboxId });
+
+  const editAndRegenerateMessage = async (
+    content: string,
+    parentHash: string,
+  ) => {
+    if (!auth) return;
+    const decodedInboxId = decodeURIComponent(inboxId ?? '');
+    const jobId = extractJobIdFromInbox(decodedInboxId);
+
+    await sendMessageToJob({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      jobId,
+      message: content,
+      parent: parentHash,
+    });
+  };
+
+  const regenerateMessage = async (messageId: string) => {
+    if (!auth) return;
+    const decodedInboxId = decodeURIComponent(inboxId ?? '');
+
+    await retryMessage({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      inboxId: decodedInboxId,
+      messageId: messageId,
+    });
+  };
 
   useEffect(() => {
     const lastMessage = data?.pages?.at(-1)?.at(-1);
@@ -623,7 +661,7 @@ const QuickAskBodyWithResponseBase = ({ inboxId }: { inboxId: string }) => {
   return (
     <MessageList
       containerClassName="px-4 py-2"
-      // editAndRegenerateMessage={editAndRegenerateMessage}
+      editAndRegenerateMessage={editAndRegenerateMessage}
       fetchPreviousPage={fetchPreviousPage}
       hasPreviousPage={hasPreviousPage}
       isFetchingPreviousPage={isFetchingPreviousPage}
@@ -631,7 +669,7 @@ const QuickAskBodyWithResponseBase = ({ inboxId }: { inboxId: string }) => {
       isSuccess={isChatConversationSuccess}
       noMoreMessageLabel={t('chat.allMessagesLoaded')}
       paginatedMessages={data}
-      // regenerateMessage={regenerateMessage}
+      regenerateMessage={regenerateMessage}
     />
   );
 };
