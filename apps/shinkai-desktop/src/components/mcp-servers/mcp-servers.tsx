@@ -41,7 +41,6 @@ export const McpServers = () => {
     token: auth?.api_v2_key ?? '',
   });
 
-
   const { mutateAsync: setEnableMcpServer } = useSetEnableMcpServer({
     onSuccess: () => {
       toast.success(t('mcpServers.statusUpdated'));
@@ -80,9 +79,9 @@ export const McpServers = () => {
   );
 
   const installedMcpServersUrl = new Set(
-    (mcpServers ?? []).filter(
-      (server) => server.type === McpServerType.Sse
-    ).map((server) => server.url),
+    (mcpServers ?? [])
+      .filter((server) => server.type === McpServerType.Sse)
+      .map((server) => server.url),
   );
 
   return (
@@ -155,7 +154,10 @@ export const McpServers = () => {
         )}
       </div>
 
-      <ComposioMcpServers installedMcpServers={mcpServers ?? []} />
+        <ComposioMcpServers
+          installedMcpServers={mcpServers ?? []}
+          search={searchQuery}
+        />
 
       <AddMcpServerModal
         initialData={initialDataForManualModal}

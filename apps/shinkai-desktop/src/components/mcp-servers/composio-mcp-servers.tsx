@@ -4,7 +4,7 @@ import {
 } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
 import { useDeleteMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/deleteMcpServer/useDeleteMcpServer';
 import { Button } from '@shinkai_network/shinkai-ui';
-import { WrenchIcon, Loader2Icon } from 'lucide-react';
+import { Loader2Icon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { type App } from '../../lib/composio/composio-api';
@@ -14,8 +14,10 @@ import { ComposioAppDetailsModal } from './composio-app-details-modal';
 
 export const ComposioMcpServers = ({
   installedMcpServers,
+  search,
 }: {
   installedMcpServers: McpServer[];
+  search?: string;
 }) => {
   const { data: composioApps, isLoading: isLoadingComposio } = useApps();
   const [selectedApp, setSelectedApp] = useState<string | null>(null);
@@ -31,6 +33,17 @@ export const ComposioMcpServers = ({
   const { mutate: installApp } = useInstallApp();
   const { mutate: deleteMcpServer, isPending: isLoadingDeleteMcpServer } =
     useDeleteMcpServer();
+
+  const filteredApps = useMemo(() => {
+    if (!search) {
+      return composioApps;
+    }
+    return composioApps?.filter(
+      (app) =>
+        app.name.toLowerCase().includes(search.toLowerCase()) ||
+        app.description.toLowerCase().includes(search.toLowerCase()),
+    );
+  }, [composioApps, search]);
 
   const handleInstall = async (app: App) => {
     if (!auth) {
@@ -77,7 +90,8 @@ export const ComposioMcpServers = ({
   };
 
   const getComposioAppIdFromSseUrl = (url: string) => {
-    let composioAppIdFromSseUrlRegexp = /https:\/\/mcp\.composio\.dev\/partner\/composio\/([a-z0-9]+)\?customerId/;
+    let composioAppIdFromSseUrlRegexp =
+      /https:\/\/mcp\.composio\.dev\/partner\/composio\/([a-z0-9]+)\?customerId/;
     let composioAppIdFromSseUrl = composioAppIdFromSseUrlRegexp.exec(url);
     if (composioAppIdFromSseUrl) {
       return composioAppIdFromSseUrl[1];
@@ -101,16 +115,15 @@ export const ComposioMcpServers = ({
   return (
     <div className="mx-auto flex flex-col">
       <h2 className="text-2xl font-bold">Composio Apps</h2>
-      <div className="mt-2 grid grid-cols-1 gap-4">
+      <div className="divide-official-gray-780 grid grid-cols-1 gap-2 divide-y overflow-y-auto py-4 pr-2">
         {isLoadingComposio
-          ? // Loading skeleton
-            [...Array(3)].map((_, i) => (
+          ? [...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="bg-official-gray-800 border-official-gray-700 flex items-center justify-between rounded-lg border p-4"
+                className="bg-official-gray-800 border-official-gray-700 flex h-24 items-center justify-between rounded-lg border p-4"
               >
                 <div className="flex items-center gap-4">
-                  <div className="bg-official-gray-750 h-12 w-12 animate-pulse rounded-lg" />
+                  <div className="bg-official-gray-750 h-12 w-12 shrink-0 animate-pulse rounded-lg" />
                   <div className="space-y-2">
                     <div className="bg-official-gray-750 h-5 w-32 animate-pulse rounded" />
                     <div className="bg-official-gray-750 h-4 w-48 animate-pulse rounded" />
@@ -119,35 +132,29 @@ export const ComposioMcpServers = ({
                 <div className="bg-official-gray-750 h-9 w-20 animate-pulse rounded-md" />
               </div>
             ))
-          : composioApps?.map((app) => (
+          : filteredApps?.map((app) => (
               <div
                 key={app.id}
-                className="bg-official-gray-800 border-official-gray-700 hover:border-official-gray-600 flex cursor-pointer items-center justify-between rounded-lg border p-4 transition-colors"
+                className="bg-official-gray-800 border-official-gray-700 hover:border-official-gray-600 flex h-24 cursor-pointer items-center justify-between rounded-lg border p-2 transition-colors"
                 onClick={() => handleAppClick(app)}
               >
                 <div className="flex flex-1 items-center gap-4">
-                  <div className="relative">
+                  <div className="relative shrink-0">
                     <img
                       src={app.icon}
                       alt={app.name}
-                      className="h-12 w-12 rounded-lg"
+                      className="h-12 w-12 rounded-lg object-cover"
                     />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-semibold text-white">
+                      <h3 className="text-lg font-semibold text-white truncate">
                         {app.name}
                       </h3>
                     </div>
-                    <p className="text-official-gray-400 mb-2 text-sm">
+                    <p className="text-official-gray-400 text-sm line-clamp-2">
                       {app.description}
                     </p>
-                    <div className="text-official-gray-400 mt-2 flex gap-4 text-xs">
-                      <span className="inline-flex items-center gap-1">
-                        <WrenchIcon className="h-4 w-4" /> {app.meta.tool_count}{' '}
-                        tools
-                      </span>
-                    </div>
                   </div>
                 </div>
                 <div className="ml-4 flex flex-col items-end gap-2">
