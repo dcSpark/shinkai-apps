@@ -6,6 +6,16 @@ import {
   CardTitle,
   Badge,
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
   Tabs,
   TabsContent,
   TabsList,
@@ -23,12 +33,13 @@ import {
   Wallet,
 } from 'lucide-react';
 import { useMemo, useState, useEffect } from 'react';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useAuth } from '../store/auth';
 import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
 import { Link } from 'react-router';
 import axios from 'axios';
 import { invoke } from '@tauri-apps/api/core';
-import { useAuth } from '../store/auth';
+import { toast } from 'sonner';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
 
@@ -289,6 +300,26 @@ const DiscoverNetworkAgents = () => {
     }
   };
 
+  const handleRemoveAgent = async (agent: Agent) => {
+    if (!auth?.node_address || !auth?.api_v2_key || !agent.toolRouterKey) {
+      console.error('Missing auth or agent data');
+      return;
+    }
+    try {
+      await axios.delete(`${auth.node_address}/v2/remove_tool`, {
+        params: { tool_key: agent.toolRouterKey },
+        headers: { Authorization: `Bearer ${auth.api_v2_key}` },
+      });
+      setInstalledKeys((prev) => {
+        const next = new Set(prev);
+        next.delete(agent.toolRouterKey ?? '');
+        return next;
+      });
+    } catch (e) {
+      console.error('Failed to remove network agent', e);
+    }
+  };
+
   const toggleCategory = (categoryName: string) => {
     setExpandedCategories((prev) =>
       prev.includes(categoryName)
@@ -317,6 +348,7 @@ const DiscoverNetworkAgents = () => {
             type="discover"
             isInstalled={installedKeys.has(agent.toolRouterKey ?? '')}
             onAdd={handleAddAgent}
+            onRemove={handleRemoveAgent}
           />
         ))}
       </div>
@@ -384,9 +416,10 @@ interface AgentCardProps {
   type: 'discover' | 'exposed' | 'network';
   isInstalled?: boolean;
   onAdd?: (agent: Agent) => void;
+  onRemove?: (agent: Agent) => void;
 }
 
-const AgentCard = ({ agent, type, isInstalled, onAdd }: AgentCardProps) => {
+const AgentCard = ({ agent, type, isInstalled, onAdd, onRemove }: AgentCardProps) => {
   const handleAction = () => {
     onAdd?.(agent);
   };
@@ -578,15 +611,23 @@ const AgentCard = ({ agent, type, isInstalled, onAdd }: AgentCardProps) => {
 
           <div className="flex gap-2">
             {type === 'discover' && (
-              <Button
-                variant={isInstalled ? 'secondary' : 'outline'}
-                className="w-full"
-                onClick={isInstalled ? undefined : handleAction}
-                disabled={isInstalled}
-                size="md"
-              >
-                {labels.buttonText}
-              </Button>
+              <>
+                <Button
+                  variant={isInstalled ? 'secondary' : 'outline'}
+                  className="w-full"
+                  onClick={isInstalled ? undefined : handleAction}
+                  disabled={isInstalled}
+                  size="md"
+                >
+                  {labels.buttonText}
+                </Button>
+                {isInstalled && agent.toolRouterKey && (
+                  <RemoveNetworkToolButton
+                    onRemoved={() => onRemove?.(agent)}
+                    toolKey={agent.toolRouterKey}
+                  />
+                )}
+              </>
             )}
             {type === 'exposed' && (
               <div className="flex w-full flex-col gap-2">
@@ -622,6 +663,91 @@ const AgentCard = ({ agent, type, isInstalled, onAdd }: AgentCardProps) => {
         </div>
       </CardContent>
     </Card>
+  );
+};
+
+const RemoveNetworkToolButton = ({
+  toolKey,
+  onRemoved,
+}: {
+  toolKey: string;
+  onRemoved?: () => void;
+}) => {
+  const { t } = useTranslation();
+  const auth = useAuth((state) => state.auth);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+
+  const handleRemove = async () => {
+    if (!auth?.node_address || !auth?.api_v2_key) return;
+    setIsPending(true);
+    try {
+      await axios.delete(`${auth.node_address}/v2/remove_tool`, {
+        params: { tool_key: toolKey },
+        headers: { Authorization: `Bearer ${auth.api_v2_key}` },
+      });
+      onRemoved?.();
+      toast.success('Tool has been removed successfully');
+      setIsOpen(false);
+    } catch (error: any) {
+      toast.error('Failed to remove tool', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  return (
+    <Dialog onOpenChange={setIsOpen} open={isOpen}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
+            <button
+              className={cn(
+                buttonVariants({ variant: 'outline', size: 'sm' }),
+                'min-h-auto flex h-auto w-10 justify-center rounded-md py-2',
+              )}
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent align="center" side="top">
+          {t('common.deleteTool', 'Delete Tool')}
+        </TooltipContent>
+      </Tooltip>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogTitle className="pb-0">Delete Tool</DialogTitle>
+        <DialogDescription>
+          Are you sure you want to delete this tool? This action cannot be
+          undone.
+        </DialogDescription>
+        <DialogFooter>
+          <div className="flex gap-2 pt-4">
+            <DialogClose asChild className="flex-1">
+              <Button
+                className="min-w-[100px] flex-1"
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              className="min-w-[100px] flex-1"
+              isLoading={isPending}
+              onClick={handleRemove}
+              size="sm"
+              variant="destructive"
+            >
+              Delete
+            </Button>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
