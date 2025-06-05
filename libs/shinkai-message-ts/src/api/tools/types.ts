@@ -592,3 +592,16 @@ export type GetToolPlaygroundMetadataRequest = {
 };
 
 export type GetToolPlaygroundMetadataResponse = ToolMetadata | null;
+
+export type ToolOffering = {
+  meta_description: string;
+  tool_key: string;
+  usage_type: ToolUsageType;
+};
+
+export type ToolWithOffering = {
+  network_tool: NetworkShinkaiTool;
+  tool_offering: ToolOffering;
+};
+
+export type GetToolsWithOfferingsResponse = ToolWithOffering[];
