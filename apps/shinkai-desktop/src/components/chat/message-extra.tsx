@@ -28,6 +28,8 @@ const truncateAddress = (address: string) => {
 };
 
 const formatAmount = (amount: string, decimals = 18): string => {
+  console.log('formatAmount: ', amount, decimals);
+
   const value = BigInt(amount);
   const divisor = BigInt(10 ** decimals);
   const integerPart = value / divisor;
@@ -83,6 +85,8 @@ function Payment({
     },
   });
 
+  console.log('data: ', data);
+
   const hasPerUse = !!data?.usage_type?.PerUse;
   const hasDownload = !!data?.usage_type?.Downloadable;
 
@@ -136,12 +140,12 @@ function Payment({
                             ? 'Free'
                             : 'Payment' in data.usage_type.PerUse
                               ? `${formatAmount(
-                                  data.usage_type.PerUse.Payment[0].amount,
-                                  data.usage_type.PerUse.Payment[0].asset
-                                    .decimals,
+                                  (data.usage_type.PerUse.Payment[0] as any).maxAmountRequired || 
+                                  (data.usage_type.PerUse.Payment[0] as any).amount || '0',
+                                  (data.usage_type.PerUse.Payment[0] as any).asset?.decimals || 6,
                                 )} ${
-                                  data.usage_type.PerUse.Payment[0].asset
-                                    .asset_id
+                                  (data.usage_type.PerUse.Payment[0] as any).extra?.name || 
+                                  (data.usage_type.PerUse.Payment[0] as any).asset?.asset_id || 'TOKEN'
                                 }
                                   `
                               : data.usage_type.PerUse.DirectDelegation}
@@ -166,13 +170,12 @@ function Payment({
                             ? 'Free'
                             : 'Payment' in data.usage_type.Downloadable
                               ? `${formatAmount(
-                                  data.usage_type.Downloadable.Payment[0]
-                                    .amount,
-                                  data.usage_type.Downloadable.Payment[0].asset
-                                    .decimals,
+                                  (data.usage_type.Downloadable.Payment[0] as any).maxAmountRequired || 
+                                  (data.usage_type.Downloadable.Payment[0] as any).amount || '0',
+                                  (data.usage_type.Downloadable.Payment[0] as any).asset?.decimals || 6,
                                 )} ${
-                                  data.usage_type.Downloadable.Payment[0].asset
-                                    .asset_id
+                                  (data.usage_type.Downloadable.Payment[0] as any).extra?.name || 
+                                  (data.usage_type.Downloadable.Payment[0] as any).asset?.asset_id || 'TOKEN'
                                 }
                                   `
                               : data.usage_type.Downloadable.DirectDelegation}
