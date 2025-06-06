@@ -1,8 +1,9 @@
-import { McpServerTool } from "../tools/types";
+import { type McpServerTool } from '../tools/types';
 
 export enum McpServerType {
   Command = 'Command',
   Sse = 'Sse',
+  Http = 'Http',
 }
 
 export type McpServer =
@@ -22,6 +23,15 @@ export type McpServer =
       updated_at: string;
       name: string;
       type: McpServerType.Sse;
+      url: string;
+      is_enabled: boolean;
+    }
+  | {
+      id: number;
+      created_at: string;
+      updated_at: string;
+      name: string;
+      type: McpServerType.Http;
       url: string;
       is_enabled: boolean;
     };
@@ -44,6 +54,11 @@ export type AddMcpServerRequest =
       name: string;
       type: McpServerType.Sse;
       url: string;
+    }
+  | {
+      name: string;
+      type: McpServerType.Sse;
+      url: string;
     };
 
 export type UpdateMcpServerRequest = {
@@ -52,12 +67,16 @@ export type UpdateMcpServerRequest = {
   is_enabled?: boolean;
   env?: Record<string, string>;
 } & (
-    {
+  | {
       type: McpServerType.Command;
       command: string;
     }
   | {
       type: McpServerType.Sse;
+      url: string;
+    }
+  | {
+      type: McpServerType.Http;
       url: string;
     }
 );

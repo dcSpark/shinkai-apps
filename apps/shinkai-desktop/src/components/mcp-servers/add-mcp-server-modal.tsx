@@ -63,6 +63,11 @@ const formSchema = z.discriminatedUnion('type', [
     type: z.literal(McpServerType.Sse),
     url: z.string().url({ message: 'Invalid URL format' }),
   }),
+  z.object({
+    name: z.string().min(1, { message: 'Name is required' }),
+    type: z.literal(McpServerType.Http),
+    url: z.string().url({ message: 'Invalid URL format' }),
+  }),
 ]);
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -237,6 +242,12 @@ export const AddMcpServerModal = ({
           command: values.command,
           env: Object.keys(envRecord).length > 0 ? envRecord : undefined,
         };
+      } else if (values.type === McpServerType.Http) {
+        specificPayload = {
+          ...commonPayload,
+          type: McpServerType.Http as const,
+          url: values.url,
+        };
       } else {
         specificPayload = {
           ...commonPayload,
@@ -339,6 +350,12 @@ export const AddMcpServerModal = ({
                         form.clearErrors('env');
                         form.unregister('command');
                         form.unregister('env');
+                      } else if (newType === McpServerType.Http) {
+                        form.setValue('url', form.getValues('url') || '');
+                        form.clearErrors('command');
+                        form.clearErrors('env');
+                        form.unregister('command');
+                        form.unregister('env');
                       }
                     }}
                     value={field.value}
@@ -356,6 +373,9 @@ export const AddMcpServerModal = ({
                       </SelectItem>
                       <SelectItem value={McpServerType.Sse}>
                         Server-Sent Events (SSE)
+                      </SelectItem>
+                      <SelectItem value={McpServerType.Http}>
+                        HTTP
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -444,7 +464,8 @@ export const AddMcpServerModal = ({
               </>
             )}
 
-            {serverType === McpServerType.Sse && (
+            {serverType === McpServerType.Sse ||
+              serverType === McpServerType.Http && (
               <FormField
                 control={form.control}
                 name="url"
