@@ -333,6 +333,12 @@ jobs:
           source_dir: files-to-r2
           destination_dir: ./shinkai-desktop/binaries/production/${{ matrix.arch }}/${{ needs.prebuild.outputs.version }}.${{ github.run_number }}/
 
+      - name: Upload installer to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prebuild.outputs.version }}
+          files: files-to-r2/${{ matrix.distributable_file_name }}
+
   rollout-shinkai-desktop:
     environment: production
     needs:
