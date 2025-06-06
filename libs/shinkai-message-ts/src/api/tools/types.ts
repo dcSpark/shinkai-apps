@@ -605,3 +605,11 @@ export type GetToolPlaygroundMetadataRequest = {
 };
 
 export type GetToolPlaygroundMetadataResponse = ToolMetadata | null;
+
+export type SetToolOfferingRequest = {
+  tool_offering: ToolOffering;
+};
+
+export type SetToolOfferingResponse = {
+  message: string;
+};
