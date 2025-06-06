@@ -1,3 +1,4 @@
+import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
 import {
   Card,
   CardContent,
@@ -13,6 +14,8 @@ import {
   SearchInput,
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { invoke } from '@tauri-apps/api/core';
+import axios from 'axios';
 import {
   Star,
   Settings,
@@ -23,11 +26,7 @@ import {
   Wallet,
 } from 'lucide-react';
 import { useMemo, useState, useEffect } from 'react';
-import { useAuth } from '../store/auth';
-import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
 import { Link } from 'react-router';
-import axios from 'axios';
-import { invoke } from '@tauri-apps/api/core';
 import { useAuth } from '../store/auth';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
