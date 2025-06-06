@@ -1,5 +1,7 @@
+import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { TooltipProvider } from '@shinkai_network/shinkai-ui';
+import { useQueryClient } from '@tanstack/react-query';
 import { listen } from '@tauri-apps/api/event';
 import { debug } from '@tauri-apps/plugin-log';
 import React, { useEffect, useRef } from 'react';
@@ -55,6 +57,7 @@ import EditToolPage from '../pages/edit-tool';
 import { ExportConnection } from '../pages/export-connection';
 import { GalxeValidation } from '../pages/galxe-validation';
 import HomePage from '../pages/home';
+import InternetAccessPage from '../pages/internet-access';
 import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
@@ -65,6 +68,7 @@ import { PublicKeys } from '../pages/public-keys';
 import QuickConnectionPage from '../pages/quick-connection';
 import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
+import ShortcutsPage from '../pages/shortcuts';
 import { TaskLogs } from '../pages/task-logs';
 import { Tasks } from '../pages/tasks';
 import TermsAndConditionsPage, {
@@ -244,11 +248,35 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+const useNavigateToPathFromSpotlight = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    const unlisten = listen('navigate-to-path', (event) => {
+      const inboxId = event.payload as string;
+      void queryClient.invalidateQueries({
+        queryKey: [
+          FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+          {
+            inboxId: decodeURIComponent(inboxId),
+          },
+        ],
+      });
+      void navigate(inboxId);
+    });
+
+    return () => {
+      void unlisten.then((fn) => fn());
+    };
+  }, [navigate, queryClient]);
+};
+
 const AppRoutes = () => {
   useAppHotkeys();
   useGlobalAppShortcuts();
   useDefaultAgentByDefault();
   useConfigDeepLink();
+  useNavigateToPathFromSpotlight();
 
   const defaultAgentId = useSettings((state) => state.defaultAgentId);
 
@@ -434,6 +462,8 @@ const AppRoutes = () => {
               }
               path={'crypto-wallet'}
             />
+            <Route element={<InternetAccessPage />} path={'remote-access'} />
+            <Route element={<ShortcutsPage />} path={'shortcuts'} />
           </Route>
         </Route>
         <Route

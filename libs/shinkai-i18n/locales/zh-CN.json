@@ -344,6 +344,27 @@
     "addFromGitHub": "从 GitHub 添加",
     "addSuccess": "MCP 服务器添加成功",
     "addVariable": "添加",
+    "composio": {
+      "activeUsers": "活跃用户",
+      "availableActions": "可用操作",
+      "categories": "类别",
+      "created": "创建时间",
+      "details": "详细信息",
+      "install": "安装",
+      "installFailed": "从 composio 安装应用时出错",
+      "installSuccess": "{{appName}} 安装成功",
+      "installing": "正在安装...",
+      "lastUpdated": "最后更新",
+      "latestVersion": "最新版本",
+      "loginRequired": "您必须登录才能安装应用",
+      "statistics": "统计信息",
+      "title": "Composio MCP 服务器",
+      "toolsCount": "工具数量",
+      "totalDownloads": "总下载量",
+      "uninstall": "卸载",
+      "uninstalling": "正在卸载...",
+      "updatedAt": "最后更新"
+    },
     "configure": "配置服务器",
     "delete": "删除服务器",
     "deleteDescription": "您确定要删除服务器 \"{{name}}\" 吗？此操作无法撤销。",
@@ -420,7 +441,7 @@
     "uploadAFileDescription": "将您的笔记、网站、文档等安全存储在一个地方。"
   },
   "quickAsk": {
-    "emptyStateDescription": "试试“如何在 JavaScript 中发起 HTTP 请求”，“给我 80 年代的十大摇滚音乐”，“给我解释一下互联网是如何工作的”",
+    "emptyStateDescription": "试试\"如何在 JavaScript 中发起 HTTP 请求\"，\"给我 80 年代的十大摇滚音乐\"，\"给我解释一下互联网是如何工作的\"",
     "emptyStateTitle": "询问 Shinkai AI"
   },
   "quickConnection": {
@@ -500,6 +521,7 @@
       "general": "常规",
       "promptLibrary": "提示库",
       "publicKeys": "公钥",
+      "remoteAccess": "远程访问",
       "shinkaiNode": "深海节点管理器"
     },
     "maxChatIterations": {
@@ -531,6 +553,27 @@
     },
     "registerNewCode": {
       "label": "注册新设备"
+    },
+    "remoteAccess": {
+      "connected": "已连接",
+      "description": "使用 ngrok 轻松安全地从任何地方连接到您的 Shinkai 节点。无需复杂的设置——只需 <a>创建一个免费的 ngrok 账户</a>，从仪表板复制您的 <b>ngrok 认证令牌</b>，并将其粘贴到下面以启用安全的远程访问。",
+      "errors": {
+        "failedToGetStatus": "获取 ngrok 状态失败。",
+        "failedToStart": "通过 ngrok 连接远程访问失败。",
+        "failedToStop": "断开远程访问通过 ngrok 失败。"
+      },
+      "form": {
+        "authToken": "Ngrok 认证令牌",
+        "authTokenHelperText": "输入您的 ngrok 认证令牌",
+        "authTokenHelperTextWhenEnabled": "停止远程访问 ngrok 以更新您的认证令牌",
+        "enableRemoteAccess": "启用远程访问",
+        "stopRemoteAccess": "停止远程访问"
+      },
+      "publicAccessURLDescription": "使用此 URL 从任何地方连接到您的节点。",
+      "publicAccessUrl": "公共访问 URL",
+      "stopRemoteAccessSuccess": "远程访问已成功停止",
+      "success": "已连接！您的 Shinkai 节点现在可以通过 ngrok 远程访问",
+      "title": "远程访问"
     },
     "shinkaiIdentity": {
       "checkIdentityInSync": "验证Shinkai身份",
@@ -692,7 +735,7 @@
     "emptyState": {
       "noFiles": "未找到文件",
       "noFilesAndFolders": "这将成为您所有文件的主页。",
-      "noFilesAndFoldersDescription": "使用“+”按钮开始上传文件。",
+      "noFilesAndFoldersDescription": "使用\"+\"按钮开始上传文件。",
       "noSharedFolders": "您的共享文件夹将显示在这里。"
     },
     "errors": {

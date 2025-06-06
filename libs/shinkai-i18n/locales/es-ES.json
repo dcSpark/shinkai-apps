@@ -344,6 +344,27 @@
     "addFromGitHub": "Agregar desde GitHub",
     "addSuccess": "Servidor MCP agregado con éxito",
     "addVariable": "Agregar",
+    "composio": {
+      "activeUsers": "Usuarios Activos",
+      "availableActions": "Acciones Disponibles",
+      "categories": "Categorías",
+      "created": "Creado",
+      "details": "Detalles",
+      "install": "Instalar",
+      "installFailed": "Error al instalar la aplicación desde composio",
+      "installSuccess": "{{appName}} se instaló correctamente",
+      "installing": "Instalando...",
+      "lastUpdated": "Última Actualización",
+      "latestVersion": "Última Versión",
+      "loginRequired": "Debes estar conectado para instalar aplicaciones",
+      "statistics": "Estadísticas",
+      "title": "Servidores MCP de Composio",
+      "toolsCount": "Cantidad de Herramientas",
+      "totalDownloads": "Descargas Totales",
+      "uninstall": "Desinstalar",
+      "uninstalling": "Desinstalando...",
+      "updatedAt": "Última Actualización"
+    },
     "configure": "Configurar Servidor",
     "delete": "Eliminar Servidor",
     "deleteDescription": "¿Está seguro de que desea eliminar el servidor \"{{name}}\"? Esta acción no se puede deshacer.",
@@ -420,7 +441,7 @@
     "uploadAFileDescription": "Guarda tus notas, sitios web, documentos y otros de forma segura en un solo lugar."
   },
   "quickAsk": {
-    "emptyStateDescription": "Prueba con “¿Cómo hacer una solicitud HTTP en JavaScript?”, “Dame las 10 mejores canciones de rock de los 80”, “Explícame cómo funciona Internet”",
+    "emptyStateDescription": "Prueba con \"¿Cómo hacer una solicitud HTTP en JavaScript?\", \"Dame las 10 mejores canciones de rock de los 80\", \"Explícame cómo funciona Internet\"",
     "emptyStateTitle": "Pregunta a Shinkai AI"
   },
   "quickConnection": {
@@ -500,6 +521,7 @@
       "general": "General",
       "promptLibrary": "Biblioteca de Prompts",
       "publicKeys": "Claves Públicas",
+      "remoteAccess": "Acceso Remoto",
       "shinkaiNode": "Administrador de Nodo Shinkai"
     },
     "maxChatIterations": {
@@ -531,6 +553,27 @@
     },
     "registerNewCode": {
       "label": "Registrar nuevo dispositivo"
+    },
+    "remoteAccess": {
+      "connected": "Conectado",
+      "description": "Conéctate de manera fácil y segura a tu nodo Shinkai desde cualquier lugar usando ngrok. Sin configuraciones complejas: solo <a>crea una cuenta gratuita en ngrok</a>, copia tu <b>token de autenticación de ngrok</b> desde el panel de control y pégalo a continuación para habilitar el acceso remoto seguro.",
+      "errors": {
+        "failedToGetStatus": "Error al obtener el estado de ngrok.",
+        "failedToStart": "Error al conectar el acceso remoto a través de ngrok.",
+        "failedToStop": "Error al desconectar el acceso remoto a través de ngrok."
+      },
+      "form": {
+        "authToken": "Token de Autenticación de Ngrok",
+        "authTokenHelperText": "Ingresa tu token de autenticación de ngrok",
+        "authTokenHelperTextWhenEnabled": "Detén el acceso remoto a ngrok para actualizar tu token de autenticación",
+        "enableRemoteAccess": "Habilitar Acceso Remoto",
+        "stopRemoteAccess": "Detener Acceso Remoto"
+      },
+      "publicAccessURLDescription": "Utiliza esta URL para conectarte a tu nodo desde cualquier lugar.",
+      "publicAccessUrl": "URL de Acceso Público",
+      "stopRemoteAccessSuccess": "El acceso remoto se ha detenido con éxito",
+      "success": "¡Conectado! Tu nodo Shinkai ahora es accesible de forma remota a través de ngrok",
+      "title": "Acceso Remoto"
     },
     "shinkaiIdentity": {
       "checkIdentityInSync": "Verificar Identidad de Shinkai",

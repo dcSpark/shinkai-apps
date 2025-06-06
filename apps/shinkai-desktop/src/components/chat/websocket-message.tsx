@@ -2,6 +2,7 @@ import {
   type WidgetToolType,
   type WsMessage,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import {
   FunctionKeyV2,
   generateOptimisticAssistantMessage,
@@ -11,6 +12,7 @@ import {
   type ChatConversationInfiniteData,
   type ToolCall,
 } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import { createContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -113,7 +115,11 @@ export const useWebSocketMessageSmooth = ({
 }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
-  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  const socketUrl = ['localhost', '0.0.0.0', '127.0.0.1'].includes(
+    nodeAddressUrl.hostname,
+  )
+    ? `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`
+    : `ws://${nodeAddressUrl.hostname}${Number(nodeAddressUrl.port) !== 0 ? `:${Number(nodeAddressUrl.port)}` : ''}/ws`;
   const queryClient = useQueryClient();
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(
@@ -241,7 +247,11 @@ export const useWebSocketMessage = ({
 }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
-  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  const socketUrl = ['localhost', '0.0.0.0', '127.0.0.1'].includes(
+    nodeAddressUrl.hostname,
+  )
+    ? `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`
+    : `ws://${nodeAddressUrl.hostname}${Number(nodeAddressUrl.port) !== 0 ? `:${Number(nodeAddressUrl.port)}` : ''}/ws`;
   const queryClient = useQueryClient();
   const isStreamSupported = useRef(false);
 
@@ -256,6 +266,12 @@ export const useWebSocketMessage = ({
   const queryKey = useMemo(() => {
     return [FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION, { inboxId }];
   }, [inboxId]);
+
+  const { data: provider } = useGetProviderFromJob({
+    jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+    token: auth?.api_v2_key ?? '',
+    nodeAddress: auth?.node_address ?? '',
+  });
 
   useEffect(() => {
     if (!enabled || !auth) return;
@@ -300,7 +316,9 @@ export const useWebSocketMessage = ({
               ) {
                 lastMessage.content = '';
               } else {
-                const newMessages = [generateOptimisticAssistantMessage()];
+                const newMessages = [
+                  generateOptimisticAssistantMessage(provider),
+                ];
                 if (lastPage) {
                   lastPage.push(...newMessages);
                 } else {
@@ -392,7 +410,11 @@ export const useWebSocketTools = ({
 }: UseWebSocketMessage) => {
   const auth = useAuth((state) => state.auth);
   const nodeAddressUrl = new URL(auth?.node_address ?? 'http://localhost:9850');
-  const socketUrl = `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`;
+  const socketUrl = ['localhost', '0.0.0.0', '127.0.0.1'].includes(
+    nodeAddressUrl.hostname,
+  )
+    ? `ws://${nodeAddressUrl.hostname}:${Number(nodeAddressUrl.port) + 1}/ws`
+    : `ws://${nodeAddressUrl.hostname}${Number(nodeAddressUrl.port) !== 0 ? `:${Number(nodeAddressUrl.port)}` : ''}/ws`;
   const { sendMessage, lastMessage, readyState } = useWebSocket(
     socketUrl,
     { share: true },

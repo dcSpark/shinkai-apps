@@ -47,6 +47,7 @@
     "@tanstack/react-virtual": "^3.13.9",
     "@tauri-apps/plugin-dialog": "^2.2.0",
     "@tauri-apps/plugin-fs": "^2.2.0",
+    "@tauri-apps/plugin-http": "^2.4.4",
     "@tauri-apps/plugin-log": "^2.2.0",
     "@tauri-apps/plugin-notification": "^2.2.0",
     "@tauri-apps/plugin-opener": "^2.2.5",
@@ -128,7 +129,7 @@
     "@babel/plugin-syntax-bigint": "^7.8.3",
     "@babel/preset-env": "^7.24.6",
     "@babel/preset-react": "^7.24.6",
-    "@lobehub/i18n-cli": "^1.21.0",
+    "@lobehub/i18n-cli": "^1.22.0",
     "@nx/cypress": "21.1.2",
     "@nx/devkit": "21.1.2",
     "@nx/eslint": "21.1.2",
@@ -211,6 +212,7 @@
   },
   "overrides": {
     "react-reconciler": "^0.31.0",
+    "ink": "^6.0.0",
     "react-syntax-highlighter": {
       "refractor": {
         "prismjs": "1.30.0"

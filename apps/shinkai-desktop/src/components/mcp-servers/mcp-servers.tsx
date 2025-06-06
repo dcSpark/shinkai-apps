@@ -1,4 +1,5 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { McpServerType } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
 import { type ImportMCPServerFromGithubURLOutput } from '@shinkai_network/shinkai-node-state/v2/mutations/importMCPServerFromGithubURL/types';
 import { useSetEnableMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/setEnableMcpServer/useSetEnableMcpServer';
 import { useGetMcpServers } from '@shinkai_network/shinkai-node-state/v2/queries/getMcpServers/useGetMcpServers';
@@ -17,6 +18,7 @@ import { toast } from 'sonner';
 import { useAuth } from '../../store/auth';
 import { AddMcpServerModal } from './add-mcp-server-modal';
 import { AddMcpServerWithGithubModal } from './add-mcp-server-with-github-modal';
+import { ComposioMcpServers } from './composio-mcp-servers';
 import { McpServerCard } from './mcp-server-card';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
@@ -74,6 +76,12 @@ export const McpServers = () => {
     (server) =>
       server.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       server.type.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
+  const installedMcpServersUrl = new Set(
+    (mcpServers ?? [])
+      .filter((server) => server.type === McpServerType.Sse)
+      .map((server) => server.url),
   );
 
   return (
@@ -145,6 +153,11 @@ export const McpServers = () => {
           </div>
         )}
       </div>
+
+        <ComposioMcpServers
+          installedMcpServers={mcpServers ?? []}
+          search={searchQuery}
+        />
 
       <AddMcpServerModal
         initialData={initialDataForManualModal}

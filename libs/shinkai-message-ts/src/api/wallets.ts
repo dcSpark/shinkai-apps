@@ -7,12 +7,12 @@ export enum WalletRole {
   Both = 'Both',
 }
 export enum NetworkIdentifier {
-  BaseSepolia = 'BaseSepolia',
-  BaseMainnet = 'BaseMainnet',
-  EthereumSepolia = 'EthereumSepolia',
-  EthereumMainnet = 'EthereumMainnet',
-  ArbitrumSepolia = 'ArbitrumSepolia',
-  ArbitrumMainnet = 'ArbitrumMainnet',
+  BaseSepolia = 'base-sepolia',
+  BaseMainnet = 'base-mainnet',
+  EthereumSepolia = 'ethereum-sepolia',
+  EthereumMainnet = 'ethereum-mainnet',
+  ArbitrumSepolia = 'arbitrum-sepolia',
+  ArbitrumMainnet = 'arbitrum-mainnet',
   Anvil = 'Anvil',
 }
 export type WalletSource =

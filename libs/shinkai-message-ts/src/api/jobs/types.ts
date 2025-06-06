@@ -2,6 +2,8 @@ export type AgentOrLLMProvider = {
   full_identity_name: string;
   id: string;
   model: string;
+  name: string;
+  description: string;
 };
 
 export enum VectorSearchMode {

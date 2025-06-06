@@ -173,7 +173,7 @@ export default {
       shareFolderText:
         'You can share folders that you store in AI Files with anyone.',
       unshareFolderText:
-        'Everyone will be removed from this folder. You’ll still keep a copy of this folder in your AI Files. <br /> Note: Removed members will keep a copy of this shared folder.',
+        "Everyone will be removed from this folder. You'll still keep a copy of this folder in your AI Files. <br /> Note: Removed members will keep a copy of this shared folder.",
     },
     forms: {
       folderName: 'Folder Name',
@@ -320,6 +320,7 @@ export default {
     layout: {
       general: 'General',
       appearance: 'Appearance',
+      remoteAccess: 'Remote Access',
       shinkaiNode: 'Shinkai Node Manager',
       exportConnection: 'Export Connection',
       createRegistrationCode: 'Create Registration Code',
@@ -433,6 +434,31 @@ export default {
         medium: 'Medium',
         large: 'Large',
         extraLarge: 'Extra Large',
+      },
+    },
+    remoteAccess: {
+      title: 'Remote Access',
+      description:
+        'Easily and securely connect to your Shinkai node from anywhere using ngrok. No complex setup—just  <a>create a free ngrok account</a>, copy your <b>ngrok auth token</b> from the dashboard, and paste it below to enable secure remote access.',
+      connected: 'Connected',
+      publicAccessUrl: 'Public Access URL',
+      publicAccessURLDescription:
+        'Use this URL to connect to your node from anywhere.',
+      form: {
+        authToken: 'Ngrok Auth Token',
+        authTokenHelperText: 'Enter your ngrok auth token',
+        authTokenHelperTextWhenEnabled:
+          'Stop remote access to ngrok to update your auth token',
+        enableRemoteAccess: 'Enable Remote Access',
+        stopRemoteAccess: 'Stop Remote Access',
+      },
+      success:
+        'Connected! Your Shinkai node is now accessible remotely via ngrok',
+      stopRemoteAccessSuccess: 'Remote access has been stopped successfully',
+      errors: {
+        failedToStart: 'Failed to connect remote access via ngrok.',
+        failedToStop: 'Failed to disconnect remote access via ngrok.',
+        failedToGetStatus: 'Failed to get ngrok status.',
       },
     },
   },
@@ -648,8 +674,7 @@ export default {
     configure: 'Configure Server',
     updateWarningDescription:
       'Updating this server will reset its associated tools.',
-    updateDescription:
-      'Updating configuration for MCP server: {{name}}',
+    updateDescription: 'Updating configuration for MCP server: {{name}}',
     statusUpdated: 'Status updated successfully',
     statusUpdateFailed: 'Failed to update status',
     deleteDescription:
@@ -664,7 +689,7 @@ export default {
     updateFailed: 'Failed to update MCP server',
     manualSetup: 'Manual Setup',
     addFromGitHub: 'Add from GitHub',
-    tools: 'tools',
+    tools: 'Tools',
     toolsFor: 'Tools for {{name}}',
     listOfToolsAvailableFromThisMcpServer:
       'List of tools available from this MCP server.',
@@ -673,6 +698,27 @@ export default {
     noServersFound: 'No MCP servers found. Add a new server to get started.',
     title: 'MCP Servers',
     listDescription: 'List of MCP servers connected to your Shinkai Node',
+    composio: {
+      title: 'Composio MCP Servers',
+      details: 'Details',
+      created: 'Created',
+      lastUpdated: 'Last Updated',
+      categories: 'Categories',
+      toolsCount: 'Tools Count',
+      availableActions: 'Available Actions',
+      statistics: 'Statistics',
+      totalDownloads: 'Total Downloads',
+      activeUsers: 'Active Users',
+      latestVersion: 'Latest Version',
+      updatedAt: 'Last Updated',
+      installing: 'Installing...',
+      uninstalling: 'Uninstalling...',
+      install: 'Install',
+      uninstall: 'Uninstall',
+      loginRequired: 'You must be logged in to install apps',
+      installSuccess: '{{appName}} installed successfully',
+      installFailed: 'Error installing app from composio'
+    }
   },
   tools: {
     label: 'Shinkai Tools',

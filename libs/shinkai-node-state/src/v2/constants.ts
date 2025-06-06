@@ -1,3 +1,4 @@
+import { type ProviderDetails } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import {
   type AssistantMessage,
   type Attachment,
@@ -56,6 +57,7 @@ export enum FunctionKeyV2 {
   GET_TOOLS_FROM_TOOLSET = 'GET_TOOLS_FROM_TOOLSET',
   GET_MCP_SERVERS = 'GET_MCP_SERVERS',
   GET_MCP_SERVER_TOOLS = 'GET_MCP_SERVER_TOOLS',
+  GET_NGROK_STATUS = 'GET_NGROK_STATUS',
 }
 
 export const DEFAULT_CHAT_CONFIG = {
@@ -83,7 +85,9 @@ export const generateOptimisticUserMessage = (
   attachments: attachments ?? [],
 });
 
-export const generateOptimisticAssistantMessage = (): AssistantMessage => ({
+export const generateOptimisticAssistantMessage = (
+  provider?: ProviderDetails,
+): AssistantMessage => ({
   messageId: OPTIMISTIC_ASSISTANT_MESSAGE_ID,
   createdAt: new Date().toISOString(),
   content: '',
@@ -92,4 +96,5 @@ export const generateOptimisticAssistantMessage = (): AssistantMessage => ({
   metadata: { parentMessageId: '', inboxId: '' },
   toolCalls: [],
   artifacts: [],
+  provider: provider,
 });

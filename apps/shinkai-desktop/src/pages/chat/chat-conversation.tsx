@@ -15,6 +15,7 @@ import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries
 import { type ChatConversationInfiniteData } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetChatConversationWithPagination } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/useGetChatConversationWithPagination';
 
+import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import { useEffect, useMemo } from 'react';
@@ -56,6 +57,12 @@ export const useChatConversationWithOptimisticUpdates = ({
     },
   );
 
+  const { data: provider } = useGetProviderFromJob({
+    jobId: inboxId ? extractJobIdFromInbox(inboxId) : '',
+    token: auth?.api_v2_key ?? '',
+    nodeAddress: auth?.node_address ?? '',
+  });
+
   const {
     data,
     fetchPreviousPage,
@@ -91,7 +98,9 @@ export const useChatConversationWithOptimisticUpdates = ({
         queryKey,
         produce((draft: ChatConversationInfiniteData | undefined) => {
           if (!draft?.pages?.[0]) return;
-          draft?.pages?.at(-1)?.push(generateOptimisticAssistantMessage());
+          draft?.pages
+            ?.at(-1)
+            ?.push(generateOptimisticAssistantMessage(provider));
         }),
       );
     }

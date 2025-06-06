@@ -3,6 +3,7 @@ import {
   type ToolArgs,
   type ToolStatusType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type ProviderDetails } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { type InfiniteData } from '@tanstack/react-query';
 import { type ReactNode } from 'react';
 
@@ -124,6 +125,7 @@ export type AssistantMessage = BaseMessage & {
   toolCalls: ToolCall[];
   artifacts: Artifact[];
   reasoning?: ReasoningPart;
+  provider?: ProviderDetails;
 };
 
 export type FormattedMessage = AssistantMessage | UserMessage;

@@ -188,7 +188,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
               </DialogTitle>
             </DialogHeader>
             <div className="mt-8 space-y-3">
-              <Button
+              {/* <Button
                 className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
                 onClick={() =>
                   setWalletCreationView(WalletCreateConnectView.Mpc)
@@ -205,7 +205,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                     in crypto wallets.
                   </div>
                 </div>
-              </Button>
+              </Button> */}
               <Button
                 className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
                 onClick={() =>
@@ -697,7 +697,7 @@ const RegularRestoreWalletPrivateKey = () => {
                   </FormControl>
 
                   <SelectContent>
-                    <SelectItem value="BaseSepolia">Base Sepolia</SelectItem>
+                    <SelectItem value="base-sepolia">Base Sepolia</SelectItem>
                     <SelectItem disabled value="disabled">
                       Other networks coming up soon
                     </SelectItem>
@@ -849,7 +849,7 @@ const RegularCreateWallet = () => {
                   </FormControl>
 
                   <SelectContent>
-                    <SelectItem value="BaseSepolia">Base Sepolia</SelectItem>
+                    <SelectItem value="base-sepolia">Base Sepolia</SelectItem>
                     <SelectItem disabled value="disabled">
                       Other networks coming up soon
                     </SelectItem>

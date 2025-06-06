@@ -21,9 +21,7 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": [
-      "llm-models/"
-    ],
+    "resources": ["llm-models/"],
     "macOS": {
       "minimumSystemVersion": "12.0"
     },
@@ -70,8 +68,8 @@
         "label": "spotlight",
         "transparent": true,
         "title": "Spotlight",
-        "width": 720,
-        "height": 470,
+        "width": 800,
+        "height": 490,
         "resizable": true,
         "dragDropEnabled": false,
         "titleBarStyle": "Overlay",
