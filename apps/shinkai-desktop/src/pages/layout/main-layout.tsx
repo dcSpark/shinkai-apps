@@ -33,6 +33,7 @@ import {
   HomeIcon,
   InboxIcon,
   MCPIcon,
+  NetworkAgentIcon,
   ScheduledTasksIcon,
   ShinkaiCombinationMarkIcon,
   ToolsIcon,
@@ -253,6 +254,11 @@ export function MainNav() {
       icon: <MCPIcon className="size-[18px]" />,
     },
 
+    {
+      title: 'Network for AI Agents',
+      href: '/network-ai-agents',
+      icon: <NetworkAgentIcon className="size-[18px]" />,
+    },
     {
       title: t('layout.menuItems.vectorFs'),
       href: '/vector-fs',
@@ -563,7 +569,7 @@ const MainLayout = () => {
   );
 
   const { mutateAsync: importTool } = useImportTool({
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       toast.success('Installation successful', {
         description:
           'Congratulations! Your tool is now installed and ready to use it in the app.',
@@ -574,7 +580,7 @@ const MainLayout = () => {
           },
         },
       });
-      void navigate('/tools');
+      await navigate('/tools');
     },
     onError: (error) => {
       toast.error('Failed to install tool', {
@@ -584,8 +590,8 @@ const MainLayout = () => {
   });
 
   const { mutateAsync: importAgentFromUrl } = useImportAgentFromUrl({
-    onSuccess: () => {
-      void navigate('/agents');
+    onSuccess: async () => {
+      await navigate('/agents');
       toast.success('Agent imported successfully', {
         description: 'Your agent is now ready to use in the app.',
       });
@@ -602,14 +608,14 @@ const MainLayout = () => {
       if (!auth) return;
       const payload = event.payload as { tool_type: string; tool_url: string };
       if (payload.tool_type.toLowerCase() === 'tool') {
-        void importTool({
+        await importTool({
           nodeAddress: auth?.node_address ?? '',
           token: auth?.api_v2_key ?? '',
           url: payload.tool_url,
         });
       } else if (payload.tool_type.toLowerCase() === 'agent') {
         try {
-          void importAgentFromUrl({
+          await importAgentFromUrl({
             nodeAddress: auth?.node_address ?? '',
             token: auth?.api_v2_key ?? '',
             url: payload.tool_url,

@@ -62,6 +62,7 @@ import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
 import { McpRegistryPage } from '../pages/mcp';
+import { NetworkAgentPage } from '../pages/network-agents';
 import { PromptLibrary } from '../pages/prompt-library';
 import { PublicKeys } from '../pages/public-keys';
 import QuickConnectionPage from '../pages/quick-connection';
@@ -421,6 +422,7 @@ const AppRoutes = () => {
             <Route element={<EditToolPage />} path={'edit/:toolRouterKey'} />
           </Route>
           <Route element={<McpRegistryPage />} path={'mcp'} />
+          <Route element={<NetworkAgentPage />} path={'network-ai-agents'} />
           <Route
             element={
               <ProtectedRoute>
