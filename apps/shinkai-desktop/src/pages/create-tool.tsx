@@ -451,7 +451,7 @@ function ToolsHome({
   });
 
   return (
-    <div className="container flex max-w-[1100px] flex-col gap-16 py-[56px]">
+    <div className="container flex max-w-[1100px] flex-col gap-16 py-[40px]">
       <div className="flex items-center justify-start">
         <Link
           to="/tools"
