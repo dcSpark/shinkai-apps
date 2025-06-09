@@ -13,6 +13,7 @@ import {
   TabsTrigger,
   SearchInput,
 } from '@shinkai_network/shinkai-ui';
+import PublishAgentDialog from '../components/agent/publish-agent-dialog';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import axios from 'axios';
@@ -116,7 +117,10 @@ export const NetworkAgentPage = () => {
         <TabsContent value="network">
           <DiscoverNetworkAgents />
         </TabsContent>
-        <TabsContent value="published">
+        <TabsContent value="published" className="space-y-4">
+          <div className="flex justify-end">
+            <PublishAgentDialog />
+          </div>
           <PublishedAgents />
         </TabsContent>
       </div>
@@ -131,7 +135,6 @@ export const NetworkAgentPage = () => {
     </Tabs>
   );
 };
-
 
 interface ApiPayment {
   maxAmountRequired?: string;
@@ -333,8 +336,7 @@ const PublishedAgents = () => {
   const publishedAgents = useMemo<Agent[]>(() => {
     if (!data) return [];
     return data.map((item) => {
-      const payment =
-        item.tool_offering.usage_type?.PerUse?.Payment?.[0];
+      const payment = item.tool_offering.usage_type?.PerUse?.Payment?.[0];
       const price = payment
         ? `${payment.maxAmountRequired} ${payment.extra?.name ?? ''}`
         : 'Free';

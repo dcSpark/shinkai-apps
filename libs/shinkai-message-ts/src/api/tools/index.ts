@@ -64,6 +64,8 @@ import {
   type UpdateToolRequest,
   type UpdateToolResponse,
   type GetToolsWithOfferingsResponse,
+  type SetToolOfferingRequest,
+  type SetToolOfferingResponse,
 } from './types';
 
 export const createTool = async (
@@ -151,7 +153,10 @@ export const setCommonToolsetConfig = async (
   bearerToken: string,
   payload: SetCommonToolsetConfigRequest,
 ) => {
-  const response = await httpClient.post(urlJoin(nodeAddress, '/v2/set_common_toolset_config'), payload, {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/set_common_toolset_config'),
+    payload,
+    {
       headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
     },
@@ -834,6 +839,22 @@ export const getToolsWithOfferings = async (
     },
   );
   return response.data as GetToolsWithOfferingsResponse;
+};
+
+export const setToolOffering = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: SetToolOfferingRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/set_tool_offering'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as SetToolOfferingResponse;
 };
 
 export const setToolMcpEnabled = async (
