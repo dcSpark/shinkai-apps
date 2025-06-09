@@ -86,12 +86,52 @@ export const modelsConfig = {
         value: 'gemini-2.0-flash-lite-preview-02-05',
       },
       {
+        name: 'Gemini 2.0 Flash Image Generation',
+        value: 'gemini-2.0-flash-preview-image-generation',
+      },
+      {
+        name: 'Gemini 2.5 Flash Preview',
+        value: 'gemini-2.5-flash-preview-05-20',
+      },
+      {
+        name: 'Gemini 2.5 Flash Native Audio',
+        value: 'gemini-2.5-flash-preview-native-audio',
+      },
+      {
+        name: 'Gemini 2.5 Flash Exp Native Audio',
+        value: 'gemini-2.5-flash-exp-native-audio',
+      },
+      {
+        name: 'Gemini 2.5 Flash TTS',
+        value: 'gemini-2.5-flash-preview-tts',
+      },
+      {
+        name: 'Gemini 2.5 Pro Preview',
+        value: 'gemini-2.5-pro-preview-06-05',
+      },
+      {
+        name: 'Gemini 2.5 Pro TTS',
+        value: 'gemini-2.5-pro-preview-tts',
+      },
+      {
         name: 'Gemini 1.5 Flash',
         value: 'gemini-1.5-flash',
       },
       {
+        name: 'Gemini 1.5 Flash 8B',
+        value: 'gemini-1.5-flash-8b',
+      },
+      {
         name: 'Gemini 1.5 Pro',
         value: 'gemini-1.5-pro',
+      },
+      {
+        name: 'Gemini Ultra',
+        value: 'gemini-ultra',
+      },
+      {
+        name: 'Gemini Pro',
+        value: 'gemini-pro',
       },
     ],
   },
@@ -135,6 +175,50 @@ export const modelsConfig = {
         name: 'Qwen-QWQ-32B',
         value: 'qwen-qwq-32b',
       },
+      {
+        name: 'Gemma2 9B IT',
+        value: 'gemma2-9b-it',
+      },
+      {
+        name: 'Llama Guard 4 12B',
+        value: 'meta-llama/llama-guard-4-12b',
+      },
+      {
+        name: 'Llama3 70B 8192',
+        value: 'llama3-70b-8192',
+      },
+      {
+        name: 'Llama3 8B 8192',
+        value: 'llama3-8b-8192',
+      },
+      {
+        name: 'Allam 2 7B',
+        value: 'allam-2-7b',
+      },
+      {
+        name: 'DeepSeek Distill Llama 70B',
+        value: 'deepseek-r1-distill-llama-70b',
+      },
+      {
+        name: 'Llama 4 Maverick 17B Instruct',
+        value: 'meta-llama/llama-4-maverick-17b-128e-instruct',
+      },
+      {
+        name: 'Llama 4 Scout 17B Instruct',
+        value: 'meta-llama/llama-4-scout-17b-16e-instruct',
+      },
+      {
+        name: 'Llama Prompt Guard 2 22M',
+        value: 'meta-llama/llama-prompt-guard-2-22m',
+      },
+      {
+        name: 'Llama Prompt Guard 2 86M',
+        value: 'meta-llama/llama-prompt-guard-2-86m',
+      },
+      {
+        name: 'Mistral Saba 24B',
+        value: 'mistral-saba-24b',
+      },
     ],
   },
   [Models.OpenRouter]: {
@@ -159,6 +243,26 @@ export const modelsConfig = {
       {
         name: 'Claude 3 Haiku',
         value: 'claude-3-haiku-20240307',
+      },
+      {
+        name: 'Claude 4 Opus',
+        value: 'claude-opus-4-latest',
+      },
+      {
+        name: 'Claude 4 Sonnet',
+        value: 'claude-sonnet-4-latest',
+      },
+      {
+        name: 'Claude 3.7 Sonnet',
+        value: 'claude-3-7-sonnet-latest',
+      },
+      {
+        name: 'Claude 3.5 Sonnet (20241022)',
+        value: 'claude-3-5-sonnet-20241022',
+      },
+      {
+        name: 'Claude 3.5 Haiku',
+        value: 'claude-3-5-haiku-latest',
       },
     ],
   },
