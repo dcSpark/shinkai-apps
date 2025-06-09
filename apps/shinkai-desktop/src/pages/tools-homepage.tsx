@@ -279,14 +279,14 @@ function AIModelSelectorBase({
         name: 'Shinkai Code Generator',
         placeholderId: 'code-generator',
         description:
-          'Builds tools with deep protocol knowledge and ready-to-use documentation.',
+          'Builds tools using our specialized AI code-generation tool.',
       },
       {
         id: freeTrialModel?.id ?? '',
         name: 'Shinkai Free Trial',
         placeholderId: 'free-trial',
         description:
-          'Great for building tools, works with any content you provide.',
+          'Great for building tools, works with any content you provide. Recommendation: manually copy and paste the documentation that the AI requires and place it inside <documentation></documentation>.',
       },
       {
         id: 'custom-model',
