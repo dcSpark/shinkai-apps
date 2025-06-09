@@ -55,10 +55,6 @@ export const modelsConfig = {
         value: '4o-mini',
       },
       {
-        name: 'Dall-E 3',
-        value: 'dall-e-3',
-      },
-      {
         name: 'o1',
         value: 'o1',
       },

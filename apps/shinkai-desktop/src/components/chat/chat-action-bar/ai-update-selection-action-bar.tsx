@@ -76,8 +76,6 @@ const nonOllamaProviderModels = {
     'Preview version of GPT‑4o with multimodal support.',
   'openai:4o-mini':
     'Compact GPT‑4o model balancing speed and quality.',
-  'openai:dall-e-3':
-    'Latest DALL·E model for high fidelity image generation.',
   'openai:o1':
     'OpenAI lightweight reasoning model.',
   'openai:o1-mini':
