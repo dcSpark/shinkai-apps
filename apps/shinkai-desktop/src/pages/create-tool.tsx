@@ -273,7 +273,7 @@ function AIModelSelectorBase({
         name: 'Shinkai Code Generator',
         placeholderId: 'code-generator',
         description:
-          'Builds tools with deep protocol knowledge and ready-to-use documentation.',
+          'Builds tools using our specialized AI code-generation tool.',
       },
       {
         id: freeTrialModel?.id ?? '',
@@ -281,6 +281,8 @@ function AIModelSelectorBase({
         placeholderId: 'free-trial',
         description:
           'Great for building tools, works with any content you provide.',
+        recommendation:
+          'Manually copy and paste the documentation that the AI requires and place it inside <documentation></documentation>.',
       },
       {
         id: 'custom-model',
@@ -363,9 +365,15 @@ function AIModelSelectorBase({
               </div>
             </CardHeader>
             <CardContent className="space-y-4 p-0">
-              <CardDescription className="text-official-gray-400 text-sm">
+              <CardDescription className="text-official-gray-400 flex flex-col gap-2 text-sm">
                 {model.description}
               </CardDescription>
+              {model.recommendation && (
+                <div className="text-official-gray-400 text-sm">
+                  <span className="font-semibold">Recommendation: </span>
+                  {model.recommendation}
+                </div>
+              )}
               {model.placeholderId === 'code-generator' && (
                 <SupportedProtocols />
               )}
