@@ -30,7 +30,7 @@ import { toast } from 'sonner';
 
 import { useAuth } from '../../../store/auth';
 import { SHINKAI_STORE_URL } from '../../../utils/store';
-import { DockerStatus } from '../../tools/tool-collection';
+import { DockerStatus } from '../../tools/components/docker-status';
 import { usePlaygroundStore } from '../context/playground-context';
 import { type CreateToolCodeFormSchema } from '../hooks/use-tool-code';
 import { useToolSave } from '../hooks/use-tool-save';
@@ -319,7 +319,7 @@ function PlaygroundHeaderBase({
           <PopoverContent align="end" className="w-[450px]" sideOffset={10}>
             <div className="space-y-4">
               <div className="space-y-3">
-                <h4 className="flex items-center gap-2 font-medium leading-none">
+                <h4 className="flex items-center gap-2 leading-none font-medium">
                   <StoreIcon className="h-4 w-4" />
                   Publish to the App Store
                 </h4>
@@ -338,7 +338,7 @@ function PlaygroundHeaderBase({
               </div>
               {/* create short preview with the tool name and description */}
               <div className="bg-official-gray-900 flex flex-col gap-2 rounded-lg p-4 text-white">
-                <h5 className="text-sm font-medium leading-none">
+                <h5 className="text-sm leading-none font-medium">
                   {toolMetadata?.name}
                 </h5>
                 <p className="text-xs">{toolMetadata?.description}</p>
