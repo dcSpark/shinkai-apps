@@ -1,10 +1,7 @@
-import {
-  type GetToolsCategory,
-  type ToolMetadata,
-} from '@shinkai_network/shinkai-message-ts/api/tools/types';
+import { type ToolMetadata } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { type PrismEditor } from 'prism-react-editor';
 import { createContext, createRef, useContext, useState } from 'react';
-import { createStore, useStore  } from 'zustand';
+import { createStore, useStore } from 'zustand';
 
 type Status = 'idle' | 'pending' | 'success' | 'error';
 
@@ -77,22 +74,7 @@ type PlaygroundStore = {
   forceGenerateCode: React.RefObject<boolean | null>;
   forceGenerateMetadata: React.RefObject<boolean | null>;
   forceAutoSave: React.RefObject<boolean | null>;
-  toolHomepageScrollPositionRef: React.RefObject<{
-    [key: string]: number;
-  } | null>;
-
-  selectedToolCategory: GetToolsCategory | 'all';
-  setSelectedToolCategory: (
-    selectedToolCategory: GetToolsCategory | 'all',
-  ) => void;
 };
-
-export const toolHomepageScrollPositionRef = createRef<{
-  [key: string]: number;
-}>() as React.RefObject<{
-  [key: string]: number;
-}>;
-toolHomepageScrollPositionRef.current = {};
 
 const createPlaygroundStore = () =>
   createStore<PlaygroundStore>((set) => ({
@@ -151,11 +133,6 @@ const createPlaygroundStore = () =>
     focusedPanel: 'code',
     setFocusedPanel: (focusedPanel) => set({ focusedPanel }),
 
-    toolHomepageScrollPositionRef,
-    selectedToolCategory: 'all',
-    setSelectedToolCategory: (selectedToolCategory) =>
-      set({ selectedToolCategory }),
-
     metadataEditorRef: createRef<PrismEditor>(),
     codeEditorRef: createRef<PrismEditor>(),
     forceGenerateCode: createRef<boolean>(),
@@ -177,7 +154,6 @@ const createPlaygroundStore = () =>
         focusedPanel: 'code',
         xShinkaiAppId: `app-id-${Date.now()}`,
         xShinkaiToolId: `task-id-${Date.now()}`,
-        selectedToolCategory: 'all',
         forceGenerateCode: createRef<boolean>(),
         forceGenerateMetadata: createRef<boolean>(),
         codeEditorRef: createRef<PrismEditor>(),
