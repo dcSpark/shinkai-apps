@@ -286,7 +286,8 @@ function AIModelSelectorBase({
         name: 'Shinkai Free Trial',
         placeholderId: 'free-trial',
         description:
-          'Great for building tools, works with any content you provide. Recommendation: manually copy and paste the documentation that the AI requires and place it inside <documentation></documentation>.',
+          'Great for building tools, works with any content you provide.',
+        recommendation: 'manually copy and paste the documentation that the AI requires and place it inside <documentation></documentation>.',
       },
       {
         id: 'custom-model',
@@ -371,6 +372,14 @@ function AIModelSelectorBase({
             <CardContent className="space-y-4 p-0">
               <CardDescription className="text-official-gray-400 text-sm">
                 {model.description}
+                {model.recommendation && (
+                  <>
+                    <br />
+                    <br />
+                    <span className="font-semibold">Recommendation:</span>{' '}
+                    {model.recommendation}
+                  </>
+                )}
               </CardDescription>
               {model.placeholderId === 'code-generator' && (
                 <SupportedProtocols />
