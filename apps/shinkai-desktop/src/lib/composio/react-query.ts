@@ -60,7 +60,7 @@ export const useInstallApp = (
         nodeAddress: auth.node_address,
         token: auth.api_v2_key,
         name: data.name,
-        type: McpServerType.Sse,
+        type: McpServerType.Http,
         url: data.sseUrl,
         is_enabled: true,
       });
