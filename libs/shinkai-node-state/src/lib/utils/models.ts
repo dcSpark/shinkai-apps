@@ -23,6 +23,38 @@ export const modelsConfig = {
         value: 'gpt-4o',
       },
       {
+        name: 'GPT 4-1106 Preview',
+        value: 'gpt-4-1106-preview',
+      },
+      {
+        name: 'GPT 4 Vision Preview',
+        value: 'gpt-4-vision-preview',
+      },
+      {
+        name: 'GPT 3.5 Turbo 1106',
+        value: 'gpt-3.5-turbo-1106',
+      },
+      {
+        name: 'GPT 4.1',
+        value: 'gpt-4.1',
+      },
+      {
+        name: 'GPT 4.1 Mini',
+        value: 'gpt-4.1-mini',
+      },
+      {
+        name: 'GPT 4.1 Nano',
+        value: 'gpt-4.1-nano',
+      },
+      {
+        name: '4o Preview',
+        value: '4o-preview',
+      },
+      {
+        name: '4o Mini',
+        value: '4o-mini',
+      },
+      {
         name: 'o1',
         value: 'o1',
       },
