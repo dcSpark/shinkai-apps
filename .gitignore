@@ -54,3 +54,4 @@ output.txt
 
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
+.with-cache

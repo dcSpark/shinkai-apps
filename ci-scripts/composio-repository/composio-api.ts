@@ -1,18 +1,16 @@
-import { fetch } from '@tauri-apps/plugin-http';
-import composioRegistry from './composio-registry.json' with { type: 'json' };
-export interface AppCategory {
+interface AppCategory {
   id: string;
   name: string;
 }
 
-export interface AppMeta {
+interface AppMeta {
   description: string;
   categories: AppCategory[];
   logo: string;
   tool_count: number;
 }
 
-export interface App {
+interface App {
   id: string;
   key: string;
   name: string;
@@ -30,7 +28,7 @@ export interface App {
   meta: AppMeta;
 }
 
-export interface AuthField {
+interface AuthField {
   name: string;
   displayName: string;
   type: string;
@@ -39,7 +37,7 @@ export interface AuthField {
   default?: string;
 }
 
-export interface AuthFields {
+interface AuthFields {
   auth_config_creation: {
     required: AuthField[];
     optional: AuthField[];
@@ -50,7 +48,7 @@ export interface AuthFields {
   };
 }
 
-export interface AuthConfigDetail {
+interface AuthConfigDetail {
   name: string;
   mode: string;
   fields: AuthFields;
@@ -59,12 +57,12 @@ export interface AuthConfigDetail {
   };
 }
 
-export interface AppAction {
+interface AppAction {
   name: string;
   description: string;
 }
 
-export interface AppMetadata {
+interface AppMetadata {
   totalDownloads: string;
   activeUsers: string;
   latestVersion: string;
@@ -72,7 +70,7 @@ export interface AppMetadata {
   tempDisabled: boolean;
 }
 
-export interface AppDetailMeta {
+interface AppDetailMeta {
   created_at: string;
   updated_at: string;
   description: string;
@@ -103,44 +101,17 @@ export interface AppDetails {
 }
 
 export class ComposioApi {
-  async getApps(fromCache = true): Promise<App[]> {
-    if (fromCache) {
-      return composioRegistry.apps as App[];
-    }
-    const response = await fetch('https://mcp.composio.dev/api/apps', {});
+  async getApps(): Promise<App[]> {
+    const response = await fetch('https://mcp.composio.dev/api/apps', {
+      headers: {},
+    });
     return response.json();
   }
 
-  async getApp(appId: string, fromCache = true): Promise<AppDetails> {
-    if (fromCache) {
-      return composioRegistry.appDetails[
-        appId as keyof typeof composioRegistry.appDetails
-      ] as AppDetails;
-    }
-    const response = await fetch(
-      `https://mcp.composio.dev/api/apps/${appId}`,
-      {},
-    );
-    return response.json();
-  }
-
-  async generateClientId(appId: string): Promise<string> {
-    console.log('generating client id for app', appId);
-    const response = await fetch(`https://mcp.composio.dev/${appId}`, {});
-    const url = new URL(response.url);
-    const customerId = url.searchParams.get('customerId') || '';
-    return customerId;
-  }
-
-  async getAppForClientId(
-    appId: string,
-    clientId: string,
-  ): Promise<AppDetails> {
-    console.log('getting app for client id', appId, clientId);
-    const response = await fetch(
-      `https://mcp.composio.dev/api/apps/${appId}?uuid=${clientId}`,
-      {},
-    );
+  async getApp(appId: string): Promise<AppDetails> {
+    const response = await fetch(`https://mcp.composio.dev/api/apps/${appId}`, {
+      headers: {},
+    });
     return response.json();
   }
 }
