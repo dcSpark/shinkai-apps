@@ -105,9 +105,14 @@ export const ComposioMcpServers = ({
   const getComposioAppIdFromSseUrl = (url: string) => {
     let composioAppIdFromSseUrlRegexp =
       /https:\/\/mcp\.composio\.dev\/partner\/composio\/([a-z0-9]+)\?customerId/;
+    let composioAppIdFromHttpUrlRegexp =
+      /https:\/\/mcp\.composio\.dev\/partner\/composio\/([a-z0-9]+)\/mcp\?customerId/;
     let composioAppIdFromSseUrl = composioAppIdFromSseUrlRegexp.exec(url);
+    let composioAppIdFromHttpUrl = composioAppIdFromHttpUrlRegexp.exec(url);
     if (composioAppIdFromSseUrl) {
       return composioAppIdFromSseUrl[1];
+    } else if (composioAppIdFromHttpUrl) {
+      return composioAppIdFromHttpUrl[1];
     }
     return null;
   };
@@ -115,8 +120,12 @@ export const ComposioMcpServers = ({
   const installMcpServersIndexedByComposioAppId = useMemo(() => {
     const indexed = new Map<string, McpServer>();
     for (const server of installedMcpServers) {
-      if (server.type === McpServerType.Sse) {
+      if (
+        server.type === McpServerType.Sse ||
+        server.type === McpServerType.Http
+      ) {
         const key = getComposioAppIdFromSseUrl(server.url);
+        console.log('key', server.url, key);
         if (key) {
           indexed.set(key, server);
         }
