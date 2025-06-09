@@ -12,6 +12,13 @@ import {
   TabsList,
   TabsTrigger,
   SearchInput,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+  PrettyJsonPrint,
 } from '@shinkai_network/shinkai-ui';
 import PublishAgentDialog from '../components/agent/publish-agent-dialog';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -579,15 +586,31 @@ const AgentCard = ({ agent, type, isInstalled, onAdd }: AgentCardProps) => {
 
           <div className="flex gap-2">
             {type === 'discover' && (
-              <Button
-                variant={isInstalled ? 'secondary' : 'outline'}
-                className="w-full"
-                onClick={isInstalled ? undefined : handleAction}
-                disabled={isInstalled}
-                size="md"
-              >
-                {labels.buttonText}
-              </Button>
+              <>
+                <Button
+                  variant={isInstalled ? 'secondary' : 'outline'}
+                  className="flex-1"
+                  onClick={isInstalled ? undefined : handleAction}
+                  disabled={isInstalled}
+                  size="md"
+                >
+                  {labels.buttonText}
+                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="md">
+                      Details
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent showCloseButton className="max-w-xl">
+                    <DialogHeader>
+                      <DialogTitle>{agent.name}</DialogTitle>
+                      <DialogDescription>Agent details</DialogDescription>
+                    </DialogHeader>
+                    <PrettyJsonPrint json={agent.apiData ?? {}} />
+                  </DialogContent>
+                </Dialog>
+              </>
             )}
             {type === 'exposed' && (
               <div className="flex w-full flex-col gap-2">
