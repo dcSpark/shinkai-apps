@@ -351,7 +351,7 @@
       "created": "Creado",
       "details": "Detalles",
       "install": "Instalar",
-      "installFailed": "Error al instalar la aplicación desde composio",
+      "installFailed": "Error al instalar la aplicación desde Composio",
       "installSuccess": "{{appName}} se instaló correctamente",
       "installing": "Instalando...",
       "lastUpdated": "Última Actualización",
@@ -362,6 +362,8 @@
       "toolsCount": "Cantidad de Herramientas",
       "totalDownloads": "Descargas Totales",
       "uninstall": "Desinstalar",
+      "uninstallFailed": "Error al desinstalar la aplicación de Composio",
+      "uninstallSuccess": "{{appName}} desinstalado con éxito",
       "uninstalling": "Desinstalando...",
       "updatedAt": "Última Actualización"
     },

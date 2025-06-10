@@ -351,7 +351,7 @@
       "created": "Dibuat",
       "details": "Rincian",
       "install": "Instal",
-      "installFailed": "Kesalahan saat menginstal aplikasi dari composio",
+      "installFailed": "Kesalahan saat menginstal aplikasi dari Composio",
       "installSuccess": "{{appName}} berhasil diinstal",
       "installing": "Menginstal...",
       "lastUpdated": "Terakhir Diperbarui",
@@ -362,6 +362,8 @@
       "toolsCount": "Jumlah Alat",
       "totalDownloads": "Total Unduhan",
       "uninstall": "Copot",
+      "uninstallFailed": "Kesalahan saat menghapus aplikasi dari Composio",
+      "uninstallSuccess": "{{appName}} berhasil dihapus",
       "uninstalling": "Mencopot...",
       "updatedAt": "Terakhir Diperbarui"
     },

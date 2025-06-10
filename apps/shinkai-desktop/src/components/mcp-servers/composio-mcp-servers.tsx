@@ -40,12 +40,23 @@ export const ComposioMcpServers = ({
         }),
       );
     },
-    onError: (error) => {
+    onError: () => {
       toast.error(t('mcpServers.composio.installFailed'));
     },
   });
   const { mutate: deleteMcpServer, isPending: isLoadingDeleteMcpServer } =
-    useDeleteMcpServer();
+    useDeleteMcpServer({
+      onSuccess: (data) => {
+        toast.success(
+          t('mcpServers.composio.uninstallSuccess', {
+            appName: data.name,
+          }),
+        );
+      },
+      onError: () => {
+        toast.error(t('mcpServers.composio.uninstallFailed'));
+      },
+    });
 
   const filteredApps = useMemo(() => {
     if (!search) {

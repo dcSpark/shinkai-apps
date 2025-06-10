@@ -362,6 +362,8 @@
       "toolsCount": "ツール数",
       "totalDownloads": "総ダウンロード数",
       "uninstall": "アンインストール",
+      "uninstallFailed": "Composioからアプリをアンインストール中にエラーが発生しました",
+      "uninstallSuccess": "{{appName}}が正常にアンインストールされました",
       "uninstalling": "アンインストール中...",
       "updatedAt": "最終更新日"
     },
