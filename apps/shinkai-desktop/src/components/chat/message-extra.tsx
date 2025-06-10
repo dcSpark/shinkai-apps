@@ -27,9 +27,13 @@ const truncateAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
-const formatAmount = (amount: string, decimals = 18): string => {
+const formatAmount = (
+  amount: string | number | bigint,
+  decimals: string | number | bigint = 18,
+): string => {
   const value = BigInt(amount);
-  const divisor = BigInt(10 ** decimals);
+  const bigDecimals = BigInt(decimals);
+  const divisor = BigInt(10) ** bigDecimals;
   const integerPart = value / divisor;
   const fractionalPart = value % divisor;
 
@@ -37,7 +41,8 @@ const formatAmount = (amount: string, decimals = 18): string => {
     return integerPart.toString();
   }
 
-  const fractionalStr = fractionalPart.toString().padStart(decimals, '0');
+  const decimalsNumber = Number(bigDecimals);
+  const fractionalStr = fractionalPart.toString().padStart(decimalsNumber, '0');
   const trimmedFractionalStr = fractionalStr.replace(/0+$/, '');
 
   return `${integerPart}.${trimmedFractionalStr}`;
