@@ -5,7 +5,7 @@ import {
 } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
 import { useDeleteMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/deleteMcpServer/useDeleteMcpServer';
 import { Button, SearchInput } from '@shinkai_network/shinkai-ui';
-import { Loader2Icon } from 'lucide-react';
+import { Loader2Icon, PlusIcon, Trash } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { type App } from '../../lib/composio/composio-api';
@@ -209,14 +209,15 @@ export const ComposioMcpServers = ({
                       disabled={installingAppIds.has(app.id)}
                       size="sm"
                       variant="outline"
+                      isLoading={installingAppIds.has(app.id)}
                     >
                       {installingAppIds.has(app.id) ? (
-                        <>
-                          <Loader2Icon className="h-4 w-4 animate-spin" />
-                          {t('mcpServers.composio.installing')}
-                        </>
+                        t('mcpServers.composio.adding')
                       ) : (
-                        t('mcpServers.composio.install')
+                        <>
+                          <PlusIcon className="size-4" />
+                          {t('mcpServers.composio.add')}
+                        </>
                       )}
                     </Button>
                   )}
@@ -230,14 +231,15 @@ export const ComposioMcpServers = ({
                       disabled={isLoadingDeleteMcpServer}
                       size="sm"
                       variant="outline"
+                      isLoading={isLoadingDeleteMcpServer}
                     >
                       {isLoadingDeleteMcpServer ? (
-                        <>
-                          <Loader2Icon className="h-4 w-4 animate-spin" />
-                          {t('mcpServers.composio.uninstalling')}
-                        </>
+                        t('mcpServers.composio.deleting')
                       ) : (
-                        t('mcpServers.composio.uninstall')
+                        <>
+                          <Trash className="h-4 w-4" />
+                          {t('mcpServers.composio.delete')}
+                        </>
                       )}
                     </Button>
                   )}

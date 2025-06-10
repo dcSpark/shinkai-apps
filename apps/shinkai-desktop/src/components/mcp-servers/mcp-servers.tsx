@@ -175,10 +175,7 @@ export const McpServers = () => {
           </div>
         </TabsContent>
         <TabsContent value="explore_composio">
-          <ComposioMcpServers
-            installedMcpServers={mcpServers ?? []}
-            search={searchQuery}
-          />
+          <ComposioMcpServers installedMcpServers={mcpServers ?? []} />
         </TabsContent>
       </Tabs>
 

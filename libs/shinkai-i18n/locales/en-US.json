@@ -647,13 +647,17 @@
       "updatedAt": "Last Updated",
       "installing": "Installing...",
       "uninstalling": "Uninstalling...",
+      "adding": "Adding...",
+      "deleting": "Deleting...",
       "install": "Install",
       "uninstall": "Uninstall",
+      "add": "Add MCP Server",
+      "delete": "Delete",
       "loginRequired": "You must be logged in to install apps",
       "installSuccess": "{{appName}} installed successfully",
-      "installFailed": "Error installing app from Composio",
+      "installFailed": "Error installing app from composio",
       "uninstallSuccess": "{{appName}} uninstalled successfully",
-      "uninstallFailed": "Error uninstalling app from Composio"
+      "uninstallFailed": "Error uninstalling app from composio"
     }
   },
   "tools": {

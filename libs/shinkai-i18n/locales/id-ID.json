@@ -346,9 +346,13 @@
     "addVariable": "Tambah",
     "composio": {
       "activeUsers": "Pengguna Aktif",
+      "add": "Tambahkan Server MCP",
+      "adding": "Menambahkan...",
       "availableActions": "Tindakan Tersedia",
       "categories": "Kategori",
       "created": "Dibuat",
+      "delete": "Hapus",
+      "deleting": "Menghapus...",
       "details": "Rincian",
       "install": "Instal",
       "installFailed": "Kesalahan saat menginstal aplikasi dari Composio",

@@ -346,9 +346,13 @@
     "addVariable": "Agregar",
     "composio": {
       "activeUsers": "Usuarios Activos",
+      "add": "Agregar servidor MCP",
+      "adding": "Añadiendo...",
       "availableActions": "Acciones Disponibles",
       "categories": "Categorías",
       "created": "Creado",
+      "delete": "Eliminar",
+      "deleting": "Eliminando...",
       "details": "Detalles",
       "install": "Instalar",
       "installFailed": "Error al instalar la aplicación desde Composio",
