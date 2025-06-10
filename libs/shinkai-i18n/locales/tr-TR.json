@@ -362,6 +362,8 @@
       "toolsCount": "Araç Sayısı",
       "totalDownloads": "Toplam İndirme",
       "uninstall": "Kaldır",
+      "uninstallFailed": "Composio'dan uygulama kaldırılırken hata oluştu",
+      "uninstallSuccess": "{{appName}} başarıyla kaldırıldı",
       "uninstalling": "Kaldırılıyor...",
       "updatedAt": "Son Güncelleme"
     },

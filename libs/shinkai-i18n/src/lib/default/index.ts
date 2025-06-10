@@ -717,8 +717,10 @@ export default {
       uninstall: 'Uninstall',
       loginRequired: 'You must be logged in to install apps',
       installSuccess: '{{appName}} installed successfully',
-      installFailed: 'Error installing app from composio'
-    }
+      installFailed: 'Error installing app from composio',
+      uninstallSuccess: '{{appName}} uninstalled successfully',
+      uninstallFailed: 'Error uninstalling app from composio',
+    },
   },
   tools: {
     label: 'Shinkai Tools',
