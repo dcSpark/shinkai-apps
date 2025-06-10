@@ -106,7 +106,7 @@ export const McpRegistryPage = () => {
           </div>
           <p className="text-official-gray-400 text-sm whitespace-pre-wrap">
             {selectedTab === 'mcp_servers'
-              ? 'Connect to an MCP server to instantly tap into external data sources and tools—like live weather updates, stock prices, or translation services—without building custom integrations.\nThis expands your system\'s capabilities with real-time information and easy access to new resources as your needs grow.'
+              ? "Connect to an MCP server to instantly tap into external data sources and tools—like live weather updates, stock prices, or translation services—without building custom integrations.\nThis expands your system's capabilities with real-time information and easy access to new resources as your needs grow."
               : 'Expose your AI Tools through MCP to enable seamless integration with other MCP Clients \nand expand their capabilities.'}
           </p>
           {selectedTab === 'mcp_servers' && (
@@ -133,10 +133,10 @@ export const McpRegistryPage = () => {
             </p>
           )}
         </div>
-        <TabsContent value="mcp_servers">
+        <TabsContent value="mcp_servers" className="mt-0">
           <McpServers />
         </TabsContent>
-        <TabsContent value="expose_tools">
+        <TabsContent value="expose_tools" className="mt-0">
           <ExposeToolsAsMcp />
         </TabsContent>
       </div>
