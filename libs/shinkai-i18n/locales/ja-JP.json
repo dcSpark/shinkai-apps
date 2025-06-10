@@ -346,9 +346,13 @@
     "addVariable": "追加",
     "composio": {
       "activeUsers": "アクティブユーザー",
+      "add": "MCPサーバーを追加",
+      "adding": "追加中...",
       "availableActions": "利用可能なアクション",
       "categories": "カテゴリ",
       "created": "作成日",
+      "delete": "MCPサーバーを削除",
+      "deleting": "削除中...",
       "details": "詳細",
       "install": "インストール",
       "installFailed": "Composioからアプリをインストール中にエラーが発生しました",
