@@ -159,6 +159,8 @@ Every command, if it's needed, build projects and it's dependencies according to
 - Update ollama models repository
   - `npx ts-node ./ci-scripts/generate-ollama-models-repository.ts`
 
+- Update composio apps repository
+  - `deno run -A ./ci-scripts/composio-repository/main.ts`
 ## Dev conventions
 
 ### Monorepo
