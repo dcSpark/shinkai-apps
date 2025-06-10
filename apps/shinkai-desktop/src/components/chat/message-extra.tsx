@@ -27,7 +27,8 @@ const truncateAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
-const formatAmount = (amount: string, decimals = 18): string => {
+const formatAmount = (amount: string | undefined, decimals = 18): string => {
+  if (!amount) return '0';
   const value = BigInt(amount);
   const divisor = BigInt(10 ** decimals);
   const integerPart = value / divisor;
@@ -136,7 +137,9 @@ function Payment({
                             ? 'Free'
                             : 'Payment' in data.usage_type.PerUse
                               ? `${formatAmount(
-                                  data.usage_type.PerUse.Payment[0].amount,
+                                  data.usage_type.PerUse.Payment[0].amount ??
+                                    data.usage_type.PerUse.Payment[0].maxAmountRequired ??
+                                    '0',
                                   data.usage_type.PerUse.Payment[0].asset
                                     .decimals,
                                 )} ${
@@ -167,7 +170,10 @@ function Payment({
                             : 'Payment' in data.usage_type.Downloadable
                               ? `${formatAmount(
                                   data.usage_type.Downloadable.Payment[0]
-                                    .amount,
+                                    .amount ??
+                                    data.usage_type.Downloadable.Payment[0]
+                                      .maxAmountRequired ??
+                                    '0',
                                   data.usage_type.Downloadable.Payment[0].asset
                                     .decimals,
                                 )} ${
