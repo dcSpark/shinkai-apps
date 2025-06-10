@@ -248,7 +248,8 @@ export type ToolPrice =
   | { DirectDelegation: string }
   | {
       Payment: Array<{
-        amount: string;
+        amount?: string;
+        maxAmountRequired?: string;
         asset: {
           asset_id: string;
           contract_address: string;

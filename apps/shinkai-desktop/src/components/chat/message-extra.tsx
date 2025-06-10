@@ -27,13 +27,17 @@ const truncateAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
-const formatAmount = (
-  amount: string | number | bigint,
-  decimals: string | number | bigint = 18,
-): string => {
+const formatAmount = (amount: string | undefined, decimals = 18): string => {
+  if (!amount) return '0';
   const value = BigInt(amount);
   const bigDecimals = BigInt(decimals);
-  const divisor = BigInt(10) ** bigDecimals;
+  
+  // Calculate 10^decimals using string multiplication instead of ** operator
+  let divisor = BigInt(1);
+  for (let i = 0; i < decimals; i++) {
+    divisor *= BigInt(10);
+  }
+  
   const integerPart = value / divisor;
   const fractionalPart = value % divisor;
 
@@ -141,7 +145,9 @@ function Payment({
                             ? 'Free'
                             : 'Payment' in data.usage_type.PerUse
                               ? `${formatAmount(
-                                  data.usage_type.PerUse.Payment[0].amount,
+                                  data.usage_type.PerUse.Payment[0].amount ??
+                                    data.usage_type.PerUse.Payment[0].maxAmountRequired ??
+                                    '0',
                                   data.usage_type.PerUse.Payment[0].asset
                                     .decimals,
                                 )} ${
@@ -172,7 +178,10 @@ function Payment({
                             : 'Payment' in data.usage_type.Downloadable
                               ? `${formatAmount(
                                   data.usage_type.Downloadable.Payment[0]
-                                    .amount,
+                                    .amount ??
+                                    data.usage_type.Downloadable.Payment[0]
+                                      .maxAmountRequired ??
+                                    '0',
                                   data.usage_type.Downloadable.Payment[0].asset
                                     .decimals,
                                 )} ${
