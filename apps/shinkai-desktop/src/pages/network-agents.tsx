@@ -1,4 +1,6 @@
+import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils';
 import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
+import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import {
   Card,
   CardContent,
@@ -18,36 +20,52 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
-  PrettyJsonPrint,
+  DialogFooter,
+  Alert,
+  AlertTitle,
+  AlertDescription,
+  buttonVariants,
+  CopyToClipboardIcon,
 } from '@shinkai_network/shinkai-ui';
-import PublishAgentDialog from '../components/agent/publish-agent-dialog';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import axios from 'axios';
 import {
   Star,
   Settings,
-  Trash2,
-  DollarSign,
-  TrendingUp,
   Network,
   Wallet,
+  User,
+  CreditCard,
+  Info,
+  AlertCircle,
+  CheckCircle2,
+  ExternalLink,
 } from 'lucide-react';
 import { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router';
+import PublishAgentDialog from '../components/agent/publish-agent-dialog';
+import { truncateAddress } from '../components/chat/message-extra';
 import { useAuth } from '../store/auth';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
 
-export const tabTriggerClassnames = cn(
-  'relative flex size-full min-w-[120px] rounded-xs p-0 pt-0.5 text-sm',
-  'data-[state=active]:bg-official-gray-950 data-[state=active]:text-white data-[state=active]:shadow-[0_2px_0_0_#1a1a1d]',
-  'before:absolute before:top-0 before:right-0 before:left-0 before:h-0.5',
-);
-
 export const NetworkAgentPage = () => {
   const [selectedTab, setSelectedTab] = useState<'network' | 'published'>(
     'network',
+  );
+
+  const auth = useAuth((state) => state.auth);
+  const { data: walletInfo } = useGetWalletList({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const isWalletConnected =
+    walletInfo?.payment_wallet || walletInfo?.receiving_wallet;
+
+  const isIdentityRegistered = !isShinkaiIdentityLocalhost(
+    auth?.shinkai_identity ?? '',
   );
 
   return (
@@ -94,35 +112,18 @@ export const NetworkAgentPage = () => {
               ? 'Discover and deploy AI agents from the global network. Each agent operates autonomously and can be integrated into your workflows. Pay per use or deploy agents for others to access.'
               : 'Publish your AI agents to the network. Each agent operates autonomously and can be integrated into your workflows. Pay per use or deploy agents for others to access.'}
           </p>
-
-          {selectedTab === 'network' && (
-            <div className="border-official-gray-800 bg-official-gray-950/80 rounded-lg border p-4">
-              <div className="flex items-start gap-4">
-                <div className="bg-official-gray-800 rounded-full p-2">
-                  <Wallet className="text-official-gray-400 h-5 w-5" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-base font-medium text-white">
-                    Connect your wallet to access premium/paid agents
-                  </h3>
-                  <p className="text-official-gray-400 mt-1 text-sm">
-                    {selectedTab === 'network'
-                      ? 'Some agents require payment to use. Connect your wallet to access all features.'
-                      : 'Publishing agents requires a connected wallet to receive payments.'}{' '}
-                    <Link
-                      to="/crypto-wallet"
-                      className="text-official-gray-400 hover:text-official-gray-200 underline"
-                    >
-                      Connect your wallet to publish agents
-                    </Link>
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
+        {(!isWalletConnected || !isIdentityRegistered) && (
+          <SetupGuide
+            isWalletConnected={!!isWalletConnected}
+            isIdentityRegistered={isIdentityRegistered}
+          />
+        )}
         <TabsContent value="network">
-          <DiscoverNetworkAgents />
+          <DiscoverNetworkAgents
+            isIdentityRegistered={isIdentityRegistered}
+            isWalletConnected={!!isWalletConnected}
+          />
         </TabsContent>
         <TabsContent value="published" className="space-y-4">
           <div className="flex justify-end">
@@ -131,21 +132,30 @@ export const NetworkAgentPage = () => {
           <PublishedAgents />
         </TabsContent>
       </div>
-      {/* <ExposeAgentDialog
-        open={isExposeDialogOpen}
-        onOpenChange={setIsExposeDialogOpen}
-      />
-      <AddNetworkAgentDialog
+
+      {/* <AddNetworkAgentDialog
         open={isAddDialogOpen}
         onOpenChange={setIsAddDialogOpen}
-      /> */}
+      />  */}
     </Tabs>
   );
 };
 
 interface ApiPayment {
   maxAmountRequired?: string;
-  extra?: { name?: string };
+  extra?: {
+    name?: string;
+    version?: string;
+  };
+  asset?: string;
+  description?: string;
+  maxTimeoutSeconds?: number;
+  mimeType?: string;
+  network?: string;
+  outputSchema?: Record<string, any>;
+  payTo?: string;
+  resource?: string;
+  scheme?: string;
 }
 
 interface ApiUsageType {
@@ -155,12 +165,21 @@ interface ApiUsageType {
 }
 
 interface ApiNetworkTool {
-  name?: string;
+  activated?: boolean;
+  author: string;
+  config?: Record<string, any>[];
   description?: string;
+  input_args?: Record<string, any>;
+  mcp_enabled?: boolean;
+  name?: string;
+  output_arg: {
+    json: string;
+  };
+  restrictions?: string;
   provider?: string;
-  author?: string;
   tool_router_key?: string;
   usage_type?: ApiUsageType;
+  version?: string;
 }
 
 interface ApiToolOffering {
@@ -173,15 +192,15 @@ interface ApiNetworkAgent {
   tool_offering?: ApiToolOffering;
 }
 
-const DiscoverNetworkAgents = () => {
+const DiscoverNetworkAgents = ({
+  isIdentityRegistered,
+  isWalletConnected,
+}: {
+  isIdentityRegistered: boolean;
+  isWalletConnected: boolean;
+}) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [activeView, setActiveView] = useState('explore');
-  const [isExposeDialogOpen, setIsExposeDialogOpen] = useState(false);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [expandedCategories, setExpandedCategories] = useState<string[]>([
-    'use-cases',
-  ]);
+
   const [networkAgents, setNetworkAgents] = useState<Agent[]>([]);
   const auth = useAuth((state) => state.auth);
   const [installedKeys, setInstalledKeys] = useState<Set<string>>(new Set());
@@ -239,9 +258,8 @@ const DiscoverNetworkAgents = () => {
         return;
       }
       try {
-        const resp = await axios.post(
+        const resp = await axios.get(
           `${auth.node_address}/v2/list_all_network_shinkai_tools`,
-          {},
           {
             headers: { Authorization: `Bearer ${auth.api_v2_key}` },
           },
@@ -260,13 +278,9 @@ const DiscoverNetworkAgents = () => {
   const filteredAgents = networkAgents.filter((agent) => {
     const matchesSearch =
       agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      agent.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      agent.capabilities?.some((cap) =>
-        cap.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
-    const matchesCategory =
-      selectedCategory === 'all' || agent.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+      agent.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesSearch;
   });
 
   const handleAddAgent = async (agent: Agent) => {
@@ -298,14 +312,6 @@ const DiscoverNetworkAgents = () => {
     }
   };
 
-  const toggleCategory = (categoryName: string) => {
-    setExpandedCategories((prev) =>
-      prev.includes(categoryName)
-        ? prev.filter((cat) => cat !== categoryName)
-        : [...prev, categoryName],
-    );
-  };
-
   return (
     <div className="space-y-8">
       <SearchInput
@@ -313,21 +319,20 @@ const DiscoverNetworkAgents = () => {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
-
-      <h3 className="mb-4 text-lg font-semibold">
-        {selectedCategory === 'all' ? 'All network agents' : selectedCategory}
-      </h3>
-
-      <div className="grid grid-cols-1 gap-6 pb-10 md:grid-cols-2 lg:grid-cols-3">
-        {filteredAgents.map((agent) => (
-          <AgentCard
-            key={agent.id}
-            agent={agent}
-            type="discover"
-            isInstalled={installedKeys.has(agent.toolRouterKey ?? '')}
-            onAdd={handleAddAgent}
-          />
-        ))}
+      <div className="grid grid-cols-1 gap-6 pb-10 md:grid-cols-2">
+        {[...filteredAgents, ...filteredAgents, ...filteredAgents].map(
+          (agent) => (
+            <AgentCard
+              key={agent.id}
+              agent={agent}
+              type="discover"
+              isInstalled={installedKeys.has(agent.toolRouterKey ?? '')}
+              onAdd={handleAddAgent}
+              isIdentityRegistered={isIdentityRegistered}
+              isWalletConnected={isWalletConnected}
+            />
+          ),
+        )}
       </div>
     </div>
   );
@@ -359,7 +364,7 @@ const PublishedAgents = () => {
   }, [data]);
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       {publishedAgents.map((agent) => (
         <AgentCard key={agent.id} agent={agent} type="exposed" />
       ))}
@@ -373,18 +378,9 @@ interface Agent {
   description: string;
   price: string;
   category: string;
-  provider?: string;
-  toolRouterKey?: string;
+  provider: string;
+  toolRouterKey: string;
   apiData?: ApiNetworkAgent;
-  rating?: number;
-  reviews?: number;
-  featured?: boolean;
-  status?: string;
-  requests?: number;
-  revenue?: string;
-  dateAdded?: string;
-  capabilities?: string[];
-  connectedApps?: string[];
 }
 
 interface AgentCardProps {
@@ -392,86 +388,21 @@ interface AgentCardProps {
   type: 'discover' | 'exposed' | 'network';
   isInstalled?: boolean;
   onAdd?: (agent: Agent) => void;
+  isIdentityRegistered: boolean;
+  isWalletConnected: boolean;
 }
 
-const AgentCard = ({ agent, type, isInstalled, onAdd }: AgentCardProps) => {
+const AgentCard = ({
+  agent,
+  type,
+  isInstalled,
+  onAdd,
+  isIdentityRegistered,
+  isWalletConnected,
+}: AgentCardProps) => {
   const handleAction = () => {
     onAdd?.(agent);
   };
-
-  const getAppLogo = (app: string) => {
-    const appLogos = {
-      Slack: (
-        <div className="flex h-6 w-6 items-center justify-center rounded bg-purple-600">
-          <span className="text-xs font-bold text-white">#</span>
-        </div>
-      ),
-      'Google Sheets': (
-        <div className="flex h-6 w-6 items-center justify-center rounded bg-green-600">
-          <span className="text-xs font-bold text-white">⚏</span>
-        </div>
-      ),
-      Linear: (
-        <div className="flex h-6 w-6 items-center justify-center rounded bg-blue-600">
-          <span className="text-xs font-bold text-white">⟶</span>
-        </div>
-      ),
-      Notion: (
-        <div className="flex h-6 w-6 items-center justify-center rounded bg-gray-800">
-          <span className="text-xs font-bold text-white">N</span>
-        </div>
-      ),
-      GitHub: (
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-900">
-          <span className="text-xs font-bold text-white">⚬</span>
-        </div>
-      ),
-      Figma: (
-        <div className="flex h-6 w-6 items-center justify-center rounded bg-pink-500">
-          <span className="text-xs font-bold text-white">F</span>
-        </div>
-      ),
-      Trello: (
-        <div className="flex h-6 w-6 items-center justify-center rounded bg-blue-500">
-          <span className="text-xs font-bold text-white">T</span>
-        </div>
-      ),
-      Discord: (
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600">
-          <span className="text-xs font-bold text-white">D</span>
-        </div>
-      ),
-    };
-    return (
-      appLogos[app as keyof typeof appLogos] || (
-        <div className="flex h-6 w-6 items-center justify-center rounded bg-gray-400">
-          <span className="text-xs font-bold text-white">?</span>
-        </div>
-      )
-    );
-  };
-
-  // Mock connected apps for demonstration
-  const defaultConnectedApps = {
-    'Research Paper Analyzer': ['Notion', 'Google Sheets'],
-    'Smart Contract Auditor': ['GitHub', 'Slack'],
-    'Personal Data Guardian': ['Linear', 'Discord'],
-    'Multi-Model Orchestrator': ['Slack', 'Trello'],
-    'Learning Path Designer': ['Notion', 'Google Sheets', 'Linear'],
-    'Workflow Automation Engine': [
-      'Slack',
-      'Google Sheets',
-      'Trello',
-      'Linear',
-    ],
-    'Knowledge Synthesizer': ['Notion', 'Google Sheets', 'Slack'],
-    'Code Review Assistant': ['GitHub', 'Slack', 'Linear'],
-  };
-
-  const connectedApps =
-    agent.connectedApps ||
-    defaultConnectedApps[agent.name as keyof typeof defaultConnectedApps] ||
-    [];
 
   const isFreePricing =
     agent.price.toLowerCase().includes('free') || agent.price === '$0.00';
@@ -488,7 +419,7 @@ const AgentCard = ({ agent, type, isInstalled, onAdd }: AgentCardProps) => {
         return {
           priceLabel: 'Earnings per request',
           buttonText: 'View Analytics',
-          statusText: agent.status,
+          statusText: 'In your network',
         };
       case 'network':
         return {
@@ -508,14 +439,14 @@ const AgentCard = ({ agent, type, isInstalled, onAdd }: AgentCardProps) => {
   const labels = getTypeSpecificLabels();
 
   return (
-    <Card className="bg-official-gray-900 border-official-gray-780 flex h-full flex-col border-0 transition-all duration-300 hover:shadow-xl">
-      <CardHeader className="pb-3">
+    <Card className="border-official-gray-850 bg-official-gray-900 flex flex-col border">
+      <CardHeader className="pb-4">
         <div className="mb-3 flex items-start justify-between">
           <div className="flex items-center gap-2">
             {type === 'network' && (
               <Badge
                 variant="outline"
-                className="flex items-center gap-1 border-blue-200 bg-blue-50 text-xs text-blue-700"
+                className="flex items-center gap-1 border-cyan-200 bg-cyan-50 text-xs text-cyan-700"
               >
                 <Network className="h-3 w-3" />
                 Connected
@@ -524,125 +455,203 @@ const AgentCard = ({ agent, type, isInstalled, onAdd }: AgentCardProps) => {
           </div>
         </div>
 
-        <CardTitle className="mb-2 text-lg leading-tight font-bold text-white">
+        <CardTitle className="mb-1 inline-flex items-center gap-2 text-lg leading-tight font-bold text-white">
           {agent.name}
+          <Badge variant="outline" className="text-xs">
+            v{agent.apiData?.network_tool?.version}
+          </Badge>
         </CardTitle>
+
+        {agent.provider && type === 'discover' && (
+          <div className="text-official-gray-400 mb-3 flex items-center gap-2 text-sm">
+            <User className="h-3 w-3" />
+            <span>{agent.provider}</span>
+          </div>
+        )}
         <CardDescription className="text-official-gray-400 line-clamp-2 text-sm leading-relaxed">
           {agent.description}
         </CardDescription>
-
-        {agent.provider && type === 'discover' && (
-          <p className="text-official-gray-200 mt-2 text-sm font-medium">
-            Published by {agent.provider}
-          </p>
-        )}
       </CardHeader>
 
       <CardContent className="flex flex-1 flex-col space-y-4 pt-0">
-        {type === 'discover' && agent.rating && (
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
-              <span className="text-official-gray-400 text-sm font-semibold">
-                {agent.rating}
-              </span>
-            </div>
-            <span className="bg-official-gray-800 rounded-full px-2 py-1 text-xs">
-              {labels.statusText}
-            </span>
-          </div>
-        )}
-
-        {/* Metrics for exposed type */}
-        {type === 'exposed' && (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 rounded-lg bg-green-900/30 p-3">
-              <DollarSign className="h-4 w-4 text-green-600" />
-              <div>
-                <p className="text-xs font-medium text-green-600">
-                  Earned this month
-                </p>
-                <p className="text-sm font-bold text-green-50">
-                  {agent.revenue}
-                </p>
+        {type === 'discover' && (
+          <div className="mb-4">
+            <div className="mb-2 flex items-center justify-between">
+              <div className="text-official-gray-400 flex items-center gap-1 text-sm">
+                <CreditCard className="h-4 w-4" />
+                <span>Cost per use</span>
+              </div>
+              <div className="text-right">
+                <div className="text-lg font-semibold">{agent.price}</div>
+                <div className="text-official-gray-400 text-xs">
+                  on Base Sepolia
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        <div className="border-official-gray-780 mt-auto space-y-4 border-t pt-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-baseline gap-1">
-              <span className="text-xl font-bold text-white">
-                {isFreePricing ? 'Free' : agent.price}
-              </span>
-              {!isFreePricing && (
-                <span className="text-official-gray-400 text-sm">
-                  {labels.priceLabel}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className="flex gap-2">
-            {type === 'discover' && (
-              <>
-                <Button
-                  variant={isInstalled ? 'secondary' : 'outline'}
-                  className="flex-1"
-                  onClick={isInstalled ? undefined : handleAction}
-                  disabled={isInstalled}
-                  size="md"
+        <div className="flex gap-2">
+          {type === 'discover' && (
+            <>
+              <Button
+                variant={isInstalled ? 'default' : 'outline'}
+                className="flex-1"
+                onClick={isInstalled ? undefined : handleAction}
+                disabled={isInstalled}
+                size="md"
+              >
+                {labels.buttonText}
+              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="md" className="flex-1">
+                    Details
+                  </Button>
+                </DialogTrigger>
+                <DialogContent
+                  showCloseButton
+                  className="max-h-[80vh] max-w-xl overflow-y-auto"
                 >
-                  {labels.buttonText}
-                </Button>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="md">
-                      Details
+                  <DialogHeader>
+                    <DialogTitle className="text-xl">{agent?.name}</DialogTitle>
+                    <DialogDescription className="flex items-center gap-2">
+                      <Badge variant="outline" className="font-normal">
+                        v{agent?.apiData?.network_tool?.version}
+                      </Badge>
+                      <span className="text-sm">
+                        by {agent?.apiData?.network_tool?.author}
+                      </span>
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div className="space-y-6">
+                    <p>{agent?.apiData?.network_tool?.description}</p>
+
+                    {(!isWalletConnected || !isIdentityRegistered) && (
+                      <SetupGuide
+                        isWalletConnected={!!isWalletConnected}
+                        isIdentityRegistered={isIdentityRegistered}
+                      />
+                    )}
+                    <div className="flex justify-between py-2">
+                      <span className="text-official-gray-400 text-sm">
+                        Tool Router Key
+                      </span>
+                      <span className="font-mono text-xs">
+                        {agent?.toolRouterKey}
+                      </span>
+                    </div>
+
+                    <div className="bg-official-gray-850 flex items-center justify-between rounded-md p-3">
+                      <div className="flex items-center gap-3">
+                        <CreditCard className="h-5 w-5" />
+                        <div>
+                          <p className="font-medium">Cost per use</p>
+                          <p className="text-official-gray-400 text-sm">
+                            Pay each time you use this agent
+                          </p>
+                        </div>
+                      </div>
+                      <Badge className="py-1.5 text-lg">
+                        {
+                          agent?.apiData?.tool_offering?.usage_type?.PerUse
+                            ?.Payment?.[0]?.maxAmountRequired
+                        }{' '}
+                        {
+                          agent?.apiData?.tool_offering?.usage_type?.PerUse
+                            ?.Payment?.[0]?.extra?.name
+                        }
+                      </Badge>
+                    </div>
+
+                    <div>
+                      <h3 className="mb-2 font-medium">Payment Details</h3>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between border-b py-2">
+                          <span className="text-official-gray-400">
+                            Network
+                          </span>
+                          <span>
+                            {
+                              agent?.apiData?.tool_offering?.usage_type?.PerUse
+                                ?.Payment?.[0]?.network
+                            }
+                          </span>
+                        </div>
+                        <div className="flex justify-between border-b py-2">
+                          <span className="text-official-gray-400">
+                            Payment recipient
+                          </span>
+                          <span className="inline-flex items-center gap-2 font-mono">
+                            {truncateAddress(
+                              agent?.apiData?.tool_offering?.usage_type?.PerUse
+                                ?.Payment?.[0]?.payTo ?? '',
+                            )}
+                            <CopyToClipboardIcon
+                              className="ml-2 h-4 w-4"
+                              string={
+                                agent?.apiData?.tool_offering?.usage_type
+                                  ?.PerUse?.Payment?.[0]?.payTo ?? ''
+                              }
+                            />
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-md border border-cyan-800 bg-cyan-900/10 p-3">
+                      <div className="flex gap-2">
+                        <Info className="mt-0.5 h-4 w-4 shrink-0 text-cyan-400" />
+                        <div>
+                          <p className="text-sm font-medium text-cyan-400">
+                            How payments work
+                          </p>
+                          <p className="text-official-gray-400 text-sm">
+                            When you use this agent, you'll be prompted to
+                            confirm the payment from your connected wallet.
+                            Payments are processed on the{' '}
+                            {
+                              agent?.apiData?.tool_offering?.usage_type?.PerUse
+                                ?.Payment?.[0]?.network
+                            }{' '}
+                            network.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <DialogFooter className="flex-col gap-3 sm:flex-row">
+                    <Button
+                      variant="outline"
+                      // onClick={onClose}
+                      size="md"
+                      className="w-full sm:w-auto"
+                    >
+                      Cancel
                     </Button>
-                  </DialogTrigger>
-                  <DialogContent showCloseButton className="max-w-xl">
-                    <DialogHeader>
-                      <DialogTitle>{agent.name}</DialogTitle>
-                      <DialogDescription>Agent details</DialogDescription>
-                    </DialogHeader>
-                    <PrettyJsonPrint json={agent.apiData ?? {}} />
-                  </DialogContent>
-                </Dialog>
-              </>
-            )}
-            {type === 'exposed' && (
-              <div className="flex w-full flex-col gap-2">
-                <Button variant="outline" size="md" onClick={handleAction}>
-                  <TrendingUp className="h-4 w-4" />
-                  Analytics
-                </Button>
-                <Button variant="outline" size="md" onClick={handleAction}>
-                  <Settings className="h-4 w-4" />
-                  Settings
-                </Button>
-              </div>
-            )}
-            {type === 'network' && (
-              <>
-                <Button
-                  variant="outline"
-                  className="flex-1 border-gray-200 hover:bg-gray-50"
-                  onClick={handleAction}
-                >
-                  {labels.buttonText}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </>
-            )}
-          </div>
+                    <Button
+                      size="md"
+                      // onClick={onAdd}
+                      // disabled={!canAddAgent}
+                      className="w-full sm:w-auto"
+                    >
+                      Add Agent
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </>
+          )}
+          {type === 'exposed' && (
+            <div className="flex w-full flex-col gap-3">
+              <Button variant="outline" size="md" onClick={handleAction}>
+                <Settings className="h-4 w-4" />
+                Settings
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
@@ -650,3 +659,89 @@ const AgentCard = ({ agent, type, isInstalled, onAdd }: AgentCardProps) => {
 };
 
 export default AgentCard;
+
+interface SetupGuideProps {
+  isWalletConnected: boolean;
+  isIdentityRegistered: boolean;
+}
+function SetupGuide({
+  isWalletConnected,
+  isIdentityRegistered,
+}: SetupGuideProps) {
+  const auth = useAuth((state) => state.auth);
+
+  return (
+    <Alert variant="warning" className="mb-6 border-0 bg-yellow-300/5 p-6">
+      <div className="flex flex-col gap-4">
+        <AlertTitle className="text-base font-semibold text-white">
+          Setup required to use paid agents
+        </AlertTitle>
+        <AlertDescription>
+          <div className="space-y-5">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-start gap-3">
+                {isIdentityRegistered ? (
+                  <CheckCircle2 className="mt-0.5 size-4 text-green-500" />
+                ) : (
+                  <AlertCircle className="mt-0.5 size-4 text-yellow-400" />
+                )}
+                <div>
+                  <p className="text-sm font-medium text-white">
+                    Register Shinkai Identity
+                  </p>
+                  <p className="text-official-gray-200 text-sm">
+                    Create your unique identity on the Shinkai network to use
+                    and publish agents
+                  </p>
+                </div>
+              </div>
+              {!isIdentityRegistered && (
+                <a
+                  href={`https://shinkai-contracts.pages.dev?encryption_pk=${auth?.encryption_pk}&signature_pk=${auth?.identity_pk}&node_address=${auth?.node_address}`}
+                  className={cn(
+                    buttonVariants({ variant: 'outline', size: 'md' }),
+                    'bg-yellow-400 text-black hover:bg-yellow-500 hover:text-black',
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Register Identity
+                </a>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-start gap-3">
+                {isWalletConnected ? (
+                  <CheckCircle2 className="mt-0.5 size-4 text-green-500" />
+                ) : (
+                  <AlertCircle className="mt-0.5 size-4 text-yellow-400" />
+                )}
+                <div>
+                  <p className="text-sm font-medium text-white">
+                    Connect Crypto Wallet
+                  </p>
+                  <p className="text-official-gray-200 text-sm">
+                    Connect your wallet to pay for agent usage and receive
+                    earnings from your published agents
+                  </p>
+                </div>
+              </div>
+              {!isWalletConnected && (
+                <Link
+                  to="/settings/crypto-wallet"
+                  className={cn(
+                    buttonVariants({ variant: 'outline', size: 'md' }),
+                    'bg-yellow-400 text-black hover:bg-yellow-500 hover:text-black',
+                  )}
+                >
+                  Connect Wallet
+                </Link>
+              )}
+            </div>
+          </div>
+        </AlertDescription>
+      </div>
+    </Alert>
+  );
+}

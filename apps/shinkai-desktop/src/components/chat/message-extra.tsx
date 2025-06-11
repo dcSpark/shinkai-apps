@@ -23,7 +23,7 @@ import React from 'react';
 import { useAuth } from '../../store/auth';
 import { useToolsStore } from './context/tools-context';
 
-const truncateAddress = (address: string) => {
+export const truncateAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
 
@@ -31,13 +31,13 @@ const formatAmount = (amount: string | undefined, decimals = 18): string => {
   if (!amount) return '0';
   const value = BigInt(amount);
   const bigDecimals = BigInt(decimals);
-  
+
   // Calculate 10^decimals using string multiplication instead of ** operator
   let divisor = BigInt(1);
   for (let i = 0; i < decimals; i++) {
     divisor *= BigInt(10);
   }
-  
+
   const integerPart = value / divisor;
   const fractionalPart = value % divisor;
 
@@ -146,7 +146,8 @@ function Payment({
                             : 'Payment' in data.usage_type.PerUse
                               ? `${formatAmount(
                                   data.usage_type.PerUse.Payment[0].amount ??
-                                    data.usage_type.PerUse.Payment[0].maxAmountRequired ??
+                                    data.usage_type.PerUse.Payment[0]
+                                      .maxAmountRequired ??
                                     '0',
                                   data.usage_type.PerUse.Payment[0].asset
                                     .decimals,
