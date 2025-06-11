@@ -349,7 +349,7 @@ export default {
       emptyState: {
         title: 'No wallets found',
         description:
-          'Manage your crypto wallets. Create or restore your Coinbase CDP Wallet or your Hot Wallet.',
+          'Manage your crypto wallets. Create or restore your Wallet.',
       },
     },
     shinkaiIdentity: {
@@ -717,8 +717,8 @@ export default {
       uninstall: 'Uninstall',
       loginRequired: 'You must be logged in to install apps',
       installSuccess: '{{appName}} installed successfully',
-      installFailed: 'Error installing app from composio'
-    }
+      installFailed: 'Error installing app from composio',
+    },
   },
   tools: {
     label: 'Shinkai Tools',

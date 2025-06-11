@@ -8,11 +8,17 @@ import {
 import { useCreateLocalWallet } from '@shinkai_network/shinkai-node-state/v2/mutations/createLocalWallet/useCreateLocalWallet';
 import { useRestoreCoinbaseMpcWallet } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreCoinbaseMpcWallet/useRestoreCoinbaseMpcWallet';
 import { useRestoreLocalWallet } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreLocalWallet/useRestoreLocalWallet';
+import { useGetWalletBalance } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletBalance/useGetWalletBalance';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import {
   Badge,
   Button,
   buttonVariants,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CopyToClipboardIcon,
   Dialog,
   DialogContent,
   DialogHeader,
@@ -28,6 +34,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Separator,
   Switch,
   Textarea,
   TextField,
@@ -36,12 +43,26 @@ import {
   AddCryptoWalletIcon,
   CryptoWalletIcon,
 } from '@shinkai_network/shinkai-ui/assets';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useMeasure } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Download, FileText, PlusIcon, XIcon } from 'lucide-react';
-import { useMemo, useRef } from 'react';
+import {
+  ArrowDownLeft,
+  ArrowLeft,
+  Copy,
+  Download,
+  Eye,
+  EyeOff,
+  FileText,
+  PlusIcon,
+  RefreshCw,
+  Wallet,
+  XIcon,
+} from 'lucide-react';
+import { useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Link } from 'react-router';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -51,6 +72,11 @@ import {
 } from '../components/crypto-wallet/context/wallets-context';
 import { useAuth } from '../store/auth';
 import { SimpleLayout } from './layout/simple-layout';
+
+function formatBalance(amount: string, decimals: number): string {
+  const balance = Number.parseFloat(amount) / Math.pow(10, decimals);
+  return balance.toFixed(decimals === 18 ? 6 : 2);
+}
 
 const CryptoWalletPage = () => {
   const { t } = useTranslation();
@@ -65,37 +91,206 @@ const CryptoWalletPage = () => {
   const walletExist =
     walletInfo?.payment_wallet || walletInfo?.receiving_wallet;
 
+  const { data: walletBalance } = useGetWalletBalance(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    },
+    { enabled: !!walletExist },
+  );
+
   return (
     <SimpleLayout
       classname="container"
       headerRightElement={
-        walletExist ? <CreateWalletDialog buttonLabel="Update Wallet" /> : null
+        walletExist ? (
+          <div className="flex items-center gap-3">
+            <Link
+              to="/network-ai-agents"
+              className={cn(
+                buttonVariants({
+                  variant: 'outline',
+                  size: 'sm',
+                }),
+              )}
+            >
+              Explore Network Agents
+            </Link>
+            <CreateWalletDialog buttonLabel="Update Wallet" />
+          </div>
+        ) : null
       }
-      title={t('settings.cryptoWallet.title')}
+      title={walletExist ? 'My Wallet' : t('settings.cryptoWallet.title')}
     >
       {walletExist ? (
-        <div className="mt-6 flex w-full items-center justify-between gap-4 rounded-md border border-gray-200 px-6 py-3">
-          <span className="rounded-md bg-gray-300 p-2">
-            <CryptoWalletIcon className="size-4" />
-          </span>
-          <div className="flex-1 space-y-1">
-            <h2 className="text-sm font-medium">
-              {walletInfo?.payment_wallet.data.network.display_name}
-              {walletInfo?.payment_wallet.data.network.is_testnet && (
-                <Badge className="ml-2" variant="tags">
-                  Testnet
-                </Badge>
-              )}
-            </h2>
-            <p className="text-gray-80 text-sm">
-              {walletInfo?.payment_wallet?.data?.address?.address_id}
-            </p>
+        <>
+          <div className="min-h-screen py-5">
+            <div className="mx-auto space-y-6">
+              <Card>
+                <CardContent className="space-y-4 pt-5">
+                  <div className="space-y-2">
+                    <div className="text-official-gray-400 text-sm font-medium">
+                      Wallet Address
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <code className="font-mono text-base">
+                        {walletInfo?.payment_wallet?.data?.address?.address_id}
+                      </code>
+                      <CopyToClipboardIcon
+                        string={
+                          walletInfo?.payment_wallet?.data?.address?.address_id
+                        }
+                        className="size-4"
+                      />
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="space-y-2">
+                    <div className="text-official-gray-400 text-sm font-medium">
+                      Network
+                    </div>
+                    <p className="text-base text-white">
+                      {formatText(walletInfo?.payment_wallet?.data?.network)}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="space-y-6 pt-5">
+                  <div className="text-base font-medium">Assets</div>
+                  <div className="space-y-4">
+                    {/* ETH */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex size-9 items-center justify-center rounded-full border bg-black">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              fill="#fff"
+                              d="M12 3v6.65l5.625 2.516zm0 0-5.625 9.166L12 9.651zm0 13.477v4.522l5.625-7.784zM12 21v-4.523l-5.625-3.262z"
+                            />
+                            <path
+                              fill="#fff"
+                              d="m12 15.43 5.625-3.263L12 9.65zm-5.625-3.263L12 15.429V9.651z"
+                            />
+                            <path
+                              fill="#fff"
+                              fill-rule="evenodd"
+                              d="m12 15.429-5.625-3.263L12 3l5.625 9.166zM6.749 11.9l5.161-8.41v6.115zm-.077.23 5.238-2.327v5.364zm5.418-2.327v5.364l5.233-3.038zm0-.198 5.16 2.295-5.16-8.41z"
+                              clip-rule="evenodd"
+                            />
+                            <path
+                              fill="#fff"
+                              fill-rule="evenodd"
+                              d="M12 16.406 6.375 13.21 12 21l5.625-7.79zm-4.995-2.633 4.905 2.79v4.005zm5.085 2.79v4.005l4.905-6.795z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="font-medium">Ethereum</div>
+                          <div className="text-muted-foreground text-sm">
+                            ETH
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-medium">
+                          {formatBalance(
+                            walletBalance?.ETH.amount ?? '0',
+                            walletBalance?.ETH.decimals ?? 0,
+                          )}{' '}
+                          ETH
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex size-9 items-center justify-center rounded-full border bg-black">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              fill="#fff"
+                              fill-rule="evenodd"
+                              d="M12 21c4.99 0 9-4.01 9-9s-4.01-9-9-9-9 4.01-9 9 4.01 9 9 9m2.475-7.578c0-1.31-.787-1.76-2.362-1.946-1.125-.152-1.35-.45-1.35-.978 0-.523.377-.86 1.125-.86.675 0 1.052.224 1.237.787.04.112.152.185.265.185h.596a.256.256 0 0 0 .264-.259v-.039c-.152-.827-.827-1.614-1.687-1.687v-.827c0-.152-.113-.265-.298-.298h-.495c-.152 0-.293.112-.332.298v.827c-1.125.151-1.873 1.012-1.873 1.951 0 1.238.748 1.722 2.323 1.913 1.052.185 1.39.41 1.39 1.012 0 .597-.53 1.013-1.238 1.013-.98 0-1.316-.416-1.429-.979-.034-.146-.146-.225-.259-.225h-.641a.256.256 0 0 0-.259.264v.04c.146.934.748 1.575 1.986 1.76v.833c0 .152.112.253.298.293h.54c.146 0 .248-.102.287-.293v-.833c1.125-.185 1.912-.939 1.912-1.952m-6.262 2.803a5.6 5.6 0 0 0 1.875 1.135c.112.079.225.225.225.338v.528c0 .073 0 .113-.04.146-.033.152-.185.225-.337.152a6.751 6.751 0 0 1 0-12.864c.04-.034.112-.034.152-.034.152.034.225.147.225.298v.524c0 .19-.073.303-.225.376a5.55 5.55 0 0 0-3.336 3.336 5.59 5.59 0 0 0 1.46 6.065m5.514-10.413c.034-.152.186-.225.338-.152a6.8 6.8 0 0 1 4.387 4.427c1.125 3.56-.827 7.352-4.387 8.477-.04.033-.113.033-.152.033-.152-.033-.225-.146-.225-.298v-.523c0-.191.073-.303.225-.377a5.55 5.55 0 0 0 3.335-3.335 5.585 5.585 0 0 0-3.335-7.2c-.113-.079-.225-.225-.225-.377v-.523c0-.079 0-.113.04-.152"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="font-medium">USD Coin</div>
+                          <div className="text-muted-foreground text-sm">
+                            USDC
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-medium">
+                          {formatBalance(
+                            walletBalance?.USDC.amount ?? '0',
+                            walletBalance?.USDC.decimals ?? 0,
+                          )}{' '}
+                          USDC
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Recent Activity</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                        <ArrowDownLeft className="h-4 w-4 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium">Received USDC</div>
+                        <div className="text-muted-foreground text-xs">
+                          2 hours ago
+                        </div>
+                      </div>
+                      <div className="text-sm font-medium text-green-600">
+                        +9.98 USDC
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                        <ArrowDownLeft className="h-4 w-4 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium">Received ETH</div>
+                        <div className="text-muted-foreground text-xs">
+                          1 day ago
+                        </div>
+                      </div>
+                      <div className="text-sm font-medium text-green-600">
+                        +0.003 ETH
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card> */}
+            </div>
           </div>
-          <span className="text-gray-80 text-xs">
-            -{' '}
-            {walletInfo?.payment_wallet?.data?.network?.native_asset?.asset_id}
-          </span>
-        </div>
+        </>
       ) : (
         <div className="flex h-full flex-col items-center justify-center">
           <div className="col-span-4 flex flex-col items-center justify-center gap-3 rounded-md p-6">
@@ -104,7 +299,7 @@ const CryptoWalletPage = () => {
               <h2 className="text-lg font-medium">
                 {t('settings.cryptoWallet.emptyState.title')}
               </h2>
-              <p className="text-gray-80 text-sm">
+              <p className="text-official-gray-400 text-sm">
                 {t('settings.cryptoWallet.emptyState.description')}
               </p>
             </div>
@@ -200,7 +395,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                   <div className="text-sm font-semibold">
                     Multi-Party Computation Wallet{' '}
                   </div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-400 text-sm">
                     MPC Wallets provides better recovery and stronger security
                     in crypto wallets.
                   </div>
@@ -216,7 +411,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 <AddCryptoWalletIcon className="size-5" />
                 <div>
                   <div className="text-sm font-semibold">Hot Wallet</div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-400 text-sm">
                     Use a hot wallet to store your cryptocurrency assets.
                   </div>
                 </div>
@@ -246,7 +441,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 <PlusIcon className="size-4 shrink-0" />
                 <div>
                   <div className="text-sm font-semibold">Create New</div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-400 text-sm">
                     Create a new MPC wallet to store your assets.
                   </div>
                 </div>
@@ -264,7 +459,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                     {' '}
                     Import Private Key
                   </div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-400 text-sm">
                     Restore to regain access to your cryptocurrency assets.
                   </div>
                 </div>
@@ -289,7 +484,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 <PlusIcon className="size-4 shrink-0" />
                 <div>
                   <div className="text-sm font-semibold">Create New</div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-400 text-sm">
                     Create a new wallet to store your assets.
                   </div>
                 </div>
@@ -307,7 +502,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                     {' '}
                     Import Secret Recovery Phrase
                   </div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-400 text-sm">
                     Restore to regain access to your cryptocurrency assets.
                   </div>
                 </div>
@@ -327,7 +522,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                     {' '}
                     Import Private Key
                   </div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-400 text-sm">
                     Restore to regain access to your cryptocurrency assets.
                   </div>
                 </div>
@@ -360,9 +555,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
       open={openWalletCreationModal}
     >
       <DialogTrigger asChild>
-        <Button className="min-w-[150px] gap-2 px-3" size="sm">
-          {buttonLabel}
-        </Button>
+        <Button size="sm">{buttonLabel}</Button>
       </DialogTrigger>
       <DialogContent
         onInteractOutside={(e) => {
@@ -394,7 +587,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
               size="icon"
               variant="tertiary"
             >
-              <XIcon className="text-gray-80 h-5 w-5" />
+              <XIcon className="text-official-gray-400 h-5 w-5" />
             </Button>
           </DialogClose>
           <div className="px-2 pt-2.5 antialiased" ref={elementRef}>
@@ -518,7 +711,7 @@ const MpcRestoreWallet = () => {
                 </FormControl>
                 <div
                   className={cn(
-                    'text-gray-80 space-y-1 text-sm leading-none',
+                    'text-official-gray-400 space-y-1 text-sm leading-none',
                     field.value && 'text-white',
                   )}
                 >
@@ -711,7 +904,7 @@ const RegularRestoreWalletPrivateKey = () => {
           {/*  name="role"*/}
           {/*  render={({ field }) => (*/}
           {/*    <div className="space-y-1.5">*/}
-          {/*      <Label className="text-gray-80 pb-2 pl-2 text-xs">*/}
+          {/*      <Label className="text-official-gray-400 pb-2 pl-2 text-xs">*/}
           {/*        Select account type*/}
           {/*      </Label>*/}
           {/*      <FormItem>*/}

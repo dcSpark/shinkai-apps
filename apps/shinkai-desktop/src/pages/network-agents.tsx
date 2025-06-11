@@ -31,16 +31,13 @@ import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import axios from 'axios';
 import {
-  Star,
   Settings,
   Network,
-  Wallet,
   User,
   CreditCard,
   Info,
   AlertCircle,
   CheckCircle2,
-  ExternalLink,
 } from 'lucide-react';
 import { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router';
