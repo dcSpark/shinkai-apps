@@ -3,14 +3,19 @@ import {
   type McpServer,
   McpServerType,
 } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
+import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
+import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
+import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useDeleteMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/deleteMcpServer/useDeleteMcpServer';
 import { Button, SearchInput } from '@shinkai_network/shinkai-ui';
-import { Loader2Icon, PlusIcon, Trash } from 'lucide-react';
+import { PlusIcon, Trash } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { type App } from '../../lib/composio/composio-api';
 import { useApps, useInstallApp } from '../../lib/composio/react-query';
 import { useAuth } from '../../store/auth';
+import { useSettings } from '../../store/settings';
 import { ComposioAppDetailsModal } from './composio-app-details-modal';
 
 export const ComposioMcpServers = ({
@@ -31,7 +36,23 @@ export const ComposioMcpServers = ({
     setSelectedApp(app.id);
   };
 
-  const { mutate: installApp } = useInstallApp({
+  const navigate = useNavigate();
+  const defaultAgentId = useSettings((state) => state.defaultAgentId);
+
+  const { mutateAsync: createJob } = useCreateJob({
+    onError: (error) => {
+      toast.error('Failed to send message', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+    onSuccess: async (data) => {
+      void navigate(
+        `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
+      );
+    },
+  });
+
+  const { mutateAsync: installApp } = useInstallApp({
     onSuccess: (data) => {
       toast.success(
         t('mcpServers.composio.installSuccess', {
@@ -42,8 +63,15 @@ export const ComposioMcpServers = ({
     onError: () => {
       toast.error(t('mcpServers.composio.installFailed'));
     },
+    onSettled: (_, __, variables) => {
+      setInstallingAppIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(variables.appId);
+        return newSet;
+      });
+    },
   });
-  const { mutate: deleteMcpServer, isPending: isLoadingDeleteMcpServer } =
+  const { mutateAsync: deleteMcpServer, isPending: isLoadingDeleteMcpServer } =
     useDeleteMcpServer({
       onSuccess: (data) => {
         toast.success(
@@ -74,38 +102,37 @@ export const ComposioMcpServers = ({
       return;
     }
     setInstallingAppIds((prev) => new Set([...prev, app.id]));
-    installApp(
-      {
-        appId: app.id,
-        auth: {
-          node_address: auth.node_address,
-          api_v2_key: auth.api_v2_key,
-        },
+    await installApp({
+      appId: app.id,
+      auth: {
+        node_address: auth.node_address,
+        api_v2_key: auth.api_v2_key,
       },
-      {
-        onError: (error) => {
-          toast.error(t('mcpServers.composio.installFailed'));
-        },
-        onSettled: () => {
-          setInstallingAppIds((prev) => {
-            const newSet = new Set(prev);
-            newSet.delete(app.id);
-            return newSet;
-          });
-        },
+    });
+    await createJob({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      llmProvider: defaultAgentId,
+      content: `Initiate connection with ${app.id}`,
+      isHidden: false,
+      chatConfig: {
+        stream: DEFAULT_CHAT_CONFIG.stream,
+        custom_prompt: '',
+        temperature: DEFAULT_CHAT_CONFIG.temperature,
+        top_p: DEFAULT_CHAT_CONFIG.top_p,
+        top_k: DEFAULT_CHAT_CONFIG.top_k,
+        use_tools: true,
       },
-    );
+    });
   };
 
   const handleUninstall = async (app: App) => {
-    if (!auth) {
-      return;
-    }
+    if (!auth) return;
     const mcpServerId = installMcpServersIndexedByComposioAppId.get(app.id)?.id;
     if (!mcpServerId) {
       return;
     }
-    deleteMcpServer({
+    await deleteMcpServer({
       id: mcpServerId,
       nodeAddress: auth.node_address,
       token: auth.api_v2_key,
@@ -135,7 +162,7 @@ export const ComposioMcpServers = ({
         server.type === McpServerType.Http
       ) {
         const key = getComposioAppIdFromSseUrl(server.url);
-        console.log('key', server.url, key);
+
         if (key) {
           indexed.set(key, server);
         }
