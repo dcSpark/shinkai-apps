@@ -90,28 +90,26 @@ export const McpServers = () => {
 
   return (
     <>
-      <Tabs defaultValue="my_mcp_servers">
+      <Tabs defaultValue="explore_composio">
         <TabsList className="border-official-gray-780 flex h-auto justify-start gap-4 rounded-full bg-transparent px-0.5 py-1">
-          <TabsTrigger
-            className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-official-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
-            value="my_mcp_servers"
-          >
-            My MCP Servers
-          </TabsTrigger>
           <TabsTrigger
             className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-official-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
             value="explore_composio"
           >
             Explore Composio MCPs
           </TabsTrigger>
+          <TabsTrigger
+            className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-official-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+            value="my_mcp_servers"
+          >
+            My MCP Servers
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="my_mcp_servers">
           <div className="mx-auto flex flex-col">
             <div className="flex items-center justify-between gap-4">
               <SearchInput
-                classNames={{
-                  input: 'bg-transparent',
-                }}
+                classNames={{ input: 'bg-transparent' }}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
                 }}

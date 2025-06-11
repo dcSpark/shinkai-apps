@@ -5,7 +5,7 @@ import {
   type UseMutationOptions,
   useQuery,
 } from '@tanstack/react-query';
-import { toast } from 'sonner';
+
 import { ComposioApi } from './composio-api';
 
 const api = new ComposioApi();
