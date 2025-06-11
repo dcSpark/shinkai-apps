@@ -346,9 +346,13 @@
     "addVariable": "Ekle",
     "composio": {
       "activeUsers": "Aktif Kullanıcılar",
+      "add": "MCP Sunucusu Ekle",
+      "adding": "Ekleniyor...",
       "availableActions": "Mevcut Eylemler",
       "categories": "Kategoriler",
       "created": "Oluşturuldu",
+      "delete": "MCP Sunucusunu Sil",
+      "deleting": "Siliniyor...",
       "details": "Ayrıntılar",
       "install": "Yükle",
       "installFailed": "Composio'dan uygulama yüklenirken hata",
@@ -362,6 +366,8 @@
       "toolsCount": "Araç Sayısı",
       "totalDownloads": "Toplam İndirme",
       "uninstall": "Kaldır",
+      "uninstallFailed": "Composio'dan uygulama kaldırılırken hata oluştu",
+      "uninstallSuccess": "{{appName}} başarıyla kaldırıldı",
       "uninstalling": "Kaldırılıyor...",
       "updatedAt": "Son Güncelleme"
     },

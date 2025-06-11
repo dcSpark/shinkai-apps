@@ -3,25 +3,29 @@ import {
   type McpServer,
   McpServerType,
 } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
+import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
+import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
+import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useDeleteMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/deleteMcpServer/useDeleteMcpServer';
-import { Button } from '@shinkai_network/shinkai-ui';
-import { Loader2Icon } from 'lucide-react';
+import { Button, SearchInput } from '@shinkai_network/shinkai-ui';
+import { PlusIcon, Trash } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { type App } from '../../lib/composio/composio-api';
 import { useApps, useInstallApp } from '../../lib/composio/react-query';
 import { useAuth } from '../../store/auth';
+import { useSettings } from '../../store/settings';
 import { ComposioAppDetailsModal } from './composio-app-details-modal';
 
 export const ComposioMcpServers = ({
   installedMcpServers,
-  search,
 }: {
   installedMcpServers: McpServer[];
-  search?: string;
 }) => {
   const { t } = useTranslation();
   const { data: composioApps, isLoading: isLoadingComposio } = useApps();
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedApp, setSelectedApp] = useState<string | null>(null);
   const [installingAppIds, setInstallingAppIds] = useState<Set<string>>(
     new Set(),
@@ -32,7 +36,23 @@ export const ComposioMcpServers = ({
     setSelectedApp(app.id);
   };
 
-  const { mutate: installApp } = useInstallApp({
+  const navigate = useNavigate();
+  const defaultAgentId = useSettings((state) => state.defaultAgentId);
+
+  const { mutateAsync: createJob } = useCreateJob({
+    onError: (error) => {
+      toast.error('Failed to send message', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+    onSuccess: async (data) => {
+      void navigate(
+        `/inboxes/${encodeURIComponent(buildInboxIdFromJobId(data.jobId))}`,
+      );
+    },
+  });
+
+  const { mutateAsync: installApp } = useInstallApp({
     onSuccess: (data) => {
       toast.success(
         t('mcpServers.composio.installSuccess', {
@@ -40,23 +60,41 @@ export const ComposioMcpServers = ({
         }),
       );
     },
-    onError: (error) => {
+    onError: () => {
       toast.error(t('mcpServers.composio.installFailed'));
     },
+    onSettled: (_, __, variables) => {
+      setInstallingAppIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(variables.appId);
+        return newSet;
+      });
+    },
   });
-  const { mutate: deleteMcpServer, isPending: isLoadingDeleteMcpServer } =
-    useDeleteMcpServer();
+  const { mutateAsync: deleteMcpServer, isPending: isLoadingDeleteMcpServer } =
+    useDeleteMcpServer({
+      onSuccess: (data) => {
+        toast.success(
+          t('mcpServers.composio.uninstallSuccess', {
+            appName: data.name,
+          }),
+        );
+      },
+      onError: () => {
+        toast.error(t('mcpServers.composio.uninstallFailed'));
+      },
+    });
 
   const filteredApps = useMemo(() => {
-    if (!search) {
+    if (!searchQuery) {
       return composioApps;
     }
     return composioApps?.filter(
       (app) =>
-        app.name.toLowerCase().includes(search.toLowerCase()) ||
-        app.description.toLowerCase().includes(search.toLowerCase()),
+        app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        app.description.toLowerCase().includes(searchQuery.toLowerCase()),
     );
-  }, [composioApps, search]);
+  }, [composioApps, searchQuery]);
 
   const handleInstall = async (app: App) => {
     if (!auth) {
@@ -64,38 +102,37 @@ export const ComposioMcpServers = ({
       return;
     }
     setInstallingAppIds((prev) => new Set([...prev, app.id]));
-    installApp(
-      {
-        appId: app.id,
-        auth: {
-          node_address: auth.node_address,
-          api_v2_key: auth.api_v2_key,
-        },
+    await installApp({
+      appId: app.id,
+      auth: {
+        node_address: auth.node_address,
+        api_v2_key: auth.api_v2_key,
       },
-      {
-        onError: (error) => {
-          toast.error(t('mcpServers.composio.installFailed'));
-        },
-        onSettled: () => {
-          setInstallingAppIds((prev) => {
-            const newSet = new Set(prev);
-            newSet.delete(app.id);
-            return newSet;
-          });
-        },
+    });
+    await createJob({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      llmProvider: defaultAgentId,
+      content: `Initiate connection with ${app.id}`,
+      isHidden: false,
+      chatConfig: {
+        stream: DEFAULT_CHAT_CONFIG.stream,
+        custom_prompt: '',
+        temperature: DEFAULT_CHAT_CONFIG.temperature,
+        top_p: DEFAULT_CHAT_CONFIG.top_p,
+        top_k: DEFAULT_CHAT_CONFIG.top_k,
+        use_tools: true,
       },
-    );
+    });
   };
 
   const handleUninstall = async (app: App) => {
-    if (!auth) {
-      return;
-    }
+    if (!auth) return;
     const mcpServerId = installMcpServersIndexedByComposioAppId.get(app.id)?.id;
     if (!mcpServerId) {
       return;
     }
-    deleteMcpServer({
+    await deleteMcpServer({
       id: mcpServerId,
       nodeAddress: auth.node_address,
       token: auth.api_v2_key,
@@ -105,9 +142,14 @@ export const ComposioMcpServers = ({
   const getComposioAppIdFromSseUrl = (url: string) => {
     let composioAppIdFromSseUrlRegexp =
       /https:\/\/mcp\.composio\.dev\/partner\/composio\/([a-z0-9]+)\?customerId/;
+    let composioAppIdFromHttpUrlRegexp =
+      /https:\/\/mcp\.composio\.dev\/partner\/composio\/([a-z0-9]+)\/mcp\?customerId/;
     let composioAppIdFromSseUrl = composioAppIdFromSseUrlRegexp.exec(url);
+    let composioAppIdFromHttpUrl = composioAppIdFromHttpUrlRegexp.exec(url);
     if (composioAppIdFromSseUrl) {
       return composioAppIdFromSseUrl[1];
+    } else if (composioAppIdFromHttpUrl) {
+      return composioAppIdFromHttpUrl[1];
     }
     return null;
   };
@@ -115,8 +157,12 @@ export const ComposioMcpServers = ({
   const installMcpServersIndexedByComposioAppId = useMemo(() => {
     const indexed = new Map<string, McpServer>();
     for (const server of installedMcpServers) {
-      if (server.type === McpServerType.Sse) {
+      if (
+        server.type === McpServerType.Sse ||
+        server.type === McpServerType.Http
+      ) {
         const key = getComposioAppIdFromSseUrl(server.url);
+
         if (key) {
           indexed.set(key, server);
         }
@@ -127,41 +173,51 @@ export const ComposioMcpServers = ({
 
   return (
     <div className="mx-auto flex flex-col">
-      <h2 className="text-2xl font-bold">{t('mcpServers.composio.title')}</h2>
-      <div className="divide-official-gray-780 grid grid-cols-1 gap-2 divide-y overflow-y-auto py-4 pr-2">
+      <SearchInput
+        classNames={{
+          input: 'bg-transparent',
+        }}
+        onChange={(e) => {
+          setSearchQuery(e.target.value);
+        }}
+        placeholder={t('common.searchPlaceholder')}
+        value={searchQuery}
+      />
+      <div className="grid grid-cols-1 gap-2.5 overflow-y-auto py-4 pr-2">
         {isLoadingComposio
           ? [...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="bg-official-gray-800 border-official-gray-700 flex h-24 items-center justify-between rounded-lg border p-4"
+                className="bg-official-gray-900 flex h-24 items-center justify-between rounded-lg border p-4"
               >
                 <div className="flex items-center gap-4">
-                  <div className="bg-official-gray-750 h-12 w-12 shrink-0 animate-pulse rounded-lg" />
+                  <div className="bg-official-gray-850 h-12 w-12 shrink-0 animate-pulse rounded-lg" />
                   <div className="space-y-2">
-                    <div className="bg-official-gray-750 h-5 w-32 animate-pulse rounded" />
-                    <div className="bg-official-gray-750 h-4 w-48 animate-pulse rounded" />
+                    <div className="bg-official-gray-850 h-5 w-32 animate-pulse rounded" />
+                    <div className="bg-official-gray-850 h-4 w-48 animate-pulse rounded" />
                   </div>
                 </div>
-                <div className="bg-official-gray-750 h-9 w-20 animate-pulse rounded-md" />
+                <div className="bg-official-gray-850 h-9 w-20 animate-pulse rounded-md" />
               </div>
             ))
           : filteredApps?.map((app) => (
               <div
                 key={app.id}
-                className="bg-official-gray-800 border-official-gray-700 hover:border-official-gray-600 flex h-20 cursor-pointer items-center justify-between rounded-lg border p-2 transition-colors"
+                className="bg-official-gray-900 border-official-gray-850 group hover:border-official-gray-700 flex h-20 overflow-hidden rounded-2xl border p-3.5 transition-all"
                 onClick={() => handleAppClick(app)}
+                role="button"
               >
                 <div className="flex flex-1 items-center gap-4">
                   <div className="relative shrink-0">
                     <img
                       src={app.icon}
                       alt={app.name}
-                      className="h-12 w-12 rounded-lg object-cover"
+                      className="size-10 rounded-lg object-cover"
                     />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="truncate text-lg font-semibold text-white">
+                      <h3 className="truncate text-base font-semibold text-white">
                         {app.name}
                       </h3>
                     </div>
@@ -173,7 +229,6 @@ export const ComposioMcpServers = ({
                 <div className="ml-4 flex flex-col items-end gap-2">
                   {!installMcpServersIndexedByComposioAppId.has(app.id) && (
                     <Button
-                      className="flex items-center gap-2 rounded-md px-4 py-2 text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                       onClick={(e) => {
                         e.stopPropagation();
                         void handleInstall(app);
@@ -181,21 +236,21 @@ export const ComposioMcpServers = ({
                       disabled={installingAppIds.has(app.id)}
                       size="sm"
                       variant="outline"
+                      isLoading={installingAppIds.has(app.id)}
                     >
                       {installingAppIds.has(app.id) ? (
-                        <>
-                          <Loader2Icon className="h-4 w-4 animate-spin" />
-                          {t('mcpServers.composio.installing')}
-                        </>
+                        t('mcpServers.composio.adding')
                       ) : (
-                        t('mcpServers.composio.install')
+                        <>
+                          <PlusIcon className="size-4" />
+                          {t('mcpServers.composio.add')}
+                        </>
                       )}
                     </Button>
                   )}
 
                   {installMcpServersIndexedByComposioAppId.has(app.id) && (
                     <Button
-                      className="flex items-center gap-2 rounded-md px-4 py-2 text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                       onClick={(e) => {
                         e.stopPropagation();
                         void handleUninstall(app);
@@ -203,14 +258,15 @@ export const ComposioMcpServers = ({
                       disabled={isLoadingDeleteMcpServer}
                       size="sm"
                       variant="outline"
+                      isLoading={isLoadingDeleteMcpServer}
                     >
                       {isLoadingDeleteMcpServer ? (
-                        <>
-                          <Loader2Icon className="h-4 w-4 animate-spin" />
-                          {t('mcpServers.composio.uninstalling')}
-                        </>
+                        t('mcpServers.composio.deleting')
                       ) : (
-                        t('mcpServers.composio.uninstall')
+                        <>
+                          <Trash className="h-4 w-4" />
+                          {t('mcpServers.composio.delete')}
+                        </>
                       )}
                     </Button>
                   )}

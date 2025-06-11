@@ -2,14 +2,12 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { type GetToolsCategory } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useDisableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/disableAllTools/useDisableAllTools';
 import { useEnableAllTools } from '@shinkai_network/shinkai-node-state/v2/mutations/enableAllTools/useEnableAllTools';
-import { useGetDockerStatus } from '@shinkai_network/shinkai-node-state/v2/queries/getDockerStatus/useGetDockerStatus';
+
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetSearchTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsSearch/useGetToolsSearch';
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
   Button,
+  buttonVariants,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -17,20 +15,22 @@ import {
   SearchInput,
   ToggleGroup,
   ToggleGroupItem,
-  Tooltip,
-  TooltipContent,
-  TooltipPortal,
-  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { StoreIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { Eye, EyeOff, MoreVerticalIcon } from 'lucide-react';
+import { Eye, EyeOff, MoreVerticalIcon, Plus } from 'lucide-react';
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { useDebounce } from '../../hooks/use-debounce';
 import { useAuth } from '../../store/auth';
-import { usePlaygroundStore } from '../playground-tool/context/playground-context';
+import { SHINKAI_STORE_URL } from '../../utils/store';
+
+import { DockerStatus } from './components/docker-status';
 import ToolCard from './components/tool-card';
+import { useToolsStore } from './context/tools-context';
+import ImportToolModal from './import-tool';
 
 const toolsGroup: {
   label: string;
@@ -50,7 +50,7 @@ const toolsGroup: {
   },
 ];
 
-const ToolCollectionBase = () => {
+export const ToolCollection = () => {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
 
@@ -58,11 +58,11 @@ const ToolCollectionBase = () => {
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
 
-  const selectedToolCategory = usePlaygroundStore(
+  const selectedToolCategory = useToolsStore(
     (state) => state.selectedToolCategory,
   );
 
-  const setSelectedToolCategory = usePlaygroundStore(
+  const setSelectedToolCategory = useToolsStore(
     (state) => state.setSelectedToolCategory,
   );
 
@@ -102,29 +102,58 @@ const ToolCollectionBase = () => {
     },
   });
 
+  const navigate = useNavigate();
+
   return (
-    <div className="mx-auto flex w-full max-w-[956px] flex-col gap-8">
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h2 className="text-lg font-semibold tracking-tight">
-            Shinkai Tools
-          </h2>
-          <p className="text-muted-foreground text-sm">
-            {t('tools.description')}
-          </p>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1 pt-10 pb-6">
+        <div className="flex justify-between gap-4">
+          <h1 className="font-clash text-3xl font-medium">Tools</h1>
+          <div className="flex gap-2">
+            <ImportToolModal />
+            <Link
+              className={cn(
+                buttonVariants({
+                  size: 'sm',
+                  variant: 'outline',
+                }),
+              )}
+              rel="noreferrer"
+              target="_blank"
+              to={SHINKAI_STORE_URL}
+            >
+              <StoreIcon className="size-4" />
+              {t('tools.store.label')}
+            </Link>
+            <Button
+              className="min-w-[100px]"
+              onClick={() => {
+                void navigate('/tools/create');
+              }}
+              size="sm"
+            >
+              <Plus className="h-4 w-4" />
+              <span>New Tool</span>
+            </Button>
+          </div>
         </div>
-        <SearchInput
-          classNames={{ container: 'max-w-[340px]', input: 'bg-transparent' }}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-          }}
-          value={searchQuery}
-        />
+        <p className="text-official-gray-400 text-sm">
+          {t('tools.description')}
+        </p>
       </div>
+      <SearchInput
+        classNames={{
+          input: 'bg-transparent',
+        }}
+        onChange={(e) => {
+          setSearchQuery(e.target.value);
+        }}
+        value={searchQuery}
+      />
 
       {searchQuery && isSearchQuerySynced && searchToolList?.length === 0 && (
         <div className="flex h-20 items-center justify-center">
-          <p className="text-gray-80 text-sm">
+          <p className="text-official-gray-400 text-sm">
             {t('tools.emptyState.search.text')}
           </p>
         </div>
@@ -141,7 +170,7 @@ const ToolCollectionBase = () => {
         )}
       {!searchQuery && isSearchQuerySynced && (
         <div>
-          <div className="flex w-full items-center justify-between">
+          <div className="flex w-full items-center justify-between gap-3">
             <ToggleGroup
               className="border-official-gray-780 rounded-full border bg-transparent px-0.5 py-1"
               onValueChange={(value) => {
@@ -170,44 +199,47 @@ const ToolCollectionBase = () => {
               ))}
             </ToggleGroup>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  className="text-gray-80"
-                  rounded="lg"
-                  size="icon"
-                  variant="outline"
-                >
-                  <MoreVerticalIcon className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-gray-300 p-2.5">
-                <DropdownMenuItem
-                  className="text-xs"
-                  onClick={async () => {
-                    await enableAllTools({
-                      nodeAddress: auth?.node_address ?? '',
-                      token: auth?.api_v2_key ?? '',
-                    });
-                  }}
-                >
-                  <Eye className="mr-2 h-4 w-4" />
-                  Enable All Tools
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-xs"
-                  onClick={async () => {
-                    await disableAllTools({
-                      nodeAddress: auth?.node_address ?? '',
-                      token: auth?.api_v2_key ?? '',
-                    });
-                  }}
-                >
-                  <EyeOff className="mr-2 h-4 w-4" />
-                  Disable All Tools
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center gap-3">
+              <DockerStatus />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    className="text-official-gray-400"
+                    rounded="lg"
+                    size="icon"
+                    variant="outline"
+                  >
+                    <MoreVerticalIcon className="size-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="p-2.5">
+                  <DropdownMenuItem
+                    className="text-xs"
+                    onClick={async () => {
+                      await enableAllTools({
+                        nodeAddress: auth?.node_address ?? '',
+                        token: auth?.api_v2_key ?? '',
+                      });
+                    }}
+                  >
+                    <Eye className="mr-2 h-4 w-4" />
+                    Enable All Tools
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-xs"
+                    onClick={async () => {
+                      await disableAllTools({
+                        nodeAddress: auth?.node_address ?? '',
+                        token: auth?.api_v2_key ?? '',
+                      });
+                    }}
+                  >
+                    <EyeOff className="mr-2 h-4 w-4" />
+                    Disable All Tools
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
           <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
             {toolsList?.length === 0 ? (
@@ -225,7 +257,6 @@ const ToolCollectionBase = () => {
           </div>
         </div>
       )}
-
       {(isPending || !isSearchQuerySynced || isSearchToolListPending) && (
         <div className="divide-official-gray-780 grid grid-cols-1 divide-y py-4">
           {Array.from({ length: 8 }).map((_, idx) => (
@@ -236,15 +267,15 @@ const ToolCollectionBase = () => {
               key={idx}
             >
               <div className="flex w-full flex-1 flex-col gap-3">
-                <span className="h-4 w-36 rounded-xs bg-gray-300" />
+                <span className="bg-official-gray-800 h-4 w-36 rounded-xs" />
                 <div className="flex flex-col gap-1">
-                  <span className="h-3 w-full rounded-xs bg-gray-300" />
-                  <span className="h-3 w-2/4 rounded-xs bg-gray-300" />
+                  <span className="bg-official-gray-800 h-3 w-full rounded-xs" />
+                  <span className="bg-official-gray-800 h-3 w-2/4 rounded-xs" />
                 </div>
               </div>
-              <span className="h-7 w-full rounded-md bg-gray-300" />
-              <span className="h-7 w-10 rounded-md bg-gray-300" />
-              <span className="h-5 w-[36px] rounded-full bg-gray-300" />
+              <span className="bg-official-gray-800 h-7 w-full rounded-md" />
+              <span className="bg-official-gray-800 h-7 w-10 rounded-md" />
+              <span className="bg-official-gray-800 h-5 w-[36px] rounded-full" />
             </div>
           ))}
         </div>
@@ -252,96 +283,3 @@ const ToolCollectionBase = () => {
     </div>
   );
 };
-export const ToolCollection = () => {
-  return <ToolCollectionBase />;
-};
-
-export function DockerStatus() {
-  const auth = useAuth((state) => state.auth);
-
-  const { data, refetch } = useGetDockerStatus({
-    nodeAddress: auth?.node_address ?? '',
-  });
-
-  const statusConfig = {
-    'not-installed': {
-      title: 'Docker Not Installed',
-      description:
-        'Docker is not installed on your system. Installing it will unlock better performance, faster processing, and an improved AI tool experience.',
-      color: 'bg-yellow-500',
-      bgColor: 'bg-yellow-500/10',
-      borderColor: 'border-yellow-500/20',
-    },
-    'not-running': {
-      title: 'Docker Installed but Not Running',
-      description:
-        'Docker is installed but not running. Start it now to improve tool execution speed, stability, and overall performance.',
-      color: 'bg-orange-500',
-      bgColor: 'bg-orange-500/10',
-      borderColor: 'border-orange-500/20',
-    },
-    running: {
-      title: 'Docker Running & Active',
-      description:
-        'Your tools are now running at full efficiency with Docker. Enjoy a smoother experience!',
-      color: 'bg-green-500',
-      bgColor: 'bg-green-500/10',
-      borderColor: 'border-green-500/20',
-    },
-  };
-
-  const config = statusConfig[data?.docker_status ?? 'not-installed'];
-
-  return (
-    <Tooltip>
-      <TooltipTrigger
-        className="flex items-center gap-2 px-1"
-        onClick={async () => {
-          await refetch();
-        }}
-      >
-        <span
-          className={`h-2 w-2 rounded-full ${config.color} ${config.borderColor}`}
-        />
-        <span className="text-official-gray-400 text-xs">{config.title}</span>
-      </TooltipTrigger>
-      <TooltipPortal>
-        <TooltipContent
-          align="end"
-          alignOffset={-10}
-          className="m-0 max-w-[350px] p-0"
-          side="bottom"
-          sideOffset={10}
-        >
-          <Alert
-            className={cn(
-              'border',
-              config.borderColor,
-              'bg-gray-300',
-              config.bgColor,
-            )}
-          >
-            <svg
-              className="size-5"
-              fill="currentColor"
-              height="1em"
-              role="img"
-              stroke="currentColor"
-              strokeWidth="0"
-              viewBox="0 0 24 24"
-              width="1em"
-            >
-              <path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.185.185.186m-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.185.185.186m-2.964 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.136a.186.186 0 00-.186.185v1.887c0 .102.084.185.186.186m5.893 2.715h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.083.185.185.185m-2.964 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.184-.186h-2.12a.186.186 0 00-.186.186v1.887c0 .102.084.185.186.185m-2.92 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.082.185.185.185M23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338.001-.676.03-1.01.087-.248-1.7-1.653-2.53-1.716-2.566l-.344-.199-.226.327c-.284.438-.49.922-.612 1.43-.23.97-.09 1.882.403 2.661-.595.332-1.55.413-1.744.42H.751a.751.751 0 00-.75.748 11.376 11.376 0 00.692 4.062c.545 1.428 1.355 2.48 2.41 3.124 1.18.723 3.1 1.137 5.275 1.137.983.003 1.963-.086 2.93-.266a12.248 12.248 0 003.823-1.389c.98-.567 1.86-1.288 2.61-2.136 1.252-1.418 1.998-2.997 2.553-4.4h.221c1.372 0 2.215-.549 2.68-1.009.309-.293.55-.65.707-1.046l.098-.288Z" />
-            </svg>
-            <AlertTitle className="flex items-center gap-2 text-sm font-semibold">
-              {config.title}
-            </AlertTitle>
-            <AlertDescription className="mt-1 text-xs">
-              {config.description}
-            </AlertDescription>
-          </Alert>
-        </TooltipContent>
-      </TooltipPortal>
-    </Tooltip>
-  );
-}

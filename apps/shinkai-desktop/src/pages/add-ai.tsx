@@ -325,7 +325,7 @@ const AddAIPage = () => {
                           <SelectValue placeholder={' '} />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="max-h-[800px]">
                         {modelOptions.map((model) => (
                           <SelectItem
                             key={model.value}

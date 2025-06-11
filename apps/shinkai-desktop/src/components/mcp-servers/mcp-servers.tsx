@@ -10,6 +10,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   SearchInput,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '@shinkai_network/shinkai-ui';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
@@ -86,78 +90,92 @@ export const McpServers = () => {
 
   return (
     <>
-      <div className="mx-auto flex flex-col">
-        <div className="flex items-center justify-between gap-4">
-          <SearchInput
-            classNames={{
-              input: 'bg-transparent',
-            }}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-            }}
-            placeholder={t('common.searchPlaceholder')}
-            value={searchQuery}
-          />
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="min-w-[100px]" size="md">
-                <Plus className="h-4 w-4" />
-                <span>Add MCP Server</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="p-1.5 px-2">
-              <DropdownMenuItem
-                onClick={() => setIsAddMcpServerModalOpen(true)}
-              >
-                {t('mcpServers.manualSetup')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setIsAddMcpServerWithGithubModalOpen(true)}
-              >
-                Add from GitHub
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        {isLoading ? (
-          <div className="flex items-center justify-center py-10">
-            <div className="grid w-full animate-pulse grid-cols-[1fr_120px_40px_115px_36px] gap-5">
-              {[...Array(3)].map((_, i) => (
-                <div className="contents" key={i}>
-                  <div className="bg-official-gray-750 h-12 rounded" />
-                  <div className="bg-official-gray-750 h-12 rounded" />
-                  <div className="bg-official-gray-750 h-12 rounded" />
-                  <div className="bg-official-gray-750 h-12 rounded" />
-                  <div className="bg-official-gray-750 h-12 rounded" />
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : filteredServers && filteredServers.length > 0 ? (
-          <div className="divide-official-gray-780 grid max-h-[calc(100vh-300px)] grid-cols-1 divide-y overflow-y-auto py-4">
-            {filteredServers.map((server) => (
-              <McpServerCard
-                key={server.id}
-                onToggleEnabled={handleToggleEnabled}
-                server={server}
+      <Tabs defaultValue="explore_composio">
+        <TabsList className="border-official-gray-780 flex h-auto justify-start gap-4 rounded-full bg-transparent px-0.5 py-1">
+          <TabsTrigger
+            className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-official-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+            value="explore_composio"
+          >
+            Explore Composio MCPs
+          </TabsTrigger>
+          <TabsTrigger
+            className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-official-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
+            value="my_mcp_servers"
+          >
+            My MCP Servers
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="my_mcp_servers">
+          <div className="mx-auto flex flex-col">
+            <div className="flex items-center justify-between gap-4">
+              <SearchInput
+                classNames={{ input: 'bg-transparent' }}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                }}
+                placeholder={t('common.searchPlaceholder')}
+                value={searchQuery}
               />
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center gap-2 py-8">
-            <p className="text-official-gray-400 text-sm">
-              {t('mcpServers.noServersFound')}
-            </p>
-          </div>
-        )}
-      </div>
 
-        <ComposioMcpServers
-          installedMcpServers={mcpServers ?? []}
-          search={searchQuery}
-        />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="min-w-[100px]" size="md">
+                    <Plus className="h-4 w-4" />
+                    <span>Add MCP Server</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="p-1.5 px-2">
+                  <DropdownMenuItem
+                    onClick={() => setIsAddMcpServerModalOpen(true)}
+                  >
+                    {t('mcpServers.manualSetup')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setIsAddMcpServerWithGithubModalOpen(true)}
+                  >
+                    Add from GitHub
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            {isLoading ? (
+              <div className="flex items-center justify-center py-10">
+                <div className="grid w-full animate-pulse grid-cols-[1fr_120px_40px_115px_36px] gap-5">
+                  {[...Array(3)].map((_, i) => (
+                    <div className="contents" key={i}>
+                      <div className="bg-official-gray-750 h-12 rounded" />
+                      <div className="bg-official-gray-750 h-12 rounded" />
+                      <div className="bg-official-gray-750 h-12 rounded" />
+                      <div className="bg-official-gray-750 h-12 rounded" />
+                      <div className="bg-official-gray-750 h-12 rounded" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : filteredServers && filteredServers.length > 0 ? (
+              <div className="divide-official-gray-780 grid max-h-[calc(100vh-300px)] grid-cols-1 divide-y overflow-y-auto py-4">
+                {filteredServers.map((server) => (
+                  <McpServerCard
+                    key={server.id}
+                    onToggleEnabled={handleToggleEnabled}
+                    server={server}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center gap-2 py-8">
+                <p className="text-official-gray-400 text-sm">
+                  {t('mcpServers.noServersFound')}
+                </p>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+        <TabsContent value="explore_composio">
+          <ComposioMcpServers installedMcpServers={mcpServers ?? []} />
+        </TabsContent>
+      </Tabs>
 
       <AddMcpServerModal
         initialData={initialDataForManualModal}

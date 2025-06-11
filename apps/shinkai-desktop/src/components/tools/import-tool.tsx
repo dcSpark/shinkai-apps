@@ -149,7 +149,7 @@ export default function ImportToolModal() {
         return (
           <div>
             <DialogHeader>
-              <DialogTitle className="text-center">Import </DialogTitle>
+              <DialogTitle className="text-center">Import</DialogTitle>
             </DialogHeader>
             <div className="mt-8 space-y-3">
               <Button
@@ -292,8 +292,7 @@ export default function ImportToolModal() {
         className={cn(
           buttonVariants({
             variant: 'outline',
-            size: 'xs',
-            rounded: 'lg',
+            size: 'sm',
           }),
         )}
       >
@@ -317,7 +316,7 @@ export default function ImportToolModal() {
         >
           {importToolView !== ImportToolView.Main && (
             <Button
-              className="absolute left-4 top-6"
+              className="absolute top-6 left-4"
               onClick={() => setImportToolView(ImportToolView.Main)}
               size="icon"
               variant="tertiary"
@@ -326,7 +325,7 @@ export default function ImportToolModal() {
             </Button>
           )}
           <Button
-            className="absolute right-4 top-6"
+            className="absolute top-6 right-4"
             onClick={() => {
               setImportModalOpen(false);
             }}

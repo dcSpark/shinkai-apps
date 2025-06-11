@@ -11,6 +11,7 @@ import {
   TooltipPortal,
   TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
+import { ToolsIcon } from '@shinkai_network/shinkai-ui/assets';
 import {
   formatText,
   getVersionFromTool,
@@ -62,31 +63,39 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
     >
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-white">
+          <Link
+            className="text-sm font-medium text-white hover:underline"
+            to={`/tools/${tool.tool_router_key}`}
+          >
             {formatText(tool.name)}{' '}
-          </span>
-          <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
+          </Link>
+          <Badge className="text-official-gray-400 bg-official-gray-750 text-xs font-normal">
             {getVersionFromTool(tool)}
           </Badge>
           {tool.tool_type === 'MCPServer' && (
-            <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
+            <Badge className="text-official-gray-400 bg-official-gray-750 text-xs font-normal">
               MCP
             </Badge>
           )}
           {tool.tool_type === 'Network' && (
-            <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
+            <Badge className="text-official-gray-400 bg-official-gray-750 text-xs font-normal">
               Network
             </Badge>
           )}
           {tool.author !== '@@official.shinkai' && (
-            <Badge className="text-gray-80 bg-official-gray-750 text-xs font-normal">
+            <Badge className="text-official-gray-400 bg-official-gray-750 text-xs font-normal">
               {tool.author}
             </Badge>
           )}
         </div>
-        <p className="text-gray-80 line-clamp-2 text-xs whitespace-pre-wrap">
+        <p className="text-official-gray-400 line-clamp-2 text-sm whitespace-pre-wrap">
           {tool.description}
         </p>
+        {tool.author !== '@@official.shinkai' && (
+          <p className="text-official-gray-400 text-xs font-normal">
+            {tool.author}
+          </p>
+        )}
       </div>
 
       <Tooltip>

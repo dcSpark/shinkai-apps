@@ -60,6 +60,28 @@ const nonOllamaProviderModels = {
     'Lightweight OpenAI model for concise text and image generation.',
   'openai:gpt-4o-2024-08-06':
     'Latest OpenAI GPT-4 model for diverse and accurate content generation.',
+  'openai:gpt-4-1106-preview':
+    'OpenAI GPT-4 Turbo model optimized for speed and cost.',
+  'openai:gpt-4-vision-preview':
+    'OpenAI GPT-4 model with image understanding capabilities.',
+  'openai:gpt-3.5-turbo-1106':
+    'Cost‑efficient OpenAI model for general text tasks.',
+  'openai:gpt-4.1':
+    'Newest GPT‑4.1 model for high quality responses.',
+  'openai:gpt-4.1-mini':
+    'Smaller GPT‑4.1 model offering lower cost.',
+  'openai:gpt-4.1-nano':
+    'Fastest GPT‑4.1 variant for quick replies.',
+  'openai:4o-preview':
+    'Preview version of GPT‑4o with multimodal support.',
+  'openai:4o-mini':
+    'Compact GPT‑4o model balancing speed and quality.',
+  'openai:o1':
+    'OpenAI lightweight reasoning model.',
+  'openai:o1-mini':
+    'Smaller variant of OpenAI o1 model.',
+  'openai:o3-mini':
+    'Mini version of OpenAI o3 model.',
 } as Record<string, string>;
 
 export function AIModelSelectorBase({
