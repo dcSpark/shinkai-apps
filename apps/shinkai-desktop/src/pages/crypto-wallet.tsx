@@ -70,13 +70,9 @@ import {
   useWalletsStore,
   WalletCreateConnectView,
 } from '../components/crypto-wallet/context/wallets-context';
+import { formatBalance } from '../components/crypto-wallet/utils';
 import { useAuth } from '../store/auth';
 import { SimpleLayout } from './layout/simple-layout';
-
-function formatBalance(amount: string, decimals: number): string {
-  const balance = Number.parseFloat(amount) / Math.pow(10, decimals);
-  return balance.toFixed(decimals === 18 ? 6 : 2);
-}
 
 const CryptoWalletPage = () => {
   const { t } = useTranslation();
@@ -195,7 +191,7 @@ const CryptoWalletPage = () => {
                         </div>
                         <div>
                           <div className="font-medium">Ethereum</div>
-                          <div className="text-muted-foreground text-sm">
+                          <div className="text-official-gray-400 text-sm">
                             ETH
                           </div>
                         </div>
@@ -231,7 +227,7 @@ const CryptoWalletPage = () => {
                         </div>
                         <div>
                           <div className="font-medium">USD Coin</div>
-                          <div className="text-muted-foreground text-sm">
+                          <div className="text-official-gray-400 text-sm">
                             USDC
                           </div>
                         </div>
@@ -262,7 +258,7 @@ const CryptoWalletPage = () => {
                       </div>
                       <div className="flex-1">
                         <div className="text-sm font-medium">Received USDC</div>
-                        <div className="text-muted-foreground text-xs">
+                        <div className="text-official-gray-400 text-xs">
                           2 hours ago
                         </div>
                       </div>
@@ -277,7 +273,7 @@ const CryptoWalletPage = () => {
                       </div>
                       <div className="flex-1">
                         <div className="text-sm font-medium">Received ETH</div>
-                        <div className="text-muted-foreground text-xs">
+                        <div className="text-official-gray-400 text-xs">
                           1 day ago
                         </div>
                       </div>

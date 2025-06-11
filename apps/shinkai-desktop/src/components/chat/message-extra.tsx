@@ -21,11 +21,8 @@ import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import React from 'react';
 
 import { useAuth } from '../../store/auth';
+import { truncateAddress } from '../crypto-wallet/utils';
 import { useToolsStore } from './context/tools-context';
-
-export const truncateAddress = (address: string) => {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
-};
 
 const formatAmount = (amount: string | undefined, decimals = 18): string => {
   if (!amount) return '0';

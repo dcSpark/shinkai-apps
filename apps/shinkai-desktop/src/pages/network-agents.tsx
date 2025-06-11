@@ -1,5 +1,6 @@
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils';
 import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
+import { useGetWalletBalance } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletBalance/useGetWalletBalance';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import {
   Card,
@@ -26,7 +27,15 @@ import {
   AlertDescription,
   buttonVariants,
   CopyToClipboardIcon,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from '@shinkai_network/shinkai-ui';
+import {
+  CryptoWalletIcon,
+  EthereumIcon,
+  USDCIcon,
+} from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { invoke } from '@tauri-apps/api/core';
 import axios from 'axios';
@@ -38,11 +47,16 @@ import {
   Info,
   AlertCircle,
   CheckCircle2,
+  ChevronDownIcon,
+  PlusIcon,
 } from 'lucide-react';
 import { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import PublishAgentDialog from '../components/agent/publish-agent-dialog';
-import { truncateAddress } from '../components/chat/message-extra';
+import {
+  formatBalance,
+  truncateAddress,
+} from '../components/crypto-wallet/utils';
 import { useAuth } from '../store/auth';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
@@ -60,6 +74,14 @@ export const NetworkAgentPage = () => {
 
   const isWalletConnected =
     walletInfo?.payment_wallet || walletInfo?.receiving_wallet;
+
+  const { data: walletBalance } = useGetWalletBalance(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    },
+    { enabled: !!isWalletConnected },
+  );
 
   const isIdentityRegistered = !isShinkaiIdentityLocalhost(
     auth?.shinkai_identity ?? '',
@@ -103,6 +125,81 @@ export const NetworkAgentPage = () => {
                 </TabsTrigger>
               </TabsList>
             </div>
+
+            {!isWalletConnected && (
+              <Link to="/settings/crypto-wallet">
+                <Button variant="outline" size="sm">
+                  <CryptoWalletIcon className="size-4" />
+                  Connect Wallet
+                </Button>
+              </Link>
+            )}
+
+            {isWalletConnected && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <CryptoWalletIcon className="size-4" />
+                    {truncateAddress(
+                      walletInfo?.payment_wallet?.data?.address?.address_id ??
+                        '',
+                    )}
+                    <ChevronDownIcon className="size-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80" align="end">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm font-medium">Wallet Balance</div>
+                      <div className="text-official-gray-400 text-xs">
+                        {walletInfo?.payment_wallet?.data?.network}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="flex size-6 items-center justify-center rounded-full border bg-black">
+                            <EthereumIcon />
+                          </div>
+                          <span className="text-sm">ETH</span>
+                        </div>
+                        <div className="text-sm font-medium">
+                          {formatBalance(
+                            walletBalance?.ETH.amount ?? '0',
+                            walletBalance?.ETH.decimals ?? 0,
+                          )}{' '}
+                          ETH
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="flex size-6 items-center justify-center rounded-full border bg-black">
+                            <USDCIcon />
+                          </div>
+                          <span className="text-sm">USDC</span>
+                        </div>
+                        <div className="text-sm font-medium">
+                          {formatBalance(
+                            walletBalance?.USDC.amount ?? '0',
+                            walletBalance?.USDC.decimals ?? 0,
+                          )}{' '}
+                          USDC
+                        </div>
+                      </div>
+                    </div>
+                    <Link
+                      to="/settings/crypto-wallet"
+                      className={cn(
+                        buttonVariants({ variant: 'outline', size: 'sm' }),
+                        'w-full',
+                      )}
+                    >
+                      Manage Wallet
+                    </Link>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
           </div>
           <p className="text-official-gray-400 text-sm whitespace-pre-wrap">
             {selectedTab === 'network'
@@ -235,8 +332,9 @@ const DiscoverNetworkAgents = ({
             description: item.network_tool?.description ?? '',
             price,
             category: item.tool_offering?.meta_description ?? 'Network Agent',
-            provider: item.network_tool?.provider ?? item.network_tool?.author,
-            toolRouterKey: item.network_tool?.tool_router_key,
+            provider:
+              item.network_tool?.provider ?? item.network_tool?.author ?? '',
+            toolRouterKey: item.network_tool?.tool_router_key ?? '',
             apiData: item,
           };
         });
@@ -313,6 +411,7 @@ const DiscoverNetworkAgents = ({
     <div className="space-y-8">
       <SearchInput
         placeholder="Search for agents"
+        classNames={{ input: 'bg-transparent' }}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
@@ -363,7 +462,13 @@ const PublishedAgents = () => {
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       {publishedAgents.map((agent) => (
-        <AgentCard key={agent.id} agent={agent} type="exposed" />
+        <AgentCard
+          key={agent.id}
+          agent={agent}
+          type="exposed"
+          isIdentityRegistered={true}
+          isWalletConnected={true}
+        />
       ))}
     </div>
   );
@@ -404,59 +509,22 @@ const AgentCard = ({
   const isFreePricing =
     agent.price.toLowerCase().includes('free') || agent.price === '$0.00';
 
-  const getTypeSpecificLabels = () => {
-    switch (type) {
-      case 'discover':
-        return {
-          priceLabel: isFreePricing ? 'Free to deploy' : 'Network access fee',
-          buttonText: isInstalled ? 'Added' : 'Add',
-          statusText: 'Highly rated',
-        };
-      case 'exposed':
-        return {
-          priceLabel: 'Earnings per request',
-          buttonText: 'View Analytics',
-          statusText: 'In your network',
-        };
-      case 'network':
-        return {
-          priceLabel: 'Usage cost',
-          buttonText: 'Configure Access',
-          statusText: 'In your network',
-        };
-      default:
-        return {
-          priceLabel: 'access fee',
-          buttonText: 'Add Agent',
-          statusText: 'Available',
-        };
-    }
-  };
-
-  const labels = getTypeSpecificLabels();
+  console.log(agent);
 
   return (
     <Card className="border-official-gray-850 bg-official-gray-900 flex flex-col border">
       <CardHeader className="pb-4">
-        <div className="mb-3 flex items-start justify-between">
-          <div className="flex items-center gap-2">
-            {type === 'network' && (
-              <Badge
-                variant="outline"
-                className="flex items-center gap-1 border-cyan-200 bg-cyan-50 text-xs text-cyan-700"
-              >
-                <Network className="h-3 w-3" />
-                Connected
-              </Badge>
-            )}
-          </div>
-        </div>
-
-        <CardTitle className="mb-1 inline-flex items-center gap-2 text-lg leading-tight font-bold text-white">
+        <CardTitle className="mb-1 inline-flex items-center justify-between gap-2 text-lg leading-tight font-bold text-white">
           {agent.name}
-          <Badge variant="outline" className="text-xs">
-            v{agent.apiData?.network_tool?.version}
-          </Badge>
+          {isInstalled && (
+            <Badge
+              variant="outline"
+              className="flex items-center gap-1 border-none bg-green-800/10 text-xs text-green-500"
+            >
+              <CheckCircle2 className="h-3 w-3" />
+              Added
+            </Badge>
+          )}
         </CardTitle>
 
         {agent.provider && type === 'discover' && (
@@ -479,30 +547,20 @@ const AgentCard = ({
                 <span>Cost per use</span>
               </div>
               <div className="text-right">
-                <div className="text-lg font-semibold">{agent.price}</div>
-                <div className="text-official-gray-400 text-xs">
-                  on Base Sepolia
+                <div className="text-lg font-semibold">
+                  {isFreePricing ? 'Free' : agent.price}
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        <div className="flex gap-2">
+        <div className="ml-auto flex w-full items-center gap-3">
           {type === 'discover' && (
             <>
-              <Button
-                variant={isInstalled ? 'default' : 'outline'}
-                className="flex-1"
-                onClick={isInstalled ? undefined : handleAction}
-                disabled={isInstalled}
-                size="md"
-              >
-                {labels.buttonText}
-              </Button>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="md" className="flex-1">
+                  <Button variant="outline" size="sm" className="flex-1/3">
                     Details
                   </Button>
                 </DialogTrigger>
@@ -623,13 +681,13 @@ const AgentCard = ({
                     <Button
                       variant="outline"
                       // onClick={onClose}
-                      size="md"
+                      size="sm"
                       className="w-full sm:w-auto"
                     >
                       Cancel
                     </Button>
                     <Button
-                      size="md"
+                      size="sm"
                       // onClick={onAdd}
                       // disabled={!canAddAgent}
                       className="w-full sm:w-auto"
@@ -639,6 +697,17 @@ const AgentCard = ({
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+              {!isInstalled && (
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={handleAction}
+                  size="sm"
+                >
+                  <PlusIcon className="h-4 w-4" />
+                  Add Agent
+                </Button>
+              )}
             </>
           )}
           {type === 'exposed' && (
