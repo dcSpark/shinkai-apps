@@ -77,7 +77,7 @@ jobs:
 
   release-shinkai-desktop:
     permissions:
-      contents: 'read'
+      contents: 'write'
       id-token: 'write'
     needs: prebuild
     name: Release Shinkai Desktop
