@@ -31,6 +31,7 @@ import {
   Switch,
   Textarea,
   TextField,
+  CopyToClipboardIcon,
 } from '@shinkai_network/shinkai-ui';
 import {
   AddCryptoWalletIcon,
@@ -39,7 +40,14 @@ import {
 import { useMeasure } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Download, FileText, PlusIcon, XIcon } from 'lucide-react';
+import {
+  ArrowLeft,
+  Download,
+  FileText,
+  PlusIcon,
+  XIcon,
+  ExternalLinkIcon,
+} from 'lucide-react';
 import { useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -65,6 +73,17 @@ const CryptoWalletPage = () => {
   const walletExist =
     walletInfo?.payment_wallet || walletInfo?.receiving_wallet;
 
+  const walletAddress = walletInfo?.payment_wallet?.data?.address?.address_id;
+  const networkId = walletInfo?.payment_wallet?.data?.network?.id;
+  let etherscanUrl: string | undefined;
+  if (walletAddress && networkId) {
+    if (networkId === 'BaseSepolia') {
+      etherscanUrl = `https://sepolia.basescan.org/address/${walletAddress}`;
+    } else if (networkId === 'BaseMainnet' || networkId === 'Base') {
+      etherscanUrl = `https://basescan.org/address/${walletAddress}`;
+    }
+  }
+
   return (
     <SimpleLayout
       classname="container"
@@ -87,8 +106,17 @@ const CryptoWalletPage = () => {
                 </Badge>
               )}
             </h2>
-            <p className="text-gray-80 text-sm">
+            <p className="text-gray-80 text-sm flex items-center gap-2">
               {walletInfo?.payment_wallet?.data?.address?.address_id}
+              <CopyToClipboardIcon
+                className="h-4 w-4"
+                string={walletInfo?.payment_wallet?.data?.address?.address_id}
+              />
+              {etherscanUrl ? (
+                <a href={etherscanUrl} rel="noreferrer" target="_blank">
+                  <ExternalLinkIcon className="h-4 w-4" />
+                </a>
+              ) : null}
             </p>
           </div>
           <span className="text-gray-80 text-xs">
