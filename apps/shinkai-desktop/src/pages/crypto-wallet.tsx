@@ -38,6 +38,9 @@ import {
   Switch,
   Textarea,
   TextField,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
   AddCryptoWalletIcon,
@@ -107,7 +110,10 @@ const CryptoWalletPage = () => {
         ? 'https://sepolia.basescan.org'
         : 'https://basescan.org';
     return `${baseUrl}/address/${address}`;
-  }, [walletInfo?.payment_wallet?.data?.address?.address_id, walletInfo?.payment_wallet?.data?.network]);
+  }, [
+    walletInfo?.payment_wallet?.data?.address?.address_id,
+    walletInfo?.payment_wallet?.data?.network,
+  ]);
 
   return (
     <SimpleLayout
@@ -153,14 +159,25 @@ const CryptoWalletPage = () => {
                         className="size-4"
                       />
                       {etherscanLink && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="flex h-8 w-8 rounded-lg bg-gray-400 text-xs font-normal text-gray-50 transition-colors hover:bg-gray-400 hover:text-white"
-                          onClick={() => window.open(etherscanLink, '_blank')}
-                        >
-                          <ExternalLinkIcon className="h-3.5 w-3.5" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <a
+                              href={etherscanLink}
+                              target="_blank"
+                              className={cn(
+                                buttonVariants({
+                                  variant: 'tertiary',
+                                  size: 'icon',
+                                }),
+                              )}
+                            >
+                              <ExternalLinkIcon className="h-3.5 w-3.5" />
+                            </a>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>View on Explorer</p>
+                          </TooltipContent>
+                        </Tooltip>
                       )}
                     </div>
                   </div>
@@ -820,13 +837,17 @@ const RegularRestoreWalletMnemonic = () => {
                     <Textarea
                       className="!min-h-[130px] resize-none text-sm"
                       spellCheck={false}
-                      style={{ WebkitTextSecurity: showMnemonic ? 'none' : 'disc' } as React.CSSProperties}
+                      style={
+                        {
+                          WebkitTextSecurity: showMnemonic ? 'none' : 'disc',
+                        } as React.CSSProperties
+                      }
                       {...field}
                     />
                   </FormControl>
                   <Button
                     aria-label={showMnemonic ? 'Hide phrase' : 'Show phrase'}
-                    className="text-gray-80 hover:bg-gray-350 absolute right-2 top-2"
+                    className="text-gray-80 hover:bg-gray-350 absolute top-2 right-2"
                     onClick={() => setShowMnemonic(!showMnemonic)}
                     size="icon"
                     type="button"
