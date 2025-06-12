@@ -658,7 +658,6 @@ const MpcRestoreWallet = () => {
   const { mutateAsync: restoreCoinbaseMPCWallet } = useRestoreCoinbaseMpcWallet(
     {
       onSuccess: () => {
-        toast.success('MPC Wallet restored successfully');
         resetWalletCreation();
       },
       onError: (error) => {
@@ -773,9 +772,8 @@ const RegularRestoreWalletMnemonic = () => {
   });
   const [showMnemonic, setShowMnemonic] = useState(false);
 
-  const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
+  const { mutateAsync: restoreLocalWallet, isPending } = useRestoreLocalWallet({
     onSuccess: () => {
-      toast.success('Wallet restored successfully');
       resetWalletCreation();
     },
     onError: (error) => {
@@ -840,7 +838,13 @@ const RegularRestoreWalletMnemonic = () => {
 
           <div className="flex justify-end pt-6">
             <div className="flex justify-end gap-2">
-              <Button className="min-w-[100px] flex-1" size="sm" type="submit">
+              <Button
+                className="min-w-[100px] flex-1"
+                size="sm"
+                type="submit"
+                isLoading={isPending}
+                disabled={isPending}
+              >
                 {t('common.restore')}
               </Button>
             </div>
@@ -878,7 +882,6 @@ const RegularRestoreWalletPrivateKey = () => {
 
   const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
     onSuccess: () => {
-      toast.success('Wallet restored successfully');
       resetWalletCreation();
     },
     onError: (error) => {

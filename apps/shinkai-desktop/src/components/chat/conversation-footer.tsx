@@ -95,6 +95,12 @@ export type ChatConversationLocationState = {
   selectedVRFiles: string[];
   selectedVRFolders: string[];
   llmProviderId: string;
+  selectedTool: {
+    key: string;
+    name: string;
+    description: string;
+    args: Record<string, any>;
+  };
 };
 
 export const useSelectedFilesChat = ({ inboxId }: { inboxId?: string }) => {
