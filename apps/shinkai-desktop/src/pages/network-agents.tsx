@@ -587,17 +587,8 @@ const AgentCard = ({
                   ) : (
                     <DialogFooter>
                       <RemoveNetworkAgentButton
-                        asChild
                         toolRouterKey={agent.toolRouterKey}
-                      >
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          className="w-full sm:w-auto"
-                        >
-                          Remove Agent
-                        </Button>
-                      </RemoveNetworkAgentButton>
+                      />
                     </DialogFooter>
                   )}
                 </DialogContent>
