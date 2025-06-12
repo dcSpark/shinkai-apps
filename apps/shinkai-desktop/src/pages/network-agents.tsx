@@ -64,6 +64,7 @@ import {
   type FormattedNetworkAgent,
   type ApiNetworkAgent,
 } from '../components/network/types';
+import RemoveNetworkAgentButton from '../components/network/remove-network-agent-button';
 import { useAuth } from '../store/auth';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
@@ -638,29 +639,38 @@ const AgentCard = ({
                     </div>
                   </div>
 
-                  {!isInstalled && (
+                  {!isInstalled ? (
                     <DialogFooter className="flex-col gap-3 sm:flex-row">
                       <Button
                         variant="outline"
-                        // onClick={onClose}
                         size="sm"
                         className="w-full sm:w-auto"
                       >
                         Cancel
                       </Button>
-                      <Button
-                        size="sm"
-                        // onClick={onAdd}
-                        // disabled={!canAddAgent}
-                        className="w-full sm:w-auto"
-                      >
+                      <Button size="sm" className="w-full sm:w-auto">
                         Add Agent
                       </Button>
+                    </DialogFooter>
+                  ) : (
+                    <DialogFooter>
+                      <RemoveNetworkAgentButton
+                        asChild
+                        toolRouterKey={agent.toolRouterKey}
+                      >
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="w-full sm:w-auto"
+                        >
+                          Remove Agent
+                        </Button>
+                      </RemoveNetworkAgentButton>
                     </DialogFooter>
                   )}
                 </DialogContent>
               </Dialog>
-              {!isInstalled && (
+              {!isInstalled ? (
                 <Button
                   variant="outline"
                   className="flex-1"
@@ -670,6 +680,8 @@ const AgentCard = ({
                   <PlusIcon className="h-4 w-4" />
                   Add Agent
                 </Button>
+              ) : (
+                <RemoveNetworkAgentButton toolRouterKey={agent.toolRouterKey} />
               )}
             </>
           )}
