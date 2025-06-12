@@ -572,15 +572,23 @@ const AgentCard = ({
                   </div>
 
                   {!isInstalled ? (
-                    <DialogFooter className="flex-col gap-3 sm:flex-row">
+                    <DialogFooter className="ml-auto w-full max-w-[300px] flex-row gap-1">
                       <Button
                         variant="outline"
-                        size="sm"
-                        className="w-full px-4 sm:w-auto"
+                        size="md"
+                        className="flex-1 px-4"
+                        onClick={() => setShowDetailsModal(false)}
                       >
                         Cancel
                       </Button>
-                      <Button size="sm" className="w-full sm:w-auto">
+                      <Button
+                        size="md"
+                        className="flex-1"
+                        onClick={() => {
+                          setShowInstallModal(true);
+                          setShowDetailsModal(false);
+                        }}
+                      >
                         Add Agent
                       </Button>
                     </DialogFooter>
@@ -741,7 +749,7 @@ export const InstallAgentModal = ({
               </div>
             </div>
 
-            <div className="flex space-x-3">
+            <div className="ml-auto flex max-w-[300px] items-center gap-2">
               <Button
                 variant="outline"
                 onClick={handleClose}
@@ -772,7 +780,7 @@ export const InstallAgentModal = ({
             <p className="text-official-gray-400 mb-6 text-sm">
               {agent.name} is now in your collection. Start a chat to use it!
             </p>
-            <div className="flex space-x-3">
+            <div className="mx-auto flex w-full max-w-sm gap-3">
               <Button
                 variant="outline"
                 onClick={handleClose}
@@ -798,7 +806,7 @@ export const InstallAgentModal = ({
                 size="md"
                 className="flex-1"
               >
-                Start Chatting
+                Start Chat
               </Button>
             </div>
           </div>
