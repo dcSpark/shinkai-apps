@@ -4,6 +4,8 @@ import { invoke } from '@tauri-apps/api/core';
 export const storeKeys = {
   all: ['store'] as const,
   agents: () => [...storeKeys.all, 'agents'] as const,
+  downloadUrl: (routerKey: string) =>
+    [...storeKeys.agents(), 'downloadUrl', routerKey] as const,
 };
 
 export interface StoreProduct {
@@ -14,6 +16,12 @@ export interface StoreProduct {
   routerKey: string;
   downloads: number;
   icon_url: string;
+  category: {
+    id: string;
+    name: string;
+    description: string;
+    examples: string;
+  };
 }
 
 export type FormattedStoreAgent = {
@@ -24,6 +32,12 @@ export type FormattedStoreAgent = {
   downloads: number;
   iconUrl: string;
   routerKey: string;
+  category: {
+    id: string;
+    name: string;
+    description: string;
+    examples: string;
+  };
 };
 
 export type UseGetStoreAgents = ReturnType<typeof storeKeys.agents>;
@@ -61,6 +75,7 @@ const getStoreAgents = async (): Promise<FormattedStoreAgent[]> => {
     downloads: item.downloads,
     iconUrl: item.icon_url,
     routerKey: item.routerKey,
+    category: item.category,
   }));
 };
 
