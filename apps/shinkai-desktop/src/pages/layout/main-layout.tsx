@@ -255,7 +255,7 @@ export function MainNav() {
     },
 
     {
-      title: 'Network for AI Agents',
+      title: 'Decentralized AI Agents',
       href: '/network-ai-agents',
       icon: <NetworkAgentIcon className="size-[18px]" />,
     },

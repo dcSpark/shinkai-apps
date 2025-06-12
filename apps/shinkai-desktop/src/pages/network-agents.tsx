@@ -65,6 +65,7 @@ import {
   type ApiNetworkAgent,
 } from '../components/network/types';
 import { useAuth } from '../store/auth';
+import { useSettings } from '../store/settings';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
 
@@ -74,6 +75,7 @@ export const NetworkAgentPage = () => {
   );
 
   const auth = useAuth((state) => state.auth);
+  const optInExperimental = useSettings((state) => state.optInExperimental);
   const { data: walletInfo } = useGetWalletList({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
@@ -119,17 +121,19 @@ export const NetworkAgentPage = () => {
                 >
                   Agents
                 </TabsTrigger>
-                <TabsTrigger
-                  className={cn(
-                    'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
-                    'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
-                    'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
-                    'focus-visible:outline-hidden',
-                  )}
-                  value="published"
-                >
-                  Published Agents
-                </TabsTrigger>
+                {optInExperimental && (
+                  <TabsTrigger
+                    className={cn(
+                      'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
+                      'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
+                      'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
+                      'focus-visible:outline-hidden',
+                    )}
+                    value="published"
+                  >
+                    Published Agents
+                  </TabsTrigger>
+                )}
               </TabsList>
             </div>
 
@@ -226,12 +230,14 @@ export const NetworkAgentPage = () => {
             isWalletConnected={!!isWalletConnected}
           />
         </TabsContent>
-        <TabsContent value="published" className="space-y-4">
-          <div className="flex justify-end">
-            <PublishAgentDialog />
-          </div>
-          <PublishedAgents />
-        </TabsContent>
+        {optInExperimental && (
+          <TabsContent value="published" className="space-y-4">
+            <div className="flex justify-end">
+              <PublishAgentDialog />
+            </div>
+            <PublishedAgents />
+          </TabsContent>
+        )}
       </div>
 
       {/* <AddNetworkAgentDialog
