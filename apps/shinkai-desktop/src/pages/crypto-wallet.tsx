@@ -39,7 +39,14 @@ import {
 import { useMeasure } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Download, FileText, PlusIcon, XIcon } from 'lucide-react';
+import {
+  ArrowLeft,
+  Download,
+  FileText,
+  PlusIcon,
+  RefreshCw,
+  XIcon,
+} from 'lucide-react';
 import { useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -57,7 +64,11 @@ const CryptoWalletPage = () => {
 
   const auth = useAuth((state) => state.auth);
 
-  const { data: walletInfo } = useGetWalletList({
+  const {
+    data: walletInfo,
+    refetch: refetchWallets,
+    isFetching: isWalletFetching,
+  } = useGetWalletList({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
@@ -69,7 +80,21 @@ const CryptoWalletPage = () => {
     <SimpleLayout
       classname="container"
       headerRightElement={
-        walletExist ? <CreateWalletDialog buttonLabel="Update Wallet" /> : null
+        walletExist ? (
+          <div className="flex items-center gap-2">
+            <Button
+              isLoading={isWalletFetching}
+              onClick={() => {
+                void refetchWallets();
+              }}
+              size="xs"
+            >
+              {isWalletFetching ? null : <RefreshCw className="h-4 w-4" />}
+              Refresh
+            </Button>
+            <CreateWalletDialog buttonLabel="Update Wallet" />
+          </div>
+        ) : null
       }
       title={t('settings.cryptoWallet.title')}
     >
@@ -380,7 +405,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
         >
           {walletCreationView !== WalletCreateConnectView.Main && (
             <Button
-              className="absolute left-4 top-6"
+              className="absolute top-6 left-4"
               onClick={handleBack}
               size="icon"
               variant="tertiary"
@@ -390,7 +415,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
           )}
           <DialogClose asChild>
             <Button
-              className="absolute right-4 top-6"
+              className="absolute top-6 right-4"
               size="icon"
               variant="tertiary"
             >
