@@ -218,14 +218,16 @@ export const MessageBase = ({
 
   const { message: currentMessage } = editMessageForm.watch();
 
+  const parentMessageId = message.metadata.parentMessageId;
+
   const { data: tracingData, isLoading: isTracingLoading } =
     useGetMessageTraces(
       {
         nodeAddress: auth?.node_address ?? '',
         token: auth?.api_v2_key ?? '',
-        messageId,
+        messageId: parentMessageId,
       },
-      { enabled: tracingOpen && !!messageId },
+      { enabled: tracingOpen && !!parentMessageId },
     );
 
   const onSubmit = async (data: z.infer<typeof editMessageFormSchema>) => {
