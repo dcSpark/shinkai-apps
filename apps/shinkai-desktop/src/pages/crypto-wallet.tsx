@@ -53,7 +53,9 @@ import {
   Copy,
   Download,
   Eye,
+  EyeIcon,
   EyeOff,
+  EyeOffIcon,
   FileText,
   PlusIcon,
   RefreshCw,
@@ -87,7 +89,11 @@ const CryptoWalletPage = () => {
   const walletExist =
     walletInfo?.payment_wallet || walletInfo?.receiving_wallet;
 
-  const { data: walletBalance } = useGetWalletBalance(
+  const {
+    data: walletBalance,
+    refetch,
+    isRefetching,
+  } = useGetWalletBalance(
     {
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
@@ -154,7 +160,20 @@ const CryptoWalletPage = () => {
 
               <Card>
                 <CardContent className="space-y-6 pt-5">
-                  <div className="text-base font-medium">Assets</div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-base font-medium">Assets</div>
+                    <Button
+                      className="h-8 w-auto"
+                      disabled={isRefetching}
+                      isLoading={isRefetching}
+                      onClick={() => refetch()}
+                      rounded="lg"
+                      size="xs"
+                      variant="outline"
+                    >
+                      {!isRefetching && <RefreshCw className="h-4 w-4" />}
+                    </Button>
+                  </div>
                   <div className="space-y-4">
                     {/* ETH */}
                     <div className="flex items-center justify-between">
@@ -751,6 +770,7 @@ const RegularRestoreWalletMnemonic = () => {
       role: WalletRole.Both,
     },
   });
+  const [showMnemonic, setShowMnemonic] = useState(false);
 
   const { mutateAsync: restoreLocalWallet, isPending } = useRestoreLocalWallet({
     onSuccess: () => {
@@ -788,13 +808,30 @@ const RegularRestoreWalletMnemonic = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Secret Recovery Phrase</FormLabel>
-                <FormControl>
-                  <Textarea
-                    className="!min-h-[130px] resize-none text-sm"
-                    spellCheck={false}
-                    {...field}
-                  />
-                </FormControl>
+                <div className="relative">
+                  <FormControl>
+                    <Textarea
+                      className="!min-h-[130px] resize-none text-sm"
+                      spellCheck={false}
+                      style={{ WebkitTextSecurity: showMnemonic ? 'none' : 'disc' } as React.CSSProperties}
+                      {...field}
+                    />
+                  </FormControl>
+                  <Button
+                    aria-label={showMnemonic ? 'Hide phrase' : 'Show phrase'}
+                    className="text-gray-80 hover:bg-gray-350 absolute right-2 top-2"
+                    onClick={() => setShowMnemonic(!showMnemonic)}
+                    size="icon"
+                    type="button"
+                    variant="ghost"
+                  >
+                    {showMnemonic ? (
+                      <EyeOffIcon aria-hidden="true" className="h-4 w-4" />
+                    ) : (
+                      <EyeIcon aria-hidden="true" className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </FormItem>
             )}
           />

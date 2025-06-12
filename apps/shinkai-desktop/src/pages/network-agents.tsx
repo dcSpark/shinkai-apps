@@ -62,11 +62,13 @@ import {
   truncateAddress,
 } from '../components/crypto-wallet/utils';
 import { useGetNetworkAgents } from '../components/network/network-client';
+import RemoveNetworkAgentButton from '../components/network/remove-network-agent-button';
 import {
   type FormattedNetworkAgent,
   type ApiNetworkAgent,
 } from '../components/network/types';
 import { useAuth } from '../store/auth';
+import { useSettings } from '../store/settings';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
 
@@ -76,6 +78,7 @@ export const NetworkAgentPage = () => {
   );
 
   const auth = useAuth((state) => state.auth);
+  const optInExperimental = useSettings((state) => state.optInExperimental);
   const { data: walletInfo } = useGetWalletList({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
@@ -121,17 +124,19 @@ export const NetworkAgentPage = () => {
                 >
                   Agents
                 </TabsTrigger>
-                <TabsTrigger
-                  className={cn(
-                    'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
-                    'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
-                    'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
-                    'focus-visible:outline-hidden',
-                  )}
-                  value="published"
-                >
-                  Published Agents
-                </TabsTrigger>
+                {optInExperimental && (
+                  <TabsTrigger
+                    className={cn(
+                      'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
+                      'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
+                      'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
+                      'focus-visible:outline-hidden',
+                    )}
+                    value="published"
+                  >
+                    Published Agents
+                  </TabsTrigger>
+                )}
               </TabsList>
             </div>
 
@@ -228,12 +233,14 @@ export const NetworkAgentPage = () => {
             isWalletConnected={!!isWalletConnected}
           />
         </TabsContent>
-        <TabsContent value="published" className="space-y-4">
-          <div className="flex justify-end">
-            <PublishAgentDialog />
-          </div>
-          <PublishedAgents />
-        </TabsContent>
+        {optInExperimental && (
+          <TabsContent value="published" className="space-y-4">
+            <div className="flex justify-end">
+              <PublishAgentDialog />
+            </div>
+            <PublishedAgents />
+          </TabsContent>
+        )}
       </div>
 
       {/* <AddNetworkAgentDialog
@@ -564,33 +571,38 @@ const AgentCard = ({
                     </div>
                   </div>
 
-                  {!isInstalled && (
-                    <DialogFooter className="flex-col gap-2 sm:flex-row sm:space-x-0">
+                  {!isInstalled ? (
+                    <DialogFooter className="flex-col gap-3 sm:flex-row">
                       <Button
                         variant="outline"
-                        onClick={() => setShowDetailsModal(false)}
                         size="sm"
                         className="w-full px-4 sm:w-auto"
                       >
                         Cancel
                       </Button>
-                      {isWalletConnected && isIdentityRegistered && (
+                      <Button size="sm" className="w-full sm:w-auto">
+                        Add Agent
+                      </Button>
+                    </DialogFooter>
+                  ) : (
+                    <DialogFooter>
+                      <RemoveNetworkAgentButton
+                        asChild
+                        toolRouterKey={agent.toolRouterKey}
+                      >
                         <Button
+                          variant="destructive"
                           size="sm"
-                          onClick={() => {
-                            setShowInstallModal(true);
-                            setShowDetailsModal(false);
-                          }}
                           className="w-full sm:w-auto"
                         >
-                          Add Agent
+                          Remove Agent
                         </Button>
-                      )}
+                      </RemoveNetworkAgentButton>
                     </DialogFooter>
                   )}
                 </DialogContent>
               </Dialog>
-              {!isInstalled && isWalletConnected && isIdentityRegistered && (
+              {!isInstalled && isWalletConnected && isIdentityRegistered ? (
                 <Button
                   variant="outline"
                   onClick={() => setShowInstallModal(true)}
@@ -599,6 +611,8 @@ const AgentCard = ({
                   <PlusIcon className="h-4 w-4" />
                   Add Agent
                 </Button>
+              ) : (
+                <RemoveNetworkAgentButton toolRouterKey={agent.toolRouterKey} />
               )}
             </div>
           )}
