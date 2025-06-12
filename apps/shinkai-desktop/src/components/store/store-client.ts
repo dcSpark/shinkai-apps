@@ -4,8 +4,6 @@ import { invoke } from '@tauri-apps/api/core';
 export const storeKeys = {
   all: ['store'] as const,
   agents: () => [...storeKeys.all, 'agents'] as const,
-  downloadUrl: (routerKey: string) =>
-    [...storeKeys.agents(), 'downloadUrl', routerKey] as const,
 };
 
 export interface StoreProduct {
