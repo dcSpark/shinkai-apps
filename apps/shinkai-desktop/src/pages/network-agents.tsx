@@ -63,10 +63,7 @@ import {
 } from '../components/crypto-wallet/utils';
 import { useGetNetworkAgents } from '../components/network/network-client';
 import RemoveNetworkAgentButton from '../components/network/remove-network-agent-button';
-import {
-  type FormattedNetworkAgent,
-  type ApiNetworkAgent,
-} from '../components/network/types';
+import { type FormattedNetworkAgent } from '../components/network/types';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 
@@ -108,23 +105,21 @@ export const NetworkAgentPage = () => {
       }}
     >
       <div className="container max-w-screen-lg">
-        <div className="flex flex-col gap-5 pt-10 pb-6">
-          <div className="flex justify-between gap-4">
-            <div className="font-clash inline-flex items-center gap-5 text-3xl font-medium">
-              <h1>Network</h1>
-              <TabsList className="bg-official-gray-950/80 flex h-10 w-fit items-center gap-2 rounded-full px-1 py-1">
-                <TabsTrigger
-                  className={cn(
-                    'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
-                    'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
-                    'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
-                    'focus-visible:outline-hidden',
-                  )}
-                  value="network"
-                >
-                  Agents
-                </TabsTrigger>
-                {optInExperimental && (
+        <div
+          className={cn(
+            'flex flex-col gap-2 pt-10 pb-6',
+            optInExperimental && 'gap-5',
+          )}
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div
+              className={cn(
+                'font-clash inline-flex items-center gap-2 text-3xl font-medium',
+              )}
+            >
+              <h1>{optInExperimental ? 'Network' : 'Descentralized Agents'}</h1>
+              {optInExperimental && (
+                <TabsList className="bg-official-gray-950/80 flex h-10 w-fit items-center gap-2 rounded-full px-1 py-1">
                   <TabsTrigger
                     className={cn(
                       'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
@@ -132,12 +127,25 @@ export const NetworkAgentPage = () => {
                       'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
                       'focus-visible:outline-hidden',
                     )}
-                    value="published"
+                    value="network"
                   >
-                    Published Agents
+                    Agents
                   </TabsTrigger>
-                )}
-              </TabsList>
+                  {optInExperimental && (
+                    <TabsTrigger
+                      className={cn(
+                        'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
+                        'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
+                        'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
+                        'focus-visible:outline-hidden',
+                      )}
+                      value="published"
+                    >
+                      Published Agents
+                    </TabsTrigger>
+                  )}
+                </TabsList>
+              )}
             </div>
 
             {!isWalletConnected && (
@@ -391,17 +399,6 @@ const PublishedAgents = () => {
   );
 };
 
-interface Agent {
-  id: string;
-  name: string;
-  description: string;
-  price: string;
-  category: string;
-  provider: string;
-  toolRouterKey: string;
-  apiData?: ApiNetworkAgent;
-}
-
 interface AgentCardProps {
   agent: FormattedNetworkAgent;
   type: 'discover' | 'exposed';
@@ -571,7 +568,7 @@ const AgentCard = ({
                     </div>
                   </div>
 
-                  {!isInstalled ? (
+                  {!isInstalled && isWalletConnected && isIdentityRegistered ? (
                     <DialogFooter className="ml-auto w-full max-w-[300px] flex-row gap-1">
                       <Button
                         variant="outline"
@@ -592,13 +589,13 @@ const AgentCard = ({
                         Add Agent
                       </Button>
                     </DialogFooter>
-                  ) : (
+                  ) : isInstalled ? (
                     <DialogFooter>
                       <RemoveNetworkAgentButton
                         toolRouterKey={agent.toolRouterKey}
                       />
                     </DialogFooter>
-                  )}
+                  ) : null}
                 </DialogContent>
               </Dialog>
               {!isInstalled && isWalletConnected && isIdentityRegistered ? (
@@ -610,7 +607,8 @@ const AgentCard = ({
                   <PlusIcon className="h-4 w-4" />
                   Add Agent
                 </Button>
-              ) : (
+              ) : null}
+              {isInstalled && (
                 <RemoveNetworkAgentButton toolRouterKey={agent.toolRouterKey} />
               )}
             </div>
