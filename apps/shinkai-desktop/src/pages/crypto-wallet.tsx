@@ -53,7 +53,9 @@ import {
   Copy,
   Download,
   Eye,
+  EyeIcon,
   EyeOff,
+  EyeOffIcon,
   FileText,
   PlusIcon,
   RefreshCw,
@@ -752,6 +754,7 @@ const RegularRestoreWalletMnemonic = () => {
       role: WalletRole.Both,
     },
   });
+  const [showMnemonic, setShowMnemonic] = useState(false);
 
   const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
     onSuccess: () => {
@@ -790,13 +793,30 @@ const RegularRestoreWalletMnemonic = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Secret Recovery Phrase</FormLabel>
-                <FormControl>
-                  <Textarea
-                    className="!min-h-[130px] resize-none text-sm"
-                    spellCheck={false}
-                    {...field}
-                  />
-                </FormControl>
+                <div className="relative">
+                  <FormControl>
+                    <Textarea
+                      className="!min-h-[130px] resize-none text-sm"
+                      spellCheck={false}
+                      style={{ WebkitTextSecurity: showMnemonic ? 'none' : 'disc' } as React.CSSProperties}
+                      {...field}
+                    />
+                  </FormControl>
+                  <Button
+                    aria-label={showMnemonic ? 'Hide phrase' : 'Show phrase'}
+                    className="text-gray-80 hover:bg-gray-350 absolute right-2 top-2"
+                    onClick={() => setShowMnemonic(!showMnemonic)}
+                    size="icon"
+                    type="button"
+                    variant="ghost"
+                  >
+                    {showMnemonic ? (
+                      <EyeOffIcon aria-hidden="true" className="h-4 w-4" />
+                    ) : (
+                      <EyeIcon aria-hidden="true" className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </FormItem>
             )}
           />
