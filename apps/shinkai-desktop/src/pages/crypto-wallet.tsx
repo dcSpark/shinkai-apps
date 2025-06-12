@@ -89,7 +89,11 @@ const CryptoWalletPage = () => {
   const walletExist =
     walletInfo?.payment_wallet || walletInfo?.receiving_wallet;
 
-  const { data: walletBalance } = useGetWalletBalance(
+  const {
+    data: walletBalance,
+    refetch,
+    isRefetching,
+  } = useGetWalletBalance(
     {
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
@@ -156,7 +160,20 @@ const CryptoWalletPage = () => {
 
               <Card>
                 <CardContent className="space-y-6 pt-5">
-                  <div className="text-base font-medium">Assets</div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-base font-medium">Assets</div>
+                    <Button
+                      className="h-8 w-auto"
+                      disabled={isRefetching}
+                      isLoading={isRefetching}
+                      onClick={() => refetch()}
+                      rounded="lg"
+                      size="xs"
+                      variant="outline"
+                    >
+                      {!isRefetching && <RefreshCw className="h-4 w-4" />}
+                    </Button>
+                  </div>
                   <div className="space-y-4">
                     {/* ETH */}
                     <div className="flex items-center justify-between">
