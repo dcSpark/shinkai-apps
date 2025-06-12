@@ -39,8 +39,16 @@ import {
 import { useMeasure } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Download, FileText, PlusIcon, XIcon } from 'lucide-react';
-import { useMemo, useRef } from 'react';
+import {
+  ArrowLeft,
+  Download,
+  FileText,
+  PlusIcon,
+  XIcon,
+  EyeIcon,
+  EyeOffIcon,
+} from 'lucide-react';
+import { useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -563,6 +571,7 @@ const RegularRestoreWalletMnemonic = () => {
       role: WalletRole.Both,
     },
   });
+  const [showMnemonic, setShowMnemonic] = useState(false);
 
   const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
     onSuccess: () => {
@@ -601,13 +610,30 @@ const RegularRestoreWalletMnemonic = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Secret Recovery Phrase</FormLabel>
-                <FormControl>
-                  <Textarea
-                    className="!min-h-[130px] resize-none text-sm"
-                    spellCheck={false}
-                    {...field}
-                  />
-                </FormControl>
+                <div className="relative">
+                  <FormControl>
+                    <Textarea
+                      className="!min-h-[130px] resize-none text-sm"
+                      spellCheck={false}
+                      style={{ WebkitTextSecurity: showMnemonic ? 'none' : 'disc' }}
+                      {...field}
+                    />
+                  </FormControl>
+                  <Button
+                    aria-label={showMnemonic ? 'Hide phrase' : 'Show phrase'}
+                    className="text-gray-80 hover:bg-gray-350 absolute right-2 top-2"
+                    onClick={() => setShowMnemonic(!showMnemonic)}
+                    size="icon"
+                    type="button"
+                    variant="ghost"
+                  >
+                    {showMnemonic ? (
+                      <EyeOffIcon aria-hidden="true" className="h-4 w-4" />
+                    ) : (
+                      <EyeIcon aria-hidden="true" className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </FormItem>
             )}
           />
