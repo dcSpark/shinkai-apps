@@ -295,7 +295,7 @@ export default function ToolDetailsCard({
       toast.success(
         t('tools.configuration.updateAllToolsInSetSuccess', {
           toolSetName: formatText(
-            'tool_set' in tool ? tool.tool_set?.split('_')[0] ?? '' : '',
+            'tool_set' in tool ? (tool.tool_set?.split('_')[0] ?? '') : '',
           ),
         }),
       );
@@ -305,7 +305,7 @@ export default function ToolDetailsCard({
       toast.error(
         t('tools.configuration.updateAllToolsInSetError', {
           toolSetName: formatText(
-            'tool_set' in tool ? tool.tool_set?.split('_')[0] ?? '' : '',
+            'tool_set' in tool ? (tool.tool_set?.split('_')[0] ?? '') : '',
           ),
         }),
         {
@@ -535,12 +535,11 @@ export default function ToolDetailsCard({
       language:
         toolType === 'MCPServer'
           ? CodeLanguage.MCPServer
-          :
-        toolType === CodeLanguage.Agent
-          ? CodeLanguage.Agent
-          : toolType === 'Deno'
-            ? CodeLanguage.Typescript
-            : CodeLanguage.Python,
+          : toolType === CodeLanguage.Agent
+            ? CodeLanguage.Agent
+            : toolType === 'Deno'
+              ? CodeLanguage.Typescript
+              : CodeLanguage.Python,
       params: sanitizedParams,
       llmProviderId: defaultAgentId ?? '',
       tools: [],
@@ -581,7 +580,7 @@ export default function ToolDetailsCard({
             <h1 className="mb-2 text-lg font-bold">
               {formatText(tool.name ?? '')}
             </h1>
-            <p className="text-gray-80 mb-4 line-clamp-2 whitespace-pre-wrap text-sm">
+            <p className="text-gray-80 mb-4 line-clamp-2 text-sm whitespace-pre-wrap">
               {tool.description}
             </p>
           </div>
@@ -814,7 +813,7 @@ export default function ToolDetailsCard({
                     <div className="flex flex-col gap-1" key={label}>
                       <span className="text-gray-80 text-xs">{label}</span>
                       <a
-                        className="inline-flex items-center gap-2 whitespace-pre-wrap text-sm text-white hover:underline"
+                        className="inline-flex items-center gap-2 text-sm whitespace-pre-wrap text-white hover:underline"
                         href={href}
                         rel="noreferrer"
                         target="_blank"
@@ -848,7 +847,7 @@ export default function ToolDetailsCard({
                         />
                       )}
                     </div>
-                    <span className="whitespace-pre-wrap text-sm text-white">
+                    <span className="text-sm whitespace-pre-wrap text-white">
                       {value}
                     </span>
                   </div>
@@ -1258,10 +1257,10 @@ export default function ToolDetailsCard({
                 {isExecutionError && executionError && (
                   <div className="mt-2 flex flex-col items-center gap-2 bg-red-900/20 px-3 py-4 text-xs text-red-400">
                     <p>Tool execution failed.</p>
-                    <pre className="whitespace-break-spaces break-words px-4 text-center">
+                    <pre className="px-4 text-center break-words whitespace-break-spaces">
                       {showFullError
-                        ? executionError.response?.data?.message ??
-                          executionError.message
+                        ? (executionError.response?.data?.message ??
+                          executionError.message)
                         : simplifiedError}
                     </pre>
                     {simplifiedError && (
@@ -1380,31 +1379,6 @@ export default function ToolDetailsCard({
           )}
       </Tabs>
     </>
-  );
-}
-
-const SHINKAI_DAPP_URL = 'https://shinkai-contracts.pages.dev';
-
-export function AuthorAvatarLink({ author }: { author: string }) {
-  const formattedAuthor = author.replace('@@', '');
-
-  return (
-    <a
-      className="text-gray-80 isolate flex items-center gap-2 text-xs hover:[&>span]:underline"
-      href={`${SHINKAI_DAPP_URL}/identity/${formattedAuthor}`}
-      rel="noopener noreferrer"
-      target="_blank"
-    >
-      <Avatar className={cn('h-5 w-5')}>
-        {/*{author === 'Shinkai' ? (*/}
-        {/*  <img alt="Shinkai AI" src="/app-icon.png" />*/}
-        {/*) : (*/}
-        <AvatarFallback className="bg-[#313336] uppercase text-[#b0b0b0]">
-          {formattedAuthor.charAt(0)}
-        </AvatarFallback>
-      </Avatar>
-      <span className="truncate">{formattedAuthor}</span>
-    </a>
   );
 }
 

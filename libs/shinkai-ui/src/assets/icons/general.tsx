@@ -2160,3 +2160,49 @@ export const HomeIcon = ({ className }: { className?: string }) => (
     />
   </svg>
 );
+
+export const DownloadIcon = ({ className }: { className?: string }) => {
+  return (
+    <svg
+      fill="none"
+      viewBox="0 0 16 16"
+      height="20"
+      width="20"
+      className={cn(`shrink-0`, className)}
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+        d="M10.25 8.75 8 11.25m0 0-2.25-2.5M8 11.25v-6.5m0 9.5a6.25 6.25 0 1 1 0-12.5 6.25 6.25 0 0 1 0 12.5Z"
+      ></path>
+    </svg>
+  );
+};
+
+export const CategoryIcon = ({ className }: { className?: string }) => {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 512 512"
+      fill="none"
+      className={cn(`shrink-0`, className)}
+    >
+      <g
+        id="icon"
+        fill="currentColor"
+        transform="translate(64.000000, 64.000000)"
+      >
+        <path
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+          d="M106.666667,1.42108547e-14 L106.666667,42.6666667 L42.6666667,42.6666667 L42.6666667,341.333333 L106.666667,341.333333 L106.666667,384 L1.42108547e-14,384 L1.42108547e-14,1.42108547e-14 L106.666667,1.42108547e-14 Z M384,1.42108547e-14 L384,384 L277.333333,384 L277.333333,341.333333 L341.333333,341.333333 L341.333333,42.6666667 L277.333333,42.6666667 L277.333333,1.42108547e-14 L384,1.42108547e-14 Z M298.666667,256 L298.666667,298.666667 L85.3333333,298.666667 L85.3333333,256 L298.666667,256 Z M298.666667,170.666667 L298.666667,213.333333 L85.3333333,213.333333 L85.3333333,170.666667 L298.666667,170.666667 Z M298.666667,85.3333333 L298.666667,128 L85.3333333,128 L85.3333333,85.3333333 L298.666667,85.3333333 Z"
+        ></path>
+      </g>
+    </svg>
+  );
+};
