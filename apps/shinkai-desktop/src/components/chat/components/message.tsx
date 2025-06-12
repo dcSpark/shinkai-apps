@@ -28,6 +28,12 @@ import {
   Form,
   FormField,
   MarkdownText,
+  ScrollArea,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -53,6 +59,7 @@ import {
   RotateCcw,
   Unplug,
   XCircle,
+  History,
 } from 'lucide-react';
 import React, { Fragment, memo, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -65,6 +72,7 @@ import { useSettings } from '../../../store/settings';
 import { oauthUrlMatcherFromErrorMessage } from '../../../utils/oauth';
 import { useChatStore } from '../context/chat-context';
 import { PythonCodeRunner } from '../python-code-runner/python-code-runner';
+import { useGetMessageTraces } from '@shinkai_network/shinkai-node-state/v2/queries/getMessageTraces/useGetMessageTraces';
 
 export const extractErrorPropertyOrContent = (
   content: string,
@@ -176,6 +184,7 @@ type EditMessageFormSchema = z.infer<typeof editMessageFormSchema>;
 
 export const MessageBase = ({
   message,
+  messageId,
   // messageId,
   hidePythonExecution,
   isPending,
@@ -196,6 +205,7 @@ export const MessageBase = ({
   );
 
   const [editing, setEditing] = useState(false);
+  const [tracingOpen, setTracingOpen] = useState(false);
 
   const editMessageForm = useForm<EditMessageFormSchema>({
     resolver: zodResolver(editMessageFormSchema),
@@ -205,6 +215,16 @@ export const MessageBase = ({
   });
 
   const { message: currentMessage } = editMessageForm.watch();
+
+  const { data: tracingData, isLoading: isTracingLoading } =
+    useGetMessageTraces(
+      {
+        nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
+        messageId,
+      },
+      { enabled: tracingOpen && !!messageId },
+    );
 
   const onSubmit = async (data: z.infer<typeof editMessageFormSchema>) => {
     if (message.role === 'user') {
@@ -629,6 +649,46 @@ export const MessageBase = ({
                         </Tooltip>
                       </>
                     )}
+
+                    <Sheet onOpenChange={setTracingOpen} open={tracingOpen}>
+                      <Tooltip>
+                        <SheetTrigger asChild>
+                          <button
+                            className={cn(
+                              'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                            )}
+                          >
+                            <History />
+                          </button>
+                        </SheetTrigger>
+                        <TooltipPortal>
+                          <TooltipContent>
+                            <p>{t('common.tracing')}</p>
+                          </TooltipContent>
+                        </TooltipPortal>
+                      </Tooltip>
+                      <SheetContent className="max-w-xl pr-1.5" side="right">
+                        <SheetHeader>
+                          <SheetTitle>{t('common.tracing')}</SheetTitle>
+                        </SheetHeader>
+                        <ScrollArea className="h-[calc(100vh-130px)] pr-3">
+                          {isTracingLoading ? (
+                            <Loader2 className="mx-auto mt-4 h-5 w-5 animate-spin" />
+                          ) : (
+                            <div className="space-y-4 py-4">
+                              {tracingData?.map((trace, index) => (
+                                <div key={index} className="space-y-2">
+                                  <p className="text-sm font-medium">
+                                    {trace.trace_name}
+                                  </p>
+                                  <PrettyJsonPrint data={trace.trace_info} />
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </ScrollArea>
+                      </SheetContent>
+                    </Sheet>
 
                     <Tooltip>
                       <TooltipTrigger asChild>

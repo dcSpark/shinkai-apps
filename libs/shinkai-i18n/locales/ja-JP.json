@@ -156,7 +156,8 @@
     "upload": "アップロード",
     "uploadAFileDescription": "画像、PDF、CSV、TXT、XLSXなどの形式をサポートしています",
     "uploadFile": "ファイルをアップロード",
-    "viewDetails": "詳細を見る"
+    "viewDetails": "詳細を見る",
+    "tracing": "Tracing"
   },
   "desktop": {
     "benefits": {

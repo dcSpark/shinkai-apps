@@ -326,3 +326,18 @@ export type ExportMessagesFromInboxRequest = {
 };
 
 export type ExportMessagesFromInboxResponse = Blob;
+
+export type GetMessageTracesRequest = {
+  message_id: string;
+};
+
+export type MessageTrace = {
+  id: string;
+  parent_message_id: string;
+  inbox_name: string;
+  datetime: string;
+  trace_name: string;
+  trace_info: unknown;
+};
+
+export type GetMessageTracesResponse = MessageTrace[];

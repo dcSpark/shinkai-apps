@@ -156,7 +156,8 @@
     "upload": "Subir",
     "uploadAFileDescription": "Admite imágenes, PDF, CSV, TXT, XLSX y más formatos",
     "uploadFile": "Subir un Archivo",
-    "viewDetails": "Ver detalles"
+    "viewDetails": "Ver detalles",
+    "tracing": "Tracing"
   },
   "desktop": {
     "benefits": {

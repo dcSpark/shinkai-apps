@@ -558,6 +558,7 @@ export default {
     showMore: 'More',
     showLess: 'Show Less',
     viewDetails: 'View Details',
+    tracing: 'Tracing',
     about: 'About',
   },
   quickConnection: {

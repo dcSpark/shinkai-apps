@@ -156,7 +156,8 @@
     "upload": "Yükle",
     "uploadAFileDescription": "Görüntüler, PDF, CSV, TXT, XLSX ve daha fazla formatı destekler",
     "uploadFile": "Bir Dosya Yükle",
-    "viewDetails": "Detayları Görüntüle"
+    "viewDetails": "Detayları Görüntüle",
+    "tracing": "Tracing"
   },
   "desktop": {
     "benefits": {
