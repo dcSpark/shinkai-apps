@@ -50,6 +50,7 @@ import {
   CheckCircle2,
   ChevronDownIcon,
   PlusIcon,
+  ExternalLinkIcon,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
@@ -69,6 +70,13 @@ import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
+
+const getBasescanAddressUrl = (address: string, network?: string) => {
+  if (!address) return '';
+  return network?.toLowerCase() === 'base-sepolia'
+    ? `https://sepolia.basescan.org/address/${address}`
+    : `https://basescan.org/address/${address}`;
+};
 
 export const NetworkAgentPage = () => {
   const [selectedTab, setSelectedTab] = useState<'network' | 'published'>(
@@ -587,29 +595,44 @@ const AgentCard = ({
                           </span>
                           <span className="inline-flex items-center gap-2 font-mono">
                             {truncateAddress(
-                              agent?.apiData?.tool_offering?.usage_type
-                                ?.PerUse &&
-                                typeof agent?.apiData?.tool_offering?.usage_type
-                                  ?.PerUse === 'object' &&
-                                'Payment' in
-                                  agent?.apiData?.tool_offering?.usage_type
-                                    ?.PerUse
-                                ? (agent?.apiData?.tool_offering?.usage_type
-                                    ?.PerUse?.Payment?.[0]?.payTo ?? '')
+                              agent?.apiData?.tool_offering?.usage_type?.PerUse &&
+                                typeof agent?.apiData?.tool_offering?.usage_type?.PerUse === 'object' &&
+                                'Payment' in agent?.apiData?.tool_offering?.usage_type?.PerUse
+                                ? agent?.apiData?.tool_offering?.usage_type?.PerUse?.Payment?.[0]?.payTo ?? ''
                                 : '',
                             )}
+                            {(() => {
+                              const payTo =
+                                agent?.apiData?.tool_offering?.usage_type?.PerUse &&
+                                typeof agent?.apiData?.tool_offering?.usage_type?.PerUse === 'object' &&
+                                'Payment' in agent?.apiData?.tool_offering?.usage_type?.PerUse
+                                  ? agent?.apiData?.tool_offering?.usage_type?.PerUse?.Payment?.[0]?.payTo ?? ''
+                                  : '';
+                              const network =
+                                agent?.apiData?.tool_offering?.usage_type?.PerUse &&
+                                typeof agent?.apiData?.tool_offering?.usage_type?.PerUse === 'object' &&
+                                'Payment' in agent?.apiData?.tool_offering?.usage_type?.PerUse
+                                  ? agent?.apiData?.tool_offering?.usage_type?.PerUse?.Payment?.[0]?.network
+                                  : undefined;
+                              const href = getBasescanAddressUrl(payTo, network);
+                              return href ? (
+                                <a
+                                  href={href}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-official-gray-400 hover:text-white"
+                                >
+                                  <ExternalLinkIcon className="h-4 w-4" />
+                                </a>
+                              ) : null;
+                            })()}
                             <CopyToClipboardIcon
                               className="ml-2 h-4 w-4"
                               string={
-                                agent?.apiData?.tool_offering?.usage_type
-                                  ?.PerUse &&
-                                typeof agent?.apiData?.tool_offering?.usage_type
-                                  ?.PerUse === 'object' &&
-                                'Payment' in
-                                  agent?.apiData?.tool_offering?.usage_type
-                                    ?.PerUse
-                                  ? (agent?.apiData?.tool_offering?.usage_type
-                                      ?.PerUse?.Payment?.[0]?.payTo ?? '')
+                                agent?.apiData?.tool_offering?.usage_type?.PerUse &&
+                                typeof agent?.apiData?.tool_offering?.usage_type?.PerUse === 'object' &&
+                                'Payment' in agent?.apiData?.tool_offering?.usage_type?.PerUse
+                                  ? agent?.apiData?.tool_offering?.usage_type?.PerUse?.Payment?.[0]?.payTo ?? ''
                                   : ''
                               }
                             />
