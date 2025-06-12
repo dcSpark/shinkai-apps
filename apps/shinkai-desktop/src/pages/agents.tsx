@@ -83,7 +83,7 @@ function AgentsPage() {
         onValueChange={(value) => setSelectedTab(value as 'my' | 'explore')}
       >
         <div className="container flex flex-col">
-          <div className="flex flex-col gap-1 pt-10 pb-6">
+          <div className="flex flex-col gap-3 pt-10 pb-4">
             <div className="flex justify-between gap-4">
               <div className="font-clash inline-flex items-center gap-5 text-3xl font-medium">
                 <h1>Agents</h1>
@@ -127,13 +127,23 @@ function AgentsPage() {
               </div>
             </div>
             <p className="text-official-gray-400 text-sm">
-              Create and explore AI agents with personalized instructions,
-              enriched knowledge, <br /> diverse task capabilities, and more to
-              tackle your goals autonomously.
+              {selectedTab === 'my' ? (
+                <>
+                  Create and explore AI agents with personalized instructions,
+                  enriched knowledge, <br /> diverse task capabilities, and more
+                  to tackle your goals autonomously.
+                </>
+              ) : (
+                <>
+                  Discover and install AI agents from the community to enhance
+                  your workflow <br /> and supercharge your productivity and
+                  creativity.
+                </>
+              )}
             </p>
           </div>
 
-          <TabsContent value="my" className="space-y-8">
+          <TabsContent value="my" className="space-y-6">
             <SearchInput
               classNames={{ input: 'bg-transparent' }}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -170,7 +180,7 @@ function AgentsPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="explore" className="space-y-8">
+          <TabsContent value="explore" className="space-y-6">
             <DownloadAgents />
           </TabsContent>
         </div>
@@ -518,14 +528,14 @@ const DownloadAgents = () => {
   }, [storeAgents, searchQuery]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <SearchInput
         placeholder="Search for agents"
         classNames={{ input: 'bg-transparent' }}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
-      <div className="grid grid-cols-1 gap-6 pb-10">
+      <div className="grid grid-cols-1 gap-3 pb-10">
         {isStoreAgentsPending &&
           Array.from({ length: 4 }).map((_, idx) => (
             <Card
