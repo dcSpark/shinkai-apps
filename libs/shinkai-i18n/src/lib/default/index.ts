@@ -349,7 +349,7 @@ export default {
       emptyState: {
         title: 'No wallets found',
         description:
-          'Manage your crypto wallets. Create or restore your Coinbase CDP Wallet or your Hot Wallet.',
+          'Manage your crypto wallets. Create or restore your Wallet.',
       },
     },
     shinkaiIdentity: {

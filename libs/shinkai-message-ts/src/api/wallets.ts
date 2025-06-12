@@ -74,10 +74,10 @@ interface Address {
 
 interface WalletData {
   id: string;
-  network: Network;
+  network: NetworkIdentifier;
   address: Address;
-  wallet_private_key: string;
-  provider_url: string;
+  private_key: string;
+  public_key: string;
 }
 
 interface LocalEthersWallet {
@@ -149,4 +149,35 @@ export const getWalletList = async (
     },
   );
   return response.data as GetWalletListResponse;
+};
+
+export type GetWalletBalanceRequest = {
+  network: NetworkIdentifier;
+};
+export type GetWalletBalanceResponse = {
+  [key: string]: {
+    amount: string;
+    asset: {
+      asset_id: string;
+      contract_address: string | null;
+      decimals: number;
+      network_id: string;
+    };
+    decimals: number;
+  };
+};
+
+export const getWalletBalance = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/get_wallet_balance'),
+
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetWalletBalanceResponse;
 };

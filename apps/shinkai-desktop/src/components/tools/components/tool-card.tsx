@@ -77,6 +77,16 @@ export default function ToolCard({ tool }: { tool: ShinkaiToolHeader }) {
               MCP
             </Badge>
           )}
+          {tool.tool_type === 'Network' && (
+            <Badge className="text-official-gray-400 bg-official-gray-750 text-xs font-normal">
+              Network
+            </Badge>
+          )}
+          {tool.author !== '@@official.shinkai' && (
+            <Badge className="text-official-gray-400 bg-official-gray-750 text-xs font-normal">
+              {tool.author}
+            </Badge>
+          )}
         </div>
         <p className="text-official-gray-400 line-clamp-2 text-sm whitespace-pre-wrap">
           {tool.description}

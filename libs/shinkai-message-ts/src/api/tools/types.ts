@@ -113,11 +113,12 @@ export type RustShinkaiTool = {
 
 export type NetworkShinkaiTool = {
   activated: boolean;
-  config: ToolConfigBase;
-  configurations: ToolConfig;
-  configFormData: Record<string, any>;
+  author: string;
+  config?: ToolConfigBase;
+  // configurations?: ToolConfig;
+  // configFormData: Record<string, any>;
   description: string;
-  embedding: null | string;
+  // embedding: null | string;
   input_args: ToolArgument;
   name: string;
   output_arg: {
@@ -125,9 +126,10 @@ export type NetworkShinkaiTool = {
   };
   provider: string;
   restrictions?: string;
-  toolkit_name: string;
+  toolkit_name?: string;
   usage_type: ToolUsageType;
   version: string;
+  tool_router_key: string;
 };
 
 export type AgentShinkaiTool = {
@@ -248,13 +250,26 @@ export type ToolPrice =
   | { DirectDelegation: string }
   | {
       Payment: Array<{
-        amount: string;
-        asset: {
-          asset_id: string;
-          contract_address: string;
-          decimals: number;
-          network_id: string;
+        // amount?: string;
+        // maxAmountRequired?: string;
+        // asset: {
+        //   asset_id: string;
+        //   contract_address: string;
+        //   decimals: number;
+        //   network_id: string;
+        // };
+        asset: string;
+        description: string;
+        extra: {
+          name: string;
+          version: string;
         };
+        maxAmountRequired?: string;
+        maxTimeoutSeconds?: number;
+        network?: string;
+        payTo?: string;
+        resource?: string;
+        scheme?: string;
       }>;
     };
 
@@ -578,6 +593,19 @@ export type CopyToolAssetsResponse = {
   message: string;
 };
 
+export type ToolOffering = {
+  meta_description: string;
+  tool_key: string;
+  usage_type: ToolUsageType;
+};
+
+export type NetworkToolWithOffering = {
+  network_tool: NetworkShinkaiTool;
+  tool_offering: ToolOffering;
+};
+
+export type GetToolsWithOfferingsResponse = NetworkToolWithOffering[];
+
 export type GetToolProtocolsResponse = {
   created: string;
   supported: {
@@ -592,3 +620,21 @@ export type GetToolPlaygroundMetadataRequest = {
 };
 
 export type GetToolPlaygroundMetadataResponse = ToolMetadata | null;
+
+export type SetToolOfferingRequest = {
+  tool_offering: ToolOffering;
+};
+
+export type SetToolOfferingResponse = {
+  message: string;
+};
+
+export type GetInstalledNetworkToolsResponse = ShinkaiToolHeader[];
+
+export type AddNetworkToolRequest = {
+  assets: any[];
+  tool: {
+    type: 'Network';
+    content: [NetworkShinkaiTool, boolean];
+  };
+};

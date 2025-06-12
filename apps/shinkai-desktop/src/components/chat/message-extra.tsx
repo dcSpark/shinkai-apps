@@ -21,15 +21,20 @@ import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import React from 'react';
 
 import { useAuth } from '../../store/auth';
+import { truncateAddress } from '../crypto-wallet/utils';
 import { useToolsStore } from './context/tools-context';
 
-const truncateAddress = (address: string) => {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
-};
-
-const formatAmount = (amount: string, decimals = 18): string => {
+const formatAmount = (amount: string | undefined, decimals = 18): string => {
+  if (!amount) return '0';
   const value = BigInt(amount);
-  const divisor = BigInt(10 ** decimals);
+  const bigDecimals = BigInt(decimals);
+
+  // Calculate 10^decimals using string multiplication instead of ** operator
+  let divisor = BigInt(1);
+  for (let i = 0; i < decimals; i++) {
+    divisor *= BigInt(10);
+  }
+
   const integerPart = value / divisor;
   const fractionalPart = value % divisor;
 
@@ -37,7 +42,8 @@ const formatAmount = (amount: string, decimals = 18): string => {
     return integerPart.toString();
   }
 
-  const fractionalStr = fractionalPart.toString().padStart(decimals, '0');
+  const decimalsNumber = Number(bigDecimals);
+  const fractionalStr = fractionalPart.toString().padStart(decimalsNumber, '0');
   const trimmedFractionalStr = fractionalStr.replace(/0+$/, '');
 
   return `${integerPart}.${trimmedFractionalStr}`;
@@ -136,7 +142,10 @@ function Payment({
                             ? 'Free'
                             : 'Payment' in data.usage_type.PerUse
                               ? `${formatAmount(
-                                  data.usage_type.PerUse.Payment[0].amount,
+                                  data.usage_type.PerUse.Payment[0].amount ??
+                                    data.usage_type.PerUse.Payment[0]
+                                      .maxAmountRequired ??
+                                    '0',
                                   data.usage_type.PerUse.Payment[0].asset
                                     .decimals,
                                 )} ${
@@ -167,7 +176,10 @@ function Payment({
                             : 'Payment' in data.usage_type.Downloadable
                               ? `${formatAmount(
                                   data.usage_type.Downloadable.Payment[0]
-                                    .amount,
+                                    .amount ??
+                                    data.usage_type.Downloadable.Payment[0]
+                                      .maxAmountRequired ??
+                                    '0',
                                   data.usage_type.Downloadable.Payment[0].asset
                                     .decimals,
                                 )} ${

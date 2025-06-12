@@ -63,6 +63,11 @@ import {
   type UpdateToolCodeImplementationResponse,
   type UpdateToolRequest,
   type UpdateToolResponse,
+  type GetToolsWithOfferingsResponse,
+  type SetToolOfferingRequest,
+  type SetToolOfferingResponse,
+  type GetInstalledNetworkToolsResponse,
+  type AddNetworkToolRequest,
 } from './types';
 
 export const createTool = async (
@@ -150,7 +155,10 @@ export const setCommonToolsetConfig = async (
   bearerToken: string,
   payload: SetCommonToolsetConfigRequest,
 ) => {
-  const response = await httpClient.post(urlJoin(nodeAddress, '/v2/set_common_toolset_config'), payload, {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/set_common_toolset_config'),
+    payload,
+    {
       headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
     },
@@ -821,6 +829,36 @@ export const copyToolAssets = async (
   return response.data as CopyToolAssetsResponse;
 };
 
+export const getToolsWithOfferings = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/get_tools_with_offerings'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetToolsWithOfferingsResponse;
+};
+
+export const setToolOffering = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: SetToolOfferingRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/set_tool_offering'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as SetToolOfferingResponse;
+};
+
 export const setToolMcpEnabled = async (
   nodeAddress: string,
   bearerToken: string,
@@ -849,4 +887,34 @@ export const getToolProtocols = async () => {
     },
   );
   return response.data as GetToolProtocolsResponse;
+};
+
+export const getInstalledNetworkTools = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/list_all_network_shinkai_tools'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetInstalledNetworkToolsResponse;
+};
+
+export const addNetworkTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: AddNetworkToolRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/add_shinkai_tool'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
 };
