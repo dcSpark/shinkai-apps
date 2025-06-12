@@ -73,6 +73,7 @@ import { oauthUrlMatcherFromErrorMessage } from '../../../utils/oauth';
 import { useChatStore } from '../context/chat-context';
 import { PythonCodeRunner } from '../python-code-runner/python-code-runner';
 import { useGetMessageTraces } from '@shinkai_network/shinkai-node-state/v2/queries/getMessageTraces/useGetMessageTraces';
+import { type MessageTrace } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 
 export const extractErrorPropertyOrContent = (
   content: string,
@@ -208,6 +209,7 @@ export const MessageBase = ({
 
   const [editing, setEditing] = useState(false);
   const [tracingOpen, setTracingOpen] = useState(false);
+  const [selectedTrace, setSelectedTrace] = useState<MessageTrace | null>(null);
 
   const editMessageForm = useForm<EditMessageFormSchema>({
     resolver: zodResolver(editMessageFormSchema),
@@ -229,6 +231,52 @@ export const MessageBase = ({
       },
       { enabled: tracingOpen && !!parentMessageId },
     );
+
+  const tracesTree = useMemo(() => {
+    if (!tracingData) return [] as MessageTrace[];
+    const map = new Map<number, MessageTrace & { children: MessageTrace[] }>();
+    const roots: (MessageTrace & { children: MessageTrace[] })[] = [];
+    tracingData.forEach((t) => {
+      map.set(t.id, { ...t, children: [] });
+    });
+    tracingData.forEach((t) => {
+      const info = t.trace_info as any;
+      const parentId = info?.parent_id ?? info?.parent_trace_id;
+      if (parentId && map.has(parentId)) {
+        map.get(parentId)!.children.push(map.get(t.id)!);
+      } else {
+        roots.push(map.get(t.id)!);
+      }
+    });
+    return roots;
+  }, [tracingData]);
+
+  const renderTraceTree = (
+    nodes: (MessageTrace & { children: MessageTrace[] })[],
+    level = 0,
+  ) =>
+    nodes.map((node) => (
+      <div key={node.id} style={{ paddingLeft: level * 12 }} className="py-1">
+        <button
+          className={cn(
+            'text-left text-sm hover:underline',
+            selectedTrace?.id === node.id && 'font-semibold',
+          )}
+          onClick={() => setSelectedTrace(node)}
+        >
+          {node.trace_name}
+        </button>
+        {node.children &&
+          node.children.length > 0 &&
+          renderTraceTree(node.children, level + 1)}
+      </div>
+    ));
+
+  useEffect(() => {
+    if (tracingOpen && tracingData && tracingData.length > 0) {
+      setSelectedTrace(tracingData[0]);
+    }
+  }, [tracingOpen, tracingData]);
 
   const onSubmit = async (data: z.infer<typeof editMessageFormSchema>) => {
     if (message.role === 'user') {
@@ -669,26 +717,37 @@ export const MessageBase = ({
                           </TooltipContent>
                         </TooltipPortal>
                       </Tooltip>
-                      <SheetContent className="max-w-xl pr-1.5" side="right">
+                      <SheetContent className="max-w-3xl pr-1.5" side="right">
                         <SheetHeader>
                           <SheetTitle>{t('common.tracing')}</SheetTitle>
                         </SheetHeader>
-                        <ScrollArea className="h-[calc(100vh-130px)] pr-3">
-                          {isTracingLoading ? (
-                            <Loader2 className="mx-auto mt-4 h-5 w-5 animate-spin" />
-                          ) : (
-                            <div className="space-y-4 py-4">
-                              {tracingData?.map((trace, index) => (
-                                <div key={index} className="space-y-2">
-                                  <p className="text-sm font-medium">
-                                    {trace.trace_name}
-                                  </p>
-                                  <PrettyJsonPrint json={trace.trace_info} />
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </ScrollArea>
+                        <div className="flex h-[calc(100vh-130px)] divide-x">
+                          <ScrollArea className="w-1/3 pr-3">
+                            {isTracingLoading ? (
+                              <Loader2 className="mx-auto mt-4 h-5 w-5 animate-spin" />
+                            ) : (
+                              <div className="py-4">
+                                {renderTraceTree(tracesTree)}
+                              </div>
+                            )}
+                          </ScrollArea>
+                          <ScrollArea className="w-2/3 pl-3">
+                            {selectedTrace ? (
+                              <div className="space-y-2 py-4">
+                                <p className="text-sm font-medium">
+                                  {selectedTrace.trace_name}
+                                </p>
+                                <PrettyJsonPrint
+                                  json={selectedTrace.trace_info}
+                                />
+                              </div>
+                            ) : (
+                              <p className="py-4 text-center text-sm text-gray-400">
+                                {t('common.selectItem')}
+                              </p>
+                            )}
+                          </ScrollArea>
+                        </div>
                       </SheetContent>
                     </Sheet>
 

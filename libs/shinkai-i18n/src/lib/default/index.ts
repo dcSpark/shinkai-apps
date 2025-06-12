@@ -559,6 +559,7 @@ export default {
     showLess: 'Show Less',
     viewDetails: 'View Details',
     tracing: 'Tracing',
+    selectItem: 'Select an item to view details',
     about: 'About',
   },
   quickConnection: {

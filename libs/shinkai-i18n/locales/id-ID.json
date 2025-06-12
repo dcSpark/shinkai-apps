@@ -157,7 +157,8 @@
     "uploadAFileDescription": "Mendukung gambar, PDF, CSV, TXT, XLSX, dan format lainnya",
     "uploadFile": "Unggah Berkas",
     "viewDetails": "Lihat Detail",
-    "tracing": "Tracing"
+    "tracing": "Tracing",
+    "selectItem": "Pilih item untuk melihat detail"
   },
   "desktop": {
     "benefits": {
