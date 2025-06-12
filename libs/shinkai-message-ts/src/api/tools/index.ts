@@ -66,6 +66,8 @@ import {
   type GetToolsWithOfferingsResponse,
   type SetToolOfferingRequest,
   type SetToolOfferingResponse,
+  type GetInstalledNetworkToolsResponse,
+  type AddNetworkToolRequest,
 } from './types';
 
 export const createTool = async (
@@ -885,4 +887,34 @@ export const getToolProtocols = async () => {
     },
   );
   return response.data as GetToolProtocolsResponse;
+};
+
+export const getInstalledNetworkTools = async (
+  nodeAddress: string,
+  bearerToken: string,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/list_all_network_shinkai_tools'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data as GetInstalledNetworkToolsResponse;
+};
+
+export const addNetworkTool = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: AddNetworkToolRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/add_shinkai_tool'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
 };

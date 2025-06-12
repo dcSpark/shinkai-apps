@@ -1,4 +1,6 @@
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils';
+import { useAddNetworkTool } from '@shinkai_network/shinkai-node-state/v2/mutations/addNetworkTool/useAddNetworkTool';
+import { useGetInstalledNetworkTools } from '@shinkai_network/shinkai-node-state/v2/queries/getInstalledNetworkTools/useGetInstalledNetworkTools';
 import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
 import { useGetWalletBalance } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletBalance/useGetWalletBalance';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
@@ -30,6 +32,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  CardFooter,
 } from '@shinkai_network/shinkai-ui';
 import {
   CryptoWalletIcon,
@@ -37,11 +40,9 @@ import {
   USDCIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
-import { invoke } from '@tauri-apps/api/core';
-import axios from 'axios';
+
 import {
   Settings,
-  Network,
   User,
   CreditCard,
   Info,
@@ -50,13 +51,19 @@ import {
   ChevronDownIcon,
   PlusIcon,
 } from 'lucide-react';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
+import { toast } from 'sonner';
 import PublishAgentDialog from '../components/agent/publish-agent-dialog';
 import {
   formatBalance,
   truncateAddress,
 } from '../components/crypto-wallet/utils';
+import { useGetNetworkAgents } from '../components/network/network-client';
+import {
+  type FormattedNetworkAgent,
+  type ApiNetworkAgent,
+} from '../components/network/types';
 import { useAuth } from '../store/auth';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
@@ -99,7 +106,7 @@ export const NetworkAgentPage = () => {
         <div className="flex flex-col gap-5 pt-10 pb-6">
           <div className="flex justify-between gap-4">
             <div className="font-clash inline-flex items-center gap-5 text-3xl font-medium">
-              <h1>Network </h1>
+              <h1>Network</h1>
               <TabsList className="bg-official-gray-950/80 flex h-10 w-fit items-center gap-2 rounded-full px-1 py-1">
                 <TabsTrigger
                   className={cn(
@@ -235,57 +242,6 @@ export const NetworkAgentPage = () => {
   );
 };
 
-interface ApiPayment {
-  maxAmountRequired?: string;
-  extra?: {
-    name?: string;
-    version?: string;
-  };
-  asset?: string;
-  description?: string;
-  maxTimeoutSeconds?: number;
-  mimeType?: string;
-  network?: string;
-  outputSchema?: Record<string, any>;
-  payTo?: string;
-  resource?: string;
-  scheme?: string;
-}
-
-interface ApiUsageType {
-  PerUse?: {
-    Payment?: ApiPayment[];
-  };
-}
-
-interface ApiNetworkTool {
-  activated?: boolean;
-  author: string;
-  config?: Record<string, any>[];
-  description?: string;
-  input_args?: Record<string, any>;
-  mcp_enabled?: boolean;
-  name?: string;
-  output_arg: {
-    json: string;
-  };
-  restrictions?: string;
-  provider?: string;
-  tool_router_key?: string;
-  usage_type?: ApiUsageType;
-  version?: string;
-}
-
-interface ApiToolOffering {
-  meta_description?: string;
-  usage_type?: ApiUsageType;
-}
-
-interface ApiNetworkAgent {
-  network_tool?: ApiNetworkTool;
-  tool_offering?: ApiToolOffering;
-}
-
 const DiscoverNetworkAgents = ({
   isIdentityRegistered,
   isWalletConnected,
@@ -295,82 +251,34 @@ const DiscoverNetworkAgents = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const [networkAgents, setNetworkAgents] = useState<Agent[]>([]);
   const auth = useAuth((state) => state.auth);
-  const [installedKeys, setInstalledKeys] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    const fetchAgents = async () => {
-      try {
-        const res = await invoke<{
-          status: number;
-          headers: Record<string, string[]>;
-          body: string;
-        }>('get_request', {
-          url: 'https://storage.googleapis.com/network-agents/all_agents.json',
-          customHeaders: JSON.stringify({}),
-        });
-        if (res.status !== 200) {
-          throw new Error(`Request failed: ${res.status}`);
-        }
-        const data = JSON.parse(res.body) as ApiNetworkAgent[];
+  const {
+    data: networkAgents,
+    isPending: isNetworkAgentsPending,
+    isSuccess: isNetworkAgentsSuccess,
+  } = useGetNetworkAgents();
 
-        const parsed = data.map((item, idx): Agent => {
-          const usage =
-            item.network_tool?.usage_type ?? item.tool_offering?.usage_type;
-          const payment = usage?.PerUse?.Payment?.[0];
+  const {
+    data: installedNetworkTools,
+    isPending: isInstalledNetworkToolsPending,
+  } = useGetInstalledNetworkTools({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
 
-          let price = 'Free';
-          if (payment?.maxAmountRequired) {
-            const currency = payment.extra?.name ?? '';
-            price = `${payment.maxAmountRequired} ${currency}`.trim();
-          }
+  const { mutateAsync: addNetworkTool } = useAddNetworkTool({
+    onError: (error) => {
+      toast.error('Failed to add network agent', {
+        description: error.response?.data?.message ?? error.message,
+      });
+    },
+    onSuccess: () => {
+      toast.success('Network agent added successfully.');
+    },
+  });
 
-          return {
-            id: item.network_tool?.tool_router_key ?? String(idx),
-            name: item.network_tool?.name ?? 'Unknown',
-            description: item.network_tool?.description ?? '',
-            price,
-            category: item.tool_offering?.meta_description ?? 'Network Agent',
-            provider:
-              item.network_tool?.provider ?? item.network_tool?.author ?? '',
-            toolRouterKey: item.network_tool?.tool_router_key ?? '',
-            apiData: item,
-          };
-        });
-
-        setNetworkAgents(parsed);
-      } catch (e) {
-        console.error('Failed to fetch network agents', e);
-      }
-    };
-    void fetchAgents();
-  }, []);
-
-  useEffect(() => {
-    const fetchInstalled = async () => {
-      if (!auth?.node_address || !auth?.api_v2_key) {
-        return;
-      }
-      try {
-        const resp = await axios.get(
-          `${auth.node_address}/v2/list_all_network_shinkai_tools`,
-          {
-            headers: { Authorization: `Bearer ${auth.api_v2_key}` },
-          },
-        );
-        const keys = (resp.data as { tool_router_key?: string }[])
-          .map((t) => t.tool_router_key)
-          .filter(Boolean) as string[];
-        setInstalledKeys(new Set(keys));
-      } catch (e) {
-        console.error('Failed to fetch installed network tools', e);
-      }
-    };
-    void fetchInstalled();
-  }, [auth]);
-
-  const filteredAgents = networkAgents.filter((agent) => {
+  const filteredAgents = (networkAgents ?? [])?.filter((agent) => {
     const matchesSearch =
       agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       agent.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -378,33 +286,13 @@ const DiscoverNetworkAgents = ({
     return matchesSearch;
   });
 
-  const handleAddAgent = async (agent: Agent) => {
-    if (
-      !auth?.node_address ||
-      !auth?.api_v2_key ||
-      !agent.apiData?.network_tool
-    ) {
-      console.error('Missing auth or agent data');
-      return;
-    }
-    try {
-      await axios.post(
-        `${auth.node_address}/v2/add_shinkai_tool`,
-        {
-          assets: [],
-          tool: {
-            type: 'Network',
-            content: [agent.apiData.network_tool, true],
-          },
-        },
-        {
-          headers: { Authorization: `Bearer ${auth.api_v2_key}` },
-        },
-      );
-      setInstalledKeys((prev) => new Set(prev).add(agent.toolRouterKey ?? ''));
-    } catch (e) {
-      console.error('Failed to add network agent', e);
-    }
+  const handleAddAgent = async (agent: FormattedNetworkAgent) => {
+    if (!auth) return;
+    await addNetworkTool({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      networkTool: agent.apiData.network_tool,
+    });
   };
 
   return (
@@ -416,19 +304,47 @@ const DiscoverNetworkAgents = ({
         onChange={(e) => setSearchQuery(e.target.value)}
       />
       <div className="grid grid-cols-1 gap-6 pb-10 md:grid-cols-2">
-        {[...filteredAgents, ...filteredAgents, ...filteredAgents].map(
-          (agent) => (
+        {(isNetworkAgentsPending || isInstalledNetworkToolsPending) &&
+          Array.from({ length: 4 }).map((_, index) => (
+            <Card
+              key={index}
+              className="border-official-gray-850 bg-official-gray-900 flex flex-col border"
+            >
+              <CardHeader className="pb-4">
+                <div className="bg-official-gray-800 mb-1 h-6 w-3/4 animate-pulse rounded" />
+                <div className="bg-official-gray-800 mb-3 h-4 w-1/2 animate-pulse rounded" />
+                <div className="space-y-2">
+                  <div className="bg-official-gray-800 h-4 w-full animate-pulse rounded" />
+                  <div className="bg-official-gray-800 h-4 w-2/3 animate-pulse rounded" />
+                </div>
+              </CardHeader>
+              <CardContent className="flex-1">
+                <div className="flex items-center justify-between">
+                  <div className="bg-official-gray-800 h-4 w-1/4 animate-pulse rounded" />
+                  <div className="bg-official-gray-800 h-4 w-1/4 animate-pulse rounded" />
+                </div>
+              </CardContent>
+              <CardFooter className="flex gap-3">
+                <div className="bg-official-gray-800 h-9 w-full animate-pulse rounded-full" />
+                <div className="bg-official-gray-800 h-9 w-full animate-pulse rounded-full" />
+              </CardFooter>
+            </Card>
+          ))}
+
+        {isNetworkAgentsSuccess &&
+          filteredAgents.map((agent) => (
             <AgentCard
               key={agent.id}
               agent={agent}
               type="discover"
-              isInstalled={installedKeys.has(agent.toolRouterKey ?? '')}
+              isInstalled={installedNetworkTools?.some(
+                (tool) => tool.tool_router_key === agent.toolRouterKey,
+              )}
               onAdd={handleAddAgent}
               isIdentityRegistered={isIdentityRegistered}
               isWalletConnected={isWalletConnected}
             />
-          ),
-        )}
+          ))}
       </div>
     </div>
   );
@@ -441,10 +357,15 @@ const PublishedAgents = () => {
     token: auth?.api_v2_key ?? '',
   });
 
-  const publishedAgents = useMemo<Agent[]>(() => {
+  const publishedAgents = useMemo<FormattedNetworkAgent[]>(() => {
     if (!data) return [];
     return data.map((item) => {
-      const payment = item.tool_offering.usage_type?.PerUse?.Payment?.[0];
+      const payment =
+        item.tool_offering.usage_type?.PerUse &&
+        typeof item.tool_offering.usage_type?.PerUse === 'object' &&
+        'Payment' in item.tool_offering.usage_type?.PerUse
+          ? item.tool_offering.usage_type?.PerUse?.Payment?.[0]
+          : undefined;
       const price = payment
         ? `${payment.maxAmountRequired} ${payment.extra?.name ?? ''}`
         : 'Free';
@@ -486,13 +407,19 @@ interface Agent {
 }
 
 interface AgentCardProps {
-  agent: Agent;
-  type: 'discover' | 'exposed' | 'network';
+  agent: FormattedNetworkAgent;
+  type: 'discover' | 'exposed';
   isInstalled?: boolean;
-  onAdd?: (agent: Agent) => void;
+  onAdd?: (agent: FormattedNetworkAgent) => void;
   isIdentityRegistered: boolean;
   isWalletConnected: boolean;
 }
+/* TODO:
+  - loading, error, success when adding an agent
+  - refactor every server state
+  - published agents
+  - improve network agent in chats
+*/
 
 const AgentCard = ({
   agent,
@@ -560,7 +487,7 @@ const AgentCard = ({
             <>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="flex-1/3">
+                  <Button variant="outline" size="sm" className="flex-1">
                     Details
                   </Button>
                 </DialogTrigger>
@@ -609,14 +536,22 @@ const AgentCard = ({
                         </div>
                       </div>
                       <Badge className="py-1.5 text-lg">
-                        {
+                        {agent?.apiData?.tool_offering?.usage_type?.PerUse &&
+                        typeof agent?.apiData?.tool_offering?.usage_type
+                          ?.PerUse === 'object' &&
+                        'Payment' in
                           agent?.apiData?.tool_offering?.usage_type?.PerUse
-                            ?.Payment?.[0]?.maxAmountRequired
-                        }{' '}
-                        {
+                          ? agent?.apiData?.tool_offering?.usage_type?.PerUse
+                              ?.Payment?.[0]?.maxAmountRequired
+                          : undefined}{' '}
+                        {agent?.apiData?.tool_offering?.usage_type?.PerUse &&
+                        typeof agent?.apiData?.tool_offering?.usage_type
+                          ?.PerUse === 'object' &&
+                        'Payment' in
                           agent?.apiData?.tool_offering?.usage_type?.PerUse
-                            ?.Payment?.[0]?.extra?.name
-                        }
+                          ? agent?.apiData?.tool_offering?.usage_type?.PerUse
+                              ?.Payment?.[0]?.extra?.name
+                          : undefined}
                       </Badge>
                     </div>
 
@@ -628,10 +563,15 @@ const AgentCard = ({
                             Network
                           </span>
                           <span>
-                            {
+                            {agent?.apiData?.tool_offering?.usage_type
+                              ?.PerUse &&
+                            typeof agent?.apiData?.tool_offering?.usage_type
+                              ?.PerUse === 'object' &&
+                            'Payment' in
                               agent?.apiData?.tool_offering?.usage_type?.PerUse
-                                ?.Payment?.[0]?.network
-                            }
+                              ? agent?.apiData?.tool_offering?.usage_type
+                                  ?.PerUse?.Payment?.[0]?.network
+                              : undefined}
                           </span>
                         </div>
                         <div className="flex justify-between border-b py-2">
@@ -640,14 +580,30 @@ const AgentCard = ({
                           </span>
                           <span className="inline-flex items-center gap-2 font-mono">
                             {truncateAddress(
-                              agent?.apiData?.tool_offering?.usage_type?.PerUse
-                                ?.Payment?.[0]?.payTo ?? '',
+                              agent?.apiData?.tool_offering?.usage_type
+                                ?.PerUse &&
+                                typeof agent?.apiData?.tool_offering?.usage_type
+                                  ?.PerUse === 'object' &&
+                                'Payment' in
+                                  agent?.apiData?.tool_offering?.usage_type
+                                    ?.PerUse
+                                ? (agent?.apiData?.tool_offering?.usage_type
+                                    ?.PerUse?.Payment?.[0]?.payTo ?? '')
+                                : '',
                             )}
                             <CopyToClipboardIcon
                               className="ml-2 h-4 w-4"
                               string={
                                 agent?.apiData?.tool_offering?.usage_type
-                                  ?.PerUse?.Payment?.[0]?.payTo ?? ''
+                                  ?.PerUse &&
+                                typeof agent?.apiData?.tool_offering?.usage_type
+                                  ?.PerUse === 'object' &&
+                                'Payment' in
+                                  agent?.apiData?.tool_offering?.usage_type
+                                    ?.PerUse
+                                  ? (agent?.apiData?.tool_offering?.usage_type
+                                      ?.PerUse?.Payment?.[0]?.payTo ?? '')
+                                  : ''
                               }
                             />
                           </span>
@@ -666,10 +622,15 @@ const AgentCard = ({
                             When you use this agent, you'll be prompted to
                             confirm the payment from your connected wallet.
                             Payments are processed on the{' '}
-                            {
+                            {agent?.apiData?.tool_offering?.usage_type
+                              ?.PerUse &&
+                            typeof agent?.apiData?.tool_offering?.usage_type
+                              ?.PerUse === 'object' &&
+                            'Payment' in
                               agent?.apiData?.tool_offering?.usage_type?.PerUse
-                                ?.Payment?.[0]?.network
-                            }{' '}
+                              ? agent?.apiData?.tool_offering?.usage_type
+                                  ?.PerUse?.Payment?.[0]?.network
+                              : undefined}{' '}
                             network.
                           </p>
                         </div>
@@ -677,24 +638,26 @@ const AgentCard = ({
                     </div>
                   </div>
 
-                  <DialogFooter className="flex-col gap-3 sm:flex-row">
-                    <Button
-                      variant="outline"
-                      // onClick={onClose}
-                      size="sm"
-                      className="w-full sm:w-auto"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      size="sm"
-                      // onClick={onAdd}
-                      // disabled={!canAddAgent}
-                      className="w-full sm:w-auto"
-                    >
-                      Add Agent
-                    </Button>
-                  </DialogFooter>
+                  {!isInstalled && (
+                    <DialogFooter className="flex-col gap-3 sm:flex-row">
+                      <Button
+                        variant="outline"
+                        // onClick={onClose}
+                        size="sm"
+                        className="w-full sm:w-auto"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        size="sm"
+                        // onClick={onAdd}
+                        // disabled={!canAddAgent}
+                        className="w-full sm:w-auto"
+                      >
+                        Add Agent
+                      </Button>
+                    </DialogFooter>
+                  )}
                 </DialogContent>
               </Dialog>
               {!isInstalled && (
