@@ -474,7 +474,10 @@
       "successTitle": "Cüzdan başarıyla geri yüklendi",
       "title": "Kripto Cüzdanı",
       "walletId": "Cüzdan ID",
-      "walletIdOptional": "Cüzdan ID isteğe bağlıdır"
+      "walletIdOptional": "Cüzdan ID isteğe bağlıdır",
+      "myWallet": "Cüzdanım",
+      "assets": "Varlıklar",
+      "recentTransactions": "Son İşlemler"
     },
     "defaultAgent": "Varsayılan AI",
     "description": "Hesap ayar tercihlerinizi yönetin.",

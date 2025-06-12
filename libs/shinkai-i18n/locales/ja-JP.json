@@ -474,7 +474,10 @@
       "successTitle": "ウォレットが正常に復元されました",
       "title": "暗号通貨ウォレット",
       "walletId": "ウォレットID",
-      "walletIdOptional": "ウォレットIDは任意です"
+      "walletIdOptional": "ウォレットIDは任意です",
+      "myWallet": "マイウォレット",
+      "assets": "資産",
+      "recentTransactions": "最新の取引"
     },
     "defaultAgent": "デフォルトAI",
     "description": "アカウント設定を管理します",

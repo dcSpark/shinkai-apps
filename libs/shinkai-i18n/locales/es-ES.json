@@ -474,7 +474,10 @@
       "successTitle": "Billetera restaurada con éxito",
       "title": "Billetera Cripto",
       "walletId": "ID de Billetera",
-      "walletIdOptional": "El ID de Billetera es opcional"
+      "walletIdOptional": "El ID de Billetera es opcional",
+      "myWallet": "Mi Billetera",
+      "assets": "Activos",
+      "recentTransactions": "Transacciones Recientes"
     },
     "defaultAgent": "IA Predeterminada",
     "description": "Administra tus preferencias de configuración de cuenta.",

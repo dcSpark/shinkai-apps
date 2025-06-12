@@ -474,7 +474,10 @@
       "successTitle": "Dompet berhasil dipulihkan",
       "title": "Dompet Kripto",
       "walletId": "ID Dompet",
-      "walletIdOptional": "ID Dompet bersifat opsional"
+      "walletIdOptional": "ID Dompet bersifat opsional",
+      "myWallet": "Dompet Saya",
+      "assets": "Aset",
+      "recentTransactions": "Transaksi Terbaru"
     },
     "defaultAgent": "AI Default",
     "description": "Kelola preferensi pengaturan akun Anda.",

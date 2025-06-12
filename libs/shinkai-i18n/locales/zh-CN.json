@@ -474,7 +474,10 @@
       "successTitle": "钱包恢复成功",
       "title": "加密钱包",
       "walletId": "钱包 ID",
-      "walletIdOptional": "钱包 ID 可选"
+      "walletIdOptional": "钱包 ID 可选",
+      "myWallet": "我的钱包",
+      "assets": "资产",
+      "recentTransactions": "最新交易"
     },
     "defaultAgent": "默认 AI",
     "description": "管理您的帐户设置偏好。",

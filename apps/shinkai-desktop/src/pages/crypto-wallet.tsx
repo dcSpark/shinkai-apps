@@ -36,6 +36,7 @@ import {
   AddCryptoWalletIcon,
   CryptoWalletIcon,
 } from '@shinkai_network/shinkai-ui/assets';
+import { TransactionsSection } from '../components/crypto-wallet/transactions-section';
 import { useMeasure } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -74,28 +75,51 @@ const CryptoWalletPage = () => {
       title={t('settings.cryptoWallet.title')}
     >
       {walletExist ? (
-        <div className="mt-6 flex w-full items-center justify-between gap-4 rounded-md border border-gray-200 px-6 py-3">
-          <span className="rounded-md bg-gray-300 p-2">
-            <CryptoWalletIcon className="size-4" />
-          </span>
-          <div className="flex-1 space-y-1">
-            <h2 className="text-sm font-medium">
-              {walletInfo?.payment_wallet.data.network.display_name}
-              {walletInfo?.payment_wallet.data.network.is_testnet && (
-                <Badge className="ml-2" variant="tags">
-                  Testnet
-                </Badge>
-              )}
-            </h2>
-            <p className="text-gray-80 text-sm">
-              {walletInfo?.payment_wallet?.data?.address?.address_id}
-            </p>
+        <>
+          <div className="mt-6 flex w-full items-center justify-between gap-4 rounded-md border border-gray-200 px-6 py-3">
+            <span className="rounded-md bg-gray-300 p-2">
+              <CryptoWalletIcon className="size-4" />
+            </span>
+            <div className="flex-1 space-y-1">
+              <h2 className="text-sm font-medium">
+                {walletInfo?.payment_wallet.data.network.display_name}
+                {walletInfo?.payment_wallet.data.network.is_testnet && (
+                  <Badge className="ml-2" variant="tags">
+                    Testnet
+                  </Badge>
+                )}
+              </h2>
+              <p className="text-gray-80 text-sm">
+                {walletInfo?.payment_wallet?.data?.address?.address_id}
+              </p>
+            </div>
+            <span className="text-gray-80 text-xs">
+              -{' '}
+              {
+                walletInfo?.payment_wallet?.data?.network?.native_asset
+                  ?.asset_id
+              }
+            </span>
           </div>
-          <span className="text-gray-80 text-xs">
-            -{' '}
-            {walletInfo?.payment_wallet?.data?.network?.native_asset?.asset_id}
-          </span>
-        </div>
+          <TransactionsSection
+            address={
+              walletInfo?.payment_wallet?.data?.address?.address_id ?? ''
+            }
+            network={
+              walletInfo?.payment_wallet?.data?.network?.is_testnet
+                ? 'BaseSepolia'
+                : 'BaseMainnet'
+            }
+            decimals={
+              walletInfo?.payment_wallet?.data?.network?.native_asset
+                ?.decimals ?? 18
+            }
+            asset={
+              walletInfo?.payment_wallet?.data?.network?.native_asset
+                ?.asset_id ?? ''
+            }
+          />
+        </>
       ) : (
         <div className="flex h-full flex-col items-center justify-center">
           <div className="col-span-4 flex flex-col items-center justify-center gap-3 rounded-md p-6">
@@ -380,7 +404,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
         >
           {walletCreationView !== WalletCreateConnectView.Main && (
             <Button
-              className="absolute left-4 top-6"
+              className="absolute top-6 left-4"
               onClick={handleBack}
               size="icon"
               variant="tertiary"
@@ -390,7 +414,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
           )}
           <DialogClose asChild>
             <Button
-              className="absolute right-4 top-6"
+              className="absolute top-6 right-4"
               size="icon"
               variant="tertiary"
             >

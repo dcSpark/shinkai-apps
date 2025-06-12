@@ -28,6 +28,7 @@ use crate::commands::mcp_clients_install::{
 };
 use crate::commands::logs::{download_logs, retrieve_logs};
 use crate::commands::spotlight_commands::{hide_spotlight_window_app, show_spotlight_window_app};
+use crate::commands::wallet::fetch_transactions;
 use deep_links::setup_deep_links;
 use global_shortcuts::global_shortcut_handler;
 use globals::SHINKAI_NODE_MANAGER_INSTANCE;
@@ -135,6 +136,7 @@ fn main() {
             register_sse_server_in_cursor,
             get_cursor_command_config_help,
             get_cursor_sse_config_help,
+            fetch_transactions,
         ])
         .setup(|app| {
             log::info!("starting app version: {}", env!("CARGO_PKG_VERSION"));
