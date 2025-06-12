@@ -61,6 +61,7 @@ import {
   RefreshCw,
   Wallet,
   XIcon,
+  ExternalLinkIcon,
 } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -96,6 +97,17 @@ const CryptoWalletPage = () => {
     },
     { enabled: !!walletExist },
   );
+
+  const etherscanLink = useMemo(() => {
+    const address = walletInfo?.payment_wallet?.data?.address?.address_id;
+    const network = walletInfo?.payment_wallet?.data?.network;
+    if (!address || !network) return '';
+    const baseUrl =
+      network === NetworkIdentifier.BaseSepolia
+        ? 'https://sepolia.basescan.org'
+        : 'https://basescan.org';
+    return `${baseUrl}/address/${address}`;
+  }, [walletInfo?.payment_wallet?.data?.address?.address_id, walletInfo?.payment_wallet?.data?.network]);
 
   return (
     <SimpleLayout
@@ -140,6 +152,18 @@ const CryptoWalletPage = () => {
                         }
                         className="size-4"
                       />
+                      {etherscanLink && (
+                        <Button
+                          asChild
+                          variant="ghost"
+                          size="icon"
+                          className="flex h-8 w-8 rounded-lg bg-gray-400 text-xs font-normal text-gray-50 transition-colors hover:bg-gray-400 hover:text-white"
+                        >
+                          <a href={etherscanLink} target="_blank" rel="noreferrer">
+                            <ExternalLinkIcon className="h-3.5 w-3.5" />
+                          </a>
+                        </Button>
+                      )}
                     </div>
                   </div>
                   <Separator />
