@@ -200,6 +200,8 @@ export const MessageBase = ({
   const selectedArtifact = useChatStore((state) => state.selectedArtifact);
   const setArtifact = useChatStore((state) => state.setSelectedArtifact);
 
+  const auth = useAuth((state) => state.auth);
+
   const getChatFontSizeInPts = useSettings(
     (state) => state.getChatFontSizeInPts,
   );
@@ -263,8 +265,6 @@ export const MessageBase = ({
   }, [message]);
 
   const { setOauthModalVisible } = useOAuth();
-
-  const auth = useAuth((state) => state.auth);
 
   return (
     <motion.div
