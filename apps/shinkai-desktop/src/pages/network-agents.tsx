@@ -23,6 +23,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
+  DialogClose,
   DialogFooter,
   Alert,
   AlertTitle,
@@ -647,16 +648,24 @@ const AgentCard = ({
 
                   {!isInstalled ? (
                     <DialogFooter className="flex-col gap-3 sm:flex-row">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full sm:w-auto"
-                      >
-                        Cancel
-                      </Button>
-                      <Button size="sm" className="w-full sm:w-auto">
-                        Add Agent
-                      </Button>
+                      <DialogClose asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full sm:w-auto"
+                        >
+                          Cancel
+                        </Button>
+                      </DialogClose>
+                      <DialogClose asChild>
+                        <Button
+                          size="sm"
+                          className="w-full sm:w-auto"
+                          onClick={handleAction}
+                        >
+                          Add Agent
+                        </Button>
+                      </DialogClose>
                     </DialogFooter>
                   ) : (
                     <DialogFooter>
