@@ -700,56 +700,58 @@ export const MessageBase = ({
                       </>
                     )}
 
-                    <Sheet onOpenChange={setTracingOpen} open={tracingOpen}>
-                      <Tooltip>
-                        <SheetTrigger asChild>
-                          <button
-                            className={cn(
-                              'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
-                            )}
-                          >
-                            <History />
-                          </button>
-                        </SheetTrigger>
-                        <TooltipPortal>
-                          <TooltipContent>
-                            <p>{t('common.tracing')}</p>
-                          </TooltipContent>
-                        </TooltipPortal>
-                      </Tooltip>
-                      <SheetContent className="max-w-3xl pr-1.5" side="right">
-                        <SheetHeader>
-                          <SheetTitle>{t('common.tracing')}</SheetTitle>
-                        </SheetHeader>
-                        <div className="flex h-[calc(100vh-130px)] divide-x">
-                          <ScrollArea className="w-1/3 pr-3">
-                            {isTracingLoading ? (
-                              <Loader2 className="mx-auto mt-4 h-5 w-5 animate-spin" />
-                            ) : (
-                              <div className="py-4">
-                                {renderTraceTree(tracesTree)}
-                              </div>
-                            )}
-                          </ScrollArea>
-                          <ScrollArea className="w-2/3 pl-3">
-                            {selectedTrace ? (
-                              <div className="space-y-2 py-4">
-                                <p className="text-sm font-medium">
-                                  {selectedTrace.trace_name}
+                    {message.role === 'assistant' && (
+                      <Sheet onOpenChange={setTracingOpen} open={tracingOpen}>
+                        <Tooltip>
+                          <SheetTrigger asChild>
+                            <button
+                              className={cn(
+                                'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                              )}
+                            >
+                              <History />
+                            </button>
+                          </SheetTrigger>
+                          <TooltipPortal>
+                            <TooltipContent>
+                              <p>{t('common.tracing')}</p>
+                            </TooltipContent>
+                          </TooltipPortal>
+                        </Tooltip>
+                        <SheetContent className="max-w-3xl pr-1.5" side="right">
+                          <SheetHeader>
+                            <SheetTitle>{t('common.tracing')}</SheetTitle>
+                          </SheetHeader>
+                          <div className="flex h-[calc(100vh-130px)] divide-x">
+                            <ScrollArea className="w-1/3 pr-3">
+                              {isTracingLoading ? (
+                                <Loader2 className="mx-auto mt-4 h-5 w-5 animate-spin" />
+                              ) : (
+                                <div className="py-4">
+                                  {renderTraceTree(tracesTree)}
+                                </div>
+                              )}
+                            </ScrollArea>
+                            <ScrollArea className="w-2/3 pl-3">
+                              {selectedTrace ? (
+                                <div className="space-y-2 py-4">
+                                  <p className="text-sm font-medium">
+                                    {selectedTrace.trace_name}
+                                  </p>
+                                  <PrettyJsonPrint
+                                    json={selectedTrace.trace_info}
+                                  />
+                                </div>
+                              ) : (
+                                <p className="py-4 text-center text-sm text-gray-400">
+                                  {t('common.selectItem')}
                                 </p>
-                                <PrettyJsonPrint
-                                  json={selectedTrace.trace_info}
-                                />
-                              </div>
-                            ) : (
-                              <p className="py-4 text-center text-sm text-gray-400">
-                                {t('common.selectItem')}
-                              </p>
-                            )}
-                          </ScrollArea>
-                        </div>
-                      </SheetContent>
-                    </Sheet>
+                              )}
+                            </ScrollArea>
+                          </div>
+                        </SheetContent>
+                      </Sheet>
+                    )}
 
                     <Tooltip>
                       <TooltipTrigger asChild>
