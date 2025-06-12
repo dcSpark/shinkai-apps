@@ -43,6 +43,7 @@ import { handleConfigureClaude } from '../lib/external-clients/claude-desktop';
 import { getDenoBinPath, ConfigError } from '../lib/external-clients/common';
 import { handleConfigureCursor } from '../lib/external-clients/cursor';
 import { useAuth } from '../store/auth';
+import RemoveToolButton from '../components/playground-tool/components/remove-tool-button';
 
 export const MCP_SERVER_ID = 'shinkai-mcp-server';
 
@@ -557,6 +558,7 @@ const McpCard = ({
             </TooltipPortal>
           </Tooltip>
         )}
+        <RemoveToolButton toolKey={toolRouterKey} />
       </div>
     </div>
   );
