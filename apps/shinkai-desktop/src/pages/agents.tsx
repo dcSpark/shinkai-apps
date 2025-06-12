@@ -25,6 +25,14 @@ import {
   TooltipPortal,
   TooltipProvider,
   TooltipTrigger,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
 } from '@shinkai_network/shinkai-ui';
 import {
   AIAgentIcon,
@@ -41,6 +49,8 @@ import React, { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
+import { useGetStoreAgents } from '../components/store/store-client';
+
 import ImportAgentModal from '../components/agent/import-agent-modal';
 import { useAuth } from '../store/auth';
 
@@ -52,6 +62,9 @@ function AgentsPage() {
     token: auth?.api_v2_key ?? '',
   });
 
+  const [selectedTab, setSelectedTab] = useState<'my' | 'download'>('my');
+  const { data: storeAgents, isPending: isStoreAgentsPending } = useGetStoreAgents();
+
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredAgents = useMemo(() => {
@@ -62,66 +75,108 @@ function AgentsPage() {
 
   return (
     <div className="h-full">
-      <div className="container flex flex-col">
-        <div className="flex flex-col gap-1 pb-6 pt-10">
-          <div className="flex justify-between gap-4">
-            <h1 className="font-clash text-3xl font-medium">Agents</h1>
-            <div className="flex gap-2">
-              <ImportAgentModal />
-              <Button
-                className="min-w-[100px]"
-                onClick={() => {
-                  void navigate('/add-agent');
-                }}
-                size="sm"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Add Agent</span>
-              </Button>
+      <Tabs
+        className="flex h-full flex-col"
+        defaultValue="my"
+        onValueChange={(value) => setSelectedTab(value as 'my' | 'download')}
+      >
+        <div className="container flex flex-col">
+          <div className="flex flex-col gap-1 pb-6 pt-10">
+            <div className="flex justify-between gap-4">
+              <div className="font-clash inline-flex items-center gap-5 text-3xl font-medium">
+                <h1>Agents</h1>
+                <TabsList className="bg-official-gray-950/80 flex h-10 w-fit items-center gap-2 rounded-full px-1 py-1">
+                  <TabsTrigger
+                    className={cn(
+                      'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
+                      'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
+                      'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
+                      'focus-visible:outline-hidden',
+                    )}
+                    value="my"
+                  >
+                    My Agents
+                  </TabsTrigger>
+                  <TabsTrigger
+                    className={cn(
+                      'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
+                      'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
+                      'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
+                      'focus-visible:outline-hidden',
+                    )}
+                    value="download"
+                  >
+                    Download Agents
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+              {selectedTab === 'my' && (
+                <div className="flex gap-2">
+                  <ImportAgentModal />
+                  <Button
+                    className="min-w-[100px]"
+                    onClick={() => {
+                      void navigate('/add-agent');
+                    }}
+                    size="sm"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Add Agent</span>
+                  </Button>
+                </div>
+              )}
             </div>
+            <p className="text-official-gray-400 text-sm">
+              Create and explore AI agents with personalized instructions,
+              enriched knowledge, <br /> diverse task capabilities, and more to
+              tackle your goals autonomously.
+            </p>
           </div>
-          <p className="text-official-gray-400 text-sm">
-            Create and explore AI agents with personalized instructions,
-            enriched knowledge, <br /> diverse task capabilities, and more to
-            tackle your goals autonomously.
-          </p>
-        </div>
-        <SearchInput
-          classNames={{
-            container: 'w-full mb-4',
-          }}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          value={searchQuery}
-        />
-        <div className="flex flex-1 flex-col space-y-3 pb-10">
-          {!filteredAgents?.length ? (
-            <div className="flex grow flex-col items-center gap-3 pt-20">
-              <div className="bg-official-gray-800 flex size-10 items-center justify-center rounded-lg p-2">
-                <AIAgentIcon className="size-full" name={''} />
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <p className="font-medium">No available agents</p>
-                <p className="text-official-gray-400 text-center text-sm font-medium">
-                  Create your first Agent to start exploring the power of AI.
-                </p>
-              </div>
+
+          <TabsContent value="my">
+            <SearchInput
+              classNames={{ container: 'w-full mb-4' }}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchQuery}
+            />
+            <div className="flex flex-1 flex-col space-y-3 pb-10">
+              {!filteredAgents?.length ? (
+                <div className="flex grow flex-col items-center gap-3 pt-20">
+                  <div className="bg-official-gray-800 flex size-10 items-center justify-center rounded-lg p-2">
+                    <AIAgentIcon className="size-full" name={''} />
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <p className="font-medium">No available agents</p>
+                    <p className="text-official-gray-400 text-center text-sm font-medium">
+                      Create your first Agent to start exploring the power of AI.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {filteredAgents?.map((agent) => (
+                    <AgentCard
+                      key={agent.agent_id}
+                      agentDescription={agent.ui_description}
+                      agentId={agent.agent_id}
+                      agentName={agent.name}
+                      llmProviderId={agent.llm_provider_id}
+                      scheduledTasks={agent.cron_tasks}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {filteredAgents?.map((agent) => (
-                <AgentCard
-                  agentDescription={agent.ui_description}
-                  agentId={agent.agent_id}
-                  agentName={agent.name}
-                  key={agent.agent_id}
-                  llmProviderId={agent.llm_provider_id}
-                  scheduledTasks={agent.cron_tasks}
-                />
-              ))}
-            </div>
-          )}
+          </TabsContent>
+
+          <TabsContent value="download" className="space-y-8">
+            <DownloadAgents
+              agents={storeAgents ?? []}
+              isLoading={isStoreAgentsPending}
+            />
+          </TabsContent>
         </div>
-      </div>
+      </Tabs>
     </div>
   );
 }
@@ -418,5 +473,52 @@ const RemoveAgentDrawer = ({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+};
+
+interface DownloadAgentsProps {
+  agents: ReturnType<typeof useGetStoreAgents>['data'] extends infer T ? T : never;
+  isLoading: boolean;
+}
+
+const DownloadAgents = ({ agents, isLoading }: DownloadAgentsProps) => {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filtered = useMemo(() => {
+    return (
+      agents?.filter((a) =>
+        a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.description.toLowerCase().includes(searchQuery.toLowerCase()),
+      ) ?? []
+    );
+  }, [agents, searchQuery]);
+
+  return (
+    <div className="space-y-8">
+      <SearchInput
+        placeholder="Search for agents"
+        classNames={{ input: 'bg-transparent' }}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+      <div className="grid grid-cols-1 gap-6 pb-10 md:grid-cols-2">
+        {isLoading &&
+          Array.from({ length: 4 }).map((_, idx) => (
+            <Card key={idx} className="border-official-gray-850 bg-official-gray-900 h-24 animate-pulse" />
+          ))}
+        {filtered.map((agent) => (
+          <Card key={agent.id} className="border-official-gray-850 bg-official-gray-900 flex flex-col border">
+            <CardHeader className="pb-4">
+              <CardTitle className="mb-1 text-lg font-bold leading-tight text-white">
+                {agent.name}
+              </CardTitle>
+              <CardDescription className="text-official-gray-400 line-clamp-2 text-sm">
+                {agent.description}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+    </div>
   );
 };
