@@ -154,14 +154,12 @@ const CryptoWalletPage = () => {
                       />
                       {etherscanLink && (
                         <Button
-                          asChild
                           variant="ghost"
                           size="icon"
                           className="flex h-8 w-8 rounded-lg bg-gray-400 text-xs font-normal text-gray-50 transition-colors hover:bg-gray-400 hover:text-white"
+                          onClick={() => window.open(etherscanLink, '_blank')}
                         >
-                          <a href={etherscanLink} target="_blank" rel="noreferrer">
-                            <ExternalLinkIcon className="h-3.5 w-3.5" />
-                          </a>
+                          <ExternalLinkIcon className="h-3.5 w-3.5" />
                         </Button>
                       )}
                     </div>
