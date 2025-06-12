@@ -332,7 +332,7 @@ export type GetMessageTracesRequest = {
 };
 
 export type MessageTrace = {
-  id: string;
+  id: number;
   parent_message_id: string;
   inbox_name: string;
   datetime: string;

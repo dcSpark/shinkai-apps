@@ -683,7 +683,7 @@ export const MessageBase = ({
                                   <p className="text-sm font-medium">
                                     {trace.trace_name}
                                   </p>
-                                  <PrettyJsonPrint data={trace.trace_info} />
+                                  <PrettyJsonPrint json={trace.trace_info} />
                                 </div>
                               ))}
                             </div>
