@@ -1,4 +1,4 @@
-use tauri::{utils::config::BackgroundThrottlingPolicy, AppHandle, Error, Manager, WebviewWindow, WebviewWindowBuilder};
+use tauri::{utils::config::BackgroundThrottlingPolicy, AppHandle, Error, Manager, WebviewWindow, WebviewWindowBuilder, Emitter};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Window {
@@ -93,5 +93,21 @@ pub fn hide_spotlight_window(app_handle: AppHandle) {
 pub fn show_spotlight_window(app_handle: AppHandle) {
     if let Some(window) = app_handle.get_webview_window(Window::Spotlight.as_str()) {
         window.show().unwrap();
+    }
+}
+
+pub fn open_main_window_with_path(app_handle: AppHandle, path: String) {
+    match recreate_window(app_handle.clone(), Window::Main, true) {
+        Ok(window) => {
+            if let Err(e) = app_handle.emit_to(Window::Main.as_str(), "navigate-to-path", path) {
+                log::error!("failed to emit 'navigate-to-path': {}", e);
+            }
+            if let Err(e) = window.set_focus() {
+                log::error!("failed to set focus: {}", e);
+            }
+        }
+        Err(e) => {
+            log::error!("failed to recreate main window: {}", e);
+        }
     }
 }

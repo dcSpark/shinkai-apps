@@ -142,6 +142,9 @@ export default {
       deleteInboxConfirmationDescription:
         'The chat will be deleted and removed from your chat history',
     },
+    tracing: {
+      title: 'Tracing',
+    },
   },
   aiFilesSearch: {
     label: 'AI Files Content Search',
@@ -349,7 +352,7 @@ export default {
       emptyState: {
         title: 'No wallets found',
         description:
-          'Manage your crypto wallets. Create or restore your Coinbase CDP Wallet or your Hot Wallet.',
+          'Manage your crypto wallets. Create or restore your Wallet.',
       },
     },
     shinkaiIdentity: {
@@ -558,6 +561,7 @@ export default {
     showMore: 'More',
     showLess: 'Show Less',
     viewDetails: 'View Details',
+    selectItem: 'Select an item to view details',
     about: 'About',
   },
   quickConnection: {
@@ -689,7 +693,7 @@ export default {
     updateFailed: 'Failed to update MCP server',
     manualSetup: 'Manual Setup',
     addFromGitHub: 'Add from GitHub',
-    tools: 'tools',
+    tools: 'Tools',
     toolsFor: 'Tools for {{name}}',
     listOfToolsAvailableFromThisMcpServer:
       'List of tools available from this MCP server.',
@@ -698,6 +702,33 @@ export default {
     noServersFound: 'No MCP servers found. Add a new server to get started.',
     title: 'MCP Servers',
     listDescription: 'List of MCP servers connected to your Shinkai Node',
+    composio: {
+      title: 'Composio MCP Servers',
+      details: 'Details',
+      created: 'Created',
+      lastUpdated: 'Last Updated',
+      categories: 'Categories',
+      toolsCount: 'Tools Count',
+      availableActions: 'Available Actions',
+      statistics: 'Statistics',
+      totalDownloads: 'Total Downloads',
+      activeUsers: 'Active Users',
+      latestVersion: 'Latest Version',
+      updatedAt: 'Last Updated',
+      installing: 'Installing...',
+      uninstalling: 'Uninstalling...',
+      adding: 'Adding...',
+      deleting: 'Deleting...',
+      install: 'Install',
+      uninstall: 'Uninstall',
+      add: 'Add MCP Server',
+      delete: 'Delete',
+      loginRequired: 'You must be logged in to install apps',
+      installSuccess: '{{appName}} installed successfully',
+      installFailed: 'Error installing app from composio',
+      uninstallSuccess: '{{appName}} uninstalled successfully',
+      uninstallFailed: 'Error uninstalling app from composio',
+    },
   },
   tools: {
     label: 'Shinkai Tools',

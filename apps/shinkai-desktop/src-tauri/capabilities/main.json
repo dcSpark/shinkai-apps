@@ -24,6 +24,11 @@
           "path": "$HOME/Downloads/*"
         }
       ]
+    },
+    {
+      "identifier": "http:default",
+      "allow": [{ "url": "https://mcp.composio.dev" }],
+      "deny": []
     }
   ],
   "commands.allow": [

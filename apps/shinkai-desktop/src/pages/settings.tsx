@@ -297,9 +297,9 @@ const SettingsPage = () => {
                   <span>Total tokens used</span>
                   <div className="flex items-center gap-1">
                     <span className="text-xs text-white">
-                      {shinkaiFreeModelQuota.usedTokens}{' '}
+                      {shinkaiFreeModelQuota.usedTokens.toLocaleString()}{' '}
                       <span className="text-official-gray-500 text-xs">
-                        / {shinkaiFreeModelQuota.tokensQuota}
+                        / {shinkaiFreeModelQuota.tokensQuota.toLocaleString()}
                       </span>
                     </span>
                     <Tooltip>

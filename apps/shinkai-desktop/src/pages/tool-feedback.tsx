@@ -84,12 +84,12 @@ function ToolFeedbackPrompt() {
         return (
           <div
             className={cn(
-              'flex h-full flex-col items-center justify-center py-10',
+              'flex size-full flex-col items-center justify-center py-4',
             )}
           >
             <motion.div
               className={cn(
-                'border-official-gray-780 mx-auto flex h-[84vh] w-full max-w-2xl flex-col items-stretch justify-center rounded-xl border p-1 pt-0 pb-3',
+                'mx-auto flex h-full w-full flex-col items-stretch justify-center rounded-xl p-1 pt-0 pb-3',
               )}
               layoutId={`left-element`}
             >

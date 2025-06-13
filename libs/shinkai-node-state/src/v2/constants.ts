@@ -1,3 +1,4 @@
+import { type ProviderDetails } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import {
   type AssistantMessage,
   type Attachment,
@@ -30,6 +31,7 @@ export enum FunctionKeyV2 {
   GET_PLAYGROUND_TOOL = 'GET_PLAYGROUND_TOOL',
   GET_PLAYGROUND_TOOLS = 'GET_PLAYGROUND_TOOLS',
   GET_TOOL_STORE_DETAILS = 'GET_TOOL_STORE_DETAILS',
+  GET_TOOLS_WITH_OFFERINGS = 'GET_TOOLS_WITH_OFFERINGS',
   GET_TOOL = 'GET_TOOL',
   GET_SEARCH_TOOLS = 'GET_SEARCH_TOOLS',
   GET_CHAT_CONFIG = 'GET_CHAT_CONFIG',
@@ -39,6 +41,7 @@ export enum FunctionKeyV2 {
   GET_SEARCH_PROMPT = 'GET_SEARCH_PROMPT',
   GET_PREFERENCES = 'GET_PREFERENCES',
   GET_WALLET_LIST = 'GET_WALLET_LIST',
+  GET_WALLET_BALANCE = 'GET_WALLET_BALANCE',
   GET_RECURRING_TASKS = 'GET_RECURRING_TASKS',
   GET_RECURRING_TASK = 'GET_RECURRING_TASK',
   GET_RECURRING_TASK_LOGS = 'GET_RECURRING_TASK_LOGS',
@@ -56,6 +59,8 @@ export enum FunctionKeyV2 {
   GET_MCP_SERVERS = 'GET_MCP_SERVERS',
   GET_MCP_SERVER_TOOLS = 'GET_MCP_SERVER_TOOLS',
   GET_NGROK_STATUS = 'GET_NGROK_STATUS',
+  GET_INSTALLED_NETWORK_TOOLS = 'GET_INSTALLED_NETWORK_TOOLS',
+  GET_MESSAGE_TRACES = 'GET_MESSAGE_TRACES',
 }
 
 export const DEFAULT_CHAT_CONFIG = {
@@ -83,7 +88,9 @@ export const generateOptimisticUserMessage = (
   attachments: attachments ?? [],
 });
 
-export const generateOptimisticAssistantMessage = (): AssistantMessage => ({
+export const generateOptimisticAssistantMessage = (
+  provider?: ProviderDetails,
+): AssistantMessage => ({
   messageId: OPTIMISTIC_ASSISTANT_MESSAGE_ID,
   createdAt: new Date().toISOString(),
   content: '',
@@ -92,4 +99,5 @@ export const generateOptimisticAssistantMessage = (): AssistantMessage => ({
   metadata: { parentMessageId: '', inboxId: '' },
   toolCalls: [],
   artifacts: [],
+  provider: provider,
 });

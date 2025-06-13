@@ -69,7 +69,10 @@
     "limitReachedDescription": "Anda telah menggunakan semua kueri Anda untuk bulan ini pada model/agen ini. Silakan mulai obrolan baru dengan agen lain.",
     "limitReachedTitle": "Batas Telah Tercapai",
     "openChatFolder": "Buka Folder Obrolan",
-    "sendMessage": "Kirim Pesan"
+    "sendMessage": "Kirim Pesan",
+    "tracing": {
+      "title": "Pelacakan"
+    }
   },
   "chatDM": {
     "create": "Buat Obrolan DM",
@@ -142,6 +145,7 @@
     "search": "Cari",
     "searchPlaceholder": "Cari...",
     "seeOptions": "Lihat Opsi",
+    "selectItem": "Pilih item untuk melihat detail",
     "send": "Kirim",
     "shinkaiPrivate": "Shinkai Pribadi (Lokal)",
     "showLess": "Tampilkan Lebih Sedikit",
@@ -344,6 +348,33 @@
     "addFromGitHub": "Tambah dari GitHub",
     "addSuccess": "Server MCP berhasil ditambahkan",
     "addVariable": "Tambah",
+    "composio": {
+      "activeUsers": "Pengguna Aktif",
+      "add": "Tambahkan Server MCP",
+      "adding": "Menambahkan...",
+      "availableActions": "Tindakan Tersedia",
+      "categories": "Kategori",
+      "created": "Dibuat",
+      "delete": "Hapus",
+      "deleting": "Menghapus...",
+      "details": "Rincian",
+      "install": "Instal",
+      "installFailed": "Kesalahan saat menginstal aplikasi dari Composio",
+      "installSuccess": "{{appName}} berhasil diinstal",
+      "installing": "Menginstal...",
+      "lastUpdated": "Terakhir Diperbarui",
+      "latestVersion": "Versi Terbaru",
+      "loginRequired": "Anda harus masuk untuk menginstal aplikasi",
+      "statistics": "Statistik",
+      "title": "Server MCP Composio",
+      "toolsCount": "Jumlah Alat",
+      "totalDownloads": "Total Unduhan",
+      "uninstall": "Copot",
+      "uninstallFailed": "Kesalahan saat menghapus aplikasi dari Composio",
+      "uninstallSuccess": "{{appName}} berhasil dihapus",
+      "uninstalling": "Mencopot...",
+      "updatedAt": "Terakhir Diperbarui"
+    },
     "configure": "Konfigurasi Server",
     "delete": "Hapus Server",
     "deleteDescription": "Apakah Anda yakin ingin menghapus server \"{{name}}\"? Tindakan ini tidak dapat dibatalkan.",

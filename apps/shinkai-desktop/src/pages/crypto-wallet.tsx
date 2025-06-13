@@ -8,11 +8,14 @@ import {
 import { useCreateLocalWallet } from '@shinkai_network/shinkai-node-state/v2/mutations/createLocalWallet/useCreateLocalWallet';
 import { useRestoreCoinbaseMpcWallet } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreCoinbaseMpcWallet/useRestoreCoinbaseMpcWallet';
 import { useRestoreLocalWallet } from '@shinkai_network/shinkai-node-state/v2/mutations/restoreLocalWallet/useRestoreLocalWallet';
+import { useGetWalletBalance } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletBalance/useGetWalletBalance';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import {
-  Badge,
   Button,
   buttonVariants,
+  Card,
+  CardContent,
+  CopyToClipboardIcon,
   Dialog,
   DialogContent,
   DialogHeader,
@@ -28,20 +31,40 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Separator,
   Switch,
   Textarea,
   TextField,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@shinkai_network/shinkai-ui';
 import {
   AddCryptoWalletIcon,
   CryptoWalletIcon,
+  EthereumIcon,
+  USDCIcon,
 } from '@shinkai_network/shinkai-ui/assets';
+import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useMeasure } from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Download, FileText, PlusIcon, XIcon } from 'lucide-react';
-import { useMemo, useRef } from 'react';
+import {
+  ArrowDownLeft,
+  ArrowLeft,
+  Copy,
+  Download,
+  EyeIcon,
+  EyeOffIcon,
+  FileText,
+  PlusIcon,
+  RefreshCw,
+  XIcon,
+  ExternalLinkIcon,
+} from 'lucide-react';
+import { useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Link } from 'react-router';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -49,6 +72,7 @@ import {
   useWalletsStore,
   WalletCreateConnectView,
 } from '../components/crypto-wallet/context/wallets-context';
+import { formatBalanceAmount } from '../components/crypto-wallet/utils';
 import { useAuth } from '../store/auth';
 import { SimpleLayout } from './layout/simple-layout';
 
@@ -65,37 +89,218 @@ const CryptoWalletPage = () => {
   const walletExist =
     walletInfo?.payment_wallet || walletInfo?.receiving_wallet;
 
+  const {
+    data: walletBalance,
+    refetch,
+    isRefetching,
+  } = useGetWalletBalance(
+    {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    },
+    { enabled: !!walletExist },
+  );
+
+  const etherscanLink = useMemo(() => {
+    const address = walletInfo?.payment_wallet?.data?.address?.address_id;
+    const network = walletInfo?.payment_wallet?.data?.network;
+    if (!address || !network) return '';
+    const baseUrl =
+      network === NetworkIdentifier.BaseSepolia
+        ? 'https://sepolia.basescan.org'
+        : 'https://basescan.org';
+    return `${baseUrl}/address/${address}`;
+  }, [
+    walletInfo?.payment_wallet?.data?.address?.address_id,
+    walletInfo?.payment_wallet?.data?.network,
+  ]);
+
   return (
     <SimpleLayout
       classname="container"
       headerRightElement={
-        walletExist ? <CreateWalletDialog buttonLabel="Update Wallet" /> : null
+        walletExist ? (
+          <div className="flex items-center gap-3">
+            <Link
+              to="/network-ai-agents"
+              className={cn(
+                buttonVariants({
+                  variant: 'outline',
+                  size: 'sm',
+                }),
+              )}
+            >
+              Explore Network Agents
+            </Link>
+            <CreateWalletDialog buttonLabel="Update Wallet" />
+          </div>
+        ) : null
       }
-      title={t('settings.cryptoWallet.title')}
+      title={walletExist ? 'My Wallet' : t('settings.cryptoWallet.title')}
     >
       {walletExist ? (
-        <div className="mt-6 flex w-full items-center justify-between gap-4 rounded-md border border-gray-200 px-6 py-3">
-          <span className="rounded-md bg-gray-300 p-2">
-            <CryptoWalletIcon className="size-4" />
-          </span>
-          <div className="flex-1 space-y-1">
-            <h2 className="text-sm font-medium">
-              {walletInfo?.payment_wallet.data.network.display_name}
-              {walletInfo?.payment_wallet.data.network.is_testnet && (
-                <Badge className="ml-2" variant="tags">
-                  Testnet
-                </Badge>
-              )}
-            </h2>
-            <p className="text-gray-80 text-sm">
-              {walletInfo?.payment_wallet?.data?.address?.address_id}
-            </p>
+        <>
+          <div className="min-h-screen py-5">
+            <div className="mx-auto space-y-6">
+              <Card>
+                <CardContent className="space-y-4 pt-5">
+                  <div className="space-y-2">
+                    <div className="text-official-gray-400 text-sm font-medium">
+                      Wallet Address
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <code className="font-mono text-base">
+                        {walletInfo?.payment_wallet?.data?.address?.address_id}
+                      </code>
+                      <CopyToClipboardIcon
+                        string={
+                          walletInfo?.payment_wallet?.data?.address?.address_id
+                        }
+                        className="size-4"
+                      />
+                      {etherscanLink && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <a
+                              href={etherscanLink}
+                              target="_blank"
+                              className={cn(
+                                buttonVariants({
+                                  variant: 'tertiary',
+                                  size: 'icon',
+                                }),
+                              )}
+                            >
+                              <ExternalLinkIcon className="h-3.5 w-3.5" />
+                            </a>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>View on Explorer</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="space-y-2">
+                    <div className="text-official-gray-400 text-sm font-medium">
+                      Network
+                    </div>
+                    <p className="text-base text-white">
+                      {formatText(walletInfo?.payment_wallet?.data?.network)}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="space-y-6 pt-5">
+                  <div className="flex items-center justify-between">
+                    <div className="text-base font-medium">Assets</div>
+                    <Button
+                      className="h-8 w-auto"
+                      disabled={isRefetching}
+                      isLoading={isRefetching}
+                      onClick={() => refetch()}
+                      rounded="lg"
+                      size="xs"
+                      variant="outline"
+                    >
+                      {!isRefetching && <RefreshCw className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                  <div className="space-y-4">
+                    {/* ETH */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex size-9 items-center justify-center rounded-full border bg-black">
+                          <EthereumIcon className="size-5" />
+                        </div>
+                        <div>
+                          <div className="font-medium">Ethereum</div>
+                          <div className="text-official-gray-400 text-sm">
+                            ETH
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-medium">
+                          {formatBalanceAmount(
+                            walletBalance?.ETH.amount ?? '0',
+                            walletBalance?.ETH.decimals ?? 0,
+                          )}{' '}
+                          ETH
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex size-9 items-center justify-center rounded-full border bg-black">
+                          <USDCIcon className="size-5" />
+                        </div>
+                        <div>
+                          <div className="font-medium">USD Coin</div>
+                          <div className="text-official-gray-400 text-sm">
+                            USDC
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-medium">
+                          {formatBalanceAmount(
+                            walletBalance?.USDC.amount ?? '0',
+                            walletBalance?.USDC.decimals ?? 0,
+                          )}{' '}
+                          USDC
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Recent Activity</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                        <ArrowDownLeft className="h-4 w-4 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium">Received USDC</div>
+                        <div className="text-official-gray-400 text-xs">
+                          2 hours ago
+                        </div>
+                      </div>
+                      <div className="text-sm font-medium text-green-600">
+                        +9.98 USDC
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                        <ArrowDownLeft className="h-4 w-4 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium">Received ETH</div>
+                        <div className="text-official-gray-400 text-xs">
+                          1 day ago
+                        </div>
+                      </div>
+                      <div className="text-sm font-medium text-green-600">
+                        +0.003 ETH
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card> */}
+            </div>
           </div>
-          <span className="text-gray-80 text-xs">
-            -{' '}
-            {walletInfo?.payment_wallet?.data?.network?.native_asset?.asset_id}
-          </span>
-        </div>
+        </>
       ) : (
         <div className="flex h-full flex-col items-center justify-center">
           <div className="col-span-4 flex flex-col items-center justify-center gap-3 rounded-md p-6">
@@ -104,7 +309,7 @@ const CryptoWalletPage = () => {
               <h2 className="text-lg font-medium">
                 {t('settings.cryptoWallet.emptyState.title')}
               </h2>
-              <p className="text-gray-80 text-sm">
+              <p className="text-official-gray-400 text-sm">
                 {t('settings.cryptoWallet.emptyState.description')}
               </p>
             </div>
@@ -200,7 +405,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                   <div className="text-sm font-semibold">
                     Multi-Party Computation Wallet{' '}
                   </div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-400 text-sm">
                     MPC Wallets provides better recovery and stronger security
                     in crypto wallets.
                   </div>
@@ -216,7 +421,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 <AddCryptoWalletIcon className="size-5" />
                 <div>
                   <div className="text-sm font-semibold">Hot Wallet</div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-400 text-sm">
                     Use a hot wallet to store your cryptocurrency assets.
                   </div>
                 </div>
@@ -246,7 +451,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 <PlusIcon className="size-4 shrink-0" />
                 <div>
                   <div className="text-sm font-semibold">Create New</div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-400 text-sm">
                     Create a new MPC wallet to store your assets.
                   </div>
                 </div>
@@ -264,7 +469,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                     {' '}
                     Import Private Key
                   </div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-400 text-sm">
                     Restore to regain access to your cryptocurrency assets.
                   </div>
                 </div>
@@ -289,7 +494,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 <PlusIcon className="size-4 shrink-0" />
                 <div>
                   <div className="text-sm font-semibold">Create New</div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-400 text-sm">
                     Create a new wallet to store your assets.
                   </div>
                 </div>
@@ -307,7 +512,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                     {' '}
                     Import Secret Recovery Phrase
                   </div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-400 text-sm">
                     Restore to regain access to your cryptocurrency assets.
                   </div>
                 </div>
@@ -327,7 +532,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                     {' '}
                     Import Private Key
                   </div>
-                  <div className="text-gray-80 text-sm">
+                  <div className="text-official-gray-400 text-sm">
                     Restore to regain access to your cryptocurrency assets.
                   </div>
                 </div>
@@ -360,9 +565,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
       open={openWalletCreationModal}
     >
       <DialogTrigger asChild>
-        <Button className="min-w-[150px] gap-2 px-3" size="sm">
-          {buttonLabel}
-        </Button>
+        <Button size="sm">{buttonLabel}</Button>
       </DialogTrigger>
       <DialogContent
         onInteractOutside={(e) => {
@@ -394,7 +597,7 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
               size="icon"
               variant="tertiary"
             >
-              <XIcon className="text-gray-80 h-5 w-5" />
+              <XIcon className="text-official-gray-400 h-5 w-5" />
             </Button>
           </DialogClose>
           <div className="px-2 pt-2.5 antialiased" ref={elementRef}>
@@ -450,7 +653,6 @@ const MpcRestoreWallet = () => {
   const { mutateAsync: restoreCoinbaseMPCWallet } = useRestoreCoinbaseMpcWallet(
     {
       onSuccess: () => {
-        toast.success('MPC Wallet restored successfully');
         resetWalletCreation();
       },
       onError: (error) => {
@@ -518,7 +720,7 @@ const MpcRestoreWallet = () => {
                 </FormControl>
                 <div
                   className={cn(
-                    'text-gray-80 space-y-1 text-sm leading-none',
+                    'text-official-gray-400 space-y-1 text-sm leading-none',
                     field.value && 'text-white',
                   )}
                 >
@@ -563,10 +765,10 @@ const RegularRestoreWalletMnemonic = () => {
       role: WalletRole.Both,
     },
   });
+  const [showMnemonic, setShowMnemonic] = useState(false);
 
-  const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
+  const { mutateAsync: restoreLocalWallet, isPending } = useRestoreLocalWallet({
     onSuccess: () => {
-      toast.success('Wallet restored successfully');
       resetWalletCreation();
     },
     onError: (error) => {
@@ -601,20 +803,47 @@ const RegularRestoreWalletMnemonic = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Secret Recovery Phrase</FormLabel>
-                <FormControl>
-                  <Textarea
-                    className="!min-h-[130px] resize-none text-sm"
-                    spellCheck={false}
-                    {...field}
-                  />
-                </FormControl>
+                <div className="relative">
+                  <FormControl>
+                    <Textarea
+                      className="!min-h-[130px] resize-none text-sm"
+                      spellCheck={false}
+                      style={
+                        {
+                          WebkitTextSecurity: showMnemonic ? 'none' : 'disc',
+                        } as React.CSSProperties
+                      }
+                      {...field}
+                    />
+                  </FormControl>
+                  <Button
+                    aria-label={showMnemonic ? 'Hide phrase' : 'Show phrase'}
+                    className="text-gray-80 hover:bg-gray-350 absolute top-2 right-2"
+                    onClick={() => setShowMnemonic(!showMnemonic)}
+                    size="icon"
+                    type="button"
+                    variant="ghost"
+                  >
+                    {showMnemonic ? (
+                      <EyeOffIcon aria-hidden="true" className="h-4 w-4" />
+                    ) : (
+                      <EyeIcon aria-hidden="true" className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </FormItem>
             )}
           />
 
           <div className="flex justify-end pt-6">
             <div className="flex justify-end gap-2">
-              <Button className="min-w-[100px] flex-1" size="sm" type="submit">
+              <Button
+                className="min-w-[100px] flex-1"
+                size="sm"
+                type="submit"
+                isLoading={isPending}
+                disabled={isPending}
+              >
                 {t('common.restore')}
               </Button>
             </div>
@@ -652,7 +881,6 @@ const RegularRestoreWalletPrivateKey = () => {
 
   const { mutateAsync: restoreLocalWallet } = useRestoreLocalWallet({
     onSuccess: () => {
-      toast.success('Wallet restored successfully');
       resetWalletCreation();
     },
     onError: (error) => {
@@ -711,7 +939,7 @@ const RegularRestoreWalletPrivateKey = () => {
           {/*  name="role"*/}
           {/*  render={({ field }) => (*/}
           {/*    <div className="space-y-1.5">*/}
-          {/*      <Label className="text-gray-80 pb-2 pl-2 text-xs">*/}
+          {/*      <Label className="text-official-gray-400 pb-2 pl-2 text-xs">*/}
           {/*        Select account type*/}
           {/*      </Label>*/}
           {/*      <FormItem>*/}

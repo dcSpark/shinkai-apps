@@ -1,14 +1,14 @@
 import { httpClient } from '../../http-client';
 import { urlJoin } from '../../utils/url-join';
 import {
-  AddMcpServerRequest,
-  DeleteMcpServerRequest,
-  GetMcpServersResponse,
-  GetMcpServerToolsRequest,
-  GetMcpServerToolsResponse,
-  ImportMcpServerFromGithubUrlRequest,
-  McpServer,
-  UpdateMcpServerRequest,
+  type AddMcpServerRequest,
+  type DeleteMcpServerRequest,
+  type GetMcpServersResponse,
+  type GetMcpServerToolsRequest,
+  type GetMcpServerToolsResponse,
+  type ImportMcpServerFromGithubUrlRequest,
+  type McpServer,
+  type UpdateMcpServerRequest,
 } from './types';
 
 export const getMcpServers = async (
@@ -87,7 +87,11 @@ export const deleteMcpServer = async (
       responseType: 'json',
     },
   );
-  return response.data as McpServer;
+  return response.data as {
+    deleted_mcp_server: McpServer;
+    message: string;
+    tools_deleted: number;
+  };
 };
 
 export const importMcpServerFromGithubUrl = async (

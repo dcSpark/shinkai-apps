@@ -1119,6 +1119,57 @@ export const ShortcutsIcon = ({ className }: { className?: string }) => (
     />
   </svg>
 );
+
+export const NetworkAgentIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    viewBox="0 0 24 24"
+    width="24"
+    height="24"
+    fill="none"
+  >
+    <path
+      d="M21.5 12C21.5 13.3807 20.3807 14.5 19 14.5C17.6193 14.5 16.5 13.3807 16.5 12C16.5 10.6193 17.6193 9.5 19 9.5C20.3807 9.5 21.5 10.6193 21.5 12Z"
+      stroke="currentColor"
+      stroke-width="1.5"
+    />
+    <path
+      d="M13.5 4C13.5 4.82843 12.8284 5.5 12 5.5C11.1716 5.5 10.5 4.82843 10.5 4C10.5 3.17157 11.1716 2.5 12 2.5C12.8284 2.5 13.5 3.17157 13.5 4Z"
+      stroke="currentColor"
+      stroke-width="1.5"
+    />
+    <path
+      d="M12.5 11.5C12.5 12.3284 11.8284 13 11 13C10.1716 13 9.5 12.3284 9.5 11.5C9.5 10.6716 10.1716 10 11 10C11.8284 10 12.5 10.6716 12.5 11.5Z"
+      stroke="currentColor"
+      stroke-width="1.5"
+    />
+    <path
+      d="M6.5 7.5C6.5 8.60457 5.60457 9.5 4.5 9.5C3.39543 9.5 2.5 8.60457 2.5 7.5C2.5 6.39543 3.39543 5.5 4.5 5.5C5.60457 5.5 6.5 6.39543 6.5 7.5Z"
+      stroke="currentColor"
+      stroke-width="1.5"
+    />
+    <path
+      d="M10.5 19.5C10.5 20.6046 9.60457 21.5 8.5 21.5C7.39543 21.5 6.5 20.6046 6.5 19.5C6.5 18.3954 7.39543 17.5 8.5 17.5C9.60457 17.5 10.5 18.3954 10.5 19.5Z"
+      stroke="currentColor"
+      stroke-width="1.5"
+    />
+    <path
+      d="M13.5 5L17.5 10M14.5 15.5L10.5 18.5M8 17.5L5 9.5M6.31298 6.65431L10.5 4.5M12.5 11.5L16.505 11.8443"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M12 5.5L11 10"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+);
+
 export const MCPIcon = ({ className }: { className?: string }) => (
   <svg
     className={cn('shrink-0', className)}
@@ -2109,3 +2160,88 @@ export const HomeIcon = ({ className }: { className?: string }) => (
     />
   </svg>
 );
+
+export const TracingIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={cn('shrink-0', className)}
+    viewBox="0 0 24 24"
+    width="24"
+    height="24"
+    fill="none"
+  >
+    <path
+      d="M3 19C3 20.4142 3 21.1213 3.43934 21.5607C3.87868 22 4.58579 22 6 22C7.41421 22 8.12132 22 8.56066 21.5607C9 21.1213 9 20.4142 9 19C9 17.5858 9 16.8787 8.56066 16.4393C8.12132 16 7.41421 16 6 16C4.58579 16 3.87868 16 3.43934 16.4393C3 16.8787 3 17.5858 3 19Z"
+      stroke="currentColor"
+      stroke-width="1.5"
+    ></path>
+    <path
+      d="M3 5C3 6.41421 3 7.12132 3.43934 7.56066C3.87868 8 4.58579 8 6 8C7.41421 8 8.12132 8 8.56066 7.56066C9 7.12132 9 6.41421 9 5C9 3.58579 9 2.87868 8.56066 2.43934C8.12132 2 7.41421 2 6 2C4.58579 2 3.87868 2 3.43934 2.43934C3 2.87868 3 3.58579 3 5Z"
+      stroke="currentColor"
+      stroke-width="1.5"
+    ></path>
+    <path
+      d="M15 14C15 15.4142 15 16.1213 15.4393 16.5607C15.8787 17 16.5858 17 18 17C19.4142 17 20.1213 17 20.5607 16.5607C21 16.1213 21 15.4142 21 14C21 12.5858 21 11.8787 20.5607 11.4393C20.1213 11 19.4142 11 18 11C16.5858 11 15.8787 11 15.4393 11.4393C15 11.8787 15 12.5858 15 14Z"
+      stroke="currentColor"
+      stroke-width="1.5"
+    ></path>
+    <path
+      d="M6 8V16"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    ></path>
+    <path
+      d="M15 14H12C8.68629 14 6 11.3137 6 8"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    ></path>
+  </svg>
+);
+export const DownloadIcon = ({ className }: { className?: string }) => {
+  return (
+    <svg
+      fill="none"
+      viewBox="0 0 16 16"
+      height="20"
+      width="20"
+      className={cn(`shrink-0`, className)}
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+        d="M10.25 8.75 8 11.25m0 0-2.25-2.5M8 11.25v-6.5m0 9.5a6.25 6.25 0 1 1 0-12.5 6.25 6.25 0 0 1 0 12.5Z"
+      ></path>
+    </svg>
+  );
+};
+
+export const CategoryIcon = ({ className }: { className?: string }) => {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 512 512"
+      fill="none"
+      className={cn(`shrink-0`, className)}
+    >
+      <g
+        id="icon"
+        fill="currentColor"
+        transform="translate(64.000000, 64.000000)"
+      >
+        <path
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+          d="M106.666667,1.42108547e-14 L106.666667,42.6666667 L42.6666667,42.6666667 L42.6666667,341.333333 L106.666667,341.333333 L106.666667,384 L1.42108547e-14,384 L1.42108547e-14,1.42108547e-14 L106.666667,1.42108547e-14 Z M384,1.42108547e-14 L384,384 L277.333333,384 L277.333333,341.333333 L341.333333,341.333333 L341.333333,42.6666667 L277.333333,42.6666667 L277.333333,1.42108547e-14 L384,1.42108547e-14 Z M298.666667,256 L298.666667,298.666667 L85.3333333,298.666667 L85.3333333,256 L298.666667,256 Z M298.666667,170.666667 L298.666667,213.333333 L85.3333333,213.333333 L85.3333333,170.666667 L298.666667,170.666667 Z M298.666667,85.3333333 L298.666667,128 L85.3333333,128 L85.3333333,85.3333333 L298.666667,85.3333333 Z"
+        ></path>
+      </g>
+    </svg>
+  );
+};

@@ -12,5 +12,6 @@
   "rust-analyzer.linkedProjects": ["apps/shinkai-desktop/src-tauri/Cargo.toml"],
   "rust-analyzer.check.command": "check",
   "tailwindCSS.classFunctions": ["cva", "cn"],
-  "tailwindCSS.experimental.configFile": "libs/shinkai-ui/src/styles/styles.css"
+  "tailwindCSS.experimental.configFile": "libs/shinkai-ui/src/styles/styles.css",
+  "deno.enablePaths": ["ci-scripts/composio-repository/main.ts"]
 }

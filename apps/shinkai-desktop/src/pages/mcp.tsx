@@ -59,6 +59,7 @@ export const McpRegistryPage = () => {
     'mcp_servers' | 'expose_tools'
   >('mcp_servers');
 
+  const { t } = useTranslation();
   return (
     <Tabs
       className="flex size-full flex-col"
@@ -75,7 +76,7 @@ export const McpRegistryPage = () => {
               <TabsList className="bg-official-gray-950/80 flex h-10 w-fit items-center gap-2 rounded-full px-1 py-1">
                 <TabsTrigger
                   className={cn(
-                    'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
+                    'flex items-center gap-4 rounded-full px-4 py-1.5 text-base font-medium transition-colors',
                     'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
                     'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
                     'focus-visible:outline-hidden',
@@ -89,7 +90,7 @@ export const McpRegistryPage = () => {
                 </TabsTrigger>
                 <TabsTrigger
                   className={cn(
-                    'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
+                    'flex items-center gap-4 rounded-full px-4 py-1.5 text-base font-medium transition-colors',
                     'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
                     'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
                     'focus-visible:outline-hidden',
@@ -133,10 +134,10 @@ export const McpRegistryPage = () => {
             </p>
           )}
         </div>
-        <TabsContent value="mcp_servers">
+        <TabsContent value="mcp_servers" className="mt-0">
           <McpServers />
         </TabsContent>
-        <TabsContent value="expose_tools">
+        <TabsContent value="expose_tools" className="mt-0">
           <ExposeToolsAsMcp />
         </TabsContent>
       </div>

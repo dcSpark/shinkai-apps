@@ -1,6 +1,6 @@
 {
   "name": "@shinkai/source",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "license": "SEE LICENSE IN LICENSE",
   "files": [
     "LICENSE"
@@ -47,6 +47,7 @@
     "@tanstack/react-virtual": "^3.13.9",
     "@tauri-apps/plugin-dialog": "^2.2.0",
     "@tauri-apps/plugin-fs": "^2.2.0",
+    "@tauri-apps/plugin-http": "^2.4.4",
     "@tauri-apps/plugin-log": "^2.2.0",
     "@tauri-apps/plugin-notification": "^2.2.0",
     "@tauri-apps/plugin-opener": "^2.2.5",

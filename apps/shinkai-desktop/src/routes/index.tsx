@@ -1,5 +1,7 @@
+import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { TooltipProvider } from '@shinkai_network/shinkai-ui';
+import { useQueryClient } from '@tanstack/react-query';
 import { listen } from '@tauri-apps/api/event';
 import { debug } from '@tauri-apps/plugin-log';
 import React, { useEffect, useRef } from 'react';
@@ -16,7 +18,7 @@ import AddAgentPage from '../components/agent/add-agent';
 import EditAgentPage from '../components/agent/edit-agent';
 import { ChatProvider } from '../components/chat/context/chat-context';
 import { SetJobScopeProvider } from '../components/chat/context/set-job-scope-context';
-import { ToolsProvider } from '../components/chat/context/tools-context';
+import { ToolsProvider as ToolsProviderChat } from '../components/chat/context/tools-context';
 import { WalletsProvider } from '../components/crypto-wallet/context/wallets-context';
 import DefaultLlmProviderUpdater from '../components/default-llm-provider/default-llm-provider-updater';
 import {
@@ -25,6 +27,7 @@ import {
 } from '../components/onboarding/constants';
 import { PlaygroundProvider } from '../components/playground-tool/context/playground-context';
 import { PromptSelectionProvider } from '../components/prompt/context/prompt-selection-context';
+import { ToolsProvider } from '../components/tools/context/tools-context';
 import ToolDetails from '../components/tools/tool-details';
 import { VectorFolderSelectionProvider } from '../components/vector-fs/components/folder-selection-list';
 import { VectorFsProvider } from '../components/vector-fs/context/vector-fs-context';
@@ -49,6 +52,7 @@ import AppearancePage from '../pages/appearance';
 import ChatConversation from '../pages/chat/chat-conversation';
 import ChatLayout from '../pages/chat/layout';
 import CreateTaskPage from '../pages/create-task';
+import { CreateToolPage } from '../pages/create-tool';
 import CryptoWalletPage from '../pages/crypto-wallet';
 import EditTaskPage from '../pages/edit-task';
 import EditToolPage from '../pages/edit-tool';
@@ -60,23 +64,24 @@ import MainLayout from '../pages/layout/main-layout';
 import OnboardingLayout from '../pages/layout/onboarding-layout';
 import SettingsLayout from '../pages/layout/settings-layout';
 import { McpRegistryPage } from '../pages/mcp';
+import { NetworkAgentPage } from '../pages/network-agents';
 import { PromptLibrary } from '../pages/prompt-library';
 import { PublicKeys } from '../pages/public-keys';
 import QuickConnectionPage from '../pages/quick-connection';
 import RestoreConnectionPage from '../pages/restore-connection';
 import SettingsPage from '../pages/settings';
+import ShortcutsPage from '../pages/shortcuts';
 import { TaskLogs } from '../pages/task-logs';
 import { Tasks } from '../pages/tasks';
 import TermsAndConditionsPage, {
   LogoTapProvider,
 } from '../pages/terms-conditions';
 import ToolFeedbackPrompt from '../pages/tool-feedback';
-import { ToolsHomepage } from '../pages/tools-homepage';
+import { ToolsPage } from '../pages/tools-homepage';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
 import useAppHotkeys from '../utils/use-app-hotkeys';
-import ShortcutsPage from '../pages/shortcuts';
 
 const skipOnboardingRoutes = ['/quick-connection', '/restore', '/connect-qr'];
 
@@ -245,11 +250,35 @@ const OnboardingGuard = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+const useNavigateToPathFromSpotlight = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    const unlisten = listen('navigate-to-path', (event) => {
+      const inboxId = event.payload as string;
+      void queryClient.invalidateQueries({
+        queryKey: [
+          FunctionKeyV2.GET_CHAT_CONVERSATION_PAGINATION,
+          {
+            inboxId: decodeURIComponent(inboxId),
+          },
+        ],
+      });
+      void navigate(inboxId);
+    });
+
+    return () => {
+      void unlisten.then((fn) => fn());
+    };
+  }, [navigate, queryClient]);
+};
+
 const AppRoutes = () => {
   useAppHotkeys();
   useGlobalAppShortcuts();
   useDefaultAgentByDefault();
   useConfigDeepLink();
+  useNavigateToPathFromSpotlight();
 
   const defaultAgentId = useSettings((state) => state.defaultAgentId);
 
@@ -287,9 +316,9 @@ const AppRoutes = () => {
                   <ChatProvider>
                     <SetJobScopeProvider>
                       <PromptSelectionProvider>
-                        <ToolsProvider>
+                        <ToolsProviderChat>
                           <Outlet />
-                        </ToolsProvider>
+                        </ToolsProviderChat>
                       </PromptSelectionProvider>
                     </SetJobScopeProvider>
                   </ChatProvider>
@@ -306,9 +335,9 @@ const AppRoutes = () => {
                   <ChatProvider>
                     <SetJobScopeProvider>
                       <PromptSelectionProvider>
-                        <ToolsProvider>
+                        <ToolsProviderChat>
                           <ChatLayout />
-                        </ToolsProvider>
+                        </ToolsProviderChat>
                       </PromptSelectionProvider>
                     </SetJobScopeProvider>
                   </ChatProvider>
@@ -375,26 +404,44 @@ const AppRoutes = () => {
           <Route
             element={
               <ProtectedRoute>
-                <PlaygroundProvider>
-                  <TooltipProvider delayDuration={0}>
-                    <ChatProvider>
-                      <Outlet />
-                    </ChatProvider>
-                  </TooltipProvider>
-                </PlaygroundProvider>
+                <ToolsProvider>
+                  <ChatProvider>
+                    <Outlet />
+                  </ChatProvider>
+                </ToolsProvider>
               </ProtectedRoute>
             }
             path={'tools'}
           >
-            <Route element={<ToolsHomepage />} index />
+            <Route element={<ToolsPage />} index />
             <Route element={<ToolDetails />} path={':toolKey'} />
             <Route
-              element={<ToolFeedbackPrompt />}
+              element={
+                <PlaygroundProvider>
+                  <CreateToolPage />
+                </PlaygroundProvider>
+              }
+              path={'create'}
+            />
+            <Route
+              element={
+                <PlaygroundProvider>
+                  <ToolFeedbackPrompt />
+                </PlaygroundProvider>
+              }
               path={'tool-feedback/:inboxId'}
             />
-            <Route element={<EditToolPage />} path={'edit/:toolRouterKey'} />
+            <Route
+              element={
+                <PlaygroundProvider>
+                  <EditToolPage />
+                </PlaygroundProvider>
+              }
+              path={'edit/:toolRouterKey'}
+            />
           </Route>
           <Route element={<McpRegistryPage />} path={'mcp'} />
+          <Route element={<NetworkAgentPage />} path={'network-ai-agents'} />
           <Route
             element={
               <ProtectedRoute>

@@ -4,6 +4,7 @@ import {
   type ToolArgs,
   ToolStatusType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
+import { type MessageTrace } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import {
   type AssistantMessage,
@@ -11,6 +12,7 @@ import {
   type TextStatus,
   type ToolCall,
 } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
+import { useGetMessageTraces } from '@shinkai_network/shinkai-node-state/v2/queries/getMessageTraces/useGetMessageTraces';
 import {
   Accordion,
   AccordionContent,
@@ -28,6 +30,11 @@ import {
   Form,
   FormField,
   MarkdownText,
+  ScrollArea,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
   Tooltip,
   TooltipContent,
   TooltipPortal,
@@ -35,10 +42,12 @@ import {
   PrettyJsonPrint,
 } from '@shinkai_network/shinkai-ui';
 import {
+  AisIcon,
   appIcon,
   ReactJsIcon,
   ReasoningIcon,
   ToolsIcon,
+  TracingIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -53,6 +62,9 @@ import {
   RotateCcw,
   Unplug,
   XCircle,
+  Zap,
+  User,
+  Cpu,
 } from 'lucide-react';
 import React, { Fragment, memo, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -63,6 +75,7 @@ import { useAuth } from '../../../store/auth';
 import { useOAuth } from '../../../store/oauth';
 import { useSettings } from '../../../store/settings';
 import { oauthUrlMatcherFromErrorMessage } from '../../../utils/oauth';
+import { useGetNetworkAgents } from '../../network/network-client';
 import { useChatStore } from '../context/chat-context';
 import { PythonCodeRunner } from '../python-code-runner/python-code-runner';
 
@@ -176,6 +189,7 @@ type EditMessageFormSchema = z.infer<typeof editMessageFormSchema>;
 
 export const MessageBase = ({
   message,
+  messageId,
   // messageId,
   hidePythonExecution,
   isPending,
@@ -191,11 +205,14 @@ export const MessageBase = ({
   const selectedArtifact = useChatStore((state) => state.selectedArtifact);
   const setArtifact = useChatStore((state) => state.setSelectedArtifact);
 
+  const auth = useAuth((state) => state.auth);
+
   const getChatFontSizeInPts = useSettings(
     (state) => state.getChatFontSizeInPts,
   );
 
   const [editing, setEditing] = useState(false);
+  const [tracingOpen, setTracingOpen] = useState(false);
 
   const editMessageForm = useForm<EditMessageFormSchema>({
     resolver: zodResolver(editMessageFormSchema),
@@ -205,6 +222,8 @@ export const MessageBase = ({
   });
 
   const { message: currentMessage } = editMessageForm.watch();
+
+  const parentMessageId = message.metadata.parentMessageId;
 
   const onSubmit = async (data: z.infer<typeof editMessageFormSchema>) => {
     if (message.role === 'user') {
@@ -243,8 +262,6 @@ export const MessageBase = ({
   }, [message]);
 
   const { setOauthModalVisible } = useOAuth();
-
-  const auth = useAuth((state) => state.auth);
 
   return (
     <motion.div
@@ -575,7 +592,7 @@ export const MessageBase = ({
                         <TooltipTrigger asChild>
                           <button
                             className={cn(
-                              'text-gray-80 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                              'text-gray-80 border-official-gray-780 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                             )}
                             onClick={() => {
                               setEditing(true);
@@ -597,7 +614,7 @@ export const MessageBase = ({
                           <TooltipTrigger asChild>
                             <button
                               className={cn(
-                                'text-official-gray-400 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                                'text-official-gray-400 border-official-gray-780 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                               )}
                               onClick={handleForkMessage}
                             >
@@ -614,7 +631,7 @@ export const MessageBase = ({
                           <TooltipTrigger asChild>
                             <button
                               className={cn(
-                                'text-official-gray-400 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
+                                'text-official-gray-400 border-official-gray-780 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:bg-gray-300 hover:text-white [&>svg]:h-3 [&>svg]:w-3',
                               )}
                               onClick={handleRetryMessage}
                             >
@@ -630,12 +647,37 @@ export const MessageBase = ({
                       </>
                     )}
 
+                    {message.role === 'assistant' && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            className={cn(
+                              'text-official-gray-400 border-official-gray-780 flex h-7 w-7 items-center justify-center rounded-lg border bg-transparent transition-colors hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                            )}
+                            onClick={() => setTracingOpen(true)}
+                          >
+                            <TracingIcon />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipPortal>
+                          <TooltipContent>
+                            <p>{t('chat.tracing.title')}</p>
+                          </TooltipContent>
+                        </TooltipPortal>
+                        <TracingDialog
+                          open={tracingOpen}
+                          onOpenChange={setTracingOpen}
+                          parentMessageId={parentMessageId}
+                        />
+                      </Tooltip>
+                    )}
+
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div>
                           <CopyToClipboardIcon
                             className={cn(
-                              'text-gray-80 h-7 w-7 border border-gray-200 bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
+                              'text-gray-80 border-official-gray-780 h-7 w-7 border bg-transparent hover:bg-gray-300 [&>svg]:h-3 [&>svg]:w-3',
                             )}
                             string={extractErrorPropertyOrContent(
                               message.content,
@@ -707,6 +749,12 @@ export function ToolCard({
   name: string;
   toolRouterKey: string;
 }) {
+  const { data: networkAgents } = useGetNetworkAgents();
+
+  const isNetworkTool = (networkAgents ?? [])?.some(
+    (agent) => agent.toolRouterKey === toolRouterKey,
+  );
+
   const renderStatus = () => {
     if (status === ToolStatusType.Complete) {
       return <ToolsIcon className="text-brand size-full" />;
@@ -722,7 +770,7 @@ export function ToolCard({
 
   const renderLabelText = () => {
     if (status === ToolStatusType.Complete) {
-      return 'Tool Used';
+      return isNetworkTool ? 'Network Tool Used' : 'Tool Used';
     }
     if (status === ToolStatusType.Incomplete) {
       return 'Incomplete';
@@ -730,7 +778,7 @@ export function ToolCard({
     if (status === ToolStatusType.RequiresAction) {
       return 'Requires Action';
     }
-    return 'Processing Tool';
+    return isNetworkTool ? 'Processing Network Tool' : 'Processing Tool';
   };
 
   return (
@@ -880,3 +928,513 @@ export const GeneratedFiles = ({ toolCalls }: { toolCalls: ToolCall[] }) => {
     )
   );
 };
+
+const getStepIcon = (type: string) => {
+  switch (type) {
+    case 'llm_payload':
+    case 'llm_response':
+      return <AisIcon className="h-4 w-4" />;
+    case 'tool_call':
+    case 'tool_response':
+      return <ToolsIcon className="h-4 w-4" />;
+    default:
+      return <Zap className="h-4 w-4" />;
+  }
+};
+
+export type LLMPayloadTracingInfo = {
+  functions: [
+    {
+      description: string;
+      name: string;
+      parameters: {
+        properties: Record<string, any>;
+        required: string[];
+        type: 'object';
+      };
+      tool_router_key: string;
+    },
+  ];
+  max_tokens: number;
+  messages: [
+    {
+      content:
+        | string
+        | { text: string; type: string }[]
+        | { function_call: { arguments: string; id: string; name: string } };
+      role: 'system' | 'user' | 'assistant' | 'function';
+      name?: string;
+    },
+  ];
+  model: string;
+  stream: boolean;
+  temperature: number;
+  top_p: number;
+};
+
+export type LLMResponseTracingInfo = {
+  function_calls: {
+    arguments: {
+      url: string;
+    };
+    id: string;
+    index: number;
+    name: string;
+    response: null;
+    tool_router_key: string;
+    type: null;
+  }[];
+  json: {};
+  response: '';
+};
+
+export type ToolCallTracingInfo = {
+  function: string;
+  tool: string;
+};
+
+export type ToolResponseTracingInfo = {
+  function: string;
+  response: string;
+};
+export type InvoiceRequestSentTracingInfo = {
+  provider: string;
+  tool: string;
+  usage_type: string;
+};
+
+type TracingNode = MessageTrace & { children: TracingNode[] };
+export function TracingDialog({
+  open,
+  onOpenChange,
+  parentMessageId,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  parentMessageId: string;
+}) {
+  const auth = useAuth((state) => state.auth);
+  const [selectedTrace, setSelectedTrace] = useState<MessageTrace | null>(null);
+  const { t } = useTranslation();
+
+  const { data: tracingData, isLoading: isTracingLoading } =
+    useGetMessageTraces(
+      {
+        nodeAddress: auth?.node_address ?? '',
+        token: auth?.api_v2_key ?? '',
+        messageId: parentMessageId,
+      },
+      { enabled: open && !!parentMessageId },
+    );
+
+  useEffect(() => {
+    if (open && tracingData && tracingData.length > 0) {
+      setSelectedTrace(tracingData[0]);
+    }
+  }, [open, tracingData]);
+
+  const tracesTree = useMemo(() => {
+    if (!tracingData) return [] as TracingNode[];
+    const map = new Map<number, TracingNode>();
+    const roots: TracingNode[] = [];
+    tracingData.forEach((t) => {
+      map.set(t.id, { ...t, children: [] });
+    });
+    tracingData.forEach((t) => {
+      const info = t.trace_info as any;
+      const parentId = info?.parent_id ?? info?.parent_trace_id;
+      if (parentId && map.has(parentId)) {
+        map.get(parentId)!.children.push(map.get(t.id)!);
+      } else {
+        roots.push(map.get(t.id)!);
+      }
+    });
+    return roots;
+  }, [tracingData]);
+
+  const renderTraceTree = (nodes: TracingNode[], level = 0) =>
+    nodes.map((node, idx) => {
+      const isLast = idx === nodes.length - 1;
+      return (
+        <div
+          key={node.id}
+          style={{ paddingLeft: level * 12 }}
+          className="flex items-center"
+        >
+          <Button
+            variant="tertiary"
+            className={cn(
+              'py-2text-white relative mb-1 h-auto w-full justify-start p-0 py-2 hover:bg-transparent',
+              selectedTrace?.id === node.id
+                ? 'text-white'
+                : 'text-official-gray-400',
+            )}
+            rounded="lg"
+            onClick={() => setSelectedTrace(node)}
+          >
+            <div className="mr-2 flex flex-col items-center">
+              <div
+                className={cn(
+                  'flex size-8 items-center justify-center rounded-full',
+                  selectedTrace?.id === node.id
+                    ? 'bg-cyan-900/90'
+                    : 'bg-cyan-900/50',
+                )}
+              >
+                {getStepIcon(node.trace_name)}
+              </div>
+              {!isLast && (
+                <div
+                  className="absolute top-[38px] left-[15px] bg-cyan-700"
+                  style={{
+                    width: 2,
+                    flex: 1,
+                    minHeight: 21,
+                    marginTop: 2,
+                    borderRadius: 1,
+                    opacity: 0.5,
+                  }}
+                />
+              )}
+            </div>
+            <div className="flex w-full items-start space-x-3">
+              <div className="min-w-0 flex-1 text-left">
+                <div className="truncate text-sm font-medium">
+                  {formatText(node.trace_name)}
+                </div>
+              </div>
+            </div>
+          </Button>
+          {node.children &&
+            node.children.length > 0 &&
+            renderTraceTree(node.children, level + 1)}
+        </div>
+      );
+    });
+
+  const renderContentByType = (type: string, info: Record<string, any>) => {
+    switch (type) {
+      case 'llm_payload': {
+        const data = info as LLMPayloadTracingInfo;
+        return (
+          <div className="flex flex-col gap-5">
+            {data.messages && data.messages.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="text-base font-medium text-white">Messages</h4>
+                {data.messages.map((message, index) => (
+                  <div
+                    key={index}
+                    className="border-official-gray-780 rounded-md border p-2"
+                  >
+                    <div className="flex flex-col items-start gap-1">
+                      <div className="inline-flex items-center gap-2 rounded-full p-2">
+                        {message.role === 'user' ? (
+                          <User className="size-3" />
+                        ) : message.role === 'assistant' ? (
+                          <AisIcon className="size-3" />
+                        ) : message.role === 'function' ? (
+                          <ToolsIcon className="size-3" />
+                        ) : message.role === 'system' ? (
+                          <Cpu className="size-3" />
+                        ) : (
+                          <Zap className="size-3" />
+                        )}
+                        <span className="text-official-gray-400 text-xs capitalize">
+                          {message.role}
+                        </span>
+                      </div>
+                      <div className="w-full flex-1 pl-2">
+                        <p className="text-official-gray-200 text-sm leading-relaxed break-words">
+                          {(() => {
+                            if (typeof message.content === 'string') {
+                              return (
+                                <div className="max-h-[280px] space-y-2 overflow-y-auto">
+                                  {message.content}
+                                </div>
+                              );
+                            }
+
+                            if (Array.isArray(message.content)) {
+                              return (
+                                <div className="space-y-2">
+                                  {message.content.map(
+                                    (item: any, index: number) => (
+                                      <div key={index} className="mb-2">
+                                        <div className="max-h-[280px] space-y-2 overflow-y-auto">
+                                          <p className="text-official-gray-200 text-sm">
+                                            {item.text}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    ),
+                                  )}
+                                </div>
+                              );
+                            }
+
+                            if (
+                              message.content?.function_call &&
+                              message.role === 'function'
+                            ) {
+                              return (
+                                <PrettyJsonPrint
+                                  json={JSON.parse(
+                                    message.content as unknown as any,
+                                  )}
+                                  className="text-sm"
+                                />
+                              );
+                            }
+
+                            if (
+                              'function_call' in message &&
+                              message.function_call &&
+                              message.role === 'assistant'
+                            ) {
+                              return (
+                                <PrettyJsonPrint
+                                  json={message.function_call}
+                                  className="text-sm"
+                                />
+                              );
+                            }
+
+                            return 'No content available';
+                          })()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {(data.functions ?? []).length > 0 && (
+              <div>
+                <h3 className="mb-2 text-sm font-medium text-white">
+                  Tool Calls
+                </h3>
+                <div className="border-official-gray-780 bg-official-gray-900 rounded-md border p-3">
+                  {data.functions.map((func) => (
+                    <div className="flex items-start gap-3" key={func.name}>
+                      <ToolsIcon className="mt-0.5 h-5 w-5 text-cyan-500" />
+                      <div>
+                        <p className="text-sm font-medium">{func.name}</p>
+                        <p className="text-official-gray-400 text-sm">
+                          {func.description}
+                        </p>
+                        {Object.entries(func.parameters.properties).length >
+                          0 && (
+                          <div className="mt-2 flex flex-wrap items-center gap-1">
+                            <p className="text-official-gray-400 text-xs">
+                              Parameters:
+                            </p>
+                            {Object.entries(func.parameters.properties).map(
+                              ([key, value]) => (
+                                <span
+                                  className="text-official-gray-400 text-xs"
+                                  key={key}
+                                >
+                                  {key}
+                                </span>
+                              ),
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <h3 className="mb-2 text-sm font-medium text-white">
+                Model Configuration
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-official-gray-900 border-official-gray-780 rounded-md border p-3">
+                  <p className="text-official-gray-400 text-xs">Model</p>
+                  <p className="text-sm">{data.model}</p>
+                </div>
+                <div className="bg-official-gray-900 border-official-gray-780 rounded-md border p-3">
+                  <p className="text-official-gray-400 text-xs">Max Tokens</p>
+                  <p className="text-sm">{data.max_tokens}</p>
+                </div>
+                <div className="bg-official-gray-900 border-official-gray-780 rounded-md border p-3">
+                  <p className="text-official-gray-400 text-xs">Temperature</p>
+                  <p className="text-sm">{data.temperature}</p>
+                </div>
+                <div className="bg-official-gray-900 border-official-gray-780 rounded-md border p-3">
+                  <p className="text-official-gray-400 text-xs">Top P</p>
+                  <p className="text-sm">{data.top_p}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      case 'llm_response': {
+        const data = info as LLMResponseTracingInfo;
+        return (
+          <div className="flex flex-col gap-5">
+            {data.function_calls && data.function_calls.length > 0 && (
+              <div>
+                <h3 className="mb-2 text-sm font-medium text-white">
+                  Tool Calls
+                </h3>
+                <div className="border-official-gray-780 bg-official-gray-900 rounded-md border p-3">
+                  {data.function_calls.map((func) => (
+                    <div className="flex items-start gap-3" key={func.name}>
+                      <ToolsIcon className="mt-0.5 h-5 w-5 text-cyan-500" />
+                      <div>
+                        <p className="text-sm font-medium">{func.name}</p>
+                        <p className="text-official-gray-400 text-xs">
+                          <span className="text-official-gray-200 font-medium">
+                            Tool Router Key:{' '}
+                          </span>
+                          {func.tool_router_key}
+                        </p>
+                        {Object.entries(func.arguments).length > 0 && (
+                          <div className="mt-2 flex flex-col gap-0.5">
+                            <p className="text-official-gray-400 text-xs">
+                              Parameters
+                            </p>
+                            {Object.entries(func.arguments).map(
+                              ([key, value]) => (
+                                <span
+                                  className="text-official-gray-400 text-sm"
+                                  key={key}
+                                >
+                                  {key}:{' '}
+                                  <span className="text-official-gray-200 text-sm">
+                                    {value}
+                                  </span>
+                                </span>
+                              ),
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {data.response && (
+              <div>
+                <h3 className="mb-2 text-sm font-medium text-white">
+                  Response
+                </h3>
+                <div className="border-official-gray-780 bg-official-gray-900 rounded-md border p-3 text-sm">
+                  {data.response}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      case 'tool_call': {
+        const data = info as ToolCallTracingInfo;
+        return (
+          <div className="border-official-gray-780 bg-official-gray-900 rounded-md border p-3">
+            <div className="flex items-start gap-3">
+              <ToolsIcon className="mt-0.5 h-5 w-5 text-cyan-500" />
+              <div>
+                <p className="text-sm font-medium">{data.function}</p>
+                <p className="text-official-gray-400 text-xs">
+                  <span className="text-official-gray-200 font-medium">
+                    Tool Router Key:{' '}
+                  </span>
+                  {data.tool}
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      case 'tool_response': {
+        const data = info as ToolResponseTracingInfo;
+        return (
+          <div className="border-official-gray-780 bg-official-gray-900 space-y-2 overflow-hidden rounded-md border p-3">
+            <p className="text-sm font-medium">{data.function}</p>
+
+            <div className="text-official-gray-400 overflow-auto text-xs">
+              <PrettyJsonPrint json={data.response} />
+            </div>
+          </div>
+        );
+      }
+      case 'invoice_request_sent': {
+        const data = info as InvoiceRequestSentTracingInfo;
+        return (
+          <div className="border-official-gray-780 bg-official-gray-900 space-y-2 overflow-hidden rounded-md border p-3">
+            <p className="text-sm font-medium">{data.tool}</p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Provider:{' '}
+              </span>
+              {data.provider}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Usage Type:{' '}
+              </span>
+              {data.usage_type}
+            </p>
+          </div>
+        );
+      }
+      default: {
+        return <PrettyJsonPrint json={info} />;
+      }
+    }
+  };
+
+  return (
+    <Sheet onOpenChange={onOpenChange} open={open}>
+      <SheetContent className="max-w-3xl p-0 pt-4" side="right">
+        <SheetHeader className="border-official-gray-750 border-b p-4 pt-0">
+          <SheetTitle>{t('chat.tracing.title')}</SheetTitle>
+        </SheetHeader>
+        <div className="flex size-full divide-x">
+          <ScrollArea className="bg-official-gray-900 h-[calc(100vh-45px)] w-1/3 px-4 [&>div>div]:!block">
+            <div className="flex items-center justify-between py-3">
+              <h3 className="text-base font-semibold text-white">
+                Activity Steps
+              </h3>
+              <p className="text-official-gray-400 mt-1 text-sm">
+                {tracingData?.length} steps
+              </p>
+            </div>
+            {isTracingLoading ? (
+              <Loader2 className="mx-auto mt-4 h-5 w-5 animate-spin" />
+            ) : (
+              <div className="flex flex-col py-2">
+                {renderTraceTree(tracesTree)}
+              </div>
+            )}
+          </ScrollArea>
+          <ScrollArea className="h-[calc(100vh-45px)] w-full max-w-2/3 px-3 [&>div>div]:!block">
+            {selectedTrace ? (
+              <div className="size-full space-y-4 overflow-hidden py-4">
+                <p className="text-base font-medium text-white">
+                  {formatText(selectedTrace.trace_name)}
+                </p>
+                {renderContentByType(
+                  selectedTrace.trace_name,
+                  selectedTrace.trace_info,
+                )}
+              </div>
+            ) : (
+              <p className="text-official-gray-400 py-4 text-center text-sm">
+                {t('common.selectItem')}
+              </p>
+            )}
+          </ScrollArea>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}

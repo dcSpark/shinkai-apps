@@ -386,6 +386,19 @@ const EmptyMessage = () => {
   }, [chatForm, locationState]);
 
   useEffect(() => {
+    if (locationState?.selectedTool) {
+      chatForm.setValue('tool', {
+        key: locationState?.selectedTool?.key,
+        name: locationState?.selectedTool?.name,
+        description: locationState?.selectedTool?.description,
+        args: locationState?.selectedTool?.args,
+      });
+      chatConfigForm.setValue('useTools', true);
+      chatForm.setValue('message', 'Tool Used');
+    }
+  }, [chatConfigForm, chatForm, locationState]);
+
+  useEffect(() => {
     if (!locationState?.agentName) {
       return;
     }

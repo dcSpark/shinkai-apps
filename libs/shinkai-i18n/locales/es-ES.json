@@ -69,7 +69,10 @@
     "limitReachedDescription": "Has utilizado todas tus consultas del mes en este modelo/agente. Por favor, inicia un nuevo chat con otro agente.",
     "limitReachedTitle": "Límite Alcanzado",
     "openChatFolder": "Abrir carpeta de chat",
-    "sendMessage": "Enviar Mensaje"
+    "sendMessage": "Enviar Mensaje",
+    "tracing": {
+      "title": "Rastreo"
+    }
   },
   "chatDM": {
     "create": "Crear Chat DM",
@@ -142,6 +145,7 @@
     "search": "Buscar",
     "searchPlaceholder": "Buscar...",
     "seeOptions": "Ver Opciones",
+    "selectItem": "Seleccione un elemento para ver detalles",
     "send": "Enviar",
     "shinkaiPrivate": "Shinkai Privado (Local)",
     "showLess": "Mostrar menos",
@@ -344,6 +348,33 @@
     "addFromGitHub": "Agregar desde GitHub",
     "addSuccess": "Servidor MCP agregado con éxito",
     "addVariable": "Agregar",
+    "composio": {
+      "activeUsers": "Usuarios Activos",
+      "add": "Agregar servidor MCP",
+      "adding": "Añadiendo...",
+      "availableActions": "Acciones Disponibles",
+      "categories": "Categorías",
+      "created": "Creado",
+      "delete": "Eliminar",
+      "deleting": "Eliminando...",
+      "details": "Detalles",
+      "install": "Instalar",
+      "installFailed": "Error al instalar la aplicación desde Composio",
+      "installSuccess": "{{appName}} se instaló correctamente",
+      "installing": "Instalando...",
+      "lastUpdated": "Última Actualización",
+      "latestVersion": "Última Versión",
+      "loginRequired": "Debes estar conectado para instalar aplicaciones",
+      "statistics": "Estadísticas",
+      "title": "Servidores MCP de Composio",
+      "toolsCount": "Cantidad de Herramientas",
+      "totalDownloads": "Descargas Totales",
+      "uninstall": "Desinstalar",
+      "uninstallFailed": "Error al desinstalar la aplicación de Composio",
+      "uninstallSuccess": "{{appName}} desinstalado con éxito",
+      "uninstalling": "Desinstalando...",
+      "updatedAt": "Última Actualización"
+    },
     "configure": "Configurar Servidor",
     "delete": "Eliminar Servidor",
     "deleteDescription": "¿Está seguro de que desea eliminar el servidor \"{{name}}\"? Esta acción no se puede deshacer.",
