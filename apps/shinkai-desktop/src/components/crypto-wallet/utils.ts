@@ -29,3 +29,10 @@ export const formatBalanceAmount = (
 
   return `${integerPart}.${trimmedFractionalStr}`;
 };
+
+export const getBasescanAddressUrl = (address: string, network?: string) => {
+  if (!address) return '';
+  return network?.toLowerCase() === 'base-sepolia'
+    ? `https://sepolia.basescan.org/address/${address}`
+    : `https://basescan.org/address/${address}`;
+};
