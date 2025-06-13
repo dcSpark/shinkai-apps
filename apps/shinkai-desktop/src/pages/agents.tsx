@@ -65,6 +65,7 @@ function AgentsPage() {
     token: auth?.api_v2_key ?? '',
   });
 
+  const { t } = useTranslation();
   const [selectedTab, setSelectedTab] = useState<'my' | 'explore'>('explore');
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -86,7 +87,7 @@ function AgentsPage() {
           <div className="flex flex-col gap-3 pt-10 pb-4">
             <div className="flex justify-between gap-4">
               <div className="font-clash inline-flex items-center gap-5 text-3xl font-medium">
-                <h1>Agents</h1>
+                <h1>{t('layout.menuItems.agents')}</h1>
                 <TabsList className="bg-official-gray-950/80 flex h-10 w-fit items-center gap-2 rounded-full px-1 py-1">
                   <TabsTrigger
                     className={cn(
@@ -122,7 +123,7 @@ function AgentsPage() {
                   size="sm"
                 >
                   <Plus className="h-4 w-4" />
-                  <span>Add Agent</span>
+                  <span>{t('agentsPage.addAgent')}</span>
                 </Button>
               </div>
             </div>
@@ -300,7 +301,7 @@ const AgentCard = ({
                         align="center"
                         className="flex flex-col items-center gap-1"
                       >
-                        Go to task details
+                        {t('agentsPage.goToTaskDetails')}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>

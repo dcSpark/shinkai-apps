@@ -2,11 +2,21 @@
   "agents": {
     "systemInstructions": "Sistem Talimatları"
   },
+  "agentsPage": {
+    "addAgent": "Aracı Ekle",
+    "description": "Kişiselleştirilmiş talimatlar ve zengin bilgi birikimiyle AI ajanları oluşturup keşfedin ve hedeflerinizi otonom bir şekilde gerçekleştirin.",
+    "goToTaskDetails": "Görev detaylarına git",
+    "notFoundDescription": "AI gücünü keşfetmek için ilk Ajanınızı oluşturun.",
+    "notFoundTitle": "Kullanılabilir ajan yok"
+  },
   "aiFilesSearch": {
     "description": "Yapay Zeka Dosyalarınızda içerik bulmak için kolayca arama yapın",
     "filesSelected": "{{count}} dosya seçildi",
     "foundResults": "{{count}} sonuç bulundu",
     "label": "Yapay Zeka Dosyaları İçerik Arama"
+  },
+  "aisPage": {
+    "description": "Çalışma akışınıza uyacak şekilde bulut ve yerel AI modellerini kolayca yönetin ve arasında geçiş yapın."
   },
   "analytics": {
     "bulletPoints": {
@@ -341,6 +351,12 @@
     "customDescriptionSecondary": "İstemciniz SSE'yi desteklemiyorsa, bu komutu kullanarak Shinkai MCP sunucusunu ayrı bir işlem olarak çalıştırabilirsiniz:",
     "customTitle": "Özel Harici İstemci Yapılandırması"
   },
+  "mcpPage": {
+    "exposeToolsDescription": "AI Araçlarınızı MCP aracılığıyla diğer MCP İstemcileriyle sorunsuz bir şekilde entegre edin ve yeteneklerini artırın.",
+    "exposeToolsTab": "Araçları Açığa Çıkar",
+    "helpfulLinks": "Shinkai ile bağlantı kurmak için faydalı MCP'leri smithery.ai ve composio.dev adreslerinde bulabilirsiniz.",
+    "mcpServersDescription": "MCP sunucusuna bağlanarak canlı hava durumu, hisse senedi fiyatları veya çeviri servisleri gibi harici veri kaynaklarına ve araçlara anında erişin; özel entegrasyonlar oluşturmanıza gerek kalmaz.\nBu sayede sisteminiz gerçek zamanlı bilgiler ve yeni kaynaklara kolay erişim ile genişler."
+  },
   "mcpServers": {
     "add": "MCP Sunucusu Ekle",
     "addDescription": "Shinkai Düğümünüzle bağlantı kurmak için yeni bir MCP sunucusu yapılandırın",
@@ -671,7 +687,13 @@
   "tasks": {
     "runNow": "Şimdi Çalıştır"
   },
+  "tasksPage": {
+    "noTasksDescription": "Hatırlatıcılar, özetler veya yönetmeniz gereken diğer görevleri otomatikleştirmek için ilk görevinizi oluşturun",
+    "noTasksTitle": "Planlanmış görev bulunamadı"
+  },
   "tools": {
+    "commandActiveHeading": "Aktif Araçların",
+    "commandEmpty": "Araç bulunamadı.",
     "commonToolsetAffectedTools": "Setteki tüm araçları güncellemeyi seçmek, aynı zamanda şunları da etkileyecektir:",
     "commonToolsetUpdateDescription": "{{toolName}} için değiştirdiğiniz yapılandırma anahtarı, bu setteki diğer araçlar tarafından da kullanılmaktadır.",
     "configuration": {
@@ -694,9 +716,30 @@
     },
     "errorDuplicateTool": "Aracı çoğaltma işlemi başarısız oldu",
     "errorOpenToolInCodeEditor": "Kod editöründe aracı açma başarısız oldu",
+    "homepage": {
+      "buildDescription": "Güçlü AI araçlarıyla iş akışınızı oluşturun, otomatikleştirin ve optimize edin.",
+      "buildTitle": "Dakikalar içinde AI Araçları oluşturun",
+      "createInIDE": "VSCode/Cursor'da Oluştur",
+      "discoverMoreDescription": "Üretkenliğinizi artırmak ve iş akışınızı otomatikleştirmek için App Store'umuzu keşfedin ve araçları kurun.",
+      "discoverMoreTitle": "Daha Fazla Araç Keşfedin",
+      "enterToSend": "Göndermek için",
+      "generationError": "Araç oluşturulamadı. Daha iyi sonuçlar için daha güçlü bir AI modeli kullanmayı deneyin.",
+      "messagePlaceholder": "Oluşturmak istediğiniz aracı açıklayın...",
+      "noProtocols": "Protokol bulunamadı.",
+      "otherProtocols": "Diğer protokoller de çalışabilir ancak resmi olarak doğrulanmamıştır.",
+      "requestProtocol": "Protokol Talep Et",
+      "shiftEnter": "Yeni satır için",
+      "step1Label": "Adım 1",
+      "step1Text": "Modelinizi seçin",
+      "step2Label": "Adım 2",
+      "step2Text": "Gereksinimlerinizi yazın",
+      "verifiedProtocolsTitle": "Doğrulanmış Protokoller",
+      "wellSupportedProtocols": "İyi Desteklenen Protokoller"
+    },
     "installFromStore": "Mağazadan Yükle",
     "label": "Shinkai Araçları",
     "lookingForMoreTools": "Daha fazla araç mı arıyorsunuz?",
+    "noToolsInCategory": "Bu kategoride araç bulunamadı. Yeni bir araç oluşturun veya App Store'dan kurun.",
     "notifications": {
       "codeGenerationComplete": {
         "description": "Kod başarıyla üretildi.",
@@ -711,6 +754,7 @@
         "title": "Meta Veriler Üretimi Tamamlandı"
       }
     },
+    "searchPlaceholder": "Araçları ara...",
     "setupDescription": "Bu özelliği kullanmak için önce bazı ayarları yapılandırmamız gerekiyor. Bu sadece bir dakikanızı alacak ve her şeyin sorunsuz çalışmasını sağlamaya yardımcı olacaktır.",
     "setupNow": "Şimdi Kur",
     "setupRequired": "Araç Kurulumu Gerekli",

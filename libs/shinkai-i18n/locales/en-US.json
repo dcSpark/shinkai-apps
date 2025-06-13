@@ -672,6 +672,10 @@
         "text": "No tools found for the search query"
       }
     },
+    "searchPlaceholder": "Search tools...",
+    "commandEmpty": "No tools found.",
+    "commandActiveHeading": "Your Active Tools",
+    "noToolsInCategory": "No tools found in this category. Create a new tool or install from the App Store.",
     "store": {
       "label": "Explore AI Store"
     },
@@ -712,6 +716,26 @@
         "title": "Metadata Generation Complete",
         "description": "The metadata has been generated successfully."
       }
+    },
+    "homepage": {
+      "buildTitle": "Build AI Tools in Minutes",
+      "buildDescription": "Create, automate, and optimize your workflow with powerful AI tools.",
+      "step1Label": "Step 1",
+      "step1Text": "Select your model",
+      "step2Label": "Step 2",
+      "step2Text": "Write your requirements",
+      "createInIDE": "Create in VSCode/Cursor",
+      "messagePlaceholder": "Describe the tool you want to create...",
+      "generationError": "Failed to generate tool. You might want to try using a more powerful AI model for better results.",
+      "discoverMoreTitle": "Discover More Tools",
+      "discoverMoreDescription": "Explore and install tools from our App Store to boost your productivity and automate your workflow.",
+      "wellSupportedProtocols": "Well Supported Protocols",
+      "verifiedProtocolsTitle": "Verified Protocols",
+      "noProtocols": "No protocols found .",
+      "otherProtocols": "Other protocols may also work but haven't been officially verified.",
+      "requestProtocol": "Request Protocol",
+      "shiftEnter": "for a new line",
+      "enterToSend": "to send"
     }
   },
   "disconnect": {
@@ -790,5 +814,25 @@
   },
   "agents": {
     "systemInstructions": "System Instructions"
+  },
+  "agentsPage": {
+    "description": "Create and explore AI agents with personalized instructions, enriched knowledge, <br /> diverse task capabilities, and more to tackle your goals autonomously.",
+    "notFoundTitle": "No available agents",
+    "notFoundDescription": "Create your first Agent to start exploring the power of AI.",
+    "addAgent": "Add Agent",
+    "goToTaskDetails": "Go to task details"
+  },
+  "aisPage": {
+    "description": "Easily manage both cloud and local AI models, <br /> switching between them seamlessly to fit your workflow."
+  },
+  "tasksPage": {
+    "noTasksTitle": "No scheduled tasks found",
+    "noTasksDescription": "Create your first scheduled task to automate reminders, summaries, or any other tasks you need to manage"
+  },
+  "mcpPage": {
+    "exposeToolsTab": "Expose Tools",
+    "mcpServersDescription": "Connect to an MCP server to instantly tap into external data sources and tools—like live weather updates, stock prices, or translation services—without building custom integrations.\nThis expands your system's capabilities with real-time information and easy access to new resources as your needs grow.",
+    "exposeToolsDescription": "Expose your AI Tools through MCP to enable seamless integration with other MCP Clients \nand expand their capabilities.",
+    "helpfulLinks": "You can find helpful MCPs to connect with Shinkai at smithery.ai and composio.dev."
   }
 }

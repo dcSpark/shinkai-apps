@@ -245,8 +245,7 @@ export const ToolCollection = () => {
             {toolsList?.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-2 py-8">
                 <p className="text-official-gray-400 text-sm">
-                  No tools found in this category. Create a new tool or install
-                  from the App Store.
+                  {t('tools.noToolsInCategory')}
                 </p>
               </div>
             ) : (

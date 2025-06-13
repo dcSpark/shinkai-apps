@@ -2,11 +2,21 @@
   "agents": {
     "systemInstructions": "Instrucciones del sistema"
   },
+  "agentsPage": {
+    "addAgent": "Agregar agente",
+    "description": "Crea y explora agentes de IA con instrucciones personalizadas, conocimiento enriquecido y más para alcanzar tus metas de forma autónoma.",
+    "goToTaskDetails": "Ir a detalles de la tarea",
+    "notFoundDescription": "Crea tu primer Agente para comenzar a explorar el poder de la IA.",
+    "notFoundTitle": "No hay agentes disponibles"
+  },
   "aiFilesSearch": {
     "description": "Busca para encontrar contenido en todos los archivos de tus archivos AI fácilmente",
     "filesSelected": "Seleccionados {{count}} archivos",
     "foundResults": "Encontrado {{count}} resultado",
     "label": "Búsqueda de Contenido en Archivos de IA"
+  },
+  "aisPage": {
+    "description": "Administra fácilmente modelos de IA locales y en la nube, cambiando entre ellos según tu flujo de trabajo."
   },
   "analytics": {
     "bulletPoints": {
@@ -341,6 +351,12 @@
     "customDescriptionSecondary": "Si tu cliente no soporta SSE, puedes ejecutar el servidor Shinkai MCP como un proceso separado utilizando este comando:",
     "customTitle": "Configuración de Cliente Externo Personalizado"
   },
+  "mcpPage": {
+    "exposeToolsDescription": "Expón tus Herramientas de IA mediante MCP para integrarlas fácilmente con otros Clientes MCP y ampliar sus capacidades.",
+    "exposeToolsTab": "Exponer Herramientas",
+    "helpfulLinks": "Puedes encontrar MCPs útiles para conectar con Shinkai en smithery.ai y composio.dev.",
+    "mcpServersDescription": "Conéctate a un servidor MCP para acceder al instante a fuentes de datos y herramientas externas, como clima en vivo, precios de acciones o servicios de traducción, sin crear integraciones personalizadas.\nEsto amplía las capacidades de tu sistema con información en tiempo real y acceso sencillo a nuevos recursos a medida que crecen tus necesidades."
+  },
   "mcpServers": {
     "add": "Agregar Servidor MCP",
     "addDescription": "Configura un nuevo servidor MCP para conectarte con tu Nodo Shinkai",
@@ -671,7 +687,13 @@
   "tasks": {
     "runNow": "Ejecutar ahora"
   },
+  "tasksPage": {
+    "noTasksDescription": "Crea tu primera tarea programada para automatizar recordatorios, resúmenes u otras tareas que necesites gestionar",
+    "noTasksTitle": "No se encontraron tareas programadas"
+  },
   "tools": {
+    "commandActiveHeading": "Tus herramientas activas",
+    "commandEmpty": "No se encontraron herramientas.",
     "commonToolsetAffectedTools": "Elegir actualizar todas las herramientas en el conjunto también afectará a:",
     "commonToolsetUpdateDescription": "La clave de configuración que estás cambiando para {{toolName}} también es utilizada por otras herramientas en este conjunto.",
     "configuration": {
@@ -694,9 +716,30 @@
     },
     "errorDuplicateTool": "Error al duplicar la herramienta",
     "errorOpenToolInCodeEditor": "Error al abrir la herramienta en el editor de código",
+    "homepage": {
+      "buildDescription": "Crea, automatiza y optimiza tu flujo de trabajo con potentes herramientas de IA.",
+      "buildTitle": "Crea herramientas de IA en minutos",
+      "createInIDE": "Crear en VSCode/Cursor",
+      "discoverMoreDescription": "Explora e instala herramientas desde nuestra App Store para impulsar tu productividad y automatizar tu flujo de trabajo.",
+      "discoverMoreTitle": "Descubre más herramientas",
+      "enterToSend": "para enviar",
+      "generationError": "No se pudo generar la herramienta. Intenta usar un modelo de IA más potente para mejores resultados.",
+      "messagePlaceholder": "Describe la herramienta que quieres crear...",
+      "noProtocols": "No se encontraron protocolos.",
+      "otherProtocols": "Otros protocolos también podrían funcionar pero no han sido verificados oficialmente.",
+      "requestProtocol": "Solicitar protocolo",
+      "shiftEnter": "para una nueva línea",
+      "step1Label": "Paso 1",
+      "step1Text": "Selecciona tu modelo",
+      "step2Label": "Paso 2",
+      "step2Text": "Escribe tus requisitos",
+      "verifiedProtocolsTitle": "Protocolos verificados",
+      "wellSupportedProtocols": "Protocolos bien soportados"
+    },
     "installFromStore": "Instalar desde la tienda",
     "label": "Herramientas Shinkai",
     "lookingForMoreTools": "¿Buscas más herramientas?",
+    "noToolsInCategory": "No se encontraron herramientas en esta categoría. Crea una nueva herramienta o instala desde la App Store.",
     "notifications": {
       "codeGenerationComplete": {
         "description": "El código se ha generado con éxito.",
@@ -711,6 +754,7 @@
         "title": "Generación de metadatos completa"
       }
     },
+    "searchPlaceholder": "Buscar herramientas...",
     "setupDescription": "Para utilizar esta función, necesitamos configurar algunos ajustes primero. Esto solo tomará un minuto y ayuda a garantizar que todo funcione sin problemas.",
     "setupNow": "Configurar Ahora",
     "setupRequired": "Configuración de Herramientas Requerida",

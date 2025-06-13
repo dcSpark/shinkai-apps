@@ -75,9 +75,12 @@ const AIsPage = () => {
   return (
     <div className="h-full">
       <div className="container flex h-full flex-col">
+        {/* prettier-ignore */}
         <div className="flex flex-col gap-1 pb-6 pt-10">
           <div className="flex justify-between gap-4">
-            <h1 className="font-clash text-3xl font-medium">Manage AIs</h1>
+            <h1 className="font-clash text-3xl font-medium">
+              {t('layout.menuItems.manageAis')}
+            </h1>
             <div className="flex gap-2">
               <Button
                 className="min-w-[100px]"
@@ -90,8 +93,7 @@ const AIsPage = () => {
             </div>
           </div>
           <p className="text-official-gray-400 text-sm">
-            Easily manage both cloud and local AI models, <br />
-            switching between them seamlessly to fit your workflow.
+            {t('aisPage.description')}
           </p>
         </div>
 

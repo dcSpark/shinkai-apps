@@ -2,11 +2,21 @@
   "agents": {
     "systemInstructions": "Instruksi Sistem"
   },
+  "agentsPage": {
+    "addAgent": "Tambah Agen",
+    "description": "Buat dan jelajahi agen AI dengan instruksi khusus, pengetahuan yang diperkaya, serta kemampuan tugas yang beragam untuk mencapai tujuan Anda secara otomatis.",
+    "goToTaskDetails": "Lihat detail tugas",
+    "notFoundDescription": "Buat Agen pertama Anda untuk mulai menjelajahi kekuatan AI.",
+    "notFoundTitle": "Tidak ada agen tersedia"
+  },
   "aiFilesSearch": {
     "description": "Cari untuk menemukan konten di semua file AI Anda dengan mudah",
     "filesSelected": "Dipilih {{count}} file",
     "foundResults": "Ditemukan {{count}} hasil",
     "label": "Pencarian Konten File AI"
+  },
+  "aisPage": {
+    "description": "Kelola model AI lokal dan cloud dengan mudah, beralih di antaranya sesuai kebutuhan alur kerja Anda."
   },
   "analytics": {
     "bulletPoints": {
@@ -341,6 +351,12 @@
     "customDescriptionSecondary": "Jika klien Anda tidak mendukung SSE, Anda dapat menjalankan server Shinkai MCP sebagai proses terpisah menggunakan perintah ini:",
     "customTitle": "Konfigurasi Klien Eksternal Kustom"
   },
+  "mcpPage": {
+    "exposeToolsDescription": "Ekspose Alat AI Anda melalui MCP untuk integrasi mulus dengan Klien MCP lainnya dan perluas kemampuannya.",
+    "exposeToolsTab": "Ekspose Alat",
+    "helpfulLinks": "Anda dapat menemukan MCP bermanfaat untuk terhubung dengan Shinkai di smithery.ai dan composio.dev.",
+    "mcpServersDescription": "Hubungkan ke server MCP untuk segera mengakses sumber data dan alat eksternal—seperti pembaruan cuaca, harga saham, atau layanan terjemahan—tanpa membuat integrasi khusus.\nIni memperluas kemampuan sistem Anda dengan informasi real-time dan akses mudah ke sumber daya baru saat kebutuhan meningkat."
+  },
   "mcpServers": {
     "add": "Tambah Server MCP",
     "addDescription": "Konfigurasikan server MCP baru untuk terhubung dengan Node Shinkai Anda",
@@ -671,7 +687,13 @@
   "tasks": {
     "runNow": "Jalankan Sekarang"
   },
+  "tasksPage": {
+    "noTasksDescription": "Buat tugas terjadwal pertama Anda untuk mengotomatiskan pengingat, ringkasan, atau tugas lain yang perlu Anda kelola",
+    "noTasksTitle": "Tidak ada tugas terjadwal"
+  },
   "tools": {
+    "commandActiveHeading": "Alat Aktif Anda",
+    "commandEmpty": "Tidak ada alat ditemukan.",
     "commonToolsetAffectedTools": "Memilih untuk memperbarui semua alat dalam set juga akan mempengaruhi:",
     "commonToolsetUpdateDescription": "Kunci konfigurasi yang Anda ubah untuk {{toolName}} juga digunakan oleh alat lain dalam set ini.",
     "configuration": {
@@ -694,9 +716,30 @@
     },
     "errorDuplicateTool": "Gagal menggandakan alat",
     "errorOpenToolInCodeEditor": "Gagal membuka alat di editor kode",
+    "homepage": {
+      "buildDescription": "Buat, otomatisasi, dan optimalkan alur kerja Anda dengan alat AI yang kuat.",
+      "buildTitle": "Buat Alat AI dalam Hitungan Menit",
+      "createInIDE": "Buat di VSCode/Cursor",
+      "discoverMoreDescription": "Jelajahi dan instal alat dari App Store kami untuk meningkatkan produktivitas dan mengotomatiskan alur kerja Anda.",
+      "discoverMoreTitle": "Temukan Lebih Banyak Alat",
+      "enterToSend": "untuk mengirim",
+      "generationError": "Gagal membuat alat. Cobalah menggunakan model AI yang lebih kuat untuk hasil yang lebih baik.",
+      "messagePlaceholder": "Jelaskan alat yang ingin Anda buat...",
+      "noProtocols": "Tidak ada protokol ditemukan.",
+      "otherProtocols": "Protokol lain mungkin berfungsi tetapi belum diverifikasi secara resmi.",
+      "requestProtocol": "Minta Protokol",
+      "shiftEnter": "untuk baris baru",
+      "step1Label": "Langkah 1",
+      "step1Text": "Pilih model Anda",
+      "step2Label": "Langkah 2",
+      "step2Text": "Tulis kebutuhan Anda",
+      "verifiedProtocolsTitle": "Protokol Terverifikasi",
+      "wellSupportedProtocols": "Protokol yang Didukung Baik"
+    },
     "installFromStore": "Instal dari Toko",
     "label": "Alat-alat Shinkai",
     "lookingForMoreTools": "Mencari lebih banyak alat?",
+    "noToolsInCategory": "Tidak ada alat dalam kategori ini. Buat alat baru atau instal dari App Store.",
     "notifications": {
       "codeGenerationComplete": {
         "description": "Kode telah berhasil dihasilkan.",
@@ -711,6 +754,7 @@
         "title": "Pembuatan Metadata Selesai"
       }
     },
+    "searchPlaceholder": "Cari alat...",
     "setupDescription": "Untuk menggunakan fitur ini, kami perlu mengonfigurasi beberapa pengaturan terlebih dahulu. Ini hanya akan memakan waktu sebentar dan membantu memastikan semuanya berjalan lancar.",
     "setupNow": "Atur Sekarang",
     "setupRequired": "Pengaturan Alat Diperlukan",

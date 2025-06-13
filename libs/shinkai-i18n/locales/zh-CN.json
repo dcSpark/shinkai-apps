@@ -2,11 +2,21 @@
   "agents": {
     "systemInstructions": "系统说明"
   },
+  "agentsPage": {
+    "addAgent": "添加代理",
+    "description": "通过个性化指令和丰富的知识创建并探索 AI 代理，自动完成各类任务以实现目标。",
+    "goToTaskDetails": "前往任务详情",
+    "notFoundDescription": "创建您的第一个代理，开始探索 AI 的强大功能。",
+    "notFoundTitle": "没有可用的代理"
+  },
   "aiFilesSearch": {
     "description": "搜索以轻松查找 AI 文件中的所有文件内容",
     "filesSelected": "已选择 {{count}} 个文件",
     "foundResults": "找到 {{count}} 个结果",
     "label": "AI文件内容搜索"
+  },
+  "aisPage": {
+    "description": "轻松管理本地和云端 AI 模型，并根据工作流程在它们之间切换。"
   },
   "analytics": {
     "bulletPoints": {
@@ -341,6 +351,12 @@
     "customDescriptionSecondary": "如果您的客户端不支持SSE，您可以使用以下命令将Shinkai MCP服务器作为单独的进程运行：",
     "customTitle": "自定义外部客户端配置"
   },
+  "mcpPage": {
+    "exposeToolsDescription": "通过 MCP 公开您的 AI 工具，与其他 MCP 客户端无缝集成并扩展其能力。",
+    "exposeToolsTab": "公开工具",
+    "helpfulLinks": "您可以在 smithery.ai 和 composio.dev 找到用于连接 Shinkai 的有用 MCP。",
+    "mcpServersDescription": "连接 MCP 服务器即可即时访问外部数据源和工具，如实时天气、股票价格或翻译服务，而无需构建自定义集成。\n这将通过实时信息和对新资源的轻松访问扩展系统功能。"
+  },
   "mcpServers": {
     "add": "添加 MCP 服务器",
     "addDescription": "配置一个新的 MCP 服务器以连接到您的 Shinkai 节点",
@@ -671,7 +687,13 @@
   "tasks": {
     "runNow": "立即运行"
   },
+  "tasksPage": {
+    "noTasksDescription": "创建您的第一个计划任务以自动执行提醒、摘要或其他需要管理的任务",
+    "noTasksTitle": "没有计划任务"
+  },
   "tools": {
+    "commandActiveHeading": "您的活跃工具",
+    "commandEmpty": "未找到任何工具。",
     "commonToolsetAffectedTools": "选择更新该工具集中的所有工具也将影响：",
     "commonToolsetUpdateDescription": "您正在更改的配置键 {{toolName}} 也被该工具集中的其他工具使用。",
     "configuration": {
@@ -694,9 +716,30 @@
     },
     "errorDuplicateTool": "工具复制失败",
     "errorOpenToolInCodeEditor": "无法在代码编辑器中打开工具",
+    "homepage": {
+      "buildDescription": "使用强大的 AI 工具创建、自动化并优化您的工作流程。",
+      "buildTitle": "几分钟内构建 AI 工具",
+      "createInIDE": "在 VSCode/Cursor 中创建",
+      "discoverMoreDescription": "在我们的应用商店中探索并安装工具，以提升工作效率并自动化流程。",
+      "discoverMoreTitle": "发现更多工具",
+      "enterToSend": "发送",
+      "generationError": "生成工具失败。请尝试使用更强大的 AI 模型以获得更好结果。",
+      "messagePlaceholder": "描述您想要创建的工具...",
+      "noProtocols": "未找到协议。",
+      "otherProtocols": "其他协议可能也能工作，但尚未正式验证。",
+      "requestProtocol": "请求协议",
+      "shiftEnter": "换行",
+      "step1Label": "步骤 1",
+      "step1Text": "选择您的模型",
+      "step2Label": "步骤 2",
+      "step2Text": "编写您的需求",
+      "verifiedProtocolsTitle": "已验证的协议",
+      "wellSupportedProtocols": "良好支持的协议"
+    },
     "installFromStore": "从商店安装",
     "label": "深海工具",
     "lookingForMoreTools": "寻找更多工具？",
+    "noToolsInCategory": "该类别中没有工具。创建一个新的工具或从应用商店安装。",
     "notifications": {
       "codeGenerationComplete": {
         "description": "代码已成功生成。",
@@ -711,6 +754,7 @@
         "title": "元数据生成完成"
       }
     },
+    "searchPlaceholder": "搜索工具...",
     "setupDescription": "要使用此功能，我们需要先配置一些设置。这只需一分钟，有助于确保一切顺利运行。",
     "setupNow": "立即设置",
     "setupRequired": "工具设置必需",

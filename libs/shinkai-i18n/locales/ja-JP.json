@@ -2,11 +2,21 @@
   "agents": {
     "systemInstructions": "システムの指示"
   },
+  "agentsPage": {
+    "addAgent": "エージェントを追加",
+    "description": "パーソナライズされた指示や豊富な知識でAIエージェントを作成し、さまざまなタスクを自律的にこなします。",
+    "goToTaskDetails": "タスクの詳細へ",
+    "notFoundDescription": "最初のエージェントを作成してAIの力を体験しましょう。",
+    "notFoundTitle": "利用可能なエージェントはありません"
+  },
   "aiFilesSearch": {
     "description": "AIファイル全体を簡単に検索してコンテンツを見つける",
     "filesSelected": "{{count}} 個のファイルが選択されました",
     "foundResults": "{{count}} 件の結果が見つかりました",
     "label": "AIファイルコンテンツ検索"
+  },
+  "aisPage": {
+    "description": "クラウドとローカルのAIモデルを簡単に管理し、ワークフローに合わせて切り替えられます。"
   },
   "analytics": {
     "bulletPoints": {
@@ -341,6 +351,12 @@
     "customDescriptionSecondary": "クライアントがSSEをサポートしていない場合は、次のコマンドを使用してShinkai MCPサーバーを別のプロセスとして実行できます：",
     "customTitle": "カスタム外部クライアント設定"
   },
+  "mcpPage": {
+    "exposeToolsDescription": "MCPを通じてAIツールを公開し、他のMCPクライアントとシームレスに統合して機能を拡張します。",
+    "exposeToolsTab": "ツールを公開",
+    "helpfulLinks": "Shinkaiと接続するための便利なMCPは smithery.ai と composio.dev にあります。",
+    "mcpServersDescription": "MCPサーバーに接続して天気情報、株価、翻訳サービスなどの外部データソースやツールに即座にアクセスします。\nカスタム統合を構築せずとも、リアルタイムの情報と新しいリソースへの簡単なアクセスでシステムの機能を拡張できます。"
+  },
   "mcpServers": {
     "add": "MCPサーバーを追加",
     "addDescription": "Shinkaiノードに接続する新しいMCPサーバーを設定します",
@@ -671,7 +687,13 @@
   "tasks": {
     "runNow": "今すぐ実行"
   },
+  "tasksPage": {
+    "noTasksDescription": "リマインダーやサマリーなどを自動化する最初のタスクを作成してください",
+    "noTasksTitle": "スケジュールされたタスクがありません"
+  },
   "tools": {
+    "commandActiveHeading": "アクティブなツール",
+    "commandEmpty": "ツールが見つかりません。",
     "commonToolsetAffectedTools": "セット内のすべてのツールを更新することを選択すると、次のツールにも影響があります：",
     "commonToolsetUpdateDescription": "{{toolName}}の変更している設定キーは、このセット内の他のツールでも使用されています。",
     "configuration": {
@@ -694,9 +716,30 @@
     },
     "errorDuplicateTool": "ツールの複製に失敗しました",
     "errorOpenToolInCodeEditor": "コードエディタでツールを開くことに失敗しました",
+    "homepage": {
+      "buildDescription": "強力なAIツールでワークフローを作成、 自動化、最適化します。",
+      "buildTitle": "数分でAIツールを構築",
+      "createInIDE": "VSCode/Cursorで作成",
+      "discoverMoreDescription": "App Storeからツールをインストールして生産性を高め、ワークフローを自動化しましょう。",
+      "discoverMoreTitle": "さらに多くのツールを発見",
+      "enterToSend": "で送信",
+      "generationError": "ツールの生成に失敗しました。より強力なAIモデルを試してみてください。",
+      "messagePlaceholder": "作成したいツールを説明してください...",
+      "noProtocols": "プロトコルが見つかりません。",
+      "otherProtocols": "他のプロトコルも動作する可能性がありますが、正式には確認されていません。",
+      "requestProtocol": "プロトコルをリクエスト",
+      "shiftEnter": "で改行",
+      "step1Label": "ステップ1",
+      "step1Text": "モデルを選択",
+      "step2Label": "ステップ2",
+      "step2Text": "要件を入力",
+      "verifiedProtocolsTitle": "検証済みプロトコル",
+      "wellSupportedProtocols": "十分にサポートされたプロトコル"
+    },
     "installFromStore": "ストアからインストール",
     "label": "深海ツール",
     "lookingForMoreTools": "さらにツールを探していますか？",
+    "noToolsInCategory": "このカテゴリにはツールがありません。新しいツールを作成するか、App Storeからインストールしてください。",
     "notifications": {
       "codeGenerationComplete": {
         "description": "コードが正常に生成されました。",
@@ -711,6 +754,7 @@
         "title": "メタデータ生成完了"
       }
     },
+    "searchPlaceholder": "ツールを検索...",
     "setupDescription": "この機能を使用するには、まずいくつかの設定を構成する必要があります。これには1分ほどしかかからず、すべてがスムーズに動作することを保証します。",
     "setupNow": "今すぐセットアップ",
     "setupRequired": "ツールのセットアップが必要です",

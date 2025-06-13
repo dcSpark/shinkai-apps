@@ -645,11 +645,11 @@ function ConversationChatFooter({
               <Command>
                 <CommandInput
                   onValueChange={scrollUpWhenSearchingTools}
-                  placeholder="Search tools..."
+                  placeholder={t('tools.searchPlaceholder')}
                 />
                 <CommandList ref={toolListRef}>
-                  <CommandEmpty>No tools found.</CommandEmpty>
-                  <CommandGroup heading="Your Active Tools">
+                  <CommandEmpty>{t('tools.commandEmpty')}</CommandEmpty>
+                  <CommandGroup heading={t('tools.commandActiveHeading')}>
                     {isToolsListSuccess &&
                       toolsList?.map((tool) => (
                         <CommandItem

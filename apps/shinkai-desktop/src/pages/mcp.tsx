@@ -59,6 +59,7 @@ export const McpRegistryPage = () => {
     'mcp_servers' | 'expose_tools'
   >('mcp_servers');
 
+  const { t } = useTranslation();
   return (
     <Tabs
       className="flex size-full flex-col"
@@ -96,7 +97,7 @@ export const McpRegistryPage = () => {
                   )}
                   value="expose_tools"
                 >
-                  Expose Tools
+                  {t('mcpPage.exposeToolsTab')}
                   <span className="text-official-gray-400 inline-flex items-center gap-1 text-xs">
                     Shinkai <MoveRightIcon className="size-2.5" /> MCP
                   </span>
@@ -106,12 +107,12 @@ export const McpRegistryPage = () => {
           </div>
           <p className="text-official-gray-400 text-sm whitespace-pre-wrap">
             {selectedTab === 'mcp_servers'
-              ? "Connect to an MCP server to instantly tap into external data sources and tools—like live weather updates, stock prices, or translation services—without building custom integrations.\nThis expands your system's capabilities with real-time information and easy access to new resources as your needs grow."
-              : 'Expose your AI Tools through MCP to enable seamless integration with other MCP Clients \nand expand their capabilities.'}
+              ? t('mcpPage.mcpServersDescription')
+              : t('mcpPage.exposeToolsDescription')}
           </p>
           {selectedTab === 'mcp_servers' && (
             <p className="text-official-gray-400 text-sm">
-              You can find helpful MCPs to connect with Shinkai at{' '}
+              {t('mcpPage.helpfulLinks')}{' '}
               <a
                 href="http://smithery.ai"
                 target="_blank"
