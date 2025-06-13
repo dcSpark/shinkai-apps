@@ -142,6 +142,9 @@ export default {
       deleteInboxConfirmationDescription:
         'The chat will be deleted and removed from your chat history',
     },
+    tracing: {
+      title: 'Tracing',
+    },
   },
   aiFilesSearch: {
     label: 'AI Files Content Search',
@@ -558,6 +561,7 @@ export default {
     showMore: 'More',
     showLess: 'Show Less',
     viewDetails: 'View Details',
+    selectItem: 'Select an item to view details',
     about: 'About',
   },
   quickConnection: {

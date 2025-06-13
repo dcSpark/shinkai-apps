@@ -69,7 +69,10 @@
     "limitReachedDescription": "Bu model/ajan için ay boyunca tüm sorgularınızı kullandınız. Lütfen başka bir ajan ile yeni bir sohbet başlatın.",
     "limitReachedTitle": "Limit Aşıldı",
     "openChatFolder": "Sohbet Klasörünü Aç",
-    "sendMessage": "Mesaj Gönder"
+    "sendMessage": "Mesaj Gönder",
+    "tracing": {
+      "title": "İzleme"
+    }
   },
   "chatDM": {
     "create": "DM Sohbeti Oluştur",
@@ -142,6 +145,7 @@
     "search": "Ara",
     "searchPlaceholder": "Ara...",
     "seeOptions": "Seçenekleri Gör",
+    "selectItem": "Detayları görmek için bir öğe seçin",
     "send": "Gönder",
     "shinkaiPrivate": "Yerel AI'nizi Kurun",
     "showLess": "Daha Az Göster",

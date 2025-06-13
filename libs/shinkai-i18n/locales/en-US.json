@@ -117,6 +117,9 @@
       "deleteInbox": "Delete Chat",
       "deleteInboxConfirmationTitle": "Delete chat?",
       "deleteInboxConfirmationDescription": "The chat will be deleted and removed from your chat history"
+    },
+    "tracing": {
+      "title": "Tracing"
     }
   },
   "aiFilesSearch": {
@@ -306,7 +309,7 @@
       "errorDescription": "There was an error restoring your wallet.",
       "emptyState": {
         "title": "No wallets found",
-        "description": "Manage your crypto wallets. Create or restore your Coinbase CDP Wallet or your Hot Wallet."
+        "description": "Manage your crypto wallets. Create or restore your Wallet."
       }
     },
     "shinkaiIdentity": {
@@ -505,6 +508,7 @@
     "showMore": "More",
     "showLess": "Show Less",
     "viewDetails": "View Details",
+    "selectItem": "Select an item to view details",
     "about": "About"
   },
   "quickConnection": {

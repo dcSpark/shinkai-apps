@@ -69,7 +69,10 @@
     "limitReachedDescription": "今月のこのモデル/エージェントでのクエリをすべて使用しました。別のエージェントと新しいチャットを開始してください。",
     "limitReachedTitle": "制限に達しました",
     "openChatFolder": "チャットフォルダーを開く",
-    "sendMessage": "メッセージを送信"
+    "sendMessage": "メッセージを送信",
+    "tracing": {
+      "title": "トレース"
+    }
   },
   "chatDM": {
     "create": "DMチャットを作成",
@@ -142,6 +145,7 @@
     "search": "検索",
     "searchPlaceholder": "検索...",
     "seeOptions": "オプションを表示",
+    "selectItem": "詳細を表示する項目を選択",
     "send": "送信",
     "shinkaiPrivate": "Shinkaiプライベート（ローカル）",
     "showLess": "表示を減らす",

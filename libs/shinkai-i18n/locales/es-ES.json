@@ -69,7 +69,10 @@
     "limitReachedDescription": "Has utilizado todas tus consultas del mes en este modelo/agente. Por favor, inicia un nuevo chat con otro agente.",
     "limitReachedTitle": "Límite Alcanzado",
     "openChatFolder": "Abrir carpeta de chat",
-    "sendMessage": "Enviar Mensaje"
+    "sendMessage": "Enviar Mensaje",
+    "tracing": {
+      "title": "Rastreo"
+    }
   },
   "chatDM": {
     "create": "Crear Chat DM",
@@ -142,6 +145,7 @@
     "search": "Buscar",
     "searchPlaceholder": "Buscar...",
     "seeOptions": "Ver Opciones",
+    "selectItem": "Seleccione un elemento para ver detalles",
     "send": "Enviar",
     "shinkaiPrivate": "Shinkai Privado (Local)",
     "showLess": "Mostrar menos",

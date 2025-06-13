@@ -50,6 +50,8 @@ import {
   type UpdateLLMProviderInJobResponse,
   type UpdateLLMProviderRequest,
   type UpdateLLMProviderResponse,
+  type GetMessageTracesRequest,
+  type GetMessageTracesResponse,
 } from './types';
 
 export const createJob = async (
@@ -598,4 +600,20 @@ export const exportMessagesFromInbox = async (
     },
   );
   return response.data as ExportMessagesFromInboxResponse;
+};
+
+export const getMessageTraces = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: GetMessageTracesRequest,
+) => {
+  const response = await httpClient.get(
+    urlJoin(nodeAddress, '/v2/get_message_traces'),
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+      params: { message_id: payload.message_id },
+    },
+  );
+  return response.data as GetMessageTracesResponse;
 };

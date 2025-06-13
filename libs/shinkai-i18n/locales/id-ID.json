@@ -69,7 +69,10 @@
     "limitReachedDescription": "Anda telah menggunakan semua kueri Anda untuk bulan ini pada model/agen ini. Silakan mulai obrolan baru dengan agen lain.",
     "limitReachedTitle": "Batas Telah Tercapai",
     "openChatFolder": "Buka Folder Obrolan",
-    "sendMessage": "Kirim Pesan"
+    "sendMessage": "Kirim Pesan",
+    "tracing": {
+      "title": "Pelacakan"
+    }
   },
   "chatDM": {
     "create": "Buat Obrolan DM",
@@ -142,6 +145,7 @@
     "search": "Cari",
     "searchPlaceholder": "Cari...",
     "seeOptions": "Lihat Opsi",
+    "selectItem": "Pilih item untuk melihat detail",
     "send": "Kirim",
     "shinkaiPrivate": "Shinkai Pribadi (Lokal)",
     "showLess": "Tampilkan Lebih Sedikit",

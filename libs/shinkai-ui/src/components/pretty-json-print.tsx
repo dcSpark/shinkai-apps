@@ -1,6 +1,13 @@
 import { useMemo } from 'react';
+import { cn } from '../utils';
 
-export const PrettyJsonPrint = ({ json }: { json: string | object }) => {
+export const PrettyJsonPrint = ({
+  json,
+  className,
+}: {
+  json: string | object;
+  className?: string;
+}) => {
   const formattedJson = useMemo(() => {
     let formattedValue = `Unparseable JSON: String(${json})`;
     if (typeof json === 'object') {
@@ -15,5 +22,7 @@ export const PrettyJsonPrint = ({ json }: { json: string | object }) => {
     }
     return formattedValue;
   }, [json]);
-  return <pre className="overflow-x-scroll">{formattedJson}</pre>;
+  return (
+    <pre className={cn('overflow-x-scroll', className)}>{formattedJson}</pre>
+  );
 };
