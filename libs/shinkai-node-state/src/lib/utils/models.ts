@@ -5,6 +5,7 @@ export enum Models {
   Gemini = 'gemini',
   Exo = 'exo',
   Groq = 'groq',
+  HuggingFace = 'huggingface',
   OpenRouter = 'openrouter',
   Claude = 'claude',
   DeepSeek = 'deepseek',
@@ -302,5 +303,9 @@ export const modelsConfig = {
         value: 'deepseek-reasoner',
       },
     ],
+  },
+  [Models.HuggingFace]: {
+    apiUrl: 'https://huggingface.co',
+    modelTypes: [],
   },
 };

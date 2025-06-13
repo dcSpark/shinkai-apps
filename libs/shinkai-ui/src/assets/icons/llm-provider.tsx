@@ -802,3 +802,21 @@ export const AyaCohereIcon = ({ className }: { className?: string }) => {
     </svg>
   );
 };
+
+export const HuggingFaceIcon = ({ className }: { className?: string }) => {
+  return (
+    <svg className={cn('shrink-0', className)} viewBox="0 0 24 24">
+      <title>HuggingFace</title>
+      <circle cx="12" cy="12" r="10" fill="#FFCC4D" />
+      <circle cx="8.5" cy="10" r="1.5" fill="#664500" />
+      <circle cx="15.5" cy="10" r="1.5" fill="#664500" />
+      <path
+        d="M7 15c1.5 2 8.5 2 10 0"
+        fill="none"
+        stroke="#664500"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+};
