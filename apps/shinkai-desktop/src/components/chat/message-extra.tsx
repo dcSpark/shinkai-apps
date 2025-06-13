@@ -7,11 +7,15 @@ import { usePayInvoice } from '@shinkai_network/shinkai-node-state/v2/mutations/
 import { Button, Dialog, DialogContent } from '@shinkai_network/shinkai-ui';
 import { CryptoWalletIcon } from '@shinkai_network/shinkai-ui/assets';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CheckCircle, Loader2, XCircle } from 'lucide-react';
+import { CheckCircle, ExternalLinkIcon, Loader2, XCircle } from 'lucide-react';
 import React from 'react';
 
 import { useAuth } from '../../store/auth';
-import { formatBalanceAmount, truncateAddress } from '../crypto-wallet/utils';
+import {
+  formatBalanceAmount,
+  getBasescanAddressUrl,
+  truncateAddress,
+} from '../crypto-wallet/utils';
 import { useToolsStore } from './context/tools-context';
 
 export default function MessageExtra() {
@@ -140,6 +144,50 @@ function Payment({
                                 : data.usage_type.PerUse.DirectDelegation}
                           </span>
                         </div>
+                        {data.usage_type?.PerUse &&
+                          typeof data.usage_type.PerUse === 'object' &&
+                          'Payment' in data.usage_type.PerUse &&
+                          data.usage_type.PerUse.Payment?.[0].payTo && (
+                            <div className="flex justify-between">
+                              <span className="text-official-gray-400">
+                                Payment Recipient:
+                              </span>
+                              <span className="inline-flex items-center gap-1 text-white">
+                                {truncateAddress(
+                                  data.usage_type?.PerUse &&
+                                    typeof data.usage_type.PerUse ===
+                                      'object' &&
+                                    'Payment' in data.usage_type.PerUse
+                                    ? (data.usage_type.PerUse.Payment?.[0]
+                                        .payTo ?? '')
+                                    : '',
+                                )}
+                                <a
+                                  href={getBasescanAddressUrl(
+                                    data.usage_type?.PerUse &&
+                                      typeof data.usage_type.PerUse ===
+                                        'object' &&
+                                      'Payment' in data.usage_type.PerUse
+                                      ? (data.usage_type.PerUse.Payment?.[0]
+                                          .payTo ?? '')
+                                      : '',
+                                    data.usage_type?.PerUse &&
+                                      typeof data.usage_type.PerUse ===
+                                        'object' &&
+                                      'Payment' in data.usage_type.PerUse
+                                      ? (data.usage_type.PerUse.Payment?.[0]
+                                          .network ?? '')
+                                      : '',
+                                  )}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-official-gray-400 ml-1 hover:text-white"
+                                >
+                                  <ExternalLinkIcon className="h-4 w-4" />
+                                </a>
+                              </span>
+                            </div>
+                          )}
                       </div>
                     </div>
                     {/* <RadioGroup
