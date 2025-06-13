@@ -35,17 +35,11 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
   Tooltip,
   TooltipContent,
   TooltipPortal,
   TooltipTrigger,
   PrettyJsonPrint,
-  Badge,
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-  Textarea,
 } from '@shinkai_network/shinkai-ui';
 import {
   AisIcon,
@@ -68,11 +62,7 @@ import {
   RotateCcw,
   Unplug,
   XCircle,
-  History,
-  MessageSquare,
   Zap,
-  FunctionSquareIcon,
-  CodeIcon,
   User,
   Cpu,
 } from 'lucide-react';
@@ -85,6 +75,7 @@ import { useAuth } from '../../../store/auth';
 import { useOAuth } from '../../../store/oauth';
 import { useSettings } from '../../../store/settings';
 import { oauthUrlMatcherFromErrorMessage } from '../../../utils/oauth';
+import { useGetNetworkAgents } from '../../network/network-client';
 import { useChatStore } from '../context/chat-context';
 import { PythonCodeRunner } from '../python-code-runner/python-code-runner';
 
@@ -758,6 +749,12 @@ export function ToolCard({
   name: string;
   toolRouterKey: string;
 }) {
+  const { data: networkAgents } = useGetNetworkAgents();
+
+  const isNetworkTool = (networkAgents ?? [])?.some(
+    (agent) => agent.toolRouterKey === toolRouterKey,
+  );
+
   const renderStatus = () => {
     if (status === ToolStatusType.Complete) {
       return <ToolsIcon className="text-brand size-full" />;
@@ -773,7 +770,7 @@ export function ToolCard({
 
   const renderLabelText = () => {
     if (status === ToolStatusType.Complete) {
-      return 'Tool Used';
+      return isNetworkTool ? 'Network Tool Used' : 'Tool Used';
     }
     if (status === ToolStatusType.Incomplete) {
       return 'Incomplete';
@@ -781,7 +778,7 @@ export function ToolCard({
     if (status === ToolStatusType.RequiresAction) {
       return 'Requires Action';
     }
-    return 'Processing Tool';
+    return isNetworkTool ? 'Processing Network Tool' : 'Processing Tool';
   };
 
   return (
@@ -942,21 +939,6 @@ const getStepIcon = (type: string) => {
       return <ToolsIcon className="h-4 w-4" />;
     default:
       return <Zap className="h-4 w-4" />;
-  }
-};
-
-const getStepColor = (type: string) => {
-  switch (type) {
-    case 'llm_payload':
-      return 'text-blue-600';
-    case 'llm_response':
-      return 'text-blue-500';
-    case 'tool_call':
-      return 'text-orange-600';
-    case 'tool_response':
-      return 'text-orange-500';
-    default:
-      return 'text-gray-600';
   }
 };
 
