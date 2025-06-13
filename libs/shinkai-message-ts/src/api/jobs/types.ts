@@ -337,7 +337,7 @@ export type MessageTrace = {
   inbox_name: string;
   datetime: string;
   trace_name: string;
-  trace_info: unknown;
+  trace_info: Record<string, any>;
 };
 
 export type GetMessageTracesResponse = MessageTrace[];

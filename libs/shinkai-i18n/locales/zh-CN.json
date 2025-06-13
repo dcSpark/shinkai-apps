@@ -69,7 +69,10 @@
     "limitReachedDescription": "您已用尽本月对此模型/代理的所有查询。请开始与其他代理的新聊天。",
     "limitReachedTitle": "已达到限制",
     "openChatFolder": "打开聊天文件夹",
-    "sendMessage": "发送消息"
+    "sendMessage": "发送消息",
+    "tracing": {
+      "title": "追踪"
+    }
   },
   "chatDM": {
     "create": "创建直接消息聊天",
@@ -142,6 +145,7 @@
     "search": "搜索",
     "searchPlaceholder": "搜索...",
     "seeOptions": "查看选项",
+    "selectItem": "选择项目以查看详情",
     "send": "发送",
     "shinkaiPrivate": "Shinkai私有（本地）",
     "showLess": "显示更少",
@@ -156,9 +160,7 @@
     "upload": "上传",
     "uploadAFileDescription": "支持图像、PDF、CSV、TXT、XLSX等多种格式",
     "uploadFile": "上传文件",
-    "viewDetails": "查看详情",
-    "tracing": "Tracing",
-    "selectItem": "选择项目以查看详情"
+    "viewDetails": "查看详情"
   },
   "desktop": {
     "benefits": {
