@@ -28,7 +28,6 @@ import {
   AlertTitle,
   AlertDescription,
   buttonVariants,
-  CopyToClipboardIcon,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -50,21 +49,21 @@ import {
   CheckCircle2,
   ChevronDownIcon,
   PlusIcon,
+  Sparkles,
+  Plus,
+  CheckCircle,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import PublishAgentDialog from '../components/agent/publish-agent-dialog';
 import {
-  formatBalance,
+  formatBalanceAmount,
   truncateAddress,
 } from '../components/crypto-wallet/utils';
 import { useGetNetworkAgents } from '../components/network/network-client';
-import {
-  type FormattedNetworkAgent,
-  type ApiNetworkAgent,
-} from '../components/network/types';
 import RemoveNetworkAgentButton from '../components/network/remove-network-agent-button';
+import { type FormattedNetworkAgent } from '../components/network/types';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 
@@ -106,23 +105,21 @@ export const NetworkAgentPage = () => {
       }}
     >
       <div className="container max-w-screen-lg">
-        <div className="flex flex-col gap-5 pt-10 pb-6">
-          <div className="flex justify-between gap-4">
-            <div className="font-clash inline-flex items-center gap-5 text-3xl font-medium">
-              <h1>Network</h1>
-              <TabsList className="bg-official-gray-950/80 flex h-10 w-fit items-center gap-2 rounded-full px-1 py-1">
-                <TabsTrigger
-                  className={cn(
-                    'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
-                    'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
-                    'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
-                    'focus-visible:outline-hidden',
-                  )}
-                  value="network"
-                >
-                  Agents
-                </TabsTrigger>
-                {optInExperimental && (
+        <div
+          className={cn(
+            'flex flex-col gap-2 pt-10 pb-6',
+            optInExperimental && 'gap-5',
+          )}
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div
+              className={cn(
+                'font-clash inline-flex items-center gap-2 text-3xl font-medium',
+              )}
+            >
+              <h1>{optInExperimental ? 'Network' : 'Descentralized Agents'}</h1>
+              {optInExperimental && (
+                <TabsList className="bg-official-gray-950/80 flex h-10 w-fit items-center gap-2 rounded-full px-1 py-1">
                   <TabsTrigger
                     className={cn(
                       'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
@@ -130,12 +127,25 @@ export const NetworkAgentPage = () => {
                       'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
                       'focus-visible:outline-hidden',
                     )}
-                    value="published"
+                    value="network"
                   >
-                    Published Agents
+                    Agents
                   </TabsTrigger>
-                )}
-              </TabsList>
+                  {optInExperimental && (
+                    <TabsTrigger
+                      className={cn(
+                        'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
+                        'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
+                        'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
+                        'focus-visible:outline-hidden',
+                      )}
+                      value="published"
+                    >
+                      Published Agents
+                    </TabsTrigger>
+                  )}
+                </TabsList>
+              )}
             </div>
 
             {!isWalletConnected && (
@@ -176,7 +186,7 @@ export const NetworkAgentPage = () => {
                           <span className="text-sm">ETH</span>
                         </div>
                         <div className="text-sm font-medium">
-                          {formatBalance(
+                          {formatBalanceAmount(
                             walletBalance?.ETH.amount ?? '0',
                             walletBalance?.ETH.decimals ?? 0,
                           )}{' '}
@@ -191,7 +201,7 @@ export const NetworkAgentPage = () => {
                           <span className="text-sm">USDC</span>
                         </div>
                         <div className="text-sm font-medium">
-                          {formatBalance(
+                          {formatBalanceAmount(
                             walletBalance?.USDC.amount ?? '0',
                             walletBalance?.USDC.decimals ?? 0,
                           )}{' '}
@@ -269,20 +279,10 @@ const DiscoverNetworkAgents = ({
   const {
     data: installedNetworkTools,
     isPending: isInstalledNetworkToolsPending,
+    isSuccess: isInstalledNetworkToolsSuccess,
   } = useGetInstalledNetworkTools({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
-  });
-
-  const { mutateAsync: addNetworkTool } = useAddNetworkTool({
-    onError: (error) => {
-      toast.error('Failed to add network agent', {
-        description: error.response?.data?.message ?? error.message,
-      });
-    },
-    onSuccess: () => {
-      toast.success('Network agent added successfully.');
-    },
   });
 
   const filteredAgents = (networkAgents ?? [])?.filter((agent) => {
@@ -292,15 +292,6 @@ const DiscoverNetworkAgents = ({
 
     return matchesSearch;
   });
-
-  const handleAddAgent = async (agent: FormattedNetworkAgent) => {
-    if (!auth) return;
-    await addNetworkTool({
-      nodeAddress: auth.node_address,
-      token: auth.api_v2_key,
-      networkTool: agent.apiData.network_tool,
-    });
-  };
 
   return (
     <div className="space-y-8">
@@ -339,15 +330,19 @@ const DiscoverNetworkAgents = ({
           ))}
 
         {isNetworkAgentsSuccess &&
+          isInstalledNetworkToolsSuccess &&
           filteredAgents.map((agent) => (
             <AgentCard
               key={agent.id}
               agent={agent}
               type="discover"
-              isInstalled={installedNetworkTools?.some(
-                (tool) => tool.tool_router_key === agent.toolRouterKey,
-              )}
-              onAdd={handleAddAgent}
+              isInstalled={
+                (Array.isArray(installedNetworkTools) &&
+                  installedNetworkTools?.some(
+                    (tool) => tool.tool_router_key === agent.toolRouterKey,
+                  )) ??
+                false
+              }
               isIdentityRegistered={isIdentityRegistered}
               isWalletConnected={isWalletConnected}
             />
@@ -364,7 +359,7 @@ const PublishedAgents = () => {
     token: auth?.api_v2_key ?? '',
   });
 
-  const publishedAgents = useMemo<FormattedNetworkAgent[]>(() => {
+  const publishedAgents = useMemo(() => {
     if (!data) return [];
     return data.map((item) => {
       const payment =
@@ -383,6 +378,8 @@ const PublishedAgents = () => {
         price,
         category: item.network_tool.toolkit_name ?? '',
         provider: item.network_tool.provider,
+        toolRouterKey: item.network_tool.tool_router_key,
+        apiData: item,
       };
     });
   }, [data]);
@@ -402,48 +399,47 @@ const PublishedAgents = () => {
   );
 };
 
-interface Agent {
-  id: string;
-  name: string;
-  description: string;
-  price: string;
-  category: string;
-  provider: string;
-  toolRouterKey: string;
-  apiData?: ApiNetworkAgent;
-}
-
 interface AgentCardProps {
   agent: FormattedNetworkAgent;
   type: 'discover' | 'exposed';
   isInstalled?: boolean;
-  onAdd?: (agent: FormattedNetworkAgent) => void;
   isIdentityRegistered: boolean;
   isWalletConnected: boolean;
 }
 /* TODO:
-  - loading, error, success when adding an agent
-  - refactor every server state
   - published agents
-  - improve network agent in chats
+
 */
 
 const AgentCard = ({
   agent,
   type,
   isInstalled,
-  onAdd,
+
   isIdentityRegistered,
   isWalletConnected,
 }: AgentCardProps) => {
-  const handleAction = () => {
-    onAdd?.(agent);
-  };
+  const [showInstallModal, setShowInstallModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const isFreePricing =
     agent.price.toLowerCase().includes('free') || agent.price === '$0.00';
 
-  console.log(agent);
+  const amount =
+    agent.apiData.tool_offering.usage_type?.PerUse &&
+    typeof agent.apiData.tool_offering.usage_type?.PerUse === 'object' &&
+    'Payment' in agent.apiData.tool_offering.usage_type?.PerUse
+      ? agent.apiData.tool_offering.usage_type?.PerUse?.Payment?.[0]
+          ?.maxAmountRequired
+      : undefined;
+
+  const ticker =
+    agent.apiData.tool_offering.usage_type?.PerUse &&
+    typeof agent.apiData.tool_offering.usage_type?.PerUse === 'object' &&
+    'Payment' in agent.apiData.tool_offering.usage_type?.PerUse
+      ? agent.apiData.tool_offering.usage_type?.PerUse?.Payment?.[0]?.extra
+          ?.name
+      : undefined;
 
   return (
     <Card className="border-official-gray-850 bg-official-gray-900 flex flex-col border">
@@ -471,30 +467,35 @@ const AgentCard = ({
           {agent.description}
         </CardDescription>
       </CardHeader>
-
-      <CardContent className="flex flex-1 flex-col space-y-4 pt-0">
-        {type === 'discover' && (
-          <div className="mb-4">
-            <div className="mb-2 flex items-center justify-between">
-              <div className="text-official-gray-400 flex items-center gap-1 text-sm">
-                <CreditCard className="h-4 w-4" />
-                <span>Cost per use</span>
-              </div>
-              <div className="text-right">
-                <div className="text-lg font-semibold">
-                  {isFreePricing ? 'Free' : agent.price}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="ml-auto flex w-full items-center gap-3">
+      <CardContent className="flex flex-1 flex-col space-y-4 pt-3">
+        <div className="flex w-full items-center justify-between gap-2">
           {type === 'discover' && (
-            <>
-              <Dialog>
+            <div className="inline-flex items-center gap-2 text-right">
+              <div className="text-lg font-semibold">
+                {isFreePricing ? 'Free' : formatBalanceAmount(amount ?? '0', 6)}
+                {!isFreePricing && (
+                  <span className="text-official-gray-200 text-sm font-medium">
+                    {' '}
+                    {ticker}
+                  </span>
+                )}
+              </div>
+              {!isFreePricing && (
+                <div className="text-official-gray-400 flex items-center gap-1 text-sm">
+                  <span>per use</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {type === 'discover' && (
+            <div className="flex items-center gap-2">
+              <Dialog
+                open={showDetailsModal}
+                onOpenChange={setShowDetailsModal}
+              >
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="flex-1">
+                  <Button variant="outline" size="sm" className="px-4">
                     Details
                   </Button>
                 </DialogTrigger>
@@ -542,80 +543,18 @@ const AgentCard = ({
                           </p>
                         </div>
                       </div>
-                      <Badge className="py-1.5 text-lg">
-                        {agent?.apiData?.tool_offering?.usage_type?.PerUse &&
-                        typeof agent?.apiData?.tool_offering?.usage_type
-                          ?.PerUse === 'object' &&
-                        'Payment' in
-                          agent?.apiData?.tool_offering?.usage_type?.PerUse
-                          ? agent?.apiData?.tool_offering?.usage_type?.PerUse
-                              ?.Payment?.[0]?.maxAmountRequired
-                          : undefined}{' '}
-                        {agent?.apiData?.tool_offering?.usage_type?.PerUse &&
-                        typeof agent?.apiData?.tool_offering?.usage_type
-                          ?.PerUse === 'object' &&
-                        'Payment' in
-                          agent?.apiData?.tool_offering?.usage_type?.PerUse
-                          ? agent?.apiData?.tool_offering?.usage_type?.PerUse
-                              ?.Payment?.[0]?.extra?.name
-                          : undefined}
-                      </Badge>
-                    </div>
-
-                    <div>
-                      <h3 className="mb-2 font-medium">Payment Details</h3>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between border-b py-2">
-                          <span className="text-official-gray-400">
-                            Network
-                          </span>
-                          <span>
-                            {agent?.apiData?.tool_offering?.usage_type
-                              ?.PerUse &&
-                            typeof agent?.apiData?.tool_offering?.usage_type
-                              ?.PerUse === 'object' &&
-                            'Payment' in
-                              agent?.apiData?.tool_offering?.usage_type?.PerUse
-                              ? agent?.apiData?.tool_offering?.usage_type
-                                  ?.PerUse?.Payment?.[0]?.network
-                              : undefined}
+                      {isFreePricing ? (
+                        <div className="inline-flex gap-1 py-1.5 text-lg">
+                          Free
+                        </div>
+                      ) : (
+                        <div className="inline-flex items-center gap-1 py-1.5 text-lg">
+                          {formatBalanceAmount(amount ?? '0', 6)}{' '}
+                          <span className="text-official-gray-200 text-sm font-medium">
+                            {ticker}
                           </span>
                         </div>
-                        <div className="flex justify-between border-b py-2">
-                          <span className="text-official-gray-400">
-                            Payment recipient
-                          </span>
-                          <span className="inline-flex items-center gap-2 font-mono">
-                            {truncateAddress(
-                              agent?.apiData?.tool_offering?.usage_type
-                                ?.PerUse &&
-                                typeof agent?.apiData?.tool_offering?.usage_type
-                                  ?.PerUse === 'object' &&
-                                'Payment' in
-                                  agent?.apiData?.tool_offering?.usage_type
-                                    ?.PerUse
-                                ? (agent?.apiData?.tool_offering?.usage_type
-                                    ?.PerUse?.Payment?.[0]?.payTo ?? '')
-                                : '',
-                            )}
-                            <CopyToClipboardIcon
-                              className="ml-2 h-4 w-4"
-                              string={
-                                agent?.apiData?.tool_offering?.usage_type
-                                  ?.PerUse &&
-                                typeof agent?.apiData?.tool_offering?.usage_type
-                                  ?.PerUse === 'object' &&
-                                'Payment' in
-                                  agent?.apiData?.tool_offering?.usage_type
-                                    ?.PerUse
-                                  ? (agent?.apiData?.tool_offering?.usage_type
-                                      ?.PerUse?.Payment?.[0]?.payTo ?? '')
-                                  : ''
-                              }
-                            />
-                          </span>
-                        </div>
-                      </div>
+                      )}
                     </div>
 
                     <div className="rounded-md border border-cyan-800 bg-cyan-900/10 p-3">
@@ -645,55 +584,54 @@ const AgentCard = ({
                     </div>
                   </div>
 
-                  {!isInstalled ? (
-                    <DialogFooter className="flex-col gap-3 sm:flex-row">
+                  {!isInstalled && isWalletConnected && isIdentityRegistered ? (
+                    <DialogFooter className="ml-auto w-full max-w-[300px] flex-row gap-1">
                       <Button
                         variant="outline"
-                        size="sm"
-                        className="w-full sm:w-auto"
+                        size="md"
+                        className="flex-1 px-4"
+                        onClick={() => setShowDetailsModal(false)}
                       >
                         Cancel
                       </Button>
-                      <Button size="sm" className="w-full sm:w-auto">
+                      <Button
+                        size="md"
+                        className="flex-1"
+                        onClick={() => {
+                          setShowInstallModal(true);
+                          setShowDetailsModal(false);
+                        }}
+                      >
                         Add Agent
                       </Button>
                     </DialogFooter>
-                  ) : (
+                  ) : isInstalled ? (
                     <DialogFooter>
                       <RemoveNetworkAgentButton
-                        asChild
                         toolRouterKey={agent.toolRouterKey}
-                      >
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          className="w-full sm:w-auto"
-                        >
-                          Remove Agent
-                        </Button>
-                      </RemoveNetworkAgentButton>
+                      />
                     </DialogFooter>
-                  )}
+                  ) : null}
                 </DialogContent>
               </Dialog>
-              {!isInstalled ? (
+              {!isInstalled && isWalletConnected && isIdentityRegistered ? (
                 <Button
                   variant="outline"
-                  className="flex-1"
-                  onClick={handleAction}
+                  onClick={() => setShowInstallModal(true)}
                   size="sm"
                 >
                   <PlusIcon className="h-4 w-4" />
                   Add Agent
                 </Button>
-              ) : (
+              ) : null}
+              {isInstalled && (
                 <RemoveNetworkAgentButton toolRouterKey={agent.toolRouterKey} />
               )}
-            </>
+            </div>
           )}
           {type === 'exposed' && (
             <div className="flex w-full flex-col gap-3">
-              <Button variant="outline" size="md" onClick={handleAction}>
+              <Button variant="outline" size="md">
                 <Settings className="h-4 w-4" />
                 Settings
               </Button>
@@ -701,11 +639,221 @@ const AgentCard = ({
           )}
         </div>
       </CardContent>
+      <InstallAgentModal
+        isOpen={showInstallModal}
+        onClose={() => setShowInstallModal(false)}
+        agent={agent}
+      />
     </Card>
   );
 };
 
 export default AgentCard;
+
+interface InstallAgentModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  agent: FormattedNetworkAgent;
+}
+
+export const InstallAgentModal = ({
+  isOpen,
+  onClose,
+  agent,
+}: InstallAgentModalProps) => {
+  const [step, setStep] = useState<1 | 2>(1); // 1: confirm, 2: success
+
+  const auth = useAuth((state) => state.auth);
+  const { mutateAsync: addNetworkTool, isPending: isAddingAgent } =
+    useAddNetworkTool({
+      onError: (error) => {
+        toast.error('Failed to add network agent', {
+          description: error.response?.data?.message ?? error.message,
+        });
+      },
+      onSuccess: () => {
+        setStep(2);
+      },
+    });
+
+  const navigate = useNavigate();
+
+  if (!agent) return null;
+
+  const handleAddAgent = async () => {
+    if (!auth) return;
+
+    await addNetworkTool({
+      nodeAddress: auth.node_address,
+      token: auth.api_v2_key,
+      networkTool: agent.apiData.network_tool,
+    });
+  };
+
+  const handleClose = () => {
+    setStep(1);
+    onClose();
+  };
+
+  const isFreePricing =
+    agent.price.toLowerCase().includes('free') || agent.price === '$0.00';
+
+  const amount =
+    agent.apiData.tool_offering.usage_type?.PerUse &&
+    typeof agent.apiData.tool_offering.usage_type?.PerUse === 'object' &&
+    'Payment' in agent.apiData.tool_offering.usage_type?.PerUse
+      ? agent.apiData.tool_offering.usage_type?.PerUse?.Payment?.[0]
+          ?.maxAmountRequired
+      : undefined;
+
+  const ticker =
+    agent.apiData.tool_offering.usage_type?.PerUse &&
+    typeof agent.apiData.tool_offering.usage_type?.PerUse === 'object' &&
+    'Payment' in agent.apiData.tool_offering.usage_type?.PerUse
+      ? agent.apiData.tool_offering.usage_type?.PerUse?.Payment?.[0]?.extra
+          ?.name
+      : undefined;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-lg text-white">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-3 text-xl">
+            {/* <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 text-xl">
+              {agent.icon}
+            </div> */}
+            <span>Add {agent.name}</span>
+          </DialogTitle>
+          <DialogDescription className="text-official-gray-400">
+            {step === 1 && 'Add this AI agent to your collection'}
+            {step === 2 && 'Ready to use in chat!'}
+          </DialogDescription>
+        </DialogHeader>
+
+        {step === 1 && (
+          <div className="space-y-6">
+            <div className="rounded-lg border border-cyan-800 bg-cyan-900/10 p-4">
+              <div className="flex flex-col gap-2.5">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-cyan-400" />
+                  <p className="text-sm font-medium text-cyan-400">
+                    How payments work
+                  </p>
+                </div>
+                <div>
+                  <div className="text-official-gray-100 space-y-2 text-sm">
+                    <p>
+                      <strong>Free to add</strong> - No cost to add agents to
+                      your collection
+                    </p>
+                    <p>
+                      <strong>Pay per use</strong> - Only pay{' '}
+                      <strong className="text-white">
+                        {isFreePricing
+                          ? 'FREE'
+                          : `${formatBalanceAmount(amount ?? '0', 6)} ${ticker}`}
+                      </strong>{' '}
+                      when you use it in chat. You'll see a payment confirmation
+                      before any charges.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-official-gray-900 space-y-3 rounded-lg p-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-white">
+                    {agent.name}
+                  </h3>
+                  <p className="text-official-gray-400 text-sm">
+                    by {agent.provider}
+                  </p>
+                </div>
+              </div>
+              <p className="text-official-gray-400 text-sm leading-relaxed">
+                {agent.description}
+              </p>
+
+              <div className="border-official-gray-780 border-t pt-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-white">Cost per use:</span>
+                  <span className="font-semibold text-white">
+                    {isFreePricing
+                      ? 'FREE'
+                      : `${formatBalanceAmount(amount ?? '0', 6)} ${ticker}`}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="ml-auto flex max-w-[300px] items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                className="flex-1"
+                size="md"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAddAgent}
+                size="md"
+                className="flex-1"
+                isLoading={isAddingAgent}
+              >
+                {isAddingAgent ? null : <Plus className="h-4 w-4" />}
+                Add Agent
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="py-8 text-center">
+            <CheckCircle className="mx-auto mb-4 h-12 w-12 text-green-400" />
+            <h3 className="mb-2 text-base font-semibold text-white">
+              Added Successfully!
+            </h3>
+            <p className="text-official-gray-400 mb-6 text-sm">
+              {agent.name} is now in your collection. Start a chat to use it!
+            </p>
+            <div className="mx-auto flex w-full max-w-sm gap-3">
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                className="flex-1"
+                size="md"
+              >
+                Browse More Agents
+              </Button>
+              <Button
+                onClick={async () => {
+                  handleClose();
+                  await navigate('/home', {
+                    state: {
+                      selectedTool: {
+                        key: agent.toolRouterKey,
+                        name: agent.name,
+                        description: agent.description,
+                        args: agent.apiData?.network_tool?.input_args,
+                      },
+                    },
+                  });
+                }}
+                size="md"
+                className="flex-1"
+              >
+                Start Chat
+              </Button>
+            </div>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 interface SetupGuideProps {
   isWalletConnected: boolean;
@@ -747,7 +895,7 @@ function SetupGuide({
                   href={`https://shinkai-contracts.pages.dev?encryption_pk=${auth?.encryption_pk}&signature_pk=${auth?.identity_pk}&node_address=${auth?.node_address}`}
                   className={cn(
                     buttonVariants({ variant: 'outline', size: 'md' }),
-                    'bg-yellow-400 text-black hover:bg-yellow-500 hover:text-black',
+                    'shrink-0 bg-yellow-400 text-black hover:bg-yellow-500 hover:text-black',
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -779,7 +927,7 @@ function SetupGuide({
                   to="/settings/crypto-wallet"
                   className={cn(
                     buttonVariants({ variant: 'outline', size: 'md' }),
-                    'bg-yellow-400 text-black hover:bg-yellow-500 hover:text-black',
+                    'shrink-0 bg-yellow-400 text-black hover:bg-yellow-500 hover:text-black',
                   )}
                 >
                   Connect Wallet

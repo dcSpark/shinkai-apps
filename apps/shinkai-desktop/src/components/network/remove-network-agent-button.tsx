@@ -1,7 +1,7 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { Slot } from '@radix-ui/react-slot';
-import { useRemoveTool } from '@shinkai_network/shinkai-node-state/v2/mutations/removeTool/useRemoveTool';
 import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
+import { useRemoveTool } from '@shinkai_network/shinkai-node-state/v2/mutations/removeTool/useRemoveTool';
 import {
   Button,
   buttonVariants,
@@ -25,10 +25,8 @@ import { useAuth } from '../../store/auth';
 
 export default function RemoveNetworkAgentButton({
   toolRouterKey,
-  asChild,
 }: {
   toolRouterKey: string;
-  asChild?: boolean;
 }) {
   const auth = useAuth((state) => state.auth);
   const [isOpen, setIsOpen] = useState(false);
@@ -58,21 +56,19 @@ export default function RemoveNetworkAgentButton({
     });
   };
 
-  const TriggerComponent = asChild ? Slot : 'button';
-
   return (
     <Dialog onOpenChange={setIsOpen} open={isOpen}>
       <Tooltip>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <TriggerComponent
+            <button
               className={cn(
                 buttonVariants({ variant: 'outline', size: 'sm' }),
-                'flex h-auto min-h-auto w-10 justify-center rounded-md py-2',
+                'flex h-auto min-h-auto w-10 justify-center py-2',
               )}
             >
               <Trash2 className="h-4 w-4" />
-            </TriggerComponent>
+            </button>
           </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent align="center" side="top">

@@ -34,7 +34,7 @@ const getNetworkAgents = async (): Promise<FormattedNetworkAgent[]> => {
     throw new Error(`Request failed: ${res.status}`);
   }
   const data = JSON.parse(res.body) as NetworkToolWithOffering[];
-  console.log(data, 'data');
+
   return data.map((item, idx) => {
     const usage =
       item.network_tool?.usage_type ?? item.tool_offering?.usage_type;

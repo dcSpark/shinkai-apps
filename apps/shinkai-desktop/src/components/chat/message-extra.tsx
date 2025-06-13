@@ -4,50 +4,15 @@ import {
   type WidgetToolType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { usePayInvoice } from '@shinkai_network/shinkai-node-state/v2/mutations/payInvoice/usePayInvoice';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  Label,
-  RadioGroup,
-  RadioGroupItem,
-} from '@shinkai_network/shinkai-ui';
+import { Button, Dialog, DialogContent } from '@shinkai_network/shinkai-ui';
+import { CryptoWalletIcon } from '@shinkai_network/shinkai-ui/assets';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import React from 'react';
 
 import { useAuth } from '../../store/auth';
-import { truncateAddress } from '../crypto-wallet/utils';
+import { formatBalanceAmount, truncateAddress } from '../crypto-wallet/utils';
 import { useToolsStore } from './context/tools-context';
-
-const formatAmount = (amount: string | undefined, decimals = 18): string => {
-  if (!amount) return '0';
-  const value = BigInt(amount);
-  const bigDecimals = BigInt(decimals);
-
-  // Calculate 10^decimals using string multiplication instead of ** operator
-  let divisor = BigInt(1);
-  for (let i = 0; i < decimals; i++) {
-    divisor *= BigInt(10);
-  }
-
-  const integerPart = value / divisor;
-  const fractionalPart = value % divisor;
-
-  if (fractionalPart === BigInt(0)) {
-    return integerPart.toString();
-  }
-
-  const decimalsNumber = Number(bigDecimals);
-  const fractionalStr = fractionalPart.toString().padStart(decimalsNumber, '0');
-  const trimmedFractionalStr = fractionalStr.replace(/0+$/, '');
-
-  return `${integerPart}.${trimmedFractionalStr}`;
-};
 
 export default function MessageExtra() {
   const widget = useToolsStore((state) => state.widget);
@@ -71,9 +36,11 @@ function Payment({
   data: PaymentRequest;
   onCancel: () => void;
 }) {
-  const [selectedPlan, setSelectedPlan] = React.useState<
-    'one-time' | 'download' | 'both'
-  >('one-time');
+  // const [selectedPlan, setSelectedPlan] = React.useState<
+  //   'one-time' | 'download' | 'both'
+  // >('one-time');
+
+  const [open, setOpen] = React.useState(true);
 
   const [status, setStatus] = React.useState<
     'idle' | 'pending' | 'success' | 'error'
@@ -83,43 +50,99 @@ function Payment({
   const { mutateAsync: payInvoice } = usePayInvoice({
     onSuccess: () => {
       setStatus('success');
+      setTimeout(() => {
+        setOpen(false);
+      }, 4000);
     },
     onError: () => {
       setStatus('error');
     },
   });
 
-  const hasPerUse = !!data?.usage_type?.PerUse;
-  const hasDownload = !!data?.usage_type?.Downloadable;
+  // const hasPerUse = !!data?.usage_type?.PerUse;
+  // const hasDownload = !!data?.usage_type?.Downloadable;
+
+  const token = data.wallet_balances.data.find((balance) => {
+    const payment =
+      data.usage_type?.PerUse &&
+      typeof data.usage_type.PerUse === 'object' &&
+      'Payment' in data.usage_type.PerUse
+        ? data.usage_type.PerUse.Payment?.[0]
+        : undefined;
+    return payment?.extra.name === balance.asset.asset_id;
+  })?.asset;
+
+  const tokenDecimals = token?.decimals;
+  const tokenId = token?.asset_id;
 
   return (
-    <motion.div
-      animate={{ opacity: 1, y: 0 }}
-      className="-mt-7 mb-4 ml-10 min-h-[300px] max-w-3xl rounded-xl border border-gray-300 p-2"
-      exit={{ opacity: 0, y: -20 }}
-      initial={{ opacity: 0, y: 20 }}
-      transition={{ duration: 0.3 }}
-    >
-      <Card className="mx-auto flex h-full max-w-xl flex-col items-center justify-center border-0">
-        <AnimatePresence mode="popLayout">
-          {status === 'idle' && (
-            <motion.div
-              animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-              exit={{ y: 8, opacity: 0, filter: 'blur(4px)' }}
-              initial={{ y: -32, opacity: 0, filter: 'blur(4px)' }}
-              key="idle"
-              transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
-            >
-              <CardHeader className="space-y-1">
-                <CardTitle className="font-clash text-center text-xl font-medium">
-                  {/*{data.toolKey}*/}
-                </CardTitle>
-                <CardDescription className="text-center text-xs">
-                  {data.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <RadioGroup
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent
+        className="w-full max-w-lg"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
+        <motion.div
+          animate={{ opacity: 1, y: 0 }}
+          className="min-h-[300px] max-w-3xl rounded-xl"
+          exit={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="size-full">
+            <AnimatePresence mode="popLayout">
+              {status === 'idle' && (
+                <motion.div
+                  animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+                  exit={{ y: 8, opacity: 0, filter: 'blur(4px)' }}
+                  initial={{ y: -32, opacity: 0, filter: 'blur(4px)' }}
+                  key="idle"
+                  className="space-y-6"
+                  transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+                >
+                  <div className="space-y-1">
+                    <div className="inline-flex items-center gap-2 text-center text-base font-medium">
+                      <CryptoWalletIcon /> Tool Payment Required
+                    </div>
+                    <p className="text-sm">
+                      This tool requires payment to use.
+                    </p>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="bg-official-gray-850 rounded-lg p-4">
+                      <h4 className="mb-3 font-medium">Network Tool Details</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-official-gray-400">Tool:</span>
+                          <span>{data.tool_key}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-official-gray-400">
+                            Author:
+                          </span>
+                          <span>{data.invoice.provider_name}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-official-gray-400">
+                            Cost per use:
+                          </span>
+                          <span className="font-semibold text-white">
+                            {data.usage_type.PerUse === 'Free'
+                              ? 'Free'
+                              : 'Payment' in data.usage_type.PerUse
+                                ? `${formatBalanceAmount(
+                                    data.usage_type.PerUse.Payment[0]
+                                      .maxAmountRequired ?? '0',
+                                    tokenDecimals,
+                                  )} ${tokenId}
+                                  `
+                                : data.usage_type.PerUse.DirectDelegation}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    {/* <RadioGroup
                   className="flex items-center justify-center gap-4"
                   onValueChange={(value) =>
                     setSelectedPlan(value as 'one-time' | 'download' | 'both')
@@ -142,20 +165,16 @@ function Payment({
                             ? 'Free'
                             : 'Payment' in data.usage_type.PerUse
                               ? `${formatAmount(
-                                  data.usage_type.PerUse.Payment[0].amount ??
-                                    data.usage_type.PerUse.Payment[0]
-                                      .maxAmountRequired ??
-                                    '0',
-                                  data.usage_type.PerUse.Payment[0].asset
-                                    .decimals,
-                                )} ${
-                                  data.usage_type.PerUse.Payment[0].asset
-                                    .asset_id
-                                }
+                                  data.usage_type.PerUse.Payment[0]
+                                    .maxAmountRequired ?? '0',
+                                  tokenDecimals,
+                                )} ${tokenId}
                                   `
                               : data.usage_type.PerUse.DirectDelegation}
                         </span>
-                        <span className="text-gray-100">one-time use</span>
+                        <span className="text-official-gray-400">
+                          one-time use
+                        </span>
                       </Label>
                     </div>
                   )}
@@ -176,16 +195,9 @@ function Payment({
                             : 'Payment' in data.usage_type.Downloadable
                               ? `${formatAmount(
                                   data.usage_type.Downloadable.Payment[0]
-                                    .amount ??
-                                    data.usage_type.Downloadable.Payment[0]
-                                      .maxAmountRequired ??
-                                    '0',
-                                  data.usage_type.Downloadable.Payment[0].asset
-                                    .decimals,
-                                )} ${
-                                  data.usage_type.Downloadable.Payment[0].asset
-                                    .asset_id
-                                }
+                                    .maxAmountRequired ?? '0',
+                                  tokenDecimals,
+                                )} ${tokenId}
                                   `
                               : data.usage_type.Downloadable.DirectDelegation}
                         </span>
@@ -193,153 +205,161 @@ function Payment({
                       </Label>
                     </div>
                   )}
-                </RadioGroup>
-                <div className="mx-auto flex max-w-sm flex-col gap-2 py-2">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-100">Author</span>
-                    <span className="text-white">
-                      {data.invoice.provider_name}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-100">Wallet Address</span>
-                    <span className="text-white">
-                      {truncateAddress(data.invoice.address.address_id)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-100">Wallet Balances</span>
-                    <div className="text-white">
-                      {data.wallet_balances.data.map((balance) => (
-                        <div
-                          className="text-right"
-                          key={balance.asset.asset_id}
-                        >
-                          {formatAmount(balance.amount, balance.asset.decimals)}{' '}
-                          {balance.asset.asset_id}
+                </RadioGroup> */}
+                    <div className="bg-official-gray-850 rounded-lg p-4">
+                      <h4 className="mb-2 font-medium">Your Wallet</h4>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-official-gray-400">
+                            Wallet Address:
+                          </span>
+                          <div className="flex flex-col items-end justify-start gap-2">
+                            {truncateAddress(data.invoice.address.address_id)}
+                          </div>
                         </div>
-                      ))}
+                        <div className="flex items-start justify-between text-sm">
+                          <span className="text-official-gray-400">
+                            USDC Balance:
+                          </span>
+                          <div className="flex flex-col items-end justify-start gap-0.5">
+                            {data.wallet_balances.data.map((balance) => (
+                              <div
+                                className="text-right"
+                                key={balance.asset.asset_id}
+                              >
+                                {formatBalanceAmount(
+                                  balance.amount,
+                                  balance.asset.decimals,
+                                )}{' '}
+                                <span className="text-official-gray-200 font-medium">
+                                  {balance.asset.asset_id}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-center">
-                <div className="flex justify-between gap-2">
-                  <Button
-                    className="mx-auto min-w-[200px] rounded-md"
-                    onClick={onCancel}
-                    size="sm"
-                    variant="ghost"
-                  >
-                    No, thanks
-                  </Button>
-                  <Button
-                    className="mx-auto min-w-[200px] rounded-md"
-                    onClick={async () => {
-                      if (!auth) return;
-                      setStatus('pending');
-                      await payInvoice({
-                        nodeAddress: auth.node_address,
-                        token: auth.api_v2_key,
-                        payload: {
-                          invoice_id: data.invoice.invoice_id,
-                          data_for_tool: data.function_args,
-                        },
-                      });
-                    }}
-                    size="sm"
-                  >
-                    Confirm Payment
-                  </Button>
-                </div>
-              </CardFooter>
-            </motion.div>
-          )}
+                  <div className="ml-auto flex max-w-xs items-center justify-between gap-2">
+                    <Button
+                      className="flex-1"
+                      onClick={onCancel}
+                      size="md"
+                      variant="outline"
+                    >
+                      No, thanks
+                    </Button>
+                    <Button
+                      className="flex-1"
+                      onClick={async () => {
+                        if (!auth) return;
+                        setStatus('pending');
+                        await payInvoice({
+                          nodeAddress: auth.node_address,
+                          token: auth.api_v2_key,
+                          payload: {
+                            invoice_id: data.invoice.invoice_id,
+                            data_for_tool: data.function_args,
+                          },
+                        });
+                      }}
+                      size="md"
+                    >
+                      Confirm Payment
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
 
-          {status === 'pending' && (
-            <motion.div
-              animate={{ opacity: 1, scale: 1 }}
-              className="h-full pt-12"
-              exit={{ opacity: 0, scale: 0.8 }}
-              initial={{ opacity: 0, scale: 0.8 }}
-              key="pending"
-              transition={{ duration: 0.3 }}
-            >
-              <CardContent className="flex flex-col items-center justify-center gap-2 py-8">
-                <Loader2 className="h-8 w-8 animate-spin text-white" />
-                <span className="text-gray-80 ml-2">Processing payment...</span>
-              </CardContent>
-            </motion.div>
-          )}
-
-          {status === 'success' && (
-            <motion.div
-              animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-              initial={{ y: -32, opacity: 0, filter: 'blur(4px)' }}
-              key="success"
-              transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
-            >
-              <CardContent>
-                <div className="flex flex-col items-center justify-center py-8">
-                  <CheckCircle className="h-12 w-12 text-green-500" />
-                  <span className="mt-4 text-lg font-semibold text-white">
-                    Payment Successful!
-                  </span>
-                  <span className="mt-2 text-sm text-gray-100">
-                    Thank you for your purchase.
-                  </span>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-center">
-                <Button
-                  className="mx-auto min-w-[200px] rounded-md"
-                  onClick={() => {
-                    onCancel();
-                  }}
-                  size="sm"
-                  variant="ghost"
+              {status === 'pending' && (
+                <motion.div
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="h-full pt-12"
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  key="pending"
+                  transition={{ duration: 0.3 }}
                 >
-                  Dismiss
-                </Button>
-              </CardFooter>
-            </motion.div>
-          )}
+                  <div className="flex flex-col items-center justify-center pt-8">
+                    <Loader2 className="mb-4 size-8 animate-spin text-cyan-500" />
+                    <span className="mb-2 text-lg text-white">
+                      Processing payment
+                    </span>
+                    <p className="text-official-gray-400 text-sm">
+                      Please wait while we process your transaction...
+                    </p>
+                  </div>
+                </motion.div>
+              )}
 
-          {status === 'error' && (
-            <motion.div
-              animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-              exit={{ y: 8, opacity: 0, filter: 'blur(4px)' }}
-              initial={{ y: -32, opacity: 0, filter: 'blur(4px)' }}
-              key="success"
-              transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
-            >
-              <CardContent>
-                <div className="flex flex-col items-center justify-center py-8">
-                  <XCircle className="h-12 w-12 text-red-500" />
-                  <span className="mt-4 text-lg font-semibold text-white">
-                    Payment Failed!
-                  </span>
-                  <span className="mt-2 text-sm text-gray-100">
-                    Please try again.
-                  </span>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-center">
-                <Button
-                  className="mx-auto min-w-[200px] rounded-md"
-                  onClick={() => {
-                    setStatus('idle');
-                  }}
-                  size="sm"
-                  variant="ghost"
+              {status === 'success' && (
+                <motion.div
+                  animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+                  initial={{ y: -32, opacity: 0, filter: 'blur(4px)' }}
+                  key="success"
+                  transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
                 >
-                  Go back
-                </Button>
-              </CardFooter>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </Card>
-    </motion.div>
+                  <div className="mx-auto flex max-w-sm flex-col items-center justify-center pt-8 text-center">
+                    <CheckCircle className="mb-4 size-8 text-green-500" />
+                    <span className="mb-2 text-lg font-semibold text-white">
+                      Payment Successful!
+                    </span>
+                    <span className="text-official-gray-400 mb-10 text-sm">
+                      Your payment went through successfully. The tool is now
+                      executing...
+                    </span>
+                    <Button
+                      className="mx-auto min-w-[200px] rounded-md"
+                      onClick={() => {
+                        onCancel();
+                      }}
+                      size="sm"
+                      variant="outline"
+                    >
+                      Dismiss
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
+
+              {status === 'error' && (
+                <motion.div
+                  animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+                  exit={{ y: 8, opacity: 0, filter: 'blur(4px)' }}
+                  initial={{ y: -32, opacity: 0, filter: 'blur(4px)' }}
+                  key="success"
+                  transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+                >
+                  <div>
+                    <div className="flex flex-col items-center justify-center py-8">
+                      <XCircle className="mb-4 size-8 text-red-500" />
+                      <span className="mb-2 text-lg font-semibold text-white">
+                        Payment Failed!
+                      </span>
+                      <span className="text-official-gray-400 text-sm">
+                        Please try again.
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex justify-center">
+                    <Button
+                      className="mx-auto min-w-[200px] rounded-md"
+                      onClick={() => {
+                        setStatus('idle');
+                      }}
+                      size="sm"
+                      variant="ghost"
+                    >
+                      Go back
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      </DialogContent>
+    </Dialog>
   );
 }

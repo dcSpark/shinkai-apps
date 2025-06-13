@@ -25,10 +25,21 @@ import {
   TooltipPortal,
   TooltipProvider,
   TooltipTrigger,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  Card,
+  CardTitle,
+  CardDescription,
+  AvatarFallback,
+  Avatar,
 } from '@shinkai_network/shinkai-ui';
 import {
   AIAgentIcon,
+  CategoryIcon,
   CreateAIIcon,
+  DownloadIcon,
   ScheduledTasksIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
@@ -36,12 +47,14 @@ import { save } from '@tauri-apps/plugin-dialog';
 import * as fs from '@tauri-apps/plugin-fs';
 import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import cronstrue from 'cronstrue';
-import { DownloadIcon, Edit, Plus, TrashIcon } from 'lucide-react';
+import { Edit, Plus, TrashIcon } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import ImportAgentModal from '../components/agent/import-agent-modal';
+import { useGetStoreAgents } from '../components/store/store-client';
+
 import { useAuth } from '../store/auth';
 
 function AgentsPage() {
@@ -51,6 +64,8 @@ function AgentsPage() {
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
+
+  const [selectedTab, setSelectedTab] = useState<'my' | 'explore'>('explore');
 
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -62,66 +77,114 @@ function AgentsPage() {
 
   return (
     <div className="h-full">
-      <div className="container flex flex-col">
-        <div className="flex flex-col gap-1 pb-6 pt-10">
-          <div className="flex justify-between gap-4">
-            <h1 className="font-clash text-3xl font-medium">Agents</h1>
-            <div className="flex gap-2">
-              <ImportAgentModal />
-              <Button
-                className="min-w-[100px]"
-                onClick={() => {
-                  void navigate('/add-agent');
-                }}
-                size="sm"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Add Agent</span>
-              </Button>
+      <Tabs
+        className="flex h-full flex-col"
+        value={selectedTab}
+        onValueChange={(value) => setSelectedTab(value as 'my' | 'explore')}
+      >
+        <div className="container flex flex-col">
+          <div className="flex flex-col gap-3 pt-10 pb-4">
+            <div className="flex justify-between gap-4">
+              <div className="font-clash inline-flex items-center gap-5 text-3xl font-medium">
+                <h1>Agents</h1>
+                <TabsList className="bg-official-gray-950/80 flex h-10 w-fit items-center gap-2 rounded-full px-1 py-1">
+                  <TabsTrigger
+                    className={cn(
+                      'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
+                      'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
+                      'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
+                      'focus-visible:outline-hidden',
+                    )}
+                    value="explore"
+                  >
+                    Explore
+                  </TabsTrigger>
+                  <TabsTrigger
+                    className={cn(
+                      'flex flex-col rounded-full px-4 py-1.5 text-base font-medium transition-colors',
+                      'data-[state=active]:bg-official-gray-800 data-[state=active]:text-white',
+                      'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
+                      'focus-visible:outline-hidden',
+                    )}
+                    value="my"
+                  >
+                    My Agents
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+              <div className="flex gap-2">
+                {selectedTab === 'my' && <ImportAgentModal />}
+                <Button
+                  className="min-w-[100px]"
+                  onClick={() => {
+                    void navigate('/add-agent');
+                  }}
+                  size="sm"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Add Agent</span>
+                </Button>
+              </div>
             </div>
+            <p className="text-official-gray-400 text-sm">
+              {selectedTab === 'my' ? (
+                <>
+                  Create and explore AI agents with personalized instructions,
+                  enriched knowledge, <br /> diverse task capabilities, and more
+                  to tackle your goals autonomously.
+                </>
+              ) : (
+                <>
+                  Discover and install AI agents from the community to enhance
+                  your workflow <br /> and supercharge your productivity and
+                  creativity.
+                </>
+              )}
+            </p>
           </div>
-          <p className="text-official-gray-400 text-sm">
-            Create and explore AI agents with personalized instructions,
-            enriched knowledge, <br /> diverse task capabilities, and more to
-            tackle your goals autonomously.
-          </p>
-        </div>
-        <SearchInput
-          classNames={{
-            container: 'w-full mb-4',
-          }}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          value={searchQuery}
-        />
-        <div className="flex flex-1 flex-col space-y-3 pb-10">
-          {!filteredAgents?.length ? (
-            <div className="flex grow flex-col items-center gap-3 pt-20">
-              <div className="bg-official-gray-800 flex size-10 items-center justify-center rounded-lg p-2">
-                <AIAgentIcon className="size-full" name={''} />
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <p className="font-medium">No available agents</p>
-                <p className="text-official-gray-400 text-center text-sm font-medium">
-                  Create your first Agent to start exploring the power of AI.
-                </p>
-              </div>
+
+          <TabsContent value="my" className="space-y-6">
+            <SearchInput
+              classNames={{ input: 'bg-transparent' }}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchQuery}
+            />
+            <div className="flex flex-1 flex-col space-y-3 pb-10">
+              {!filteredAgents?.length ? (
+                <div className="flex grow flex-col items-center gap-3 pt-20">
+                  <div className="bg-official-gray-800 flex size-10 items-center justify-center rounded-lg p-2">
+                    <AIAgentIcon className="size-full" name={''} />
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <p className="font-medium">No available agents</p>
+                    <p className="text-official-gray-400 text-center text-sm font-medium">
+                      Create your first Agent to start exploring the power of
+                      AI.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {filteredAgents?.map((agent) => (
+                    <AgentCard
+                      key={agent.agent_id}
+                      agentDescription={agent.ui_description}
+                      agentId={agent.agent_id}
+                      agentName={agent.name}
+                      llmProviderId={agent.llm_provider_id}
+                      scheduledTasks={agent.cron_tasks}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {filteredAgents?.map((agent) => (
-                <AgentCard
-                  agentDescription={agent.ui_description}
-                  agentId={agent.agent_id}
-                  agentName={agent.name}
-                  key={agent.agent_id}
-                  llmProviderId={agent.llm_provider_id}
-                  scheduledTasks={agent.cron_tasks}
-                />
-              ))}
-            </div>
-          )}
+          </TabsContent>
+
+          <TabsContent value="explore" className="space-y-6">
+            <DownloadAgents />
+          </TabsContent>
         </div>
-      </div>
+      </Tabs>
     </div>
   );
 }
@@ -418,5 +481,130 @@ const RemoveAgentDrawer = ({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+};
+const SHINKAI_DAPP_URL = 'https://shinkai-contracts.pages.dev';
+
+export function AuthorAvatarLink({ author }: { author: string }) {
+  const formattedAuthor = author
+    .replace('@@', '')
+    .replace('official.shinkai', 'official.sep-shinkai');
+
+  return (
+    <a
+      href={`${SHINKAI_DAPP_URL}/identity/${formattedAuthor}`}
+      className="text-gray-80 isolate flex items-center gap-2 text-sm hover:[&>span]:underline"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <Avatar className={cn('h-5 w-5')}>
+        {author === '@@official.shinkai' ? (
+          <img alt="Shinkai" src="/app-icon.png" />
+        ) : (
+          <AvatarFallback className="bg-official-gray-800 text-official-gray-300">
+            {formattedAuthor.charAt(0)}
+          </AvatarFallback>
+        )}
+      </Avatar>
+      <span className="truncate">{author}</span>
+    </a>
+  );
+}
+
+const DownloadAgents = () => {
+  const { data: storeAgents, isPending: isStoreAgentsPending } =
+    useGetStoreAgents();
+
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filtered = useMemo(() => {
+    return (
+      storeAgents?.filter(
+        (a) =>
+          a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          a.description.toLowerCase().includes(searchQuery.toLowerCase()),
+      ) ?? []
+    );
+  }, [storeAgents, searchQuery]);
+
+  return (
+    <div className="space-y-6">
+      <SearchInput
+        placeholder="Search for agents"
+        classNames={{ input: 'bg-transparent' }}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+      <div className="grid grid-cols-1 gap-3 pb-10">
+        {isStoreAgentsPending &&
+          Array.from({ length: 4 }).map((_, idx) => (
+            <Card
+              key={idx}
+              className="border-official-gray-850 bg-official-gray-900 h-24 animate-pulse"
+            />
+          ))}
+        {filtered.map((agent) => (
+          <Card
+            key={agent.id}
+            className="border-official-gray-850 bg-official-gray-900 flex flex-col rounded-xl border p-4"
+          >
+            <div className="flex items-center gap-2">
+              <div className="bg-official-gray-900 flex h-12 min-h-12 w-12 min-w-12 items-center justify-center rounded-lg">
+                {agent.iconUrl ? (
+                  <img
+                    src={agent.iconUrl}
+                    alt={agent.name}
+                    className="h-8 w-8 rounded object-cover"
+                  />
+                ) : (
+                  <AIAgentIcon className="h-8 w-8" name={agent.name} />
+                )}
+              </div>
+              <div className="flex min-w-0 flex-1 flex-col">
+                <CardTitle className="truncate text-base leading-tight font-semibold text-white">
+                  <Link
+                    className="truncate text-base leading-tight font-semibold text-white hover:underline"
+                    to={`https://store.shinkai.com/product/${agent.routerKey}`}
+                    target="_blank"
+                  >
+                    {agent.name}
+                  </Link>
+                </CardTitle>
+                <CardDescription className="text-official-gray-400 line-clamp-1 text-sm">
+                  {agent.description}
+                </CardDescription>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-wrap items-center gap-4">
+              <div className="text-official-gray-400 flex items-center gap-6 pl-2 text-sm font-medium">
+                <span className="flex items-center gap-2">
+                  <CategoryIcon className="text-official-gray-400 size-4" />
+                  {agent.category?.name ?? ''}
+                </span>
+                <span className="flex items-center gap-1">
+                  <DownloadIcon className="text-official-gray-400 size-4" />
+                  {agent.downloads ?? 0} Installs
+                </span>
+                <AuthorAvatarLink author={agent.author} />
+              </div>
+              <div className="ml-auto">
+                <Link
+                  className={cn(
+                    buttonVariants({
+                      variant: 'outline',
+                      size: 'sm',
+                    }),
+                  )}
+                  to={`https://store.shinkai.com/product/${agent.routerKey}`}
+                  target="_blank"
+                >
+                  Get Agent
+                </Link>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
   );
 };
