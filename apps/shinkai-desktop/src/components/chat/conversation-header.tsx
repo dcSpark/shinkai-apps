@@ -1,5 +1,7 @@
+import { DotsVerticalIcon } from '@radix-ui/react-icons';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
+import { useExportMessagesFromInbox } from '@shinkai_network/shinkai-node-state/v2/mutations/exportMessagesFromInbox/useExportMessagesFromInbox';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
@@ -34,6 +36,9 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { save } from '@tauri-apps/plugin-dialog';
+import * as fs from '@tauri-apps/plugin-fs';
+import { BaseDirectory } from '@tauri-apps/plugin-fs';
 import cronstrue from 'cronstrue';
 import {
   ExternalLinkIcon,
@@ -43,19 +48,14 @@ import {
   PanelRightOpen,
   DownloadIcon,
 } from 'lucide-react';
-import { DotsVerticalIcon } from '@radix-ui/react-icons';
-import { save } from '@tauri-apps/plugin-dialog';
-import * as fs from '@tauri-apps/plugin-fs';
-import { BaseDirectory } from '@tauri-apps/plugin-fs';
-import { useExportMessagesFromInbox } from '@shinkai_network/shinkai-node-state/v2/mutations/exportMessagesFromInbox/useExportMessagesFromInbox';
 import { memo } from 'react';
 import { Link, useParams } from 'react-router';
 
+import { toast } from 'sonner';
 import { useGetCurrentInbox } from '../../hooks/use-current-inbox';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import ProviderIcon from '../ais/provider-icon';
-import { toast } from 'sonner';
 
 function sanitizeFileName(name: string): string {
   let sanitized = name.replace(/[^a-zA-Z0-9_]/g, '_');
