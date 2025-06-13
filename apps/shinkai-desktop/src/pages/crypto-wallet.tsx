@@ -11,13 +11,10 @@ import { useRestoreLocalWallet } from '@shinkai_network/shinkai-node-state/v2/mu
 import { useGetWalletBalance } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletBalance/useGetWalletBalance';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import {
-  Badge,
   Button,
   buttonVariants,
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
   CopyToClipboardIcon,
   Dialog,
   DialogContent,
@@ -45,6 +42,8 @@ import {
 import {
   AddCryptoWalletIcon,
   CryptoWalletIcon,
+  EthereumIcon,
+  USDCIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { useMeasure } from '@shinkai_network/shinkai-ui/hooks';
@@ -55,14 +54,11 @@ import {
   ArrowLeft,
   Copy,
   Download,
-  Eye,
   EyeIcon,
-  EyeOff,
   EyeOffIcon,
   FileText,
   PlusIcon,
   RefreshCw,
-  Wallet,
   XIcon,
   ExternalLinkIcon,
 } from 'lucide-react';
@@ -76,7 +72,7 @@ import {
   useWalletsStore,
   WalletCreateConnectView,
 } from '../components/crypto-wallet/context/wallets-context';
-import { formatBalance } from '../components/crypto-wallet/utils';
+import { formatBalanceAmount } from '../components/crypto-wallet/utils';
 import { useAuth } from '../store/auth';
 import { SimpleLayout } from './layout/simple-layout';
 
@@ -218,34 +214,7 @@ const CryptoWalletPage = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="flex size-9 items-center justify-center rounded-full border bg-black">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              fill="#fff"
-                              d="M12 3v6.65l5.625 2.516zm0 0-5.625 9.166L12 9.651zm0 13.477v4.522l5.625-7.784zM12 21v-4.523l-5.625-3.262z"
-                            />
-                            <path
-                              fill="#fff"
-                              d="m12 15.43 5.625-3.263L12 9.65zm-5.625-3.263L12 15.429V9.651z"
-                            />
-                            <path
-                              fill="#fff"
-                              fill-rule="evenodd"
-                              d="m12 15.429-5.625-3.263L12 3l5.625 9.166zM6.749 11.9l5.161-8.41v6.115zm-.077.23 5.238-2.327v5.364zm5.418-2.327v5.364l5.233-3.038zm0-.198 5.16 2.295-5.16-8.41z"
-                              clip-rule="evenodd"
-                            />
-                            <path
-                              fill="#fff"
-                              fill-rule="evenodd"
-                              d="M12 16.406 6.375 13.21 12 21l5.625-7.79zm-4.995-2.633 4.905 2.79v4.005zm5.085 2.79v4.005l4.905-6.795z"
-                              clip-rule="evenodd"
-                            />
-                          </svg>
+                          <EthereumIcon className="size-5" />
                         </div>
                         <div>
                           <div className="font-medium">Ethereum</div>
@@ -256,7 +225,7 @@ const CryptoWalletPage = () => {
                       </div>
                       <div className="text-right">
                         <div className="font-medium">
-                          {formatBalance(
+                          {formatBalanceAmount(
                             walletBalance?.ETH.amount ?? '0',
                             walletBalance?.ETH.decimals ?? 0,
                           )}{' '}
@@ -268,20 +237,7 @@ const CryptoWalletPage = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="flex size-9 items-center justify-center rounded-full border bg-black">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              fill="#fff"
-                              fill-rule="evenodd"
-                              d="M12 21c4.99 0 9-4.01 9-9s-4.01-9-9-9-9 4.01-9 9 4.01 9 9 9m2.475-7.578c0-1.31-.787-1.76-2.362-1.946-1.125-.152-1.35-.45-1.35-.978 0-.523.377-.86 1.125-.86.675 0 1.052.224 1.237.787.04.112.152.185.265.185h.596a.256.256 0 0 0 .264-.259v-.039c-.152-.827-.827-1.614-1.687-1.687v-.827c0-.152-.113-.265-.298-.298h-.495c-.152 0-.293.112-.332.298v.827c-1.125.151-1.873 1.012-1.873 1.951 0 1.238.748 1.722 2.323 1.913 1.052.185 1.39.41 1.39 1.012 0 .597-.53 1.013-1.238 1.013-.98 0-1.316-.416-1.429-.979-.034-.146-.146-.225-.259-.225h-.641a.256.256 0 0 0-.259.264v.04c.146.934.748 1.575 1.986 1.76v.833c0 .152.112.253.298.293h.54c.146 0 .248-.102.287-.293v-.833c1.125-.185 1.912-.939 1.912-1.952m-6.262 2.803a5.6 5.6 0 0 0 1.875 1.135c.112.079.225.225.225.338v.528c0 .073 0 .113-.04.146-.033.152-.185.225-.337.152a6.751 6.751 0 0 1 0-12.864c.04-.034.112-.034.152-.034.152.034.225.147.225.298v.524c0 .19-.073.303-.225.376a5.55 5.55 0 0 0-3.336 3.336 5.59 5.59 0 0 0 1.46 6.065m5.514-10.413c.034-.152.186-.225.338-.152a6.8 6.8 0 0 1 4.387 4.427c1.125 3.56-.827 7.352-4.387 8.477-.04.033-.113.033-.152.033-.152-.033-.225-.146-.225-.298v-.523c0-.191.073-.303.225-.377a5.55 5.55 0 0 0 3.335-3.335 5.585 5.585 0 0 0-3.335-7.2c-.113-.079-.225-.225-.225-.377v-.523c0-.079 0-.113.04-.152"
-                              clip-rule="evenodd"
-                            />
-                          </svg>
+                          <USDCIcon className="size-5" />
                         </div>
                         <div>
                           <div className="font-medium">USD Coin</div>
@@ -292,7 +248,7 @@ const CryptoWalletPage = () => {
                       </div>
                       <div className="text-right">
                         <div className="font-medium">
-                          {formatBalance(
+                          {formatBalanceAmount(
                             walletBalance?.USDC.amount ?? '0',
                             walletBalance?.USDC.decimals ?? 0,
                           )}{' '}

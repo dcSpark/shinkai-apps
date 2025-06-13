@@ -58,7 +58,7 @@ import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import PublishAgentDialog from '../components/agent/publish-agent-dialog';
 import {
-  formatBalance,
+  formatBalanceAmount,
   truncateAddress,
 } from '../components/crypto-wallet/utils';
 import { useGetNetworkAgents } from '../components/network/network-client';
@@ -186,7 +186,7 @@ export const NetworkAgentPage = () => {
                           <span className="text-sm">ETH</span>
                         </div>
                         <div className="text-sm font-medium">
-                          {formatBalance(
+                          {formatBalanceAmount(
                             walletBalance?.ETH.amount ?? '0',
                             walletBalance?.ETH.decimals ?? 0,
                           )}{' '}
@@ -201,7 +201,7 @@ export const NetworkAgentPage = () => {
                           <span className="text-sm">USDC</span>
                         </div>
                         <div className="text-sm font-medium">
-                          {formatBalance(
+                          {formatBalanceAmount(
                             walletBalance?.USDC.amount ?? '0',
                             walletBalance?.USDC.decimals ?? 0,
                           )}{' '}
@@ -425,6 +425,22 @@ const AgentCard = ({
   const isFreePricing =
     agent.price.toLowerCase().includes('free') || agent.price === '$0.00';
 
+  const amount =
+    agent.apiData.tool_offering.usage_type?.PerUse &&
+    typeof agent.apiData.tool_offering.usage_type?.PerUse === 'object' &&
+    'Payment' in agent.apiData.tool_offering.usage_type?.PerUse
+      ? agent.apiData.tool_offering.usage_type?.PerUse?.Payment?.[0]
+          ?.maxAmountRequired
+      : undefined;
+
+  const ticker =
+    agent.apiData.tool_offering.usage_type?.PerUse &&
+    typeof agent.apiData.tool_offering.usage_type?.PerUse === 'object' &&
+    'Payment' in agent.apiData.tool_offering.usage_type?.PerUse
+      ? agent.apiData.tool_offering.usage_type?.PerUse?.Payment?.[0]?.extra
+          ?.name
+      : undefined;
+
   return (
     <Card className="border-official-gray-850 bg-official-gray-900 flex flex-col border">
       <CardHeader className="pb-4">
@@ -456,7 +472,13 @@ const AgentCard = ({
           {type === 'discover' && (
             <div className="inline-flex items-center gap-2 text-right">
               <div className="text-lg font-semibold">
-                {isFreePricing ? 'Free' : agent.price}
+                {isFreePricing ? 'Free' : formatBalanceAmount(amount ?? '0', 6)}
+                {!isFreePricing && (
+                  <span className="text-official-gray-200 text-sm font-medium">
+                    {' '}
+                    {ticker}
+                  </span>
+                )}
               </div>
               {!isFreePricing && (
                 <div className="text-official-gray-400 flex items-center gap-1 text-sm">
@@ -521,24 +543,18 @@ const AgentCard = ({
                           </p>
                         </div>
                       </div>
-                      <Badge className="py-1.5 text-lg">
-                        {agent?.apiData?.tool_offering?.usage_type?.PerUse &&
-                        typeof agent?.apiData?.tool_offering?.usage_type
-                          ?.PerUse === 'object' &&
-                        'Payment' in
-                          agent?.apiData?.tool_offering?.usage_type?.PerUse
-                          ? agent?.apiData?.tool_offering?.usage_type?.PerUse
-                              ?.Payment?.[0]?.maxAmountRequired
-                          : undefined}{' '}
-                        {agent?.apiData?.tool_offering?.usage_type?.PerUse &&
-                        typeof agent?.apiData?.tool_offering?.usage_type
-                          ?.PerUse === 'object' &&
-                        'Payment' in
-                          agent?.apiData?.tool_offering?.usage_type?.PerUse
-                          ? agent?.apiData?.tool_offering?.usage_type?.PerUse
-                              ?.Payment?.[0]?.extra?.name
-                          : undefined}
-                      </Badge>
+                      {isFreePricing ? (
+                        <div className="inline-flex gap-1 py-1.5 text-lg">
+                          Free
+                        </div>
+                      ) : (
+                        <div className="inline-flex items-center gap-1 py-1.5 text-lg">
+                          {formatBalanceAmount(amount ?? '0', 6)}{' '}
+                          <span className="text-official-gray-200 text-sm font-medium">
+                            {ticker}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="rounded-md border border-cyan-800 bg-cyan-900/10 p-3">
@@ -679,6 +695,25 @@ export const InstallAgentModal = ({
     onClose();
   };
 
+  const isFreePricing =
+    agent.price.toLowerCase().includes('free') || agent.price === '$0.00';
+
+  const amount =
+    agent.apiData.tool_offering.usage_type?.PerUse &&
+    typeof agent.apiData.tool_offering.usage_type?.PerUse === 'object' &&
+    'Payment' in agent.apiData.tool_offering.usage_type?.PerUse
+      ? agent.apiData.tool_offering.usage_type?.PerUse?.Payment?.[0]
+          ?.maxAmountRequired
+      : undefined;
+
+  const ticker =
+    agent.apiData.tool_offering.usage_type?.PerUse &&
+    typeof agent.apiData.tool_offering.usage_type?.PerUse === 'object' &&
+    'Payment' in agent.apiData.tool_offering.usage_type?.PerUse
+      ? agent.apiData.tool_offering.usage_type?.PerUse?.Payment?.[0]?.extra
+          ?.name
+      : undefined;
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-lg text-white">
@@ -713,8 +748,12 @@ export const InstallAgentModal = ({
                     </p>
                     <p>
                       <strong>Pay per use</strong> - Only pay{' '}
-                      <strong className="text-white">{agent.price}</strong> when
-                      you use it in chat. You'll see a payment confirmation
+                      <strong className="text-white">
+                        {isFreePricing
+                          ? 'FREE'
+                          : `${formatBalanceAmount(amount ?? '0', 6)} ${ticker}`}
+                      </strong>{' '}
+                      when you use it in chat. You'll see a payment confirmation
                       before any charges.
                     </p>
                   </div>
@@ -741,7 +780,9 @@ export const InstallAgentModal = ({
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-white">Cost per use:</span>
                   <span className="font-semibold text-white">
-                    {agent.price}
+                    {isFreePricing
+                      ? 'FREE'
+                      : `${formatBalanceAmount(amount ?? '0', 6)} ${ticker}`}
                   </span>
                 </div>
               </div>
