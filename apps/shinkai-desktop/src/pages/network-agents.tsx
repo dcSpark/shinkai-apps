@@ -408,7 +408,7 @@ interface AgentCardProps {
 }
 /* TODO:
   - published agents
-  - improve network agent in chats
+
 */
 
 const AgentCard = ({

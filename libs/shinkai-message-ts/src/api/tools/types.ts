@@ -270,6 +270,8 @@ export type ToolPrice =
         payTo?: string;
         resource?: string;
         scheme?: string;
+        mimeType?: string;
+        outputSchema?: Record<string, any>;
       }>;
     };
 
