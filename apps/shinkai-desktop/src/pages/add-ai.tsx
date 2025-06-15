@@ -12,6 +12,11 @@ import {
 } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { useAddLLMProvider } from '@shinkai_network/shinkai-node-state/v2/mutations/addLLMProvider/useAddLLMProvider';
 import { useScanOllamaModels } from '@shinkai_network/shinkai-node-state/v2/queries/scanOllamaModels/useScanOllamaModels';
+import { useSyncOllamaModels } from '@shinkai_network/shinkai-node-state/v2/mutations/syncOllamaModels/useSyncOllamaModels';
+import { useOllamaPullMutation } from '../lib/shinkai-node-manager/ollama-client';
+import { ALLOWED_OLLAMA_MODELS } from '../lib/shinkai-node-manager/ollama-models';
+import { useShinkaiNodeGetOllamaApiUrlQuery } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
+import { type ProgressResponse } from 'ollama/browser';
 import {
   Button,
   buttonVariants,
@@ -77,6 +82,10 @@ const modelOptions: { value: Models; label: string }[] = [
     value: Models.DeepSeek,
     label: 'DeepSeek',
   },
+  {
+    value: Models.HuggingFace,
+    label: 'HuggingFace',
+  },
 ];
 
 const getGuideUrl = (model: Models) => {
@@ -95,6 +104,7 @@ const getGuideUrl = (model: Models) => {
     [Models.Exo]: 'https://docs.shinkai.com/advanced/models/exo',
     [Models.Claude]: 'https://docs.shinkai.com/advanced/models/claude',
     [Models.DeepSeek]: 'https://docs.shinkai.com/advanced/models/deepseek',
+    [Models.HuggingFace]: 'https://huggingface.co/docs',
   };
 
   return urlMap[model] || 'https://docs.shinkai.com/advanced/models';
@@ -119,6 +129,8 @@ export const getModelObject = (
       return { Claude: { model_type: modelType } };
     case Models.DeepSeek:
       return { DeepSeek: { model_type: modelType } };
+    case Models.HuggingFace:
+      return { Ollama: { model_type: modelType } };
     default:
       return { [model]: { model_type: modelType } };
   }
@@ -175,6 +187,53 @@ const AddAIPage = () => {
     },
   );
 
+  const { data: ollamaApiUrl } = useShinkaiNodeGetOllamaApiUrlQuery();
+  const ollamaConfig = { host: ollamaApiUrl || 'http://127.0.0.1:11435' };
+  const { mutateAsync: ollamaPull } = useOllamaPullMutation(ollamaConfig);
+  const { mutateAsync: syncOllamaModels } = useSyncOllamaModels();
+
+  const handlePullProgress = async (
+    model: string,
+    progressIterator: AsyncGenerator<ProgressResponse>,
+  ): Promise<void> => {
+    try {
+      for await (const progress of progressIterator) {
+        if (!progress) continue;
+        if (progress.status === 'success') {
+          toast.success(
+            t('shinkaiNode.models.success.modelInstalled', {
+              modelName: model,
+            }),
+          );
+          if (auth) {
+            await syncOllamaModels({
+              nodeAddress: auth?.node_address ?? '',
+              token: auth?.api_v2_key ?? '',
+              allowedModels: [...ALLOWED_OLLAMA_MODELS, model],
+            });
+          }
+          break;
+        } else if (progress.status === 'error') {
+          toast.error(
+            t('shinkaiNode.models.errors.modelInstalled', {
+              modelName: model,
+            }),
+          );
+          break;
+        }
+      }
+    } catch (error) {
+      toast.error(
+        t('shinkaiNode.models.errors.modelInstalled', {
+          modelName: model,
+        }),
+        {
+          description: error?.toString(),
+        },
+      );
+    }
+  };
+
   useEffect(() => {
     if (isOllamaModelsError) {
       toast.error(t('ollama.errors.failedToFetch'), {
@@ -203,6 +262,14 @@ const AddAIPage = () => {
           }))
           .concat({ label: 'Custom Model', value: 'custom' }),
       );
+      return;
+    }
+    if (currentModel === Models.HuggingFace) {
+      addAgentForm.setValue(
+        'externalUrl',
+        modelsConfig[Models.HuggingFace].apiUrl,
+      );
+      setModelTypeOptions([{ label: 'Custom Model', value: 'custom' }]);
       return;
     }
     const modelConfig = modelsConfig[currentModel as Models];
@@ -247,6 +314,21 @@ const AddAIPage = () => {
       model = getModelObject(data.model, data.modelTypeCustom);
     }
     const generatedId = data.name.replace(/[^a-zA-Z0-9_]/g, '_');
+
+    if (currentModel === Models.HuggingFace) {
+      try {
+        const progressIterator = await ollamaPull({ model: data.externalUrl });
+        await handlePullProgress(
+          data.modelTypeCustom || data.externalUrl,
+          progressIterator,
+        );
+      } catch (error) {
+        toast.error(t('shinkaiNode.models.errors.modelInstalled'), {
+          description: (error as Error)?.message,
+        });
+        return;
+      }
+    }
 
     await addLLMProvider({
       nodeAddress: auth?.node_address ?? '',
