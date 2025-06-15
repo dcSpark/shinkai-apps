@@ -44,6 +44,10 @@ cd shinkai-apps
 # Install dependencies
 npm ci
 
+# Download the side binaries used by Shinkai
+# (set ARCH, OLLAMA_VERSION or SHINKAI_NODE_VERSION to override)
+./scripts/download-side-binaries.sh
+
 # Start the desktop app in development mode
 npx nx serve shinkai-desktop
 ```
