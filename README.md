@@ -1,6 +1,6 @@
 <h1 align="center">
   <img width="36" height="36" src="assets/icon.png"/><br/>
-  Shinkai Apps
+  Shinkai: Create Powerful AI Agents using local or remote AIs
 </h1>
 
 <p align="center">
@@ -10,28 +10,56 @@
 </p>
 
 <p align="center">
-  Shinkai is a two-click install AI manager (local and remote) that lets you spin up
-  AI agents in minutes through a friendly UI. Agents and tools are all exposed via an
-  MCP server.
+  <strong>Create Powerful AI Agents using local or remote AIs</strong>
   <br/>
-  <br/>
-  A companion repository, <a href="https://github.com/dcSpark/shinkai-node">Shinkai Node</a>,
-  provides the core services for agent management, job processing and secure communications.
+  Shinkai is a free, open-source platform that lets anyone build collaborative AI agents 
+  that can handle crypto payments, work across platforms, and tackle complex workflows.
 </p>
 
-## Key Features
+<p align="center">
+  <a href="#-what-makes-shinkai-special">Features</a> •
+  <a href="#demo">Demo</a> •
+  <a href="#examples">Examples</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="https://docs.shinkai.com">Documentation</a>
+</p>
 
-- **Rapid Agent Setup** – create and configure agents in under five minutes with a guided UI.
-- **Local or Remote** – run everything on your machine or connect to a remote Shinkai Node.
-- **MCP Server Integration** – expose agents and tools over an MCP server for easy automation.
+---
+
+## ✨ What makes Shinkai special?
+
+**🚀 No-Code Agent Creation** – Build specialized agents (trading bots, sentiment trackers, workflow automators) in minutes through a friendly UI.
+
+**🤝 Multi-Agent Collaboration** – Your agents work together, sharing information and coordinating complex tasks automatically.
+
+**💰 Crypto-Native** – Built-in support for decentralized payments and transactions. Agents can autonomously pay for services or receive payments.
+
+**🔗 Universal Compatibility** – Works with Model Context Protocol (MCP), making your agents accessible from Claude, Cursor, and other platforms.
+
+**⚡ Flexible Deployment** – Run everything locally for privacy, connect to cloud models for power, or mix both approaches.
+
+**🔐 Local-First Security** – Your crypto keys and sensitive computations stay on your device.
 
 ## Demo
 
 https://github.com/user-attachments/assets/bc5bb7da-7ca5-477d-838a-8239951b6c01
 
-## Documentation
+## Examples
 
-General Documentation: [https://docs.shinkai.com](https://docs.shinkai.com)
+**💹 Trading Bot**: Create an agent that monitors social sentiment and executes trades based on market analysis.
+
+**📧 Email Assistant**: Build an agent that categorizes emails, drafts responses, and schedules follow-ups.
+
+**📊 Data Analyst**: Deploy agents that scrape web data, analyze trends, and generate reports automatically.
+
+**🔄 Workflow Orchestrator**: Set up multiple agents that handle different parts of complex business processes.
+
+## Quick Start
+
+### Two-Click Install
+1. Download the latest release for your platform
+2. Run the installer and launch Shinkai
+3. Start creating agents through the guided UI
 
 ## Repository Structure
 
