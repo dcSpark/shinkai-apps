@@ -83,6 +83,10 @@ export default {
       settings: 'Settings',
       disconnect: 'Disconnect',
       helpAndSupport: 'Help and Support',
+      mcp: 'MCPs',
+      tools: 'Tools',
+      scheduledTasks: 'Scheduled Tasks',
+      decentralizedAgents: 'Decentralized AI Agents',
     },
   },
   chatDM: {
@@ -505,6 +509,9 @@ export default {
     noResultsFound: 'No results found.',
     adding: 'Adding...',
     updating: 'Updating...',
+    details: 'Details',
+    added: 'Added',
+    more: 'More',
     next: 'Next',
     clear: 'Clear',
     enabled: 'Enabled',
@@ -1094,7 +1101,6 @@ export default {
     titleDecentralized: 'Decentralized Agents',
     agentsTab: 'Agents',
     publishedTab: 'Published Agents',
-    connectWallet: 'Connect Wallet',
     manageWallet: 'Manage Wallet',
     walletBalance: 'Wallet Balance',
     descriptionNetwork:
@@ -1103,8 +1109,6 @@ export default {
       'Publish your AI agents to the network. Each agent operates autonomously and can be integrated into your workflows. Pay per use or deploy agents for others to access.',
     searchPlaceholder: 'Search for agents',
     toolRouterKey: 'Tool Router Key',
-    costPerUse: 'Cost per use',
-    howPaymentsWork: 'How payments work',
     addAgent: 'Add Agent',
     addedSuccess: 'Added Successfully!',
     addedDescription:
@@ -1114,6 +1118,19 @@ export default {
     setupRequired: 'Setup required to use paid agents',
     removeSuccess: 'Network agent removed successfully',
     removeFailed: 'Failed to remove agent',
+    registerShinkaiIdentity: 'Register Shinkai Identity',
+    registerShinkaiIdentityDescription:
+      'Create your unique identity on the Shinkai network to use and publish agents',
+    registerIdentity: 'Register Identity',
+    connectWallet: 'Connect Wallet',
+    connectWalletDescription:
+      'Connect your wallet to pay for agent usage and receive earnings from your published agents',
+    payPerUse: 'Pay per use',
+    costPerUse: 'Cost per use',
+    costPerUseDescription: 'Pay each time you use this agent',
+    howPaymentsWork: 'How payments work',
+    howPaymentsWorkDescription:
+      "When you use this agent, you'll be prompted to confirm the payment from your connected wallet. Payments are processed on the {{network}} network.",
   },
   mcpPage: {
     exposeToolsTab: 'Expose Tools',

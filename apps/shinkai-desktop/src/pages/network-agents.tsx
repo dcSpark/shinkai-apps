@@ -1,10 +1,10 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils';
 import { useAddNetworkTool } from '@shinkai_network/shinkai-node-state/v2/mutations/addNetworkTool/useAddNetworkTool';
 import { useGetInstalledNetworkTools } from '@shinkai_network/shinkai-node-state/v2/queries/getInstalledNetworkTools/useGetInstalledNetworkTools';
 import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
 import { useGetWalletBalance } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletBalance/useGetWalletBalance';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
-import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   Card,
   CardContent,
@@ -276,7 +276,7 @@ const DiscoverNetworkAgents = ({
   isWalletConnected: boolean;
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
 
   const {
@@ -431,6 +431,7 @@ const AgentCard = ({
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
+  const { t } = useTranslation();
   const isFreePricing =
     agent.price.toLowerCase().includes('free') || agent.price === '$0.00';
 
@@ -461,7 +462,7 @@ const AgentCard = ({
               className="flex items-center gap-1 border-none bg-green-800/10 text-xs text-green-500"
             >
               <CheckCircle2 className="h-3 w-3" />
-              Added
+              {t('common.added')}
             </Badge>
           )}
         </CardTitle>
@@ -505,7 +506,7 @@ const AgentCard = ({
               >
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm" className="px-4">
-                    Details
+                    {t('common.details')}
                   </Button>
                 </DialogTrigger>
                 <DialogContent
@@ -550,7 +551,7 @@ const AgentCard = ({
                             {t('networkAgentsPage.costPerUse')}
                           </p>
                           <p className="text-official-gray-400 text-sm">
-                            Pay each time you use this agent
+                            {t('networkAgentsPage.costPerUseDescription')}
                           </p>
                         </div>
                       </div>
@@ -576,19 +577,19 @@ const AgentCard = ({
                             {t('networkAgentsPage.howPaymentsWork')}
                           </p>
                           <p className="text-official-gray-400 text-sm">
-                            When you use this agent, you'll be prompted to
-                            confirm the payment from your connected wallet.
-                            Payments are processed on the{' '}
-                            {agent?.apiData?.tool_offering?.usage_type
-                              ?.PerUse &&
-                            typeof agent?.apiData?.tool_offering?.usage_type
-                              ?.PerUse === 'object' &&
-                            'Payment' in
-                              agent?.apiData?.tool_offering?.usage_type?.PerUse
-                              ? agent?.apiData?.tool_offering?.usage_type
-                                  ?.PerUse?.Payment?.[0]?.network
-                              : undefined}{' '}
-                            network.
+                            {t('networkAgentsPage.howPaymentsWorkDescription', {
+                              network:
+                                agent?.apiData?.tool_offering?.usage_type
+                                  ?.PerUse &&
+                                typeof agent?.apiData?.tool_offering?.usage_type
+                                  ?.PerUse === 'object' &&
+                                'Payment' in
+                                  agent?.apiData?.tool_offering?.usage_type
+                                    ?.PerUse
+                                  ? agent?.apiData?.tool_offering?.usage_type
+                                      ?.PerUse?.Payment?.[0]?.network
+                                  : undefined,
+                            })}
                           </p>
                         </div>
                       </div>
@@ -603,7 +604,7 @@ const AgentCard = ({
                         className="flex-1 px-4"
                         onClick={() => setShowDetailsModal(false)}
                       >
-                        Cancel
+                        {t('common.cancel')}
                       </Button>
                       <Button
                         size="md"
@@ -644,7 +645,7 @@ const AgentCard = ({
             <div className="flex w-full flex-col gap-3">
               <Button variant="outline" size="md">
                 <Settings className="h-4 w-4" />
-                Settings
+                {t('common.configure')}
               </Button>
             </div>
           )}
@@ -672,6 +673,7 @@ export const InstallAgentModal = ({
   onClose,
   agent,
 }: InstallAgentModalProps) => {
+  const { t } = useTranslation();
   const [step, setStep] = useState<1 | 2>(1); // 1: confirm, 2: success
 
   const auth = useAuth((state) => state.auth);
@@ -747,9 +749,9 @@ export const InstallAgentModal = ({
               <div className="flex flex-col gap-2.5">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-cyan-400" />
-                          <p className="text-sm font-medium text-cyan-400">
-                            {t('networkAgentsPage.howPaymentsWork')}
-                          </p>
+                  <p className="text-sm font-medium text-cyan-400">
+                    {t('networkAgentsPage.howPaymentsWork')}
+                  </p>
                 </div>
                 <div>
                   <div className="text-official-gray-100 space-y-2 text-sm">
@@ -877,6 +879,7 @@ function SetupGuide({
   isIdentityRegistered,
 }: SetupGuideProps) {
   const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
 
   return (
     <Alert variant="warning" className="mb-6 border-0 bg-yellow-300/5 p-6">
@@ -895,11 +898,10 @@ function SetupGuide({
                 )}
                 <div>
                   <p className="text-sm font-medium text-white">
-                    Register Shinkai Identity
+                    {t('networkAgentsPage.registerShinkaiIdentity')}
                   </p>
                   <p className="text-official-gray-200 text-sm">
-                    Create your unique identity on the Shinkai network to use
-                    and publish agents
+                    {t('networkAgentsPage.registerShinkaiIdentityDescription')}
                   </p>
                 </div>
               </div>
@@ -913,7 +915,7 @@ function SetupGuide({
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Register Identity
+                  {t('networkAgentsPage.registerIdentity')}
                 </a>
               )}
             </div>
@@ -921,17 +923,16 @@ function SetupGuide({
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-start gap-3">
                 {isWalletConnected ? (
-                  <CheckCircle2 className="mt-0.5 size-4 text-green-500" />
+                  <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-green-500" />
                 ) : (
-                  <AlertCircle className="mt-0.5 size-4 text-yellow-400" />
+                  <AlertCircle className="mt-0.5 size-4 shrink-0 text-yellow-400" />
                 )}
                 <div>
                   <p className="text-sm font-medium text-white">
                     {t('networkAgentsPage.connectWallet')}
                   </p>
                   <p className="text-official-gray-200 text-sm">
-                    Connect your wallet to pay for agent usage and receive
-                    earnings from your published agents
+                    {t('networkAgentsPage.connectWalletDescription')}
                   </p>
                 </div>
               </div>
@@ -943,7 +944,7 @@ function SetupGuide({
                     'shrink-0 bg-yellow-400 text-black hover:bg-yellow-500 hover:text-black',
                   )}
                 >
-                  Connect Wallet
+                  {t('networkAgentsPage.connectWallet')}
                 </Link>
               )}
             </div>

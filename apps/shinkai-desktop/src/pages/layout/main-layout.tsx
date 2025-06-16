@@ -244,18 +244,18 @@ export function MainNav() {
 
   const secondaryNavigationLinks = [
     {
-      title: 'Tools',
+      title: t('layout.menuItems.tools'),
       href: '/tools',
       icon: <ToolsIcon className="size-[18px]" />,
     },
     {
-      title: 'MCPs',
+      title: t('layout.menuItems.mcp'),
       href: '/mcp',
       icon: <MCPIcon className="size-[18px]" />,
     },
 
     {
-      title: 'Decentralized AI Agents',
+      title: t('layout.menuItems.decentralizedAgents'),
       href: '/network-ai-agents',
       icon: <NetworkAgentIcon className="size-[18px]" />,
     },
@@ -265,7 +265,7 @@ export function MainNav() {
       icon: <FilesIcon className="size-[18px]" />,
     },
     {
-      title: 'Scheduled Tasks',
+      title: t('layout.menuItems.scheduledTasks'),
       href: '/tasks',
       icon: <ScheduledTasksIcon className="size-[18px]" />,
     },
@@ -421,7 +421,7 @@ export function MainNav() {
                           !sidebarExpanded && 'sr-only',
                         )}
                       >
-                        More
+                        {t('common.more')}
                       </span>
                     </Button>
                   </PopoverTrigger>
@@ -433,7 +433,7 @@ export function MainNav() {
                       arrowPadding={2}
                       side="right"
                     >
-                      <p>More</p>
+                      <p>{t('common.more')}</p>
                     </TooltipContent>
                   </TooltipPortal>
                 )}
