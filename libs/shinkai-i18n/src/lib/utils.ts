@@ -8,7 +8,6 @@ export const readJSON = (filePath: string) => {
   return JSON.parse(data);
 };
 
- 
 export const writeJSON = (filePath: string, data: any) => {
   const jsonStr = JSON.stringify(data, null, 2);
   writeFileSync(filePath, jsonStr, 'utf8');
