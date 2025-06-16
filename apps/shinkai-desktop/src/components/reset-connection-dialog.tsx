@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useInitialRegistration } from '@shinkai_network/shinkai-node-state/v2/mutations/initialRegistration/useInitialRegistration';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/v2/queries/getEncryptionKeys/useGetEncryptionKeys';
 import {
@@ -10,7 +11,6 @@ import {
   AlertDialogTitle,
   Button,
 } from '@shinkai_network/shinkai-ui';
-import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { XIcon } from 'lucide-react';
 import { useNavigate } from 'react-router';
@@ -22,7 +22,6 @@ import {
 } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useAuth } from '../store/auth';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
-import { useTranslation } from '@shinkai_network/shinkai-i18n';
 
 export const ResetConnectionDialog = ({
   isOpen,
@@ -99,7 +98,7 @@ export const ResetConnectionDialog = ({
       <AlertDialogContent className="w-[75%]">
         {allowClose && (
           <AlertDialogCancel
-            className="absolute right-3 top-3 border-0"
+            className="absolute top-3 right-3 border-0"
             disabled={isResetLoading}
           >
             <XIcon className="h-4 w-4" />
@@ -109,9 +108,7 @@ export const ResetConnectionDialog = ({
           <AlertDialogTitle>{t('appReset.title')}</AlertDialogTitle>
           <AlertDialogDescription>
             <div className="flex flex-col space-y-3 text-left text-white/70">
-              <div className="text-sm">
-                {t('appReset.description')}
-              </div>
+              <div className="text-sm">{t('appReset.description')}</div>
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>

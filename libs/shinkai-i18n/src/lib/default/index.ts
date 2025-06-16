@@ -3,6 +3,16 @@ export default {
     welcome:
       'Transform your web browsing experience using AI with Shinkai Visor ✨',
   },
+  homepage: {
+    welcomeTitle: 'How can I help you today?',
+    agentConfigurationRequired:
+      '{{agentName}} requires some configurations to work properly.',
+    setupAgent: 'Setup Agent',
+    recommendedAgents: 'Recommended Agents',
+    installingDefaultAgents: 'Installing default agents',
+    shiftEnterForNewLine: '<span>Shift + Enter</span> for a new line',
+    enterToSend: '<span>Enter</span> to send',
+  },
   desktop: {
     welcome: 'Welcome to Shinkai',
     welcomeDescription:
@@ -97,6 +107,7 @@ export default {
     create: 'Create AI Chat',
     allMessagesLoaded: 'All previous messages have been loaded ✅',
     limitReachedTitle: 'Limit Reached',
+    sendMessagePlaceholder: 'Send a message, or press "/" to access tools',
     limitReachedDescription:
       "You've used all of your queries for the month on this model/agent. Please start a new chat with another agent.",
     enterMessage: 'Enter Message',
@@ -491,6 +502,7 @@ export default {
   },
   common: {
     search: 'Search',
+    noResultsFound: 'No results found.',
     adding: 'Adding...',
     updating: 'Updating...',
     next: 'Next',
@@ -571,6 +583,7 @@ export default {
     all: 'All',
     agent: 'Agent',
     tool: 'Tool',
+    add: 'Add',
   },
   quickConnection: {
     label: 'Quick Connection',
@@ -741,7 +754,7 @@ export default {
     },
   },
   tools: {
-    label: 'Shinkai Tools',
+    label: 'Tools',
     description: 'Manage, customize, and expand your AI tools.',
     emptyState: {
       search: {
@@ -925,7 +938,15 @@ export default {
     },
   },
   agents: {
+    label: 'Agents',
+    explore: 'Explore',
+    myAgents: 'My Agents',
+    configureAgent: 'Configure Agent',
+    createFirstAgent:
+      'Create your first Agent to start exploring the power of AI.',
+    noAvailableAgents: 'No available agents',
     systemInstructions: 'System Instructions',
+    chatWithAgent: 'Chat with Agent',
     form: {
       newChat: 'New Chat',
       chatHistory: 'Chat History',
@@ -937,6 +958,7 @@ export default {
       messagePlaceholder: 'Send message...',
       updateAgent: 'Update Agent',
       createAgent: 'Create New Agent',
+      newAgent: 'New Agent',
       openChat: 'Open Chat',
     },
     importModal: {
@@ -960,13 +982,18 @@ export default {
   agentsPage: {
     description:
       'Create and explore AI agents with personalized instructions, enriched knowledge, <br /> diverse task capabilities, and more to tackle your goals autonomously.',
+    exploreDescription:
+      'Discover and install AI agents from the community to enhance your workflow <br /> and supercharge your productivity and creativity.',
     notFoundTitle: 'No available agents',
     notFoundDescription:
       'Create your first Agent to start exploring the power of AI.',
     addAgent: 'Add Agent',
     goToTaskDetails: 'Go to task details',
+    exploreAgentsDescription: 'Explore custom AI agents for your needs',
   },
   aisPage: {
+    label: 'AI Models',
+    shortDescription: 'Explore a wide range of AI models',
     description:
       'Easily manage both cloud and local AI models, <br /> switching between them seamlessly to fit your workflow.',
   },
@@ -993,7 +1020,8 @@ export default {
     howPaymentsWork: 'How payments work',
     addAgent: 'Add Agent',
     addedSuccess: 'Added Successfully!',
-    addedDescription: '{{name}} is now in your collection. Start a chat to use it!',
+    addedDescription:
+      '{{name}} is now in your collection. Start a chat to use it!',
     browseMore: 'Browse More Agents',
     startChat: 'Start Chat',
     setupRequired: 'Setup required to use paid agents',
@@ -1047,7 +1075,8 @@ export default {
   },
   cronTask: {
     taskDescription: 'Task Description',
-    taskDescriptionHelper: "Briefly describe your agent's purpose (not used by the agent).",
+    taskDescriptionHelper:
+      "Briefly describe your agent's purpose (not used by the agent).",
     taskPrompt: 'Task Prompt',
     promptPlaceholder: 'e.g. Give me top hacker news stories',
     promptExample: 'e.g. Give me top hacker news stories',

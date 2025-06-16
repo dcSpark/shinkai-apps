@@ -2,6 +2,15 @@
   "extension": {
     "welcome": "Transform your web browsing experience using AI with Shinkai Visor ✨"
   },
+  "homepage": {
+    "welcomeTitle": "How can I help you today?",
+    "agentConfigurationRequired": "{{agentName}} requires some configurations to work properly.",
+    "setupAgent": "Setup Agent",
+    "recommendedAgents": "Recommended Agents",
+    "installingDefaultAgents": "Installing default agents",
+    "shiftEnterForNewLine": "<span>Shift + Enter</span> for a new line",
+    "enterToSend": "<span>Enter</span> to send"
+  },
   "desktop": {
     "welcome": "Welcome to Shinkai",
     "welcomeDescription": "<b>Shinkai lets you build AI agents in minutes — fast, private, and secure.</b> Run locally, collaborate through a decentralized network, and create AI workflows effortlessly. ",
@@ -77,6 +86,7 @@
     "create": "Create AI Chat",
     "allMessagesLoaded": "All previous messages have been loaded ✅",
     "limitReachedTitle": "Limit Reached",
+    "sendMessagePlaceholder": "Send a message, or press \"/\" to access tools",
     "limitReachedDescription": "You've used all of your queries for the month on this model/agent. Please start a new chat with another agent.",
     "enterMessage": "Enter Message",
     "sendMessage": "Send Message",
@@ -440,10 +450,12 @@
   },
   "common": {
     "search": "Search",
+    "noResultsFound": "No results found.",
     "adding": "Adding...",
     "updating": "Updating...",
     "next": "Next",
     "enabled": "Enabled",
+    "disabled": "Disabled",
     "configure": "Configure",
     "create": "Create",
     "restore": "Restore",
@@ -509,7 +521,15 @@
     "showLess": "Show Less",
     "viewDetails": "View Details",
     "selectItem": "Select an item to view details",
-    "about": "About"
+    "about": "About",
+    "refresh": "Refresh",
+    "tryAgain": "Try again",
+    "none": "None",
+    "advanced": "Advanced",
+    "all": "All",
+    "agent": "Agent",
+    "tool": "Tool",
+    "add": "Add"
   },
   "quickConnection": {
     "label": "Quick Connection",
@@ -626,6 +646,8 @@
     "addDescription": "Configure a new MCP server to connect with your Shinkai Node",
     "updateSuccess": "MCP server updated successfully",
     "updateFailed": "Failed to update MCP server",
+    "toolMustBeEnabled": "Tool must be enabled before changing MCP server mode",
+    "tooltipEnableFirst": "Enable tool first to manage MCP Server mode",
     "manualSetup": "Manual Setup",
     "addFromGitHub": "Add from GitHub",
     "tools": "Tools",
@@ -665,7 +687,7 @@
     }
   },
   "tools": {
-    "label": "Shinkai Tools",
+    "label": "Tools",
     "description": "Manage, customize, and expand your AI tools.",
     "emptyState": {
       "search": {
@@ -680,6 +702,15 @@
       "label": "Explore AI Store"
     },
     "create": "Create Tool",
+    "importModal": {
+      "title": "Import Tool",
+      "fromUrl": "Import from URL",
+      "fromZip": "Import from Zip",
+      "urlDescription": "Import a tool from a URL.",
+      "zipDescription": "Import a tool from a zip file.",
+      "chooseFile": "Choose a zip file",
+      "action": "Import"
+    },
     "successDuplicateTool": "Tool duplicated successfully",
     "errorDuplicateTool": "Failed to duplicate tool",
     "successOpenToolInCodeEditor": "Tool opened in code editor successfully",
@@ -795,7 +826,8 @@
     "customCopySseUrlButton": "Copy SSE URL",
     "customCopyCommandButton": "Copy Command",
     "copySuccessUrl": "SSE URL copied to clipboard",
-    "copySuccessCommand": "Command copied to clipboard"
+    "copySuccessCommand": "Command copied to clipboard",
+    "connectExternalClient": "Connect External MCP Client"
   },
   "feedback": {
     "button": "Feedback",
@@ -813,14 +845,54 @@
     }
   },
   "agents": {
-    "systemInstructions": "System Instructions"
+    "label": "Agents",
+    "explore": "Explore",
+    "myAgents": "My Agents",
+    "configureAgent": "Configure Agent",
+    "createFirstAgent": "Create your first Agent to start exploring the power of AI.",
+    "noAvailableAgents": "No available agents",
+    "systemInstructions": "System Instructions",
+    "chatWithAgent": "Chat with Agent",
+    "form": {
+      "newChat": "New Chat",
+      "chatHistory": "Chat History",
+      "closeChat": "Close Chat",
+      "emptyChatTitle": "Chat with your Agent",
+      "emptyChatDescription": "Send a message to start chatting with this agent",
+      "enter": "Enter",
+      "enterToSend": "to send",
+      "messagePlaceholder": "Send message...",
+      "updateAgent": "Update Agent",
+      "createAgent": "Create New Agent",
+      "newAgent": "New Agent",
+      "openChat": "Open Chat"
+    },
+    "importModal": {
+      "title": "Import Agent",
+      "chooseFile": "Choose a zip file",
+      "action": "Import"
+    },
+    "publishDialog": {
+      "open": "Publish Agent",
+      "title": "Publish {{name}}",
+      "paymentAddress": "Payment Address",
+      "asset": "Asset",
+      "amount": "Amount",
+      "description": "Description",
+      "selectAgent": "Select Agent",
+      "searchAgents": "Search agents",
+      "publish": "Publish",
+      "published": "Published"
+    }
   },
   "agentsPage": {
     "description": "Create and explore AI agents with personalized instructions, enriched knowledge, <br /> diverse task capabilities, and more to tackle your goals autonomously.",
+    "exploreDescription": "Discover and install AI agents from the community to enhance your workflow <br /> and supercharge your productivity and creativity.",
     "notFoundTitle": "No available agents",
     "notFoundDescription": "Create your first Agent to start exploring the power of AI.",
     "addAgent": "Add Agent",
-    "goToTaskDetails": "Go to task details"
+    "goToTaskDetails": "Go to task details",
+    "exploreAgentsDescription": "Explore custom AI agents for your needs"
   },
   "aisPage": {
     "description": "Easily manage both cloud and local AI models, <br /> switching between them seamlessly to fit your workflow."
@@ -829,10 +901,96 @@
     "noTasksTitle": "No scheduled tasks found",
     "noTasksDescription": "Create your first scheduled task to automate reminders, summaries, or any other tasks you need to manage"
   },
+  "networkAgentsPage": {
+    "titleNetwork": "Network",
+    "titleDecentralized": "Decentralized Agents",
+    "agentsTab": "Agents",
+    "publishedTab": "Published Agents",
+    "connectWallet": "Connect Wallet",
+    "manageWallet": "Manage Wallet",
+    "walletBalance": "Wallet Balance",
+    "descriptionNetwork": "Discover and deploy AI agents from the global network. Each agent operates autonomously and can be integrated into your workflows. Pay per use or deploy agents for others to access.",
+    "descriptionPublished": "Publish your AI agents to the network. Each agent operates autonomously and can be integrated into your workflows. Pay per use or deploy agents for others to access.",
+    "searchPlaceholder": "Search for agents",
+    "toolRouterKey": "Tool Router Key",
+    "costPerUse": "Cost per use",
+    "howPaymentsWork": "How payments work",
+    "addAgent": "Add Agent",
+    "addedSuccess": "Added Successfully!",
+    "addedDescription": "{{name}} is now in your collection. Start a chat to use it!",
+    "browseMore": "Browse More Agents",
+    "startChat": "Start Chat",
+    "setupRequired": "Setup required to use paid agents",
+    "removeSuccess": "Network agent removed successfully",
+    "removeFailed": "Failed to remove agent"
+  },
   "mcpPage": {
     "exposeToolsTab": "Expose Tools",
     "mcpServersDescription": "Connect to an MCP server to instantly tap into external data sources and tools—like live weather updates, stock prices, or translation services—without building custom integrations.\nThis expands your system's capabilities with real-time information and easy access to new resources as your needs grow.",
     "exposeToolsDescription": "Expose your AI Tools through MCP to enable seamless integration with other MCP Clients \nand expand their capabilities.",
     "helpfulLinks": "You can find helpful MCPs to connect with Shinkai at smithery.ai and composio.dev."
+  },
+  "errorBoundary": {
+    "genericError": "Something went wrong. Try refreshing the app."
+  },
+  "videoBanner": {
+    "unsupported": "Your browser does not support the video tag."
+  },
+  "appReset": {
+    "title": "App Reset Required",
+    "description": "We're currently in beta and we made some significant updates to improve your experience. To apply these updates, we need to reset your data. If you need assistance, please contact our support team.",
+    "action": "Reset App"
+  },
+  "playgroundTool": {
+    "metadataError": "Tool metadata failed. Try generating again.",
+    "prismError": "The code editor encountered an error."
+  },
+  "prompt": {
+    "libraryTitle": "Prompt Library",
+    "libraryDescription": "Choose a prompt from the library to get started.",
+    "drawer": {
+      "createTitle": "Create custom prompt",
+      "updateTitle": "Update Prompt"
+    },
+    "fields": {
+      "name": "Prompt Name",
+      "content": "Prompt Content"
+    },
+    "actions": {
+      "create": "Create Prompt",
+      "update": "Update Prompt"
+    },
+    "successCreate": "Prompt created successfully",
+    "failCreate": "Failed to create prompt",
+    "successUpdate": "Prompt updated successfully",
+    "failUpdate": "Failed to update prompt"
+  },
+  "cronTask": {
+    "taskDescription": "Task Description",
+    "taskDescriptionHelper": "Briefly describe your agent's purpose (not used by the agent).",
+    "taskPrompt": "Task Prompt",
+    "promptPlaceholder": "e.g. Give me top hacker news stories",
+    "promptExample": "e.g. Give me top hacker news stories",
+    "cronExpression": "Cron Expression",
+    "cronExample": "Enter a cron expression eg: */30 * * * * (every 30 min)",
+    "cronWillRun": "This cron will run {{schedule}} ({{expression}})",
+    "scheduleOptions": {
+      "every5Min": "every 5 min",
+      "every5Hours": "every 5 hours",
+      "everyMonday8am": "every monday at 8am",
+      "everyJanuary1st12am": "every january 1st at 12am",
+      "every1stMonth12pm": "every 1st of the month at 12pm"
+    },
+    "aiModelConfiguration": "AI Model Configuration",
+    "aiAgent": "AI / Agent",
+    "forceToolUsage": "Force Tool Usage (Optional)",
+    "enableStream": "Enable Stream",
+    "enableTools": "Enable Tools",
+    "temperature": "Temperature",
+    "temperatureInfo": "Temperature is a parameter that affects the randomness of AI outputs. Higher temp = more unexpected, lower temp = more predictable.",
+    "topP": "Top P",
+    "topPInfo": "Adjust the probability threshold to increase the relevance of results. For example, a threshold of 0.9 could be optimal for targeted, specific applications, whereas a threshold of 0.95 or 0.97 might be preferred for tasks that require broader, more creative responses.",
+    "topK": "Top K",
+    "topKInfo": "Adjust the count of key words for creating sequences. This parameter governs the extent of the generated passage, forestalling too much repetition. Selecting a higher figure yields longer narratives, whereas a smaller figure keeps the text brief."
   }
 }

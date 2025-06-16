@@ -630,6 +630,7 @@ function ToolsHome({
 }
 
 const ChatBoxFooterBase = () => {
+  const { Trans } = useTranslation();
   return (
     <div
       className={cn(
@@ -637,13 +638,18 @@ const ChatBoxFooterBase = () => {
       )}
     >
       <div className="text-official-gray-400 flex w-full items-center justify-between gap-2 px-2">
-        <span className="text-xs font-light">
-          <span className="font-medium">Shift + Enter</span> for a new line
-        </span>
-
-        <span className="text-xs font-light">
-          <span className="font-medium">Enter</span> to send
-        </span>
+        <Trans
+          i18nKey="homepage.shiftEnterForNewLine"
+          components={{
+            span: <span className="font-medium" />,
+          }}
+        />
+        <Trans
+          i18nKey="homepage.enterToSend"
+          components={{
+            span: <span className="font-medium" />,
+          }}
+        />
       </div>
     </div>
   );

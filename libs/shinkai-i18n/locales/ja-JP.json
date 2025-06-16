@@ -1,10 +1,50 @@
 {
   "agents": {
+    "chatWithAgent": "エージェントとチャット",
+    "configureAgent": "エージェントを設定",
+    "createFirstAgent": "AIの力を探求するために最初のエージェントを作成してください。",
+    "explore": "探索する",
+    "form": {
+      "chatHistory": "チャット履歴",
+      "closeChat": "チャットを閉じる",
+      "createAgent": "新しいエージェントを作成",
+      "emptyChatDescription": "メッセージを送信してこのエージェントとのチャットを開始します",
+      "emptyChatTitle": "エージェントとチャット",
+      "enter": "入力",
+      "enterToSend": "送信するには",
+      "messagePlaceholder": "メッセージを送信...",
+      "newAgent": "新しいエージェント",
+      "newChat": "新しいチャット",
+      "openChat": "チャットを開く",
+      "updateAgent": "エージェントを更新"
+    },
+    "importModal": {
+      "action": "インポート",
+      "chooseFile": "Zipファイルを選択",
+      "title": "エージェントのインポート"
+    },
+    "label": "エージェント",
+    "myAgents": "マイエージェント",
+    "noAvailableAgents": "利用可能なエージェントはありません",
+    "publishDialog": {
+      "amount": "金額",
+      "asset": "資産",
+      "description": "説明",
+      "open": "エージェントを公開",
+      "paymentAddress": "支払いアドレス",
+      "publish": "公開",
+      "published": "公開済み",
+      "searchAgents": "エージェントを検索",
+      "selectAgent": "エージェントを選択",
+      "title": "{{name}}を公開"
+    },
     "systemInstructions": "システムの指示"
   },
   "agentsPage": {
     "addAgent": "エージェントを追加",
     "description": "パーソナライズされた指示や豊富な知識でAIエージェントを作成し、さまざまなタスクを自律的にこなします。",
+    "exploreAgentsDescription": "あなたのニーズに合わせたカスタムAIエージェントを探索",
+    "exploreDescription": "コミュニティからAIエージェントを発見し、インストールして、あなたのワークフローを強化し、<br /> 生産性と創造性を向上させましょう。",
     "goToTaskDetails": "タスクの詳細へ",
     "notFoundDescription": "最初のエージェントを作成してAIの力を体験しましょう。",
     "notFoundTitle": "利用可能なエージェントはありません"
@@ -30,6 +70,11 @@
     "label": "分析",
     "moreInfo": "プライバシーに関する当社のプラクティスに関する詳細情報については、<a>プライバシーポリシー</a>をご覧ください",
     "title": "Shinkaiの改善にご協力ください"
+  },
+  "appReset": {
+    "action": "アプリをリセット",
+    "description": "現在ベータ版であり、ユーザー体験を向上させるためにいくつかの重要な更新を行いました。これらの更新を適用するには、データをリセットする必要があります。サポートが必要な場合は、サポートチームにお問い合わせください。",
+    "title": "アプリのリセットが必要です"
   },
   "chat": {
     "actions": {
@@ -80,6 +125,7 @@
     "limitReachedTitle": "制限に達しました",
     "openChatFolder": "チャットフォルダーを開く",
     "sendMessage": "メッセージを送信",
+    "sendMessagePlaceholder": "メッセージを送信するか、ツールにアクセスするには「/」を押してください",
     "tracing": {
       "title": "トレース"
     }
@@ -101,7 +147,11 @@
   },
   "common": {
     "about": "について",
+    "add": "追加",
     "adding": "追加中...",
+    "advanced": "詳細",
+    "agent": "エージェント",
+    "all": "すべて",
     "alreadyHaveNode": "すでにノードをお持ちですか？",
     "back": "戻る",
     "cancel": "キャンセル",
@@ -115,6 +165,7 @@
     "create": "作成する",
     "delete": "削除",
     "deleteTool": "ツールを削除",
+    "disabled": "無効",
     "disconnect": "切断",
     "done": "完了",
     "edit": "編集",
@@ -136,12 +187,15 @@
     "logInShinkaiHosting": "Shinkai Hostingにログイン",
     "moreOptions": "その他のオプション",
     "next": "次へ",
+    "noResultsFound": "結果が見つかりませんでした。",
     "noThanks": "いいえ、結構です",
+    "none": "なし",
     "optIn": "オプトイン",
     "optOut": "オプトアウト",
     "passphrase": "パスフレーズ",
     "quickConnect": "クイック接続",
     "recommended": "おすすめ",
+    "refresh": "更新",
     "remove": "削除",
     "rename": "名前を変更",
     "repeatPassphrase": "パスフレーズを確認",
@@ -163,6 +217,8 @@
     "signUpShinkaiHosting": "Shinkai Hostingにサインアップ",
     "soon": "近日公開",
     "termsAndConditionsText": "<a>利用規約</a>に同意し、<b>プライバシーポリシー</b>に同意します",
+    "tool": "ツール",
+    "tryAgain": "再試行",
     "tryItOut": "試してみる",
     "unselectAll": "すべて選択解除",
     "update": "更新",
@@ -171,6 +227,34 @@
     "uploadAFileDescription": "画像、PDF、CSV、TXT、XLSXなどの形式をサポートしています",
     "uploadFile": "ファイルをアップロード",
     "viewDetails": "詳細を見る"
+  },
+  "cronTask": {
+    "aiAgent": "AI / エージェント",
+    "aiModelConfiguration": "AIモデルの設定",
+    "cronExample": "Cron式を入力してください。例：*/30 * * * *（30分ごと）",
+    "cronExpression": "Cron式",
+    "cronWillRun": "このCronは{{schedule}}（{{expression}}）で実行されます",
+    "enableStream": "ストリームを有効にする",
+    "enableTools": "ツールを有効にする",
+    "forceToolUsage": "ツールの使用を強制（オプション）",
+    "promptExample": "例：トップハッカーニュースのストーリーを教えて",
+    "promptPlaceholder": "例：トップハッカーニュースのストーリーを教えて",
+    "scheduleOptions": {
+      "every1stMonth12pm": "毎月1日の午後12時",
+      "every5Hours": "5時間ごと",
+      "every5Min": "5分ごと",
+      "everyJanuary1st12am": "毎年1月1日の午前0時",
+      "everyMonday8am": "毎週月曜日の午前8時"
+    },
+    "taskDescription": "タスクの説明",
+    "taskDescriptionHelper": "エージェントの目的を簡潔に説明してください（エージェントによって使用されません）。",
+    "taskPrompt": "タスクプロンプト",
+    "temperature": "温度",
+    "temperatureInfo": "温度はAI出力のランダム性に影響を与えるパラメータです。高い温度 = より予測不可能、低い温度 = より予測可能。",
+    "topK": "トップK",
+    "topKInfo": "シーケンスを生成するためのキーワードの数を調整します。このパラメータは生成される文章の範囲を制御し、過度の繰り返しを防ぎます。高い数値を選択すると長い物語が生成され、低い数値を選択するとテキストが短く保たれます。",
+    "topP": "トップP",
+    "topPInfo": "結果の関連性を高めるために確率の閾値を調整します。例えば、0.9の閾値は特定のアプリケーションに最適で、0.95または0.97の閾値はより広範で創造的な応答が必要なタスクに好まれるかもしれません。"
   },
   "desktop": {
     "benefits": {
@@ -215,6 +299,9 @@
     "exportConnection": "続行する前に、<Link>接続をエクスポート</Link>して、いつでも接続を復元できるようにしてください。",
     "modalDescription": "本当に接続を切断してもよろしいですか？これにより、データが永久に削除されます。",
     "modalTitle": "新界との接続を切断"
+  },
+  "errorBoundary": {
+    "genericError": "何かがうまくいきませんでした。アプリを更新してみてください。"
   },
   "errors": {
     "nodeUnavailable": {
@@ -266,6 +353,15 @@
     "success": {
       "registerDesktopInstallation": "Shinkai Desktopのインストールが正常に登録されました。Galxeクエストに登録されるまで数時間かかる場合があります。"
     }
+  },
+  "homepage": {
+    "agentConfigurationRequired": "{{agentName}}が正常に動作するためには、いくつかの設定が必要です。",
+    "enterToSend": "<span>Enter</span> で送信",
+    "installingDefaultAgents": "デフォルトエージェントをインストール中",
+    "recommendedAgents": "おすすめのエージェント",
+    "setupAgent": "エージェントを設定",
+    "shiftEnterForNewLine": "<span>Shift + Enter</span> で改行",
+    "welcomeTitle": "今日はどのようにお手伝いできますか？"
   },
   "inboxes": {
     "inboxName": "名前",
@@ -337,6 +433,7 @@
     "claudeSuccessTitle": "Claudeデスクトップが正常に設定されました！",
     "configFailDescription": "{{errorMessage}} 以下の手順に従って手動設定を行ってください:",
     "configFailTitle": "{{clientName}}の自動設定に失敗しました",
+    "connectExternalClient": "外部MCPクライアントに接続",
     "copyJsonButton": "JSON設定をコピー",
     "copyJsonSuccess": "JSON設定がクリップボードにコピーされました",
     "copySuccessCommand": "コマンドがクリップボードにコピーされました",
@@ -410,8 +507,10 @@
     "statusUpdateFailed": "ステータスの更新に失敗しました",
     "statusUpdated": "ステータスが正常に更新されました",
     "title": "MCPサーバー",
+    "toolMustBeEnabled": "MCPサーバーモードを変更する前にツールを有効にする必要があります",
     "tools": "ツール",
     "toolsFor": "{{name}}のツール",
+    "tooltipEnableFirst": "MCPサーバーモードを管理するには、まずツールを有効にしてください",
     "type": "タイプ",
     "update": "MCPサーバーを更新",
     "updateDescription": "MCPサーバーの設定を更新: {{name}}",
@@ -419,6 +518,29 @@
     "updateSuccess": "MCPサーバーが正常に更新されました",
     "updateWarningDescription": "このサーバーを更新すると、関連するツールがリセットされます。",
     "viewAvailableTools": "利用可能なツールを表示"
+  },
+  "networkAgentsPage": {
+    "addAgent": "エージェントを追加",
+    "addedDescription": "{{name}}があなたのコレクションに追加されました。チャットを開始して使用してください！",
+    "addedSuccess": "正常に追加されました！",
+    "agentsTab": "エージェント",
+    "browseMore": "他のエージェントをブラウズ",
+    "connectWallet": "ウォレットに接続",
+    "costPerUse": "使用ごとのコスト",
+    "descriptionNetwork": "グローバルネットワークからAIエージェントを発見し、展開します。各エージェントは自律的に動作し、ワークフローに統合できます。使用ごとに支払うか、他の人がアクセスできるようにエージェントを展開します。",
+    "descriptionPublished": "AIエージェントをネットワークに公開します。各エージェントは自律的に動作し、ワークフローに統合できます。使用ごとに支払うか、他の人がアクセスできるようにエージェントを展開します。",
+    "howPaymentsWork": "支払いの仕組み",
+    "manageWallet": "ウォレットを管理",
+    "publishedTab": "公開されたエージェント",
+    "removeFailed": "エージェントの削除に失敗しました",
+    "removeSuccess": "ネットワークエージェントが正常に削除されました",
+    "searchPlaceholder": "エージェントを検索",
+    "setupRequired": "有料エージェントを使用するには設定が必要です",
+    "startChat": "チャットを開始",
+    "titleDecentralized": "分散型エージェント",
+    "titleNetwork": "ネットワーク",
+    "toolRouterKey": "ツールルーターキー",
+    "walletBalance": "ウォレット残高"
   },
   "notifications": {
     "messageReceived": {
@@ -465,6 +587,30 @@
     "setupShinkaiDesktopDescription": "Shinkaiデスクトップのセットアップを行いましょう",
     "uploadAFile": "ファイルをアップロード",
     "uploadAFileDescription": "ノート、ウェブサイト、ドキュメントなどを安全に保存"
+  },
+  "playgroundTool": {
+    "metadataError": "ツールのメタデータに失敗しました。再生成を試みてください。",
+    "prismError": "コードエディタでエラーが発生しました。"
+  },
+  "prompt": {
+    "actions": {
+      "create": "プロンプトを作成",
+      "update": "プロンプトを更新"
+    },
+    "drawer": {
+      "createTitle": "カスタムプロンプトを作成",
+      "updateTitle": "プロンプトを更新"
+    },
+    "failCreate": "プロンプトの作成に失敗しました",
+    "failUpdate": "プロンプトの更新に失敗しました",
+    "fields": {
+      "content": "プロンプト内容",
+      "name": "プロンプト名"
+    },
+    "libraryDescription": "ライブラリからプロンプトを選択して開始します。",
+    "libraryTitle": "プロンプトライブラリ",
+    "successCreate": "プロンプトが正常に作成されました",
+    "successUpdate": "プロンプトが正常に更新されました"
   },
   "quickAsk": {
     "emptyStateDescription": "「JavaScriptでHTTPリクエストを作成する方法は？」、「80年代のロック音楽トップ10は？」、「インターネットの仕組みを説明して」などを試してみてください。",
@@ -736,6 +882,15 @@
       "verifiedProtocolsTitle": "検証済みプロトコル",
       "wellSupportedProtocols": "十分にサポートされたプロトコル"
     },
+    "importModal": {
+      "action": "インポート",
+      "chooseFile": "Zipファイルを選択",
+      "fromUrl": "URLからインポート",
+      "fromZip": "Zipからインポート",
+      "title": "ツールのインポート",
+      "urlDescription": "URLからツールをインポートします。",
+      "zipDescription": "Zipファイルからツールをインポートします。"
+    },
     "installFromStore": "ストアからインストール",
     "label": "深海ツール",
     "lookingForMoreTools": "さらにツールを探していますか？",
@@ -834,5 +989,8 @@
       "folderShared": "フォルダが正常に共有されました",
       "folderUnshared": "フォルダが正常に共有解除されました"
     }
+  },
+  "videoBanner": {
+    "unsupported": "お使いのブラウザはビデオタグをサポートしていません。"
   }
 }

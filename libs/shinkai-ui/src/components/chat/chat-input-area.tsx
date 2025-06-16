@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import * as React from 'react';
 
 import { useCombinedRefs } from '../../hooks/use-combined-refs';
@@ -38,6 +39,7 @@ export const ChatInputArea = ({
   className,
   ref,
 }: ChatInputAreaProps) => {
+  const { t } = useTranslation();
   const textareaRef = useCombinedRefs<HTMLTextAreaElement>(
     ref as React.RefObject<HTMLTextAreaElement>,
   );
@@ -71,9 +73,7 @@ export const ChatInputArea = ({
             onKeyDown={onKeyDown}
             onPaste={onPaste}
             onSend={onSubmit}
-            placeholder={
-              placeholder ?? 'Send a message, or press "/" to access tools'
-            }
+            placeholder={placeholder ?? t('chat.sendMessagePlaceholder')}
             ref={textareaRef}
             value={value}
           />
