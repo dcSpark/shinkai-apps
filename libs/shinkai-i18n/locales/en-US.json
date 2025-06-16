@@ -453,7 +453,9 @@
     "create": "Create Registration Code"
   },
   "common": {
+    "dismiss": "Dismiss",
     "search": "Search",
+    "noThanks": "No, Thanks",
     "noResultsFound": "No results found.",
     "adding": "Adding...",
     "updating": "Updating...",
@@ -501,7 +503,6 @@
     "update": "Update",
     "moreOptions": "More Options",
     "comingSoon": "Coming soon - Late August",
-    "noThanks": "No, Thanks",
     "iAgree": "I Agree",
     "getStarted": "Get Started Free",
     "passphrase": "Passphrase",
@@ -1004,7 +1005,21 @@
     "costPerUse": "Cost per use",
     "costPerUseDescription": "Pay each time you use this agent",
     "howPaymentsWork": "How payments work",
-    "howPaymentsWorkDescription": "When you use this agent, you'll be prompted to confirm the payment from your connected wallet. Payments are processed on the {{network}} network."
+    "howPaymentsWorkDescription": "When you use this agent, you'll be prompted to confirm the payment from your connected wallet. Payments are processed on the {{network}} network.",
+    "toolPaymentRequired": "Tool Payment Required",
+    "toolPaymentRequiredDescription": "This tool requires payment to use.",
+    "networkToolDetails": "Network Tool Details",
+    "tool": "Tool",
+    "author": "Author",
+    "paymentRecipient": "Payment Recipient",
+    "yourWallet": "Your Wallet",
+    "walletAddress": "Wallet Address",
+    "usdcBalance": "USDC Balance",
+    "confirmPayment": "Confirm Payment",
+    "processingPayment": "Processing Payment",
+    "pleaseWait": "Please wait while we process your transaction...",
+    "paymentSuccessful": "Payment Successful!",
+    "paymentSuccessfulDescription": "Your payment went through successfully. The tool is now executing..."
   },
   "mcpPage": {
     "exposeToolsTab": "Expose Tools",
