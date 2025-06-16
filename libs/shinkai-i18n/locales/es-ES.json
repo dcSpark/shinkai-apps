@@ -943,7 +943,29 @@
       "updateOnlyThisTool": "Actualizar solo esta herramienta"
     },
     "configurationRequired": "Se requiere configuración de la herramienta",
-    "create": "Crear herramienta",
+    "create": {
+      "backToTools": "Volver a herramientas",
+      "customModel": "Modelo personalizado",
+      "customModelDescription": "Elige tu modelo de IA preferido para tus necesidades específicas.",
+      "description": "Crea, automatiza y optimiza tu flujo de trabajo con potentes herramientas de IA.",
+      "generationError": "Error al generar la herramienta. Puede que desees intentar usar un modelo de IA más potente para obtener mejores resultados.",
+      "messagePlaceholder": "Describe la herramienta que deseas crear...",
+      "noProtocols": "No se encontraron protocolos.",
+      "otherProtocols": "Otros protocolos también pueden funcionar, pero no han sido verificados oficialmente.",
+      "requestProtocol": "Solicitar protocolo",
+      "shinkaiCodeGenerator": "Generador de código Shinkai",
+      "shinkaiCodeGeneratorDescription": "Crea herramientas utilizando nuestra herramienta especializada de generación de código de IA.",
+      "shinkaiFreeTrial": "Prueba gratuita de Shinkai",
+      "shinkaiFreeTrialDescription": "Ideal para construir herramientas, funciona con cualquier contenido que proporciones.",
+      "shinkaiFreeTrialRecommendation": "Copia y pega manualmente la documentación que la IA requiere y colócala dentro de <documentation></documentation>.",
+      "step1Label": "Paso 1",
+      "step1Text": "Selecciona tu modelo",
+      "step2Label": "Paso 2",
+      "step2Text": "Escribe tus requisitos",
+      "title": "Crea herramientas de IA en minutos",
+      "verifiedProtocolsTitle": "Protocolos verificados",
+      "wellSupportedProtocols": "Protocolos bien soportados"
+    },
     "description": "Gestiona, personaliza y amplía tus herramientas de IA.",
     "emptyState": {
       "search": {
