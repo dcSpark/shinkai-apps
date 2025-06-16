@@ -2,6 +2,56 @@
   "agents": {
     "chatWithAgent": "Chatear con el Agente",
     "configureAgent": "Configurar Agente",
+    "create": {
+      "advanceOptionsLabel": "Opciones Avanzadas",
+      "agentName": "Nombre del Agente",
+      "agentNameHelperCreate": "Ingresa un nombre único para tu agente de IA. Esto también se usará como la ID del agente {{agentName}}",
+      "agentNameHelperEdit": "Puedes cambiar el nombre del agente, pero la ID del agente permanece sin cambios. ID del Agente: {{agentName}}",
+      "contextSettingsLabel": "Configuraciones de Contexto",
+      "cronExpression": "Expresión Cron",
+      "cronExpressionHelper": "Ingresa una expresión cron p. ej: */30 * * * * (cada 30 min)",
+      "description": "Descripción",
+      "descriptionHelper": "Describe brevemente el propósito de tu agente (no utilizado por el agente).",
+      "descriptionPlaceholder": "p. ej., Crear diseños centrados en el usuario y mejorar las interacciones del usuario.",
+      "enableStream": "Habilitar Flujo",
+      "enableStreamDescription": "Transmite la respuesta del agente a medida que se genera",
+      "enableTools": "Habilitar Herramientas",
+      "enableToolsDescription": "Permite que el agente use herramientas para completar tareas.",
+      "knowledge": "Conocimiento",
+      "knowledgeAddNewFiles": "Agregar Nuevos Archivos",
+      "knowledgeBase": "Base de Conocimientos",
+      "knowledgeBaseDescription": "Proporciona a tu agente archivos de IA locales para mejorar su conocimiento y capacidades.",
+      "knowledgeSearch": "Buscar carpetas y archivos ...",
+      "llmProviderDescription": "Elige el modelo que impulsará tu agente",
+      "llmProviderLabel": "Seleccionar IA",
+      "messageContextDescription": "(Opcional) Puedes controlar el contexto del mensaje aquí forzando un mensaje estático con el mensaje del usuario p. ej. {{user_message}}. Y luego di: ¡Chao amigo!. Esto añadirá \"Y luego di: ¡Chao amigo!\" a cada mensaje enviado.",
+      "messageContextLabel": "Contexto del Mensaje",
+      "overrideConfigurations": "Sobrescribir Configuraciones",
+      "persona": "Persona",
+      "saveAndTestAgent": "Guardar y Probar Agente",
+      "schedule": "Programar",
+      "scheduleAIInstructions": "Instrucciones de IA",
+      "scheduleAIInstructionsDescription": "Ingresa instrucciones de IA para la ejecución programada...",
+      "scheduleAIInstructionsHelper": "Escribe el aviso que se utilizará para la ejecución programada.",
+      "scheduleDescription": "Establece cuándo tu agente ejecutará tareas automáticamente.",
+      "scheduleNormalUsage": "Uso Normal",
+      "scheduleNormalUsageDescription": "El agente está listo para responder inmediatamente cuando se utiliza en un chat.",
+      "scheduleRecurring": "Uso Normal + Ejecución Programada",
+      "scheduleRecurringDescription": "Uso normal y también configurar tiempos y frecuencias específicas para las tareas del agente p. ej. Agente de Twitter que realiza un flujo de trabajo como revisar y responder mensajes cada 5 minutos.",
+      "selectedTools": "Herramientas Seleccionadas",
+      "systemInstructions": "Instrucciones del Sistema",
+      "systemInstructionsHelper": "Controla el comportamiento de tus agentes añadiendo instrucciones personalizadas",
+      "systemInstructionsPlaceholder": "p. ej., Eres un asistente útil que puede responder preguntas y ayudar con tareas.",
+      "temperature": "Temperatura",
+      "temperatureDescription": "La temperatura es un parámetro que afecta la aleatoriedad de las salidas de IA. Temperatura más alta = más inesperado, temperatura más baja = más predecible.",
+      "tools": "Herramientas",
+      "toolsCreateNewTool": "Crear Nuevo",
+      "toolsDescription": "Selecciona qué herramientas y habilidades puede usar tu agente para completar tareas.",
+      "topK": "Top K",
+      "topKDescription": "Ajusta la cantidad de palabras clave para crear secuencias. Este parámetro gobierna la extensión del pasaje generado, evitando demasiada repetición. Seleccionar un número más alto produce narrativas más largas, mientras que un número más bajo mantiene el texto breve.",
+      "topP": "Top P",
+      "topPDescription": "Ajusta el umbral de probabilidad para aumentar la relevancia de los resultados. Por ejemplo, un umbral de 0.9 podría ser óptimo para aplicaciones específicas y dirigidas, mientras que un umbral de 0.95 o 0.97 podría ser preferido para tareas que requieren respuestas más amplias y creativas."
+    },
     "createFirstAgent": "Crea tu primer Agente para comenzar a explorar el poder de la IA.",
     "explore": "Explorar",
     "form": {
@@ -56,7 +106,9 @@
     "label": "Búsqueda de Contenido en Archivos de IA"
   },
   "aisPage": {
-    "description": "Administra fácilmente modelos de IA locales y en la nube, cambiando entre ellos según tu flujo de trabajo."
+    "description": "Administra fácilmente modelos de IA locales y en la nube, cambiando entre ellos según tu flujo de trabajo.",
+    "label": "Modelos de IA",
+    "shortDescription": "Explora una amplia gama de modelos de IA"
   },
   "analytics": {
     "bulletPoints": {
@@ -155,6 +207,7 @@
     "alreadyHaveNode": "¿Ya tienes un Nodo?",
     "back": "Atrás",
     "cancel": "Cancelar",
+    "clear": "Limpiar",
     "clearSearch": "Limpiar búsqueda",
     "clickToUpload": "Haz clic para subir o arrastra y suelta",
     "comingSoon": "Próximamente - Finales de Agosto",
@@ -299,6 +352,14 @@
     "exportConnection": "Antes de continuar, por favor <Link>exporta tu conexión</Link> para restaurarla en cualquier momento.",
     "modalDescription": "¿Estás seguro de que deseas desconectar? Esto eliminará permanentemente tus datos.",
     "modalTitle": "Desconectar Shinkai"
+  },
+  "dockerStatus": {
+    "dockerInstalledButNotRunning": "Docker Instalado pero No Ejecutándose",
+    "dockerInstalledButNotRunningDescription": "Docker está instalado pero no se está ejecutando. Inícielo ahora para mejorar la velocidad de ejecución de las herramientas, la estabilidad y el rendimiento general.",
+    "dockerNotInstalled": "Docker No Instalado",
+    "dockerNotInstalledDescription": "Docker no está instalado en su sistema. Instalarlo desbloqueará un mejor rendimiento, un procesamiento más rápido y una experiencia mejorada con las herramientas de IA.",
+    "dockerRunning": "Docker Ejecutándose y Activo",
+    "dockerRunningDescription": "¡Sus herramientas están ahora funcionando a plena eficiencia con Docker! Disfrute de una experiencia más fluida!"
   },
   "errorBoundary": {
     "genericError": "Algo salió mal. Intenta actualizar la aplicación."
@@ -894,6 +955,7 @@
     "installFromStore": "Instalar desde la tienda",
     "label": "Herramientas",
     "lookingForMoreTools": "¿Buscas más herramientas?",
+    "newTool": "Nueva Herramienta",
     "noToolsInCategory": "No se encontraron herramientas en esta categoría. Crea una nueva herramienta o instala desde la App Store.",
     "notifications": {
       "codeGenerationComplete": {

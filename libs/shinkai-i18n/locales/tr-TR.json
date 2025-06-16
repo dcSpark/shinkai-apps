@@ -2,6 +2,56 @@
   "agents": {
     "chatWithAgent": "Ajan ile Sohbet Et",
     "configureAgent": "Ajanı Yapılandır",
+    "create": {
+      "advanceOptionsLabel": "Gelişmiş Seçenekler",
+      "agentName": "Ajan Adı",
+      "agentNameHelperCreate": "AI ajanınız için benzersiz bir ad girin. Bu, ajan kimliği olarak da kullanılacaktır {{agentName}}",
+      "agentNameHelperEdit": "Ajan adını değiştirebilirsiniz, ancak ajan kimliği değişmez. Ajan Kimliği: {{agentName}}",
+      "contextSettingsLabel": "Bağlam Ayarları",
+      "cronExpression": "Cron İfadesi",
+      "cronExpressionHelper": "Bir cron ifadesi girin örn: */30 * * * * (her 30 dakikada bir)",
+      "description": "Açıklama",
+      "descriptionHelper": "Ajanınızın amacını kısaca tanımlayın (ajan tarafından kullanılmaz).",
+      "descriptionPlaceholder": "örn., Kullanıcı odaklı tasarımlar oluşturun ve kullanıcı etkileşimlerini geliştirin.",
+      "enableStream": "Akışı Etkinleştir",
+      "enableStreamDescription": "Ajanın yanıtını oluştururken akış halinde iletin",
+      "enableTools": "Araçları Etkinleştir",
+      "enableToolsDescription": "Ajanın görevleri tamamlamak için araçları kullanmasına izin verir.",
+      "knowledge": "Bilgi",
+      "knowledgeAddNewFiles": "Yeni Dosyalar Ekle",
+      "knowledgeBase": "Bilgi Tabanı",
+      "knowledgeBaseDescription": "Ajanınıza bilgi ve yeteneklerini artırmak için yerel AI dosyaları sağlayın.",
+      "knowledgeSearch": "Klasörleri ve dosyaları ara ...",
+      "llmProviderDescription": "Ajanınızı güçlendirecek modeli seçin",
+      "llmProviderLabel": "AI Seçin",
+      "messageContextDescription": "(İsteğe Bağlı) Kullanıcı mesajıyla sabit bir mesaj zorlayarak mesaj bağlamını burada kontrol edebilirsiniz, örn. {{user_message}}. Ve sonra şunu söyleyin: Chao amigo!. Bu, her gönderilen mesaja \"Ve sonra şunu söyleyin: Chao amigo!\" ekleyecektir.",
+      "messageContextLabel": "Mesaj Bağlamı",
+      "overrideConfigurations": "Yapılandırmaları Geçersiz Kıl",
+      "persona": "Persona",
+      "saveAndTestAgent": "Ajanı Kaydet ve Test Et",
+      "schedule": "Program",
+      "scheduleAIInstructions": "AI Talimatları",
+      "scheduleAIInstructionsDescription": "Planlı icra için AI talimatlarını girin...",
+      "scheduleAIInstructionsHelper": "Planlı icra için kullanılacak istemi yazın.",
+      "scheduleDescription": "Ajanınızın otomatik olarak görevleri ne zaman gerçekleştireceğini ayarlayın.",
+      "scheduleNormalUsage": "Normal Kullanım",
+      "scheduleNormalUsageDescription": "Ajan, bir sohbette kullanıldığında hemen yanıt vermeye hazırdır.",
+      "scheduleRecurring": "Normal Kullanım + Planlı İcra",
+      "scheduleRecurringDescription": "Normal kullanım ve ayrıca ajan görevleri için belirli zamanlar ve sıklıklar yapılandırın, örn. Her 5 dakikada bir mesajları kontrol eden ve yanıtlayan Twitter Ajanı.",
+      "selectedTools": "Seçilen Araçlar",
+      "systemInstructions": "Sistem Talimatları",
+      "systemInstructionsHelper": "Ajanınızın davranışını özel talimatlar ekleyerek kontrol edin",
+      "systemInstructionsPlaceholder": "örn., Soruları yanıtlayabilen ve görevlerde yardımcı olabilen bir asistan.",
+      "temperature": "Sıcaklık",
+      "temperatureDescription": "Sıcaklık, AI çıktılarının rastgeleliğini etkileyen bir parametredir. Daha yüksek sıcaklık = daha beklenmedik, daha düşük sıcaklık = daha öngörülebilir.",
+      "tools": "Araçlar",
+      "toolsCreateNewTool": "Yeni Araç Oluştur",
+      "toolsDescription": "Ajanınızın görevleri tamamlamak için kullanabileceği araçları ve becerileri seçin.",
+      "topK": "En Yüksek K",
+      "topKDescription": "Diziler oluşturmak için anahtar kelime sayısını ayarlayın. Bu parametre, üretilen pasajın kapsamını belirler, fazla tekrarın önüne geçer. Daha yüksek bir rakam, daha uzun anlatımlar üretirken, daha düşük bir rakam metni kısa tutar.",
+      "topP": "En Yüksek P",
+      "topPDescription": "Sonuçların alaka düzeyini artırmak için olasılık eşiğini ayarlayın. Örneğin, 0.9'luk bir eşik, hedeflenmiş, belirli uygulamalar için optimal olabilirken, 0.95 veya 0.97'lik bir eşik daha geniş, daha yaratıcı yanıtlar gerektiren görevler için tercih edilebilir."
+    },
     "createFirstAgent": "AI'nin gücünü keşfetmeye başlamak için ilk Ajanınızı oluşturun.",
     "explore": "Keşfet",
     "form": {
@@ -56,7 +106,9 @@
     "label": "Yapay Zeka Dosyaları İçerik Arama"
   },
   "aisPage": {
-    "description": "Çalışma akışınıza uyacak şekilde bulut ve yerel AI modellerini kolayca yönetin ve arasında geçiş yapın."
+    "description": "Çalışma akışınıza uyacak şekilde bulut ve yerel AI modellerini kolayca yönetin ve arasında geçiş yapın.",
+    "label": "AI Modelleri",
+    "shortDescription": "Geniş bir AI modeli yelpazesini keşfedin"
   },
   "analytics": {
     "bulletPoints": {
@@ -155,6 +207,7 @@
     "alreadyHaveNode": "Zaten bir Düğümünüz mü var?",
     "back": "Geri",
     "cancel": "İptal",
+    "clear": "Temizle",
     "clearSearch": "Aramayı Temizle",
     "clickToUpload": "Yüklemek için tıklayın veya sürükleyip bırakın",
     "comingSoon": "Yakında - Ağustos Sonu",
@@ -299,6 +352,14 @@
     "exportConnection": "Devam etmeden önce, lütfen<Link>bağlantınızı dışa aktarın</Link> böylece istediğiniz zaman bağlantınızı geri yükleyebilirsiniz.",
     "modalDescription": "Bağlantıyı kesmek istediğinize emin misiniz? Bu, verilerinizi kalıcı olarak silecektir.",
     "modalTitle": "Shinkai'yi Bağlantıyı Kes"
+  },
+  "dockerStatus": {
+    "dockerInstalledButNotRunning": "Docker Yüklü ama Çalışmıyor",
+    "dockerInstalledButNotRunningDescription": "Docker yüklü ama çalışmıyor. Araç yürütme hızını, kararlılığını ve genel performansı artırmak için şimdi başlatın.",
+    "dockerNotInstalled": "Docker Yüklenmedi",
+    "dockerNotInstalledDescription": "Docker sisteminizde yüklü değil. Yüklemek, daha iyi performans, daha hızlı işlem ve geliştirilmiş bir AI araç deneyimi sağlayacaktır.",
+    "dockerRunning": "Docker Çalışıyor ve Aktif",
+    "dockerRunningDescription": "Araçlarınız artık Docker ile tam verimlilikte çalışıyor. Daha akıcı bir deneyimin tadını çıkarın!"
   },
   "errorBoundary": {
     "genericError": "Bir şeyler yanlış gitti. Uygulamayı yenilemeyi deneyin."
@@ -894,6 +955,7 @@
     "installFromStore": "Mağazadan Yükle",
     "label": "Shinkai Araçları",
     "lookingForMoreTools": "Daha fazla araç mı arıyorsunuz?",
+    "newTool": "Yeni Araç",
     "noToolsInCategory": "Bu kategoride araç bulunamadı. Yeni bir araç oluşturun veya App Store'dan kurun.",
     "notifications": {
       "codeGenerationComplete": {

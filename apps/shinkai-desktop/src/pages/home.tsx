@@ -1078,7 +1078,7 @@ const EmptyMessage = () => {
                   icon={<AIAgentIcon className="size-full" name={agent.name} />}
                   key={agent.agent_id}
                   secondaryAction={{
-                    label: 'Chat History',
+                    label: t('agents.form.chatHistory'),
                     onClick: () => {
                       void navigate(`/inboxes?agentId=${agent.agent_id}`);
                     },

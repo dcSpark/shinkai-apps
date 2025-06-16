@@ -506,6 +506,7 @@ export default {
     adding: 'Adding...',
     updating: 'Updating...',
     next: 'Next',
+    clear: 'Clear',
     enabled: 'Enabled',
     disabled: 'Disabled',
     configure: 'Configure',
@@ -755,6 +756,25 @@ export default {
   },
   tools: {
     label: 'Tools',
+    newTool: 'New Tool',
+    create: {
+      title: 'Build AI Tools in Minutes',
+      description:
+        'Create, automate, and optimize your workflow with powerful AI tools.',
+      step1Label: 'Step 1',
+      step1Text: 'Select your model',
+      step2Label: 'Step 2',
+      step2Text: 'Write your requirements',
+      messagePlaceholder: 'Describe the tool you want to create...',
+      generationError:
+        'Failed to generate tool. You might want to try using a more powerful AI model for better results.',
+      wellSupportedProtocols: 'Well Supported Protocols',
+      verifiedProtocolsTitle: 'Verified Protocols',
+      noProtocols: 'No protocols found .',
+      otherProtocols:
+        "Other protocols may also work but haven't been officially verified.",
+      requestProtocol: 'Request Protocol',
+    },
     description: 'Manage, customize, and expand your AI tools.',
     emptyState: {
       search: {
@@ -769,7 +789,6 @@ export default {
     store: {
       label: 'Explore AI Store',
     },
-    create: 'Create Tool',
     importModal: {
       title: 'Import Tool',
       fromUrl: 'Import from URL',
@@ -961,6 +980,74 @@ export default {
       newAgent: 'New Agent',
       openChat: 'Open Chat',
     },
+    create: {
+      persona: 'Persona',
+      knowledge: 'Knowledge',
+      tools: 'Tools',
+      schedule: 'Schedule',
+      agentName: 'Agent Name',
+      agentNameHelperEdit:
+        'You can change the agent name, but the agent ID remains unchanged. Agent ID: {{agentName}}',
+      agentNameHelperCreate:
+        'Enter a unique name for your AI agent. This will also be used as the agent ID {{agentName}}',
+      description: 'Description',
+      descriptionPlaceholder:
+        'e.g., Create user-centered designs and improve user interactions.',
+      descriptionHelper:
+        'Briefly describe your agent’s purpose (not used by the agent).',
+      systemInstructions: 'System Instructions',
+      systemInstructionsPlaceholder:
+        'e.g., You are a helpful assistant that can answer questions and help with tasks.',
+      systemInstructionsHelper:
+        'Control your agents behavior by adding custom instructions',
+      llmProviderLabel: 'Select AI',
+      llmProviderDescription: 'Choose the model that will power your agent',
+      contextSettingsLabel: 'Context Settings',
+      messageContextLabel: 'Message Context',
+      messageContextDescription:
+        '(Optional) You can control the message context here by forcing a static message with the user message e.g. {{user_message}}. And then say: Chao amigo!. This will add "And then say: Chao amigo!" to every message sent.',
+      advanceOptionsLabel: 'Advanced Options',
+      enableStream: 'Enable Stream',
+      enableStreamDescription: "Streams the agent's response as it generates",
+      enableTools: 'Enable Tools',
+      enableToolsDescription:
+        'Allows the agent to use tools to complete tasks.',
+      temperature: 'Temperature',
+      temperatureDescription:
+        'Temperature is a parameter that affects the randomness of AI outputs. Higher temp = more unexpected, lower temp = more predictable.',
+      topP: 'Top P',
+      topPDescription:
+        'Adjust the probability threshold to increase the relevance of results. For example, a threshold of 0.9 could be optimal for targeted, specific applications, whereas a threshold of 0.95 or 0.97 might be preferred for tasks that require broader, more creative responses.',
+      topK: 'Top K',
+      topKDescription:
+        'Adjust the count of key words for creating sequences. This parameter governs the extent of the generated passage, forestalling too much repetition. Selecting a higher figure yields longer narratives, whereas a smaller figure keeps the text brief.',
+      knowledgeBase: 'Knowledge Base',
+      knowledgeBaseDescription:
+        'Provide your agent with local AI files to enhance its knowledge and capabilities.',
+      knowledgeSearch: 'Search folders and files ...',
+      knowledgeAddNewFiles: 'Add New Files',
+      toolsDescription:
+        'Select which tools & skills your agent can use to complete tasks.',
+      toolsCreateNewTool: 'Create New',
+      selectedTools: 'Selected Tools',
+      overrideConfigurations: 'Override Configurations',
+      scheduleDescription: 'Set when your agent will automatically run tasks.',
+      scheduleNormalUsage: 'Normal Usage',
+      scheduleNormalUsageDescription:
+        'Agent is ready to respond immediately when used upon in a chat.',
+      scheduleRecurring: 'Normal Usage + Scheduled Execution',
+      scheduleRecurringDescription:
+        'Normal usage and also configure specific times and frequencies for agent tasks e.g. Twitter Agent that performs a workflow like checking and answering messages every 5 minutes.',
+      scheduleAIInstructions: 'AI Instructions',
+      scheduleAIInstructionsDescription:
+        'Enter AI instructions for the scheduled execution...',
+      scheduleAIInstructionsHelper:
+        'Write the prompt that will be used for the scheduled execution.',
+      cronExpression: 'Cron Expression',
+      cronExpressionHelper:
+        'Enter a cron expression eg: */30 * * * * (every 30 min)',
+      saveAndTestAgent: 'Save & Test Agent',
+    },
     importModal: {
       title: 'Import Agent',
       chooseFile: 'Choose a zip file',
@@ -1104,5 +1191,16 @@ export default {
     topK: 'Top K',
     topKInfo:
       'Adjust the count of key words for creating sequences. This parameter governs the extent of the generated passage, forestalling too much repetition. Selecting a higher figure yields longer narratives, whereas a smaller figure keeps the text brief.',
+  },
+  dockerStatus: {
+    dockerNotInstalled: 'Docker Not Installed',
+    dockerInstalledButNotRunning: 'Docker Installed but Not Running',
+    dockerRunning: 'Docker Running & Active',
+    dockerNotInstalledDescription:
+      'Docker is not installed on your system. Installing it will unlock better performance, faster processing, and an improved AI tool experience.',
+    dockerInstalledButNotRunningDescription:
+      'Docker is installed but not running. Start it now to improve tool execution speed, stability, and overall performance.',
+    dockerRunningDescription:
+      'Your tools are now running at full efficiency with Docker. Enjoy a smoother experience!',
   },
 };

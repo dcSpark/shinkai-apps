@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useGetDockerStatus } from '@shinkai_network/shinkai-node-state/v2/queries/getDockerStatus/useGetDockerStatus';
 import {
   Alert,
@@ -13,6 +14,7 @@ import { useAuth } from '../../../store/auth';
 
 export function DockerStatus() {
   const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
 
   const { data, refetch } = useGetDockerStatus({
     nodeAddress: auth?.node_address ?? '',
@@ -20,25 +22,22 @@ export function DockerStatus() {
 
   const statusConfig = {
     'not-installed': {
-      title: 'Docker Not Installed',
-      description:
-        'Docker is not installed on your system. Installing it will unlock better performance, faster processing, and an improved AI tool experience.',
+      title: t('dockerStatus.dockerNotInstalled'),
+      description: t('dockerStatus.dockerNotInstalledDescription'),
       color: 'bg-yellow-500',
       bgColor: 'bg-yellow-500/10',
       borderColor: 'border-yellow-500/20',
     },
     'not-running': {
-      title: 'Docker Installed but Not Running',
-      description:
-        'Docker is installed but not running. Start it now to improve tool execution speed, stability, and overall performance.',
+      title: t('dockerStatus.dockerInstalledButNotRunning'),
+      description: t('dockerStatus.dockerInstalledButNotRunningDescription'),
       color: 'bg-orange-500',
       bgColor: 'bg-orange-500/10',
       borderColor: 'border-orange-500/20',
     },
     running: {
-      title: 'Docker Running & Active',
-      description:
-        'Your tools are now running at full efficiency with Docker. Enjoy a smoother experience!',
+      title: t('dockerStatus.dockerRunning'),
+      description: t('dockerStatus.dockerRunningDescription'),
       color: 'bg-green-500',
       bgColor: 'bg-green-500/10',
       borderColor: 'border-green-500/20',

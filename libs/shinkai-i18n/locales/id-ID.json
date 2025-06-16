@@ -2,6 +2,56 @@
   "agents": {
     "chatWithAgent": "Chat dengan Agen",
     "configureAgent": "Konfigurasi Agen",
+    "create": {
+      "advanceOptionsLabel": "Opsi Lanjutan",
+      "agentName": "Nama Agen",
+      "agentNameHelperCreate": "Masukkan nama unik untuk agen AI Anda. Ini juga akan digunakan sebagai ID agen {{agentName}}",
+      "agentNameHelperEdit": "Anda dapat mengubah nama agen, tetapi ID agen tetap tidak berubah. ID Agen: {{agentName}}",
+      "contextSettingsLabel": "Pengaturan Konteks",
+      "cronExpression": "Ekspresi Cron",
+      "cronExpressionHelper": "Masukkan ekspresi cron misalnya: */30 * * * * (setiap 30 menit)",
+      "description": "Deskripsi",
+      "descriptionHelper": "Jelaskan secara singkat tujuan agen Anda (tidak digunakan oleh agen).",
+      "descriptionPlaceholder": "misalnya, Buat desain yang berpusat pada pengguna dan tingkatkan interaksi pengguna.",
+      "enableStream": "Aktifkan Stream",
+      "enableStreamDescription": "Mengalirkan respons agen saat dihasilkan",
+      "enableTools": "Aktifkan Alat",
+      "enableToolsDescription": "Memungkinkan agen menggunakan alat untuk menyelesaikan tugas.",
+      "knowledge": "Pengetahuan",
+      "knowledgeAddNewFiles": "Tambahkan File Baru",
+      "knowledgeBase": "Basis Pengetahuan",
+      "knowledgeBaseDescription": "Berikan agen Anda file AI lokal untuk meningkatkan pengetahuan dan kemampuannya.",
+      "knowledgeSearch": "Cari folder dan file ...",
+      "llmProviderDescription": "Pilih model yang akan menggerakkan agen Anda",
+      "llmProviderLabel": "Pilih AI",
+      "messageContextDescription": "(Opsional) Anda dapat mengontrol konteks pesan di sini dengan memaksa pesan statis dengan pesan pengguna misalnya {{user_message}}. Dan kemudian katakan: Chao amigo!. Ini akan menambahkan \"Dan kemudian katakan: Chao amigo!\" ke setiap pesan yang dikirim.",
+      "messageContextLabel": "Konteks Pesan",
+      "overrideConfigurations": "Timpakan Konfigurasi",
+      "persona": "Persona",
+      "saveAndTestAgent": "Simpan & Uji Agen",
+      "schedule": "Jadwal",
+      "scheduleAIInstructions": "Instruksi AI",
+      "scheduleAIInstructionsDescription": "Masukkan instruksi AI untuk eksekusi terjadwal...",
+      "scheduleAIInstructionsHelper": "Tulis prompt yang akan digunakan untuk eksekusi terjadwal.",
+      "scheduleDescription": "Atur kapan agen Anda akan secara otomatis menjalankan tugas.",
+      "scheduleNormalUsage": "Penggunaan Normal",
+      "scheduleNormalUsageDescription": "Agen siap merespons segera saat digunakan dalam obrolan.",
+      "scheduleRecurring": "Penggunaan Normal + Eksekusi Terjadwal",
+      "scheduleRecurringDescription": "Penggunaan normal dan juga mengonfigurasi waktu dan frekuensi tertentu untuk tugas agen misalnya, Agen Twitter yang melakukan alur kerja seperti memeriksa dan menjawab pesan setiap 5 menit.",
+      "selectedTools": "Alat Terpilih",
+      "systemInstructions": "Instruksi Sistem",
+      "systemInstructionsHelper": "Kontrol perilaku agen Anda dengan menambahkan instruksi kustom",
+      "systemInstructionsPlaceholder": "misalnya, Anda adalah asisten yang membantu yang dapat menjawab pertanyaan dan membantu dengan tugas.",
+      "temperature": "Suhu",
+      "temperatureDescription": "Suhu adalah parameter yang mempengaruhi ketidakpastian keluaran AI. Suhu yang lebih tinggi = lebih tidak terduga, suhu yang lebih rendah = lebih dapat diprediksi.",
+      "tools": "Alat",
+      "toolsCreateNewTool": "Buat Baru",
+      "toolsDescription": "Pilih alat & keterampilan mana yang dapat digunakan agen Anda untuk menyelesaikan tugas.",
+      "topK": "Top K",
+      "topKDescription": "Sesuaikan jumlah kata kunci untuk membuat urutan. Parameter ini mengatur sejauh mana bagian yang dihasilkan, mencegah terlalu banyak pengulangan. Memilih angka yang lebih tinggi menghasilkan narasi yang lebih panjang, sedangkan angka yang lebih kecil menjaga teks tetap singkat.",
+      "topP": "Top P",
+      "topPDescription": "Sesuaikan ambang probabilitas untuk meningkatkan relevansi hasil. Misalnya, ambang 0,9 bisa optimal untuk aplikasi yang terarah dan spesifik, sedangkan ambang 0,95 atau 0,97 mungkin lebih disukai untuk tugas yang memerlukan respons yang lebih luas dan kreatif."
+    },
     "createFirstAgent": "Buat Agen pertama Anda untuk mulai menjelajahi kekuatan AI.",
     "explore": "Jelajahi",
     "form": {
@@ -56,7 +106,9 @@
     "label": "Pencarian Konten File AI"
   },
   "aisPage": {
-    "description": "Kelola model AI lokal dan cloud dengan mudah, beralih di antaranya sesuai kebutuhan alur kerja Anda."
+    "description": "Kelola model AI lokal dan cloud dengan mudah, beralih di antaranya sesuai kebutuhan alur kerja Anda.",
+    "label": "Model AI",
+    "shortDescription": "Jelajahi berbagai model AI"
   },
   "analytics": {
     "bulletPoints": {
@@ -155,6 +207,7 @@
     "alreadyHaveNode": "Sudah memiliki Node?",
     "back": "Kembali",
     "cancel": "Batal",
+    "clear": "Bersihkan",
     "clearSearch": "Hapus Pencarian",
     "clickToUpload": "Klik untuk mengunggah atau seret dan lepas",
     "comingSoon": "Segera hadir - Akhir Agustus",
@@ -299,6 +352,14 @@
     "exportConnection": "Sebelum melanjutkan, silakan <Link>ekspor koneksi Anda</Link> untuk memulihkan koneksi Anda kapan saja.",
     "modalDescription": "Apakah Anda yakin ingin memutuskan koneksi? Ini akan menghapus data Anda secara permanen.",
     "modalTitle": "Putuskan Koneksi Shinkai"
+  },
+  "dockerStatus": {
+    "dockerInstalledButNotRunning": "Docker Terinstal tetapi Tidak Berjalan",
+    "dockerInstalledButNotRunningDescription": "Docker terinstal tetapi tidak berjalan. Mulai sekarang untuk meningkatkan kecepatan eksekusi alat, stabilitas, dan kinerja keseluruhan.",
+    "dockerNotInstalled": "Docker Tidak Terinstal",
+    "dockerNotInstalledDescription": "Docker tidak terinstal di sistem Anda. Menginstalnya akan membuka kinerja yang lebih baik, pemrosesan yang lebih cepat, dan pengalaman alat AI yang lebih baik.",
+    "dockerRunning": "Docker Berjalan & Aktif",
+    "dockerRunningDescription": "Alat Anda sekarang berjalan dengan efisiensi penuh dengan Docker. Nikmati pengalaman yang lebih lancar!"
   },
   "errorBoundary": {
     "genericError": "Terjadi kesalahan. Coba segarkan aplikasi."
@@ -894,6 +955,7 @@
     "installFromStore": "Instal dari Toko",
     "label": "Alat-alat",
     "lookingForMoreTools": "Mencari lebih banyak alat?",
+    "newTool": "Alat Baru",
     "noToolsInCategory": "Tidak ada alat dalam kategori ini. Buat alat baru atau instal dari App Store.",
     "notifications": {
       "codeGenerationComplete": {

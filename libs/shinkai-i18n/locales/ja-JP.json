@@ -2,6 +2,56 @@
   "agents": {
     "chatWithAgent": "エージェントとチャット",
     "configureAgent": "エージェントを設定",
+    "create": {
+      "advanceOptionsLabel": "詳細オプション",
+      "agentName": "エージェント名",
+      "agentNameHelperCreate": "AIエージェントのユニークな名前を入力してください。これがエージェントIDとしても使用されます {{agentName}}",
+      "agentNameHelperEdit": "エージェント名は変更できますが、エージェントIDは変更されません。エージェントID: {{agentName}}",
+      "contextSettingsLabel": "コンテキスト設定",
+      "cronExpression": "Cron式",
+      "cronExpressionHelper": "Cron式を入力してください。例: */30 * * * * (30分ごと)",
+      "description": "説明",
+      "descriptionHelper": "エージェントの目的を簡潔に説明してください（エージェントには使用されません）。",
+      "descriptionPlaceholder": "例: ユーザー中心のデザインを作成し、ユーザーインタラクションを改善します。",
+      "enableStream": "ストリームを有効にする",
+      "enableStreamDescription": "エージェントの応答を生成しながらストリーミングします",
+      "enableTools": "ツールを有効にする",
+      "enableToolsDescription": "エージェントがタスクを完了するためにツールを使用できるようにします。",
+      "knowledge": "知識",
+      "knowledgeAddNewFiles": "新しいファイルを追加",
+      "knowledgeBase": "ナレッジベース",
+      "knowledgeBaseDescription": "エージェントの知識と能力を向上させるために、ローカルAIファイルを提供します。",
+      "knowledgeSearch": "フォルダとファイルを検索 ...",
+      "llmProviderDescription": "エージェントを動かすモデルを選択してください",
+      "llmProviderLabel": "AIを選択",
+      "messageContextDescription": "(オプション) ユーザーメッセージに静的メッセージを強制することで、メッセージコンテキストをここで制御できます。例: {{user_message}}。そして言う: チャオ、アミーゴ！。これにより、送信されるすべてのメッセージに「そして言う: チャオ、アミーゴ！」が追加されます。",
+      "messageContextLabel": "メッセージコンテキスト",
+      "overrideConfigurations": "設定を上書き",
+      "persona": "ペルソナ",
+      "saveAndTestAgent": "エージェントを保存してテスト",
+      "schedule": "スケジュール",
+      "scheduleAIInstructions": "AI指示",
+      "scheduleAIInstructionsDescription": "スケジュール実行のためのAI指示を入力してください...",
+      "scheduleAIInstructionsHelper": "スケジュール実行に使用されるプロンプトを書いてください。",
+      "scheduleDescription": "エージェントが自動的にタスクを実行する時刻を設定します。",
+      "scheduleNormalUsage": "通常の使用",
+      "scheduleNormalUsageDescription": "チャットで使用されたときにエージェントが即座に応答できるようになります。",
+      "scheduleRecurring": "通常の使用 + スケジュール実行",
+      "scheduleRecurringDescription": "通常の使用に加えて、エージェントタスクの特定の時間と頻度を設定します。例: 5分ごとにメッセージを確認し、応答するTwitterエージェントのようなワークフロー。",
+      "selectedTools": "選択されたツール",
+      "systemInstructions": "システム指示",
+      "systemInstructionsHelper": "カスタム指示を追加してエージェントの動作を制御します",
+      "systemInstructionsPlaceholder": "例: あなたは質問に答え、タスクを手伝う有用なアシスタントです。",
+      "temperature": "温度",
+      "temperatureDescription": "温度はAIの出力のランダム性に影響を与えるパラメータです。高い温度 = より予測不可能、低い温度 = より予測可能。",
+      "tools": "ツール",
+      "toolsCreateNewTool": "新しいツールを作成",
+      "toolsDescription": "エージェントがタスクを完了するために使用できるツールとスキルを選択します。",
+      "topK": "トップK",
+      "topKDescription": "シーケンスを作成するためのキーワードの数を調整します。このパラメータは生成される文章の範囲を制御し、過度の繰り返しを防ぎます。高い数値を選択すると長い物語が生成され、低い数値を選択するとテキストが簡潔になります。",
+      "topP": "トップP",
+      "topPDescription": "結果の関連性を高めるために確率の閾値を調整します。例えば、0.9の閾値は特定のアプリケーションに最適かもしれませんが、0.95または0.97の閾値はより広範で創造的な応答が必要なタスクに好まれるかもしれません。"
+    },
     "createFirstAgent": "AIの力を探求するために最初のエージェントを作成してください。",
     "explore": "探索する",
     "form": {
@@ -56,7 +106,9 @@
     "label": "AIファイルコンテンツ検索"
   },
   "aisPage": {
-    "description": "クラウドとローカルのAIモデルを簡単に管理し、ワークフローに合わせて切り替えられます。"
+    "description": "クラウドとローカルのAIモデルを簡単に管理し、ワークフローに合わせて切り替えられます。",
+    "label": "AIモデル",
+    "shortDescription": "幅広いAIモデルを探索してください"
   },
   "analytics": {
     "bulletPoints": {
@@ -155,6 +207,7 @@
     "alreadyHaveNode": "すでにノードをお持ちですか？",
     "back": "戻る",
     "cancel": "キャンセル",
+    "clear": "クリア",
     "clearSearch": "検索をクリア",
     "clickToUpload": "クリックしてアップロードするか、ドラッグアンドドロップ",
     "comingSoon": "近日公開 - 8月末",
@@ -299,6 +352,14 @@
     "exportConnection": "続行する前に、<Link>接続をエクスポート</Link>して、いつでも接続を復元できるようにしてください。",
     "modalDescription": "本当に接続を切断してもよろしいですか？これにより、データが永久に削除されます。",
     "modalTitle": "新界との接続を切断"
+  },
+  "dockerStatus": {
+    "dockerInstalledButNotRunning": "Dockerはインストールされていますが、実行されていません",
+    "dockerInstalledButNotRunningDescription": "Dockerはインストールされていますが、実行されていません。今すぐ起動して、ツールの実行速度、安定性、全体的なパフォーマンスを向上させましょう。",
+    "dockerNotInstalled": "Dockerがインストールされていません",
+    "dockerNotInstalledDescription": "システムにDockerがインストールされていません。インストールすることで、パフォーマンスが向上し、処理が速くなり、AIツールの体験が改善されます。",
+    "dockerRunning": "Dockerが実行中でアクティブです",
+    "dockerRunningDescription": "Dockerを使用して、ツールがフル効率で実行されています。よりスムーズな体験をお楽しみください！"
   },
   "errorBoundary": {
     "genericError": "何かがうまくいきませんでした。アプリを更新してみてください。"
@@ -894,6 +955,7 @@
     "installFromStore": "ストアからインストール",
     "label": "深海ツール",
     "lookingForMoreTools": "さらにツールを探していますか？",
+    "newTool": "新しいツール",
     "noToolsInCategory": "このカテゴリにはツールがありません。新しいツールを作成するか、App Storeからインストールしてください。",
     "notifications": {
       "codeGenerationComplete": {
