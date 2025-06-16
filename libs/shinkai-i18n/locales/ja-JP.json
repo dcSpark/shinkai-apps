@@ -1004,7 +1004,7 @@
       "zipDescription": "Zipファイルからツールをインポートします。"
     },
     "installFromStore": "ストアからインストール",
-    "label": "深海ツール",
+    "label": "ツール",
     "lookingForMoreTools": "さらにツールを探していますか？",
     "newTool": "新しいツール",
     "noToolsInCategory": "このカテゴリにはツールがありません。新しいツールを作成するか、App Storeからインストールしてください。",

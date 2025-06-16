@@ -763,7 +763,7 @@ export default {
     },
   },
   tools: {
-    label: 'Shinkai Tools',
+    label: 'Tools',
     newTool: 'New Tool',
     create: {
       title: 'Build AI Tools in Minutes',

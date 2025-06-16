@@ -1004,7 +1004,7 @@
       "zipDescription": "从 zip 文件导入工具。"
     },
     "installFromStore": "从商店安装",
-    "label": "深海工具",
+    "label": "工具",
     "lookingForMoreTools": "寻找更多工具？",
     "newTool": "新工具",
     "noToolsInCategory": "该类别中没有工具。创建一个新的工具或从应用商店安装。",
