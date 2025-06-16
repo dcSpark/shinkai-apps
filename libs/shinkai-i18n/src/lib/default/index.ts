@@ -563,6 +563,10 @@ export default {
     viewDetails: 'View Details',
     selectItem: 'Select an item to view details',
     about: 'About',
+    refresh: 'Refresh',
+    tryAgain: 'Try again',
+    none: 'None',
+    advanced: 'Advanced',
   },
   quickConnection: {
     label: 'Quick Connection',
@@ -906,6 +910,36 @@ export default {
   },
   agents: {
     systemInstructions: 'System Instructions',
+    form: {
+      newChat: 'New Chat',
+      chatHistory: 'Chat History',
+      closeChat: 'Close Chat',
+      emptyChatTitle: 'Chat with your Agent',
+      emptyChatDescription: 'Send a message to start chatting with this agent',
+      enter: 'Enter',
+      enterToSend: 'to send',
+      messagePlaceholder: 'Send message...',
+      updateAgent: 'Update Agent',
+      createAgent: 'Create New Agent',
+      openChat: 'Open Chat',
+    },
+    importModal: {
+      title: 'Import Agent',
+      chooseFile: 'Choose a zip file',
+      action: 'Import',
+    },
+    publishDialog: {
+      open: 'Publish Agent',
+      title: 'Publish {{name}}',
+      paymentAddress: 'Payment Address',
+      asset: 'Asset',
+      amount: 'Amount',
+      description: 'Description',
+      selectAgent: 'Select Agent',
+      searchAgents: 'Search agents',
+      publish: 'Publish',
+      published: 'Published',
+    },
   },
   agentsPage: {
     description:
@@ -933,5 +967,72 @@ export default {
       'Expose your AI Tools through MCP to enable seamless integration with other MCP Clients \nand expand their capabilities.',
     helpfulLinks:
       'You can find helpful MCPs to connect with Shinkai at smithery.ai and composio.dev.',
+  },
+  errorBoundary: {
+    genericError: 'Something went wrong. Try refreshing the app.',
+  },
+  videoBanner: {
+    unsupported: 'Your browser does not support the video tag.',
+  },
+  appReset: {
+    title: 'App Reset Required',
+    description:
+      "We're currently in beta and we made some significant updates to improve your experience. To apply these updates, we need to reset your data. If you need assistance, please contact our support team.",
+    action: 'Reset App',
+  },
+  playgroundTool: {
+    metadataError: 'Tool metadata failed. Try generating again.',
+    prismError: 'The code editor encountered an error.',
+  },
+  prompt: {
+    libraryTitle: 'Prompt Library',
+    libraryDescription: 'Choose a prompt from the library to get started.',
+    drawer: {
+      createTitle: 'Create custom prompt',
+      updateTitle: 'Update Prompt',
+    },
+    fields: {
+      name: 'Prompt Name',
+      content: 'Prompt Content',
+    },
+    actions: {
+      create: 'Create Prompt',
+      update: 'Update Prompt',
+    },
+    successCreate: 'Prompt created successfully',
+    failCreate: 'Failed to create prompt',
+    successUpdate: 'Prompt updated successfully',
+    failUpdate: 'Failed to update prompt',
+  },
+  cronTask: {
+    taskDescription: 'Task Description',
+    taskDescriptionHelper: "Briefly describe your agent's purpose (not used by the agent).",
+    taskPrompt: 'Task Prompt',
+    promptPlaceholder: 'e.g. Give me top hacker news stories',
+    promptExample: 'e.g. Give me top hacker news stories',
+    cronExpression: 'Cron Expression',
+    cronExample: 'Enter a cron expression eg: */30 * * * * (every 30 min)',
+    cronWillRun: 'This cron will run {{schedule}} ({{expression}})',
+    scheduleOptions: {
+      every5Min: 'every 5 min',
+      every5Hours: 'every 5 hours',
+      everyMonday8am: 'every monday at 8am',
+      everyJanuary1st12am: 'every january 1st at 12am',
+      every1stMonth12pm: 'every 1st of the month at 12pm',
+    },
+    aiModelConfiguration: 'AI Model Configuration',
+    aiAgent: 'AI / Agent',
+    forceToolUsage: 'Force Tool Usage (Optional)',
+    enableStream: 'Enable Stream',
+    enableTools: 'Enable Tools',
+    temperature: 'Temperature',
+    temperatureInfo:
+      'Temperature is a parameter that affects the randomness of AI outputs. Higher temp = more unexpected, lower temp = more predictable.',
+    topP: 'Top P',
+    topPInfo:
+      'Adjust the probability threshold to increase the relevance of results. For example, a threshold of 0.9 could be optimal for targeted, specific applications, whereas a threshold of 0.95 or 0.97 might be preferred for tasks that require broader, more creative responses.',
+    topK: 'Top K',
+    topKInfo:
+      'Adjust the count of key words for creating sequences. This parameter governs the extent of the generated passage, forestalling too much repetition. Selecting a higher figure yields longer narratives, whereas a smaller figure keeps the text brief.',
   },
 };

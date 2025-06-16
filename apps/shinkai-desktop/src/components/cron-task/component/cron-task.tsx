@@ -279,8 +279,8 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
               render={({ field }) => (
                 <TextField
                   field={field}
-                  helperMessage="Briefly describe your agent's purpose (not used by the agent)."
-                  label="Task Description"
+                  helperMessage={t('cronTask.taskDescriptionHelper')}
+                  label={t('cronTask.taskDescription')}
                 />
               )}
             />
@@ -289,19 +289,17 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
               name="jobMessage.content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Task Prompt</FormLabel>
+                  <FormLabel>{t('cronTask.taskPrompt')}</FormLabel>
                   <FormControl>
                     <Textarea
                       className="!min-h-[130px] text-sm"
-                      placeholder="e.g. Give me top hacker news stories"
+                      placeholder={t('cronTask.promptPlaceholder')}
                       resize="vertical"
                       spellCheck={false}
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    e.g. Give me top hacker news stories
-                  </FormDescription>
+                  <FormDescription>{t('cronTask.promptExample')}</FormDescription>
                 </FormItem>
               )}
             />
@@ -311,8 +309,8 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
               render={({ field }) => (
                 <TextField
                   field={field}
-                  helperMessage="Enter a cron expression eg: */30 * * * * (every 30 min) "
-                  label="Cron Expression"
+                  helperMessage={t('cronTask.cronExample')}
+                  label={t('cronTask.cronExpression')}
                 />
               )}
             />
@@ -320,33 +318,33 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
               <div className="flex items-center gap-2 text-xs">
                 <ScheduledTasksIcon className="size-4" />
                 <span>
-                  This cron will run {readableCronExpression.toLowerCase()}{' '}
-                  <span className="text-gray-80 font-mono">
-                    ({form.watch('cronExpression')})
-                  </span>
+                  {t('cronTask.cronWillRun', {
+                    schedule: readableCronExpression.toLowerCase(),
+                    expression: form.watch('cronExpression'),
+                  })}
                 </span>
               </div>
             )}
-            <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2">
               {[
                 {
-                  label: 'every 5 min',
+                  label: t('cronTask.scheduleOptions.every5Min'),
                   cron: '*/5 * * * *',
                 },
                 {
-                  label: 'every 5 hours',
+                  label: t('cronTask.scheduleOptions.every5Hours'),
                   cron: '0 */5 * * *',
                 },
                 {
-                  label: 'every monday at 8am',
+                  label: t('cronTask.scheduleOptions.everyMonday8am'),
                   cron: '0 8 * * 1',
                 },
                 {
-                  label: 'every january 1st at 12am',
+                  label: t('cronTask.scheduleOptions.everyJanuary1st12am'),
                   cron: '0 0 1 1 *',
                 },
                 {
-                  label: 'every 1st of the month at 12pm',
+                  label: t('cronTask.scheduleOptions.every1stMonth12pm'),
                   cron: '0 12 1 * *',
                 },
               ].map((item) => (
@@ -367,12 +365,12 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
             <div className="space-y-4">
               <div className="bg-official-gray-900 space-y-6 rounded-lg px-4 py-4 pb-7">
                 <span className="flex-1 items-center gap-1 truncate py-2 text-left text-xs font-semibold text-gray-50">
-                  AI Model Configuration
+                  {t('cronTask.aiModelConfiguration')}
                 </span>
 
                 <div className="space-y-4">
                   <div className="grid grid-cols-[1fr_auto] items-center">
-                    <span className="text-gray-80 text-xs">AI / Agent</span>
+                    <span className="text-gray-80 text-xs">{t('cronTask.aiAgent')}</span>
                     <AIModelSelector
                       onValueChange={(value) => {
                         form.setValue('llmOrAgentId', value);
@@ -382,7 +380,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                   </div>
                   <div className="grid grid-cols-[1fr_auto] items-center">
                     <span className="text-gray-80 text-xs">
-                      Force Tool Usage (Optional)
+                      {t('cronTask.forceToolUsage')}
                     </span>
 
                     <DropdownMenu>
@@ -423,7 +421,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                           >
                             <ToolsIcon className="h-3.5 w-3.5 shrink-0" />
                             <div className="flex flex-col gap-1">
-                              <span className="text-xs">None</span>
+                              <span className="text-xs">{t('common.none')}</span>
                             </div>
                           </DropdownMenuRadioItem>
                           {isToolListSuccess &&
@@ -450,7 +448,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
 
                 <Collapsible className="space-y-4">
                   <CollapsibleTrigger className="text-official-gray-400 hover:text-official-gray-300 flex items-center gap-1 text-sm [&[data-state=open]>svg]:rotate-90">
-                    Advanced
+                    {t('common.advanced')}
                     <ChevronDownIcon className="h-3 w-3" />
                   </CollapsibleTrigger>
                   <CollapsibleContent className="space-y-4">
@@ -486,7 +484,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                             </FormControl>
                             <div className="space-y-1 leading-none">
                               <FormLabel className="static space-y-1.5 text-sm text-white">
-                                Enable Stream
+                                {t('cronTask.enableStream')}
                               </FormLabel>
                             </div>
                           </div>
@@ -507,7 +505,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                             </FormControl>
                             <div className="space-y-1 leading-none">
                               <FormLabel className="static space-y-1.5 text-sm text-white">
-                                Enable Tools
+                                {t('cronTask.enableTools')}
                               </FormLabel>
                             </div>
                           </div>
@@ -525,7 +523,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                                 <div className="grid w-full gap-4">
                                   <div className="flex items-center justify-between">
                                     <Label htmlFor="temperature">
-                                      Temperature
+                                      {t('cronTask.temperature')}
                                     </Label>
                                     <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
                                       {field.value}
@@ -549,9 +547,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                                 className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
                                 side="left"
                               >
-                                Temperature is a parameter that affects the
-                                randomness of AI outputs. Higher temp = more
-                                unexpected, lower temp = more predictable.
+                                {t('cronTask.temperatureInfo')}
                               </HoverCardContent>
                             </HoverCard>
                           </FormControl>
@@ -568,7 +564,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                               <HoverCardTrigger asChild>
                                 <div className="grid w-full gap-4">
                                   <div className="flex items-center justify-between">
-                                    <Label htmlFor="topP">Top P</Label>
+                                    <Label htmlFor="topP">{t('cronTask.topP')}</Label>
                                     <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
                                       {field.value}
                                     </span>
@@ -592,12 +588,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                                 className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
                                 side="left"
                               >
-                                Adjust the probability threshold to increase the
-                                relevance of results. For example, a threshold
-                                of 0.9 could be optimal for targeted, specific
-                                applications, whereas a threshold of 0.95 or
-                                0.97 might be preferred for tasks that require
-                                broader, more creative responses.
+                                {t('cronTask.topPInfo')}
                               </HoverCardContent>
                             </HoverCard>
                           </FormControl>
@@ -614,7 +605,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                               <HoverCardTrigger asChild>
                                 <div className="grid w-full gap-4">
                                   <div className="flex items-center justify-between">
-                                    <Label htmlFor="topK">Top K</Label>
+                                    <Label htmlFor="topK">{t('cronTask.topK')}</Label>
                                     <span className="text-muted-foreground hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
                                       {field.value}
                                     </span>
@@ -637,12 +628,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
                                 className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
                                 side="left"
                               >
-                                Adjust the count of key words for creating
-                                sequences. This parameter governs the extent of
-                                the generated passage, forestalling too much
-                                repetition. Selecting a higher figure yields
-                                longer narratives, whereas a smaller figure
-                                keeps the text brief.
+                                {t('cronTask.topKInfo')}
                               </HoverCardContent>
                             </HoverCard>
                           </FormControl>

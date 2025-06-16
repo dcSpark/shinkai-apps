@@ -10,6 +10,7 @@ import {
   AlertDialogTitle,
   Button,
 } from '@shinkai_network/shinkai-ui';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { submitRegistrationNoCodeError } from '@shinkai_network/shinkai-ui/helpers';
 import { XIcon } from 'lucide-react';
 import { useNavigate } from 'react-router';
@@ -21,6 +22,7 @@ import {
 } from '../lib/shinkai-node-manager/shinkai-node-manager-client';
 import { useAuth } from '../store/auth';
 import { useShinkaiNodeManager } from '../store/shinkai-node-manager';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 
 export const ResetConnectionDialog = ({
   isOpen,
@@ -31,6 +33,7 @@ export const ResetConnectionDialog = ({
   onOpenChange: (open: boolean) => void;
   allowClose?: boolean;
 }) => {
+  const { t } = useTranslation();
   const { mutateAsync: shinkaiNodeKill, isPending: isShinkaiNodeKillPending } =
     useShinkaiNodeKillMutation();
   const {
@@ -103,15 +106,11 @@ export const ResetConnectionDialog = ({
           </AlertDialogCancel>
         )}
         <AlertDialogHeader>
-          <AlertDialogTitle>App Reset Required</AlertDialogTitle>
+          <AlertDialogTitle>{t('appReset.title')}</AlertDialogTitle>
           <AlertDialogDescription>
             <div className="flex flex-col space-y-3 text-left text-white/70">
               <div className="text-sm">
-                We&apos;re currently in beta and we made some significant
-                updates to improve your experience. To apply these updates, we
-                need to reset your data.
-                <br /> <br />
-                If you need assistance, please contact our support team.
+                {t('appReset.description')}
               </div>
             </div>
           </AlertDialogDescription>
@@ -125,7 +124,7 @@ export const ResetConnectionDialog = ({
             size="sm"
             variant={'destructive'}
           >
-            Reset App
+            {t('appReset.action')}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -39,6 +39,7 @@ import {
 import React, { createContext, useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { z } from 'zod';
 import { createStore, useStore } from 'zustand';
 
@@ -94,6 +95,7 @@ const PromptSearchDrawer = () => {
     (state) => state.setSelectedPromptEdit,
   );
   const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 600);
   const isSearchQuerySynced = searchQuery === debouncedSearchQuery;
@@ -132,9 +134,9 @@ const PromptSearchDrawer = () => {
       <SheetContent side="right">
         <CreatePromptDrawer />
         <SheetHeader className="mb-4 p-0">
-          <SheetTitle>Prompt Library</SheetTitle>
+          <SheetTitle>{t('prompt.libraryTitle')}</SheetTitle>
           <SheetDescription>
-            <p>Choose a prompt from the library to get started.</p>
+            <p>{t('prompt.libraryDescription')}</p>
           </SheetDescription>
         </SheetHeader>
         <SearchInput
@@ -295,6 +297,7 @@ export function CreatePromptDrawer({
   onPromptCreated?: (prompt: Prompt) => void;
 }) {
   const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
   const createPromptForm = useForm<CreatePromptFormSchema>({
     resolver: zodResolver(createPromptFormSchema),
   });
@@ -302,7 +305,7 @@ export function CreatePromptDrawer({
 
   const { mutateAsync: createPrompt, isPending } = useCreatePrompt({
     onSuccess: (data) => {
-      toast.success('Prompt created successfully');
+      toast.success(t('prompt.successCreate'));
       setIsPromptDrawerOpen(false);
       createPromptForm.reset({
         promptContent: '',
@@ -311,7 +314,7 @@ export function CreatePromptDrawer({
       onPromptCreated?.(data);
     },
     onError: (error) => {
-      toast.error('Failed to create prompt', {
+      toast.error(t('prompt.failCreate'), {
         description: error.response?.data?.message ?? error.message,
       });
     },
@@ -339,7 +342,7 @@ export function CreatePromptDrawer({
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Create custom prompt</DialogTitle>
+          <DialogTitle>{t('prompt.drawer.createTitle')}</DialogTitle>
           <div>
             <Form {...createPromptForm}>
               <form
@@ -350,7 +353,7 @@ export function CreatePromptDrawer({
                   control={createPromptForm.control}
                   name="promptName"
                   render={({ field }) => (
-                    <TextField autoFocus field={field} label="Prompt Name" />
+                    <TextField autoFocus field={field} label={t('prompt.fields.name')} />
                   )}
                 />
                 <FormField
@@ -358,7 +361,7 @@ export function CreatePromptDrawer({
                   name="promptContent"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Prompt Content</FormLabel>
+                      <FormLabel>{t('prompt.fields.content')}</FormLabel>
                       <FormControl>
                         <div className="space-y-2">
                           <Textarea
@@ -390,7 +393,7 @@ export function CreatePromptDrawer({
                     type="button"
                     variant="outline"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </Button>
                   <Button
                     disabled={isPending}
@@ -399,7 +402,7 @@ export function CreatePromptDrawer({
                     size="xs"
                     type="submit"
                   >
-                    Create Prompt
+                    {t('prompt.actions.create')}
                   </Button>
                 </div>
               </form>
@@ -433,6 +436,7 @@ function UpdatePromptDrawer({
   setOpen: (isOpen: boolean) => void;
 }) {
   const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
   const createPromptForm = useForm<CreatePromptFormSchema>({
     resolver: zodResolver(createPromptFormSchema),
     defaultValues: {
@@ -447,11 +451,11 @@ function UpdatePromptDrawer({
 
   const { mutateAsync: updatePrompt, isPending } = useUpdatePrompt({
     onSuccess: () => {
-      toast.success('Prompt updated successfully');
+      toast.success(t('prompt.successUpdate'));
       setOpen(false);
     },
     onError: (error) => {
-      toast.error('Failed to update prompt', {
+      toast.error(t('prompt.failUpdate'), {
         description: error.message,
       });
     },
@@ -474,7 +478,7 @@ function UpdatePromptDrawer({
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Update Prompt</DialogTitle>
+          <DialogTitle>{t('prompt.drawer.updateTitle')}</DialogTitle>
           <div>
             <Form {...createPromptForm}>
               <form
@@ -485,7 +489,7 @@ function UpdatePromptDrawer({
                   control={createPromptForm.control}
                   name="promptName"
                   render={({ field }) => (
-                    <TextField autoFocus field={field} label="Prompt Name" />
+                    <TextField autoFocus field={field} label={t('prompt.fields.name')} />
                   )}
                 />
                 <FormField
@@ -493,7 +497,7 @@ function UpdatePromptDrawer({
                   name="promptContent"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Prompt Content</FormLabel>
+                      <FormLabel>{t('prompt.fields.content')}</FormLabel>
                       <FormControl>
                         <div className="space-y-2">
                           <Textarea
@@ -524,7 +528,7 @@ function UpdatePromptDrawer({
                     type="button"
                     variant="outline"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </Button>
                   <Button
                     disabled={isPending}
@@ -533,7 +537,7 @@ function UpdatePromptDrawer({
                     size="xs"
                     type="submit"
                   >
-                    Update Prompt
+                    {t('prompt.actions.update')}
                   </Button>
                 </div>
               </form>

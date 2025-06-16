@@ -353,11 +353,11 @@ function AgentSideChat({
             {/* Title */}
             <h2 className="truncate text-base font-medium">
               {chatInboxId === null
-                ? 'New Chat'
+                ? t('agents.form.newChat')
                 : agentInboxes?.find((inbox) => inbox.inbox_id === chatInboxId)
                     ?.custom_name ||
                   chatInboxId ||
-                  'New Chat'}
+                  t('agents.form.newChat')}
             </h2>
 
             {/* Buttons Group */}
@@ -375,7 +375,7 @@ function AgentSideChat({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>New Chat</p>
+                  <p>{t('agents.form.newChat')}</p>
                 </TooltipContent>
               </Tooltip>
 
@@ -399,7 +399,7 @@ function AgentSideChat({
                     </SelectPrimitive.Trigger>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Chat History</p>
+                  <p>{t('agents.form.chatHistory')}</p>
                   </TooltipContent>
                 </Tooltip>
                 <SelectContent className="w-[300px]">
@@ -432,7 +432,7 @@ function AgentSideChat({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Close Chat</p>
+                  <p>{t('agents.form.closeChat')}</p>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -444,9 +444,11 @@ function AgentSideChat({
                 <span aria-hidden className="text-4xl">
                   🤖
                 </span>
-                <h2 className="text-base font-medium">Chat with your Agent</h2>
+                <h2 className="text-base font-medium">
+                  {t('agents.form.emptyChatTitle')}
+                </h2>
                 <p className="text-official-gray-400">
-                  Send a message to start chatting with this agent
+                  {t('agents.form.emptyChatDescription')}
                 </p>
               </div>
             ) : (
@@ -471,7 +473,8 @@ function AgentSideChat({
               bottomAddons={
                 <div className="relative z-50 flex items-end gap-3 self-end p-2">
                   <span className="pb-1 font-light text-gray-100">
-                    <span className="font-medium">Enter</span> to send
+                    <span className="font-medium">{t('agents.form.enter')}</span>{' '}
+                    {t('agents.form.enterToSend')}
                   </span>
 
                   <Button
@@ -490,7 +493,7 @@ function AgentSideChat({
               disabled={isLoadingMessage}
               onChange={(value) => setMessage(value)}
               onSubmit={handleSendMessage}
-              placeholder="Send message..."
+              placeholder={t('agents.form.messagePlaceholder')}
               value={message}
             />
           </div>
@@ -1146,7 +1149,9 @@ function AgentForm({ mode }: AgentFormProps) {
                 <span className="sr-only">{t('common.back')}</span>
               </Link>
               <h1 className="font-clash text-2xl font-medium">
-                {mode === 'edit' ? 'Update Agent' : 'Create New Agent'}
+                {mode === 'edit'
+                  ? t('agents.form.updateAgent')
+                  : t('agents.form.createAgent')}
               </h1>
             </div>
             {mode === 'edit' && agent && (
@@ -1172,7 +1177,7 @@ function AgentForm({ mode }: AgentFormProps) {
                       strokeLinejoin="round"
                     />
                   </svg>
-                  Save
+                  {t('common.save')}
                 </Button>
                 <Button
                   className="flex items-center gap-2"
@@ -1181,7 +1186,9 @@ function AgentForm({ mode }: AgentFormProps) {
                   variant="outline"
                 >
                   <MessageSquare className="h-4 w-4" />
-                  {isSideChatOpen ? 'Close Chat' : 'Open Chat'}
+                  {isSideChatOpen
+                    ? t('agents.form.closeChat')
+                    : t('agents.form.openChat')}
                 </Button>
               </div>
             )}

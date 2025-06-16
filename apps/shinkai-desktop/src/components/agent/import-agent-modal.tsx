@@ -96,7 +96,7 @@ export default function ImportAgentModal() {
         )}
       >
         <ImportIcon className="size-4" />
-        <span>Import </span>
+        <span>{t('agents.importModal.action')} </span>
       </DialogTrigger>
       <DialogContent
         className="max-w-[500px]"
@@ -117,7 +117,9 @@ export default function ImportAgentModal() {
         <div className="px-2 pt-2.5 antialiased">
           <div>
             <DialogHeader>
-              <DialogTitle className="text-center">Import Agent</DialogTitle>
+              <DialogTitle className="text-center">
+                {t('agents.importModal.title')}
+              </DialogTitle>
             </DialogHeader>
             <Form {...importAgentForm}>
               <form
@@ -135,7 +137,7 @@ export default function ImportAgentModal() {
                       <FormControl>
                         <FileUploader
                           accept={['zip'].join(',')}
-                          descriptionText="Choose a zip file"
+                          descriptionText={t('agents.importModal.chooseFile')}
                           maxFiles={1}
                           onChange={(acceptedFiles) => {
                             field.onChange(acceptedFiles);
@@ -156,7 +158,7 @@ export default function ImportAgentModal() {
                     size="auto"
                     type="submit"
                   >
-                    Import
+                    {t('agents.importModal.action')}
                   </Button>
                 </DialogFooter>
               </form>

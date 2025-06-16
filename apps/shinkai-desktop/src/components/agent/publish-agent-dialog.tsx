@@ -106,53 +106,55 @@ export default function PublishAgentDialog() {
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          Publish Agent
+          {t('agents.publishDialog.open')}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[600px]">
         {selected ? (
           <>
             <DialogHeader>
-              <DialogTitle>Publish {selected.name}</DialogTitle>
+              <DialogTitle>
+                {t('agents.publishDialog.title', { name: selected.name })}
+              </DialogTitle>
             </DialogHeader>
             <div className="mt-4 space-y-2">
               <Input
-                placeholder="Payment Address"
+                placeholder={t('agents.publishDialog.paymentAddress')}
                 value={payTo}
                 onChange={(e) => setPayTo(e.target.value)}
               />
               <Input
-                placeholder="Asset"
+                placeholder={t('agents.publishDialog.asset')}
                 value={asset}
                 onChange={(e) => setAsset(e.target.value)}
               />
               <Input
-                placeholder="Amount"
+                placeholder={t('agents.publishDialog.amount')}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
               />
               <Input
-                placeholder="Description"
+                placeholder={t('agents.publishDialog.description')}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
             <DialogFooter className="mt-4 flex justify-end gap-2">
               <Button variant="secondary" onClick={() => setSelected(null)}>
-                Back
+                {t('common.back')}
               </Button>
               <Button onClick={handlePublish} isLoading={isPending}>
-                Publish
+                {t('agents.publishDialog.publish')}
               </Button>
             </DialogFooter>
           </>
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>Select Agent</DialogTitle>
+              <DialogTitle>{t('agents.publishDialog.selectAgent')}</DialogTitle>
             </DialogHeader>
             <SearchInput
-              placeholder="Search agents"
+              placeholder={t('agents.publishDialog.searchAgents')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               classNames={{ input: 'bg-transparent' }}
@@ -171,11 +173,11 @@ export default function PublishAgentDialog() {
                   </div>
                   {publishedKeys.has(tool.tool_router_key) ? (
                     <Button size="sm" variant="secondary" disabled>
-                      Published
+                      {t('agents.publishDialog.published')}
                     </Button>
                   ) : (
                     <Button size="sm" onClick={() => setSelected(tool)}>
-                      Publish
+                      {t('agents.publishDialog.publish')}
                     </Button>
                   )}
                 </div>

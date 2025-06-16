@@ -1,18 +1,20 @@
 import { type ComponentProps, type ReactNode } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 
 /**
  * Fallback component shown when the Prism editor crashes
  */
 const PrismEditorFallback = ({ resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-4 text-center text-xs">
-      <p>The code editor encountered an error.</p>
+      <p>{t('playgroundTool.prismError')}</p>
       <button
         className="rounded-md bg-gray-600 px-3 py-1 hover:bg-gray-500"
         onClick={resetErrorBoundary}
       >
-        Try again
+        {t('common.tryAgain')}
       </button>
     </div>
   );
