@@ -177,6 +177,7 @@ interface AgentFormProps {
 }
 
 const TabNavigation = () => {
+  const { t } = useTranslation();
   return (
     <TabsList className="border-official-gray-780 flex h-auto justify-start gap-4 rounded-full bg-transparent px-0.5 py-1">
       <TabsTrigger
@@ -186,7 +187,7 @@ const TabNavigation = () => {
         <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
           1
         </Badge>
-        <span>Persona</span>
+        <span>{t('agents.create.persona')}</span>
       </TabsTrigger>
       <TabsTrigger
         className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-official-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
@@ -195,7 +196,7 @@ const TabNavigation = () => {
         <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
           2
         </Badge>
-        <span>Knowledge</span>
+        <span>{t('agents.create.knowledge')}</span>
       </TabsTrigger>
       <TabsTrigger
         className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-official-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
@@ -204,7 +205,7 @@ const TabNavigation = () => {
         <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
           3
         </Badge>
-        <span>Tools</span>
+        <span>{t('agents.create.tools')}</span>
       </TabsTrigger>
       <TabsTrigger
         className="data-[state=active]:bg-official-gray-850 text-official-gray-400 border-official-gray-780 h-full gap-2 rounded-full border bg-transparent px-4 py-2 text-xs font-medium data-[state=active]:text-white"
@@ -213,7 +214,7 @@ const TabNavigation = () => {
         <Badge className="bg-official-gray-700 inline-flex size-5 items-center justify-center rounded-full border-none border-gray-200 p-0 text-center text-[10px] text-gray-50">
           4
         </Badge>
-        <span>Schedule</span>
+        <span>{t('agents.create.schedule')}</span>
       </TabsTrigger>
     </TabsList>
   );
@@ -353,11 +354,11 @@ function AgentSideChat({
             {/* Title */}
             <h2 className="truncate text-base font-medium">
               {chatInboxId === null
-                ? 'New Chat'
+                ? t('agents.form.newChat')
                 : agentInboxes?.find((inbox) => inbox.inbox_id === chatInboxId)
                     ?.custom_name ||
                   chatInboxId ||
-                  'New Chat'}
+                  t('agents.form.newChat')}
             </h2>
 
             {/* Buttons Group */}
@@ -375,7 +376,7 @@ function AgentSideChat({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>New Chat</p>
+                  <p>{t('agents.form.newChat')}</p>
                 </TooltipContent>
               </Tooltip>
 
@@ -399,7 +400,7 @@ function AgentSideChat({
                     </SelectPrimitive.Trigger>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Chat History</p>
+                    <p>{t('agents.form.chatHistory')}</p>
                   </TooltipContent>
                 </Tooltip>
                 <SelectContent className="w-[300px]">
@@ -432,7 +433,7 @@ function AgentSideChat({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Close Chat</p>
+                  <p>{t('agents.form.closeChat')}</p>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -444,9 +445,11 @@ function AgentSideChat({
                 <span aria-hidden className="text-4xl">
                   🤖
                 </span>
-                <h2 className="text-base font-medium">Chat with your Agent</h2>
+                <h2 className="text-base font-medium">
+                  {t('agents.form.emptyChatTitle')}
+                </h2>
                 <p className="text-official-gray-400">
-                  Send a message to start chatting with this agent
+                  {t('agents.form.emptyChatDescription')}
                 </p>
               </div>
             ) : (
@@ -471,7 +474,10 @@ function AgentSideChat({
               bottomAddons={
                 <div className="relative z-50 flex items-end gap-3 self-end p-2">
                   <span className="pb-1 font-light text-gray-100">
-                    <span className="font-medium">Enter</span> to send
+                    <span className="font-medium">
+                      {t('agents.form.enter')}
+                    </span>{' '}
+                    {t('agents.form.enterToSend')}
                   </span>
 
                   <Button
@@ -490,7 +496,7 @@ function AgentSideChat({
               disabled={isLoadingMessage}
               onChange={(value) => setMessage(value)}
               onSubmit={handleSendMessage}
-              placeholder="Send message..."
+              placeholder={t('agents.form.messagePlaceholder')}
               value={message}
             />
           </div>
@@ -1146,7 +1152,9 @@ function AgentForm({ mode }: AgentFormProps) {
                 <span className="sr-only">{t('common.back')}</span>
               </Link>
               <h1 className="font-clash text-2xl font-medium">
-                {mode === 'edit' ? 'Update Agent' : 'Create New Agent'}
+                {mode === 'edit'
+                  ? t('agents.form.updateAgent')
+                  : t('agents.form.createAgent')}
               </h1>
             </div>
             {mode === 'edit' && agent && (
@@ -1172,7 +1180,7 @@ function AgentForm({ mode }: AgentFormProps) {
                       strokeLinejoin="round"
                     />
                   </svg>
-                  Save
+                  {t('common.save')}
                 </Button>
                 <Button
                   className="flex items-center gap-2"
@@ -1181,7 +1189,9 @@ function AgentForm({ mode }: AgentFormProps) {
                   variant="outline"
                 >
                   <MessageSquare className="h-4 w-4" />
-                  {isSideChatOpen ? 'Close Chat' : 'Open Chat'}
+                  {isSideChatOpen
+                    ? t('agents.form.closeChat')
+                    : t('agents.form.openChat')}
                 </Button>
               </div>
             )}
@@ -1221,17 +1231,14 @@ function AgentForm({ mode }: AgentFormProps) {
                               field={field}
                               helperMessage={
                                 mode === 'edit'
-                                  ? `You can change the agent name, but the agent ID remains unchanged. Agent ID: ${agent?.agent_id}`
-                                  : `Enter a unique name for your AI agent. This will also be used as the agent ID ${
-                                      form.watch('name')
-                                        ? `: ${form
-                                            .watch('name')
-                                            .replace(/[^a-zA-Z0-9_]/g, '_')
-                                            .toLowerCase()}`
-                                        : ''
-                                    }`
+                                  ? t('agents.create.agentNameHelperEdit', {
+                                      agentName: agent?.agent_id,
+                                    })
+                                  : t('agents.create.agentNameHelperCreate', {
+                                      agentName: form.watch('name'),
+                                    })
                               }
-                              label="Agent Name"
+                              label={t('agents.create.agentName')}
                             />
                           )}
                         />
@@ -1241,20 +1248,23 @@ function AgentForm({ mode }: AgentFormProps) {
                           name="uiDescription"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Description</FormLabel>
+                              <FormLabel>
+                                {t('agents.create.description')}
+                              </FormLabel>
 
                               <FormControl>
                                 <Textarea
                                   className="!min-h-[100px] text-sm"
                                   onChange={field.onChange}
-                                  placeholder="e.g., Create user-centered designs and improve user interactions."
+                                  placeholder={t(
+                                    'agents.create.descriptionPlaceholder',
+                                  )}
                                   spellCheck={false}
                                   value={field.value}
                                 />
                               </FormControl>
                               <FormDescription>
-                                Briefly describe your agent&apos;s purpose (not
-                                used by the agent).
+                                {t('agents.create.descriptionHelper')}
                               </FormDescription>
                               <FormMessage />
                             </FormItem>
@@ -1266,19 +1276,22 @@ function AgentForm({ mode }: AgentFormProps) {
                           name="config.custom_system_prompt"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Instructions</FormLabel>
+                              <FormLabel>
+                                {t('agents.create.systemInstructions')}
+                              </FormLabel>
                               <FormControl>
                                 <Textarea
                                   className="placeholder-official-gray-500 !max-h-[auto] !min-h-[300px] text-sm"
-                                  placeholder="e.g., You are a professional UX expert. Answer questions about UI/UX best practices."
+                                  placeholder={t(
+                                    'agents.create.systemInstructionsPlaceholder',
+                                  )}
                                   resize="vertical"
                                   spellCheck={false}
                                   {...field}
                                 />
                               </FormControl>
                               <FormDescription>
-                                Control your agents behavior by adding custom
-                                instructions
+                                {t('agents.create.systemInstructionsHelper')}
                               </FormDescription>
                             </FormItem>
                           )}
@@ -1293,7 +1306,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                 {t('chat.form.selectAI')}
                               </p>
                               <span className="text-official-gray-200 text-xs">
-                                Choose the model that will power your agent
+                                {t('agents.create.llmProviderDescription')}
                               </span>
                               <AIModelSelector
                                 className="bg-official-gray-900 !h-auto w-full rounded-lg border !border-gray-200 py-2.5"
@@ -1313,7 +1326,7 @@ function AgentForm({ mode }: AgentFormProps) {
                               '[&[data-state=open]>span.content]:hidden',
                             )}
                           >
-                            Context Settings
+                            {t('agents.create.contextSettingsLabel')}
                             <ChevronRight className="ml-1 size-4" />
                           </CollapsibleTrigger>
                           <CollapsibleContent>
@@ -1323,7 +1336,9 @@ function AgentForm({ mode }: AgentFormProps) {
                                 name="config.custom_prompt"
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel>Message Context</FormLabel>
+                                    <FormLabel>
+                                      {t('agents.create.messageContextLabel')}
+                                    </FormLabel>
                                     <FormControl>
                                       <Textarea
                                         className="placeholder-official-gray-500 !min-h-[100px] text-sm"
@@ -1333,12 +1348,9 @@ function AgentForm({ mode }: AgentFormProps) {
                                       />
                                     </FormControl>
                                     <FormDescription>
-                                      (Optional) You can control the message
-                                      context here by forcing a static message
-                                      with the user message e.g.{' '}
-                                      {'{{user_message}}'}. And then say: Chao
-                                      amigo!. This will add &quot;And then say:
-                                      Chao amigo!&quot; to every message sent.
+                                      {t(
+                                        'agents.create.messageContextDescription',
+                                      )}
                                     </FormDescription>
                                   </FormItem>
                                 )}
@@ -1356,7 +1368,7 @@ function AgentForm({ mode }: AgentFormProps) {
                               '[&[data-state=open]>span.content]:hidden',
                             )}
                           >
-                            Advanced Options
+                            {t('agents.create.advanceOptionsLabel')}
                             <ChevronRight className="ml-1 size-4" />
                           </CollapsibleTrigger>
                           <CollapsibleContent>
@@ -1369,11 +1381,12 @@ function AgentForm({ mode }: AgentFormProps) {
                                     <div className="flex justify-between gap-3">
                                       <div className="space-y-1 leading-none">
                                         <FormLabel className="static space-y-1.5 text-sm text-white">
-                                          Enable Stream
+                                          {t('agents.create.enableStream')}
                                         </FormLabel>
                                         <p className="text-official-gray-400 text-xs">
-                                          Streams the agent&apos;s response as
-                                          it generates.
+                                          {t(
+                                            'agents.create.enableStreamDescription',
+                                          )}
                                         </p>
                                       </div>
                                       <FormControl>
@@ -1394,11 +1407,12 @@ function AgentForm({ mode }: AgentFormProps) {
                                     <div className="flex justify-between gap-3">
                                       <div className="space-y-1 leading-none">
                                         <FormLabel className="static space-y-1.5 text-sm text-white">
-                                          Enable Tools
+                                          {t('agents.create.enableTools')}
                                         </FormLabel>
                                         <p className="text-official-gray-400 text-xs">
-                                          Allows the agent to use tools to
-                                          complete tasks.
+                                          {t(
+                                            'agents.create.enableToolsDescription',
+                                          )}
                                         </p>
                                       </div>
                                       <FormControl>
@@ -1422,7 +1436,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                           <div className="grid w-full gap-4">
                                             <div className="flex items-center justify-between">
                                               <Label htmlFor="temperature">
-                                                Temperature
+                                                {t('agents.create.temperature')}
                                               </Label>
                                               <span className="text-official-gray-400 hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
                                                 {field.value}
@@ -1446,10 +1460,9 @@ function AgentForm({ mode }: AgentFormProps) {
                                           className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
                                           side="left"
                                         >
-                                          Temperature is a parameter that
-                                          affects the randomness of AI outputs.
-                                          Higher temp = more unexpected, lower
-                                          temp = more predictable.
+                                          {t(
+                                            'agents.create.temperatureDescription',
+                                          )}
                                         </HoverCardContent>
                                       </HoverCard>
                                     </FormControl>
@@ -1492,14 +1505,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                           className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
                                           side="left"
                                         >
-                                          Adjust the probability threshold to
-                                          increase the relevance of results. For
-                                          example, a threshold of 0.9 could be
-                                          optimal for targeted, specific
-                                          applications, whereas a threshold of
-                                          0.95 or 0.97 might be preferred for
-                                          tasks that require broader, more
-                                          creative responses.
+                                          {t('agents.create.topPDescription')}
                                         </HoverCardContent>
                                       </HoverCard>
                                     </FormControl>
@@ -1517,7 +1523,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                           <div className="grid w-full gap-4">
                                             <div className="flex items-center justify-between">
                                               <Label htmlFor="topK">
-                                                Top K
+                                                {t('agents.create.topK')}
                                               </Label>
                                               <span className="text-official-gray-400 hover:border-border w-12 rounded-md border border-transparent px-2 py-0.5 text-right text-sm">
                                                 {field.value}
@@ -1541,13 +1547,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                           className="w-[260px] bg-gray-600 px-2 py-3 text-xs"
                                           side="left"
                                         >
-                                          Adjust the count of key words for
-                                          creating sequences. This parameter
-                                          governs the extent of the generated
-                                          passage, forestalling too much
-                                          repetition. Selecting a higher figure
-                                          yields longer narratives, whereas a
-                                          smaller figure keeps the text brief.
+                                          {t('agents.create.topKDescription')}
                                         </HoverCardContent>
                                       </HoverCard>
                                     </FormControl>
@@ -1567,7 +1567,7 @@ function AgentForm({ mode }: AgentFormProps) {
                       <div className="space-y-4">
                         <div className="space-y-1">
                           <h2 className="inline-flex items-center gap-2 text-base font-medium">
-                            Knowledge Base
+                            {t('agents.create.knowledgeBase')}
                             {Object.keys(selectedKeys ?? {}).length > 0 && (
                               <Badge className="bg-official-gray-1000 inline-flex size-6 items-center justify-center rounded-full border-gray-200 p-0 text-center text-sm text-gray-50">
                                 {Object.keys(selectedKeys ?? {}).length}
@@ -1575,8 +1575,7 @@ function AgentForm({ mode }: AgentFormProps) {
                             )}
                           </h2>
                           <p className="text-official-gray-400 text-sm">
-                            Provide your agent with local AI files to enhance
-                            its knowledge and capabilities.
+                            {t('agents.create.knowledgeBaseDescription')}
                           </p>
                         </div>
 
@@ -1589,7 +1588,7 @@ function AgentForm({ mode }: AgentFormProps) {
                             onChange={(e) => {
                               setSearchQueryKnowledge(e.target.value);
                             }}
-                            placeholder={'Search folders and files ...'}
+                            placeholder={t('agents.create.knowledgeSearch')}
                             value={searchQueryKnowledge}
                           />
 
@@ -1603,7 +1602,7 @@ function AgentForm({ mode }: AgentFormProps) {
                             variant="outline"
                           >
                             <PlusIcon className="mr-1 size-4" />
-                            Add New Files
+                            {t('agents.create.knowledgeAddNewFiles')}
                           </Button>
                         </div>
                         <div className="flex max-h-[calc(100vh-200px)] flex-1 flex-col gap-2">
@@ -1808,10 +1807,11 @@ function AgentForm({ mode }: AgentFormProps) {
                         )}
                         <div className="flex items-center justify-between gap-2">
                           <div className="space-y-1">
-                            <h2 className="text-base font-medium">Tools</h2>
+                            <h2 className="text-base font-medium">
+                              {t('agents.create.tools')}
+                            </h2>
                             <p className="text-official-gray-400 text-sm">
-                              Select which tools &amp; skills your agent can use
-                              to complete tasks.
+                              {t('agents.create.toolsDescription')}
                             </p>
                           </div>
                           <Button
@@ -1822,7 +1822,7 @@ function AgentForm({ mode }: AgentFormProps) {
                             variant="outline"
                           >
                             <PlusIcon className="mr-1 size-3.5" />
-                            Create New
+                            {t('agents.create.toolsCreateNewTool')}
                           </Button>
                         </div>
 
@@ -1830,7 +1830,7 @@ function AgentForm({ mode }: AgentFormProps) {
                           <div className="bg-official-gray-850 mr-2 rounded-lg p-3">
                             <div className="flex items-center justify-between">
                               <h3 className="text-official-gray-200 mb-2 text-xs font-medium tracking-wide uppercase">
-                                Selected Tools
+                                {t('agents.create.selectedTools')}
                               </h3>
                               <Button
                                 className="text-official-gray-200 text-xs"
@@ -1841,7 +1841,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                 size="xs"
                                 variant="tertiary"
                               >
-                                Clear
+                                {t('common.clear')}
                               </Button>
                             </div>
                             <div className="divide-official-gray-700 divide-y">
@@ -1933,7 +1933,9 @@ function AgentForm({ mode }: AgentFormProps) {
                                               )}
                                             >
                                               <span>
-                                                Override configurations
+                                                {t(
+                                                  'agents.create.overrideConfigurations',
+                                                )}
                                               </span>
                                               <ChevronDownIcon className="h-4 w-4" />
                                             </Button>
@@ -2050,7 +2052,7 @@ function AgentForm({ mode }: AgentFormProps) {
                                               type="button"
                                             >
                                               <BoltIcon className="size-4" />
-                                              Configure
+                                              {t('common.configure')}
                                             </Button>
                                           )}
                                           <Switch
@@ -2275,9 +2277,11 @@ function AgentForm({ mode }: AgentFormProps) {
                     <TabsContent value="schedule">
                       <div className="space-y-4">
                         <div className="space-y-1">
-                          <h2 className="text-base font-medium">Schedule</h2>
+                          <h2 className="text-base font-medium">
+                            {t('agents.create.schedule')}
+                          </h2>
                           <p className="text-official-gray-400 text-sm">
-                            Set when your agent will automatically run tasks.
+                            {t('agents.create.scheduleDescription')}
                           </p>
                         </div>
                         {/* Conditional rendering logic for schedule options */}
@@ -2309,11 +2313,12 @@ function AgentForm({ mode }: AgentFormProps) {
                                   className="font-medium"
                                   htmlFor="schedule-always-on"
                                 >
-                                  Normal Usage
+                                  {t('agents.create.scheduleNormalUsage')}
                                 </Label>
                                 <p className="text-official-gray-400 text-sm">
-                                  Agent is ready to respond immediately when
-                                  used upon in a chat.
+                                  {t(
+                                    'agents.create.scheduleNormalUsageDescription',
+                                  )}
                                 </p>
                               </div>
                             </div>
@@ -2330,14 +2335,12 @@ function AgentForm({ mode }: AgentFormProps) {
                                     className="font-medium"
                                     htmlFor="schedule-recurring"
                                   >
-                                    Normal Usage + Scheduled Execution
+                                    {t('agents.create.scheduleRecurring')}
                                   </Label>
                                   <p className="text-official-gray-400 text-sm">
-                                    Normal usage and also configure specific
-                                    times and frequencies for agent tasks e.g.
-                                    Twitter Agent that performs a workflow like
-                                    checking and answering messages every 5
-                                    minutes.
+                                    {t(
+                                      'agents.create.scheduleRecurringDescription',
+                                    )}
                                   </p>
                                 </div>
 
@@ -2348,14 +2351,20 @@ function AgentForm({ mode }: AgentFormProps) {
                                       name="aiPrompt"
                                       render={({ field }) => (
                                         <FormItem>
-                                          <FormLabel>AI instructions</FormLabel>
+                                          <FormLabel>
+                                            {t(
+                                              'agents.create.scheduleAIInstructions',
+                                            )}
+                                          </FormLabel>
 
                                           <FormControl>
                                             <Textarea
                                               {...field}
                                               className="min-h-[220px]"
                                               id="aiPrompt"
-                                              placeholder="Enter AI instructions for the scheduled execution..."
+                                              placeholder={t(
+                                                'agents.create.scheduleAIInstructionsDescription',
+                                              )}
                                               resize="vertical"
                                             />
                                           </FormControl>
@@ -2365,8 +2374,9 @@ function AgentForm({ mode }: AgentFormProps) {
                                       )}
                                     />
                                     <p className="text-official-gray-400 text-sm">
-                                      Write the prompt that will be used for the
-                                      scheduled execution.
+                                      {t(
+                                        'agents.create.scheduleAIInstructionsHelper',
+                                      )}
                                     </p>
 
                                     <FormField
@@ -2375,8 +2385,12 @@ function AgentForm({ mode }: AgentFormProps) {
                                       render={({ field }) => (
                                         <TextField
                                           field={field}
-                                          helperMessage="Enter a cron expression eg: */30 * * * * (every 30 min) "
-                                          label="Cron Expression"
+                                          helperMessage={t(
+                                            'agents.create.cronExpressionHelper',
+                                          )}
+                                          label={t(
+                                            'agents.create.cronExpression',
+                                          )}
                                         />
                                       )}
                                     />
@@ -2611,7 +2625,7 @@ function AgentForm({ mode }: AgentFormProps) {
                       }
                     >
                       <MessageSquare className="h-4 w-4" />
-                      Save & Test Agent
+                      {t('agents.create.saveAndTestAgent')}
                     </Button>
                   )}
                 </div>

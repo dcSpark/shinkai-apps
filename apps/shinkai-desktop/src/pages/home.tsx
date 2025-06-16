@@ -301,7 +301,7 @@ const EmptyMessage = () => {
     (state) => state.onSelectedKeysChange,
   );
 
-  const { t } = useTranslation();
+  const { t, Trans } = useTranslation();
 
   const resetJobScope = useSetJobScope((state) => state.resetJobScope);
 
@@ -552,7 +552,7 @@ const EmptyMessage = () => {
       <div className="mx-auto mt-[110px] flex w-full max-w-[1100px] flex-col items-stretch gap-6">
         <div className="mb-4 flex flex-col items-center gap-2">
           <h1 className="font-clash text-3xl font-medium text-white">
-            How can I help you today?
+            {t('homepage.welcomeTitle')}
           </h1>
           <AIModelSelector
             onValueChange={(value) => {
@@ -579,8 +579,9 @@ const EmptyMessage = () => {
                 <span className="font-medium">Configuration Required</span>
               </div>
               <p className="text-xs text-yellow-300/80">
-                {selectedAgent?.name} requires some configurations to work
-                properly.
+                {t('homepage.agentConfigurationRequired', {
+                  agentName: selectedAgent?.name ?? '',
+                })}
               </p>
             </div>
             <Button
@@ -594,7 +595,7 @@ const EmptyMessage = () => {
               variant="outline"
             >
               <BoltIcon className="h-3.5 w-3.5" />
-              Setup Agent
+              {t('homepage.setupAgent')}
             </Button>
           </div>
         )}
@@ -962,11 +963,20 @@ const EmptyMessage = () => {
             {(!debounceMessage || selectedTool || selectedAgent) && (
               <div className="flex w-full items-center justify-between gap-2 px-2">
                 <span className="text-official-gray-400 text-xs font-light">
-                  <span className="font-medium">Shift + Enter</span> for a new
-                  line
+                  <Trans
+                    i18nKey="homepage.shiftEnterForNewLine"
+                    components={{
+                      span: <span className="font-medium" />,
+                    }}
+                  />
                 </span>
                 <span className="text-official-gray-400 text-xs font-light">
-                  <span className="font-medium">Enter</span> to send
+                  <Trans
+                    i18nKey="homepage.enterToSend"
+                    components={{
+                      span: <span className="font-medium" />,
+                    }}
+                  />
                 </span>
               </div>
             )}
@@ -1025,7 +1035,7 @@ const EmptyMessage = () => {
                   icon={<AIAgentIcon className="size-full" name={agent.name} />}
                   key={agent.agent_id}
                   secondaryAction={{
-                    label: 'Chat History',
+                    label: t('agents.form.chatHistory'),
                     onClick: () => {
                       void navigate(`/inboxes?agentId=${agent.agent_id}`);
                     },
@@ -1040,16 +1050,16 @@ const EmptyMessage = () => {
           <div className="flex flex-col gap-5">
             <SectionHeading
               action={{
-                label: 'New Agent',
+                label: t('agents.form.newAgent'),
                 onClick: () => navigate('/add-agent'),
               }}
-              title="Recommended Agents"
+              title={t('homepage.recommendedAgents')}
             />
             <div className="grid grid-cols-1 gap-4">
               {agents?.map((agent, idx) => (
                 <Card
                   action={{
-                    label: 'Chat with Agent',
+                    label: t('agents.chatWithAgent'),
                     onClick: () => {
                       chatForm.setValue('agent', agent.agent_id);
                       if (agent.tools?.length > 0) {
@@ -1068,7 +1078,7 @@ const EmptyMessage = () => {
                   icon={<AIAgentIcon className="size-full" name={agent.name} />}
                   key={agent.agent_id}
                   secondaryAction={{
-                    label: 'Chat History',
+                    label: t('agents.form.chatHistory'),
                     onClick: () => {
                       void navigate(`/inboxes?agentId=${agent.agent_id}`);
                     },
@@ -1083,11 +1093,11 @@ const EmptyMessage = () => {
           (recentlyUsedAgents ?? []).length === 0 &&
           isPolling && (
             <div className="flex flex-col gap-5">
-              <SectionHeading title="Recommended Agents" />
+              <SectionHeading title={t('homepage.recommendedAgents')} />
               <div className="flex flex-col items-center justify-center gap-4 py-8">
                 <div className="flex items-center gap-2 text-lg text-white">
                   <Loader2 className="h-6 w-6 animate-spin" />
-                  <span>Installing default agents</span>
+                  <span>{t('homepage.installingDefaultAgents')}</span>
                 </div>
               </div>
             </div>

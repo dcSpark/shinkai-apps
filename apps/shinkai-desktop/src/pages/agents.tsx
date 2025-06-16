@@ -65,7 +65,7 @@ function AgentsPage() {
     token: auth?.api_v2_key ?? '',
   });
 
-  const { t } = useTranslation();
+  const { t, Trans } = useTranslation();
   const [selectedTab, setSelectedTab] = useState<'my' | 'explore'>('explore');
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -87,7 +87,7 @@ function AgentsPage() {
           <div className="flex flex-col gap-3 pt-10 pb-4">
             <div className="flex justify-between gap-4">
               <div className="font-clash inline-flex items-center gap-5 text-3xl font-medium">
-                <h1>{t('layout.menuItems.agents')}</h1>
+                <h1>{t('agents.label')}</h1>
                 <TabsList className="bg-official-gray-950/80 flex h-10 w-fit items-center gap-2 rounded-full px-1 py-1">
                   <TabsTrigger
                     className={cn(
@@ -98,7 +98,7 @@ function AgentsPage() {
                     )}
                     value="explore"
                   >
-                    Explore
+                    {t('agents.explore')}
                   </TabsTrigger>
                   <TabsTrigger
                     className={cn(
@@ -109,7 +109,7 @@ function AgentsPage() {
                     )}
                     value="my"
                   >
-                    My Agents
+                    {t('agents.myAgents')}
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -130,15 +130,21 @@ function AgentsPage() {
             <p className="text-official-gray-400 text-sm">
               {selectedTab === 'my' ? (
                 <>
-                  Create and explore AI agents with personalized instructions,
-                  enriched knowledge, <br /> diverse task capabilities, and more
-                  to tackle your goals autonomously.
+                  <Trans
+                    i18nKey="agentsPage.description"
+                    components={{
+                      br: <br />,
+                    }}
+                  />
                 </>
               ) : (
                 <>
-                  Discover and install AI agents from the community to enhance
-                  your workflow <br /> and supercharge your productivity and
-                  creativity.
+                  <Trans
+                    i18nKey="agentsPage.exploreDescription"
+                    components={{
+                      br: <br />,
+                    }}
+                  />
                 </>
               )}
             </p>
@@ -157,10 +163,11 @@ function AgentsPage() {
                     <AIAgentIcon className="size-full" name={''} />
                   </div>
                   <div className="flex flex-col items-center gap-1">
-                    <p className="font-medium">No available agents</p>
+                    <p className="font-medium">
+                      {t('agents.noAvailableAgents')}
+                    </p>
                     <p className="text-official-gray-400 text-center text-sm font-medium">
-                      Create your first Agent to start exploring the power of
-                      AI.
+                      {t('agents.createFirstAgent')}
                     </p>
                   </div>
                 </div>

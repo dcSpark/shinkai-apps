@@ -1,10 +1,100 @@
 {
   "agents": {
+    "chatWithAgent": "Chatear con el Agente",
+    "configureAgent": "Configurar Agente",
+    "create": {
+      "advanceOptionsLabel": "Opciones Avanzadas",
+      "agentName": "Nombre del Agente",
+      "agentNameHelperCreate": "Ingresa un nombre único para tu agente de IA. Esto también se usará como la ID del agente {{agentName}}",
+      "agentNameHelperEdit": "Puedes cambiar el nombre del agente, pero la ID del agente permanece sin cambios. ID del Agente: {{agentName}}",
+      "contextSettingsLabel": "Configuraciones de Contexto",
+      "cronExpression": "Expresión Cron",
+      "cronExpressionHelper": "Ingresa una expresión cron p. ej: */30 * * * * (cada 30 min)",
+      "description": "Descripción",
+      "descriptionHelper": "Describe brevemente el propósito de tu agente (no utilizado por el agente).",
+      "descriptionPlaceholder": "p. ej., Crear diseños centrados en el usuario y mejorar las interacciones del usuario.",
+      "enableStream": "Habilitar Flujo",
+      "enableStreamDescription": "Transmite la respuesta del agente a medida que se genera",
+      "enableTools": "Habilitar Herramientas",
+      "enableToolsDescription": "Permite que el agente use herramientas para completar tareas.",
+      "knowledge": "Conocimiento",
+      "knowledgeAddNewFiles": "Agregar Nuevos Archivos",
+      "knowledgeBase": "Base de Conocimientos",
+      "knowledgeBaseDescription": "Proporciona a tu agente archivos de IA locales para mejorar su conocimiento y capacidades.",
+      "knowledgeSearch": "Buscar carpetas y archivos ...",
+      "llmProviderDescription": "Elige el modelo que impulsará tu agente",
+      "llmProviderLabel": "Seleccionar IA",
+      "messageContextDescription": "(Opcional) Puedes controlar el contexto del mensaje aquí forzando un mensaje estático con el mensaje del usuario p. ej. {{user_message}}. Y luego di: ¡Chao amigo!. Esto añadirá \"Y luego di: ¡Chao amigo!\" a cada mensaje enviado.",
+      "messageContextLabel": "Contexto del Mensaje",
+      "overrideConfigurations": "Sobrescribir Configuraciones",
+      "persona": "Persona",
+      "saveAndTestAgent": "Guardar y Probar Agente",
+      "schedule": "Programar",
+      "scheduleAIInstructions": "Instrucciones de IA",
+      "scheduleAIInstructionsDescription": "Ingresa instrucciones de IA para la ejecución programada...",
+      "scheduleAIInstructionsHelper": "Escribe el aviso que se utilizará para la ejecución programada.",
+      "scheduleDescription": "Establece cuándo tu agente ejecutará tareas automáticamente.",
+      "scheduleNormalUsage": "Uso Normal",
+      "scheduleNormalUsageDescription": "El agente está listo para responder inmediatamente cuando se utiliza en un chat.",
+      "scheduleRecurring": "Uso Normal + Ejecución Programada",
+      "scheduleRecurringDescription": "Uso normal y también configurar tiempos y frecuencias específicas para las tareas del agente p. ej. Agente de Twitter que realiza un flujo de trabajo como revisar y responder mensajes cada 5 minutos.",
+      "selectedTools": "Herramientas Seleccionadas",
+      "systemInstructions": "Instrucciones del Sistema",
+      "systemInstructionsHelper": "Controla el comportamiento de tus agentes añadiendo instrucciones personalizadas",
+      "systemInstructionsPlaceholder": "p. ej., Eres un asistente útil que puede responder preguntas y ayudar con tareas.",
+      "temperature": "Temperatura",
+      "temperatureDescription": "La temperatura es un parámetro que afecta la aleatoriedad de las salidas de IA. Temperatura más alta = más inesperado, temperatura más baja = más predecible.",
+      "tools": "Herramientas",
+      "toolsCreateNewTool": "Crear Nuevo",
+      "toolsDescription": "Selecciona qué herramientas y habilidades puede usar tu agente para completar tareas.",
+      "topK": "Top K",
+      "topKDescription": "Ajusta la cantidad de palabras clave para crear secuencias. Este parámetro gobierna la extensión del pasaje generado, evitando demasiada repetición. Seleccionar un número más alto produce narrativas más largas, mientras que un número más bajo mantiene el texto breve.",
+      "topP": "Top P",
+      "topPDescription": "Ajusta el umbral de probabilidad para aumentar la relevancia de los resultados. Por ejemplo, un umbral de 0.9 podría ser óptimo para aplicaciones específicas y dirigidas, mientras que un umbral de 0.95 o 0.97 podría ser preferido para tareas que requieren respuestas más amplias y creativas."
+    },
+    "createFirstAgent": "Crea tu primer Agente para comenzar a explorar el poder de la IA.",
+    "explore": "Explorar",
+    "form": {
+      "chatHistory": "Historial de Chat",
+      "closeChat": "Cerrar Chat",
+      "createAgent": "Crear Nuevo Agente",
+      "emptyChatDescription": "Envía un mensaje para comenzar a chatear con este agente",
+      "emptyChatTitle": "Chatea con tu Agente",
+      "enter": "Entrar",
+      "enterToSend": "para enviar",
+      "messagePlaceholder": "Enviar mensaje...",
+      "newAgent": "Nuevo Agente",
+      "newChat": "Nuevo Chat",
+      "openChat": "Abrir Chat",
+      "updateAgent": "Actualizar Agente"
+    },
+    "importModal": {
+      "action": "Importar",
+      "chooseFile": "Elige un archivo zip",
+      "title": "Importar Agente"
+    },
+    "label": "Agentes",
+    "myAgents": "Mis Agentes",
+    "noAvailableAgents": "No hay agentes disponibles",
+    "publishDialog": {
+      "amount": "Cantidad",
+      "asset": "Activo",
+      "description": "Descripción",
+      "open": "Publicar Agente",
+      "paymentAddress": "Dirección de Pago",
+      "publish": "Publicar",
+      "published": "Publicado",
+      "searchAgents": "Buscar agentes",
+      "selectAgent": "Seleccionar Agente",
+      "title": "Publicar {{name}}"
+    },
     "systemInstructions": "Instrucciones del sistema"
   },
   "agentsPage": {
     "addAgent": "Agregar agente",
     "description": "Crea y explora agentes de IA con instrucciones personalizadas, conocimiento enriquecido y más para alcanzar tus metas de forma autónoma.",
+    "exploreAgentsDescription": "Explora agentes de IA personalizados para tus necesidades",
+    "exploreDescription": "Descubre e instala agentes de IA de la comunidad para mejorar tu flujo de trabajo <br /> y potenciar tu productividad y creatividad.",
     "goToTaskDetails": "Ir a detalles de la tarea",
     "notFoundDescription": "Crea tu primer Agente para comenzar a explorar el poder de la IA.",
     "notFoundTitle": "No hay agentes disponibles"
@@ -16,7 +106,9 @@
     "label": "Búsqueda de Contenido en Archivos de IA"
   },
   "aisPage": {
-    "description": "Administra fácilmente modelos de IA locales y en la nube, cambiando entre ellos según tu flujo de trabajo."
+    "description": "Administra fácilmente modelos de IA locales y en la nube, cambiando entre ellos según tu flujo de trabajo.",
+    "label": "Modelos de IA",
+    "shortDescription": "Explora una amplia gama de modelos de IA"
   },
   "analytics": {
     "bulletPoints": {
@@ -30,6 +122,11 @@
     "label": "Analíticas",
     "moreInfo": "Para obtener más información sobre nuestras prácticas de privacidad, consulta nuestra <a>Política de Privacidad</a>",
     "title": "Ayúdanos a mejorar Shinkai"
+  },
+  "appReset": {
+    "action": "Reiniciar Aplicación",
+    "description": "Actualmente estamos en beta y hemos realizado algunas actualizaciones significativas para mejorar tu experiencia. Para aplicar estas actualizaciones, necesitamos reiniciar tus datos. Si necesitas asistencia, por favor contacta a nuestro equipo de soporte.",
+    "title": "Se Requiere Reinicio de la Aplicación"
   },
   "chat": {
     "actions": {
@@ -80,6 +177,7 @@
     "limitReachedTitle": "Límite Alcanzado",
     "openChatFolder": "Abrir carpeta de chat",
     "sendMessage": "Enviar Mensaje",
+    "sendMessagePlaceholder": "Envía un mensaje, o presiona \"/\" para acceder a herramientas",
     "tracing": {
       "title": "Rastreo"
     }
@@ -101,10 +199,16 @@
   },
   "common": {
     "about": "Acerca de",
+    "add": "Agregar",
+    "added": "Añadido",
     "adding": "Añadiendo...",
+    "advanced": "Avanzado",
+    "agent": "Agente",
+    "all": "Todos",
     "alreadyHaveNode": "¿Ya tienes un Nodo?",
     "back": "Atrás",
     "cancel": "Cancelar",
+    "clear": "Limpiar",
     "clearSearch": "Limpiar búsqueda",
     "clickToUpload": "Haz clic para subir o arrastra y suelta",
     "comingSoon": "Próximamente - Finales de Agosto",
@@ -115,7 +219,10 @@
     "create": "Crear",
     "delete": "Eliminar",
     "deleteTool": "Eliminar herramienta",
+    "details": "Detalles",
+    "disabled": "Deshabilitado",
     "disconnect": "Desconectar",
+    "dismiss": "Descartar",
     "done": "Hecho",
     "edit": "Editar",
     "editMessage": "Editar mensaje",
@@ -134,14 +241,18 @@
     "install": "Instalar",
     "installed": "Instalado",
     "logInShinkaiHosting": "Iniciar Sesión en Shinkai Hosting",
+    "more": "Más",
     "moreOptions": "Más Opciones",
     "next": "Siguiente",
+    "noResultsFound": "No se encontraron resultados.",
     "noThanks": "No, Gracias",
+    "none": "Ninguno",
     "optIn": "Optar por Participar",
     "optOut": "Optar por No Participar",
     "passphrase": "Frase de Paso",
     "quickConnect": "Conexión Rápida",
     "recommended": "Recomendado",
+    "refresh": "Actualizar",
     "remove": "Eliminar",
     "rename": "Renombrar",
     "repeatPassphrase": "Confirmar frase de paso",
@@ -163,6 +274,8 @@
     "signUpShinkaiHosting": "Registrarse en Shinkai Hosting",
     "soon": "pronto",
     "termsAndConditionsText": "Acepto los <a>Términos de Servicio</a> y la <b>Política de Privacidad</b>",
+    "tool": "Herramienta",
+    "tryAgain": "Inténtalo de nuevo",
     "tryItOut": "Pruébalo",
     "unselectAll": "Deseleccionar todo",
     "update": "Actualizar",
@@ -171,6 +284,34 @@
     "uploadAFileDescription": "Admite imágenes, PDF, CSV, TXT, XLSX y más formatos",
     "uploadFile": "Subir un Archivo",
     "viewDetails": "Ver detalles"
+  },
+  "cronTask": {
+    "aiAgent": "IA / Agente",
+    "aiModelConfiguration": "Configuración del Modelo de IA",
+    "cronExample": "Ingresa una expresión cron p. ej: */30 * * * * (cada 30 min)",
+    "cronExpression": "Expresión Cron",
+    "cronWillRun": "Este cron se ejecutará {{schedule}} ({{expression}})",
+    "enableStream": "Habilitar Transmisión",
+    "enableTools": "Habilitar Herramientas",
+    "forceToolUsage": "Forzar Uso de Herramienta (Opcional)",
+    "promptExample": "p. ej. Dame las principales noticias de hackers",
+    "promptPlaceholder": "p. ej. Dame las principales noticias de hackers",
+    "scheduleOptions": {
+      "every1stMonth12pm": "cada 1 del mes a las 12pm",
+      "every5Hours": "cada 5 horas",
+      "every5Min": "cada 5 min",
+      "everyJanuary1st12am": "cada 1 de enero a las 12am",
+      "everyMonday8am": "cada lunes a las 8am"
+    },
+    "taskDescription": "Descripción de la Tarea",
+    "taskDescriptionHelper": "Describe brevemente el propósito de tu agente (no utilizado por el agente).",
+    "taskPrompt": "Prompt de Tarea",
+    "temperature": "Temperatura",
+    "temperatureInfo": "La temperatura es un parámetro que afecta la aleatoriedad de las salidas de IA. Temperatura más alta = más inesperado, temperatura más baja = más predecible.",
+    "topK": "Top K",
+    "topKInfo": "Ajusta la cantidad de palabras clave para crear secuencias. Este parámetro gobierna la extensión del pasaje generado, evitando demasiada repetición. Seleccionar un número más alto produce narrativas más largas, mientras que un número más bajo mantiene el texto breve.",
+    "topP": "Top P",
+    "topPInfo": "Ajusta el umbral de probabilidad para aumentar la relevancia de los resultados. Por ejemplo, un umbral de 0.9 podría ser óptimo para aplicaciones específicas, mientras que un umbral de 0.95 o 0.97 podría ser preferido para tareas que requieren respuestas más amplias y creativas."
   },
   "desktop": {
     "benefits": {
@@ -215,6 +356,17 @@
     "exportConnection": "Antes de continuar, por favor <Link>exporta tu conexión</Link> para restaurarla en cualquier momento.",
     "modalDescription": "¿Estás seguro de que deseas desconectar? Esto eliminará permanentemente tus datos.",
     "modalTitle": "Desconectar Shinkai"
+  },
+  "dockerStatus": {
+    "dockerInstalledButNotRunning": "Docker Instalado pero No Ejecutándose",
+    "dockerInstalledButNotRunningDescription": "Docker está instalado pero no se está ejecutando. Inícielo ahora para mejorar la velocidad de ejecución de las herramientas, la estabilidad y el rendimiento general.",
+    "dockerNotInstalled": "Docker No Instalado",
+    "dockerNotInstalledDescription": "Docker no está instalado en su sistema. Instalarlo desbloqueará un mejor rendimiento, un procesamiento más rápido y una experiencia mejorada con las herramientas de IA.",
+    "dockerRunning": "Docker Ejecutándose y Activo",
+    "dockerRunningDescription": "¡Sus herramientas están ahora funcionando a plena eficiencia con Docker! Disfrute de una experiencia más fluida!"
+  },
+  "errorBoundary": {
+    "genericError": "Algo salió mal. Intenta actualizar la aplicación."
   },
   "errors": {
     "nodeUnavailable": {
@@ -267,6 +419,15 @@
       "registerDesktopInstallation": "Tu instalación de Shinkai Desktop se registró exitosamente. Puede tardar algunas horas en registrarse en la búsqueda Galxe."
     }
   },
+  "homepage": {
+    "agentConfigurationRequired": "{{agentName}} requiere algunas configuraciones para funcionar correctamente.",
+    "enterToSend": "<span>Enter</span> para enviar",
+    "installingDefaultAgents": "Instalando agentes predeterminados",
+    "recommendedAgents": "Agentes recomendados",
+    "setupAgent": "Configurar Agente",
+    "shiftEnterForNewLine": "<span>Shift + Enter</span> para una nueva línea",
+    "welcomeTitle": "¿Cómo puedo ayudarte hoy?"
+  },
   "inboxes": {
     "inboxName": "Nombre",
     "updateName": "Actualizar nombre del buzón"
@@ -276,10 +437,14 @@
       "agents": "IAs",
       "aiTasks": "Tareas de IA",
       "chats": "Chats",
+      "decentralizedAgents": "Agentes de IA Descentralizados",
       "disconnect": "Desconectar",
       "helpAndSupport": "Ayuda y Soporte",
       "manageAis": "Gestionar AIs",
+      "mcp": "MCPs",
+      "scheduledTasks": "Tareas Programadas",
       "settings": "Ajustes",
+      "tools": "Herramientas",
       "vectorFs": "Explorador de Mis Archivos de IA",
       "vectorSearch": "Búsqueda de Contenido de Archivos de IA"
     },
@@ -337,6 +502,7 @@
     "claudeSuccessTitle": "¡Claude Desktop configurado con éxito!",
     "configFailDescription": "{{errorMessage}} Por favor, sigue las instrucciones a continuación para la configuración manual:",
     "configFailTitle": "La configuración automática de {{clientName}} ha fallado",
+    "connectExternalClient": "Conectar Cliente MCP Externo",
     "copyJsonButton": "Copiar configuración JSON",
     "copyJsonSuccess": "Configuración JSON copiada al portapapeles",
     "copySuccessCommand": "Comando copiado al portapapeles",
@@ -410,8 +576,10 @@
     "statusUpdateFailed": "Error al actualizar el estado",
     "statusUpdated": "Estado actualizado con éxito",
     "title": "Servidores MCP",
+    "toolMustBeEnabled": "La herramienta debe estar habilitada antes de cambiar el modo del servidor MCP",
     "tools": "herramientas",
     "toolsFor": "Herramientas para {{name}}",
+    "tooltipEnableFirst": "Habilita la herramienta primero para gestionar el modo del servidor MCP",
     "type": "Tipo",
     "update": "Actualizar Servidor MCP",
     "updateDescription": "Actualizando la configuración del servidor MCP: {{name}}",
@@ -419,6 +587,50 @@
     "updateSuccess": "Servidor MCP actualizado con éxito",
     "updateWarningDescription": "Actualizar este servidor restablecerá sus herramientas asociadas.",
     "viewAvailableTools": "Ver Herramientas Disponibles"
+  },
+  "networkAgentsPage": {
+    "addAgent": "Agregar Agente",
+    "addedDescription": "{{name}} ahora está en tu colección. ¡Comienza un chat para usarlo!",
+    "addedSuccess": "¡Agregado con Éxito!",
+    "agentsTab": "Agentes",
+    "author": "Autor",
+    "browseMore": "Explorar Más Agentes",
+    "confirmPayment": "Confirmar Pago",
+    "connectWallet": "Conectar Billetera",
+    "connectWalletDescription": "Conecta tu billetera para pagar por el uso de agentes y recibir ganancias de tus agentes publicados",
+    "costPerUse": "Costo por uso",
+    "costPerUseDescription": "Paga cada vez que uses este agente",
+    "descriptionNetwork": "Descubre y despliega agentes de IA desde la red global. Cada agente opera de forma autónoma y puede integrarse en tus flujos de trabajo. Paga por uso o despliega agentes para que otros accedan.",
+    "descriptionPublished": "Publica tus agentes de IA en la red. Cada agente opera de forma autónoma y puede integrarse en tus flujos de trabajo. Paga por uso o despliega agentes para que otros accedan.",
+    "howPaymentsWork": "Cómo funcionan los pagos",
+    "howPaymentsWorkDescription": "Cuando uses este agente, se te pedirá que confirmes el pago desde tu billetera conectada. Los pagos se procesan en la red {{network}}.",
+    "manageWallet": "Gestionar Billetera",
+    "networkToolDetails": "Detalles de la Herramienta de Red",
+    "payPerUse": "Pagar por uso",
+    "paymentRecipient": "Destinatario del Pago",
+    "paymentSuccessful": "¡Pago Exitoso!",
+    "paymentSuccessfulDescription": "Tu pago se realizó con éxito. La herramienta se está ejecutando ahora...",
+    "pleaseWait": "Por favor, espera mientras procesamos tu transacción...",
+    "processingPayment": "Procesando Pago",
+    "publishedTab": "Agentes Publicados",
+    "registerIdentity": "Registrar Identidad",
+    "registerShinkaiIdentity": "Registrar Identidad Shinkai",
+    "registerShinkaiIdentityDescription": "Crea tu identidad única en la red Shinkai para usar y publicar agentes",
+    "removeFailed": "Error al eliminar el agente",
+    "removeSuccess": "Agente de red eliminado con éxito",
+    "searchPlaceholder": "Buscar agentes",
+    "setupRequired": "Se requiere configuración para usar agentes de pago",
+    "startChat": "Iniciar Chat",
+    "titleDecentralized": "Agentes Descentralizados",
+    "titleNetwork": "Red",
+    "tool": "Herramienta",
+    "toolPaymentRequired": "Pago de Herramienta Requerido",
+    "toolPaymentRequiredDescription": "Esta herramienta requiere un pago para su uso.",
+    "toolRouterKey": "Clave del Enrutador de Herramientas",
+    "usdcBalance": "Saldo de USDC",
+    "walletAddress": "Dirección de la Billetera",
+    "walletBalance": "Saldo de Billetera",
+    "yourWallet": "Tu Billetera"
   },
   "notifications": {
     "messageReceived": {
@@ -465,6 +677,30 @@
     "setupShinkaiDesktopDescription": "Configura Shinkai Desktop para comenzar",
     "uploadAFile": "Subir un archivo",
     "uploadAFileDescription": "Guarda tus notas, sitios web, documentos y otros de forma segura en un solo lugar."
+  },
+  "playgroundTool": {
+    "metadataError": "Error en los metadatos de la herramienta. Intenta generar de nuevo.",
+    "prismError": "El editor de código encontró un error."
+  },
+  "prompt": {
+    "actions": {
+      "create": "Crear Prompt",
+      "update": "Actualizar Prompt"
+    },
+    "drawer": {
+      "createTitle": "Crear prompt personalizado",
+      "updateTitle": "Actualizar Prompt"
+    },
+    "failCreate": "Error al crear el prompt",
+    "failUpdate": "Error al actualizar el prompt",
+    "fields": {
+      "content": "Contenido del Prompt",
+      "name": "Nombre del Prompt"
+    },
+    "libraryDescription": "Elige un prompt de la biblioteca para comenzar.",
+    "libraryTitle": "Biblioteca de Prompts",
+    "successCreate": "Prompt creado con éxito",
+    "successUpdate": "Prompt actualizado con éxito"
   },
   "quickAsk": {
     "emptyStateDescription": "Prueba con \"¿Cómo hacer una solicitud HTTP en JavaScript?\", \"Dame las 10 mejores canciones de rock de los 80\", \"Explícame cómo funciona Internet\"",
@@ -736,9 +972,19 @@
       "verifiedProtocolsTitle": "Protocolos verificados",
       "wellSupportedProtocols": "Protocolos bien soportados"
     },
+    "importModal": {
+      "action": "Importar",
+      "chooseFile": "Elige un archivo zip",
+      "fromUrl": "Importar desde URL",
+      "fromZip": "Importar desde Zip",
+      "title": "Importar Herramienta",
+      "urlDescription": "Importa una herramienta desde una URL.",
+      "zipDescription": "Importa una herramienta desde un archivo zip."
+    },
     "installFromStore": "Instalar desde la tienda",
-    "label": "Herramientas Shinkai",
+    "label": "Herramientas",
     "lookingForMoreTools": "¿Buscas más herramientas?",
+    "newTool": "Nueva Herramienta",
     "noToolsInCategory": "No se encontraron herramientas en esta categoría. Crea una nueva herramienta o instala desde la App Store.",
     "notifications": {
       "codeGenerationComplete": {
@@ -834,5 +1080,8 @@
       "folderShared": "Carpeta compartida exitosamente",
       "folderUnshared": "Carpeta dejó de compartirse exitosamente"
     }
+  },
+  "videoBanner": {
+    "unsupported": "Tu navegador no soporta la etiqueta de video."
   }
 }

@@ -1,10 +1,100 @@
 {
   "agents": {
+    "chatWithAgent": "与代理聊天",
+    "configureAgent": "配置代理",
+    "create": {
+      "advanceOptionsLabel": "高级选项",
+      "agentName": "代理名称",
+      "agentNameHelperCreate": "输入您 AI 代理的唯一名称。这也将用作代理 ID {{agentName}}",
+      "agentNameHelperEdit": "您可以更改代理名称，但代理 ID 保持不变。代理 ID: {{agentName}}",
+      "contextSettingsLabel": "上下文设置",
+      "cronExpression": "Cron 表达式",
+      "cronExpressionHelper": "输入一个 cron 表达式，例如：*/30 * * * *（每 30 分钟）",
+      "description": "描述",
+      "descriptionHelper": "简要描述您代理的目的（代理不会使用此信息）。",
+      "descriptionPlaceholder": "例如，创建以用户为中心的设计并改善用户交互。",
+      "enableStream": "启用流",
+      "enableStreamDescription": "在生成时流式传输代理的响应",
+      "enableTools": "启用工具",
+      "enableToolsDescription": "允许代理使用工具来完成任务。",
+      "knowledge": "知识",
+      "knowledgeAddNewFiles": "添加新文件",
+      "knowledgeBase": "知识库",
+      "knowledgeBaseDescription": "为您的代理提供本地 AI 文件，以增强其知识和能力。",
+      "knowledgeSearch": "搜索文件夹和文件 ...",
+      "llmProviderDescription": "选择将为您的代理提供支持的模型",
+      "llmProviderLabel": "选择 AI",
+      "messageContextDescription": "(可选) 您可以通过强制用户消息的静态消息来控制消息上下文，例如 {{user_message}}。然后说：Chao amigo!。这将把 \"然后说：Chao amigo!\" 添加到每条发送的消息中。",
+      "messageContextLabel": "消息上下文",
+      "overrideConfigurations": "覆盖配置",
+      "persona": "角色",
+      "saveAndTestAgent": "保存并测试代理",
+      "schedule": "计划",
+      "scheduleAIInstructions": "AI 指令",
+      "scheduleAIInstructionsDescription": "输入定时执行的 AI 指令...",
+      "scheduleAIInstructionsHelper": "编写将用于定时执行的提示。",
+      "scheduleDescription": "设置您的代理何时自动运行任务。",
+      "scheduleNormalUsage": "正常使用",
+      "scheduleNormalUsageDescription": "代理在聊天中使用时准备立即响应。",
+      "scheduleRecurring": "正常使用 + 定时执行",
+      "scheduleRecurringDescription": "正常使用，并为代理任务配置特定的时间和频率，例如每 5 分钟检查和回答消息的 Twitter 代理。",
+      "selectedTools": "已选择的工具",
+      "systemInstructions": "系统指令",
+      "systemInstructionsHelper": "通过添加自定义指令来控制您代理的行为",
+      "systemInstructionsPlaceholder": "例如，您是一个可以回答问题并帮助完成任务的有用助手。",
+      "temperature": "温度",
+      "temperatureDescription": "温度是一个影响 AI 输出随机性的参数。温度越高 = 越不可预测，温度越低 = 越可预测。",
+      "tools": "工具",
+      "toolsCreateNewTool": "创建新工具",
+      "toolsDescription": "选择您的代理可以使用哪些工具和技能来完成任务。",
+      "topK": "Top K",
+      "topKDescription": "调整生成序列的关键字数量。此参数控制生成段落的长度，防止过多重复。选择较高的数字会产生更长的叙述，而较小的数字则保持文本简洁。",
+      "topP": "Top P",
+      "topPDescription": "调整概率阈值以提高结果的相关性。例如，0.9 的阈值可能适用于针对特定应用的最佳情况，而 0.95 或 0.97 的阈值可能更适合需要更广泛、更具创造性的响应的任务。"
+    },
+    "createFirstAgent": "创建您的第一个代理以开始探索人工智能的力量。",
+    "explore": "探索",
+    "form": {
+      "chatHistory": "聊天记录",
+      "closeChat": "关闭聊天",
+      "createAgent": "创建新代理",
+      "emptyChatDescription": "发送消息以开始与此代理聊天",
+      "emptyChatTitle": "与您的代理聊天",
+      "enter": "输入",
+      "enterToSend": "发送",
+      "messagePlaceholder": "发送消息...",
+      "newAgent": "新代理",
+      "newChat": "新聊天",
+      "openChat": "打开聊天",
+      "updateAgent": "更新代理"
+    },
+    "importModal": {
+      "action": "导入",
+      "chooseFile": "选择一个 zip 文件",
+      "title": "导入代理"
+    },
+    "label": "代理",
+    "myAgents": "我的代理",
+    "noAvailableAgents": "没有可用的代理",
+    "publishDialog": {
+      "amount": "金额",
+      "asset": "资产",
+      "description": "描述",
+      "open": "发布代理",
+      "paymentAddress": "支付地址",
+      "publish": "发布",
+      "published": "已发布",
+      "searchAgents": "搜索代理",
+      "selectAgent": "选择代理",
+      "title": "发布 {{name}}"
+    },
     "systemInstructions": "系统说明"
   },
   "agentsPage": {
     "addAgent": "添加代理",
     "description": "通过个性化指令和丰富的知识创建并探索 AI 代理，自动完成各类任务以实现目标。",
+    "exploreAgentsDescription": "探索满足您需求的自定义 AI 代理",
+    "exploreDescription": "发现并安装来自社区的人工智能代理，以增强您的工作流程 <br /> 并提升您的生产力和创造力。",
     "goToTaskDetails": "前往任务详情",
     "notFoundDescription": "创建您的第一个代理，开始探索 AI 的强大功能。",
     "notFoundTitle": "没有可用的代理"
@@ -16,7 +106,9 @@
     "label": "AI文件内容搜索"
   },
   "aisPage": {
-    "description": "轻松管理本地和云端 AI 模型，并根据工作流程在它们之间切换。"
+    "description": "轻松管理本地和云端 AI 模型，并根据工作流程在它们之间切换。",
+    "label": "AI 模型",
+    "shortDescription": "探索各种 AI 模型"
   },
   "analytics": {
     "bulletPoints": {
@@ -30,6 +122,11 @@
     "label": "分析",
     "moreInfo": "有关我们的隐私惯例的更多信息，请参阅我们的<a>隐私政策</a>",
     "title": "帮助我们改进 Shinkai"
+  },
+  "appReset": {
+    "action": "重置应用",
+    "description": "我们目前处于测试阶段，并进行了重大更新以改善您的体验。为了应用这些更新，我们需要重置您的数据。如果您需要帮助，请联系支持团队。",
+    "title": "需要重置应用"
   },
   "chat": {
     "actions": {
@@ -80,6 +177,7 @@
     "limitReachedTitle": "已达到限制",
     "openChatFolder": "打开聊天文件夹",
     "sendMessage": "发送消息",
+    "sendMessagePlaceholder": "发送消息，或按 \"/\" 访问工具",
     "tracing": {
       "title": "追踪"
     }
@@ -101,10 +199,16 @@
   },
   "common": {
     "about": "关于",
+    "add": "添加",
+    "added": "已添加",
     "adding": "添加中...",
+    "advanced": "高级",
+    "agent": "代理",
+    "all": "全部",
     "alreadyHaveNode": "已有节点？",
     "back": "返回",
     "cancel": "取消",
+    "clear": "清除",
     "clearSearch": "清除搜索",
     "clickToUpload": "点击上传或拖放",
     "comingSoon": "即将到来 - 八月底",
@@ -115,7 +219,10 @@
     "create": "创建",
     "delete": "删除",
     "deleteTool": "删除工具",
+    "details": "详细信息",
+    "disabled": "已禁用",
     "disconnect": "断开连接",
+    "dismiss": "关闭",
     "done": "完成",
     "edit": "编辑",
     "editMessage": "编辑消息",
@@ -134,14 +241,18 @@
     "install": "安装",
     "installed": "已安装",
     "logInShinkaiHosting": "登录Shinkai Hosting",
+    "more": "更多",
     "moreOptions": "更多选项",
     "next": "下一个",
+    "noResultsFound": "未找到结果。",
     "noThanks": "不，谢谢",
+    "none": "无",
     "optIn": "选择加入",
     "optOut": "选择退出",
     "passphrase": "密码短语",
     "quickConnect": "快速连接",
     "recommended": "推荐",
+    "refresh": "刷新",
     "remove": "移除",
     "rename": "重命名",
     "repeatPassphrase": "确认密码短语",
@@ -163,6 +274,8 @@
     "signUpShinkaiHosting": "注册Shinkai Hosting",
     "soon": "即将",
     "termsAndConditionsText": "我同意<a>服务条款</a>和<b>隐私政策</b>",
+    "tool": "工具",
+    "tryAgain": "再试一次",
     "tryItOut": "试试看",
     "unselectAll": "取消全选",
     "update": "更新",
@@ -171,6 +284,34 @@
     "uploadAFileDescription": "支持图像、PDF、CSV、TXT、XLSX等多种格式",
     "uploadFile": "上传文件",
     "viewDetails": "查看详情"
+  },
+  "cronTask": {
+    "aiAgent": "AI / 代理",
+    "aiModelConfiguration": "AI 模型配置",
+    "cronExample": "输入一个 cron 表达式，例如：*/30 * * * *（每 30 分钟）",
+    "cronExpression": "Cron 表达式",
+    "cronWillRun": "此 cron 将在 {{schedule}}（{{expression}}）运行",
+    "enableStream": "启用流",
+    "enableTools": "启用工具",
+    "forceToolUsage": "强制使用工具（可选）",
+    "promptExample": "例如：给我最热门的黑客新闻",
+    "promptPlaceholder": "例如：给我最热门的黑客新闻",
+    "scheduleOptions": {
+      "every1stMonth12pm": "每月 1 日中午 12 点",
+      "every5Hours": "每 5 小时",
+      "every5Min": "每 5 分钟",
+      "everyJanuary1st12am": "每年 1 月 1 日凌晨 12 点",
+      "everyMonday8am": "每周一上午 8 点"
+    },
+    "taskDescription": "任务描述",
+    "taskDescriptionHelper": "简要描述您代理的目的（代理不使用）。",
+    "taskPrompt": "任务提示",
+    "temperature": "温度",
+    "temperatureInfo": "温度是影响 AI 输出随机性的参数。温度越高 = 越不可预测，温度越低 = 越可预测。",
+    "topK": "Top K",
+    "topKInfo": "调整生成序列的关键字数量。此参数控制生成段落的长度，防止过多重复。选择较高的数字会产生更长的叙述，而较小的数字则保持文本简洁。",
+    "topP": "Top P",
+    "topPInfo": "调整概率阈值以提高结果的相关性。例如，0.9 的阈值可能适合针对特定应用，而 0.95 或 0.97 的阈值可能更适合需要更广泛、更具创造性的响应的任务。"
   },
   "desktop": {
     "benefits": {
@@ -215,6 +356,17 @@
     "exportConnection": "在继续之前，请<Link>导出您的连接</Link>，以便随时恢复连接。",
     "modalDescription": "您确定要断开连接吗？这将永久删除您的数据。",
     "modalTitle": "断开 Shinkai"
+  },
+  "dockerStatus": {
+    "dockerInstalledButNotRunning": "已安装 Docker，但未运行",
+    "dockerInstalledButNotRunningDescription": "已安装 Docker，但未运行。现在启动它以提高工具执行速度、稳定性和整体性能。",
+    "dockerNotInstalled": "未安装 Docker",
+    "dockerNotInstalledDescription": "您的系统上未安装 Docker。安装它将解锁更好的性能、更快的处理速度和改进的 AI 工具体验。",
+    "dockerRunning": "Docker 正在运行且处于活动状态",
+    "dockerRunningDescription": "您的工具现在在 Docker 中以全效能运行。享受更流畅的体验！"
+  },
+  "errorBoundary": {
+    "genericError": "出现问题。请尝试刷新应用。"
   },
   "errors": {
     "nodeUnavailable": {
@@ -267,6 +419,15 @@
       "registerDesktopInstallation": "您的Shinkai Desktop安装已成功注册。可能需要几个小时才能在Galxe任务中注册。"
     }
   },
+  "homepage": {
+    "agentConfigurationRequired": "{{agentName}} 需要一些配置才能正常工作。",
+    "enterToSend": "<span>Enter</span> 发送",
+    "installingDefaultAgents": "正在安装默认代理",
+    "recommendedAgents": "推荐代理",
+    "setupAgent": "设置代理",
+    "shiftEnterForNewLine": "<span>Shift + Enter</span> 以换行",
+    "welcomeTitle": "今天我能帮您什么？"
+  },
   "inboxes": {
     "inboxName": "名称",
     "updateName": "更新收件箱名称"
@@ -276,10 +437,14 @@
       "agents": "AI",
       "aiTasks": "AI 任务",
       "chats": "聊天",
+      "decentralizedAgents": "去中心化人工智能代理",
       "disconnect": "断开连接",
       "helpAndSupport": "帮助与支持",
       "manageAis": "管理人工智能",
+      "mcp": "MCPs",
+      "scheduledTasks": "计划任务",
       "settings": "设置",
+      "tools": "工具",
       "vectorFs": "我的 AI 文件浏览器",
       "vectorSearch": "AI 文件内容搜索"
     },
@@ -337,6 +502,7 @@
     "claudeSuccessTitle": "Claude Desktop 配置成功！",
     "configFailDescription": "{{errorMessage}} 请按照以下说明进行手动设置：",
     "configFailTitle": "自动配置 {{clientName}} 失败",
+    "connectExternalClient": "连接外部 MCP 客户端",
     "copyJsonButton": "复制 JSON 配置",
     "copyJsonSuccess": "JSON 配置已复制到剪贴板",
     "copySuccessCommand": "命令已复制到剪贴板",
@@ -410,8 +576,10 @@
     "statusUpdateFailed": "状态更新失败",
     "statusUpdated": "状态更新成功",
     "title": "MCP 服务器",
+    "toolMustBeEnabled": "在更改 MCP 服务器模式之前，必须启用工具",
     "tools": "工具",
     "toolsFor": "{{name}} 的工具",
+    "tooltipEnableFirst": "首先启用工具以管理 MCP 服务器模式",
     "type": "类型",
     "update": "更新 MCP 服务器",
     "updateDescription": "正在更新 MCP 服务器的配置：{{name}}",
@@ -419,6 +587,50 @@
     "updateSuccess": "MCP 服务器更新成功",
     "updateWarningDescription": "更新此服务器将重置其关联的工具。",
     "viewAvailableTools": "查看可用工具"
+  },
+  "networkAgentsPage": {
+    "addAgent": "添加代理",
+    "addedDescription": "{{name}} 现在在您的收藏中。开始聊天以使用它！",
+    "addedSuccess": "添加成功！",
+    "agentsTab": "代理",
+    "author": "作者",
+    "browseMore": "浏览更多代理",
+    "confirmPayment": "确认付款",
+    "connectWallet": "连接钱包",
+    "connectWalletDescription": "连接您的钱包以支付代理使用费用并从您发布的代理中获得收益",
+    "costPerUse": "每次使用的费用",
+    "costPerUseDescription": "每次使用此代理时支付费用",
+    "descriptionNetwork": "从全球网络发现和部署 AI 代理。每个代理独立运行，可以集成到您的工作流程中。按使用付费或部署代理供他人访问。",
+    "descriptionPublished": "将您的 AI 代理发布到网络。每个代理独立运行，可以集成到您的工作流程中。按使用付费或部署代理供他人访问。",
+    "howPaymentsWork": "支付方式",
+    "howPaymentsWorkDescription": "当您使用此代理时，系统会提示您确认来自已连接钱包的付款。付款将在{{network}}网络上处理。",
+    "manageWallet": "管理钱包",
+    "networkToolDetails": "网络工具详情",
+    "payPerUse": "按使用付费",
+    "paymentRecipient": "付款接收人",
+    "paymentSuccessful": "付款成功！",
+    "paymentSuccessfulDescription": "您的付款已成功完成。工具正在执行...",
+    "pleaseWait": "请稍等，我们正在处理您的交易...",
+    "processingPayment": "正在处理付款",
+    "publishedTab": "已发布代理",
+    "registerIdentity": "注册身份",
+    "registerShinkaiIdentity": "注册深海身份",
+    "registerShinkaiIdentityDescription": "在深海网络上创建您的独特身份，以使用和发布代理",
+    "removeFailed": "移除代理失败",
+    "removeSuccess": "网络代理成功移除",
+    "searchPlaceholder": "搜索代理",
+    "setupRequired": "使用付费代理需要设置",
+    "startChat": "开始聊天",
+    "titleDecentralized": "去中心化代理",
+    "titleNetwork": "网络",
+    "tool": "工具",
+    "toolPaymentRequired": "需要支付工具费用",
+    "toolPaymentRequiredDescription": "此工具需要支付才能使用。",
+    "toolRouterKey": "工具路由器密钥",
+    "usdcBalance": "USDC 余额",
+    "walletAddress": "钱包地址",
+    "walletBalance": "钱包余额",
+    "yourWallet": "您的钱包"
   },
   "notifications": {
     "messageReceived": {
@@ -465,6 +677,30 @@
     "setupShinkaiDesktopDescription": "设置 Shinkai 桌面以开始使用",
     "uploadAFile": "上传文件",
     "uploadAFileDescription": "将您的笔记、网站、文档等安全存储在一个地方。"
+  },
+  "playgroundTool": {
+    "metadataError": "工具元数据失败。请尝试重新生成。",
+    "prismError": "代码编辑器遇到错误。"
+  },
+  "prompt": {
+    "actions": {
+      "create": "创建提示",
+      "update": "更新提示"
+    },
+    "drawer": {
+      "createTitle": "创建自定义提示",
+      "updateTitle": "更新提示"
+    },
+    "failCreate": "创建提示失败",
+    "failUpdate": "更新提示失败",
+    "fields": {
+      "content": "提示内容",
+      "name": "提示名称"
+    },
+    "libraryDescription": "从库中选择一个提示以开始。",
+    "libraryTitle": "提示库",
+    "successCreate": "提示创建成功",
+    "successUpdate": "提示更新成功"
   },
   "quickAsk": {
     "emptyStateDescription": "试试\"如何在 JavaScript 中发起 HTTP 请求\"，\"给我 80 年代的十大摇滚音乐\"，\"给我解释一下互联网是如何工作的\"",
@@ -736,9 +972,19 @@
       "verifiedProtocolsTitle": "已验证的协议",
       "wellSupportedProtocols": "良好支持的协议"
     },
+    "importModal": {
+      "action": "导入",
+      "chooseFile": "选择一个 zip 文件",
+      "fromUrl": "从 URL 导入",
+      "fromZip": "从 Zip 导入",
+      "title": "导入工具",
+      "urlDescription": "从 URL 导入工具。",
+      "zipDescription": "从 zip 文件导入工具。"
+    },
     "installFromStore": "从商店安装",
     "label": "深海工具",
     "lookingForMoreTools": "寻找更多工具？",
+    "newTool": "新工具",
     "noToolsInCategory": "该类别中没有工具。创建一个新的工具或从应用商店安装。",
     "notifications": {
       "codeGenerationComplete": {
@@ -834,5 +1080,8 @@
       "folderShared": "文件夹分享成功",
       "folderUnshared": "文件夹取消分享成功"
     }
+  },
+  "videoBanner": {
+    "unsupported": "您的浏览器不支持视频标签。"
   }
 }

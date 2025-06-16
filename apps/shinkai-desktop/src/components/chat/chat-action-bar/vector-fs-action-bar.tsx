@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils';
 import { useUpdateJobScope } from '@shinkai_network/shinkai-node-state/v2/mutations/updateJobScope/useUpdateJobScope';
 import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
@@ -37,6 +38,7 @@ function VectorFsActionBarBase({
   disabled,
   showLabel,
 }: OpenChatFolderActionBarProps) {
+  const { t } = useTranslation();
   if (!showLabel) {
     return (
       <>
@@ -60,12 +62,12 @@ function VectorFsActionBarBase({
               ) : (
                 <FilesIcon className="size-4" />
               )}
-              Local AI Files
+              {t('vectorFs.localFiles')}
             </button>
           </TooltipTrigger>
           <TooltipPortal>
             <TooltipContent align="center" side="top">
-              Local AI Files
+              {t('vectorFs.localFiles')}
             </TooltipContent>
           </TooltipPortal>
         </Tooltip>
@@ -80,7 +82,7 @@ function VectorFsActionBarBase({
       type="button"
     >
       <FilesIcon className="size-4" />
-      <span className="">Local AI Files</span>
+      <span className="">{t('vectorFs.localFiles')}</span>
       {aiFilesCount > 0 ? (
         <Badge className="bg-official-gray-1000 inline-flex size-4 items-center justify-center rounded-full border-gray-200 p-0 text-center text-[10px] text-gray-50">
           {aiFilesCount}
@@ -216,7 +218,7 @@ export function VectorFsActionBarPreview() {
                 </div>
                 <button
                   className={cn(
-                    'bg-official-gray-850 hover:bg-official-gray-800 text-gray-80 border-official-gray-780 absolute -right-2 -top-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
+                    'bg-official-gray-850 hover:bg-official-gray-800 text-gray-80 border-official-gray-780 absolute -top-2 -right-2 h-5 w-5 cursor-pointer rounded-full border p-1 transition-colors hover:text-white',
                     isUpdatingJobScope && 'opacity-50',
                   )}
                   disabled={isUpdatingJobScope}

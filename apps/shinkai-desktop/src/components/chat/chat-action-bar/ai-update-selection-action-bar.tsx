@@ -66,22 +66,14 @@ const nonOllamaProviderModels = {
     'OpenAI GPT-4 model with image understanding capabilities.',
   'openai:gpt-3.5-turbo-1106':
     'Cost‑efficient OpenAI model for general text tasks.',
-  'openai:gpt-4.1':
-    'Newest GPT‑4.1 model for high quality responses.',
-  'openai:gpt-4.1-mini':
-    'Smaller GPT‑4.1 model offering lower cost.',
-  'openai:gpt-4.1-nano':
-    'Fastest GPT‑4.1 variant for quick replies.',
-  'openai:4o-preview':
-    'Preview version of GPT‑4o with multimodal support.',
-  'openai:4o-mini':
-    'Compact GPT‑4o model balancing speed and quality.',
-  'openai:o1':
-    'OpenAI lightweight reasoning model.',
-  'openai:o1-mini':
-    'Smaller variant of OpenAI o1 model.',
-  'openai:o3-mini':
-    'Mini version of OpenAI o3 model.',
+  'openai:gpt-4.1': 'Newest GPT‑4.1 model for high quality responses.',
+  'openai:gpt-4.1-mini': 'Smaller GPT‑4.1 model offering lower cost.',
+  'openai:gpt-4.1-nano': 'Fastest GPT‑4.1 variant for quick replies.',
+  'openai:4o-preview': 'Preview version of GPT‑4o with multimodal support.',
+  'openai:4o-mini': 'Compact GPT‑4o model balancing speed and quality.',
+  'openai:o1': 'OpenAI lightweight reasoning model.',
+  'openai:o1-mini': 'Smaller variant of OpenAI o1 model.',
+  'openai:o3-mini': 'Mini version of OpenAI o3 model.',
 } as Record<string, string>;
 
 export function AIModelSelectorBase({
@@ -265,9 +257,9 @@ export function AIModelSelectorBase({
           onValueChange={onValueChange}
           value={value}
         >
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder={t('common.search')} />
           <CommandEmpty className="text-official-gray-400 py-5 text-center text-sm">
-            No results found.
+            {t('common.noResultsFound')}
           </CommandEmpty>
           <CommandList className="flex max-h-full flex-col">
             <CommandGroup
@@ -276,10 +268,10 @@ export function AIModelSelectorBase({
                 <div className="flex items-center justify-between gap-2 pb-2">
                   <div className="space-y-0.5">
                     <h3 className="font-clash text-base font-medium text-white">
-                      Agents
+                      {t('agents.label')}
                     </h3>
                     <p className="text-official-gray-400 text-sm font-normal">
-                      Explore custom AI agents for your needs
+                      {t('agentsPage.exploreAgentsDescription')}
                     </p>
                   </div>
                   <Link
@@ -291,7 +283,7 @@ export function AIModelSelectorBase({
                     to="/add-agent"
                   >
                     <PlusIcon className="size-4" />
-                    Add
+                    {t('common.add')}
                   </Link>
                 </div>
               }
@@ -333,7 +325,7 @@ export function AIModelSelectorBase({
                           className="z-[2000000001] max-w-md"
                           side="top"
                         >
-                          <p>Configure Agent</p>
+                          <p>{t('agents.configureAgent')}</p>
                         </TooltipContent>
                       </TooltipPortal>
                     </Tooltip>
@@ -347,10 +339,10 @@ export function AIModelSelectorBase({
                 <div className="flex items-center justify-between gap-2 pb-2">
                   <div className="space-y-0.5">
                     <h3 className="font-clash text-base font-medium text-white">
-                      AI Models
+                      {t('aisPage.label')}
                     </h3>
                     <p className="text-official-gray-400 text-sm font-normal">
-                      Explore a wide range of AI models
+                      {t('aisPage.shortDescription')}
                     </p>
                   </div>
                   <Link
@@ -364,7 +356,7 @@ export function AIModelSelectorBase({
                     }
                   >
                     <PlusIcon className="size-4" />
-                    Add
+                    {t('common.add')}
                   </Link>
                 </div>
               }
@@ -396,7 +388,7 @@ export function AIModelSelectorBase({
                               className="ml-2 border bg-emerald-900/40 px-1 py-0 text-xs font-medium text-emerald-400"
                               variant="secondary"
                             >
-                              Recommended
+                              {t('common.recommended')}
                             </Badge>
                           )}
                       </span>

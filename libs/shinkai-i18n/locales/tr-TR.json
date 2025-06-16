@@ -1,10 +1,100 @@
 {
   "agents": {
+    "chatWithAgent": "Ajan ile Sohbet Et",
+    "configureAgent": "Ajanı Yapılandır",
+    "create": {
+      "advanceOptionsLabel": "Gelişmiş Seçenekler",
+      "agentName": "Ajan Adı",
+      "agentNameHelperCreate": "AI ajanınız için benzersiz bir ad girin. Bu, ajan kimliği olarak da kullanılacaktır {{agentName}}",
+      "agentNameHelperEdit": "Ajan adını değiştirebilirsiniz, ancak ajan kimliği değişmez. Ajan Kimliği: {{agentName}}",
+      "contextSettingsLabel": "Bağlam Ayarları",
+      "cronExpression": "Cron İfadesi",
+      "cronExpressionHelper": "Bir cron ifadesi girin örn: */30 * * * * (her 30 dakikada bir)",
+      "description": "Açıklama",
+      "descriptionHelper": "Ajanınızın amacını kısaca tanımlayın (ajan tarafından kullanılmaz).",
+      "descriptionPlaceholder": "örn., Kullanıcı odaklı tasarımlar oluşturun ve kullanıcı etkileşimlerini geliştirin.",
+      "enableStream": "Akışı Etkinleştir",
+      "enableStreamDescription": "Ajanın yanıtını oluştururken akış halinde iletin",
+      "enableTools": "Araçları Etkinleştir",
+      "enableToolsDescription": "Ajanın görevleri tamamlamak için araçları kullanmasına izin verir.",
+      "knowledge": "Bilgi",
+      "knowledgeAddNewFiles": "Yeni Dosyalar Ekle",
+      "knowledgeBase": "Bilgi Tabanı",
+      "knowledgeBaseDescription": "Ajanınıza bilgi ve yeteneklerini artırmak için yerel AI dosyaları sağlayın.",
+      "knowledgeSearch": "Klasörleri ve dosyaları ara ...",
+      "llmProviderDescription": "Ajanınızı güçlendirecek modeli seçin",
+      "llmProviderLabel": "AI Seçin",
+      "messageContextDescription": "(İsteğe Bağlı) Kullanıcı mesajıyla sabit bir mesaj zorlayarak mesaj bağlamını burada kontrol edebilirsiniz, örn. {{user_message}}. Ve sonra şunu söyleyin: Chao amigo!. Bu, her gönderilen mesaja \"Ve sonra şunu söyleyin: Chao amigo!\" ekleyecektir.",
+      "messageContextLabel": "Mesaj Bağlamı",
+      "overrideConfigurations": "Yapılandırmaları Geçersiz Kıl",
+      "persona": "Persona",
+      "saveAndTestAgent": "Ajanı Kaydet ve Test Et",
+      "schedule": "Program",
+      "scheduleAIInstructions": "AI Talimatları",
+      "scheduleAIInstructionsDescription": "Planlı icra için AI talimatlarını girin...",
+      "scheduleAIInstructionsHelper": "Planlı icra için kullanılacak istemi yazın.",
+      "scheduleDescription": "Ajanınızın otomatik olarak görevleri ne zaman gerçekleştireceğini ayarlayın.",
+      "scheduleNormalUsage": "Normal Kullanım",
+      "scheduleNormalUsageDescription": "Ajan, bir sohbette kullanıldığında hemen yanıt vermeye hazırdır.",
+      "scheduleRecurring": "Normal Kullanım + Planlı İcra",
+      "scheduleRecurringDescription": "Normal kullanım ve ayrıca ajan görevleri için belirli zamanlar ve sıklıklar yapılandırın, örn. Her 5 dakikada bir mesajları kontrol eden ve yanıtlayan Twitter Ajanı.",
+      "selectedTools": "Seçilen Araçlar",
+      "systemInstructions": "Sistem Talimatları",
+      "systemInstructionsHelper": "Ajanınızın davranışını özel talimatlar ekleyerek kontrol edin",
+      "systemInstructionsPlaceholder": "örn., Soruları yanıtlayabilen ve görevlerde yardımcı olabilen bir asistan.",
+      "temperature": "Sıcaklık",
+      "temperatureDescription": "Sıcaklık, AI çıktılarının rastgeleliğini etkileyen bir parametredir. Daha yüksek sıcaklık = daha beklenmedik, daha düşük sıcaklık = daha öngörülebilir.",
+      "tools": "Araçlar",
+      "toolsCreateNewTool": "Yeni Araç Oluştur",
+      "toolsDescription": "Ajanınızın görevleri tamamlamak için kullanabileceği araçları ve becerileri seçin.",
+      "topK": "En Yüksek K",
+      "topKDescription": "Diziler oluşturmak için anahtar kelime sayısını ayarlayın. Bu parametre, üretilen pasajın kapsamını belirler, fazla tekrarın önüne geçer. Daha yüksek bir rakam, daha uzun anlatımlar üretirken, daha düşük bir rakam metni kısa tutar.",
+      "topP": "En Yüksek P",
+      "topPDescription": "Sonuçların alaka düzeyini artırmak için olasılık eşiğini ayarlayın. Örneğin, 0.9'luk bir eşik, hedeflenmiş, belirli uygulamalar için optimal olabilirken, 0.95 veya 0.97'lik bir eşik daha geniş, daha yaratıcı yanıtlar gerektiren görevler için tercih edilebilir."
+    },
+    "createFirstAgent": "AI'nin gücünü keşfetmeye başlamak için ilk Ajanınızı oluşturun.",
+    "explore": "Keşfet",
+    "form": {
+      "chatHistory": "Sohbet Geçmişi",
+      "closeChat": "Sohbeti Kapat",
+      "createAgent": "Yeni Ajan Oluştur",
+      "emptyChatDescription": "Bu ajanla sohbet etmeye başlamak için bir mesaj gönderin",
+      "emptyChatTitle": "Ajanınızla Sohbet",
+      "enter": "Giriş",
+      "enterToSend": "göndermek için",
+      "messagePlaceholder": "Mesaj gönder...",
+      "newAgent": "Yeni Ajan",
+      "newChat": "Yeni Sohbet",
+      "openChat": "Sohbeti Aç",
+      "updateAgent": "Ajanı Güncelle"
+    },
+    "importModal": {
+      "action": "İçe Aktar",
+      "chooseFile": "Bir zip dosyası seçin",
+      "title": "Ajanı İçe Aktar"
+    },
+    "label": "Ajanlar",
+    "myAgents": "Ajanlarım",
+    "noAvailableAgents": "Mevcut ajan yok",
+    "publishDialog": {
+      "amount": "Miktar",
+      "asset": "Varlık",
+      "description": "Açıklama",
+      "open": "Ajanı Yayınla",
+      "paymentAddress": "Ödeme Adresi",
+      "publish": "Yayınla",
+      "published": "Yayınlandı",
+      "searchAgents": "Ajanları Ara",
+      "selectAgent": "Ajan Seç",
+      "title": "{{name}}'i Yayınla"
+    },
     "systemInstructions": "Sistem Talimatları"
   },
   "agentsPage": {
     "addAgent": "Aracı Ekle",
     "description": "Kişiselleştirilmiş talimatlar ve zengin bilgi birikimiyle AI ajanları oluşturup keşfedin ve hedeflerinizi otonom bir şekilde gerçekleştirin.",
+    "exploreAgentsDescription": "İhtiyaçlarınız için özel AI ajanlarını keşfedin",
+    "exploreDescription": "Topluluk tarafından geliştirilen AI ajanlarını keşfedin ve yükleyin, iş akışınızı geliştirin <br /> ve verimliliğinizi ve yaratıcılığınızı artırın.",
     "goToTaskDetails": "Görev detaylarına git",
     "notFoundDescription": "AI gücünü keşfetmek için ilk Ajanınızı oluşturun.",
     "notFoundTitle": "Kullanılabilir ajan yok"
@@ -16,7 +106,9 @@
     "label": "Yapay Zeka Dosyaları İçerik Arama"
   },
   "aisPage": {
-    "description": "Çalışma akışınıza uyacak şekilde bulut ve yerel AI modellerini kolayca yönetin ve arasında geçiş yapın."
+    "description": "Çalışma akışınıza uyacak şekilde bulut ve yerel AI modellerini kolayca yönetin ve arasında geçiş yapın.",
+    "label": "AI Modelleri",
+    "shortDescription": "Geniş bir AI modeli yelpazesini keşfedin"
   },
   "analytics": {
     "bulletPoints": {
@@ -30,6 +122,11 @@
     "label": "Analitik",
     "moreInfo": "Gizlilik uygulamalarımızla ilgili daha fazla bilgi için lütfen <a>Gizlilik Politikasına</a> bakın",
     "title": "Shinkai'yi geliştirmemize yardımcı olun"
+  },
+  "appReset": {
+    "action": "Uygulamayı Sıfırla",
+    "description": "Şu anda beta aşamasındayız ve deneyiminizi geliştirmek için bazı önemli güncellemeler yaptık. Bu güncellemeleri uygulamak için verilerinizi sıfırlamamız gerekiyor. Yardıma ihtiyacınız varsa, lütfen destek ekibimizle iletişime geçin.",
+    "title": "Uygulama Sıfırlaması Gerekiyor"
   },
   "chat": {
     "actions": {
@@ -80,6 +177,7 @@
     "limitReachedTitle": "Limit Aşıldı",
     "openChatFolder": "Sohbet Klasörünü Aç",
     "sendMessage": "Mesaj Gönder",
+    "sendMessagePlaceholder": "Mesaj gönderin veya araçlara erişmek için \"/\" tuşuna basın",
     "tracing": {
       "title": "İzleme"
     }
@@ -101,10 +199,16 @@
   },
   "common": {
     "about": "Hakkında",
+    "add": "Ekle",
+    "added": "Eklendi",
     "adding": "Ekleniyor...",
+    "advanced": "Gelişmiş",
+    "agent": "Ajan",
+    "all": "Hepsi",
     "alreadyHaveNode": "Zaten bir Düğümünüz mü var?",
     "back": "Geri",
     "cancel": "İptal",
+    "clear": "Temizle",
     "clearSearch": "Aramayı Temizle",
     "clickToUpload": "Yüklemek için tıklayın veya sürükleyip bırakın",
     "comingSoon": "Yakında - Ağustos Sonu",
@@ -115,7 +219,10 @@
     "create": "Oluştur",
     "delete": "Sil",
     "deleteTool": "Aracı Sil",
+    "details": "Ayrıntılar",
+    "disabled": "Devre Dışı",
     "disconnect": "Bağlantıyı Kes",
+    "dismiss": "Kapat",
     "done": "Tamam",
     "edit": "Düzenle",
     "editMessage": "Mesajı Düzenle",
@@ -134,14 +241,18 @@
     "install": "Kur",
     "installed": "Yüklü",
     "logInShinkaiHosting": "Shinkai Hosting'e Giriş Yap",
+    "more": "Daha Fazla",
     "moreOptions": "Daha Fazla Seçenek",
     "next": "İleri",
+    "noResultsFound": "Sonuç bulunamadı.",
     "noThanks": "Hayır, Teşekkürler",
+    "none": "Yok",
     "optIn": "Katıl",
     "optOut": "Ayrıl",
     "passphrase": "Şifreleme Anahtarı",
     "quickConnect": "Hızlı Bağlantı",
     "recommended": "Tavsiye Edilen",
+    "refresh": "Yenile",
     "remove": "Kaldır",
     "rename": "Yeniden Adlandır",
     "repeatPassphrase": "Şifreleme Anahtarını Onaylayın",
@@ -163,6 +274,8 @@
     "signUpShinkaiHosting": "Shinkai Hosting'e Kaydol",
     "soon": "yakında",
     "termsAndConditionsText": "<a>Hizmet Şartları</a> ve <b>Gizlilik Politikası</b>nı kabul ediyorum",
+    "tool": "Araç",
+    "tryAgain": "Tekrar Deneyin",
     "tryItOut": "Deneyin",
     "unselectAll": "Hepsini Seçme",
     "update": "Güncelle",
@@ -171,6 +284,34 @@
     "uploadAFileDescription": "Görüntüler, PDF, CSV, TXT, XLSX ve daha fazla formatı destekler",
     "uploadFile": "Bir Dosya Yükle",
     "viewDetails": "Detayları Görüntüle"
+  },
+  "cronTask": {
+    "aiAgent": "AI / Ajan",
+    "aiModelConfiguration": "AI Modeli Yapılandırması",
+    "cronExample": "Bir cron ifadesi girin örn: */30 * * * * (her 30 dakikada bir)",
+    "cronExpression": "Cron İfadesi",
+    "cronWillRun": "Bu cron {{schedule}} ({{expression}}) olarak çalışacak",
+    "enableStream": "Akışı Etkinleştir",
+    "enableTools": "Araçları Etkinleştir",
+    "forceToolUsage": "Araç Kullanımını Zorla (İsteğe Bağlı)",
+    "promptExample": "örneğin. En iyi hacker haberlerini ver",
+    "promptPlaceholder": "örneğin. En iyi hacker haberlerini ver",
+    "scheduleOptions": {
+      "every1stMonth12pm": "her ayın 1'inde saat 12'de",
+      "every5Hours": "her 5 saatte bir",
+      "every5Min": "her 5 dakikada bir",
+      "everyJanuary1st12am": "her yılın 1 Ocak'ında saat 12'de",
+      "everyMonday8am": "her pazartesi sabah 8'de"
+    },
+    "taskDescription": "Görev Açıklaması",
+    "taskDescriptionHelper": "Ajanınızın amacını kısaca tanımlayın (ajan tarafından kullanılmaz).",
+    "taskPrompt": "Görev İsteği",
+    "temperature": "Sıcaklık",
+    "temperatureInfo": "Sıcaklık, AI çıktılarının rastgeleliğini etkileyen bir parametredir. Daha yüksek sıcaklık = daha beklenmedik, daha düşük sıcaklık = daha öngörülebilir.",
+    "topK": "En Yüksek K",
+    "topKInfo": "Diziler oluşturmak için anahtar kelime sayısını ayarlayın. Bu parametre, üretilen pasajın kapsamını belirler, fazla tekrarın önüne geçer. Daha yüksek bir rakam, daha uzun anlatımlar üretirken, daha düşük bir rakam metni kısa tutar.",
+    "topP": "En Yüksek P",
+    "topPInfo": "Sonuçların alaka düzeyini artırmak için olasılık eşiğini ayarlayın. Örneğin, 0.9'luk bir eşik, hedeflenmiş, spesifik uygulamalar için optimal olabilirken, 0.95 veya 0.97'lik bir eşik, daha geniş, daha yaratıcı yanıtlar gerektiren görevler için tercih edilebilir."
   },
   "desktop": {
     "benefits": {
@@ -215,6 +356,17 @@
     "exportConnection": "Devam etmeden önce, lütfen<Link>bağlantınızı dışa aktarın</Link> böylece istediğiniz zaman bağlantınızı geri yükleyebilirsiniz.",
     "modalDescription": "Bağlantıyı kesmek istediğinize emin misiniz? Bu, verilerinizi kalıcı olarak silecektir.",
     "modalTitle": "Shinkai'yi Bağlantıyı Kes"
+  },
+  "dockerStatus": {
+    "dockerInstalledButNotRunning": "Docker Yüklü ama Çalışmıyor",
+    "dockerInstalledButNotRunningDescription": "Docker yüklü ama çalışmıyor. Araç yürütme hızını, kararlılığını ve genel performansı artırmak için şimdi başlatın.",
+    "dockerNotInstalled": "Docker Yüklenmedi",
+    "dockerNotInstalledDescription": "Docker sisteminizde yüklü değil. Yüklemek, daha iyi performans, daha hızlı işlem ve geliştirilmiş bir AI araç deneyimi sağlayacaktır.",
+    "dockerRunning": "Docker Çalışıyor ve Aktif",
+    "dockerRunningDescription": "Araçlarınız artık Docker ile tam verimlilikte çalışıyor. Daha akıcı bir deneyimin tadını çıkarın!"
+  },
+  "errorBoundary": {
+    "genericError": "Bir şeyler yanlış gitti. Uygulamayı yenilemeyi deneyin."
   },
   "errors": {
     "nodeUnavailable": {
@@ -267,6 +419,15 @@
       "registerDesktopInstallation": "Shinkai Masaüstü kurulumunuz başarıyla kaydedildi. Galxe görevinde kaydedilmesi birkaç saat sürebilir."
     }
   },
+  "homepage": {
+    "agentConfigurationRequired": "{{agentName}}'in düzgün çalışması için bazı yapılandırmalara ihtiyacı var.",
+    "enterToSend": "<span>Enter</span> ile gönder",
+    "installingDefaultAgents": "Varsayılan ajanlar yükleniyor",
+    "recommendedAgents": "Önerilen Ajanlar",
+    "setupAgent": "Ajanı Kur",
+    "shiftEnterForNewLine": "<span>Shift + Enter</span> ile yeni bir satır",
+    "welcomeTitle": "Bugün size nasıl yardımcı olabilirim?"
+  },
   "inboxes": {
     "inboxName": "Ad",
     "updateName": "Gelen kutusu adını güncelle"
@@ -276,10 +437,14 @@
       "agents": "Yapay Zekalar",
       "aiTasks": "Yapay Zeka Görevleri",
       "chats": "Sohbetler",
+      "decentralizedAgents": "Merkeziyetsiz AI Ajanları",
       "disconnect": "Bağlantıyı Kes",
       "helpAndSupport": "Yardım ve Destek",
       "manageAis": "Yapay Zekaları Yönet",
+      "mcp": "MCP'ler",
+      "scheduledTasks": "Planlanmış Görevler",
       "settings": "Ayarlar",
+      "tools": "Araçlar",
       "vectorFs": "Yapay Zeka Dosya Gezgini",
       "vectorSearch": "Yapay Zeka Dosya İçeriği Arama"
     },
@@ -337,6 +502,7 @@
     "claudeSuccessTitle": "Claude Masaüstü başarıyla yapılandırıldı!",
     "configFailDescription": "{{errorMessage}} Lütfen manuel kurulum için aşağıdaki talimatları izleyin:",
     "configFailTitle": "{{clientName}} Otomatik Yapılandırması Başarısız Oldu",
+    "connectExternalClient": "Harici MCP Müşterisini Bağla",
     "copyJsonButton": "JSON Yapılandırmasını Kopyala",
     "copyJsonSuccess": "JSON yapılandırması panoya kopyalandı",
     "copySuccessCommand": "Komut panoya kopyalandı",
@@ -410,8 +576,10 @@
     "statusUpdateFailed": "Durum güncellenemedi",
     "statusUpdated": "Durum başarıyla güncellendi",
     "title": "MCP Sunucuları",
+    "toolMustBeEnabled": "MCP sunucu modunu değiştirmeden önce aracın etkinleştirilmesi gerekir",
     "tools": "Araçlar",
     "toolsFor": "{{name}} için Araçlar",
+    "tooltipEnableFirst": "MCP Sunucu modunu yönetmek için önce aracı etkinleştir",
     "type": "Tür",
     "update": "MCP Sunucusunu Güncelle",
     "updateDescription": "MCP sunucusunun yapılandırmasını güncelle: {{name}}",
@@ -419,6 +587,50 @@
     "updateSuccess": "MCP sunucusu başarıyla güncellendi",
     "updateWarningDescription": "Bu sunucuyu güncellemek, ilişkili araçlarını sıfırlayacaktır.",
     "viewAvailableTools": "Mevcut Araçları Görüntüle"
+  },
+  "networkAgentsPage": {
+    "addAgent": "Ajan Ekle",
+    "addedDescription": "{{name}} artık koleksiyonunuzda. Kullanmak için bir sohbet başlatın!",
+    "addedSuccess": "Başarıyla Eklendi!",
+    "agentsTab": "Ajanlar",
+    "author": "Yazar",
+    "browseMore": "Daha Fazla Ajan Gözat",
+    "confirmPayment": "Ödemeyi Onayla",
+    "connectWallet": "Cüzdanı Bağla",
+    "connectWalletDescription": "Ajan kullanımını ödemek ve yayınladığınız ajanlardan kazanç almak için cüzdanınızı bağlayın",
+    "costPerUse": "Kullanım Başına Maliyet",
+    "costPerUseDescription": "Bu ajanı her kullandığınızda ödeme yapın",
+    "descriptionNetwork": "Küresel ağdan AI ajanlarını keşfedin ve dağıtın. Her ajan otonom olarak çalışır ve iş akışlarınıza entegre edilebilir. Kullanıma göre ödeme yapın veya başkalarının erişimi için ajanları dağıtın.",
+    "descriptionPublished": "AI ajanlarınızı ağa yayınlayın. Her ajan otonom olarak çalışır ve iş akışlarınıza entegre edilebilir. Kullanıma göre ödeme yapın veya başkalarının erişimi için ajanları dağıtın.",
+    "howPaymentsWork": "Ödemelerin nasıl çalıştığı",
+    "howPaymentsWorkDescription": "Bu ajanı kullandığınızda, bağlı cüzdanınızdan ödemeyi onaylamanız istenecektir. Ödemeler {{network}} ağında işlenir.",
+    "manageWallet": "Cüzdanı Yönet",
+    "networkToolDetails": "Ağ Aracı Detayları",
+    "payPerUse": "Kullanıma göre ödeme",
+    "paymentRecipient": "Ödeme Alıcısı",
+    "paymentSuccessful": "Ödeme Başarılı!",
+    "paymentSuccessfulDescription": "Ödemeniz başarıyla gerçekleşti. Araç şimdi çalışıyor...",
+    "pleaseWait": "İşleminizi gerçekleştirirken lütfen bekleyin...",
+    "processingPayment": "Ödeme İşleniyor",
+    "publishedTab": "Yayınlanan Ajanlar",
+    "registerIdentity": "Kimlik Kaydet",
+    "registerShinkaiIdentity": "Shinkai Kimliği Kaydet",
+    "registerShinkaiIdentityDescription": "Ajanları kullanmak ve yayınlamak için Shinkai ağında benzersiz kimliğinizi oluşturun",
+    "removeFailed": "Ajanı kaldırma işlemi başarısız oldu",
+    "removeSuccess": "Ağ ajanı başarıyla kaldırıldı",
+    "searchPlaceholder": "Ajanları Ara",
+    "setupRequired": "Ücretli ajanları kullanmak için kurulum gereklidir",
+    "startChat": "Sohbeti Başlat",
+    "titleDecentralized": "Merkezi Olmayan Ajanlar",
+    "titleNetwork": "Ağ",
+    "tool": "Araç",
+    "toolPaymentRequired": "Araç Ücreti Gerekli",
+    "toolPaymentRequiredDescription": "Bu aracı kullanmak için ödeme gereklidir.",
+    "toolRouterKey": "Araç Yönlendirici Anahtarı",
+    "usdcBalance": "USDC Bakiyesi",
+    "walletAddress": "Cüzdan Adresi",
+    "walletBalance": "Cüzdan Bakiyesi",
+    "yourWallet": "Cüzdanınız"
   },
   "notifications": {
     "messageReceived": {
@@ -465,6 +677,30 @@
     "setupShinkaiDesktopDescription": "Başlamak için Shinkai Masaüstünü kurun",
     "uploadAFile": "Bir Dosya Yükleyin",
     "uploadAFileDescription": "Notlarınızı, web sitelerinizi, belgelerinizi ve diğerlerini güvenli bir şekilde tek bir yerde saklayın."
+  },
+  "playgroundTool": {
+    "metadataError": "Araç meta verisi başarısız oldu. Tekrar oluşturmayı deneyin.",
+    "prismError": "Kod editörü bir hata ile karşılaştı."
+  },
+  "prompt": {
+    "actions": {
+      "create": "İstek Oluştur",
+      "update": "İsteği Güncelle"
+    },
+    "drawer": {
+      "createTitle": "Özel istek oluştur",
+      "updateTitle": "İsteği Güncelle"
+    },
+    "failCreate": "İstek oluşturma işlemi başarısız oldu",
+    "failUpdate": "İsteği güncelleme işlemi başarısız oldu",
+    "fields": {
+      "content": "İstek İçeriği",
+      "name": "İstek Adı"
+    },
+    "libraryDescription": "Başlamak için kütüphaneden bir isteği seçin.",
+    "libraryTitle": "İstek Kütüphanesi",
+    "successCreate": "İstek başarıyla oluşturuldu",
+    "successUpdate": "İstek başarıyla güncellendi"
   },
   "quickAsk": {
     "emptyStateDescription": "Şunu deneyin: \\\"JavaScript'te HTTP isteği nasıl yapılır?\\\", \\\"80'lerdeki en iyi 10 rock müziği nedir?\\\", \\\"İnternet nasıl çalışır, açıkla\\\"",
@@ -736,9 +972,19 @@
       "verifiedProtocolsTitle": "Doğrulanmış Protokoller",
       "wellSupportedProtocols": "İyi Desteklenen Protokoller"
     },
+    "importModal": {
+      "action": "İçe Aktar",
+      "chooseFile": "Bir zip dosyası seçin",
+      "fromUrl": "URL'den İçe Aktar",
+      "fromZip": "Zip'ten İçe Aktar",
+      "title": "Aracı İçe Aktar",
+      "urlDescription": "Bir URL'den aracı içe aktarın.",
+      "zipDescription": "Bir zip dosyasından aracı içe aktarın."
+    },
     "installFromStore": "Mağazadan Yükle",
     "label": "Shinkai Araçları",
     "lookingForMoreTools": "Daha fazla araç mı arıyorsunuz?",
+    "newTool": "Yeni Araç",
     "noToolsInCategory": "Bu kategoride araç bulunamadı. Yeni bir araç oluşturun veya App Store'dan kurun.",
     "notifications": {
       "codeGenerationComplete": {
@@ -834,5 +1080,8 @@
       "folderShared": "Klasör başarıyla paylaşıldı",
       "folderUnshared": "Klasörün paylaşımı başarıyla kaldırıldı"
     }
+  },
+  "videoBanner": {
+    "unsupported": "Tarayıcınız video etiketini desteklemiyor."
   }
 }

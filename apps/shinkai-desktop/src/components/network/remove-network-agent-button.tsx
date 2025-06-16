@@ -20,6 +20,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 
 import { useAuth } from '../../store/auth';
 
@@ -29,6 +30,7 @@ export default function RemoveNetworkAgentButton({
   toolRouterKey: string;
 }) {
   const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const queryClient = useQueryClient();
 
@@ -38,11 +40,11 @@ export default function RemoveNetworkAgentButton({
         await queryClient.invalidateQueries({
           queryKey: [FunctionKeyV2.GET_INSTALLED_NETWORK_TOOLS],
         });
-        toast.success('Network agent removed successfully');
+        toast.success(t('networkAgentsPage.removeSuccess'));
         setIsOpen(false);
       },
       onError: (error) => {
-        toast.error('Failed to remove agent', {
+        toast.error(t('networkAgentsPage.removeFailed'), {
           description: error.response?.data?.message ?? error.message,
         });
       },
@@ -72,14 +74,15 @@ export default function RemoveNetworkAgentButton({
           </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent align="center" side="top">
-          Remove Agent
+          {t('common.remove') + ' ' + t('agentsPage.addAgent', 'Agent')}
         </TooltipContent>
       </Tooltip>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogTitle className="pb-0">Remove Agent</DialogTitle>
+        <DialogTitle className="pb-0">
+          {t('common.remove') + ' ' + t('agentsPage.addAgent', 'Agent')}
+        </DialogTitle>
         <DialogDescription>
-          Are you sure you want to remove this agent? This action cannot be
-          undone.
+          {t('common.deleteConfirmation', 'Are you sure you want to remove this agent? This action cannot be undone.')}
         </DialogDescription>
 
         <DialogFooter>
@@ -91,7 +94,7 @@ export default function RemoveNetworkAgentButton({
                 type="button"
                 variant="ghost"
               >
-                Cancel
+                {t('common.cancel')}
               </Button>
             </DialogClose>
             <Button
@@ -101,7 +104,7 @@ export default function RemoveNetworkAgentButton({
               size="sm"
               variant="destructive"
             >
-              Remove
+              {t('common.remove')}
             </Button>
           </div>
         </DialogFooter>

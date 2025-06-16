@@ -1,10 +1,100 @@
 {
   "agents": {
+    "chatWithAgent": "Chat dengan Agen",
+    "configureAgent": "Konfigurasi Agen",
+    "create": {
+      "advanceOptionsLabel": "Opsi Lanjutan",
+      "agentName": "Nama Agen",
+      "agentNameHelperCreate": "Masukkan nama unik untuk agen AI Anda. Ini juga akan digunakan sebagai ID agen {{agentName}}",
+      "agentNameHelperEdit": "Anda dapat mengubah nama agen, tetapi ID agen tetap tidak berubah. ID Agen: {{agentName}}",
+      "contextSettingsLabel": "Pengaturan Konteks",
+      "cronExpression": "Ekspresi Cron",
+      "cronExpressionHelper": "Masukkan ekspresi cron misalnya: */30 * * * * (setiap 30 menit)",
+      "description": "Deskripsi",
+      "descriptionHelper": "Jelaskan secara singkat tujuan agen Anda (tidak digunakan oleh agen).",
+      "descriptionPlaceholder": "misalnya, Buat desain yang berpusat pada pengguna dan tingkatkan interaksi pengguna.",
+      "enableStream": "Aktifkan Stream",
+      "enableStreamDescription": "Mengalirkan respons agen saat dihasilkan",
+      "enableTools": "Aktifkan Alat",
+      "enableToolsDescription": "Memungkinkan agen menggunakan alat untuk menyelesaikan tugas.",
+      "knowledge": "Pengetahuan",
+      "knowledgeAddNewFiles": "Tambahkan File Baru",
+      "knowledgeBase": "Basis Pengetahuan",
+      "knowledgeBaseDescription": "Berikan agen Anda file AI lokal untuk meningkatkan pengetahuan dan kemampuannya.",
+      "knowledgeSearch": "Cari folder dan file ...",
+      "llmProviderDescription": "Pilih model yang akan menggerakkan agen Anda",
+      "llmProviderLabel": "Pilih AI",
+      "messageContextDescription": "(Opsional) Anda dapat mengontrol konteks pesan di sini dengan memaksa pesan statis dengan pesan pengguna misalnya {{user_message}}. Dan kemudian katakan: Chao amigo!. Ini akan menambahkan \"Dan kemudian katakan: Chao amigo!\" ke setiap pesan yang dikirim.",
+      "messageContextLabel": "Konteks Pesan",
+      "overrideConfigurations": "Timpakan Konfigurasi",
+      "persona": "Persona",
+      "saveAndTestAgent": "Simpan & Uji Agen",
+      "schedule": "Jadwal",
+      "scheduleAIInstructions": "Instruksi AI",
+      "scheduleAIInstructionsDescription": "Masukkan instruksi AI untuk eksekusi terjadwal...",
+      "scheduleAIInstructionsHelper": "Tulis prompt yang akan digunakan untuk eksekusi terjadwal.",
+      "scheduleDescription": "Atur kapan agen Anda akan secara otomatis menjalankan tugas.",
+      "scheduleNormalUsage": "Penggunaan Normal",
+      "scheduleNormalUsageDescription": "Agen siap merespons segera saat digunakan dalam obrolan.",
+      "scheduleRecurring": "Penggunaan Normal + Eksekusi Terjadwal",
+      "scheduleRecurringDescription": "Penggunaan normal dan juga mengonfigurasi waktu dan frekuensi tertentu untuk tugas agen misalnya, Agen Twitter yang melakukan alur kerja seperti memeriksa dan menjawab pesan setiap 5 menit.",
+      "selectedTools": "Alat Terpilih",
+      "systemInstructions": "Instruksi Sistem",
+      "systemInstructionsHelper": "Kontrol perilaku agen Anda dengan menambahkan instruksi kustom",
+      "systemInstructionsPlaceholder": "misalnya, Anda adalah asisten yang membantu yang dapat menjawab pertanyaan dan membantu dengan tugas.",
+      "temperature": "Suhu",
+      "temperatureDescription": "Suhu adalah parameter yang mempengaruhi ketidakpastian keluaran AI. Suhu yang lebih tinggi = lebih tidak terduga, suhu yang lebih rendah = lebih dapat diprediksi.",
+      "tools": "Alat",
+      "toolsCreateNewTool": "Buat Baru",
+      "toolsDescription": "Pilih alat & keterampilan mana yang dapat digunakan agen Anda untuk menyelesaikan tugas.",
+      "topK": "Top K",
+      "topKDescription": "Sesuaikan jumlah kata kunci untuk membuat urutan. Parameter ini mengatur sejauh mana bagian yang dihasilkan, mencegah terlalu banyak pengulangan. Memilih angka yang lebih tinggi menghasilkan narasi yang lebih panjang, sedangkan angka yang lebih kecil menjaga teks tetap singkat.",
+      "topP": "Top P",
+      "topPDescription": "Sesuaikan ambang probabilitas untuk meningkatkan relevansi hasil. Misalnya, ambang 0,9 bisa optimal untuk aplikasi yang terarah dan spesifik, sedangkan ambang 0,95 atau 0,97 mungkin lebih disukai untuk tugas yang memerlukan respons yang lebih luas dan kreatif."
+    },
+    "createFirstAgent": "Buat Agen pertama Anda untuk mulai menjelajahi kekuatan AI.",
+    "explore": "Jelajahi",
+    "form": {
+      "chatHistory": "Riwayat Obrolan",
+      "closeChat": "Tutup Obrolan",
+      "createAgent": "Buat Agen Baru",
+      "emptyChatDescription": "Kirim pesan untuk mulai mengobrol dengan agen ini",
+      "emptyChatTitle": "Obrolan dengan Agen Anda",
+      "enter": "Masukkan",
+      "enterToSend": "untuk mengirim",
+      "messagePlaceholder": "Kirim pesan...",
+      "newAgent": "Agen Baru",
+      "newChat": "Obrolan Baru",
+      "openChat": "Buka Obrolan",
+      "updateAgent": "Perbarui Agen"
+    },
+    "importModal": {
+      "action": "Impor",
+      "chooseFile": "Pilih file zip",
+      "title": "Impor Agen"
+    },
+    "label": "Agen",
+    "myAgents": "Agen Saya",
+    "noAvailableAgents": "Tidak ada agen yang tersedia",
+    "publishDialog": {
+      "amount": "Jumlah",
+      "asset": "Aset",
+      "description": "Deskripsi",
+      "open": "Terbitkan Agen",
+      "paymentAddress": "Alamat Pembayaran",
+      "publish": "Terbitkan",
+      "published": "Telah Diterbitkan",
+      "searchAgents": "Cari agen",
+      "selectAgent": "Pilih Agen",
+      "title": "Terbitkan {{name}}"
+    },
     "systemInstructions": "Instruksi Sistem"
   },
   "agentsPage": {
     "addAgent": "Tambah Agen",
     "description": "Buat dan jelajahi agen AI dengan instruksi khusus, pengetahuan yang diperkaya, serta kemampuan tugas yang beragam untuk mencapai tujuan Anda secara otomatis.",
+    "exploreAgentsDescription": "Jelajahi agen AI kustom untuk kebutuhan Anda",
+    "exploreDescription": "Temukan dan instal agen AI dari komunitas untuk meningkatkan alur kerja Anda <br /> dan meningkatkan produktivitas serta kreativitas Anda.",
     "goToTaskDetails": "Lihat detail tugas",
     "notFoundDescription": "Buat Agen pertama Anda untuk mulai menjelajahi kekuatan AI.",
     "notFoundTitle": "Tidak ada agen tersedia"
@@ -16,7 +106,9 @@
     "label": "Pencarian Konten File AI"
   },
   "aisPage": {
-    "description": "Kelola model AI lokal dan cloud dengan mudah, beralih di antaranya sesuai kebutuhan alur kerja Anda."
+    "description": "Kelola model AI lokal dan cloud dengan mudah, beralih di antaranya sesuai kebutuhan alur kerja Anda.",
+    "label": "Model AI",
+    "shortDescription": "Jelajahi berbagai model AI"
   },
   "analytics": {
     "bulletPoints": {
@@ -30,6 +122,11 @@
     "label": "Analitika",
     "moreInfo": "Untuk informasi lebih lanjut terkait praktik privasi kami, silakan lihat <a>Kebijakan Privasi</a>",
     "title": "Bantu kami meningkatkan Shinkai"
+  },
+  "appReset": {
+    "action": "Reset Aplikasi",
+    "description": "Kami saat ini dalam versi beta dan telah melakukan beberapa pembaruan signifikan untuk meningkatkan pengalaman Anda. Untuk menerapkan pembaruan ini, kami perlu mereset data Anda. Jika Anda memerlukan bantuan, silakan hubungi tim dukungan kami.",
+    "title": "Reset Aplikasi Diperlukan"
   },
   "chat": {
     "actions": {
@@ -80,6 +177,7 @@
     "limitReachedTitle": "Batas Telah Tercapai",
     "openChatFolder": "Buka Folder Obrolan",
     "sendMessage": "Kirim Pesan",
+    "sendMessagePlaceholder": "Kirim pesan, atau tekan \"/\" untuk mengakses alat",
     "tracing": {
       "title": "Pelacakan"
     }
@@ -101,10 +199,16 @@
   },
   "common": {
     "about": "Tentang",
+    "add": "Tambah",
+    "added": "Ditambahkan",
     "adding": "Menambahkan...",
+    "advanced": "Lanjutan",
+    "agent": "Agen",
+    "all": "Semua",
     "alreadyHaveNode": "Sudah memiliki Node?",
     "back": "Kembali",
     "cancel": "Batal",
+    "clear": "Bersihkan",
     "clearSearch": "Hapus Pencarian",
     "clickToUpload": "Klik untuk mengunggah atau seret dan lepas",
     "comingSoon": "Segera hadir - Akhir Agustus",
@@ -115,7 +219,10 @@
     "create": "Buat",
     "delete": "Hapus",
     "deleteTool": "Hapus Alat",
+    "details": "Rincian",
+    "disabled": "Dinonaktifkan",
     "disconnect": "Putuskan Koneksi",
+    "dismiss": "Tutup",
     "done": "Selesai",
     "edit": "Edit",
     "editMessage": "Edit Pesan",
@@ -134,14 +241,18 @@
     "install": "Instal",
     "installed": "Terinstal",
     "logInShinkaiHosting": "Masuk ke Hosting Shinkai",
+    "more": "Lebih",
     "moreOptions": "Opsi Lainnya",
     "next": "Berikutnya",
+    "noResultsFound": "Tidak ada hasil yang ditemukan.",
     "noThanks": "Tidak, Terima Kasih",
+    "none": "Tidak ada",
     "optIn": "Pilih Masuk",
     "optOut": "Pilih Keluar",
     "passphrase": "Frasa Sandi",
     "quickConnect": "Koneksi Cepat",
     "recommended": "Direkomendasikan",
+    "refresh": "Segarkan",
     "remove": "Hapus",
     "rename": "Ganti Nama",
     "repeatPassphrase": "Konfirmasi frasa sandi",
@@ -163,6 +274,8 @@
     "signUpShinkaiHosting": "Daftar untuk Hosting Shinkai",
     "soon": "segera",
     "termsAndConditionsText": "Saya setuju dengan <a>Syarat Layanan</a> dan <b>Kebijakan Privasi</b>",
+    "tool": "Alat",
+    "tryAgain": "Coba lagi",
     "tryItOut": "Coba Sekarang",
     "unselectAll": "Batalkan Pilihan Semua",
     "update": "Perbarui",
@@ -171,6 +284,34 @@
     "uploadAFileDescription": "Mendukung gambar, PDF, CSV, TXT, XLSX, dan format lainnya",
     "uploadFile": "Unggah Berkas",
     "viewDetails": "Lihat Detail"
+  },
+  "cronTask": {
+    "aiAgent": "AI / Agen",
+    "aiModelConfiguration": "Konfigurasi Model AI",
+    "cronExample": "Masukkan ekspresi cron mis: */30 * * * * (setiap 30 menit)",
+    "cronExpression": "Ekspresi Cron",
+    "cronWillRun": "Cron ini akan berjalan {{schedule}} ({{expression}})",
+    "enableStream": "Aktifkan Stream",
+    "enableTools": "Aktifkan Alat",
+    "forceToolUsage": "Paksa Penggunaan Alat (Opsional)",
+    "promptExample": "mis. Berikan saya berita hacker teratas",
+    "promptPlaceholder": "mis. Berikan saya berita hacker teratas",
+    "scheduleOptions": {
+      "every1stMonth12pm": "setiap 1 bulan pada pukul 12 siang",
+      "every5Hours": "setiap 5 jam",
+      "every5Min": "setiap 5 menit",
+      "everyJanuary1st12am": "setiap 1 januari pukul 12 pagi",
+      "everyMonday8am": "setiap senin pukul 8 pagi"
+    },
+    "taskDescription": "Deskripsi Tugas",
+    "taskDescriptionHelper": "Jelaskan secara singkat tujuan agen Anda (tidak digunakan oleh agen).",
+    "taskPrompt": "Prompt Tugas",
+    "temperature": "Suhu",
+    "temperatureInfo": "Suhu adalah parameter yang mempengaruhi ketidakpastian keluaran AI. Suhu yang lebih tinggi = lebih tidak terduga, suhu yang lebih rendah = lebih dapat diprediksi.",
+    "topK": "Top K",
+    "topKInfo": "Sesuaikan jumlah kata kunci untuk membuat urutan. Parameter ini mengatur sejauh mana teks yang dihasilkan, mencegah terlalu banyak pengulangan. Memilih angka yang lebih tinggi menghasilkan narasi yang lebih panjang, sedangkan angka yang lebih kecil menjaga teks tetap singkat.",
+    "topP": "Top P",
+    "topPInfo": "Sesuaikan ambang probabilitas untuk meningkatkan relevansi hasil. Misalnya, ambang 0.9 bisa optimal untuk aplikasi yang terarah dan spesifik, sedangkan ambang 0.95 atau 0.97 mungkin lebih disukai untuk tugas yang memerlukan respons yang lebih luas dan kreatif."
   },
   "desktop": {
     "benefits": {
@@ -215,6 +356,17 @@
     "exportConnection": "Sebelum melanjutkan, silakan <Link>ekspor koneksi Anda</Link> untuk memulihkan koneksi Anda kapan saja.",
     "modalDescription": "Apakah Anda yakin ingin memutuskan koneksi? Ini akan menghapus data Anda secara permanen.",
     "modalTitle": "Putuskan Koneksi Shinkai"
+  },
+  "dockerStatus": {
+    "dockerInstalledButNotRunning": "Docker Terinstal tetapi Tidak Berjalan",
+    "dockerInstalledButNotRunningDescription": "Docker terinstal tetapi tidak berjalan. Mulai sekarang untuk meningkatkan kecepatan eksekusi alat, stabilitas, dan kinerja keseluruhan.",
+    "dockerNotInstalled": "Docker Tidak Terinstal",
+    "dockerNotInstalledDescription": "Docker tidak terinstal di sistem Anda. Menginstalnya akan membuka kinerja yang lebih baik, pemrosesan yang lebih cepat, dan pengalaman alat AI yang lebih baik.",
+    "dockerRunning": "Docker Berjalan & Aktif",
+    "dockerRunningDescription": "Alat Anda sekarang berjalan dengan efisiensi penuh dengan Docker. Nikmati pengalaman yang lebih lancar!"
+  },
+  "errorBoundary": {
+    "genericError": "Terjadi kesalahan. Coba segarkan aplikasi."
   },
   "errors": {
     "nodeUnavailable": {
@@ -267,6 +419,15 @@
       "registerDesktopInstallation": "Instalasi Desktop Shinkai Anda berhasil terdaftar. Mungkin memerlukan beberapa jam untuk terdaftar dalam quest Galxe."
     }
   },
+  "homepage": {
+    "agentConfigurationRequired": "{{agentName}} memerlukan beberapa konfigurasi agar dapat berfungsi dengan baik.",
+    "enterToSend": "<span>Enter</span> untuk mengirim",
+    "installingDefaultAgents": "Menginstal agen default",
+    "recommendedAgents": "Agen yang Direkomendasikan",
+    "setupAgent": "Atur Agen",
+    "shiftEnterForNewLine": "<span>Shift + Enter</span> untuk baris baru",
+    "welcomeTitle": "Bagaimana saya bisa membantu Anda hari ini?"
+  },
   "inboxes": {
     "inboxName": "Nama",
     "updateName": "Perbarui nama kotak masuk"
@@ -276,10 +437,14 @@
       "agents": "AI",
       "aiTasks": "Tugas AI",
       "chats": "Obrolan",
+      "decentralizedAgents": "Agen AI Terdesentralisasi",
       "disconnect": "Putuskan Koneksi",
       "helpAndSupport": "Bantuan dan Dukungan",
       "manageAis": "Kelola AI",
+      "mcp": "MCP",
+      "scheduledTasks": "Tugas Terjadwal",
       "settings": "Pengaturan",
+      "tools": "Alat",
       "vectorFs": "Pencari Berkas AI Saya",
       "vectorSearch": "Pencarian Konten Berkas AI"
     },
@@ -337,6 +502,7 @@
     "claudeSuccessTitle": "Claude Desktop berhasil dikonfigurasi!",
     "configFailDescription": "{{errorMessage}} Silakan ikuti petunjuk di bawah untuk pengaturan manual:",
     "configFailTitle": "Konfigurasi Otomatis {{clientName}} Gagal",
+    "connectExternalClient": "Sambungkan Klien MCP Eksternal",
     "copyJsonButton": "Salin Konfigurasi JSON",
     "copyJsonSuccess": "Konfigurasi JSON telah disalin ke clipboard",
     "copySuccessCommand": "Perintah telah disalin ke papan klip",
@@ -410,8 +576,10 @@
     "statusUpdateFailed": "Gagal memperbarui status",
     "statusUpdated": "Status berhasil diperbarui",
     "title": "Server MCP",
+    "toolMustBeEnabled": "Alat harus diaktifkan sebelum mengubah mode server MCP",
     "tools": "alat",
     "toolsFor": "Alat untuk {{name}}",
+    "tooltipEnableFirst": "Aktifkan alat terlebih dahulu untuk mengelola mode Server MCP",
     "type": "Tipe",
     "update": "Perbarui Server MCP",
     "updateDescription": "Memperbarui konfigurasi untuk server MCP: {{name}}",
@@ -419,6 +587,50 @@
     "updateSuccess": "Server MCP berhasil diperbarui",
     "updateWarningDescription": "Memperbarui server ini akan mengatur ulang alat yang terkait.",
     "viewAvailableTools": "Lihat Alat yang Tersedia"
+  },
+  "networkAgentsPage": {
+    "addAgent": "Tambahkan Agen",
+    "addedDescription": "{{name}} sekarang ada dalam koleksi Anda. Mulai obrolan untuk menggunakannya!",
+    "addedSuccess": "Berhasil Ditambahkan!",
+    "agentsTab": "Agen",
+    "author": "Penulis",
+    "browseMore": "Jelajahi Agen Lain",
+    "confirmPayment": "Konfirmasi Pembayaran",
+    "connectWallet": "Sambungkan Dompet",
+    "connectWalletDescription": "Sambungkan dompet Anda untuk membayar penggunaan agen dan menerima penghasilan dari agen yang Anda terbitkan",
+    "costPerUse": "Biaya per penggunaan",
+    "costPerUseDescription": "Bayar setiap kali Anda menggunakan agen ini",
+    "descriptionNetwork": "Temukan dan terapkan agen AI dari jaringan global. Setiap agen beroperasi secara otonom dan dapat diintegrasikan ke dalam alur kerja Anda. Bayar per penggunaan atau terapkan agen untuk diakses oleh orang lain.",
+    "descriptionPublished": "Terbitkan agen AI Anda ke jaringan. Setiap agen beroperasi secara otonom dan dapat diintegrasikan ke dalam alur kerja Anda. Bayar per penggunaan atau terapkan agen untuk diakses oleh orang lain.",
+    "howPaymentsWork": "Cara kerja pembayaran",
+    "howPaymentsWorkDescription": "Saat Anda menggunakan agen ini, Anda akan diminta untuk mengonfirmasi pembayaran dari dompet yang terhubung. Pembayaran diproses di jaringan {{network}}.",
+    "manageWallet": "Kelola Dompet",
+    "networkToolDetails": "Detail Alat Jaringan",
+    "payPerUse": "Bayar per penggunaan",
+    "paymentRecipient": "Penerima Pembayaran",
+    "paymentSuccessful": "Pembayaran Berhasil!",
+    "paymentSuccessfulDescription": "Pembayaran Anda berhasil. Alat sekarang sedang dijalankan...",
+    "pleaseWait": "Silakan tunggu sementara kami memproses transaksi Anda...",
+    "processingPayment": "Memproses Pembayaran",
+    "publishedTab": "Agen yang Diterbitkan",
+    "registerIdentity": "Daftar Identitas",
+    "registerShinkaiIdentity": "Daftar Identitas Shinkai",
+    "registerShinkaiIdentityDescription": "Buat identitas unik Anda di jaringan Shinkai untuk menggunakan dan menerbitkan agen",
+    "removeFailed": "Gagal menghapus agen",
+    "removeSuccess": "Agen jaringan berhasil dihapus",
+    "searchPlaceholder": "Cari agen",
+    "setupRequired": "Pengaturan diperlukan untuk menggunakan agen berbayar",
+    "startChat": "Mulai Obrolan",
+    "titleDecentralized": "Agen Terdesentralisasi",
+    "titleNetwork": "Jaringan",
+    "tool": "Alat",
+    "toolPaymentRequired": "Pembayaran Alat Diperlukan",
+    "toolPaymentRequiredDescription": "Alat ini memerlukan pembayaran untuk digunakan.",
+    "toolRouterKey": "Kunci Router Alat",
+    "usdcBalance": "Saldo USDC",
+    "walletAddress": "Alamat Dompet",
+    "walletBalance": "Saldo Dompet",
+    "yourWallet": "Dompet Anda"
   },
   "notifications": {
     "messageReceived": {
@@ -465,6 +677,30 @@
     "setupShinkaiDesktopDescription": "Atur Desktop Shinkai untuk memulai",
     "uploadAFile": "Unggah File",
     "uploadAFileDescription": "Simpan catatan, situs web, dokumen, dan lainnya dengan aman di satu tempat."
+  },
+  "playgroundTool": {
+    "metadataError": "Metadata alat gagal. Coba hasilkan lagi.",
+    "prismError": "Editor kode mengalami kesalahan."
+  },
+  "prompt": {
+    "actions": {
+      "create": "Buat Prompt",
+      "update": "Perbarui Prompt"
+    },
+    "drawer": {
+      "createTitle": "Buat prompt kustom",
+      "updateTitle": "Perbarui Prompt"
+    },
+    "failCreate": "Gagal membuat prompt",
+    "failUpdate": "Gagal memperbarui prompt",
+    "fields": {
+      "content": "Konten Prompt",
+      "name": "Nama Prompt"
+    },
+    "libraryDescription": "Pilih prompt dari perpustakaan untuk memulai.",
+    "libraryTitle": "Perpustakaan Prompt",
+    "successCreate": "Prompt berhasil dibuat",
+    "successUpdate": "Prompt berhasil diperbarui"
   },
   "quickAsk": {
     "emptyStateDescription": "Coba tanyakan \\\"Bagaimana cara membuat permintaan HTTP di JavaScript\\\", \\\"Berikan saya 10 lagu rock terbaik di tahun 80-an\\\", \\\"Jelaskan bagaimana internet bekerja\\\"",
@@ -736,9 +972,19 @@
       "verifiedProtocolsTitle": "Protokol Terverifikasi",
       "wellSupportedProtocols": "Protokol yang Didukung Baik"
     },
+    "importModal": {
+      "action": "Impor",
+      "chooseFile": "Pilih file zip",
+      "fromUrl": "Impor dari URL",
+      "fromZip": "Impor dari Zip",
+      "title": "Impor Alat",
+      "urlDescription": "Impor alat dari URL.",
+      "zipDescription": "Impor alat dari file zip."
+    },
     "installFromStore": "Instal dari Toko",
-    "label": "Alat-alat Shinkai",
+    "label": "Alat-alat",
     "lookingForMoreTools": "Mencari lebih banyak alat?",
+    "newTool": "Alat Baru",
     "noToolsInCategory": "Tidak ada alat dalam kategori ini. Buat alat baru atau instal dari App Store.",
     "notifications": {
       "codeGenerationComplete": {
@@ -834,5 +1080,8 @@
       "folderShared": "Folder berhasil dibagikan",
       "folderUnshared": "Folder berhasil tidak dibagikan"
     }
+  },
+  "videoBanner": {
+    "unsupported": "Peramban Anda tidak mendukung tag video."
   }
 }

@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
@@ -31,6 +32,7 @@ function ToolsSwitchActionBarBase({
   checked,
   onClick,
 }: ToolsSwitchActionBarProps) {
+  const { t } = useTranslation();
   return (
     <TooltipProvider delayDuration={0}>
       <Tooltip>
@@ -50,7 +52,7 @@ function ToolsSwitchActionBarBase({
             ) : (
               <ToolsDisabledIcon className="size-4" />
             )}
-            <span>Tools</span>
+            <span>{t('tools.label')}</span>
           </button>
         </TooltipTrigger>
         <TooltipPortal>

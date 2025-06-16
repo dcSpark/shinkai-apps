@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useInitialRegistration } from '@shinkai_network/shinkai-node-state/v2/mutations/initialRegistration/useInitialRegistration';
 import { useGetEncryptionKeys } from '@shinkai_network/shinkai-node-state/v2/queries/getEncryptionKeys/useGetEncryptionKeys';
 import {
@@ -31,6 +32,7 @@ export const ResetConnectionDialog = ({
   onOpenChange: (open: boolean) => void;
   allowClose?: boolean;
 }) => {
+  const { t } = useTranslation();
   const { mutateAsync: shinkaiNodeKill, isPending: isShinkaiNodeKillPending } =
     useShinkaiNodeKillMutation();
   const {
@@ -96,23 +98,17 @@ export const ResetConnectionDialog = ({
       <AlertDialogContent className="w-[75%]">
         {allowClose && (
           <AlertDialogCancel
-            className="absolute right-3 top-3 border-0"
+            className="absolute top-3 right-3 border-0"
             disabled={isResetLoading}
           >
             <XIcon className="h-4 w-4" />
           </AlertDialogCancel>
         )}
         <AlertDialogHeader>
-          <AlertDialogTitle>App Reset Required</AlertDialogTitle>
+          <AlertDialogTitle>{t('appReset.title')}</AlertDialogTitle>
           <AlertDialogDescription>
             <div className="flex flex-col space-y-3 text-left text-white/70">
-              <div className="text-sm">
-                We&apos;re currently in beta and we made some significant
-                updates to improve your experience. To apply these updates, we
-                need to reset your data.
-                <br /> <br />
-                If you need assistance, please contact our support team.
-              </div>
+              <div className="text-sm">{t('appReset.description')}</div>
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -125,7 +121,7 @@ export const ResetConnectionDialog = ({
             size="sm"
             variant={'destructive'}
           >
-            Reset App
+            {t('appReset.action')}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

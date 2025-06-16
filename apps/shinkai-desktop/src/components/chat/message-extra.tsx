@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   type PaymentRequest,
   type WidgetToolData,
@@ -43,7 +44,7 @@ function Payment({
   // const [selectedPlan, setSelectedPlan] = React.useState<
   //   'one-time' | 'download' | 'both'
   // >('one-time');
-
+  const { t } = useTranslation();
   const [open, setOpen] = React.useState(true);
 
   const [status, setStatus] = React.useState<
@@ -107,29 +108,34 @@ function Payment({
                 >
                   <div className="space-y-1">
                     <div className="inline-flex items-center gap-2 text-center text-base font-medium">
-                      <CryptoWalletIcon /> Tool Payment Required
+                      <CryptoWalletIcon />{' '}
+                      {t('networkAgentsPage.toolPaymentRequired')}
                     </div>
                     <p className="text-sm">
-                      This tool requires payment to use.
+                      {t('networkAgentsPage.toolPaymentRequiredDescription')}
                     </p>
                   </div>
                   <div className="space-y-3">
                     <div className="bg-official-gray-850 rounded-lg p-4">
-                      <h4 className="mb-3 font-medium">Network Tool Details</h4>
+                      <h4 className="mb-3 font-medium">
+                        {t('networkAgentsPage.networkToolDetails')}
+                      </h4>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-official-gray-400">Tool:</span>
+                          <span className="text-official-gray-400">
+                            {t('networkAgentsPage.tool')}:
+                          </span>
                           <span>{data.tool_key}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-official-gray-400">
-                            Author:
+                            {t('networkAgentsPage.author')}:
                           </span>
                           <span>{data.invoice.provider_name}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-official-gray-400">
-                            Cost per use:
+                            {t('networkAgentsPage.costPerUse')}:
                           </span>
                           <span className="font-semibold text-white">
                             {data.usage_type.PerUse === 'Free'
@@ -150,7 +156,7 @@ function Payment({
                           data.usage_type.PerUse.Payment?.[0].payTo && (
                             <div className="flex justify-between">
                               <span className="text-official-gray-400">
-                                Payment Recipient:
+                                {t('networkAgentsPage.paymentRecipient')}:
                               </span>
                               <span className="inline-flex items-center gap-1 text-white">
                                 {truncateAddress(
@@ -255,11 +261,13 @@ function Payment({
                   )}
                 </RadioGroup> */}
                     <div className="bg-official-gray-850 rounded-lg p-4">
-                      <h4 className="mb-2 font-medium">Your Wallet</h4>
+                      <h4 className="mb-2 font-medium">
+                        {t('networkAgentsPage.yourWallet')}
+                      </h4>
                       <div className="flex flex-col gap-2">
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-official-gray-400">
-                            Wallet Address:
+                            {t('networkAgentsPage.walletAddress')}:
                           </span>
                           <div className="flex flex-col items-end justify-start gap-2">
                             {truncateAddress(data.invoice.address.address_id)}
@@ -267,7 +275,7 @@ function Payment({
                         </div>
                         <div className="flex items-start justify-between text-sm">
                           <span className="text-official-gray-400">
-                            USDC Balance:
+                            {t('networkAgentsPage.usdcBalance')}:
                           </span>
                           <div className="flex flex-col items-end justify-start gap-0.5">
                             {data.wallet_balances.data.map((balance) => (
@@ -296,7 +304,7 @@ function Payment({
                       size="md"
                       variant="outline"
                     >
-                      No, thanks
+                      {t('common.noThanks')}
                     </Button>
                     <Button
                       className="flex-1"
@@ -314,7 +322,7 @@ function Payment({
                       }}
                       size="md"
                     >
-                      Confirm Payment
+                      {t('networkAgentsPage.confirmPayment')}
                     </Button>
                   </div>
                 </motion.div>
@@ -332,10 +340,10 @@ function Payment({
                   <div className="flex flex-col items-center justify-center pt-8">
                     <Loader2 className="mb-4 size-8 animate-spin text-cyan-500" />
                     <span className="mb-2 text-lg text-white">
-                      Processing payment
+                      {t('networkAgentsPage.processingPayment')}
                     </span>
                     <p className="text-official-gray-400 text-sm">
-                      Please wait while we process your transaction...
+                      {t('networkAgentsPage.pleaseWait')}
                     </p>
                   </div>
                 </motion.div>
@@ -351,11 +359,10 @@ function Payment({
                   <div className="mx-auto flex max-w-sm flex-col items-center justify-center pt-8 text-center">
                     <CheckCircle className="mb-4 size-8 text-green-500" />
                     <span className="mb-2 text-lg font-semibold text-white">
-                      Payment Successful!
+                      {t('networkAgentsPage.paymentSuccessful')}
                     </span>
                     <span className="text-official-gray-400 mb-10 text-sm">
-                      Your payment went through successfully. The tool is now
-                      executing...
+                      {t('networkAgentsPage.paymentSuccessfulDescription')}
                     </span>
                     <Button
                       className="mx-auto min-w-[200px] rounded-md"
@@ -365,7 +372,7 @@ function Payment({
                       size="sm"
                       variant="outline"
                     >
-                      Dismiss
+                      {t('common.dismiss')}
                     </Button>
                   </div>
                 </motion.div>

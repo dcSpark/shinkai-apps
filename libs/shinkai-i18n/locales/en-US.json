@@ -2,6 +2,15 @@
   "extension": {
     "welcome": "Transform your web browsing experience using AI with Shinkai Visor ✨"
   },
+  "homepage": {
+    "welcomeTitle": "How can I help you today?",
+    "agentConfigurationRequired": "{{agentName}} requires some configurations to work properly.",
+    "setupAgent": "Setup Agent",
+    "recommendedAgents": "Recommended Agents",
+    "installingDefaultAgents": "Installing default agents",
+    "shiftEnterForNewLine": "<span>Shift + Enter</span> for a new line",
+    "enterToSend": "<span>Enter</span> to send"
+  },
   "desktop": {
     "welcome": "Welcome to Shinkai",
     "welcomeDescription": "<b>Shinkai lets you build AI agents in minutes — fast, private, and secure.</b> Run locally, collaborate through a decentralized network, and create AI workflows effortlessly. ",
@@ -54,7 +63,11 @@
       "manageAis": "Manage AIs",
       "settings": "Settings",
       "disconnect": "Disconnect",
-      "helpAndSupport": "Help and Support"
+      "helpAndSupport": "Help and Support",
+      "mcp": "MCPs",
+      "tools": "Tools",
+      "scheduledTasks": "Scheduled Tasks",
+      "decentralizedAgents": "Decentralized AI Agents"
     }
   },
   "chatDM": {
@@ -77,6 +90,7 @@
     "create": "Create AI Chat",
     "allMessagesLoaded": "All previous messages have been loaded ✅",
     "limitReachedTitle": "Limit Reached",
+    "sendMessagePlaceholder": "Send a message, or press \"/\" to access tools",
     "limitReachedDescription": "You've used all of your queries for the month on this model/agent. Please start a new chat with another agent.",
     "enterMessage": "Enter Message",
     "sendMessage": "Send Message",
@@ -439,11 +453,19 @@
     "create": "Create Registration Code"
   },
   "common": {
+    "dismiss": "Dismiss",
     "search": "Search",
+    "noThanks": "No, Thanks",
+    "noResultsFound": "No results found.",
     "adding": "Adding...",
     "updating": "Updating...",
+    "details": "Details",
+    "added": "Added",
+    "more": "More",
     "next": "Next",
+    "clear": "Clear",
     "enabled": "Enabled",
+    "disabled": "Disabled",
     "configure": "Configure",
     "create": "Create",
     "restore": "Restore",
@@ -481,7 +503,6 @@
     "update": "Update",
     "moreOptions": "More Options",
     "comingSoon": "Coming soon - Late August",
-    "noThanks": "No, Thanks",
     "iAgree": "I Agree",
     "getStarted": "Get Started Free",
     "passphrase": "Passphrase",
@@ -509,7 +530,15 @@
     "showLess": "Show Less",
     "viewDetails": "View Details",
     "selectItem": "Select an item to view details",
-    "about": "About"
+    "about": "About",
+    "refresh": "Refresh",
+    "tryAgain": "Try again",
+    "none": "None",
+    "advanced": "Advanced",
+    "all": "All",
+    "agent": "Agent",
+    "tool": "Tool",
+    "add": "Add"
   },
   "quickConnection": {
     "label": "Quick Connection",
@@ -626,6 +655,8 @@
     "addDescription": "Configure a new MCP server to connect with your Shinkai Node",
     "updateSuccess": "MCP server updated successfully",
     "updateFailed": "Failed to update MCP server",
+    "toolMustBeEnabled": "Tool must be enabled before changing MCP server mode",
+    "tooltipEnableFirst": "Enable tool first to manage MCP Server mode",
     "manualSetup": "Manual Setup",
     "addFromGitHub": "Add from GitHub",
     "tools": "Tools",
@@ -665,7 +696,23 @@
     }
   },
   "tools": {
-    "label": "Shinkai Tools",
+    "label": "Tools",
+    "newTool": "New Tool",
+    "create": {
+      "title": "Build AI Tools in Minutes",
+      "description": "Create, automate, and optimize your workflow with powerful AI tools.",
+      "step1Label": "Step 1",
+      "step1Text": "Select your model",
+      "step2Label": "Step 2",
+      "step2Text": "Write your requirements",
+      "messagePlaceholder": "Describe the tool you want to create...",
+      "generationError": "Failed to generate tool. You might want to try using a more powerful AI model for better results.",
+      "wellSupportedProtocols": "Well Supported Protocols",
+      "verifiedProtocolsTitle": "Verified Protocols",
+      "noProtocols": "No protocols found .",
+      "otherProtocols": "Other protocols may also work but haven't been officially verified.",
+      "requestProtocol": "Request Protocol"
+    },
     "description": "Manage, customize, and expand your AI tools.",
     "emptyState": {
       "search": {
@@ -679,7 +726,15 @@
     "store": {
       "label": "Explore AI Store"
     },
-    "create": "Create Tool",
+    "importModal": {
+      "title": "Import Tool",
+      "fromUrl": "Import from URL",
+      "fromZip": "Import from Zip",
+      "urlDescription": "Import a tool from a URL.",
+      "zipDescription": "Import a tool from a zip file.",
+      "chooseFile": "Choose a zip file",
+      "action": "Import"
+    },
     "successDuplicateTool": "Tool duplicated successfully",
     "errorDuplicateTool": "Failed to duplicate tool",
     "successOpenToolInCodeEditor": "Tool opened in code editor successfully",
@@ -795,7 +850,8 @@
     "customCopySseUrlButton": "Copy SSE URL",
     "customCopyCommandButton": "Copy Command",
     "copySuccessUrl": "SSE URL copied to clipboard",
-    "copySuccessCommand": "Command copied to clipboard"
+    "copySuccessCommand": "Command copied to clipboard",
+    "connectExternalClient": "Connect External MCP Client"
   },
   "feedback": {
     "button": "Feedback",
@@ -813,26 +869,233 @@
     }
   },
   "agents": {
-    "systemInstructions": "System Instructions"
+    "label": "Agents",
+    "explore": "Explore",
+    "myAgents": "My Agents",
+    "configureAgent": "Configure Agent",
+    "createFirstAgent": "Create your first Agent to start exploring the power of AI.",
+    "noAvailableAgents": "No available agents",
+    "systemInstructions": "System Instructions",
+    "chatWithAgent": "Chat with Agent",
+    "form": {
+      "newChat": "New Chat",
+      "chatHistory": "Chat History",
+      "closeChat": "Close Chat",
+      "emptyChatTitle": "Chat with your Agent",
+      "emptyChatDescription": "Send a message to start chatting with this agent",
+      "enter": "Enter",
+      "enterToSend": "to send",
+      "messagePlaceholder": "Send message...",
+      "updateAgent": "Update Agent",
+      "createAgent": "Create New Agent",
+      "newAgent": "New Agent",
+      "openChat": "Open Chat"
+    },
+    "create": {
+      "persona": "Persona",
+      "knowledge": "Knowledge",
+      "tools": "Tools",
+      "schedule": "Schedule",
+      "agentName": "Agent Name",
+      "agentNameHelperEdit": "You can change the agent name, but the agent ID remains unchanged. Agent ID: {{agentName}}",
+      "agentNameHelperCreate": "Enter a unique name for your AI agent. This will also be used as the agent ID {{agentName}}",
+      "description": "Description",
+      "descriptionPlaceholder": "e.g., Create user-centered designs and improve user interactions.",
+      "descriptionHelper": "Briefly describe your agent’s purpose (not used by the agent).",
+      "systemInstructions": "System Instructions",
+      "systemInstructionsPlaceholder": "e.g., You are a helpful assistant that can answer questions and help with tasks.",
+      "systemInstructionsHelper": "Control your agents behavior by adding custom instructions",
+      "llmProviderLabel": "Select AI",
+      "llmProviderDescription": "Choose the model that will power your agent",
+      "contextSettingsLabel": "Context Settings",
+      "messageContextLabel": "Message Context",
+      "messageContextDescription": "(Optional) You can control the message context here by forcing a static message with the user message e.g. {{user_message}}. And then say: Chao amigo!. This will add \"And then say: Chao amigo!\" to every message sent.",
+      "advanceOptionsLabel": "Advanced Options",
+      "enableStream": "Enable Stream",
+      "enableStreamDescription": "Streams the agent's response as it generates",
+      "enableTools": "Enable Tools",
+      "enableToolsDescription": "Allows the agent to use tools to complete tasks.",
+      "temperature": "Temperature",
+      "temperatureDescription": "Temperature is a parameter that affects the randomness of AI outputs. Higher temp = more unexpected, lower temp = more predictable.",
+      "topP": "Top P",
+      "topPDescription": "Adjust the probability threshold to increase the relevance of results. For example, a threshold of 0.9 could be optimal for targeted, specific applications, whereas a threshold of 0.95 or 0.97 might be preferred for tasks that require broader, more creative responses.",
+      "topK": "Top K",
+      "topKDescription": "Adjust the count of key words for creating sequences. This parameter governs the extent of the generated passage, forestalling too much repetition. Selecting a higher figure yields longer narratives, whereas a smaller figure keeps the text brief.",
+      "knowledgeBase": "Knowledge Base",
+      "knowledgeBaseDescription": "Provide your agent with local AI files to enhance its knowledge and capabilities.",
+      "knowledgeSearch": "Search folders and files ...",
+      "knowledgeAddNewFiles": "Add New Files",
+      "toolsDescription": "Select which tools & skills your agent can use to complete tasks.",
+      "toolsCreateNewTool": "Create New",
+      "selectedTools": "Selected Tools",
+      "overrideConfigurations": "Override Configurations",
+      "scheduleDescription": "Set when your agent will automatically run tasks.",
+      "scheduleNormalUsage": "Normal Usage",
+      "scheduleNormalUsageDescription": "Agent is ready to respond immediately when used upon in a chat.",
+      "scheduleRecurring": "Normal Usage + Scheduled Execution",
+      "scheduleRecurringDescription": "Normal usage and also configure specific times and frequencies for agent tasks e.g. Twitter Agent that performs a workflow like checking and answering messages every 5 minutes.",
+      "scheduleAIInstructions": "AI Instructions",
+      "scheduleAIInstructionsDescription": "Enter AI instructions for the scheduled execution...",
+      "scheduleAIInstructionsHelper": "Write the prompt that will be used for the scheduled execution.",
+      "cronExpression": "Cron Expression",
+      "cronExpressionHelper": "Enter a cron expression eg: */30 * * * * (every 30 min)",
+      "saveAndTestAgent": "Save & Test Agent"
+    },
+    "importModal": {
+      "title": "Import Agent",
+      "chooseFile": "Choose a zip file",
+      "action": "Import"
+    },
+    "publishDialog": {
+      "open": "Publish Agent",
+      "title": "Publish {{name}}",
+      "paymentAddress": "Payment Address",
+      "asset": "Asset",
+      "amount": "Amount",
+      "description": "Description",
+      "selectAgent": "Select Agent",
+      "searchAgents": "Search agents",
+      "publish": "Publish",
+      "published": "Published"
+    }
   },
   "agentsPage": {
     "description": "Create and explore AI agents with personalized instructions, enriched knowledge, <br /> diverse task capabilities, and more to tackle your goals autonomously.",
+    "exploreDescription": "Discover and install AI agents from the community to enhance your workflow <br /> and supercharge your productivity and creativity.",
     "notFoundTitle": "No available agents",
     "notFoundDescription": "Create your first Agent to start exploring the power of AI.",
     "addAgent": "Add Agent",
-    "goToTaskDetails": "Go to task details"
+    "goToTaskDetails": "Go to task details",
+    "exploreAgentsDescription": "Explore custom AI agents for your needs"
   },
   "aisPage": {
+    "label": "AI Models",
+    "shortDescription": "Explore a wide range of AI models",
     "description": "Easily manage both cloud and local AI models, <br /> switching between them seamlessly to fit your workflow."
   },
   "tasksPage": {
     "noTasksTitle": "No scheduled tasks found",
     "noTasksDescription": "Create your first scheduled task to automate reminders, summaries, or any other tasks you need to manage"
   },
+  "networkAgentsPage": {
+    "titleNetwork": "Network",
+    "titleDecentralized": "Decentralized Agents",
+    "agentsTab": "Agents",
+    "publishedTab": "Published Agents",
+    "manageWallet": "Manage Wallet",
+    "walletBalance": "Wallet Balance",
+    "descriptionNetwork": "Discover and deploy AI agents from the global network. Each agent operates autonomously and can be integrated into your workflows. Pay per use or deploy agents for others to access.",
+    "descriptionPublished": "Publish your AI agents to the network. Each agent operates autonomously and can be integrated into your workflows. Pay per use or deploy agents for others to access.",
+    "searchPlaceholder": "Search for agents",
+    "toolRouterKey": "Tool Router Key",
+    "addAgent": "Add Agent",
+    "addedSuccess": "Added Successfully!",
+    "addedDescription": "{{name}} is now in your collection. Start a chat to use it!",
+    "browseMore": "Browse More Agents",
+    "startChat": "Start Chat",
+    "setupRequired": "Setup required to use paid agents",
+    "removeSuccess": "Network agent removed successfully",
+    "removeFailed": "Failed to remove agent",
+    "registerShinkaiIdentity": "Register Shinkai Identity",
+    "registerShinkaiIdentityDescription": "Create your unique identity on the Shinkai network to use and publish agents",
+    "registerIdentity": "Register Identity",
+    "connectWallet": "Connect Wallet",
+    "connectWalletDescription": "Connect your wallet to pay for agent usage and receive earnings from your published agents",
+    "payPerUse": "Pay per use",
+    "costPerUse": "Cost per use",
+    "costPerUseDescription": "Pay each time you use this agent",
+    "howPaymentsWork": "How payments work",
+    "howPaymentsWorkDescription": "When you use this agent, you'll be prompted to confirm the payment from your connected wallet. Payments are processed on the {{network}} network.",
+    "toolPaymentRequired": "Tool Payment Required",
+    "toolPaymentRequiredDescription": "This tool requires payment to use.",
+    "networkToolDetails": "Network Tool Details",
+    "tool": "Tool",
+    "author": "Author",
+    "paymentRecipient": "Payment Recipient",
+    "yourWallet": "Your Wallet",
+    "walletAddress": "Wallet Address",
+    "usdcBalance": "USDC Balance",
+    "confirmPayment": "Confirm Payment",
+    "processingPayment": "Processing Payment",
+    "pleaseWait": "Please wait while we process your transaction...",
+    "paymentSuccessful": "Payment Successful!",
+    "paymentSuccessfulDescription": "Your payment went through successfully. The tool is now executing..."
+  },
   "mcpPage": {
     "exposeToolsTab": "Expose Tools",
     "mcpServersDescription": "Connect to an MCP server to instantly tap into external data sources and tools—like live weather updates, stock prices, or translation services—without building custom integrations.\nThis expands your system's capabilities with real-time information and easy access to new resources as your needs grow.",
     "exposeToolsDescription": "Expose your AI Tools through MCP to enable seamless integration with other MCP Clients \nand expand their capabilities.",
     "helpfulLinks": "You can find helpful MCPs to connect with Shinkai at smithery.ai and composio.dev."
+  },
+  "errorBoundary": {
+    "genericError": "Something went wrong. Try refreshing the app."
+  },
+  "videoBanner": {
+    "unsupported": "Your browser does not support the video tag."
+  },
+  "appReset": {
+    "title": "App Reset Required",
+    "description": "We're currently in beta and we made some significant updates to improve your experience. To apply these updates, we need to reset your data. If you need assistance, please contact our support team.",
+    "action": "Reset App"
+  },
+  "playgroundTool": {
+    "metadataError": "Tool metadata failed. Try generating again.",
+    "prismError": "The code editor encountered an error."
+  },
+  "prompt": {
+    "libraryTitle": "Prompt Library",
+    "libraryDescription": "Choose a prompt from the library to get started.",
+    "drawer": {
+      "createTitle": "Create custom prompt",
+      "updateTitle": "Update Prompt"
+    },
+    "fields": {
+      "name": "Prompt Name",
+      "content": "Prompt Content"
+    },
+    "actions": {
+      "create": "Create Prompt",
+      "update": "Update Prompt"
+    },
+    "successCreate": "Prompt created successfully",
+    "failCreate": "Failed to create prompt",
+    "successUpdate": "Prompt updated successfully",
+    "failUpdate": "Failed to update prompt"
+  },
+  "cronTask": {
+    "taskDescription": "Task Description",
+    "taskDescriptionHelper": "Briefly describe your agent's purpose (not used by the agent).",
+    "taskPrompt": "Task Prompt",
+    "promptPlaceholder": "e.g. Give me top hacker news stories",
+    "promptExample": "e.g. Give me top hacker news stories",
+    "cronExpression": "Cron Expression",
+    "cronExample": "Enter a cron expression eg: */30 * * * * (every 30 min)",
+    "cronWillRun": "This cron will run {{schedule}} ({{expression}})",
+    "scheduleOptions": {
+      "every5Min": "every 5 min",
+      "every5Hours": "every 5 hours",
+      "everyMonday8am": "every monday at 8am",
+      "everyJanuary1st12am": "every january 1st at 12am",
+      "every1stMonth12pm": "every 1st of the month at 12pm"
+    },
+    "aiModelConfiguration": "AI Model Configuration",
+    "aiAgent": "AI / Agent",
+    "forceToolUsage": "Force Tool Usage (Optional)",
+    "enableStream": "Enable Stream",
+    "enableTools": "Enable Tools",
+    "temperature": "Temperature",
+    "temperatureInfo": "Temperature is a parameter that affects the randomness of AI outputs. Higher temp = more unexpected, lower temp = more predictable.",
+    "topP": "Top P",
+    "topPInfo": "Adjust the probability threshold to increase the relevance of results. For example, a threshold of 0.9 could be optimal for targeted, specific applications, whereas a threshold of 0.95 or 0.97 might be preferred for tasks that require broader, more creative responses.",
+    "topK": "Top K",
+    "topKInfo": "Adjust the count of key words for creating sequences. This parameter governs the extent of the generated passage, forestalling too much repetition. Selecting a higher figure yields longer narratives, whereas a smaller figure keeps the text brief."
+  },
+  "dockerStatus": {
+    "dockerNotInstalled": "Docker Not Installed",
+    "dockerInstalledButNotRunning": "Docker Installed but Not Running",
+    "dockerRunning": "Docker Running & Active",
+    "dockerNotInstalledDescription": "Docker is not installed on your system. Installing it will unlock better performance, faster processing, and an improved AI tool experience.",
+    "dockerInstalledButNotRunningDescription": "Docker is installed but not running. Start it now to improve tool execution speed, stability, and overall performance.",
+    "dockerRunningDescription": "Your tools are now running at full efficiency with Docker. Enjoy a smoother experience!"
   }
 }

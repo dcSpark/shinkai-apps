@@ -465,11 +465,10 @@ function ToolsHome({
         <div className="flex flex-col gap-2">
           <div className="flex flex-col items-center">
             <h1 className="font-clash text-center text-4xl font-medium text-white">
-              Build AI Tools in Minutes
+              {t('tools.create.title')}
             </h1>
             <p className="text-official-gray-400 text-center text-sm">
-              Create, automate, and optimize your workflow with powerful AI
-              tools.
+              {t('tools.create.description')}
             </p>
           </div>
         </div>
@@ -478,10 +477,10 @@ function ToolsHome({
           <div className="flex flex-col gap-2.5">
             <div className="flex items-center gap-2">
               <span className="bg-official-gray-900 border-official-gray-700 rounded-full border px-3 py-1 text-xs font-semibold text-white">
-                Step 1
+                {t('tools.create.step1Label')}
               </span>
               <span className="text-base font-medium text-white">
-                Select your model
+                {t('tools.create.step1Text')}
               </span>
             </div>
             <div className="p-2">
@@ -497,10 +496,10 @@ function ToolsHome({
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2.5">
               <span className="bg-official-gray-900 border-official-gray-700 rounded-full border px-3 py-1 text-xs font-semibold text-white">
-                Step 2
+                {t('tools.create.step2Label')}
               </span>
               <span className="text-base font-medium text-white">
-                Write your requirements
+                {t('tools.create.step2Text')}
               </span>
             </div>
             <div className="p-2">
@@ -580,7 +579,7 @@ function ToolsHome({
                       onSubmit={() => {
                         startToolCreation(form.getValues());
                       }}
-                      placeholder={'Describe the tool you want to create...'}
+                      placeholder={t('tools.create.messagePlaceholder')}
                       textareaClassName="max-h-[200px] min-h-[200px] p-4 text-sm"
                       value={form.watch('message')}
                     />
@@ -591,8 +590,7 @@ function ToolsHome({
                       <CircleAlert className="mt-1 size-4 shrink-0" />
                       <div className="flex flex-1 flex-col gap-0.5">
                         <div className="-ml-2.5 w-full shrink-0 truncate rounded-full px-2.5 py-1 text-xs">
-                          Failed to generate tool. You might want to try using a
-                          more powerful AI model for better results.
+                          {t('tools.create.generationError')}
                         </div>
                         <div className="text-gray-80 py-1">{error}</div>
                       </div>
@@ -630,6 +628,7 @@ function ToolsHome({
 }
 
 const ChatBoxFooterBase = () => {
+  const { Trans } = useTranslation();
   return (
     <div
       className={cn(
@@ -637,13 +636,18 @@ const ChatBoxFooterBase = () => {
       )}
     >
       <div className="text-official-gray-400 flex w-full items-center justify-between gap-2 px-2">
-        <span className="text-xs font-light">
-          <span className="font-medium">Shift + Enter</span> for a new line
-        </span>
-
-        <span className="text-xs font-light">
-          <span className="font-medium">Enter</span> to send
-        </span>
+        <Trans
+          i18nKey="homepage.shiftEnterForNewLine"
+          components={{
+            span: <span className="font-medium" />,
+          }}
+        />
+        <Trans
+          i18nKey="homepage.enterToSend"
+          components={{
+            span: <span className="font-medium" />,
+          }}
+        />
       </div>
     </div>
   );
@@ -652,12 +656,13 @@ const ChatBoxFooter = memo(ChatBoxFooterBase);
 
 function SupportedProtocols() {
   const { data: toolProtocols, isPending } = useGetToolProtocols();
+  const { t } = useTranslation();
 
   return (
     <Dialog>
       <DialogTrigger className="text-official-gray-300 hover:text-official-gray-200 flex items-center gap-1 text-sm transition-colors">
         <div className="border-official-gray-300 border-b">
-          Well Supported Protocols
+          {t('tools.create.wellSupportedProtocols')}
         </div>
         <ArrowRight className="ml-0.5 h-3 w-3" />
       </DialogTrigger>
@@ -673,7 +678,9 @@ function SupportedProtocols() {
           </Button>
         </DialogClose>
         <DialogHeader>
-          <DialogTitle className="text-xl">Verified Protocols</DialogTitle>
+          <DialogTitle className="text-xl">
+            {t('tools.create.verifiedProtocolsTitle')}
+          </DialogTitle>
         </DialogHeader>
 
         {isPending ? (
@@ -722,18 +729,17 @@ function SupportedProtocols() {
         ) : (
           <div className="py-8 text-center">
             <p className="text-official-gray-400 text-sm">
-              No protocols found .
+              {t('tools.create.noProtocols')}
             </p>
           </div>
         )}
 
         <div className="border-official-gray-780 flex flex-col items-start justify-between gap-3 border-t pt-4 sm:flex-row sm:items-center">
           <p className="text-official-gray-400 text-xs">
-            Other protocols may also work but haven&apos;t been officially
-            verified.
+            {t('tools.create.otherProtocols')}
           </p>
           <FeedbackModal
-            buttonLabel="Request Protocol"
+            buttonLabel={t('tools.create.requestProtocol')}
             buttonProps={{ className: 'shrink-0' }}
           />
         </div>

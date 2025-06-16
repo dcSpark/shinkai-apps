@@ -6,6 +6,7 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import React from 'react';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 
 interface VideoBannerProps {
   onClose?: () => void;
@@ -17,6 +18,7 @@ export const SHINKAI_DOCS_URL = 'https://docs.shinkai.com';
 
 export function VideoBanner({ title, videoUrl, duration }: VideoBannerProps) {
   const [isVideoDialogOpen, setIsVideoDialogOpen] = React.useState(false);
+  const { t } = useTranslation();
 
   return (
     <>
@@ -56,7 +58,7 @@ export function VideoBanner({ title, videoUrl, duration }: VideoBannerProps) {
           </DialogHeader>
           <div className="relative aspect-video w-full overflow-hidden rounded-lg">
             <video className="h-full w-full" controls src={videoUrl}>
-              Your browser does not support the video tag.
+              {t('videoBanner.unsupported')}
             </video>
           </div>
         </DialogContent>

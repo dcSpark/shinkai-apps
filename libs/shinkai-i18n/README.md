@@ -78,3 +78,4 @@ const myFunction;
 
 Note that this should only be used in cases where we can't use `useTranslation`. The hook does extra
 processing, hence why it is preferred in all other cases.
+
