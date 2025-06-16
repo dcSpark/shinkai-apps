@@ -149,7 +149,9 @@ export default function ImportToolModal() {
         return (
           <div>
             <DialogHeader>
-              <DialogTitle className="text-center">Import</DialogTitle>
+              <DialogTitle className="text-center">
+                {t('tools.importModal.title')}
+              </DialogTitle>
             </DialogHeader>
             <div className="mt-8 space-y-3">
               <Button
@@ -159,9 +161,11 @@ export default function ImportToolModal() {
               >
                 <Link className="size-5" />
                 <div>
-                  <div className="text-sm font-semibold">Import from URL</div>
+                  <div className="text-sm font-semibold">
+                    {t('tools.importModal.fromUrl')}
+                  </div>
                   <div className="text-gray-80 text-sm">
-                    Import a tool from a URL.
+                    {t('tools.importModal.urlDescription')}
                   </div>
                 </div>
               </Button>
@@ -172,9 +176,11 @@ export default function ImportToolModal() {
               >
                 <Package2Icon className="size-5" />
                 <div>
-                  <div className="text-sm font-semibold">Import from Zip</div>
+                  <div className="text-sm font-semibold">
+                    {t('tools.importModal.fromZip')}
+                  </div>
                   <div className="text-gray-80 text-sm">
-                    Import a tool from a zip file.
+                    {t('tools.importModal.zipDescription')}
                   </div>
                 </div>
               </Button>
@@ -185,7 +191,9 @@ export default function ImportToolModal() {
         return (
           <div>
             <DialogHeader>
-              <DialogTitle className="text-center">Import From URL</DialogTitle>
+              <DialogTitle className="text-center">
+                {t('tools.importModal.fromUrl')}
+              </DialogTitle>
             </DialogHeader>{' '}
             <Form {...importToolForm}>
               <form
@@ -214,7 +222,7 @@ export default function ImportToolModal() {
                     size="auto"
                     type="submit"
                   >
-                    Import
+                    {t('tools.importModal.action')}
                   </Button>
                 </DialogFooter>
               </form>
@@ -225,7 +233,9 @@ export default function ImportToolModal() {
         return (
           <div>
             <DialogHeader>
-              <DialogTitle className="text-center">Import From ZIP</DialogTitle>
+              <DialogTitle className="text-center">
+                {t('tools.importModal.fromZip')}
+              </DialogTitle>
             </DialogHeader>{' '}
             <Form {...importToolZipForm}>
               <form
@@ -243,7 +253,7 @@ export default function ImportToolModal() {
                       <FormControl>
                         <FileUploader
                           accept={['zip'].join(',')}
-                          descriptionText={`Choose a zip file`}
+                          descriptionText={t('tools.importModal.chooseFile')}
                           maxFiles={1}
                           onChange={(acceptedFiles) => {
                             field.onChange(acceptedFiles);
@@ -264,7 +274,7 @@ export default function ImportToolModal() {
                     size="auto"
                     type="submit"
                   >
-                    Import
+                    {t('tools.importModal.action')}
                   </Button>
                 </DialogFooter>
               </form>
@@ -297,7 +307,7 @@ export default function ImportToolModal() {
         )}
       >
         <ImportIcon className="size-4" />
-        Import
+        {t('tools.importModal.title')}
       </DialogTrigger>
       <DialogContent
         className="max-w-[500px]"

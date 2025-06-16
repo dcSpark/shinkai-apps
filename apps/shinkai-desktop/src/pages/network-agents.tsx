@@ -4,6 +4,7 @@ import { useGetInstalledNetworkTools } from '@shinkai_network/shinkai-node-state
 import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
 import { useGetWalletBalance } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletBalance/useGetWalletBalance';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   Card,
   CardContent,
@@ -74,6 +75,8 @@ export const NetworkAgentPage = () => {
     'network',
   );
 
+  const { t } = useTranslation();
+
   const auth = useAuth((state) => state.auth);
   const optInExperimental = useSettings((state) => state.optInExperimental);
   const { data: walletInfo } = useGetWalletList({
@@ -117,7 +120,11 @@ export const NetworkAgentPage = () => {
                 'font-clash inline-flex items-center gap-2 text-3xl font-medium',
               )}
             >
-              <h1>{optInExperimental ? 'Network' : 'Descentralized Agents'}</h1>
+              <h1>
+                {optInExperimental
+                  ? t('networkAgentsPage.titleNetwork')
+                  : t('networkAgentsPage.titleDecentralized')}
+              </h1>
               {optInExperimental && (
                 <TabsList className="bg-official-gray-950/80 flex h-10 w-fit items-center gap-2 rounded-full px-1 py-1">
                   <TabsTrigger
@@ -129,7 +136,7 @@ export const NetworkAgentPage = () => {
                     )}
                     value="network"
                   >
-                    Agents
+                    {t('networkAgentsPage.agentsTab')}
                   </TabsTrigger>
                   {optInExperimental && (
                     <TabsTrigger
@@ -141,7 +148,7 @@ export const NetworkAgentPage = () => {
                       )}
                       value="published"
                     >
-                      Published Agents
+                      {t('networkAgentsPage.publishedTab')}
                     </TabsTrigger>
                   )}
                 </TabsList>
@@ -152,7 +159,7 @@ export const NetworkAgentPage = () => {
               <Link to="/settings/crypto-wallet">
                 <Button variant="outline" size="sm">
                   <CryptoWalletIcon className="size-4" />
-                  Connect Wallet
+                  {t('networkAgentsPage.connectWallet')}
                 </Button>
               </Link>
             )}
@@ -172,7 +179,9 @@ export const NetworkAgentPage = () => {
                 <PopoverContent className="w-80" align="end">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className="text-sm font-medium">Wallet Balance</div>
+                      <div className="text-sm font-medium">
+                        {t('networkAgentsPage.walletBalance')}
+                      </div>
                       <div className="text-official-gray-400 text-xs">
                         {walletInfo?.payment_wallet?.data?.network}
                       </div>
@@ -216,7 +225,7 @@ export const NetworkAgentPage = () => {
                         'w-full',
                       )}
                     >
-                      Manage Wallet
+                      {t('networkAgentsPage.manageWallet')}
                     </Link>
                   </div>
                 </PopoverContent>
@@ -225,8 +234,8 @@ export const NetworkAgentPage = () => {
           </div>
           <p className="text-official-gray-400 text-sm whitespace-pre-wrap">
             {selectedTab === 'network'
-              ? 'Discover and deploy AI agents from the global network. Each agent operates autonomously and can be integrated into your workflows. Pay per use or deploy agents for others to access.'
-              : 'Publish your AI agents to the network. Each agent operates autonomously and can be integrated into your workflows. Pay per use or deploy agents for others to access.'}
+              ? t('networkAgentsPage.descriptionNetwork')
+              : t('networkAgentsPage.descriptionPublished')}
           </p>
         </div>
         {(!isWalletConnected || !isIdentityRegistered) && (
@@ -296,7 +305,7 @@ const DiscoverNetworkAgents = ({
   return (
     <div className="space-y-8">
       <SearchInput
-        placeholder="Search for agents"
+        placeholder={t('networkAgentsPage.searchPlaceholder')}
         classNames={{ input: 'bg-transparent' }}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
@@ -526,7 +535,7 @@ const AgentCard = ({
                     )}
                     <div className="flex justify-between py-2">
                       <span className="text-official-gray-400 text-sm">
-                        Tool Router Key
+                        {t('networkAgentsPage.toolRouterKey')}
                       </span>
                       <span className="font-mono text-xs">
                         {agent?.toolRouterKey}
@@ -537,7 +546,9 @@ const AgentCard = ({
                       <div className="flex items-center gap-3">
                         <CreditCard className="h-5 w-5" />
                         <div>
-                          <p className="font-medium">Cost per use</p>
+                          <p className="font-medium">
+                            {t('networkAgentsPage.costPerUse')}
+                          </p>
                           <p className="text-official-gray-400 text-sm">
                             Pay each time you use this agent
                           </p>
@@ -562,7 +573,7 @@ const AgentCard = ({
                         <Info className="mt-0.5 h-4 w-4 shrink-0 text-cyan-400" />
                         <div>
                           <p className="text-sm font-medium text-cyan-400">
-                            How payments work
+                            {t('networkAgentsPage.howPaymentsWork')}
                           </p>
                           <p className="text-official-gray-400 text-sm">
                             When you use this agent, you'll be prompted to
@@ -602,7 +613,7 @@ const AgentCard = ({
                           setShowDetailsModal(false);
                         }}
                       >
-                        Add Agent
+                        {t('agentsPage.addAgent')}
                       </Button>
                     </DialogFooter>
                   ) : isInstalled ? (
@@ -621,7 +632,7 @@ const AgentCard = ({
                   size="sm"
                 >
                   <PlusIcon className="h-4 w-4" />
-                  Add Agent
+                  {t('agentsPage.addAgent')}
                 </Button>
               ) : null}
               {isInstalled && (
@@ -725,8 +736,8 @@ export const InstallAgentModal = ({
             <span>Add {agent.name}</span>
           </DialogTitle>
           <DialogDescription className="text-official-gray-400">
-            {step === 1 && 'Add this AI agent to your collection'}
-            {step === 2 && 'Ready to use in chat!'}
+            {step === 1 && t('networkAgentsPage.addAgent')}
+            {step === 2 && t('networkAgentsPage.addedSuccess')}
           </DialogDescription>
         </DialogHeader>
 
@@ -736,9 +747,9 @@ export const InstallAgentModal = ({
               <div className="flex flex-col gap-2.5">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-cyan-400" />
-                  <p className="text-sm font-medium text-cyan-400">
-                    How payments work
-                  </p>
+                          <p className="text-sm font-medium text-cyan-400">
+                            {t('networkAgentsPage.howPaymentsWork')}
+                          </p>
                 </div>
                 <div>
                   <div className="text-official-gray-100 space-y-2 text-sm">
@@ -778,7 +789,9 @@ export const InstallAgentModal = ({
 
               <div className="border-official-gray-780 border-t pt-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-white">Cost per use:</span>
+                  <span className="text-white">
+                    {t('networkAgentsPage.costPerUse')}:
+                  </span>
                   <span className="font-semibold text-white">
                     {isFreePricing
                       ? 'FREE'
@@ -804,7 +817,7 @@ export const InstallAgentModal = ({
                 isLoading={isAddingAgent}
               >
                 {isAddingAgent ? null : <Plus className="h-4 w-4" />}
-                Add Agent
+                {t('agentsPage.addAgent')}
               </Button>
             </div>
           </div>
@@ -814,10 +827,10 @@ export const InstallAgentModal = ({
           <div className="py-8 text-center">
             <CheckCircle className="mx-auto mb-4 h-12 w-12 text-green-400" />
             <h3 className="mb-2 text-base font-semibold text-white">
-              Added Successfully!
+              {t('networkAgentsPage.addedSuccess')}
             </h3>
             <p className="text-official-gray-400 mb-6 text-sm">
-              {agent.name} is now in your collection. Start a chat to use it!
+              {t('networkAgentsPage.addedDescription', { name: agent.name })}
             </p>
             <div className="mx-auto flex w-full max-w-sm gap-3">
               <Button
@@ -826,7 +839,7 @@ export const InstallAgentModal = ({
                 className="flex-1"
                 size="md"
               >
-                Browse More Agents
+                {t('networkAgentsPage.browseMore')}
               </Button>
               <Button
                 onClick={async () => {
@@ -845,7 +858,7 @@ export const InstallAgentModal = ({
                 size="md"
                 className="flex-1"
               >
-                Start Chat
+                {t('networkAgentsPage.startChat')}
               </Button>
             </div>
           </div>
@@ -869,7 +882,7 @@ function SetupGuide({
     <Alert variant="warning" className="mb-6 border-0 bg-yellow-300/5 p-6">
       <div className="flex flex-col gap-4">
         <AlertTitle className="text-base font-semibold text-white">
-          Setup required to use paid agents
+          {t('networkAgentsPage.setupRequired')}
         </AlertTitle>
         <AlertDescription>
           <div className="space-y-5">
@@ -914,7 +927,7 @@ function SetupGuide({
                 )}
                 <div>
                   <p className="text-sm font-medium text-white">
-                    Connect Crypto Wallet
+                    {t('networkAgentsPage.connectWallet')}
                   </p>
                   <p className="text-official-gray-200 text-sm">
                     Connect your wallet to pay for agent usage and receive

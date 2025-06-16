@@ -72,7 +72,7 @@ export const McpRegistryPage = () => {
         <div className="flex flex-col gap-5 pt-10 pb-6">
           <div className="flex justify-between gap-4">
             <div className="font-clash inline-flex items-center gap-5 text-3xl font-medium">
-              <h1>MCPs</h1>
+              <h1>{t('mcpServers.title')}</h1>
               <TabsList className="bg-official-gray-950/80 flex h-10 w-fit items-center gap-2 rounded-full px-1 py-1">
                 <TabsTrigger
                   className={cn(
@@ -83,7 +83,7 @@ export const McpRegistryPage = () => {
                   )}
                   value="mcp_servers"
                 >
-                  MCP Servers
+                  {t('mcpServers.label')}
                   <span className="text-official-gray-400 inline-flex items-center gap-1 text-xs">
                     MCP <MoveRightIcon className="size-2.5" /> Shinkai
                   </span>
@@ -264,15 +264,15 @@ const ExposeToolsAsMcp = () => {
               size="sm"
               value="all"
             >
-              All
+              {t('common.all')}
             </ToggleGroupItem>
             {[
               {
-                label: 'Agent',
+                label: t('common.agent'),
                 value: 'agent',
               },
               {
-                label: 'Tool',
+                label: t('common.tool'),
                 value: 'tool',
               },
             ].map((tool) => (
@@ -289,7 +289,7 @@ const ExposeToolsAsMcp = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="md" variant="outline">
-                Connect External MCP Client
+                {t('mcpClients.connectExternalClient')}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="center" className="p-1 px-2">
@@ -325,8 +325,7 @@ const ExposeToolsAsMcp = () => {
           {filteredToolsList?.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 py-8">
               <p className="text-official-gray-400 text-sm">
-                No tools found in this category. Create a new tool or install
-                from the App Store.
+                {t('tools.noToolsInCategory')}
               </p>
             </div>
           ) : (
@@ -472,7 +471,7 @@ const McpCard = ({
   const { t } = useTranslation();
   const { mutateAsync: setToolMcpEnabled } = useSetToolMcpEnabled({
     onError: (error) => {
-      toast.error('Failed to update MCP server mode', {
+      toast.error(t('mcpServers.updateFailed'), {
         description: error.response?.data?.message ?? error.message,
       });
     },
@@ -532,9 +531,7 @@ const McpCard = ({
                   onCheckedChange={async () => {
                     if (!auth) return;
                     if (toolEnabled !== true) {
-                      toast.error(
-                        'Tool must be enabled before changing MCP server mode',
-                      );
+                      toast.error(t('mcpServers.toolMustBeEnabled'));
                       return;
                     }
                     await setToolMcpEnabled({
@@ -550,9 +547,9 @@ const McpCard = ({
             <TooltipPortal>
               <TooltipContent align="center" side="top">
                 {toolEnabled !== true
-                  ? 'Enable tool first to manage MCP Server mode'
-                  : `MCP Server ${
-                      toolMcpEnabled === true ? 'Enabled' : 'Disabled'
+                  ? t('mcpServers.tooltipEnableFirst')
+                  : `${t('mcpServers.label')} ${
+                      toolMcpEnabled === true ? t('common.enabled') : t('common.disabled', 'Disabled')
                     }`}
               </TooltipContent>
             </TooltipPortal>
