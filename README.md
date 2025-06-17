@@ -277,7 +277,7 @@ npx nx run shinkai-i18n:i18n
 <p align="center">
   <strong>Built with ❤️ by the Shinkai community</strong>
   <br/>
-  <a href="https://github.com/dcSpark/shinkai-apps/blob/main/LICENSE">MIT License</a> • 
+  <a href="https://github.com/dcSpark/shinkai-apps/blob/main/LICENSE">Apache License</a> • 
   <a href="https://github.com/dcSpark/shinkai-apps/issues">Report Bug</a> • 
   <a href="https://github.com/dcSpark/shinkai-apps/issues">Request Feature</a>
 </p>
