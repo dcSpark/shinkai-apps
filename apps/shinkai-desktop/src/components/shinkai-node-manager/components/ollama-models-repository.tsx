@@ -306,10 +306,7 @@ export const OllamaModelsRepository = ({
           <TableBody>
             {!rowVirtualizer.getVirtualItems()?.length && (
               <TableRow>
-                <TableCell
-                  className="h-24 text-center"
-                  colSpan={table.getAllColumns().length}
-                >
+                <TableCell className="h-24 text-center">
                   <span className="text-white">
                     {t('llmProviders.notFound.title')}
                   </span>

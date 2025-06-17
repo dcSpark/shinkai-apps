@@ -793,6 +793,7 @@ export default function ToolDetailsCard({
                 value: toolKey,
               },
               'keywords' in tool &&
+                tool.keywords &&
                 tool.keywords.length > 0 && {
                   label: 'Keyword',
                   value: tool.keywords.join(', '),

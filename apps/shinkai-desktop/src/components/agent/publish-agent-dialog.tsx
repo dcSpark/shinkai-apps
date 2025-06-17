@@ -1,3 +1,4 @@
+import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   type ShinkaiToolHeader,
   type ToolOffering,
@@ -30,7 +31,7 @@ export default function PublishAgentDialog() {
   const [description, setDescription] = useState('');
 
   const auth = useAuth((s) => s.auth);
-
+  const { t } = useTranslation();
   const { data: tools } = useGetTools({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',

@@ -49,6 +49,7 @@ import { SimpleLayout } from './layout/simple-layout';
 export const Tasks = () => {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
+
   const {
     data: tasks,
     isPending,

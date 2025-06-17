@@ -59,10 +59,9 @@ export const ExportConnection = () => {
       reader.readAsDataURL(file);
     });
     const path = await save({
-      defaultPath:
-        `${auth?.shinkai_identity}_${auth?.registration_name}.shinkai.key`
-          .replace(/@/g, '')
-          .replace(/\//g, '_'),
+      defaultPath: `${auth?.shinkai_identity}.shinkai.key`
+        .replace(/@/g, '')
+        .replace(/\//g, '_'),
     });
     if (path) {
       const arrayBuffer = await fetch(dataUrl).then((response) =>

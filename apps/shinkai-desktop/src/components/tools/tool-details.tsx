@@ -4,7 +4,7 @@ import {
   type NetworkShinkaiTool,
   type PythonShinkaiTool,
   type RustShinkaiTool,
-  type McpServerToolType,
+  type McpServerTool as McpServerToolType,
   type ShinkaiTool,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useGetPlaygroundTools } from '@shinkai_network/shinkai-node-state/v2/queries/getPlaygroundTools/useGetPlaygroundTools';
