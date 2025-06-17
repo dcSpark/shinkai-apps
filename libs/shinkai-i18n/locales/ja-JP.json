@@ -943,7 +943,29 @@
       "updateOnlyThisTool": "このツールのみを更新"
     },
     "configurationRequired": "ツールの設定が必要です",
-    "create": "ツールを作成",
+    "create": {
+      "backToTools": "ツールに戻る",
+      "customModel": "カスタムモデル",
+      "customModelDescription": "特定のニーズに合わせて好みのAIモデルを選択します。",
+      "description": "強力なAIツールを使って、ワークフローを作成、自動化、最適化します。",
+      "generationError": "ツールの生成に失敗しました。より強力なAIモデルを使用して、より良い結果を得ることをお勧めします。",
+      "messagePlaceholder": "作成したいツールを説明してください...",
+      "noProtocols": "プロトコルが見つかりませんでした。",
+      "otherProtocols": "他のプロトコルも機能する可能性がありますが、公式に確認されていません。",
+      "requestProtocol": "プロトコルをリクエスト",
+      "shinkaiCodeGenerator": "深海コードジェネレーター",
+      "shinkaiCodeGeneratorDescription": "当社の専門的なAIコード生成ツールを使用してツールを構築します。",
+      "shinkaiFreeTrial": "深海無料トライアル",
+      "shinkaiFreeTrialDescription": "ツールを構築するのに最適で、提供するコンテンツに対応します。",
+      "shinkaiFreeTrialRecommendation": "AIが必要とするドキュメントを手動でコピー＆ペーストし、<documentation></documentation>内に配置してください。",
+      "step1Label": "ステップ 1",
+      "step1Text": "モデルを選択",
+      "step2Label": "ステップ 2",
+      "step2Text": "要件を書き込む",
+      "title": "数分でAIツールを構築",
+      "verifiedProtocolsTitle": "確認済みプロトコル",
+      "wellSupportedProtocols": "十分にサポートされたプロトコル"
+    },
     "description": "AIツールを管理、カスタマイズ、拡張します。",
     "emptyState": {
       "search": {
@@ -982,7 +1004,7 @@
       "zipDescription": "Zipファイルからツールをインポートします。"
     },
     "installFromStore": "ストアからインストール",
-    "label": "深海ツール",
+    "label": "ツール",
     "lookingForMoreTools": "さらにツールを探していますか？",
     "newTool": "新しいツール",
     "noToolsInCategory": "このカテゴリにはツールがありません。新しいツールを作成するか、App Storeからインストールしてください。",

@@ -39,6 +39,14 @@
         "lintFilePatterns": ["apps/shinkai-desktop/**/*.{ts,tsx,js,jsx}"]
       }
     },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
+      "options": {
+        "cwd": "apps/shinkai-desktop",
+        "commands": ["tsc -p tsconfig.app.json"]
+      }
+    },
     "cargo-check": {
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",

@@ -65,8 +65,7 @@ export const VectorFsFolderMoveAction = () => {
               nodeAddress: auth?.node_address ?? '',
               token: auth?.api_v2_key ?? '',
               originPath: selectedFolder?.path ?? '',
-              destinationPath:
-                `${destinationFolderPath}/${selectedFolder?.path}` ?? '/',
+              destinationPath: `${destinationFolderPath ?? ''}/${selectedFolder?.path ?? ''}`,
             });
           }}
           size="sm"
@@ -176,8 +175,7 @@ export const VectorFsFolderCopyAction = () => {
               nodeAddress: auth?.node_address ?? '',
               token: auth?.api_v2_key ?? '',
               originPath: selectedFolder?.path ?? '',
-              destinationPath:
-                `${destinationFolderPath}/${selectedFolder?.path}` ?? '/',
+              destinationPath: `${destinationFolderPath ?? ''}/${selectedFolder?.path ?? ''}`,
             });
           }}
           size="sm"

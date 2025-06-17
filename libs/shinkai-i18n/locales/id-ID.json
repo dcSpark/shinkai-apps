@@ -943,7 +943,29 @@
       "updateOnlyThisTool": "Perbarui hanya alat ini"
     },
     "configurationRequired": "Konfigurasi Alat Diperlukan",
-    "create": "Buat Alat",
+    "create": {
+      "backToTools": "Kembali ke Alat",
+      "customModel": "Model Kustom",
+      "customModelDescription": "Pilih model AI yang Anda inginkan untuk kebutuhan spesifik Anda.",
+      "description": "Buat, otomatisasi, dan optimalkan alur kerja Anda dengan alat AI yang kuat.",
+      "generationError": "Gagal menghasilkan alat. Anda mungkin ingin mencoba menggunakan model AI yang lebih kuat untuk hasil yang lebih baik.",
+      "messagePlaceholder": "Deskripsikan alat yang ingin Anda buat...",
+      "noProtocols": "Tidak ada protokol yang ditemukan.",
+      "otherProtocols": "Protokol lain mungkin juga berfungsi tetapi belum diverifikasi secara resmi.",
+      "requestProtocol": "Minta Protokol",
+      "shinkaiCodeGenerator": "Generator Kode Shinkai",
+      "shinkaiCodeGeneratorDescription": "Membangun alat menggunakan alat pembuatan kode AI khusus kami.",
+      "shinkaiFreeTrial": "Uji Coba Gratis Shinkai",
+      "shinkaiFreeTrialDescription": "Bagus untuk membangun alat, bekerja dengan konten apa pun yang Anda berikan.",
+      "shinkaiFreeTrialRecommendation": "Salin dan tempel dokumentasi yang diperlukan AI secara manual dan letakkan di dalam <documentation></documentation>.",
+      "step1Label": "Langkah 1",
+      "step1Text": "Pilih model Anda",
+      "step2Label": "Langkah 2",
+      "step2Text": "Tulis kebutuhan Anda",
+      "title": "Buat Alat AI dalam Hitungan Menit",
+      "verifiedProtocolsTitle": "Protokol Terverifikasi",
+      "wellSupportedProtocols": "Protokol yang Didukung dengan Baik"
+    },
     "description": "Kelola, sesuaikan, dan kembangkan alat AI Anda.",
     "emptyState": {
       "search": {
@@ -982,7 +1004,7 @@
       "zipDescription": "Impor alat dari file zip."
     },
     "installFromStore": "Instal dari Toko",
-    "label": "Alat-alat",
+    "label": "Alat",
     "lookingForMoreTools": "Mencari lebih banyak alat?",
     "newTool": "Alat Baru",
     "noToolsInCategory": "Tidak ada alat dalam kategori ini. Buat alat baru atau instal dari App Store.",

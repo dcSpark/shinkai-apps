@@ -28,24 +28,21 @@ const genDiff = () => {
   const filepath = entryLocaleJsonFilepath();
   if (!existsSync(filepath)) return;
 
-  const prodJSON = readJSON(filepath);
-
-  const diffResult = diff(prodJSON, devJSON as any);
-
-  const remove = diffResult.filter((item) => item.op === 'remove');
-  if (remove.length === 0) {
+  const previousProdJSON = readJSON(filepath);
+  const diffResult = diff(previousProdJSON, devJSON as any);
+  if (diffResult.length === 0) {
     consola.success(tagWhite(DEFAULT_LOCALE), colors.gray(filepath));
     return;
   }
 
   const clearLocals: string[] = [];
 
-  for (const locale of [i18nConfig.entryLocale, ...i18nConfig.outputLocales]) {
+  for (const locale of i18nConfig.outputLocales) {
     const localeFilepath = outputLocaleJsonFilepath(locale);
     if (!existsSync(localeFilepath)) continue;
     const localeJSON = readJSON(localeFilepath);
 
-    for (const item of remove) {
+    for (const item of diffResult) {
       unset(localeJSON, item.path);
     }
 
@@ -54,7 +51,7 @@ const genDiff = () => {
   }
   consola.info('clear', clearLocals);
   consola.success(tagWhite(DEFAULT_LOCALE), colors.gray(filepath), {
-    remove: remove.length,
+    remove: diffResult.length,
   });
 };
 

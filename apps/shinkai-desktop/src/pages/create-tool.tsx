@@ -66,7 +66,6 @@ import {
   TOOL_HOMEPAGE_SUGGESTIONS,
 } from '../components/tools/constants';
 
-import ImportToolModal from '../components/tools/import-tool';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 
@@ -245,6 +244,7 @@ function AIModelSelectorBase({
   onModelSelect: (modelId: string) => void;
 }) {
   const auth = useAuth((state) => state.auth);
+  const { t } = useTranslation();
 
   const { llmProviders } = useGetLLMProviders({
     nodeAddress: auth?.node_address ?? '',
@@ -270,25 +270,22 @@ function AIModelSelectorBase({
     return [
       {
         id: codeGeneratorModel?.id ?? '',
-        name: 'Shinkai Code Generator',
+        name: t('tools.create.shinkaiCodeGenerator'),
         placeholderId: 'code-generator',
-        description:
-          'Builds tools using our specialized AI code-generation tool.',
+        description: t('tools.create.shinkaiCodeGeneratorDescription'),
       },
       {
         id: freeTrialModel?.id ?? '',
-        name: 'Shinkai Free Trial',
+        name: t('tools.create.shinkaiFreeTrial'),
         placeholderId: 'free-trial',
-        description:
-          'Great for building tools, works with any content you provide.',
-        recommendation:
-          'Manually copy and paste the documentation that the AI requires and place it inside <documentation></documentation>.',
+        description: t('tools.create.shinkaiFreeTrialDescription'),
+        recommendation: t('tools.create.shinkaiFreeTrialRecommendation'),
       },
       {
         id: 'custom-model',
-        name: 'Custom Model',
+        name: t('tools.create.customModel'),
         placeholderId: 'custom-model',
-        description: 'Choose your preferred AI model for your specific needs.',
+        description: t('tools.create.customModelDescription'),
         model: 'custom-model',
       },
     ];
@@ -458,7 +455,7 @@ function ToolsHome({
           className={cn(buttonVariants({ size: 'sm', variant: 'outline' }))}
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Tools
+          {t('tools.create.backToTools')}
         </Link>
       </div>
       <div className="flex w-full flex-col items-center justify-between gap-6 pt-2">
@@ -636,18 +633,22 @@ const ChatBoxFooterBase = () => {
       )}
     >
       <div className="text-official-gray-400 flex w-full items-center justify-between gap-2 px-2">
-        <Trans
-          i18nKey="homepage.shiftEnterForNewLine"
-          components={{
-            span: <span className="font-medium" />,
-          }}
-        />
-        <Trans
-          i18nKey="homepage.enterToSend"
-          components={{
-            span: <span className="font-medium" />,
-          }}
-        />
+        <span className="text-official-gray-400 text-xs font-light">
+          <Trans
+            i18nKey="homepage.shiftEnterForNewLine"
+            components={{
+              span: <span className="font-medium" />,
+            }}
+          />
+        </span>
+        <span className="text-official-gray-400 text-xs font-light">
+          <Trans
+            i18nKey="homepage.enterToSend"
+            components={{
+              span: <span className="font-medium" />,
+            }}
+          />
+        </span>
       </div>
     </div>
   );

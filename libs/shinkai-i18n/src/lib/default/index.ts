@@ -782,6 +782,18 @@ export default {
       otherProtocols:
         "Other protocols may also work but haven't been officially verified.",
       requestProtocol: 'Request Protocol',
+      shinkaiCodeGenerator: 'Shinkai Code Generator',
+      shinkaiCodeGeneratorDescription:
+        'Builds tools using our specialized AI code-generation tool.',
+      shinkaiFreeTrial: 'Shinkai Free Trial',
+      shinkaiFreeTrialDescription:
+        'Great for building tools, works with any content you provide.',
+      shinkaiFreeTrialRecommendation:
+        'Manually copy and paste the documentation that the AI requires and place it inside <documentation></documentation>.',
+      customModel: 'Custom Model',
+      customModelDescription:
+        'Choose your preferred AI model for your specific needs.',
+      backToTools: 'Back to Tools',
     },
     description: 'Manage, customize, and expand your AI tools.',
     emptyState: {

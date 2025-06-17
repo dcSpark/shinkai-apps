@@ -57,6 +57,7 @@ jobs:
           npx nx run-many -t lint,test --parallel=3 --skip-nx-cache --verbose
           npx nx run-many -t build --parallel=3 --skip-nx-cache --verbose --exclude=shinkai-desktop
           npx nx cargo-check shinkai-desktop
+          npx nx typecheck shinkai-desktop
 
 #      - name: Run E2E for Visor
 #        id: visor-e2e-tests

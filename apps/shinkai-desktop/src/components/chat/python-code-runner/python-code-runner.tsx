@@ -220,9 +220,9 @@ export const PythonCodeRunner = ({
   token,
 }: PythonCodeRunnerProps) => {
   const i18n = useTranslation();
-  // @ts-expect-error unused-vars
+
   const [isSyncing, setIsSyncing] = useState(false);
-  // @ts-expect-error unused-vars
+
   const [jobContents, setJobContents] = useState<FileSystemEntry[] | null>(
     null,
   );
@@ -246,7 +246,7 @@ export const PythonCodeRunner = ({
         enabled: false,
       },
     );
-  // @ts-expect-error unused-vars
+
   const { pyodide, fileSystemService, initializePyodide } =
     usePyodideInstance();
 
@@ -270,7 +270,6 @@ export const PythonCodeRunner = ({
               // 1. First ensure we have job contents
               console.log('Fetching job contents...');
               const jobContentsResult = await refetchJobContents();
-              // @ts-expect-error unused-vars
               const transformedContents = jobContentsResult.data
                 ? transformToFileSystemEntry(jobContentsResult.data)
                 : null;

@@ -943,7 +943,29 @@
       "updateOnlyThisTool": "Sadece bu aracı güncelle"
     },
     "configurationRequired": "Araç Yapılandırması Gerekli",
-    "create": "Araç Oluştur",
+    "create": {
+      "backToTools": "Araçlara Geri Dön",
+      "customModel": "Özel Model",
+      "customModelDescription": "Belirli ihtiyaçlarınız için tercih ettiğiniz AI modelini seçin.",
+      "description": "Güçlü AI araçları ile iş akışınızı oluşturun, otomatikleştirin ve optimize edin.",
+      "generationError": "Aracı oluşturma başarısız oldu. Daha iyi sonuçlar için daha güçlü bir AI modeli kullanmayı deneyebilirsiniz.",
+      "messagePlaceholder": "Oluşturmak istediğiniz aracı tanımlayın...",
+      "noProtocols": "Protokol bulunamadı.",
+      "otherProtocols": "Diğer protokoller de çalışabilir ancak resmi olarak doğrulanmamıştır.",
+      "requestProtocol": "Protokol Talep Et",
+      "shinkaiCodeGenerator": "Shinkai Kod Üretici",
+      "shinkaiCodeGeneratorDescription": "Özel AI kod üretim aracımızı kullanarak araçlar oluşturur.",
+      "shinkaiFreeTrial": "Shinkai Ücretsiz Deneme",
+      "shinkaiFreeTrialDescription": "Araçlar oluşturmak için harika, sağladığınız her türlü içerikle çalışır.",
+      "shinkaiFreeTrialRecommendation": "AI'nin gerektirdiği belgeleri manuel olarak kopyalayıp yapıştırın ve <documentation></documentation> içine yerleştirin.",
+      "step1Label": "Adım 1",
+      "step1Text": "Modelinizi seçin",
+      "step2Label": "Adım 2",
+      "step2Text": "Gereksinimlerinizi yazın",
+      "title": "Dakikalar İçinde AI Araçları Oluşturun",
+      "verifiedProtocolsTitle": "Doğrulanmış Protokoller",
+      "wellSupportedProtocols": "İyi Desteklenen Protokoller"
+    },
     "description": "Yapay zeka araçlarınızı yönetin, özelleştirin ve genişletin.",
     "emptyState": {
       "search": {
@@ -982,7 +1004,7 @@
       "zipDescription": "Bir zip dosyasından aracı içe aktarın."
     },
     "installFromStore": "Mağazadan Yükle",
-    "label": "Shinkai Araçları",
+    "label": "Araçlar",
     "lookingForMoreTools": "Daha fazla araç mı arıyorsunuz?",
     "newTool": "Yeni Araç",
     "noToolsInCategory": "Bu kategoride araç bulunamadı. Yeni bir araç oluşturun veya App Store'dan kurun.",

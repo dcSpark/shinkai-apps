@@ -88,7 +88,7 @@ export default function EditToolDetailsDialog({
         fieldName === 'keywords'
           ? currentValue
           : 'keywords' in tool
-            ? tool.keywords.join(', ')
+            ? (tool.keywords?.join(', ') ?? '')
             : '',
       previewUrl: fieldName === 'previewUrl' ? currentValue : '',
       iconUrl: fieldName === 'iconUrl' ? currentValue : '',
@@ -149,7 +149,7 @@ export default function EditToolDetailsDialog({
                   Description
                 </Label>
                 <Textarea
-                  className="placeholder-gray-80 bg-official-gray-900 resize-none border-none py-2 pl-2 pt-2 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                  className="placeholder-gray-80 bg-official-gray-900 resize-none border-none py-2 pt-2 pl-2 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                   id="description"
                   onChange={field.onChange}
                   placeholder="Tool Description"
@@ -171,7 +171,7 @@ export default function EditToolDetailsDialog({
                   Keywords
                 </Label>
                 <Input
-                  className="placeholder-gray-80 bg-official-gray-900 !h-[40px] resize-none border-none py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                  className="placeholder-gray-80 bg-official-gray-900 !h-[40px] resize-none border-none py-0 pt-0 pl-2 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                   id="keywords"
                   onChange={field.onChange}
                   placeholder="Comma separated keywords"
@@ -193,7 +193,7 @@ export default function EditToolDetailsDialog({
                   Preview URL
                 </Label>
                 <Input
-                  className="placeholder-gray-80 bg-official-gray-900 !h-[40px] resize-none border-none py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                  className="placeholder-gray-80 bg-official-gray-900 !h-[40px] resize-none border-none py-0 pt-0 pl-2 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                   id="previewUrl"
                   onChange={field.onChange}
                   placeholder="https://example.com/preview.png"
@@ -215,7 +215,7 @@ export default function EditToolDetailsDialog({
                   Icon URL
                 </Label>
                 <Input
-                  className="placeholder-gray-80 bg-official-gray-900 !h-[40px] resize-none border-none py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                  className="placeholder-gray-80 bg-official-gray-900 !h-[40px] resize-none border-none py-0 pt-0 pl-2 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                   id="iconUrl"
                   onChange={field.onChange}
                   placeholder="https://example.com/icon.png"
@@ -237,7 +237,7 @@ export default function EditToolDetailsDialog({
                   Version
                 </Label>
                 <Input
-                  className="placeholder-gray-80 bg-official-gray-900 !h-[40px] resize-none border-none py-0 pl-2 pt-0 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
+                  className="placeholder-gray-80 bg-official-gray-900 !h-[40px] resize-none border-none py-0 pt-0 pl-2 text-xs caret-white focus-visible:ring-0 focus-visible:ring-white"
                   id="version"
                   onChange={field.onChange}
                   placeholder="1.0.0"
@@ -264,7 +264,7 @@ export default function EditToolDetailsDialog({
               fieldName === 'keywords'
                 ? currentValue
                 : 'keywords' in tool
-                  ? tool.keywords.join(', ')
+                  ? (tool.keywords?.join(', ') ?? '')
                   : '',
             previewUrl: fieldName === 'previewUrl' ? currentValue : '',
             iconUrl: fieldName === 'iconUrl' ? currentValue : '',
@@ -298,7 +298,7 @@ export default function EditToolDetailsDialog({
         side="bottom"
         sideOffset={10}
       >
-        <h1 className="text-sm font-semibold leading-none tracking-tight">
+        <h1 className="text-sm leading-none font-semibold tracking-tight">
           Edit {fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}
         </h1>
         <Form {...form}>
