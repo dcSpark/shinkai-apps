@@ -270,7 +270,7 @@ npx nx run shinkai-i18n:i18n
 
 - **[Official Documentation](https://docs.shinkai.com)** – Comprehensive guides and API reference
 - **[Discord Community](https://discord.gg/EuA45U3sEu)** – Get help and connect with other developers
-- **[Twitter Updates](https://x.com/ShinkaiProtocol)** – Latest news and announcements
+- **[Twitter Updates](https://x.com/ShinkaiLocalAI)** – Latest news and announcements
 
 ---
 
