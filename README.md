@@ -1,7 +1,18 @@
 <h1 align="center">
-  <img width="36" height="36" src="assets/icon.png"/><br/>
-  Shinkai: Create Powerful AI Agents using local or remote AIs
-</h1>
+<img width="36" height="36" src="assets/icon.png"/>
+  Shinkai 
+  </h1>
+<div align="center">
+
+> Create Powerful AI Agents using local or remote AIs
+
+</div>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Windows-compatible-success?logo=windows&logoColor=white" alt="Windows compatible">
+  <img src="https://img.shields.io/badge/Linux-compatible-success?logo=linux&logoColor=white" alt="Linux compatible">
+  <img src="https://img.shields.io/badge/macOS-Apple Silicon compatible-success?logo=apple&logoColor=white" alt="macOS Apple Silicon compatible">
+</p>
 
 <p align="center">
   <a href="https://github.com/dcSpark/shinkai-apps/stargazers"><img src="https://img.shields.io/github/stars/dcSpark/shinkai-apps?style=social" alt="GitHub stars"></a>
@@ -10,206 +21,263 @@
 </p>
 
 <p align="center">
-  <strong>Create Powerful AI Agents using local or remote AIs</strong>
+  <strong>Build collaborative AI agents that work together, handle payments, and automate complex workflows</strong>
   <br/>
-  Shinkai is a free, open-source platform that lets anyone build collaborative AI agents 
-  that can handle crypto payments, work across platforms, and tackle complex workflows.
+  Shinkai is a free, open-source platform that democratizes AI agent creation. 
+  No coding required – just drag, drop, and deploy intelligent agents that can work across platforms and handle real-world tasks.
 </p>
 
 <p align="center">
-  <a href="#-what-makes-shinkai-special">Features</a> •
-  <a href="#demo">Demo</a> •
-  <a href="#examples">Examples</a> •
-  <a href="#quick-start">Quick Start</a> •
+  <a href="#-features">Features</a> •
+  <a href="#-demo">Demo</a> •
+  <a href="#-examples">Examples</a> •
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-development">Development</a> •
   <a href="https://docs.shinkai.com">Documentation</a>
 </p>
 
 ---
 
-## ✨ What makes Shinkai special?
+## 🚀 Features
 
-**🚀 No-Code Agent Creation** – Build specialized agents (trading bots, sentiment trackers, workflow automators) in minutes through a friendly UI.
+**🎯 No-Code Agent Builder** – Create specialized AI agents in minutes through an intuitive visual interface. No programming experience needed.
 
-**🤝 Multi-Agent Collaboration** – Your agents work together, sharing information and coordinating complex tasks automatically.
+**🤖 Multi-Agent Orchestration** – Deploy teams of agents that collaborate, share context, and coordinate complex multi-step workflows automatically.
 
-**💰 Crypto-Native** – Built-in support for decentralized payments and transactions. Agents can autonomously pay for services or receive payments.
+**💰 Crypto-Native Architecture** – Built-in support for decentralized payments, DeFi interactions, and autonomous economic agents that can transact independently.
 
-**🔗 Universal Compatibility** – Works with Model Context Protocol (MCP), making your agents accessible from Claude, Cursor, and other platforms.
+**🔗 Universal Protocol Support** – Seamlessly integrates with Model Context Protocol (MCP), making your agents compatible with Claude, Cursor, and the broader AI ecosystem.
 
-**⚡ Flexible Deployment** – Run everything locally for privacy, connect to cloud models for power, or mix both approaches.
+**⚡ Hybrid Deployment** – Run everything locally for maximum privacy, connect to cloud models for enhanced capabilities, or combine both approaches as needed.
 
-**🔐 Local-First Security** – Your crypto keys and sensitive computations stay on your device.
+**🔐 Security-First Design** – Your crypto keys, sensitive data, and computations remain under your control with local-first architecture.
 
-## Demo
+**🌐 Cross-Platform Compatibility** – Works on Windows, macOS, and Linux with consistent performance and user experience.
 
-https://github.com/user-attachments/assets/bc5bb7da-7ca5-477d-838a-8239951b6c01
+## 🎬 Demo
 
-## Examples
+[![Demo Video](assets/shinkai-screenshot.png)](https://github.com/user-attachments/assets/bc5bb7da-7ca5-477d-838a-8239951b6c01)
 
-**💹 Trading Bot**: Create an agent that monitors social sentiment and executes trades based on market analysis.
+_Watch Shinkai agents collaborate to analyze market data, execute trades, and manage complex workflows autonomously._
 
-**📧 Email Assistant**: Build an agent that categorizes emails, drafts responses, and schedules follow-ups.
+## 📋 Examples
 
-**📊 Data Analyst**: Deploy agents that scrape web data, analyze trends, and generate reports automatically.
+**💹 Autonomous Trading Bot** – Deploy an agent that monitors social sentiment, analyzes market trends, and executes trades based on predefined strategies.
 
-**🔄 Workflow Orchestrator**: Set up multiple agents that handle different parts of complex business processes.
+**📧 Intelligent Email Assistant** – Create an agent that categorizes incoming emails, drafts contextual responses, and automatically schedules follow-ups.
 
-## Quick Start
+**📊 Data Intelligence Agent** – Build agents that scrape web data, perform trend analysis, and generate comprehensive reports with actionable insights.
 
-### Two-Click Install
-1. Download the latest release for your platform
-2. Run the installer and launch Shinkai
-3. Start creating agents through the guided UI
+**🔄 Workflow Automation Hub** – Orchestrate multiple specialized agents that handle different components of complex business processes seamlessly.
 
-## Repository Structure
+**🏦 DeFi Portfolio Manager** – Set up agents that monitor your crypto investments, rebalance portfolios, and execute yield farming strategies.
 
-### Apps
+## 🚀 Quick Start
 
-- **shinkai-desktop** – cross-platform desktop UI (can also run in the browser).
+### One-Click Installation
 
-### Libs
+1. **Download** the latest release for your platform from our [releases page](https://github.com/dcSpark/shinkai-apps/releases)
+2. **Install** and launch Shinkai
+3. **Create** your first AI agent using our step-by-step guided interface
 
-- **shinkai-message-ts** – message definitions and network helpers for talking to Shinkai Node.
-- **shinkai-node-state** – React Query based state management for node data.
-- **shinkai-ui** – reusable React components used across the apps.
-- **shinkai-artifacts** – styled UI primitives built on top of Radix and Tailwind.
-- **shinkai-i18n** – translation utilities powered by i18next.
+### System Requirements
 
-## Getting started
+- **Memory**: 4GB RAM minimum (8GB recommended)
+- **Storage**: 2GB free space
+- **OS**: Windows 10+, macOS 10.15+, or Linux (Ubuntu 20.04+)
 
-To get started first clone this repo:
+---
 
+## 🛠 Development
+
+### Architecture Overview
+
+Shinkai is built as a modern monorepo using **NX** for orchestration and dependency management. The architecture consists of:
+
+**Core Applications:**
+
+- **shinkai-desktop** – Cross-platform Tauri application with React frontend
+
+**Shared Libraries:**
+
+- **shinkai-message-ts** – Message protocols and network communication with Shinkai Node
+- **shinkai-node-state** – React Query-based state management for node data
+- **shinkai-ui** – Reusable React components with design system
+- **shinkai-artifacts** – Styled UI primitives built on Radix and Tailwind CSS
+- **shinkai-i18n** – Internationalization utilities powered by i18next
+
+**Technology Stack:**
+
+- **Frontend**: React 18, TypeScript, Tailwind CSS, Radix UI
+- **Desktop**: Tauri (Rust + React)
+- **State Management**: Zustand (UI state) + React Query (server state)
+- **Build System**: Vite, NX monorepo
+- **Testing**: Vitest, React Testing Library
+
+### 🚀 Getting Started
+
+#### 1. Clone and Setup
+
+```bash
+git clone https://github.com/dcSpark/shinkai-apps
+cd shinkai-apps
+nvm use
+npm ci
 ```
-$ git clone https://github.com/dcSpark/shinkai-apps
-```
 
-### Download side binaries:
+#### 2. Download Required Side Binaries
 
-#### Macos
+Before running Shinkai, you'll need to download the embedded Shinkai Node binary that powers the application's core functionality. This can be done with a single command based on your platform:
 
-```
+**macOS (Apple Silicon):**
+
+```bash
 ARCH="aarch64-apple-darwin" \
 SHINKAI_NODE_VERSION="v1.1.0" \
 OLLAMA_VERSION="v0.7.1" \
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
-#### Linux
+**Linux:**
 
-```
+```bash
 ARCH="x86_64-unknown-linux-gnu" \
 OLLAMA_VERSION="v0.7.1" \
 SHINKAI_NODE_VERSION="v1.1.0" \
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
-#### Windows
+**Windows:**
 
-```
-$ENV:OLLAMA_VERSION="v0.7.1";
-$ENV:SHINKAI_NODE_VERSION="v1.1.0";
-$ENV:ARCH="x86_64-pc-windows-msvc";
+```powershell
+$ENV:OLLAMA_VERSION="v0.7.1"
+$ENV:SHINKAI_NODE_VERSION="v1.1.0"
+$ENV:ARCH="x86_64-pc-windows-msvc"
 npx ts-node ./ci-scripts/download-side-binaries.ts
 ```
 
-### Run one of the projects
+### 📦 Essential Commands
 
-Once you have done that simply use `npm` to compile/serve it yourself:
+#### Development Server
 
-```
-cd shinkai-apps
-nvm use
-npm ci
-npx nx serve {project-name} # IE: npx nx serve shinkai-desktop
+```bash
+# Run desktop app (recommended for development)
+npx nx serve:tauri shinkai-desktop
 ```
 
-### Project specific configurations
+#### Building
 
-- **shinkai-desktop** – for development and building purposes
-  - Run as a Desktop App using Vite:
-    Run `npx nx serve:tauri shinkai-desktop` and it will automatically launch the Shinkai Desktop application.
-  - Run as a Web App:
-    Run `npx nx serve shinkai-desktop` and open a browser and navigate to `http://localhost:1420`.
+```bash
+# Build desktop application
+npx nx build shinkai-desktop
 
-### Useful Commands
+# Create development build
+NODE_OPTIONS="--max_old_space_size=8192" npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json"
 
-Every command, if it's needed, build projects and it's dependencies according to the project dependency tree inferred from imports between them.
+# Build all projects
+npx nx run-many --target=build
+```
 
-- Run a single task
+#### Third party data and repository management
 
-  Command: `npx nx [target] [project-name]`
+```bash
+# Update the built-in Ollama models repository. This repository contains model definitions, tags and metadata for all supported AI models. The command below regenerates the repository files to ensure compatibility with the latest Ollama version and model updates
+npx ts-node ./ci-scripts/generate-ollama-models-repository.ts
 
-  Params:
+# Generate Composio apps repository - This script regenerates the repository of pre-built Composio apps and templates that users can import into Shinkai. It ensures the app catalog stays up-to-date with the latest official releases.
+deno run -A ./ci-scripts/composio-repository/main.ts
 
-  - target: build | serve | lint | test | e2e
+# Generate translations for all languages (EN, ES, etc.)
+# This command uses AI to automatically generate translations for all supported languages based on the primary i18n source file (English).
+# It ensures consistent translations across the entire application while maintaining natural language quality.
 
-  IE:
+npx nx run shinkai-i18n:i18n
+```
 
-  - `npx nx build shinkai-desktop`
-  - `npx nx lint shinkai-message-ts`
-  - `npx nx test shinkai-ui`
-  - `npx nx serve shinkai-desktop`
+#### Testing & Quality
 
-- Run many tasks
+```bash
+# Run tests
+npx nx test [project-name]
+npx nx run-many --target=test
 
-  Command: `npx nx run-many --target=[target]`
+# Lint code
+npx nx lint [project-name]
+npx nx run-many --target=lint
+```
 
-  Params:
+### 🏗 Project Structure
 
-  - target: build | serve | lint | test | e2e
+```
+shinkai-apps/
+├── apps/
+│   └── shinkai-desktop/          # Main desktop application
+├── libs/
+│   ├── shinkai-message-ts/       # Core messaging protocol
+│   ├── shinkai-node-state/       # State management
+│   ├── shinkai-ui/               # Component library
+│   ├── shinkai-artifacts/        # UI primitives
+│   └── shinkai-i18n/             # Internationalization
+├── ci-scripts/                   # Build and deployment scripts
+└── tools/                        # Development utilities
+```
 
-  IE:
+### 🎨 UI Development Guidelines
 
-  - `npx nx run-many --target=build`
-  - `npx nx run-many --target=lint`
-  - `npx nx run-many --target=test`
-  - `npx nx run-many --target=e2e`
-  - `npx nx run-many --target=serve`
+**Component Libraries:**
 
-- Run on affected projects
+- **Radix UI** – Unstyled, accessible component primitives
+- **Tailwind CSS** – Utility-first styling and responsive design
+- **Shadcn/ui** – Pre-built component patterns
 
-  Command: `npx nx affected --target=[target]`
+**State Management:**
 
-  Params:
+- **Zustand** – Client-side UI state management
+- **React Query** – Server state, caching, and synchronization
 
-  - target: build | serve | lint | test | e2e
+### 🌍 Internationalization
 
-  IE:
+<p align="start">
+  <img src="https://img.shields.io/badge/English-supported-success?logo=alphabet&logoColor=white" alt="English supported">
+  <img src="https://img.shields.io/badge/Español-supported-success?logo=alphabet&logoColor=white" alt="Spanish supported">
+  <img src="https://img.shields.io/badge/中文-supported-success?logo=alphabet&logoColor=white" alt="Chinese supported">
+  <img src="https://img.shields.io/badge/日本語-supported-success?logo=alphabet&logoColor=white" alt="Japanese supported">
+  <img src="https://img.shields.io/badge/Bahasa Indonesia-supported-success?logo=alphabet&logoColor=white" alt="Indonesian supported">
+  <img src="https://img.shields.io/badge/Türkçe-supported-success?logo=alphabet&logoColor=white" alt="Turkish supported">
+</p>
 
-  - `npx nx affected --target=build`
+Shinkai supports multiple languages through our i18n system:
 
-> When you build a project, NX builds a cache (to make it faster), if you want to skip it just add the parameter `--skip-nx-cache` to the previous commands.
+```bash
+# Add new translation keys
+# Edit files in libs/shinkai-i18n/locales/
 
-- Create a dev build
+# Generate updated translation types
+npx nx run shinkai-i18n:i18n
 
-  - `NODE_OPTIONS="--max_old_space_size=8192" npx nx build shinkai-desktop --config="./src-tauri/tauri.conf.development.json"`
+# Supported languages: en-US, es-ES, zh-CN, ja-JP, id-ID, tr-TR
+```
 
-- Update ollama models repository
-  - `npx ts-node ./ci-scripts/generate-ollama-models-repository.ts`
+### 🤝 Contributing
 
-- Update composio apps repository
-  - `deno run -A ./ci-scripts/composio-repository/main.ts`
-## Dev conventions
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
+3. **Commit** your changes: `git commit -m 'Add amazing feature'`
+4. **Push** to the branch: `git push origin feature/amazing-feature`
+5. **Open** a Pull Request
 
-### Monorepo
+### 📚 Additional Resources
 
-To orchestrate all the tasks, dependencies and hierarchy between different projects, this repository uses [NX](https://nx.dev/) as a monorepo tooling.
+- **[Official Documentation](https://docs.shinkai.com)** – Comprehensive guides and API reference
+- **[Discord Community](https://discord.gg/EuA45U3sEu)** – Get help and connect with other developers
+- **[Twitter Updates](https://x.com/ShinkaiProtocol)** – Latest news and announcements
 
-### Third party dependencies
+---
 
-All projects share the same base of dependencies defined `./package.json` file found in the root of the repository. Nested package json files are used just to override or extends base attributes.
-
-### UI Libraries
-
-To build the UI there are 3 core libraries:
-
-- [radix](https://www.radix-ui.com/) to have base unstyled components.
-- [shadcn](https://ui.shadcn.com/) to obtain ready to use components.
-- [tailwindcss](https://tailwindui.com/) to implement css customizations, structures, layouts and helpers.
-
-### State management
-
-To implement state management there are two different libraries:
-
-- [zustand](https://docs.pmnd.rs/zustand/getting-started/introduction): To implement UI State
-- [react-query](https://tanstack.com/query/v4): To implement data state
+<p align="center">
+  <strong>Built with ❤️ by the Shinkai community</strong>
+  <br/>
+  <a href="https://github.com/dcSpark/shinkai-apps/blob/main/LICENSE">MIT License</a> • 
+  <a href="https://github.com/dcSpark/shinkai-apps/issues">Report Bug</a> • 
+  <a href="https://github.com/dcSpark/shinkai-apps/issues">Request Feature</a>
+</p>
