@@ -31,6 +31,7 @@ import {
   useWebSocketMessage,
   useWebSocketTools,
 } from '../../components/chat/websocket-message';
+import { useToolsStore } from '../../components/chat/context/tools-context';
 import { useAnalytics } from '../../lib/posthog-provider';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
@@ -149,6 +150,14 @@ const ChatConversation = () => {
 
   useWebSocketMessage({ inboxId, enabled: !!inboxId });
   useWebSocketTools({ inboxId, enabled: !!inboxId });
+  const setWidget = useToolsStore((state) => state.setWidget);
+
+  useEffect(() => {
+    setWidget(null);
+    return () => {
+      setWidget(null);
+    };
+  }, [inboxId, setWidget]);
 
   const setSelectedArtifact = useChatStore(
     (state) => state.setSelectedArtifact,
