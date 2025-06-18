@@ -28,7 +28,7 @@ export default function MessageExtra() {
   if (metadata == null || name == null) return null;
 
   if (name === 'PaymentRequest' && 'invoice' in metadata) {
-    return <Payment data={metadata} onCancel={() => setWidget(null)} />;
+    return <Payment data={metadata} cleanWidget={() => setWidget(null)} />;
   }
 
   return null;
@@ -36,10 +36,10 @@ export default function MessageExtra() {
 
 function Payment({
   data,
-  onCancel,
+  cleanWidget,
 }: {
   data: PaymentRequest;
-  onCancel: () => void;
+  cleanWidget: () => void;
 }) {
   // const [selectedPlan, setSelectedPlan] = React.useState<
   //   'one-time' | 'download' | 'both'
@@ -57,7 +57,8 @@ function Payment({
       setStatus('success');
       setTimeout(() => {
         setOpen(false);
-      }, 4000);
+        cleanWidget();
+      }, 3000);
     },
     onError: () => {
       setStatus('error');
@@ -300,7 +301,7 @@ function Payment({
                   <div className="ml-auto flex max-w-xs items-center justify-between gap-2">
                     <Button
                       className="flex-1"
-                      onClick={onCancel}
+                      onClick={cleanWidget}
                       size="md"
                       variant="outline"
                     >
@@ -367,7 +368,7 @@ function Payment({
                     <Button
                       className="mx-auto min-w-[200px] rounded-md"
                       onClick={() => {
-                        onCancel();
+                        cleanWidget();
                       }}
                       size="sm"
                       variant="outline"
