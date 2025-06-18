@@ -96,9 +96,9 @@ function AgentsPage() {
                       'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
                       'focus-visible:outline-hidden',
                     )}
-                    value="explore"
+                    value="my"
                   >
-                    {t('agents.explore')}
+                    {t('agents.myAgents')}
                   </TabsTrigger>
                   <TabsTrigger
                     className={cn(
@@ -107,9 +107,9 @@ function AgentsPage() {
                       'data-[state=inactive]:text-official-gray-400 data-[state=inactive]:bg-transparent',
                       'focus-visible:outline-hidden',
                     )}
-                    value="my"
+                    value="explore"
                   >
-                    {t('agents.myAgents')}
+                    {t('agents.explore')}
                   </TabsTrigger>
                 </TabsList>
               </div>
