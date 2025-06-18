@@ -283,6 +283,7 @@
     "upload": "Subir",
     "uploadAFileDescription": "Admite imágenes, PDF, CSV, TXT, XLSX y más formatos",
     "uploadFile": "Subir un Archivo",
+    "use": "Usar",
     "viewDetails": "Ver detalles"
   },
   "cronTask": {

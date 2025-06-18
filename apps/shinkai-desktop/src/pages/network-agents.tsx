@@ -156,11 +156,14 @@ export const NetworkAgentPage = () => {
             </div>
 
             {!isWalletConnected && (
-              <Link to="/settings/crypto-wallet">
-                <Button variant="outline" size="sm">
-                  <CryptoWalletIcon className="size-4" />
-                  {t('networkAgentsPage.connectWallet')}
-                </Button>
+              <Link
+                to="/settings/crypto-wallet"
+                className={cn(
+                  buttonVariants({ variant: 'outline', size: 'sm' }),
+                )}
+              >
+                <CryptoWalletIcon className="size-4" />
+                {t('networkAgentsPage.connectWallet')}
               </Link>
             )}
 
@@ -503,6 +506,24 @@ const AgentCard = ({
 
           {type === 'discover' && (
             <div className="flex items-center gap-2">
+              {isInstalled && (
+                <Link
+                  to={`/home`}
+                  state={{
+                    selectedTool: {
+                      key: agent.toolRouterKey,
+                      name: agent.name,
+                      description: agent.description,
+                      args: agent.apiData?.network_tool?.input_args,
+                    },
+                  }}
+                  className={cn(
+                    buttonVariants({ variant: 'outline', size: 'sm' }),
+                  )}
+                >
+                  {t('common.use')}
+                </Link>
+              )}
               <Dialog
                 open={showDetailsModal}
                 onOpenChange={setShowDetailsModal}
@@ -630,7 +651,7 @@ const AgentCard = ({
                   )}
                 </DialogContent>
               </Dialog>
-              {allowInstall && (
+              {!isInstalled && (
                 <Button
                   variant="outline"
                   onClick={() => setShowInstallModal(true)}

@@ -283,6 +283,7 @@
     "upload": "Yükle",
     "uploadAFileDescription": "Görüntüler, PDF, CSV, TXT, XLSX ve daha fazla formatı destekler",
     "uploadFile": "Bir Dosya Yükle",
+    "use": "Kullan",
     "viewDetails": "Detayları Görüntüle"
   },
   "cronTask": {

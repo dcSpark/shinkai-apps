@@ -283,6 +283,7 @@
     "upload": "アップロード",
     "uploadAFileDescription": "画像、PDF、CSV、TXT、XLSXなどの形式をサポートしています",
     "uploadFile": "ファイルをアップロード",
+    "use": "使用",
     "viewDetails": "詳細を見る"
   },
   "cronTask": {

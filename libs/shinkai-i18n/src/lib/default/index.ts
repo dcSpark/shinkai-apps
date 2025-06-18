@@ -506,6 +506,7 @@ export default {
   },
   common: {
     dismiss: 'Dismiss',
+    use: 'Use',
     search: 'Search',
     noThanks: 'No, Thanks',
     noResultsFound: 'No results found.',
