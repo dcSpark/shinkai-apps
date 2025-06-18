@@ -596,7 +596,8 @@ const AgentCard = ({
                     </div>
                   </div>
 
-                  {!isInstalled && isWalletConnected && isIdentityRegistered ? (
+                  {!isInstalled &&
+                  (isFreePricing || (isWalletConnected && isIdentityRegistered)) ? (
                     <DialogFooter className="ml-auto w-full max-w-[300px] flex-row gap-1">
                       <Button
                         variant="outline"
@@ -626,7 +627,8 @@ const AgentCard = ({
                   ) : null}
                 </DialogContent>
               </Dialog>
-              {!isInstalled && isWalletConnected && isIdentityRegistered ? (
+              {!isInstalled &&
+              (isFreePricing || (isWalletConnected && isIdentityRegistered)) ? (
                 <Button
                   variant="outline"
                   onClick={() => setShowInstallModal(true)}
