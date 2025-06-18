@@ -637,7 +637,27 @@ const AgentCard = ({
                 </Button>
               ) : null}
               {isInstalled && (
-                <RemoveNetworkAgentButton toolRouterKey={agent.toolRouterKey} />
+                <>
+                  <RemoveNetworkAgentButton toolRouterKey={agent.toolRouterKey} />
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      await navigate('/home', {
+                        state: {
+                          selectedTool: {
+                            key: agent.toolRouterKey,
+                            name: agent.name,
+                            description: agent.description,
+                            args: agent.apiData?.network_tool?.input_args,
+                          },
+                        },
+                      });
+                    }}
+                    size="sm"
+                  >
+                    {t('networkAgentsPage.chat')}
+                  </Button>
+                </>
               )}
             </div>
           )}

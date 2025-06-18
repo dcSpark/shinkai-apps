@@ -1128,6 +1128,7 @@ export default {
       '{{name}} is now in your collection. Start a chat to use it!',
     browseMore: 'Browse More Agents',
     startChat: 'Start Chat',
+    chat: 'Chat',
     setupRequired: 'Setup required to use paid agents',
     removeSuccess: 'Network agent removed successfully',
     removeFailed: 'Failed to remove agent',
