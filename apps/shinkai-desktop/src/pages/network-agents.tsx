@@ -521,7 +521,7 @@ const AgentCard = ({
                     buttonVariants({ variant: 'outline', size: 'sm' }),
                   )}
                 >
-                  {t('common.use')}
+                  {t('common.chat')}
                 </Link>
               )}
               <Dialog

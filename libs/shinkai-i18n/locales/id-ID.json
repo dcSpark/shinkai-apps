@@ -208,6 +208,7 @@
     "alreadyHaveNode": "Sudah memiliki Node?",
     "back": "Kembali",
     "cancel": "Batal",
+    "chat": "Obrolan",
     "clear": "Bersihkan",
     "clearSearch": "Hapus Pencarian",
     "clickToUpload": "Klik untuk mengunggah atau seret dan lepas",
@@ -283,7 +284,6 @@
     "upload": "Unggah",
     "uploadAFileDescription": "Mendukung gambar, PDF, CSV, TXT, XLSX, dan format lainnya",
     "uploadFile": "Unggah Berkas",
-    "use": "Gunakan",
     "viewDetails": "Lihat Detail"
   },
   "cronTask": {

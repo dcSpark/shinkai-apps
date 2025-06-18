@@ -208,6 +208,7 @@
     "alreadyHaveNode": "¿Ya tienes un Nodo?",
     "back": "Atrás",
     "cancel": "Cancelar",
+    "chat": "Charlar",
     "clear": "Limpiar",
     "clearSearch": "Limpiar búsqueda",
     "clickToUpload": "Haz clic para subir o arrastra y suelta",
@@ -283,7 +284,6 @@
     "upload": "Subir",
     "uploadAFileDescription": "Admite imágenes, PDF, CSV, TXT, XLSX y más formatos",
     "uploadFile": "Subir un Archivo",
-    "use": "Usar",
     "viewDetails": "Ver detalles"
   },
   "cronTask": {
