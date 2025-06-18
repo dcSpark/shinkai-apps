@@ -292,6 +292,13 @@ export type PayInvoiceRequest = {
 
 export type PayInvoiceResponse = any;
 
+export type RejectInvoiceRequest = {
+  invoice_id: string;
+  reason?: string | null;
+};
+
+export type RejectInvoiceResponse = any;
+
 export type Prompt = {
   rowid: number;
   name: string;
