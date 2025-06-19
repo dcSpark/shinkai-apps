@@ -451,7 +451,8 @@ const RemoveAgentDrawer = ({
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogTitle className="pb-0">
-          Delete Agent <span className="font-mono text-base">{agentId}</span> ?
+          Delete Agent{' '}
+          <span className="break-all font-mono text-base">{agentId}</span> ?
         </DialogTitle>
         <DialogDescription>
           The agent will be permanently deleted. This action cannot be undone.
