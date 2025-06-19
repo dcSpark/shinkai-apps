@@ -1132,6 +1132,7 @@ export default {
     searchPlaceholder: 'Search for agents',
     toolRouterKey: 'Tool Router Key',
     addAgent: 'Add Agent',
+    nextAddAgent: 'Next (Add Agent)',
     addedSuccess: 'Added Successfully!',
     addedDescription:
       '{{name}} is now in your collection. Start a chat to use it!',
