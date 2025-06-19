@@ -95,9 +95,6 @@ export const NetworkAgentPage = () => {
     { enabled: !!isWalletConnected },
   );
 
-  const isIdentityRegistered = !isShinkaiIdentityLocalhost(
-    auth?.shinkai_identity ?? '',
-  );
 
   return (
     <Tabs
@@ -242,17 +239,11 @@ export const NetworkAgentPage = () => {
           </p>
         </div>
 
-        {(!isWalletConnected || !isIdentityRegistered) && (
-          <SetupGuide
-            isWalletConnected={!!isWalletConnected}
-            isIdentityRegistered={isIdentityRegistered}
-          />
+        {!isWalletConnected && (
+          <SetupGuide isWalletConnected={!!isWalletConnected} />
         )}
         <TabsContent value="network">
-          <DiscoverNetworkAgents
-            isIdentityRegistered={isIdentityRegistered}
-            isWalletConnected={!!isWalletConnected}
-          />
+          <DiscoverNetworkAgents isWalletConnected={!!isWalletConnected} />
         </TabsContent>
         {optInExperimental && (
           <TabsContent value="published" className="space-y-4">
@@ -273,10 +264,8 @@ export const NetworkAgentPage = () => {
 };
 
 const DiscoverNetworkAgents = ({
-  isIdentityRegistered,
   isWalletConnected,
 }: {
-  isIdentityRegistered: boolean;
   isWalletConnected: boolean;
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -356,7 +345,6 @@ const DiscoverNetworkAgents = ({
                   )) ??
                 false
               }
-              isIdentityRegistered={isIdentityRegistered}
               isWalletConnected={isWalletConnected}
             />
           ))}
@@ -404,7 +392,6 @@ const PublishedAgents = () => {
           key={agent.id}
           agent={agent}
           type="exposed"
-          isIdentityRegistered={true}
           isWalletConnected={true}
         />
       ))}
@@ -416,7 +403,6 @@ interface AgentCardProps {
   agent: FormattedNetworkAgent;
   type: 'discover' | 'exposed';
   isInstalled?: boolean;
-  isIdentityRegistered: boolean;
   isWalletConnected: boolean;
 }
 /* TODO:
@@ -428,8 +414,6 @@ const AgentCard = ({
   agent,
   type,
   isInstalled,
-
-  isIdentityRegistered,
   isWalletConnected,
 }: AgentCardProps) => {
   const [showInstallModal, setShowInstallModal] = useState(false);
@@ -553,13 +537,9 @@ const AgentCard = ({
                   <div className="space-y-6">
                     <p>{agent?.apiData?.network_tool?.description}</p>
 
-                    {!isFreePricing &&
-                      (!isWalletConnected || !isIdentityRegistered) && (
-                        <SetupGuide
-                          isWalletConnected={!!isWalletConnected}
-                          isIdentityRegistered={isIdentityRegistered}
-                        />
-                      )}
+                    {!isFreePricing && !isWalletConnected && (
+                      <SetupGuide isWalletConnected={!!isWalletConnected} />
+                    )}
                     <div className="flex justify-between py-2">
                       <span className="text-official-gray-400 text-sm">
                         {t('networkAgentsPage.toolRouterKey')}
@@ -719,9 +699,6 @@ export const InstallAgentModal = ({
   const isWalletConnected =
     walletInfo?.payment_wallet || walletInfo?.receiving_wallet;
 
-  const isIdentityRegistered = !isShinkaiIdentityLocalhost(
-    auth?.shinkai_identity ?? '',
-  );
 
   const { mutateAsync: addNetworkTool, isPending: isAddingAgent } =
     useAddNetworkTool({
@@ -789,11 +766,8 @@ export const InstallAgentModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        {!isFreePricing && (!isWalletConnected || !isIdentityRegistered) && (
-          <SetupGuide
-            isWalletConnected={!!isWalletConnected}
-            isIdentityRegistered={isIdentityRegistered}
-          />
+        {!isFreePricing && !isWalletConnected && (
+          <SetupGuide isWalletConnected={!!isWalletConnected} />
         )}
         {step === 1 && (
           <div className="space-y-6">
@@ -926,12 +900,8 @@ export const InstallAgentModal = ({
 
 interface SetupGuideProps {
   isWalletConnected: boolean;
-  isIdentityRegistered: boolean;
 }
-function SetupGuide({
-  isWalletConnected,
-  isIdentityRegistered,
-}: SetupGuideProps) {
+function SetupGuide({ isWalletConnected }: SetupGuideProps) {
   const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
 
@@ -943,37 +913,6 @@ function SetupGuide({
         </AlertTitle>
         <AlertDescription>
           <div className="space-y-5">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-start gap-3">
-                {isIdentityRegistered ? (
-                  <CheckCircle2 className="mt-0.5 size-4 text-green-500" />
-                ) : (
-                  <AlertCircle className="mt-0.5 size-4 text-yellow-400" />
-                )}
-                <div>
-                  <p className="text-sm font-medium text-white">
-                    {t('networkAgentsPage.registerShinkaiIdentity')}
-                  </p>
-                  <p className="text-official-gray-200 text-sm">
-                    {t('networkAgentsPage.registerShinkaiIdentityDescription')}
-                  </p>
-                </div>
-              </div>
-              {!isIdentityRegistered && (
-                <a
-                  href={`https://shinkai-contracts.pages.dev?encryption_pk=${auth?.encryption_pk}&signature_pk=${auth?.identity_pk}&node_address=${auth?.node_address}`}
-                  className={cn(
-                    buttonVariants({ variant: 'outline', size: 'md' }),
-                    'shrink-0 bg-yellow-400 text-black hover:bg-yellow-500 hover:text-black',
-                  )}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t('networkAgentsPage.registerIdentity')}
-                </a>
-              )}
-            </div>
-
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-start gap-3">
                 {isWalletConnected ? (
