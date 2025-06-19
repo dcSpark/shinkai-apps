@@ -605,6 +605,8 @@
     "author": "Penulis",
     "browseMore": "Jelajahi Agen Lain",
     "confirmPayment": "Konfirmasi Pembayaran",
+    "proceedFree": "Lanjutkan (Gratis)",
+    "noWalletSetup": "Anda belum memiliki dompet",
     "connectWallet": "Sambungkan Dompet",
     "connectWalletDescription": "Sambungkan dompet Anda untuk membayar penggunaan agen dan menerima penghasilan dari agen yang Anda terbitkan",
     "costPerUse": "Biaya per penggunaan",

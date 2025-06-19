@@ -1166,6 +1166,8 @@ export default {
     walletAddress: 'Wallet Address',
     usdcBalance: 'USDC Balance',
     confirmPayment: 'Confirm Payment',
+    proceedFree: 'Proceed (Free)',
+    noWalletSetup: "You don't have a wallet set up yet",
     processingPayment: 'Processing Payment',
     pleaseWait: 'Please wait while we process your transaction...',
     paymentSuccessful: 'Payment Successful!',

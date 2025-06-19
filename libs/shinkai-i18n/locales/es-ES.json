@@ -605,6 +605,8 @@
     "author": "Autor",
     "browseMore": "Explorar Más Agentes",
     "confirmPayment": "Confirmar Pago",
+    "proceedFree": "Continuar (Gratis)",
+    "noWalletSetup": "Aún no tienes una billetera configurada",
     "connectWallet": "Conectar Billetera",
     "connectWalletDescription": "Conecta tu billetera para pagar por el uso de agentes y recibir ganancias de tus agentes publicados",
     "costPerUse": "Costo por uso",

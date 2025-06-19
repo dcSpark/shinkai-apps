@@ -605,6 +605,8 @@
     "author": "Yazar",
     "browseMore": "Daha Fazla Ajan Gözat",
     "confirmPayment": "Ödemeyi Onayla",
+    "proceedFree": "Devam Et (Ücretsiz)",
+    "noWalletSetup": "Henüz bir cüzdanınız yok",
     "connectWallet": "Cüzdanı Bağla",
     "connectWalletDescription": "Ajan kullanımını ödemek ve yayınladığınız ajanlardan kazanç almak için cüzdanınızı bağlayın",
     "costPerUse": "Kullanım Başına Maliyet",

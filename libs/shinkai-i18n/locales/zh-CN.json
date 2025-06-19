@@ -605,6 +605,8 @@
     "author": "作者",
     "browseMore": "浏览更多代理",
     "confirmPayment": "确认付款",
+    "proceedFree": "继续（免费）",
+    "noWalletSetup": "你还没有设置钱包",
     "connectWallet": "连接钱包",
     "connectWalletDescription": "连接您的钱包以支付代理使用费用并从您发布的代理中获得收益",
     "costPerUse": "每次使用的费用",

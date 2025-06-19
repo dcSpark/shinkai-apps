@@ -605,6 +605,8 @@
     "author": "著者",
     "browseMore": "他のエージェントをブラウズ",
     "confirmPayment": "支払いを確認",
+    "proceedFree": "続行（無料）",
+    "noWalletSetup": "まだウォレットが設定されていません",
     "connectWallet": "ウォレットに接続",
     "connectWalletDescription": "エージェントの使用料を支払い、公開したエージェントからの収益を受け取るためにウォレットを接続します",
     "costPerUse": "使用ごとのコスト",

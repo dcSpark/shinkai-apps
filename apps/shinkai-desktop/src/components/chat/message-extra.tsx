@@ -80,6 +80,11 @@ function Payment({
 
   const tokenDecimals = token?.decimals;
   const tokenId = token?.asset_id;
+  const hasWallet = data?.wallet_balances?.data?.length > 0;
+  const confirmLabel =
+    data.usage_type?.PerUse === 'Free'
+      ? t('networkAgentsPage.proceedFree')
+      : t('networkAgentsPage.confirmPayment');
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -263,39 +268,43 @@ function Payment({
                 </RadioGroup> */}
                     <div className="bg-official-gray-850 rounded-lg p-4">
                       <h4 className="mb-2 font-medium">
-                        {t('networkAgentsPage.yourWallet')}
+                        {hasWallet
+                          ? t('networkAgentsPage.yourWallet')
+                          : t('networkAgentsPage.noWalletSetup')}
                       </h4>
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-official-gray-400">
-                            {t('networkAgentsPage.walletAddress')}:
-                          </span>
-                          <div className="flex flex-col items-end justify-start gap-2">
-                            {truncateAddress(data.invoice.address.address_id)}
+                      {hasWallet && (
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-official-gray-400">
+                              {t('networkAgentsPage.walletAddress')}:
+                            </span>
+                            <div className="flex flex-col items-end justify-start gap-2">
+                              {truncateAddress(data.invoice.address.address_id)}
+                            </div>
+                          </div>
+                          <div className="flex items-start justify-between text-sm">
+                            <span className="text-official-gray-400">
+                              {t('networkAgentsPage.usdcBalance')}:
+                            </span>
+                            <div className="flex flex-col items-end justify-start gap-0.5">
+                              {data.wallet_balances.data.map((balance) => (
+                                <div
+                                  className="text-right"
+                                  key={balance.asset.asset_id}
+                                >
+                                  {formatBalanceAmount(
+                                    balance.amount,
+                                    balance.asset.decimals,
+                                  )}{' '}
+                                  <span className="text-official-gray-200 font-medium">
+                                    {balance.asset.asset_id}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
-                        <div className="flex items-start justify-between text-sm">
-                          <span className="text-official-gray-400">
-                            {t('networkAgentsPage.usdcBalance')}:
-                          </span>
-                          <div className="flex flex-col items-end justify-start gap-0.5">
-                            {data.wallet_balances.data.map((balance) => (
-                              <div
-                                className="text-right"
-                                key={balance.asset.asset_id}
-                              >
-                                {formatBalanceAmount(
-                                  balance.amount,
-                                  balance.asset.decimals,
-                                )}{' '}
-                                <span className="text-official-gray-200 font-medium">
-                                  {balance.asset.asset_id}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                   <div className="ml-auto flex max-w-xs items-center justify-between gap-2">
@@ -323,7 +332,7 @@ function Payment({
                       }}
                       size="md"
                     >
-                      {t('networkAgentsPage.confirmPayment')}
+                      {confirmLabel}
                     </Button>
                   </div>
                 </motion.div>
