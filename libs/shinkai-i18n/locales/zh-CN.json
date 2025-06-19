@@ -639,7 +639,9 @@
     "usdcBalance": "USDC 余额",
     "walletAddress": "钱包地址",
     "walletBalance": "钱包余额",
-    "yourWallet": "您的钱包"
+    "yourWallet": "您的钱包",
+    "walletNotSetup": "尚未设置钱包",
+    "proceedFree": "免费继续"
   },
   "notifications": {
     "messageReceived": {

@@ -639,7 +639,9 @@
     "usdcBalance": "Saldo de USDC",
     "walletAddress": "Dirección de la Billetera",
     "walletBalance": "Saldo de Billetera",
-    "yourWallet": "Tu Billetera"
+    "yourWallet": "Tu Billetera",
+    "walletNotSetup": "La billetera no está configurada",
+    "proceedFree": "Proceder (Gratis)"
   },
   "notifications": {
     "messageReceived": {
