@@ -553,12 +553,13 @@ const AgentCard = ({
                   <div className="space-y-6">
                     <p>{agent?.apiData?.network_tool?.description}</p>
 
-                    {(!isWalletConnected || !isIdentityRegistered) && (
-                      <SetupGuide
-                        isWalletConnected={!!isWalletConnected}
-                        isIdentityRegistered={isIdentityRegistered}
-                      />
-                    )}
+                    {!isFreePricing &&
+                      (!isWalletConnected || !isIdentityRegistered) && (
+                        <SetupGuide
+                          isWalletConnected={!!isWalletConnected}
+                          isIdentityRegistered={isIdentityRegistered}
+                        />
+                      )}
                     <div className="flex justify-between py-2">
                       <span className="text-official-gray-400 text-sm">
                         {t('networkAgentsPage.toolRouterKey')}
@@ -788,7 +789,7 @@ export const InstallAgentModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        {(!isWalletConnected || !isIdentityRegistered) && (
+        {!isFreePricing && (!isWalletConnected || !isIdentityRegistered) && (
           <SetupGuide
             isWalletConnected={!!isWalletConnected}
             isIdentityRegistered={isIdentityRegistered}
