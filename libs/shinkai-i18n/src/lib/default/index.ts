@@ -160,6 +160,10 @@ export default {
     tracing: {
       title: 'Tracing',
     },
+    networkAgentUsed: 'Network Agent Used',
+    processingNetworkAgent: 'Processing Network Agent',
+    toolUsed: 'Tool Used',
+    processingTool: 'Processing Tool',
   },
   aiFilesSearch: {
     label: 'AI Files Content Search',
@@ -505,8 +509,13 @@ export default {
     create: 'Create Registration Code',
   },
   common: {
+    thinking: 'Thinking...',
+    reasoning: 'Reasoning',
     dismiss: 'Dismiss',
+    chat: 'Chat',
     search: 'Search',
+    incomplete: 'Incomplete',
+    requiresAction: 'Requires Action',
     noThanks: 'No, Thanks',
     noResultsFound: 'No results found.',
     adding: 'Adding...',
@@ -1146,8 +1155,9 @@ export default {
       "When you use this agent, you'll be prompted to confirm the payment from your connected wallet. Payments are processed on the {{network}} network.",
 
     toolPaymentRequired: 'Tool Payment Required',
-    toolPaymentRequiredDescription: 'This tool requires payment to use.',
-    networkToolDetails: 'Network Tool Details',
+    toolPaymentRequiredDescription:
+      'This network agent requires payment to use.',
+    networkToolDetails: 'Network Agent Details',
     tool: 'Tool',
     author: 'Author',
 

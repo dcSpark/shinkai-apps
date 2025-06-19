@@ -436,6 +436,8 @@ export const useWebSocketTools = ({
     if (lastMessage?.data) {
       try {
         const parseData: WsMessage = JSON.parse(lastMessage.data);
+        if (parseData.inbox !== inboxId) return;
+
         if (
           parseData.message_type === 'ShinkaiMessage' &&
           isToolReceived.current

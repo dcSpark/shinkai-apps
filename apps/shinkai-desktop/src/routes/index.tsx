@@ -440,8 +440,16 @@ const AppRoutes = () => {
               path={'edit/:toolRouterKey'}
             />
           </Route>
-          <Route element={<McpRegistryPage />} path={'mcp'} />
-          <Route element={<NetworkAgentPage />} path={'network-ai-agents'} />
+          <Route
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route element={<McpRegistryPage />} path={'mcp'} />
+            <Route element={<NetworkAgentPage />} path={'network-ai-agents'} />
+          </Route>
           <Route
             element={
               <ProtectedRoute>

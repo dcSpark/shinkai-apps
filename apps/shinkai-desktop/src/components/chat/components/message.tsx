@@ -750,6 +750,7 @@ export function ToolCard({
   toolRouterKey: string;
 }) {
   const { data: networkAgents } = useGetNetworkAgents();
+  const { t } = useTranslation();
 
   const isNetworkTool = (networkAgents ?? [])?.some(
     (agent) => agent.toolRouterKey === toolRouterKey,
@@ -770,15 +771,17 @@ export function ToolCard({
 
   const renderLabelText = () => {
     if (status === ToolStatusType.Complete) {
-      return isNetworkTool ? 'Network Tool Used' : 'Tool Used';
+      return isNetworkTool ? t('chat.networkAgentUsed') : t('chat.toolUsed');
     }
     if (status === ToolStatusType.Incomplete) {
-      return 'Incomplete';
+      return t('common.incomplete');
     }
     if (status === ToolStatusType.RequiresAction) {
-      return 'Requires Action';
+      return t('common.requiresAction');
     }
-    return isNetworkTool ? 'Processing Network Tool' : 'Processing Tool';
+    return isNetworkTool
+      ? t('chat.processingNetworkAgent')
+      : t('chat.processingTool');
   };
 
   return (
@@ -813,6 +816,7 @@ export function Reasoning({
   reasoning: string;
   status?: TextStatus;
 }) {
+  const { t } = useTranslation();
   const renderStatus = () => {
     if (status?.type === 'complete') {
       return <ReasoningIcon className="text-brand size-full" />;
@@ -828,9 +832,9 @@ export function Reasoning({
 
   const renderReasoningText = () => {
     if (status?.type === 'complete') {
-      return 'Reasoning';
+      return t('common.reasoning');
     }
-    return 'Thinking...';
+    return t('common.thinking');
   };
 
   return (

@@ -156,11 +156,14 @@ export const NetworkAgentPage = () => {
             </div>
 
             {!isWalletConnected && (
-              <Link to="/settings/crypto-wallet">
-                <Button variant="outline" size="sm">
-                  <CryptoWalletIcon className="size-4" />
-                  {t('networkAgentsPage.connectWallet')}
-                </Button>
+              <Link
+                to="/settings/crypto-wallet"
+                className={cn(
+                  buttonVariants({ variant: 'outline', size: 'sm' }),
+                )}
+              >
+                <CryptoWalletIcon className="size-4" />
+                {t('networkAgentsPage.connectWallet')}
               </Link>
             )}
 
@@ -238,6 +241,7 @@ export const NetworkAgentPage = () => {
               : t('networkAgentsPage.descriptionPublished')}
           </p>
         </div>
+
         {(!isWalletConnected || !isIdentityRegistered) && (
           <SetupGuide
             isWalletConnected={!!isWalletConnected}
@@ -451,6 +455,10 @@ const AgentCard = ({
           ?.name
       : undefined;
 
+  const allowInstall =
+    (!isInstalled && isFreePricing) ||
+    (!isInstalled && !isFreePricing && isWalletConnected);
+
   return (
     <Card className="border-official-gray-850 bg-official-gray-900 flex flex-col border">
       <CardHeader className="pb-4">
@@ -500,6 +508,24 @@ const AgentCard = ({
 
           {type === 'discover' && (
             <div className="flex items-center gap-2">
+              {isInstalled && (
+                <Link
+                  to={`/home`}
+                  state={{
+                    selectedTool: {
+                      key: agent.toolRouterKey,
+                      name: agent.name,
+                      description: agent.description,
+                      args: agent.apiData?.network_tool?.input_args,
+                    },
+                  }}
+                  className={cn(
+                    buttonVariants({ variant: 'outline', size: 'sm' }),
+                  )}
+                >
+                  {t('common.chat')}
+                </Link>
+              )}
               <Dialog
                 open={showDetailsModal}
                 onOpenChange={setShowDetailsModal}
@@ -524,21 +550,21 @@ const AgentCard = ({
                       </span>
                     </DialogDescription>
                   </DialogHeader>
-
                   <div className="space-y-6">
                     <p>{agent?.apiData?.network_tool?.description}</p>
 
-                    {(!isWalletConnected || !isIdentityRegistered) && (
-                      <SetupGuide
-                        isWalletConnected={!!isWalletConnected}
-                        isIdentityRegistered={isIdentityRegistered}
-                      />
-                    )}
+                    {!isFreePricing &&
+                      (!isWalletConnected || !isIdentityRegistered) && (
+                        <SetupGuide
+                          isWalletConnected={!!isWalletConnected}
+                          isIdentityRegistered={isIdentityRegistered}
+                        />
+                      )}
                     <div className="flex justify-between py-2">
                       <span className="text-official-gray-400 text-sm">
                         {t('networkAgentsPage.toolRouterKey')}
                       </span>
-                      <span className="font-mono text-xs">
+                      <span className="font-mono text-xs break-all">
                         {agent?.toolRouterKey}
                       </span>
                     </div>
@@ -596,7 +622,7 @@ const AgentCard = ({
                     </div>
                   </div>
 
-                  {!isInstalled && isWalletConnected && isIdentityRegistered ? (
+                  {allowInstall && (
                     <DialogFooter className="ml-auto w-full max-w-[300px] flex-row gap-1">
                       <Button
                         variant="outline"
@@ -617,16 +643,17 @@ const AgentCard = ({
                         {t('agentsPage.addAgent')}
                       </Button>
                     </DialogFooter>
-                  ) : isInstalled ? (
+                  )}
+                  {isInstalled && (
                     <DialogFooter>
                       <RemoveNetworkAgentButton
                         toolRouterKey={agent.toolRouterKey}
                       />
                     </DialogFooter>
-                  ) : null}
+                  )}
                 </DialogContent>
               </Dialog>
-              {!isInstalled && isWalletConnected && isIdentityRegistered ? (
+              {!isInstalled && (
                 <Button
                   variant="outline"
                   onClick={() => setShowInstallModal(true)}
@@ -635,7 +662,8 @@ const AgentCard = ({
                   <PlusIcon className="h-4 w-4" />
                   {t('agentsPage.addAgent')}
                 </Button>
-              ) : null}
+              )}
+
               {isInstalled && (
                 <RemoveNetworkAgentButton toolRouterKey={agent.toolRouterKey} />
               )}
@@ -655,6 +683,8 @@ const AgentCard = ({
         isOpen={showInstallModal}
         onClose={() => setShowInstallModal(false)}
         agent={agent}
+        isInstalled={!!isInstalled}
+        allowInstall={!!allowInstall}
       />
     </Card>
   );
@@ -666,17 +696,33 @@ interface InstallAgentModalProps {
   isOpen: boolean;
   onClose: () => void;
   agent: FormattedNetworkAgent;
+  isInstalled?: boolean;
+  allowInstall?: boolean;
 }
 
 export const InstallAgentModal = ({
   isOpen,
   onClose,
   agent,
+
+  allowInstall,
 }: InstallAgentModalProps) => {
   const { t } = useTranslation();
   const [step, setStep] = useState<1 | 2>(1); // 1: confirm, 2: success
 
   const auth = useAuth((state) => state.auth);
+  const { data: walletInfo } = useGetWalletList({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const isWalletConnected =
+    walletInfo?.payment_wallet || walletInfo?.receiving_wallet;
+
+  const isIdentityRegistered = !isShinkaiIdentityLocalhost(
+    auth?.shinkai_identity ?? '',
+  );
+
   const { mutateAsync: addNetworkTool, isPending: isAddingAgent } =
     useAddNetworkTool({
       onError: (error) => {
@@ -729,7 +775,7 @@ export const InstallAgentModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-lg text-white">
+      <DialogContent className="max-w-xl text-white">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-3 text-xl">
             {/* <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 text-xl">
@@ -743,6 +789,12 @@ export const InstallAgentModal = ({
           </DialogDescription>
         </DialogHeader>
 
+        {!isFreePricing && (!isWalletConnected || !isIdentityRegistered) && (
+          <SetupGuide
+            isWalletConnected={!!isWalletConnected}
+            isIdentityRegistered={isIdentityRegistered}
+          />
+        )}
         {step === 1 && (
           <div className="space-y-6">
             <div className="rounded-lg border border-cyan-800 bg-cyan-900/10 p-4">
@@ -803,25 +855,27 @@ export const InstallAgentModal = ({
               </div>
             </div>
 
-            <div className="ml-auto flex max-w-[300px] items-center gap-2">
-              <Button
-                variant="outline"
-                onClick={handleClose}
-                className="flex-1"
-                size="md"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleAddAgent}
-                size="md"
-                className="flex-1"
-                isLoading={isAddingAgent}
-              >
-                {isAddingAgent ? null : <Plus className="h-4 w-4" />}
-                {t('agentsPage.addAgent')}
-              </Button>
-            </div>
+            {allowInstall && (
+              <div className="ml-auto flex max-w-[300px] items-center gap-2">
+                <Button
+                  variant="outline"
+                  onClick={handleClose}
+                  className="flex-1"
+                  size="md"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleAddAgent}
+                  size="md"
+                  className="flex-1"
+                  isLoading={isAddingAgent}
+                >
+                  {isAddingAgent ? null : <Plus className="h-4 w-4" />}
+                  {t('agentsPage.addAgent')}
+                </Button>
+              </div>
+            )}
           </div>
         )}
 
