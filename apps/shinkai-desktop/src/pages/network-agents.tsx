@@ -640,7 +640,7 @@ const AgentCard = ({
                           setShowDetailsModal(false);
                         }}
                       >
-                        {t('agentsPage.addAgent')}
+                        {t('networkAgentsPage.nextAddAgent')}
                       </Button>
                     </DialogFooter>
                   )}
