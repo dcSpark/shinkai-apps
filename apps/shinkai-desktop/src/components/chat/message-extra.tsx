@@ -5,6 +5,7 @@ import {
   type WidgetToolType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { usePayInvoice } from '@shinkai_network/shinkai-node-state/v2/mutations/payInvoice/usePayInvoice';
+import { useRejectInvoice } from '@shinkai_network/shinkai-node-state/v2/mutations/rejectInvoice/useRejectInvoice';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import { Button, Dialog, DialogContent } from '@shinkai_network/shinkai-ui';
 import { CryptoWalletIcon } from '@shinkai_network/shinkai-ui/assets';
@@ -74,6 +75,7 @@ function Payment({
       setStatus('error');
     },
   });
+  const { mutateAsync: rejectInvoice } = useRejectInvoice();
 
   // const hasPerUse = !!data?.usage_type?.PerUse;
   // const hasDownload = !!data?.usage_type?.Downloadable;
@@ -316,7 +318,15 @@ function Payment({
                   <div className="ml-auto flex max-w-xs items-center justify-between gap-2">
                     <Button
                       className="flex-1"
-                      onClick={cleanWidget}
+                      onClick={async () => {
+                        if (!auth) return;
+                        await rejectInvoice({
+                          nodeAddress: auth.node_address,
+                          token: auth.api_v2_key,
+                          payload: { invoice_id: data.invoice.invoice_id },
+                        });
+                        cleanWidget();
+                      }}
                       size="md"
                       variant="outline"
                     >

@@ -42,6 +42,7 @@ import {
   type OpenToolInCodeEditorRequest,
   type OpenToolInCodeEditorResponse,
   type PayInvoiceRequest,
+  type RejectInvoiceRequest,
   type PublishToolRequest,
   type PublishToolResponse,
   type RemovePlaygroundToolRequest,
@@ -204,6 +205,22 @@ export const payInvoice = async (
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/pay_invoice'),
+    payload,
+    {
+      headers: { Authorization: `Bearer ${bearerToken}` },
+      responseType: 'json',
+    },
+  );
+  return response.data;
+};
+
+export const rejectInvoice = async (
+  nodeAddress: string,
+  bearerToken: string,
+  payload: RejectInvoiceRequest,
+) => {
+  const response = await httpClient.post(
+    urlJoin(nodeAddress, '/v2/reject_invoice'),
     payload,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
