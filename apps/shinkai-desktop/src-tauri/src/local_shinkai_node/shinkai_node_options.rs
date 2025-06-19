@@ -228,7 +228,7 @@ impl Default for ShinkaiNodeOptions {
             initial_agent_api_keys: Some("'',''".to_string()),
             starting_num_qr_devices: Some("0".to_string()),
             log_all: Some("1".to_string()),
-            proxy_identity: None,
+            proxy_identity: Some("@@libp2p_relayer.sep-shinkai".to_string()),
             rpc_url: Some("https://sepolia.base.org".to_string()),
             default_embedding_model: Some("snowflake-arctic-embed:xs".to_string()),
             supported_embedding_models: Some("snowflake-arctic-embed:xs".to_string()),
