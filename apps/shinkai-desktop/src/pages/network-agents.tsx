@@ -95,7 +95,6 @@ export const NetworkAgentPage = () => {
     { enabled: !!isWalletConnected },
   );
 
-
   return (
     <Tabs
       className="flex size-full flex-col"
@@ -699,6 +698,7 @@ export const InstallAgentModal = ({
   const isWalletConnected =
     walletInfo?.payment_wallet || walletInfo?.receiving_wallet;
 
+  const [addedAgentId, setAddedAgentId] = useState<string | undefined>();
 
   const { mutateAsync: addNetworkTool, isPending: isAddingAgent } =
     useAddNetworkTool({
@@ -707,7 +707,8 @@ export const InstallAgentModal = ({
           description: error.response?.data?.message ?? error.message,
         });
       },
-      onSuccess: () => {
+      onSuccess: (data) => {
+        setAddedAgentId(data?.agent_id);
         setStep(2);
       },
     });
@@ -795,8 +796,8 @@ export const InstallAgentModal = ({
                           <strong className="text-white">
                             {`${formatBalanceAmount(amount ?? '0', 6)} ${ticker}`}
                           </strong>{' '}
-                          when you use it in chat. You'll see a payment confirmation
-                          before any charges.
+                          when you use it in chat. You'll see a payment
+                          confirmation before any charges.
                         </>
                       )}
                     </p>
@@ -881,12 +882,7 @@ export const InstallAgentModal = ({
                   handleClose();
                   await navigate('/home', {
                     state: {
-                      selectedTool: {
-                        key: agent.toolRouterKey,
-                        name: agent.name,
-                        description: agent.description,
-                        args: agent.apiData?.network_tool?.input_args,
-                      },
+                      agentName: addedAgentId ?? agent.id,
                     },
                   });
                 }}
