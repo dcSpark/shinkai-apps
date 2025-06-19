@@ -66,7 +66,7 @@ function AgentsPage() {
   });
 
   const { t, Trans } = useTranslation();
-  const [selectedTab, setSelectedTab] = useState<'my' | 'explore'>('explore');
+  const [selectedTab, setSelectedTab] = useState<'my' | 'explore'>('my');
 
   const [searchQuery, setSearchQuery] = useState('');
 
