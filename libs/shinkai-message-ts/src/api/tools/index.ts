@@ -909,7 +909,7 @@ export const addNetworkTool = async (
   payload: AddNetworkToolRequest,
 ) => {
   const response = await httpClient.post(
-    urlJoin(nodeAddress, '/v2/add_shinkai_tool'),
+    urlJoin(nodeAddress, '/v2/add_network_agent'),
     payload,
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
