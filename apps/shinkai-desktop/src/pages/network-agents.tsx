@@ -683,6 +683,7 @@ const AgentCard = ({
         onClose={() => setShowInstallModal(false)}
         agent={agent}
         isInstalled={!!isInstalled}
+        allowInstall={!!allowInstall}
       />
     </Card>
   );
@@ -694,14 +695,16 @@ interface InstallAgentModalProps {
   isOpen: boolean;
   onClose: () => void;
   agent: FormattedNetworkAgent;
-  isInstalled: boolean;
+  isInstalled?: boolean;
+  allowInstall?: boolean;
 }
 
 export const InstallAgentModal = ({
   isOpen,
   onClose,
   agent,
-  isInstalled,
+
+  allowInstall,
 }: InstallAgentModalProps) => {
   const { t } = useTranslation();
   const [step, setStep] = useState<1 | 2>(1); // 1: confirm, 2: success
@@ -768,10 +771,6 @@ export const InstallAgentModal = ({
       ? agent.apiData.tool_offering.usage_type?.PerUse?.Payment?.[0]?.extra
           ?.name
       : undefined;
-
-  const allowInstall =
-    (!isInstalled && isFreePricing) ||
-    (!isInstalled && !isFreePricing && isWalletConnected);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
