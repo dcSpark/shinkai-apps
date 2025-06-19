@@ -95,6 +95,16 @@ const cloudProviders = [
     description:
       'Claude is a powerful AI model that can be used to generate text, images, and code.',
   },
+  {
+    id: Models.HuggingFace,
+    prefix: ModelPrefix.Ollama,
+    name: 'HuggingFace',
+    description:
+      'Install models directly from HuggingFace using Ollama.',
+    icon: <ProviderIcon provider={ModelProvider.HuggingFace} />,
+    hasInstructions: true,
+    docUrl: 'https://huggingface.co/docs',
+  },
 ];
 const AIModelInstallation = ({
   isOnboardingStep,
