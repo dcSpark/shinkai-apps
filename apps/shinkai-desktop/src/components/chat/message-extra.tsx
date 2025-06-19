@@ -128,6 +128,21 @@ function Payment({
                       {t('networkAgentsPage.toolPaymentRequiredDescription')}
                     </p>
                   </div>
+                  <div className="bg-official-gray-850 flex items-center justify-between rounded-md p-3">
+                    <p className="font-medium">
+                      {t('networkAgentsPage.costPerUse')}
+                    </p>
+                    <p className="font-clash text-xl font-semibold">
+                      {data.usage_type.PerUse === 'Free'
+                        ? 'Free'
+                        : 'Payment' in data.usage_type.PerUse
+                          ? `${formatBalanceAmount(
+                              data.usage_type.PerUse.Payment[0].maxAmountRequired ?? '0',
+                              tokenDecimals,
+                            )} ${tokenId}`
+                          : data.usage_type.PerUse.DirectDelegation}
+                    </p>
+                  </div>
                   <div className="space-y-3">
                     <div className="bg-official-gray-850 rounded-lg p-4">
                       <h4 className="mb-3 font-medium">
@@ -145,23 +160,6 @@ function Payment({
                             {t('networkAgentsPage.author')}:
                           </span>
                           <span>{data.invoice.provider_name}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-official-gray-400">
-                            {t('networkAgentsPage.costPerUse')}:
-                          </span>
-                          <span className="font-semibold text-white">
-                            {data.usage_type.PerUse === 'Free'
-                              ? 'Free'
-                              : 'Payment' in data.usage_type.PerUse
-                                ? `${formatBalanceAmount(
-                                    data.usage_type.PerUse.Payment[0]
-                                      .maxAmountRequired ?? '0',
-                                    tokenDecimals,
-                                  )} ${tokenId}
-                                  `
-                                : data.usage_type.PerUse.DirectDelegation}
-                          </span>
                         </div>
                         {data.usage_type?.PerUse &&
                           typeof data.usage_type.PerUse === 'object' &&
