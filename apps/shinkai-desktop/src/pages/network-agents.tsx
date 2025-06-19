@@ -455,7 +455,9 @@ const AgentCard = ({
           ?.name
       : undefined;
 
-  const allowInstall = !isInstalled && isFreePricing;
+  const allowInstall =
+    (!isInstalled && isFreePricing) ||
+    (!isInstalled && !isFreePricing && isWalletConnected);
 
   return (
     <Card className="border-official-gray-850 bg-official-gray-900 flex flex-col border">
@@ -548,7 +550,6 @@ const AgentCard = ({
                       </span>
                     </DialogDescription>
                   </DialogHeader>
-
                   <div className="space-y-6">
                     <p>{agent?.apiData?.network_tool?.description}</p>
 
@@ -661,6 +662,7 @@ const AgentCard = ({
                   {t('agentsPage.addAgent')}
                 </Button>
               )}
+
               {isInstalled && (
                 <RemoveNetworkAgentButton toolRouterKey={agent.toolRouterKey} />
               )}
@@ -680,6 +682,7 @@ const AgentCard = ({
         isOpen={showInstallModal}
         onClose={() => setShowInstallModal(false)}
         agent={agent}
+        isInstalled={!!isInstalled}
       />
     </Card>
   );
@@ -691,12 +694,14 @@ interface InstallAgentModalProps {
   isOpen: boolean;
   onClose: () => void;
   agent: FormattedNetworkAgent;
+  isInstalled: boolean;
 }
 
 export const InstallAgentModal = ({
   isOpen,
   onClose,
   agent,
+  isInstalled,
 }: InstallAgentModalProps) => {
   const { t } = useTranslation();
   const [step, setStep] = useState<1 | 2>(1); // 1: confirm, 2: success
@@ -763,6 +768,10 @@ export const InstallAgentModal = ({
       ? agent.apiData.tool_offering.usage_type?.PerUse?.Payment?.[0]?.extra
           ?.name
       : undefined;
+
+  const allowInstall =
+    (!isInstalled && isFreePricing) ||
+    (!isInstalled && !isFreePricing && isWalletConnected);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -846,7 +855,7 @@ export const InstallAgentModal = ({
               </div>
             </div>
 
-            {isWalletConnected && (
+            {allowInstall && (
               <div className="ml-auto flex max-w-[300px] items-center gap-2">
                 <Button
                   variant="outline"
