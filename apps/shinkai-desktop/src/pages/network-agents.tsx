@@ -812,14 +812,19 @@ export const InstallAgentModal = ({
                       your collection
                     </p>
                     <p>
-                      <strong>Pay per use</strong> - Only pay{' '}
-                      <strong className="text-white">
-                        {isFreePricing
-                          ? 'FREE'
-                          : `${formatBalanceAmount(amount ?? '0', 6)} ${ticker}`}
-                      </strong>{' '}
-                      when you use it in chat. You'll see a payment confirmation
-                      before any charges.
+                      <strong>Pay per use</strong> -{' '}
+                      {isFreePricing ? (
+                        'Free to use in chat.'
+                      ) : (
+                        <>
+                          Only pay{' '}
+                          <strong className="text-white">
+                            {`${formatBalanceAmount(amount ?? '0', 6)} ${ticker}`}
+                          </strong>{' '}
+                          when you use it in chat. You'll see a payment confirmation
+                          before any charges.
+                        </>
+                      )}
                     </p>
                   </div>
                 </div>
