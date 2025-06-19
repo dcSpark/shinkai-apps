@@ -5,6 +5,7 @@ import {
   type WidgetToolType,
 } from '@shinkai_network/shinkai-message-ts/api/general/types';
 import { usePayInvoice } from '@shinkai_network/shinkai-node-state/v2/mutations/payInvoice/usePayInvoice';
+import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import { Button, Dialog, DialogContent } from '@shinkai_network/shinkai-ui';
 import { CryptoWalletIcon } from '@shinkai_network/shinkai-ui/assets';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -52,6 +53,15 @@ function Payment({
   >('idle');
 
   const auth = useAuth((state) => state.auth);
+
+  const { data: walletInfo } = useGetWalletList({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const walletExist =
+    walletInfo?.payment_wallet || walletInfo?.receiving_wallet;
+
   const { mutateAsync: payInvoice } = usePayInvoice({
     onSuccess: () => {
       setStatus('success');
@@ -261,42 +271,47 @@ function Payment({
                     </div>
                   )}
                 </RadioGroup> */}
-                    <div className="bg-official-gray-850 rounded-lg p-4">
-                      <h4 className="mb-2 font-medium">
-                        {t('networkAgentsPage.yourWallet')}
-                      </h4>
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-official-gray-400">
-                            {t('networkAgentsPage.walletAddress')}:
-                          </span>
-                          <div className="flex flex-col items-end justify-start gap-2">
-                            {truncateAddress(data.invoice.address.address_id)}
+                    {walletExist && (
+                      <div className="bg-official-gray-850 rounded-lg p-4">
+                        <h4 className="mb-2 font-medium">
+                          {t('networkAgentsPage.yourWallet')}
+                        </h4>
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-official-gray-400">
+                              {t('networkAgentsPage.walletAddress')}:
+                            </span>
+                            <div className="flex flex-col items-end justify-start gap-2">
+                              {truncateAddress(
+                                walletInfo?.payment_wallet?.data?.address
+                                  ?.address_id ?? '',
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-start justify-between text-sm">
-                          <span className="text-official-gray-400">
-                            {t('networkAgentsPage.usdcBalance')}:
-                          </span>
-                          <div className="flex flex-col items-end justify-start gap-0.5">
-                            {data.wallet_balances.data.map((balance) => (
-                              <div
-                                className="text-right"
-                                key={balance.asset.asset_id}
-                              >
-                                {formatBalanceAmount(
-                                  balance.amount,
-                                  balance.asset.decimals,
-                                )}{' '}
-                                <span className="text-official-gray-200 font-medium">
-                                  {balance.asset.asset_id}
-                                </span>
-                              </div>
-                            ))}
+                          <div className="flex items-start justify-between text-sm">
+                            <span className="text-official-gray-400">
+                              {t('networkAgentsPage.usdcBalance')}:
+                            </span>
+                            <div className="flex flex-col items-end justify-start gap-0.5">
+                              {data.wallet_balances.data.map((balance) => (
+                                <div
+                                  className="text-right"
+                                  key={balance.asset.asset_id}
+                                >
+                                  {formatBalanceAmount(
+                                    balance.amount,
+                                    balance.asset.decimals,
+                                  )}{' '}
+                                  <span className="text-official-gray-200 font-medium">
+                                    {balance.asset.asset_id}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                   <div className="ml-auto flex max-w-xs items-center justify-between gap-2">
                     <Button
