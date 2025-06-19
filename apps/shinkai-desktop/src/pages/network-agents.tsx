@@ -455,7 +455,7 @@ const AgentCard = ({
           ?.name
       : undefined;
 
-  const allowInstall = !isInstalled && isFreePricing && isWalletConnected;
+  const allowInstall = !isInstalled && isFreePricing;
 
   return (
     <Card className="border-official-gray-850 bg-official-gray-900 flex flex-col border">
