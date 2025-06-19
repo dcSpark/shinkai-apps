@@ -455,7 +455,9 @@ const AgentCard = ({
           ?.name
       : undefined;
 
-  const allowInstall = !isInstalled && isFreePricing && isWalletConnected;
+  const allowInstall =
+    (!isInstalled && isFreePricing) ||
+    (!isInstalled && !isFreePricing && isWalletConnected);
 
   return (
     <Card className="border-official-gray-850 bg-official-gray-900 flex flex-col border">
@@ -548,16 +550,16 @@ const AgentCard = ({
                       </span>
                     </DialogDescription>
                   </DialogHeader>
-
                   <div className="space-y-6">
                     <p>{agent?.apiData?.network_tool?.description}</p>
 
-                    {(!isWalletConnected || !isIdentityRegistered) && (
-                      <SetupGuide
-                        isWalletConnected={!!isWalletConnected}
-                        isIdentityRegistered={isIdentityRegistered}
-                      />
-                    )}
+                    {!isFreePricing &&
+                      (!isWalletConnected || !isIdentityRegistered) && (
+                        <SetupGuide
+                          isWalletConnected={!!isWalletConnected}
+                          isIdentityRegistered={isIdentityRegistered}
+                        />
+                      )}
                     <div className="flex justify-between py-2">
                       <span className="text-official-gray-400 text-sm">
                         {t('networkAgentsPage.toolRouterKey')}
@@ -661,6 +663,7 @@ const AgentCard = ({
                   {t('agentsPage.addAgent')}
                 </Button>
               )}
+
               {isInstalled && (
                 <RemoveNetworkAgentButton toolRouterKey={agent.toolRouterKey} />
               )}
@@ -680,6 +683,8 @@ const AgentCard = ({
         isOpen={showInstallModal}
         onClose={() => setShowInstallModal(false)}
         agent={agent}
+        isInstalled={!!isInstalled}
+        allowInstall={!!allowInstall}
       />
     </Card>
   );
@@ -691,12 +696,16 @@ interface InstallAgentModalProps {
   isOpen: boolean;
   onClose: () => void;
   agent: FormattedNetworkAgent;
+  isInstalled?: boolean;
+  allowInstall?: boolean;
 }
 
 export const InstallAgentModal = ({
   isOpen,
   onClose,
   agent,
+
+  allowInstall,
 }: InstallAgentModalProps) => {
   const { t } = useTranslation();
   const [step, setStep] = useState<1 | 2>(1); // 1: confirm, 2: success
@@ -780,7 +789,7 @@ export const InstallAgentModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        {(!isWalletConnected || !isIdentityRegistered) && (
+        {!isFreePricing && (!isWalletConnected || !isIdentityRegistered) && (
           <SetupGuide
             isWalletConnected={!!isWalletConnected}
             isIdentityRegistered={isIdentityRegistered}
@@ -846,7 +855,7 @@ export const InstallAgentModal = ({
               </div>
             </div>
 
-            {isWalletConnected && (
+            {allowInstall && (
               <div className="ml-auto flex max-w-[300px] items-center gap-2">
                 <Button
                   variant="outline"
