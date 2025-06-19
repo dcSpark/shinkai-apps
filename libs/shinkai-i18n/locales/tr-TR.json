@@ -639,7 +639,9 @@
     "usdcBalance": "USDC Bakiyesi",
     "walletAddress": "Cüzdan Adresi",
     "walletBalance": "Cüzdan Bakiyesi",
-    "yourWallet": "Cüzdanınız"
+    "yourWallet": "Cüzdanınız",
+    "walletNotSetup": "Cüzdan ayarlanmadı",
+    "proceedFree": "Ücretsiz Devam Et"
   },
   "notifications": {
     "messageReceived": {

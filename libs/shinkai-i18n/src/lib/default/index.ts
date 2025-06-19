@@ -1163,9 +1163,11 @@ export default {
 
     paymentRecipient: 'Payment Recipient',
     yourWallet: 'Your Wallet',
+    walletNotSetup: "Wallet isn't set up",
     walletAddress: 'Wallet Address',
     usdcBalance: 'USDC Balance',
     confirmPayment: 'Confirm Payment',
+    proceedFree: 'Proceed (Free)',
     processingPayment: 'Processing Payment',
     pleaseWait: 'Please wait while we process your transaction...',
     paymentSuccessful: 'Payment Successful!',

@@ -639,7 +639,9 @@
     "usdcBalance": "Saldo USDC",
     "walletAddress": "Alamat Dompet",
     "walletBalance": "Saldo Dompet",
-    "yourWallet": "Dompet Anda"
+    "yourWallet": "Dompet Anda",
+    "walletNotSetup": "Dompet belum disiapkan",
+    "proceedFree": "Lanjutkan (Gratis)"
   },
   "notifications": {
     "messageReceived": {

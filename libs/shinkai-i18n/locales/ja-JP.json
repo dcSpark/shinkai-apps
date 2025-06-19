@@ -639,7 +639,9 @@
     "usdcBalance": "USDC残高",
     "walletAddress": "ウォレットアドレス",
     "walletBalance": "ウォレット残高",
-    "yourWallet": "あなたのウォレット"
+    "yourWallet": "あなたのウォレット",
+    "walletNotSetup": "ウォレットが設定されていません",
+    "proceedFree": "無料で進む"
   },
   "notifications": {
     "messageReceived": {

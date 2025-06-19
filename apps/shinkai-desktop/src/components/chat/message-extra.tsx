@@ -273,7 +273,7 @@ function Payment({
                     </div>
                   )}
                 </RadioGroup> */}
-                    {walletExist && (
+                    {walletExist ? (
                       <div className="bg-official-gray-850 rounded-lg p-4">
                         <h4 className="mb-2 font-medium">
                           {t('networkAgentsPage.yourWallet')}
@@ -313,6 +313,10 @@ function Payment({
                           </div>
                         </div>
                       </div>
+                    ) : (
+                      <div className="bg-official-gray-850 rounded-lg p-4 text-sm">
+                        {t('networkAgentsPage.walletNotSetup')}
+                      </div>
                     )}
                   </div>
                   <div className="ml-auto flex max-w-xs items-center justify-between gap-2">
@@ -348,7 +352,9 @@ function Payment({
                       }}
                       size="md"
                     >
-                      {t('networkAgentsPage.confirmPayment')}
+                      {data.usage_type.PerUse === 'Free'
+                        ? t('networkAgentsPage.proceedFree')
+                        : t('networkAgentsPage.confirmPayment')}
                     </Button>
                   </div>
                 </motion.div>
