@@ -1,8 +1,8 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
-import { isShinkaiIdentityLocalhost } from '@shinkai_network/shinkai-message-ts/utils';
 import { useAddNetworkTool } from '@shinkai_network/shinkai-node-state/v2/mutations/addNetworkTool/useAddNetworkTool';
 import { useGetInstalledNetworkTools } from '@shinkai_network/shinkai-node-state/v2/queries/getInstalledNetworkTools/useGetInstalledNetworkTools';
 import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
+import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetWalletBalance } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletBalance/useGetWalletBalance';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import {
@@ -277,6 +277,11 @@ const DiscoverNetworkAgents = ({
     isSuccess: isNetworkAgentsSuccess,
   } = useGetNetworkAgents();
 
+  const { data: agents } = useGetAgents({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
   const {
     data: installedNetworkTools,
     isPending: isInstalledNetworkToolsPending,
@@ -285,6 +290,18 @@ const DiscoverNetworkAgents = ({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
+
+  const toolAgentMap = useMemo(() => {
+    const map = new Map<string, string>();
+    agents?.forEach((agent) => {
+      agent.tools.forEach((tool) => {
+        if (!map.has(tool)) {
+          map.set(tool, agent.agent_id);
+        }
+      });
+    });
+    return map;
+  }, [agents]);
 
   const filteredAgents = (networkAgents ?? [])?.filter((agent) => {
     const matchesSearch =
@@ -344,6 +361,7 @@ const DiscoverNetworkAgents = ({
                   )) ??
                 false
               }
+              associatedAgentId={toolAgentMap.get(agent.toolRouterKey)}
               isWalletConnected={isWalletConnected}
             />
           ))}
@@ -403,6 +421,7 @@ interface AgentCardProps {
   type: 'discover' | 'exposed';
   isInstalled?: boolean;
   isWalletConnected: boolean;
+  associatedAgentId?: string;
 }
 /* TODO:
   - published agents
@@ -414,6 +433,7 @@ const AgentCard = ({
   type,
   isInstalled,
   isWalletConnected,
+  associatedAgentId,
 }: AgentCardProps) => {
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -491,17 +511,10 @@ const AgentCard = ({
 
           {type === 'discover' && (
             <div className="flex items-center gap-2">
-              {isInstalled && (
+              {isInstalled && associatedAgentId && (
                 <Link
                   to={`/home`}
-                  state={{
-                    selectedTool: {
-                      key: agent.toolRouterKey,
-                      name: agent.name,
-                      description: agent.description,
-                      args: agent.apiData?.network_tool?.input_args,
-                    },
-                  }}
+                  state={{ agentName: associatedAgentId }}
                   className={cn(
                     buttonVariants({ variant: 'outline', size: 'sm' }),
                   )}
@@ -903,7 +916,6 @@ interface SetupGuideProps {
   isWalletConnected: boolean;
 }
 function SetupGuide({ isWalletConnected }: SetupGuideProps) {
-  const auth = useAuth((state) => state.auth);
   const { t } = useTranslation();
 
   return (
