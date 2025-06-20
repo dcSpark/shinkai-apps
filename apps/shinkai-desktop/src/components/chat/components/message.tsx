@@ -392,22 +392,33 @@ export const MessageBase = ({
                             key={`${tool.name}-${index}`}
                             value={`${tool.name}-${index}`}
                           >
-                            <AccordionTrigger
-                              className={cn(
-                                'min-w-[10rem] gap-3 py-0 pr-2 no-underline hover:no-underline',
-                                'hover:bg-official-gray-900 [&[data-state=open]]:bg-official-gray-950 transition-colors',
-                                tool.status !== ToolStatusType.Complete &&
-                                  '[&>svg]:hidden',
-                              )}
-                            >
-                              <ToolCard
-                                args={tool.args}
-                                name={tool.name}
-                                status={tool.status ?? ToolStatusType.Complete}
-                                toolRouterKey={tool.toolRouterKey}
-                                onOpenTracing={() => setTracingOpen(true)}
-                              />
-                            </AccordionTrigger>
+                              <div className="flex items-center">
+                                <AccordionTrigger
+                                  className={cn(
+                                    'min-w-[10rem] flex-1 gap-3 py-0 pr-2 no-underline hover:no-underline',
+                                    'hover:bg-official-gray-900 [&[data-state=open]]:bg-official-gray-950 transition-colors',
+                                    tool.status !== ToolStatusType.Complete &&
+                                      '[&>svg]:hidden',
+                                  )}
+                                >
+                                  <ToolCard
+                                    args={tool.args}
+                                    name={tool.name}
+                                    status={tool.status ?? ToolStatusType.Complete}
+                                    toolRouterKey={tool.toolRouterKey}
+                                  />
+                                </AccordionTrigger>
+                                <Button
+                                  variant="outline"
+                                  size="xs"
+                                  className="ml-2 h-6 px-2"
+                                  onClick={() => setTracingOpen(true)}
+                                  onMouseDown={(e) => e.stopPropagation()}
+                                  onKeyDown={(e) => e.stopPropagation()}
+                                >
+                                  Network Tracing
+                                </Button>
+                              </div>
                             <AccordionContent className="bg-official-gray-950 flex flex-col gap-1 rounded-b-lg px-3 pt-2 pb-3 text-xs">
                               {Object.keys(tool.args).length > 0 && (
                                 <span className="font-medium text-white">
@@ -744,13 +755,11 @@ export function ToolCard({
   // args,
   status,
   toolRouterKey,
-  onOpenTracing,
 }: {
   args: ToolArgs;
   status: ToolStatusType;
   name: string;
   toolRouterKey: string;
-  onOpenTracing: () => void;
 }) {
   const { data: networkAgents } = useGetNetworkAgents();
   const { t } = useTranslation();
@@ -806,14 +815,6 @@ export function ToolCard({
             >
               {formatText(name)}
             </Link>
-            <Button
-              variant="outline"
-              size="xs"
-              className="h-6 px-2"
-              onClick={onOpenTracing}
-            >
-              Network Tracing
-            </Button>
           </div>
         </div>
       </motion.div>
