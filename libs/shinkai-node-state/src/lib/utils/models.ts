@@ -110,39 +110,55 @@ export const modelsConfig = {
     apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
     modelTypes: [
       {
+        name: 'Gemini 2.5 Pro',
+        value: 'gemini-2.5-pro',
+      },
+      {
+        name: 'Gemini 2.5 Flash',
+        value: 'gemini-2.5-flash',
+      },
+      {
+        name: 'Gemini 2.5 Flash-Lite Preview',
+        value: 'gemini-2.5-flash-lite-preview-06-17',
+      },
+      {
+        name: 'Gemini 2.5 Flash Native Audio',
+        value: 'gemini-2.5-flash-preview-native-audio-dialog',
+      },
+      {
+        name: 'Gemini 2.5 Flash Exp Native Audio',
+        value: 'gemini-2.5-flash-exp-native-audio-thinking-dialog',
+      },
+      {
+        name: 'Gemini 2.5 Flash Preview TTS',
+        value: 'gemini-2.5-flash-preview-tts',
+      },
+      {
+        name: 'Gemini 2.5 Pro Preview TTS',
+        value: 'gemini-2.5-pro-preview-tts',
+      },
+      {
         name: 'Gemini 2.0 Flash',
         value: 'gemini-2.0-flash',
       },
       {
-        name: 'Gemini 2.0 Flash Lite',
-        value: 'gemini-2.0-flash-lite-preview-02-05',
-      },
-      {
-        name: 'Gemini 2.0 Flash Image Generation',
+        name: 'Gemini 2.0 Flash Preview Image Generation',
         value: 'gemini-2.0-flash-preview-image-generation',
       },
       {
-        name: 'Gemini 2.5 Flash Preview',
-        value: 'gemini-2.5-flash-preview-05-20',
+        name: 'Gemini 2.0 Flash-Lite',
+        value: 'gemini-2.0-flash-lite',
       },
       {
-        name: 'Gemini 2.5 Flash Native Audio',
-        value: 'gemini-2.5-flash-preview-native-audio',
-      },
-      {
-        name: 'Gemini 2.5 Flash Exp Native Audio',
-        value: 'gemini-2.5-flash-exp-native-audio',
-      },
-      {
-        name: 'Gemini 2.5 Pro Preview',
-        value: 'gemini-2.5-pro-preview-06-05',
+        name: 'Gemini 2.0 Flash Live',
+        value: 'gemini-2.0-flash-live-001',
       },
       {
         name: 'Gemini 1.5 Flash',
         value: 'gemini-1.5-flash',
       },
       {
-        name: 'Gemini 1.5 Flash 8B',
+        name: 'Gemini 1.5 Flash-8B',
         value: 'gemini-1.5-flash-8b',
       },
       {
@@ -150,12 +166,16 @@ export const modelsConfig = {
         value: 'gemini-1.5-pro',
       },
       {
-        name: 'Gemini Ultra',
-        value: 'gemini-ultra',
+        name: 'Gemini Embedding',
+        value: 'gemini-embedding-exp',
       },
       {
-        name: 'Gemini Pro',
-        value: 'gemini-pro',
+        name: 'Imagen 3',
+        value: 'imagen-3.0-generate-002',
+      },
+      {
+        name: 'Veo 2',
+        value: 'veo-2.0-generate-001',
       },
     ],
   },
@@ -253,40 +273,36 @@ export const modelsConfig = {
     apiUrl: 'https://api.anthropic.com',
     modelTypes: [
       {
-        name: 'Claude 3.5 Sonnet',
-        value: 'claude-3-5-sonnet-latest',
-      },
-      {
-        name: 'Claude 3 Opus',
-        value: 'claude-3-opus-latest',
-      },
-      {
-        name: 'Claude 3 Sonnet',
-        value: 'claude-3-sonnet-20240229',
-      },
-      {
-        name: 'Claude 3 Haiku',
-        value: 'claude-3-haiku-20240307',
-      },
-      {
-        name: 'Claude 4 Opus',
-        value: 'claude-opus-4-latest',
-      },
-      {
-        name: 'Claude 4 Sonnet',
-        value: 'claude-sonnet-4-latest',
-      },
-      {
-        name: 'Claude 3.7 Sonnet',
-        value: 'claude-3-7-sonnet-latest',
-      },
-      {
         name: 'Claude 3.5 Sonnet (20241022)',
         value: 'claude-3-5-sonnet-20241022',
       },
       {
-        name: 'Claude 3.5 Haiku',
-        value: 'claude-3-5-haiku-latest',
+        name: 'Claude 3 Opus (20240229)',
+        value: 'claude-3-opus-20240229',
+      },
+      {
+        name: 'Claude 3 Sonnet (20240229)',
+        value: 'claude-3-sonnet-20240229',
+      },
+      {
+        name: 'Claude 3 Haiku (20240307)',
+        value: 'claude-3-haiku-20240307',
+      },
+      {
+        name: 'Claude 4 Opus (20250514)',
+        value: 'claude-opus-4-20250514',
+      },
+      {
+        name: 'Claude 4 Sonnet (20250514)',
+        value: 'claude-sonnet-4-20250514',
+      },
+      {
+        name: 'Claude 3.7 Sonnet (20250219)',
+        value: 'claude-3-7-sonnet-20250219',
+      },
+      {
+        name: 'Claude 3.5 Haiku (20241022)',
+        value: 'claude-3-5-haiku-20241022',
       },
     ],
   },
