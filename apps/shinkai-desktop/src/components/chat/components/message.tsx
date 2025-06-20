@@ -1016,6 +1016,42 @@ export type ToolResponseTracingInfo = {
 export type InvoiceRequestSentTracingInfo = {
   provider: string;
   tool: string;
+  tool_author: string;
+  tool_description: string;
+  usage_type: string;
+};
+
+export type InvoiceReceivedTracingInfo = {
+  address: {
+    address_id: string;
+    network: string;
+  };
+  expiration: string;
+  has_tool_data: boolean;
+  invoice_date: string;
+  provider: string;
+  requester: string;
+  tool_key: string;
+  usage_type: string;
+};
+
+export type InvoicePaidTracingInfo = {
+  has_tool_data: boolean;
+  invoice_date: string;
+  invoice_id: string;
+  paid_date: string;
+  payment_details: {
+    date_paid: string;
+    payment_status: string;
+    transaction_hash: string;
+  };
+  provider: string;
+  requester: string;
+  status: string;
+  tool_data_keys: string[];
+  tool_data_size: number;
+  tool_key: string;
+  tool_price: string;
   usage_type: string;
 };
 
@@ -1031,6 +1067,7 @@ export function TracingDialog({
 }) {
   const auth = useAuth((state) => state.auth);
   const [selectedTrace, setSelectedTrace] = useState<MessageTrace | null>(null);
+  const [showRaw, setShowRaw] = useState(false);
   const { t } = useTranslation();
 
   const { data: tracingData, isLoading: isTracingLoading } =
@@ -1046,6 +1083,7 @@ export function TracingDialog({
   useEffect(() => {
     if (open && tracingData && tracingData.length > 0) {
       setSelectedTrace(tracingData[0]);
+      setShowRaw(false);
     }
   }, [open, tracingData]);
 
@@ -1086,7 +1124,10 @@ export function TracingDialog({
                 : 'text-official-gray-400',
             )}
             rounded="lg"
-            onClick={() => setSelectedTrace(node)}
+            onClick={() => {
+              setSelectedTrace(node);
+              setShowRaw(false);
+            }}
           >
             <div className="mr-2 flex flex-col items-center">
               <div
@@ -1389,6 +1430,18 @@ export function TracingDialog({
             <p className="text-sm font-medium">{data.tool}</p>
             <p className="text-official-gray-400 text-xs">
               <span className="text-official-gray-200 font-medium">
+                Author:{' '}
+              </span>
+              {data.tool_author}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Description:{' '}
+              </span>
+              {data.tool_description}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
                 Provider:{' '}
               </span>
               {data.provider}
@@ -1399,6 +1452,152 @@ export function TracingDialog({
               </span>
               {data.usage_type}
             </p>
+          </div>
+        );
+      }
+      case 'invoice_received': {
+        const data = info as InvoiceReceivedTracingInfo;
+        return (
+          <div className="border-official-gray-780 bg-official-gray-900 space-y-2 overflow-hidden rounded-md border p-3">
+            <p className="text-sm font-medium">{data.tool_key}</p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Provider:{' '}
+              </span>
+              {data.provider}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Requester:{' '}
+              </span>
+              {data.requester}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Invoice Date:{' '}
+              </span>
+              {format(new Date(data.invoice_date), 'yyyy-MM-dd HH:mm:ss')}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Expiration:{' '}
+              </span>
+              {format(new Date(data.expiration), 'yyyy-MM-dd HH:mm:ss')}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Usage Type:{' '}
+              </span>
+              {data.usage_type}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Has Tool Data:{' '}
+              </span>
+              {String(data.has_tool_data)}
+            </p>
+            <div className="text-official-gray-400 text-xs">
+              <p className="text-official-gray-200 font-medium">Address</p>
+              <p>
+                ID:{' '}
+                <span className="text-official-gray-200">
+                  {data.address.address_id}
+                </span>
+              </p>
+              <p>
+                Network:{' '}
+                <span className="text-official-gray-200">
+                  {data.address.network}
+                </span>
+              </p>
+            </div>
+          </div>
+        );
+      }
+      case 'invoice_paid': {
+        const data = info as InvoicePaidTracingInfo;
+        return (
+          <div className="border-official-gray-780 bg-official-gray-900 space-y-2 overflow-hidden rounded-md border p-3">
+            <p className="text-sm font-medium">{data.tool_key}</p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Provider:{' '}
+              </span>
+              {data.provider}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Requester:{' '}
+              </span>
+              {data.requester}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Status:{' '}
+              </span>
+              {data.status}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Invoice ID:{' '}
+              </span>
+              {data.invoice_id}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Invoice Date:{' '}
+              </span>
+              {format(new Date(data.invoice_date), 'yyyy-MM-dd HH:mm:ss')}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Paid Date:{' '}
+              </span>
+              {format(new Date(data.paid_date), 'yyyy-MM-dd HH:mm:ss')}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Has Tool Data:{' '}
+              </span>
+              {String(data.has_tool_data)}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Tool Price:{' '}
+              </span>
+              {data.tool_price}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Usage Type:{' '}
+              </span>
+              {data.usage_type}
+            </p>
+            <div className="text-official-gray-400 text-xs">
+              <p className="text-official-gray-200 font-medium">
+                Payment Details
+              </p>
+              <p>
+                Status:{' '}
+                <span className="text-official-gray-200">
+                  {data.payment_details.payment_status}
+                </span>
+              </p>
+              <p>
+                Tx Hash:{' '}
+                <span className="text-official-gray-200">
+                  {data.payment_details.transaction_hash}
+                </span>
+              </p>
+            </div>
+            {data.tool_data_keys.length > 0 && (
+              <div className="text-official-gray-400 text-xs">
+                <p className="text-official-gray-200 font-medium">
+                  Tool Data Keys ({data.tool_data_size})
+                </p>
+                <p>{data.tool_data_keys.join(', ')}</p>
+              </div>
+            )}
           </div>
         );
       }
@@ -1435,12 +1634,26 @@ export function TracingDialog({
           <ScrollArea className="h-[calc(100vh-45px)] w-full max-w-2/3 px-3 [&>div>div]:!block">
             {selectedTrace ? (
               <div className="size-full space-y-4 overflow-hidden py-4">
-                <p className="text-base font-medium text-white">
-                  {formatText(selectedTrace.trace_name)}
-                </p>
-                {renderContentByType(
-                  selectedTrace.trace_name,
-                  selectedTrace.trace_info,
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-medium text-white">
+                    {formatText(selectedTrace.trace_name)}
+                  </p>
+                  <Button
+                    onClick={() => setShowRaw((prev) => !prev)}
+                    size="sm"
+                    variant="tertiary"
+                    rounded="lg"
+                  >
+                    {showRaw ? 'Formatted View' : 'Raw JSON'}
+                  </Button>
+                </div>
+                {showRaw ? (
+                  <PrettyJsonPrint json={selectedTrace.trace_info} />
+                ) : (
+                  renderContentByType(
+                    selectedTrace.trace_name,
+                    selectedTrace.trace_info,
+                  )
                 )}
               </div>
             ) : (
