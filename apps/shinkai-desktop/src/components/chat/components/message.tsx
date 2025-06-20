@@ -411,7 +411,7 @@ export const MessageBase = ({
                                 <Button
                                   variant="outline"
                                   size="xs"
-                                  className="ml-2 h-6 px-2"
+                                  className="ml-2 mr-2 h-6 px-2"
                                   onClick={() => setTracingOpen(true)}
                                   onMouseDown={(e) => e.stopPropagation()}
                                   onKeyDown={(e) => e.stopPropagation()}
