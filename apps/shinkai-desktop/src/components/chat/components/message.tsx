@@ -405,6 +405,7 @@ export const MessageBase = ({
                                 name={tool.name}
                                 status={tool.status ?? ToolStatusType.Complete}
                                 toolRouterKey={tool.toolRouterKey}
+                                onOpenTracing={() => setTracingOpen(true)}
                               />
                             </AccordionTrigger>
                             <AccordionContent className="bg-official-gray-950 flex flex-col gap-1 rounded-b-lg px-3 pt-2 pb-3 text-xs">
@@ -743,11 +744,13 @@ export function ToolCard({
   // args,
   status,
   toolRouterKey,
+  onOpenTracing,
 }: {
   args: ToolArgs;
   status: ToolStatusType;
   name: string;
   toolRouterKey: string;
+  onOpenTracing: () => void;
 }) {
   const { data: networkAgents } = useGetNetworkAgents();
   const { t } = useTranslation();
@@ -803,6 +806,14 @@ export function ToolCard({
             >
               {formatText(name)}
             </Link>
+            <Button
+              variant="outline"
+              size="xs"
+              className="h-6 px-2"
+              onClick={onOpenTracing}
+            >
+              Network Tracing
+            </Button>
           </div>
         </div>
       </motion.div>
