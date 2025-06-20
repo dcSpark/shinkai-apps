@@ -1055,6 +1055,7 @@ export function TracingDialog({
 }) {
   const auth = useAuth((state) => state.auth);
   const [selectedTrace, setSelectedTrace] = useState<MessageTrace | null>(null);
+  const [showRaw, setShowRaw] = useState(false);
   const { t } = useTranslation();
 
   const { data: tracingData, isLoading: isTracingLoading } =
@@ -1070,6 +1071,7 @@ export function TracingDialog({
   useEffect(() => {
     if (open && tracingData && tracingData.length > 0) {
       setSelectedTrace(tracingData[0]);
+      setShowRaw(false);
     }
   }, [open, tracingData]);
 
@@ -1110,7 +1112,10 @@ export function TracingDialog({
                 : 'text-official-gray-400',
             )}
             rounded="lg"
-            onClick={() => setSelectedTrace(node)}
+            onClick={() => {
+              setSelectedTrace(node);
+              setShowRaw(false);
+            }}
           >
             <div className="mr-2 flex flex-col items-center">
               <div
@@ -1617,12 +1622,26 @@ export function TracingDialog({
           <ScrollArea className="h-[calc(100vh-45px)] w-full max-w-2/3 px-3 [&>div>div]:!block">
             {selectedTrace ? (
               <div className="size-full space-y-4 overflow-hidden py-4">
-                <p className="text-base font-medium text-white">
-                  {formatText(selectedTrace.trace_name)}
-                </p>
-                {renderContentByType(
-                  selectedTrace.trace_name,
-                  selectedTrace.trace_info,
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-medium text-white">
+                    {formatText(selectedTrace.trace_name)}
+                  </p>
+                  <Button
+                    onClick={() => setShowRaw((prev) => !prev)}
+                    size="sm"
+                    variant="tertiary"
+                    rounded="lg"
+                  >
+                    {showRaw ? 'Formatted View' : 'Raw JSON'}
+                  </Button>
+                </div>
+                {showRaw ? (
+                  <PrettyJsonPrint json={selectedTrace.trace_info} />
+                ) : (
+                  renderContentByType(
+                    selectedTrace.trace_name,
+                    selectedTrace.trace_info,
+                  )
                 )}
               </div>
             ) : (
