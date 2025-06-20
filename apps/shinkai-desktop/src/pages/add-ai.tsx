@@ -32,7 +32,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { HelpCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
@@ -130,17 +130,15 @@ const AddAIPage = () => {
   const navigate = useNavigate();
   const query = useURLQueryParams();
 
+  const preSelectedAiProvider = query.get('aiProvider') as Models;
   const addAgentForm = useForm<AddAiModelFormSchema>({
     resolver: zodResolver(addAiModelSchema),
-    defaultValues: addAiModelFormDefault,
+    defaultValues: {
+      ...addAiModelFormDefault,
+      model: preSelectedAiProvider,
+      modelType: modelsConfig[preSelectedAiProvider].modelTypes[0].value,
+    },
   });
-
-  const preSelectedAiProvider = query.get('aiProvider') as Models;
-  useEffect(() => {
-    if (preSelectedAiProvider) {
-      addAgentForm.setValue('model', preSelectedAiProvider);
-    }
-  }, [addAgentForm, preSelectedAiProvider]);
 
   const { mutateAsync: addLLMProvider, isPending } = useAddLLMProvider({
     onSuccess: (_, variables) => {
@@ -156,11 +154,19 @@ const AddAIPage = () => {
       });
     },
   });
-  const {
-    model: currentModel,
-    isCustomModel: isCustomModelMode,
-    modelType: currentModelType,
-  } = addAgentForm.watch();
+
+  const currentModel = useWatch({
+    control: addAgentForm.control,
+    name: 'model',
+  });
+  const isCustomModelMode = useWatch({
+    control: addAgentForm.control,
+    name: 'isCustomModel',
+  });
+  const currentModelType = useWatch({
+    control: addAgentForm.control,
+    name: 'modelType',
+  });
 
   const {
     data: ollamaModels,
@@ -205,16 +211,19 @@ const AddAIPage = () => {
       );
       return;
     }
-    const modelConfig = modelsConfig[currentModel as Models];
-    addAgentForm.setValue('externalUrl', modelConfig.apiUrl);
-    setModelTypeOptions(
-      modelsConfig[currentModel as Models].modelTypes
-        .map((modelType) => ({
-          label: modelType.name,
-          value: modelType.value,
-        }))
-        .concat({ label: 'Custom Model', value: 'custom' }),
-    );
+
+    if (currentModel) {
+      const modelConfig = modelsConfig[currentModel as Models];
+      addAgentForm.setValue('externalUrl', modelConfig.apiUrl);
+      setModelTypeOptions(
+        modelsConfig[currentModel as Models].modelTypes
+          .map((modelType) => ({
+            label: modelType.name,
+            value: modelType.value,
+          }))
+          .concat({ label: 'Custom Model', value: 'custom' }),
+      );
+    }
   }, [currentModel, addAgentForm, isCustomModelMode, ollamaModels]);
 
   useEffect(() => {
