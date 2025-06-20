@@ -1004,6 +1004,8 @@ export type ToolResponseTracingInfo = {
 export type InvoiceRequestSentTracingInfo = {
   provider: string;
   tool: string;
+  tool_author: string;
+  tool_description: string;
   usage_type: string;
 };
 
@@ -1409,6 +1411,18 @@ export function TracingDialog({
         return (
           <div className="border-official-gray-780 bg-official-gray-900 space-y-2 overflow-hidden rounded-md border p-3">
             <p className="text-sm font-medium">{data.tool}</p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Author:{' '}
+              </span>
+              {data.tool_author}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Description:{' '}
+              </span>
+              {data.tool_description}
+            </p>
             <p className="text-official-gray-400 text-xs">
               <span className="text-official-gray-200 font-medium">
                 Provider:{' '}
