@@ -1,7 +1,7 @@
 import { DialogClose } from '@radix-ui/react-dialog';
-import { Slot } from '@radix-ui/react-slot';
 import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
-import { useRemoveTool } from '@shinkai_network/shinkai-node-state/v2/mutations/removeTool/useRemoveTool';
+import { useRemoveAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/removeAgent/useRemoveAgent';
+import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import {
   Button,
   buttonVariants,
@@ -18,7 +18,7 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 
@@ -34,8 +34,19 @@ export default function RemoveNetworkAgentButton({
   const [isOpen, setIsOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  const { mutateAsync: removeTool, isPending: isRemoveToolPending } =
-    useRemoveTool({
+  const { data: agents } = useGetAgents({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const associatedAgentId = useMemo(
+    () =>
+      agents?.find((agent) => agent.tools.includes(toolRouterKey))?.agent_id,
+    [agents, toolRouterKey],
+  );
+
+  const { mutateAsync: removeAgent, isPending: isRemoveAgentPending } =
+    useRemoveAgent({
       onSuccess: async () => {
         await queryClient.invalidateQueries({
           queryKey: [FunctionKeyV2.GET_INSTALLED_NETWORK_TOOLS],
@@ -51,8 +62,12 @@ export default function RemoveNetworkAgentButton({
     });
 
   const handleRemove = async () => {
-    await removeTool({
-      toolKey: toolRouterKey,
+    if (!associatedAgentId) {
+      toast.error(t('networkAgentsPage.removeFailed'));
+      return;
+    }
+    await removeAgent({
+      agentId: associatedAgentId,
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
     });
@@ -99,7 +114,7 @@ export default function RemoveNetworkAgentButton({
             </DialogClose>
             <Button
               className="min-w-[100px] flex-1"
-              isLoading={isRemoveToolPending}
+              isLoading={isRemoveAgentPending}
               onClick={handleRemove}
               size="sm"
               variant="destructive"
