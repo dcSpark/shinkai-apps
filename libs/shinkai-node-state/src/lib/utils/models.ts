@@ -254,11 +254,11 @@ export const modelsConfig = {
     modelTypes: [
       {
         name: 'Claude 3.5 Sonnet',
-        value: 'claude-3-5-sonnet-latest',
+        value: 'claude-3-5-sonnet-20241022',
       },
       {
         name: 'Claude 3 Opus',
-        value: 'claude-3-opus-latest',
+        value: 'claude-3-opus-20240229',
       },
       {
         name: 'Claude 3 Sonnet',
@@ -270,15 +270,15 @@ export const modelsConfig = {
       },
       {
         name: 'Claude 4 Opus',
-        value: 'claude-opus-4-latest',
+        value: 'claude-opus-4-20250514',
       },
       {
         name: 'Claude 4 Sonnet',
-        value: 'claude-sonnet-4-latest',
+        value: 'claude-sonnet-4-20250514',
       },
       {
         name: 'Claude 3.7 Sonnet',
-        value: 'claude-3-7-sonnet-latest',
+        value: 'claude-3-7-sonnet-20250219',
       },
       {
         name: 'Claude 3.5 Sonnet (20241022)',
@@ -286,7 +286,7 @@ export const modelsConfig = {
       },
       {
         name: 'Claude 3.5 Haiku',
-        value: 'claude-3-5-haiku-latest',
+        value: 'claude-3-5-haiku-20241022',
       },
     ],
   },
