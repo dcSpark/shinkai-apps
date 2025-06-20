@@ -1007,6 +1007,21 @@ export type InvoiceRequestSentTracingInfo = {
   usage_type: string;
 };
 
+export type InvoiceReceivedTracingInfo = {
+  provider: string;
+  requester: string;
+  tool_key: string;
+  usage_type: string;
+};
+
+export type InvoicePaidTracingInfo = {
+  provider: string;
+  requester: string;
+  tool_key: string;
+  status: string;
+  invoice_id: string;
+};
+
 type TracingNode = MessageTrace & { children: TracingNode[] };
 export function TracingDialog({
   open,
@@ -1386,6 +1401,64 @@ export function TracingDialog({
                 Usage Type:{' '}
               </span>
               {data.usage_type}
+            </p>
+          </div>
+        );
+      }
+      case 'invoice_received': {
+        const data = info as InvoiceReceivedTracingInfo;
+        return (
+          <div className="border-official-gray-780 bg-official-gray-900 space-y-2 overflow-hidden rounded-md border p-3">
+            <p className="text-sm font-medium">{data.tool_key}</p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Provider:{' '}
+              </span>
+              {data.provider}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Requester:{' '}
+              </span>
+              {data.requester}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Usage Type:{' '}
+              </span>
+              {data.usage_type}
+            </p>
+          </div>
+        );
+      }
+      case 'invoice_paid': {
+        const data = info as InvoicePaidTracingInfo;
+        return (
+          <div className="border-official-gray-780 bg-official-gray-900 space-y-2 overflow-hidden rounded-md border p-3">
+            <p className="text-sm font-medium">{data.tool_key}</p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Provider:{' '}
+              </span>
+              {data.provider}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Requester:{' '}
+              </span>
+              {data.requester}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Status:{' '}
+              </span>
+              {data.status}
+            </p>
+            <p className="text-official-gray-400 text-xs">
+              <span className="text-official-gray-200 font-medium">
+                Invoice ID:{' '}
+              </span>
+              {data.invoice_id}
             </p>
           </div>
         );
