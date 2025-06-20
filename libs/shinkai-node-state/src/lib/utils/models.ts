@@ -110,39 +110,55 @@ export const modelsConfig = {
     apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
     modelTypes: [
       {
+        name: 'Gemini 2.5 Pro',
+        value: 'gemini-2.5-pro',
+      },
+      {
+        name: 'Gemini 2.5 Flash',
+        value: 'gemini-2.5-flash',
+      },
+      {
+        name: 'Gemini 2.5 Flash-Lite Preview',
+        value: 'gemini-2.5-flash-lite-preview-06-17',
+      },
+      {
+        name: 'Gemini 2.5 Flash Native Audio',
+        value: 'gemini-2.5-flash-preview-native-audio-dialog',
+      },
+      {
+        name: 'Gemini 2.5 Flash Exp Native Audio',
+        value: 'gemini-2.5-flash-exp-native-audio-thinking-dialog',
+      },
+      {
+        name: 'Gemini 2.5 Flash Preview TTS',
+        value: 'gemini-2.5-flash-preview-tts',
+      },
+      {
+        name: 'Gemini 2.5 Pro Preview TTS',
+        value: 'gemini-2.5-pro-preview-tts',
+      },
+      {
         name: 'Gemini 2.0 Flash',
         value: 'gemini-2.0-flash',
       },
       {
-        name: 'Gemini 2.0 Flash Lite',
-        value: 'gemini-2.0-flash-lite-preview-02-05',
-      },
-      {
-        name: 'Gemini 2.0 Flash Image Generation',
+        name: 'Gemini 2.0 Flash Preview Image Generation',
         value: 'gemini-2.0-flash-preview-image-generation',
       },
       {
-        name: 'Gemini 2.5 Flash Preview',
-        value: 'gemini-2.5-flash-preview-05-20',
+        name: 'Gemini 2.0 Flash-Lite',
+        value: 'gemini-2.0-flash-lite',
       },
       {
-        name: 'Gemini 2.5 Flash Native Audio',
-        value: 'gemini-2.5-flash-preview-native-audio',
-      },
-      {
-        name: 'Gemini 2.5 Flash Exp Native Audio',
-        value: 'gemini-2.5-flash-exp-native-audio',
-      },
-      {
-        name: 'Gemini 2.5 Pro Preview',
-        value: 'gemini-2.5-pro-preview-06-05',
+        name: 'Gemini 2.0 Flash Live',
+        value: 'gemini-2.0-flash-live-001',
       },
       {
         name: 'Gemini 1.5 Flash',
         value: 'gemini-1.5-flash',
       },
       {
-        name: 'Gemini 1.5 Flash 8B',
+        name: 'Gemini 1.5 Flash-8B',
         value: 'gemini-1.5-flash-8b',
       },
       {
@@ -150,12 +166,16 @@ export const modelsConfig = {
         value: 'gemini-1.5-pro',
       },
       {
-        name: 'Gemini Ultra',
-        value: 'gemini-ultra',
+        name: 'Gemini Embedding',
+        value: 'gemini-embedding-exp',
       },
       {
-        name: 'Gemini Pro',
-        value: 'gemini-pro',
+        name: 'Imagen 3',
+        value: 'imagen-3.0-generate-002',
+      },
+      {
+        name: 'Veo 2',
+        value: 'veo-2.0-generate-001',
       },
     ],
   },
