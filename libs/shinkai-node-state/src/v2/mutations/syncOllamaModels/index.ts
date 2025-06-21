@@ -16,11 +16,11 @@ export const syncOllamaModels = async ({
   }
   if (allowedModels?.length) {
     ollamaModels = ollamaModels.filter((model) =>
-      allowedModels.includes(model.model),
+      allowedModels.includes(model.name),
     );
   }
   const payload = {
-    models: ollamaModels.map((v) => v.model),
+    models: ollamaModels.map((v) => v.name),
   };
   return addOllamaModels(nodeAddress, token, payload);
 };

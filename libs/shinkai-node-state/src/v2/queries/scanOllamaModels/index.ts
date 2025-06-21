@@ -9,7 +9,7 @@ export const scanOllamaModels = async ({
   const response = await scanOllamaModelsApi(nodeAddress, token);
   const uniqueModels = response.filter(
     (model, index, self) =>
-      index === self.findIndex((t) => t.model === model.model),
+      index === self.findIndex((t) => t.name === model.name),
   );
   return uniqueModels;
 };
