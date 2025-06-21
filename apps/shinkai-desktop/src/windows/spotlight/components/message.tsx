@@ -685,7 +685,7 @@ export function Reasoning({
           </AnimatePresence>
         </AccordionTrigger>
         <AccordionContent className="bg-official-gray-950 flex flex-col gap-1 rounded-b-lg px-3 pt-2 pb-3 text-sm">
-          <span className="text-official-gray-400 break-words">
+          <span className="text-official-gray-400 whitespace-pre-line break-words">
             {reasoning}
           </span>
         </AccordionContent>
