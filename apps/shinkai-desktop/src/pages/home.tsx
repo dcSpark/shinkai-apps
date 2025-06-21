@@ -655,17 +655,6 @@ const EmptyMessage = () => {
                           <PopoverContent align="start" className="w-48 p-2">
                             <div className="flex flex-col items-start gap-1">
                               {!selectedTool && (
-                                <FileSelectionActionBar
-                                  disabled={!!selectedTool}
-                                  inputProps={{
-                                    ...chatForm.register('files'),
-                                    ...getInputFileProps(),
-                                  }}
-                                  onClick={openFilePicker}
-                                  showLabel
-                                />
-                              )}
-                              {!selectedTool && (
                                 <VectorFsActionBar
                                   aiFilesCount={
                                     Object.keys(selectedKeys || {}).length ?? 0
@@ -683,6 +672,18 @@ const EmptyMessage = () => {
                             </div>
                           </PopoverContent>
                         </Popover>
+
+                        {!selectedTool && (
+                          <FileSelectionActionBar
+                            disabled={!!selectedTool}
+                            inputProps={{
+                              ...chatForm.register('files'),
+                              ...getInputFileProps(),
+                            }}
+                            onClick={openFilePicker}
+                            showLabel
+                          />
+                        )}
 
                         {!selectedTool && !selectedAgent && (
                           <ToolsSwitchActionBar
