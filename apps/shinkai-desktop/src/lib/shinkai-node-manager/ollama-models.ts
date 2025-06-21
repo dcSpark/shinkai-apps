@@ -39,7 +39,7 @@ export type OllamaModelDefinition =
 export const FILTERED_OLLAMA_MODELS_REPOSITORY =
   OLLAMA_MODELS_REPOSITORY.filter((model) => !model.embedding);
 export const ALLOWED_OLLAMA_MODELS = FILTERED_OLLAMA_MODELS_REPOSITORY.flatMap(
-  (model) => model.tags.map((tag) => `${model.name}:${tag.name}`),
+  (model) => model.tags.map((tag) => tag.name),
 );
 
 const currentPlatform = platform();
