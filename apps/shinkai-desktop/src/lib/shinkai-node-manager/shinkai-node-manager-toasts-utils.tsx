@@ -10,7 +10,7 @@ export const modelNameMap: Record<string, string> = {
   'llama3.1:8b-instruct-q4_1': 'Llama 3.1 8B',
   'gemma2:2b-instruct-q4_1': 'Gemma 2 2B',
   'command-r7b:7b-12-2024-q4_K_M': 'Command R 7B',
-  'mistral-small:24b-instruct-2501-q4_K_M': 'Mistral Small 3',
+  'mistral-small3.2:24b-instruct-2506-q4_K_M': 'Mistral Small 3.2',
 };
 
 const ShinkaiNodeLogsLabel = ({
