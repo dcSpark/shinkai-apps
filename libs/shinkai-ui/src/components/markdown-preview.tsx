@@ -21,6 +21,8 @@ import tsx from 'react-syntax-highlighter/dist/esm/languages/prism/tsx';
 import { default as github } from 'react-syntax-highlighter/dist/esm/styles/hljs/github';
 // import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 import { cn } from '../utils';
 import { CopyToClipboardIcon } from './copy-to-clipboard-icon';
@@ -528,7 +530,8 @@ export const MarkdownTextBase = ({
   return (
     <MarkdownTextPrimitive
       components={components}
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={[remarkGfm, remarkMath]}
+      rehypePlugins={[rehypeKatex]}
       {...rest}
       className={cn(isRunning && 'md-running', className)}
     />
