@@ -20,17 +20,20 @@ import python from 'react-syntax-highlighter/dist/esm/languages/prism/python';
 import tsx from 'react-syntax-highlighter/dist/esm/languages/prism/tsx';
 import { default as github } from 'react-syntax-highlighter/dist/esm/styles/hljs/github';
 // import rehypeRaw from 'rehype-raw';
+import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
 
+import { memoCompareNodes } from '../helpers/memoization';
 import { cn } from '../utils';
 import { CopyToClipboardIcon } from './copy-to-clipboard-icon';
 
-type CodeHeaderProps = {
+export type CodeHeaderProps = {
+  node?: Element | undefined;
   language: string | undefined;
   code: string;
 };
+
 export const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
   return (
     <div className="code-header-root flex items-center justify-between gap-4 rounded-t-lg border-b border-gray-400 bg-[#0d1117] px-4 py-1 text-white">
@@ -264,8 +267,12 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   SyntaxHighlighter: SyntaxHighlighterBase,
 };
 
-export type PreComponent = ComponentType<ComponentPropsWithoutRef<'pre'>>;
-export type CodeComponent = ComponentType<ComponentPropsWithoutRef<'code'>>;
+export type PreComponent = ComponentType<
+  ComponentPropsWithoutRef<'pre'> & { node?: Element | undefined }
+>;
+export type CodeComponent = ComponentType<
+  ComponentPropsWithoutRef<'code'> & { node?: Element | undefined }
+>;
 
 export const PreContext = createContext<Omit<
   ComponentPropsWithoutRef<PreComponent>,
@@ -293,11 +300,12 @@ export const DefaultCode: CodeComponent = ({
 );
 
 export const DefaultCodeBlockContent: ComponentType<{
+  node: Element | undefined;
   components: { Pre: PreComponent; Code: CodeComponent };
   code: string | ReactNode | undefined;
-}> = ({ components: { Pre, Code }, code }) => (
+}> = ({ node, components: { Pre, Code }, code }) => (
   <Pre>
-    <Code>{code}</Code>
+    <Code node={node}>{code}</Code>
   </Pre>
 );
 
@@ -309,19 +317,23 @@ export type MarkdownTextPrimitiveProps = Omit<
   Options,
   'components' | 'children'
 > & {
-  containerProps?: Omit<PrimitiveDivProps, 'children' | 'asChild'>;
+  containerProps?: Omit<PrimitiveDivProps, 'children' | 'asChild'> | undefined;
   containerComponent?: ElementType;
-  components?: Partial<Components> & {
-    SyntaxHighlighter?: ComponentType<SyntaxHighlighterProps>;
-    CodeHeader?: ComponentType<CodeHeaderProps>;
-    by_language?: Record<
-      string,
-      {
-        CodeHeader?: ComponentType<CodeHeaderProps>;
-        SyntaxHighlighter?: ComponentType<SyntaxHighlighterProps>;
-      }
-    >;
-  };
+  componentsByLanguage?:
+    | Record<
+        string,
+        {
+          CodeHeader?: ComponentType<CodeHeaderProps> | undefined;
+          SyntaxHighlighter?: ComponentType<SyntaxHighlighterProps> | undefined;
+        }
+      >
+    | undefined;
+  components?:
+    | (NonNullable<Options['components']> & {
+        SyntaxHighlighter?: ComponentType<SyntaxHighlighterProps> | undefined;
+        CodeHeader?: ComponentType<CodeHeaderProps> | undefined;
+      })
+    | undefined;
   content: string;
   ref?: React.RefObject<HTMLDivElement>;
 };
@@ -332,14 +344,16 @@ export type CodeOverrideProps = ComponentPropsWithoutRef<CodeComponent> & {
     Code: CodeComponent;
     CodeHeader: ComponentType<CodeHeaderProps>;
     SyntaxHighlighter: ComponentType<SyntaxHighlighterProps>;
-    by_language?: Record<
-      string,
-      {
-        CodeHeader?: ComponentType<CodeHeaderProps>;
-        SyntaxHighlighter?: ComponentType<SyntaxHighlighterProps>;
-      }
-    >;
   };
+  componentsByLanguage?:
+    | Record<
+        string,
+        {
+          CodeHeader?: ComponentType<CodeHeaderProps>;
+          SyntaxHighlighter?: ComponentType<SyntaxHighlighterProps>;
+        }
+      >
+    | undefined;
 };
 
 export type SyntaxHighlighterProps = {
@@ -352,6 +366,7 @@ export type SyntaxHighlighterProps = {
 };
 
 export type CodeBlockProps = {
+  node: Element | undefined;
   language: string;
   code: string;
   components: {
@@ -363,21 +378,23 @@ export type CodeBlockProps = {
 };
 
 export const DefaultCodeBlock: FC<CodeBlockProps> = ({
+  node,
   components: { Pre, Code, SyntaxHighlighter, CodeHeader },
   language,
   code,
 }) => {
   const components = useMemo(() => ({ Pre, Code }), [Pre, Code]);
 
-  const SH = language ? SyntaxHighlighter : DefaultCodeBlockContent;
+  const SH = !!language ? SyntaxHighlighter : DefaultCodeBlockContent;
 
   return (
     <>
-      <CodeHeader code={code} language={language} />
+      <CodeHeader node={node} language={language} code={code} />
       <SH
-        code={code}
+        node={node}
         components={components}
         language={language ?? 'unknown'}
+        code={code}
       />
     </>
   );
@@ -397,13 +414,14 @@ export const withDefaultProps =
   };
 
 const CodeBlockOverride: FC<CodeOverrideProps> = ({
+  node,
   components: {
     Pre,
     Code,
     SyntaxHighlighter: FallbackSyntaxHighlighter,
     CodeHeader: FallbackCodeHeader,
-    by_language = {},
   },
+  componentsByLanguage = {},
   children,
   ...codeProps
 }) => {
@@ -426,19 +444,21 @@ const CodeBlockOverride: FC<CodeOverrideProps> = ({
       <DefaultCodeBlockContent
         code={children}
         components={{ Pre: WrappedPre, Code: WrappedCode }}
+        node={node}
       />
     );
   }
 
   const SyntaxHighlighter: ComponentType<SyntaxHighlighterProps> =
-    by_language[language]?.SyntaxHighlighter ?? FallbackSyntaxHighlighter;
+    componentsByLanguage[language]?.SyntaxHighlighter ??
+    FallbackSyntaxHighlighter;
 
   const CodeHeader: ComponentType<CodeHeaderProps> =
-    by_language[language]?.CodeHeader ?? FallbackCodeHeader;
+    componentsByLanguage[language]?.CodeHeader ?? FallbackCodeHeader;
 
   return (
     <DefaultCodeBlock
-      code={children}
+      node={node}
       components={{
         Pre: WrappedPre,
         Code: WrappedCode,
@@ -446,18 +466,36 @@ const CodeBlockOverride: FC<CodeOverrideProps> = ({
         CodeHeader,
       }}
       language={language || 'unknown'}
+      code={children}
     />
   );
 };
 
-export const CodeOverride: FC<CodeOverrideProps> = ({
+export const CodeOverrideBase: FC<CodeOverrideProps> = ({
+  node,
   components,
+  componentsByLanguage,
   ...props
 }) => {
-  const preProps = useContext(PreContext);
-  if (!preProps) return <components.Code {...(props as any)} />;
-  return <CodeBlockOverride components={components} {...props} />;
+  const isCodeBlock = useContext(PreContext) !== null;
+  if (!isCodeBlock) return <components.Code {...props} />;
+  return (
+    <CodeBlockOverride
+      components={components}
+      componentsByLanguage={componentsByLanguage}
+      node={node}
+      {...props}
+    />
+  );
 };
+
+export const CodeOverride = memo(CodeOverrideBase, (prev, next) => {
+  const isEqual =
+    prev.components === next.components &&
+    prev.componentsByLanguage === next.componentsByLanguage &&
+    memoCompareNodes(prev, next);
+  return isEqual;
+});
 
 export const MarkdownTextPrimitive = ({
   components: userComponents,
@@ -465,6 +503,7 @@ export const MarkdownTextPrimitive = ({
   containerProps,
   containerComponent: Container = 'div',
   content,
+  componentsByLanguage,
   ref,
   ...rest
 }: MarkdownTextPrimitiveProps) => {
@@ -473,26 +512,33 @@ export const MarkdownTextPrimitive = ({
     code = DefaultCode,
     SyntaxHighlighter = DefaultCodeBlockContent,
     CodeHeader = DefaultCodeHeader,
-    by_language,
-    ...componentsRest
   } = userComponents ?? {};
 
-  const components: typeof userComponents = {
-    ...componentsRest,
-    pre: PreOverride,
-    code: useCallbackRef((props) => (
-      <CodeOverride
-        components={{
-          Pre: pre,
-          Code: code,
-          SyntaxHighlighter,
-          CodeHeader,
-          by_language,
-        }}
-        {...props}
-      />
-    )),
-  };
+  const useCodeOverrideComponents = useMemo(() => {
+    return {
+      Pre: pre,
+      Code: code,
+      SyntaxHighlighter,
+      CodeHeader,
+    };
+  }, [pre, code, SyntaxHighlighter, CodeHeader]);
+  const CodeComponent = useCallbackRef((props) => (
+    <CodeOverride
+      components={useCodeOverrideComponents}
+      componentsByLanguage={componentsByLanguage}
+      {...props}
+    />
+  ));
+
+  const components: Options['components'] = useMemo(() => {
+    const { pre, code, SyntaxHighlighter, CodeHeader, ...componentsRest } =
+      userComponents ?? {};
+    return {
+      ...componentsRest,
+      pre: PreOverride,
+      code: CodeComponent,
+    };
+  }, [CodeComponent, userComponents]);
 
   return (
     <Container
