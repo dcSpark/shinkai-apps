@@ -1,5 +1,7 @@
 import { type Primitive } from '@radix-ui/react-primitive';
 import { useCallbackRef } from '@radix-ui/react-use-callback-ref';
+import { type Element } from 'hast';
+
 import React, {
   type ComponentPropsWithoutRef,
   type ComponentType,
@@ -11,7 +13,7 @@ import React, {
   useContext,
   useMemo,
 } from 'react';
-import ReactMarkdown, { type Components, type Options } from 'react-markdown';
+import ReactMarkdown, { type Options } from 'react-markdown';
 import {
   PrismAsyncLight,
   type SyntaxHighlighterProps as SHP,
@@ -19,14 +21,18 @@ import {
 import python from 'react-syntax-highlighter/dist/esm/languages/prism/python';
 import tsx from 'react-syntax-highlighter/dist/esm/languages/prism/tsx';
 import { default as github } from 'react-syntax-highlighter/dist/esm/styles/hljs/github';
-// import rehypeRaw from 'rehype-raw';
 import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 
-import { memoCompareNodes } from '../helpers/memoization';
+import {
+  memoCompareNodes,
+  memoizeMarkdownComponents,
+} from '../helpers/memoization';
 import { cn } from '../utils';
 import { CopyToClipboardIcon } from './copy-to-clipboard-icon';
+
+import { MermaidDiagram } from './mermaid';
 
 export type CodeHeaderProps = {
   node?: Element | undefined;
@@ -96,8 +102,8 @@ export const SyntaxHighlighterBase = makePrismAsyncLightSyntaxHighlighter({
   },
 });
 
-export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
-  h1: ({ node, className, ...props }) => (
+export const defaultComponents = memoizeMarkdownComponents({
+  h1: ({ className, ...props }) => (
     <h1
       className={cn(
         'mt-[1em] mb-[0.7em] scroll-m-20 text-[1.375rem] font-bold last:mb-0',
@@ -106,7 +112,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       {...props}
     />
   ),
-  h2: ({ node, className, ...props }) => (
+  h2: ({ className, ...props }) => (
     <h2
       className={cn(
         'text-em-xl mt-[0.8em] mb-[0.4em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
@@ -115,7 +121,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       {...props}
     />
   ),
-  h3: ({ node, className, ...props }) => (
+  h3: ({ className, ...props }) => (
     <h3
       className={cn(
         'text-em-lg mt-[1em] mb-[0.5em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
@@ -124,7 +130,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       {...props}
     />
   ),
-  h4: ({ node, className, ...props }) => (
+  h4: ({ className, ...props }) => (
     <h4
       className={cn(
         'text-em-base mt-[1em] mb-[0.5em] scroll-m-20 font-semibold first:mt-0 last:mb-0',
@@ -133,7 +139,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       {...props}
     />
   ),
-  h5: ({ node, className, ...props }) => (
+  h5: ({ className, ...props }) => (
     <h5
       className={cn(
         'text-em-base mt-[1em] mb-[0.5em] font-semibold first:mt-0 last:mb-0',
@@ -142,7 +148,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       {...props}
     />
   ),
-  h6: ({ node, className, ...props }) => (
+  h6: ({ className, ...props }) => (
     <h6
       className={cn(
         'text-em-base mt-[1em] mb-[0.5em] font-semibold first:mt-0 last:mb-0',
@@ -151,13 +157,13 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       {...props}
     />
   ),
-  p: ({ node, className, ...props }) => (
+  p: ({ className, ...props }) => (
     <p
       className={cn('text-em-base my-[0.5em] first:mt-0 last:mb-0', className)}
       {...props}
     />
   ),
-  a: ({ node, className, ...props }) => (
+  a: ({ className, ...props }) => (
     <a
       className={cn(
         'font-medium text-blue-400 underline underline-offset-4',
@@ -167,13 +173,13 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       {...props}
     />
   ),
-  blockquote: ({ node, className, ...props }) => (
+  blockquote: ({ className, ...props }) => (
     <blockquote
       className={cn('border-l-2 pl-6 italic', className)}
       {...props}
     />
   ),
-  ul: ({ node, className, ...props }) => (
+  ul: ({ className, ...props }) => (
     <ul
       className={cn(
         'text-em-base my-[1em] ml-6 list-disc [&>li]:mt-2',
@@ -182,7 +188,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       {...props}
     />
   ),
-  ol: ({ node, className, ...props }) => (
+  ol: ({ className, ...props }) => (
     <ol
       className={cn(
         'text-em-base my-[1em] ml-6 list-decimal [&>li]:mt-[0.5em]',
@@ -191,7 +197,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       {...props}
     />
   ),
-  hr: ({ node, className, ...props }) => (
+  hr: ({ className, ...props }) => (
     <hr
       className={cn(
         'border-official-gray-600/25 my-[2.25em] border-b',
@@ -200,15 +206,15 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       {...props}
     />
   ),
-  table: ({ node, className, ...props }) => (
+  table: ({ className, ...props }) => (
     <div className="my-[1.5em] size-full overflow-x-auto">
       <table className="w-full border-collapse border-spacing-0" {...props} />
     </div>
   ),
-  thead: ({ node, className, ...props }) => (
+  thead: ({ className, ...props }) => (
     <thead className={cn('[&>tr]:border-none', className)} {...props} />
   ),
-  th: ({ node, className, ...props }) => (
+  th: ({ className, ...props }) => (
     <th
       className={cn(
         'text-em-sm px-[1em] py-[0.875em] text-left font-semibold first:rounded-tl-lg last:rounded-tr-lg [&[align=center]]:text-center [&[align=right]]:text-right',
@@ -217,7 +223,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       {...props}
     />
   ),
-  td: ({ node, className, ...props }) => (
+  td: ({ className, ...props }) => (
     <td
       className={cn(
         'text-em-sm border-official-gray-700 border-b px-[1em] py-[0.875em] text-left [&[align=center]]:text-center [&[align=right]]:text-right',
@@ -226,7 +232,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       {...props}
     />
   ),
-  tr: ({ node, className, ...props }) => (
+  tr: ({ className, ...props }) => (
     <tr
       className={cn(
         'm-0 border-b p-0 first:border-t [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg',
@@ -235,13 +241,13 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       {...props}
     />
   ),
-  sup: ({ node, className, ...props }) => (
+  sup: ({ className, ...props }) => (
     <sup
       className={cn('[&>a]:text-em-xs [&>a]:no-underline', className)}
       {...props}
     />
   ),
-  pre: ({ node, className, ...props }) => (
+  pre: ({ className, ...props }) => (
     <pre
       className={cn(
         'overflow-x-auto rounded-b-lg bg-black !px-[1em] !py-[0.5em] text-white',
@@ -250,7 +256,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
       {...props}
     />
   ),
-  code: function Code({ node, className, ...props }) {
+  code: function Code({ className, ...props }) {
     const isCodeBlock = useIsMarkdownCodeBlock();
     return (
       <code
@@ -265,7 +271,7 @@ export const defaultComponents: MarkdownTextPrimitiveProps['components'] = {
   },
   CodeHeader,
   SyntaxHighlighter: SyntaxHighlighterBase,
-};
+});
 
 export type PreComponent = ComponentType<
   ComponentPropsWithoutRef<'pre'> & { node?: Element | undefined }
@@ -279,8 +285,14 @@ export const PreContext = createContext<Omit<
   'children'
 > | null>(null);
 
+export const IsRunningContext = createContext<boolean | undefined>(undefined);
+
 export const useIsMarkdownCodeBlock = () => {
   return useContext(PreContext) !== null;
+};
+
+export const useIsRunning = () => {
+  return useContext(IsRunningContext);
 };
 
 export const PreOverride: PreComponent = ({ children, ...rest }) => {
@@ -363,6 +375,7 @@ export type SyntaxHighlighterProps = {
   };
   language: string;
   code: string;
+  isRunning?: boolean;
 };
 
 export type CodeBlockProps = {
@@ -375,6 +388,7 @@ export type CodeBlockProps = {
     CodeHeader: ComponentType<CodeHeaderProps>;
     SyntaxHighlighter: ComponentType<SyntaxHighlighterProps>;
   };
+  isRunning?: boolean;
 };
 
 export const DefaultCodeBlock: FC<CodeBlockProps> = ({
@@ -382,6 +396,7 @@ export const DefaultCodeBlock: FC<CodeBlockProps> = ({
   components: { Pre, Code, SyntaxHighlighter, CodeHeader },
   language,
   code,
+  isRunning,
 }) => {
   const components = useMemo(() => ({ Pre, Code }), [Pre, Code]);
 
@@ -395,6 +410,7 @@ export const DefaultCodeBlock: FC<CodeBlockProps> = ({
         components={components}
         language={language ?? 'unknown'}
         code={code}
+        isRunning={isRunning}
       />
     </>
   );
@@ -426,6 +442,7 @@ const CodeBlockOverride: FC<CodeOverrideProps> = ({
   ...codeProps
 }) => {
   const preProps = useContext(PreContext)!;
+  const isRunning = useIsRunning();
   const getPreProps = withDefaultProps<any>(preProps);
   const WrappedPre: PreComponent = useCallbackRef((props) => (
     <Pre {...getPreProps(props)} />
@@ -467,6 +484,7 @@ const CodeBlockOverride: FC<CodeOverrideProps> = ({
       }}
       language={language || 'unknown'}
       code={children}
+      isRunning={isRunning}
     />
   );
 };
@@ -505,8 +523,9 @@ export const MarkdownTextPrimitive = ({
   content,
   componentsByLanguage,
   ref,
+  isRunning,
   ...rest
-}: MarkdownTextPrimitiveProps) => {
+}: MarkdownTextPrimitiveProps & { isRunning?: boolean }) => {
   const {
     pre = DefaultPre,
     code = DefaultCode,
@@ -547,9 +566,11 @@ export const MarkdownTextPrimitive = ({
       className={cn(className, containerProps?.className)}
       ref={ref}
     >
-      <ReactMarkdown components={components} {...rest}>
-        {content}
-      </ReactMarkdown>
+      <IsRunningContext.Provider value={isRunning}>
+        <ReactMarkdown components={components} {...rest}>
+          {content}
+        </ReactMarkdown>
+      </IsRunningContext.Provider>
     </Container>
   );
 };
@@ -566,25 +587,26 @@ export const MarkdownTextBase = ({
   components: userComponents,
   ...rest
 }: MakeMarkdownTextProps) => {
-  const components = {
-    ...defaultComponents,
-    ...Object.fromEntries(
-      Object.entries(userComponents ?? {}).filter(([_, v]) => v !== undefined),
-    ),
-  } as MarkdownTextPrimitiveProps['components'];
-
   return (
     <MarkdownTextPrimitive
-      components={components}
+      components={defaultComponents}
       remarkPlugins={[remarkGfm, remarkMath]}
       rehypePlugins={[rehypeKatex]}
-      {...rest}
       className={cn(isRunning && 'md-running', className)}
+      isRunning={isRunning}
+      componentsByLanguage={{
+        mermaid: {
+          SyntaxHighlighter: MermaidDiagram,
+        },
+      }}
+      {...rest}
     />
   );
 };
 export const MarkdownText = memo(
   MarkdownTextBase,
   (prev, next) =>
-    prev.content === next.content && prev.isRunning === next.isRunning,
+    prev.content === next.content &&
+    prev.isRunning === next.isRunning &&
+    prev.className === next.className,
 );
