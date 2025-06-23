@@ -135,8 +135,8 @@ const AddAIPage = () => {
     resolver: zodResolver(addAiModelSchema),
     defaultValues: {
       ...addAiModelFormDefault,
-      model: preSelectedAiProvider,
-      modelType: modelsConfig[preSelectedAiProvider].modelTypes[0].value,
+      model: preSelectedAiProvider || undefined,
+      modelType: preSelectedAiProvider && modelsConfig[preSelectedAiProvider]?.modelTypes?.[0]?.value || '',
     },
   });
 
