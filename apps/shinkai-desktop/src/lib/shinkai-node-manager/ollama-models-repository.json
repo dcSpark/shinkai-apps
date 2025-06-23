@@ -716,37 +716,37 @@
     "vision": true
   },
   {
-    "name": "mistral-small3.1",
-    "description": "Building upon Mistral Small 3, Mistral Small 3.1 (2503) adds state-of-the-art vision understanding and enhances long context capabilities up to 128k tokens without compromising text performance.",
+    "name": "mistral-small3.2",
+    "description": "An update to Mistral Small that improves on function calling, instruction following, and less repetition errors.",
     "supportTools": true,
-    "defaultTag": "mistral-small3.1:24b",
+    "defaultTag": "mistral-small3.2:24b",
     "tags": [
       {
-        "name": "mistral-small3.1:latest",
+        "name": "mistral-small3.2:latest",
         "hash": "b9aaf0c2586a",
         "size": "15GB",
         "isDefault": false
       },
       {
-        "name": "mistral-small3.1:24b",
+        "name": "mistral-small3.2:24b",
         "hash": "b9aaf0c2586a",
         "size": "15GB",
         "isDefault": true
       },
       {
-        "name": "mistral-small3.1:24b-instruct-2503-q4_K_M",
+        "name": "mistral-small3.2:24b-instruct-2506-q4_K_M",
         "hash": "b9aaf0c2586a",
         "size": "15GB",
         "isDefault": false
       },
       {
-        "name": "mistral-small3.1:24b-instruct-2503-q8_0",
+        "name": "mistral-small3.2:24b-instruct-2506-q8_0",
         "hash": "79252b8a3eb5",
         "size": "26GB",
         "isDefault": false
       },
       {
-        "name": "mistral-small3.1:24b-instruct-2503-fp16",
+        "name": "mistral-small3.2:24b-instruct-2506-fp16",
         "hash": "5b05d65a969a",
         "size": "48GB",
         "isDefault": false
