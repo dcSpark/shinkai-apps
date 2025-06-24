@@ -1,6 +1,9 @@
+import { save } from '@tauri-apps/plugin-dialog';
+import * as fs from '@tauri-apps/plugin-fs';
 import { RotateCcw, Download } from 'lucide-react';
 import mermaid from 'mermaid';
 import { type FC, useEffect, useRef, useState, useCallback } from 'react';
+import { toast } from 'sonner';
 import svgPanZoom from 'svg-pan-zoom';
 import { cn } from '../utils';
 import { Button } from './button';
@@ -25,15 +28,25 @@ mermaid.initialize({
 
 const generateId = () => `mermaid-${Math.random().toString(36).slice(2)}`;
 
-const downloadBlob = (blob: Blob, filename: string) => {
-  const objectUrl = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = objectUrl;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  setTimeout(() => URL.revokeObjectURL(objectUrl), 5000);
+const downloadBlob = async (blob: Blob, filename: string) => {
+  const filePath = await save({
+    title: 'Save Mermaid Diagram',
+    filters: [
+      {
+        name: 'SVG Files',
+        extensions: ['svg'],
+      },
+    ],
+    defaultPath: filename,
+  });
+
+  if (filePath) {
+    const arrayBuffer = await blob.arrayBuffer();
+    await fs.writeFile(filePath, new Uint8Array(arrayBuffer), {
+      baseDir: fs.BaseDirectory.Download,
+    });
+    toast.success('Mermaid diagram saved successfully');
+  }
 };
 
 export const MermaidDiagram: FC<MermaidDiagramProps> = ({
@@ -56,7 +69,7 @@ export const MermaidDiagram: FC<MermaidDiagramProps> = ({
     if (ref.current) {
       const svg = ref.current.innerHTML;
       const blob = new Blob([svg], { type: 'image/svg+xml' });
-      downloadBlob(blob, 'mermaid-diagram.svg');
+      void downloadBlob(blob, 'mermaid-diagram.svg');
     }
   }, []);
 
@@ -99,13 +112,17 @@ export const MermaidDiagram: FC<MermaidDiagramProps> = ({
 
           const svgElement = ref.current.querySelector('svg');
           if (svgElement) {
-            // svgElement.setAttribute('height', '100%');
-            // svgElement.setAttribute('width', '100%');
+            svgElement.setAttribute('height', '100%');
+            svgElement.setAttribute('width', '100%');
+            svgElement.style.height = '100%';
+            svgElement.style.width = '100%';
+            svgElement.style.position = 'absolute';
+            svgElement.style.top = '0';
+            svgElement.style.left = '0';
 
             const panZoomInstance = svgPanZoom(svgElement);
             panZoomInstance.fit();
             panZoomInstance.center();
-            // panZoomInstance.zoom(1);
             panZoomInstance.zoomAtPoint(1, { x: 0, y: 0 });
             panZoomInstance.disablePan();
             panZoomInstance.disableZoom();
@@ -167,10 +184,10 @@ export const MermaidDiagram: FC<MermaidDiagramProps> = ({
         onBlur={handleBlur}
         onClick={handleClick}
         className={cn(
-          'text-official-gray-400 bg-official-gray-850 focus:ring-opacity-50 w-full cursor-grab rounded-b-lg p-4 py-10 text-center text-sm focus:cursor-grabbing focus:ring-2 focus:ring-blue-500 focus:outline-none',
+          'text-official-gray-400 bg-official-gray-850 focus:ring-opacity-50 relative w-full cursor-grab overflow-hidden rounded-b-lg p-4 py-10 text-center text-sm focus:cursor-grabbing focus:ring-2 focus:ring-blue-500 focus:outline-none',
           className,
         )}
-        style={{ width: '100%', minHeight: '200px' }}
+        style={{ width: '100%', minHeight: '400px' }}
       >
         Drawing diagram...
       </div>
