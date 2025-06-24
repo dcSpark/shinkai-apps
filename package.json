@@ -114,6 +114,7 @@
     "rxjs": "^7.8.1",
     "sonner": "^2.0.3",
     "sql.js": "^1.13.0",
+    "svg-pan-zoom": "^3.6.2",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "tiptap-markdown": "^0.8.10",
