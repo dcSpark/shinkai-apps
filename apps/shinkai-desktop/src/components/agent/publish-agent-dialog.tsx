@@ -50,9 +50,9 @@ export default function PublishAgentDialog() {
 
   const filtered = useMemo(
     () =>
-      (tools ?? []).filter((t) =>
-        t.name.toLowerCase().includes(search.toLowerCase()),
-      ),
+      (tools ?? [])
+        .filter((t) => t.tool_type === 'Agent')
+        .filter((t) => t.name.toLowerCase().includes(search.toLowerCase())),
     [tools, search],
   );
 
