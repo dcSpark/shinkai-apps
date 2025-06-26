@@ -38,21 +38,16 @@ export default function AddAgentFromIdModal() {
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{t('networkAgentsPage.addAgentFromId')}</DialogTitle>
-          <DialogDescription>
-            {t('networkAgentsPage.addAgentFromIdDescription')}
+          <DialogDescription className="space-y-2">
+            <p>{t('networkAgentsPage.addAgentFromIdDescription')}</p>
+            <p>{t('networkAgentsPage.addAgentFromIdHelper')}</p>
           </DialogDescription>
         </DialogHeader>
-        <p className="text-sm text-gray-500">
-          {t('networkAgentsPage.addAgentFromIdHelper')}
-        </p>
         <Input
           placeholder={t('networkAgentsPage.addAgentFromIdPlaceholder')}
           value={agentId}
           onChange={(e) => setAgentId(e.target.value)}
         />
-        <p className="text-xs text-gray-500">
-          {t('networkAgentsPage.addAgentFromIdExample')}
-        </p>
         <DialogFooter className="flex-row gap-1">
           <Button variant="outline" size="md" onClick={() => setOpen(false)}>
             {t('common.cancel')}

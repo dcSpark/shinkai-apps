@@ -1133,10 +1133,9 @@ export default {
     toolRouterKey: 'Tool Router Key',
     addAgent: 'Add Agent',
     addAgentFromId: 'Add Agent From ID',
-    addAgentFromIdDescription: 'Add an agent to your collection using a Shinkai ID.',
+    addAgentFromIdDescription: 'Add an agent to your collection using a Shinkai ID. Example: @@official.sep-shinkai/main/agent/youtube_expert',
     addAgentFromIdHelper: 'Enter the Shinkai ID of the agent you want to add.',
     addAgentFromIdPlaceholder: 'e.g. @@official.sep-shinkai/main/agent/youtube_expert',
-    addAgentFromIdExample: 'Example: @@official.sep-shinkai/main/agent/youtube_expert',
     nextAddAgent: 'Next (Add Agent)',
     addedSuccess: 'Added Successfully!',
     addedDescription:
