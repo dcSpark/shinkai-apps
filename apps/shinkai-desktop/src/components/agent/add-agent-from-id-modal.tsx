@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   Button,
@@ -11,6 +10,7 @@ import {
   DialogTrigger,
   Input,
 } from '@shinkai_network/shinkai-ui';
+import { useState, useEffect } from 'react';
 
 export default function AddAgentFromIdModal() {
   const { t } = useTranslation();
@@ -40,7 +40,6 @@ export default function AddAgentFromIdModal() {
           <DialogTitle>{t('networkAgentsPage.addAgentFromId')}</DialogTitle>
           <DialogDescription className="space-y-2">
             <p>{t('networkAgentsPage.addAgentFromIdDescription')}</p>
-            <p>{t('networkAgentsPage.addAgentFromIdHelper')}</p>
           </DialogDescription>
         </DialogHeader>
         <Input
