@@ -65,6 +65,7 @@ import {
 import { useGetNetworkAgents } from '../components/network/network-client';
 import RemoveNetworkAgentButton from '../components/network/remove-network-agent-button';
 import { type FormattedNetworkAgent } from '../components/network/types';
+import AddAgentFromIdModal from '../components/agent/add-agent-from-id-modal';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 
@@ -313,12 +314,15 @@ const DiscoverNetworkAgents = ({
 
   return (
     <div className="space-y-8">
-      <SearchInput
-        placeholder={t('networkAgentsPage.searchPlaceholder')}
-        classNames={{ input: 'bg-transparent' }}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
+      <div className="flex items-center gap-2">
+        <SearchInput
+          placeholder={t('networkAgentsPage.searchPlaceholder')}
+          classNames={{ input: 'bg-transparent' }}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <AddAgentFromIdModal />
+      </div>
       <div className="grid grid-cols-1 gap-6 pb-10 md:grid-cols-2">
         {(isNetworkAgentsPending || isInstalledNetworkToolsPending) &&
           Array.from({ length: 4 }).map((_, index) => (
