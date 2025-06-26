@@ -112,6 +112,12 @@ export default function PublishAgentDialog() {
 
     await publish({
       nodeAddress: auth?.node_address ?? '',
+              <p className="text-official-gray-400 text-sm">
+                {t('agents.publishDialog.amountHelper')}
+              </p>
+              <p className="text-official-gray-400 text-sm">
+                {t('agents.publishDialog.descriptionHelper')}
+              </p>
       token: auth?.api_v2_key ?? '',
       offering,
     });

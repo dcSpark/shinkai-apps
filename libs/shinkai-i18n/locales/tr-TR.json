@@ -80,6 +80,8 @@
       "amount": "Miktar",
       "asset": "Varlık",
       "description": "Açıklama",
+      "amountHelper": "Değer USDC cinsindendir",
+      "descriptionHelper": "Diğer kullanıcılar bu ajanı aradığında bu açıklama gösterilecektir.",
       "open": "Ajanı Yayınla",
       "paymentAddress": "Ödeme Adresi",
       "publish": "Yayınla",
