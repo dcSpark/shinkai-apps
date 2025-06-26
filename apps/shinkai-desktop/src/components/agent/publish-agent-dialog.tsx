@@ -65,15 +65,16 @@ export default function PublishAgentDialog() {
   const asset = 'USDC';
 
   const { mutateAsync: publish, isPending } = useSetToolOffering({
-            extra: { name: asset, version: '2' },
-      Downloadable: 'Free',
+    onSuccess: () => {
       setSelected(null);
       setPayTo('');
       setAmount('');
       setDescription('');
+      setOpen(false);
     },
   });
 
+  useEffect(() => {
     if (selected && walletInfo?.payment_wallet?.data?.address?.address_id) {
       setPayTo(walletInfo.payment_wallet.data.address.address_id);
     }
@@ -99,7 +100,6 @@ export default function PublishAgentDialog() {
           },
         ],
       },
-      Downloadable: { Payment: [] },
     };
 
     if (!selected.tools.length) return;
@@ -111,12 +111,6 @@ export default function PublishAgentDialog() {
 
     await publish({
       nodeAddress: auth?.node_address ?? '',
-              <p className="text-official-gray-400 text-sm">
-                {t('agents.publishDialog.amountHelper')}
-              </p>
-              <p className="text-official-gray-400 text-sm">
-                {t('agents.publishDialog.descriptionHelper')}
-              </p>
       token: auth?.api_v2_key ?? '',
       offering,
     });
