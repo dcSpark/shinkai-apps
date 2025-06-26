@@ -74,6 +74,12 @@ export default function PublishAgentDialog() {
     },
   });
 
+  const formatUSDCAmount = (rawAmount: string): string => {
+    if (!rawAmount || isNaN(Number(rawAmount))) return '0.000000';
+    const usdcAmount = Number(rawAmount) / 1000000;
+    return usdcAmount.toFixed(6);
+  };
+
   useEffect(() => {
     if (selected && walletInfo?.payment_wallet?.data?.address?.address_id) {
       setPayTo(walletInfo.payment_wallet.data.address.address_id);
@@ -132,24 +138,42 @@ export default function PublishAgentDialog() {
               </DialogTitle>
             </DialogHeader>
             <div className="mt-4 space-y-2">
-              <Input
-                placeholder={t('agents.publishDialog.paymentAddress')}
-                value={payTo}
-                disabled
-                readOnly
-              />
-              <Input
-                placeholder={t('agents.publishDialog.amount')}
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-              <Textarea
-                placeholder={t('agents.publishDialog.description')}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                resize="vertical"
-                className="!min-h-[100px]"
-              />
+              <div>
+                <label className="text-sm font-medium text-white mb-1 block">
+                  Payment Address
+                </label>
+                <Input
+                  placeholder={t('agents.publishDialog.paymentAddress')}
+                  value={payTo}
+                  disabled
+                  readOnly
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-white mb-1 block">
+                  Amount (USDC units per use)
+                </label>
+                <Input
+                  placeholder={t('agents.publishDialog.amount')}
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+                <p className="text-xs text-gray-100 mt-1">
+                  = {formatUSDCAmount(amount)} USDC
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-white mb-1 block">
+                  Agent description that will be shown to users
+                </label>
+                <Textarea
+                  placeholder={t('agents.publishDialog.description')}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  resize="vertical"
+                  className="!min-h-[100px]"
+                />
+              </div>
             </div>
             <DialogFooter className="mt-4 flex justify-end gap-2">
               <Button variant="secondary" onClick={() => setSelected(null)}>
