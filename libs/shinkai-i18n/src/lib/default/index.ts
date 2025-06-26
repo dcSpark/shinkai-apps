@@ -1132,6 +1132,8 @@ export default {
     searchPlaceholder: 'Search for agents',
     toolRouterKey: 'Tool Router Key',
     addAgent: 'Add Agent',
+    addAgentFromId: 'Add Agent From ID',
+    addAgentFromIdDescription: 'Add an agent to your collection using a Shinkai ID.',
     nextAddAgent: 'Next (Add Agent)',
     addedSuccess: 'Added Successfully!',
     addedDescription:
