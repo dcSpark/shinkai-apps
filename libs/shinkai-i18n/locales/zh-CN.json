@@ -619,6 +619,7 @@
     "paymentRecipient": "付款接收人",
     "paymentSuccessful": "付款成功！",
     "paymentSuccessfulDescription": "您的付款已成功完成。工具正在执行...",
+    "noPublishedAgents": "你还没有分享任何代理。点击此处发布你的代理。",
     "pleaseWait": "请稍等，我们正在处理您的交易...",
     "processingPayment": "正在处理付款",
     "publishedTab": "已发布代理",
