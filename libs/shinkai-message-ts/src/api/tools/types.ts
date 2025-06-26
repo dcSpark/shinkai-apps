@@ -277,7 +277,7 @@ export type ToolPrice =
 
 export type ToolUsageType = {
   PerUse: ToolPrice;
-  Downloadable: ToolPrice;
+  // Downloadable: ToolPrice; // TODO: add this back in when backend is ready
 };
 export type PaymentTool = {
   toolKey: string;

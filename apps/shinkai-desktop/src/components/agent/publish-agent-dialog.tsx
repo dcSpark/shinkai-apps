@@ -7,6 +7,7 @@ import {
 import { useSetToolOffering } from '@shinkai_network/shinkai-node-state/v2/mutations/setToolOffering/useSetToolOffering';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
+import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import {
   Dialog,
   DialogTrigger,
@@ -17,8 +18,9 @@ import {
   Button,
   SearchInput,
   Input,
+  Textarea,
 } from '@shinkai_network/shinkai-ui';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../../store/auth';
 
 export default function PublishAgentDialog() {
@@ -26,12 +28,17 @@ export default function PublishAgentDialog() {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Agent | null>(null);
   const [payTo, setPayTo] = useState('');
-  const [asset, setAsset] = useState('');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
 
   const auth = useAuth((s) => s.auth);
   const { t } = useTranslation();
+
+  const { data: walletInfo } = useGetWalletList({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
   const { data: agents } = useGetAgents({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
@@ -55,16 +62,29 @@ export default function PublishAgentDialog() {
     [agents, search],
   );
 
+  const asset = 'USDC';
+
   const { mutateAsync: publish, isPending } = useSetToolOffering({
     onSuccess: () => {
-      setOpen(false);
       setSelected(null);
       setPayTo('');
-      setAsset('');
       setAmount('');
       setDescription('');
+      setOpen(false);
     },
   });
+
+  const formatUSDCAmount = (rawAmount: string): string => {
+    if (!rawAmount || isNaN(Number(rawAmount))) return '0.000000';
+    const usdcAmount = Number(rawAmount) / 1000000;
+    return usdcAmount.toFixed(6);
+  };
+
+  useEffect(() => {
+    if (selected && walletInfo?.payment_wallet?.data?.address?.address_id) {
+      setPayTo(walletInfo.payment_wallet.data.address.address_id);
+    }
+  }, [selected, walletInfo]);
 
   const handlePublish = async () => {
     if (!selected) return;
@@ -86,7 +106,6 @@ export default function PublishAgentDialog() {
           },
         ],
       },
-      Downloadable: { Payment: [] },
     };
 
     if (!selected.tools.length) return;
@@ -119,26 +138,42 @@ export default function PublishAgentDialog() {
               </DialogTitle>
             </DialogHeader>
             <div className="mt-4 space-y-2">
-              <Input
-                placeholder={t('agents.publishDialog.paymentAddress')}
-                value={payTo}
-                onChange={(e) => setPayTo(e.target.value)}
-              />
-              <Input
-                placeholder={t('agents.publishDialog.asset')}
-                value={asset}
-                onChange={(e) => setAsset(e.target.value)}
-              />
-              <Input
-                placeholder={t('agents.publishDialog.amount')}
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-              <Input
-                placeholder={t('agents.publishDialog.description')}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
+              <div>
+                <label className="text-sm font-medium text-white mb-1 block">
+                  Payment Address
+                </label>
+                <Input
+                  placeholder={t('agents.publishDialog.paymentAddress')}
+                  value={payTo}
+                  disabled
+                  readOnly
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-white mb-1 block">
+                  Amount (USDC units per use)
+                </label>
+                <Input
+                  placeholder={t('agents.publishDialog.amount')}
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+                <p className="text-xs text-gray-100 mt-1">
+                  = {formatUSDCAmount(amount)} USDC
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-white mb-1 block">
+                  Agent description that will be shown to users
+                </label>
+                <Textarea
+                  placeholder={t('agents.publishDialog.description')}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  resize="vertical"
+                  className="!min-h-[100px]"
+                />
+              </div>
             </div>
             <DialogFooter className="mt-4 flex justify-end gap-2">
               <Button variant="secondary" onClick={() => setSelected(null)}>

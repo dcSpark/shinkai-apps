@@ -80,6 +80,8 @@
       "amount": "金額",
       "asset": "資産",
       "description": "説明",
+      "amountHelper": "金額はUSDCです",
+      "descriptionHelper": "この説明は他のユーザーがこのエージェントを探す際に表示されます。",
       "open": "エージェントを公開",
       "paymentAddress": "支払いアドレス",
       "publish": "公開",

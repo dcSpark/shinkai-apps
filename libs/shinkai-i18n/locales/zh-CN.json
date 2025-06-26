@@ -80,6 +80,8 @@
       "amount": "金额",
       "asset": "资产",
       "description": "描述",
+      "amountHelper": "金额以 USDC 为单位",
+      "descriptionHelper": "当其他用户搜索该代理时会显示此说明。",
       "open": "发布代理",
       "paymentAddress": "支付地址",
       "publish": "发布",

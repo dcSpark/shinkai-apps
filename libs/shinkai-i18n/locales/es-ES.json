@@ -80,6 +80,8 @@
       "amount": "Cantidad",
       "asset": "Activo",
       "description": "Descripción",
+      "amountHelper": "Valor en USDC",
+      "descriptionHelper": "Este texto se mostrará a otros usuarios cuando busquen este agente.",
       "open": "Publicar Agente",
       "paymentAddress": "Dirección de Pago",
       "publish": "Publicar",

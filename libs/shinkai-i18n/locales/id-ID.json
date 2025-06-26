@@ -80,6 +80,8 @@
       "amount": "Jumlah",
       "asset": "Aset",
       "description": "Deskripsi",
+      "amountHelper": "Nilai dalam USDC",
+      "descriptionHelper": "Teks ini akan ditampilkan kepada pengguna lain saat mereka mencari agen ini.",
       "open": "Terbitkan Agen",
       "paymentAddress": "Alamat Pembayaran",
       "publish": "Terbitkan",
