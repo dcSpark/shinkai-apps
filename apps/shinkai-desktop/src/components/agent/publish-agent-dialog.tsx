@@ -74,7 +74,6 @@ export default function PublishAgentDialog() {
     },
   });
 
-  useEffect(() => {
     if (selected && walletInfo?.payment_wallet?.data?.address?.address_id) {
       setPayTo(walletInfo.payment_wallet.data.address.address_id);
     }
