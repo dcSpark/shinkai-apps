@@ -65,8 +65,8 @@ export default function PublishAgentDialog() {
   const asset = 'USDC';
 
   const { mutateAsync: publish, isPending } = useSetToolOffering({
-    onSuccess: () => {
-      setOpen(false);
+            extra: { name: asset, version: '2' },
+      Downloadable: 'Free',
       setSelected(null);
       setPayTo('');
       setAmount('');
