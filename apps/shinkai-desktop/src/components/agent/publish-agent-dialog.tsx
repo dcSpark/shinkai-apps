@@ -7,6 +7,7 @@ import {
 import { useSetToolOffering } from '@shinkai_network/shinkai-node-state/v2/mutations/setToolOffering/useSetToolOffering';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
+import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import {
   Dialog,
   DialogTrigger,
@@ -17,8 +18,9 @@ import {
   Button,
   SearchInput,
   Input,
+  Textarea,
 } from '@shinkai_network/shinkai-ui';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../../store/auth';
 
 export default function PublishAgentDialog() {
@@ -26,12 +28,15 @@ export default function PublishAgentDialog() {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<ShinkaiToolHeader | null>(null);
   const [payTo, setPayTo] = useState('');
-  const [asset, setAsset] = useState('');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
 
   const auth = useAuth((s) => s.auth);
   const { t } = useTranslation();
+  const { data: walletInfo } = useGetWalletList({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
   const { data: tools } = useGetTools({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
@@ -56,16 +61,23 @@ export default function PublishAgentDialog() {
     [tools, search],
   );
 
+  const asset = 'USDC';
+
   const { mutateAsync: publish, isPending } = useSetToolOffering({
     onSuccess: () => {
       setOpen(false);
       setSelected(null);
       setPayTo('');
-      setAsset('');
       setAmount('');
       setDescription('');
     },
   });
+
+  useEffect(() => {
+    if (selected && walletInfo?.payment_wallet?.data?.address?.address_id) {
+      setPayTo(walletInfo.payment_wallet.data.address.address_id);
+    }
+  }, [selected, walletInfo]);
 
   const handlePublish = async () => {
     if (!selected) return;
@@ -122,22 +134,20 @@ export default function PublishAgentDialog() {
               <Input
                 placeholder={t('agents.publishDialog.paymentAddress')}
                 value={payTo}
-                onChange={(e) => setPayTo(e.target.value)}
-              />
-              <Input
-                placeholder={t('agents.publishDialog.asset')}
-                value={asset}
-                onChange={(e) => setAsset(e.target.value)}
+                disabled
+                readOnly
               />
               <Input
                 placeholder={t('agents.publishDialog.amount')}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
               />
-              <Input
+              <Textarea
                 placeholder={t('agents.publishDialog.description')}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                resize="vertical"
+                className="!min-h-[100px]"
               />
             </div>
             <DialogFooter className="mt-4 flex justify-end gap-2">
