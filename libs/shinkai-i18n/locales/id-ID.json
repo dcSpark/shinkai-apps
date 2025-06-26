@@ -619,6 +619,7 @@
     "paymentRecipient": "Penerima Pembayaran",
     "paymentSuccessful": "Pembayaran Berhasil!",
     "paymentSuccessfulDescription": "Pembayaran Anda berhasil. Alat sekarang sedang dijalankan...",
+    "noPublishedAgents": "Anda belum membagikan agen apa pun. Publikasikan agen Anda dengan menekan di sini.",
     "pleaseWait": "Silakan tunggu sementara kami memproses transaksi Anda...",
     "processingPayment": "Memproses Pembayaran",
     "publishedTab": "Agen yang Diterbitkan",

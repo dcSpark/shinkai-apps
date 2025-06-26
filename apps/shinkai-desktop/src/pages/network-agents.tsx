@@ -371,6 +371,7 @@ const DiscoverNetworkAgents = ({
 };
 
 const PublishedAgents = () => {
+  const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
   const { data } = useGetToolsWithOfferings({
     nodeAddress: auth?.node_address ?? '',
@@ -401,6 +402,17 @@ const PublishedAgents = () => {
       };
     });
   }, [data]);
+
+  if (publishedAgents.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-3 pt-20">
+        <p className="text-center text-base font-medium">
+          {t('networkAgentsPage.noPublishedAgents')}
+        </p>
+        <PublishAgentDialog />
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

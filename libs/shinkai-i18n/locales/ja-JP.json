@@ -619,6 +619,7 @@
     "paymentRecipient": "支払い受取人",
     "paymentSuccessful": "支払い成功！",
     "paymentSuccessfulDescription": "支払いが正常に完了しました。ツールが実行中です... ",
+    "noPublishedAgents": "まだエージェントを共有していません。ここを押してあなたのエージェントを公開しましょう。",
     "pleaseWait": "取引を処理していますのでお待ちください...",
     "processingPayment": "支払い処理中",
     "publishedTab": "公開されたエージェント",

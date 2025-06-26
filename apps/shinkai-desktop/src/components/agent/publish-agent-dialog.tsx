@@ -1,11 +1,11 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { type Agent } from '@shinkai_network/shinkai-message-ts/api/agents/types';
 import {
-  type ShinkaiToolHeader,
   type ToolOffering,
   type ToolUsageType,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useSetToolOffering } from '@shinkai_network/shinkai-node-state/v2/mutations/setToolOffering/useSetToolOffering';
-import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
+import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import {
@@ -26,21 +26,22 @@ import { useAuth } from '../../store/auth';
 export default function PublishAgentDialog() {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<ShinkaiToolHeader | null>(null);
+  const [selected, setSelected] = useState<Agent | null>(null);
   const [payTo, setPayTo] = useState('');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
 
   const auth = useAuth((s) => s.auth);
   const { t } = useTranslation();
+
   const { data: walletInfo } = useGetWalletList({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
   });
-  const { data: tools } = useGetTools({
+
+  const { data: agents } = useGetAgents({
     nodeAddress: auth?.node_address ?? '',
     token: auth?.api_v2_key ?? '',
-    category: 'default',
   });
 
   const { data: offerings } = useGetToolsWithOfferings({
@@ -55,10 +56,10 @@ export default function PublishAgentDialog() {
 
   const filtered = useMemo(
     () =>
-      (tools ?? []).filter((t) =>
-        t.name.toLowerCase().includes(search.toLowerCase()),
+      (agents ?? []).filter((agent) =>
+        agent.name.toLowerCase().includes(search.toLowerCase()),
       ),
-    [tools, search],
+    [agents, search],
   );
 
   const asset = 'USDC';
@@ -102,9 +103,10 @@ export default function PublishAgentDialog() {
       Downloadable: { Payment: [] },
     };
 
+    if (!selected.tools.length) return;
     const offering: ToolOffering = {
       meta_description: description,
-      tool_key: selected.tool_router_key,
+      tool_key: selected.tools[0],
       usage_type: usage,
     };
 
@@ -171,23 +173,23 @@ export default function PublishAgentDialog() {
               classNames={{ input: 'bg-transparent' }}
             />
             <div className="mt-4 max-h-[50vh] space-y-2 overflow-y-auto">
-              {filtered?.map((tool) => (
+              {filtered?.map((agent) => (
                 <div
-                  key={tool.tool_router_key}
+                  key={agent.agent_id}
                   className="hover:bg-official-gray-800 flex items-center justify-between gap-2 rounded p-2"
                 >
                   <div>
-                    <p className="text-sm font-medium">{tool.name}</p>
+                    <p className="text-sm font-medium">{agent.name}</p>
                     <p className="text-official-gray-400 line-clamp-1 text-xs">
-                      {tool.description}
+                      {agent.ui_description}
                     </p>
                   </div>
-                  {publishedKeys.has(tool.tool_router_key) ? (
+                  {publishedKeys.has(agent.tools[0]) ? (
                     <Button size="sm" variant="secondary" disabled>
                       {t('agents.publishDialog.published')}
                     </Button>
                   ) : (
-                    <Button size="sm" onClick={() => setSelected(tool)}>
+                    <Button size="sm" onClick={() => setSelected(agent)}>
                       {t('agents.publishDialog.publish')}
                     </Button>
                   )}

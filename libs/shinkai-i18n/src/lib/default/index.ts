@@ -1174,6 +1174,8 @@ export default {
     paymentSuccessful: 'Payment Successful!',
     paymentSuccessfulDescription:
       'Your payment went through successfully. The tool is now executing...',
+    noPublishedAgents:
+      "You haven't shared any agents yet. Publish your agent pressing here.",
   },
   mcpPage: {
     exposeToolsTab: 'Expose Tools',
