@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import {
   Button,
@@ -16,6 +16,12 @@ export default function AddAgentFromIdModal() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [agentId, setAgentId] = useState('');
+
+  useEffect(() => {
+    if (open) {
+      setAgentId('@@');
+    }
+  }, [open]);
 
   const handleAdd = () => {
     // TODO: Add agent using the provided Shinkai ID
@@ -36,11 +42,17 @@ export default function AddAgentFromIdModal() {
             {t('networkAgentsPage.addAgentFromIdDescription')}
           </DialogDescription>
         </DialogHeader>
+        <p className="text-sm text-gray-500">
+          {t('networkAgentsPage.addAgentFromIdHelper')}
+        </p>
         <Input
-          placeholder="Shinkai ID"
+          placeholder={t('networkAgentsPage.addAgentFromIdPlaceholder')}
           value={agentId}
           onChange={(e) => setAgentId(e.target.value)}
         />
+        <p className="text-xs text-gray-500">
+          {t('networkAgentsPage.addAgentFromIdExample')}
+        </p>
         <DialogFooter className="flex-row gap-1">
           <Button variant="outline" size="md" onClick={() => setOpen(false)}>
             {t('common.cancel')}
