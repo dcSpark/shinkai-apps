@@ -619,6 +619,7 @@
     "paymentRecipient": "Ödeme Alıcısı",
     "paymentSuccessful": "Ödeme Başarılı!",
     "paymentSuccessfulDescription": "Ödemeniz başarıyla gerçekleşti. Araç şimdi çalışıyor...",
+    "noPublishedAgents": "Henüz hiç ajan paylaşmadınız. Buraya basarak ajanınızı yayınlayın.",
     "pleaseWait": "İşleminizi gerçekleştirirken lütfen bekleyin...",
     "processingPayment": "Ödeme İşleniyor",
     "publishedTab": "Yayınlanan Ajanlar",

@@ -1039,7 +1039,8 @@
     "processingPayment": "Processing Payment",
     "pleaseWait": "Please wait while we process your transaction...",
     "paymentSuccessful": "Payment Successful!",
-    "paymentSuccessfulDescription": "Your payment went through successfully. The tool is now executing..."
+    "paymentSuccessfulDescription": "Your payment went through successfully. The tool is now executing...",
+    "noPublishedAgents": "You haven't shared any agents yet. Publish your agent pressing here."
   },
   "mcpPage": {
     "exposeToolsTab": "Expose Tools",

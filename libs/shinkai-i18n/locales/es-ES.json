@@ -619,6 +619,7 @@
     "paymentRecipient": "Destinatario del Pago",
     "paymentSuccessful": "¡Pago Exitoso!",
     "paymentSuccessfulDescription": "Tu pago se realizó con éxito. La herramienta se está ejecutando ahora...",
+    "noPublishedAgents": "Aún no has compartido ningún agente. Publica tu agente presionando aquí.",
     "pleaseWait": "Por favor, espera mientras procesamos tu transacción...",
     "processingPayment": "Procesando Pago",
     "publishedTab": "Agentes Publicados",
