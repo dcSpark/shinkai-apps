@@ -48,19 +48,16 @@ export const OLLAMA_MODELS: OllamaModel[] = [
   ...(currentPlatform === 'windows' || currentPlatform === 'linux'
     ? [
         {
-          model: 'gemma3',
-          tag: '27b-it-q4_K_M',
-          name: 'Google Gemma 3',
+          model: 'gemma3n',
+          tag: 'e4b',
+          name: 'Gemma 3n 4B',
           description:
-            'Gemma is a lightweight, family of models from Google built on Gemini technology. The Gemma 3 models are multimodal—processing text and images—and feature a 128K context window with support for over 140 languages.',
-          contextLength: 128000,
+            'Gemma 3n models are designed for efficient execution on everyday devices such as laptops, tablets or phones.',
+          contextLength: 32000,
           quality: OllamaModelQuality.Good,
-          speed: OllamaModelSpeed.Average,
-          capabilities: [
-            OllamaModelCapability.TextGeneration,
-            OllamaModelCapability.ImageToText,
-          ],
-          size: 15.8,
+          speed: OllamaModelSpeed.Fast,
+          capabilities: [OllamaModelCapability.TextGeneration],
+          size: 7.5,
           fullName: '',
           provider: ModelProvider.Google,
         },
@@ -83,19 +80,16 @@ export const OLLAMA_MODELS: OllamaModel[] = [
   ...(currentPlatform === 'macos'
     ? [
         {
-          model: 'gemma3',
-          tag: '27b-it-q4_K_M',
-          name: 'Google Gemma 3',
+          model: 'gemma3n',
+          tag: 'e4b',
+          name: 'Gemma 3n 4B',
           description:
-            'Gemma is a lightweight, family of models from Google built on Gemini technology. The Gemma 3 models are multimodal—processing text and images—and feature a 128K context window with support for over 140 languages.',
-          contextLength: 128000,
+            'Gemma 3n models are designed for efficient execution on everyday devices such as laptops, tablets or phones.',
+          contextLength: 32000,
           quality: OllamaModelQuality.Good,
-          speed: OllamaModelSpeed.Average,
-          capabilities: [
-            OllamaModelCapability.TextGeneration,
-            OllamaModelCapability.ImageToText,
-          ],
-          size: 15.8,
+          speed: OllamaModelSpeed.Fast,
+          capabilities: [OllamaModelCapability.TextGeneration],
+          size: 7.5,
           fullName: '',
           provider: ModelProvider.Google,
           platforms: ['macos'],
