@@ -154,11 +154,11 @@ export const getAgentNetworkOffering = async (
   bearerToken: string,
   agentId: string,
 ) => {
-  const response = await httpClient.get(
+  const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/get_agent_network_offering'),
+    { agent_id: agentId },
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
-      params: { agent_id: agentId },
       responseType: 'json',
     },
   );
