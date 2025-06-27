@@ -156,7 +156,7 @@ export const getAgentNetworkOffering = async (
 ) => {
   const response = await httpClient.post(
     urlJoin(nodeAddress, '/v2/get_agent_network_offering'),
-    { agent_id: agentId },
+    { node_name: agentId },
     {
       headers: { Authorization: `Bearer ${bearerToken}` },
       responseType: 'json',
