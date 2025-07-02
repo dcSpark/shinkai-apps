@@ -58,6 +58,7 @@ import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import AddAgentFromIdModal from '../components/agent/add-agent-from-id-modal';
+import ConfigureAgentDialog from '../components/agent/configure-agent-dialog';
 import PublishAgentDialog from '../components/agent/publish-agent-dialog';
 import {
   formatBalanceAmount,
@@ -674,10 +675,7 @@ const AgentCard = ({
           )}
           {type === 'exposed' && (
             <div className="flex w-full flex-col gap-3">
-              <Button variant="outline" size="md">
-                <Settings className="h-4 w-4" />
-                {t('common.configure')}
-              </Button>
+              <ConfigureAgentDialog agent={agent} />
             </div>
           )}
         </div>

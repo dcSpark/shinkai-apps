@@ -122,6 +122,7 @@ export default function PublishAgentDialog() {
     };
 
     if (!selected.tools.length) return;
+
     const offering: ToolOffering = {
       meta_description: description,
       tool_key: selected.tools[0],
@@ -431,7 +432,7 @@ export default function PublishAgentDialog() {
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium text-white">
+                <label className="mb-2 block text-sm font-medium text-white">
                   Agent description
                 </label>
                 <Textarea
@@ -442,7 +443,7 @@ export default function PublishAgentDialog() {
                   className="!min-h-[100px] pt-3"
                 />
                 <p className="text-official-gray-400 mt-1 text-xs">
-                  Help users understand what your agent is about
+                  Help users understand what your agent does.
                 </p>
               </div>
               <div className="space-y-3">
