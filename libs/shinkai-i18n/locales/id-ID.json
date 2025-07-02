@@ -79,9 +79,8 @@
     "publishDialog": {
       "amount": "Jumlah",
       "asset": "Aset",
+      "configureAndPublish": "Konfigurasi & Publikasikan",
       "description": "Deskripsi",
-      "amountHelper": "Nilai dalam USDC",
-      "descriptionHelper": "Teks ini akan ditampilkan kepada pengguna lain saat mereka mencari agen ini.",
       "open": "Terbitkan Agen",
       "paymentAddress": "Alamat Pembayaran",
       "publish": "Terbitkan",
@@ -601,6 +600,10 @@
   },
   "networkAgentsPage": {
     "addAgent": "Tambahkan Agen",
+    "addAgentFromId": "Tambahkan Agen Dari ID",
+    "addAgentFromIdDescription": "Tambahkan agen ke koleksi Anda menggunakan ID Shinkai. Contoh: @@official.sep-shinkai/main/agent/youtube_expert",
+    "addAgentFromIdHelper": "Masukkan ID Shinkai dari agen yang ingin Anda tambahkan.",
+    "addAgentFromIdPlaceholder": "mis. @@official.sep-shinkai/main/agent/youtube_expert",
     "addedDescription": "{{name}} sekarang ada dalam koleksi Anda. Mulai obrolan untuk menggunakannya!",
     "addedSuccess": "Berhasil Ditambahkan!",
     "agentsTab": "Agen",
@@ -617,12 +620,14 @@
     "howPaymentsWorkDescription": "Saat Anda menggunakan agen ini, Anda akan diminta untuk mengonfirmasi pembayaran dari dompet yang terhubung. Pembayaran diproses di jaringan {{network}}.",
     "manageWallet": "Kelola Dompet",
     "networkToolDetails": "Detail Agen Jaringan",
+    "nextAddAgent": "Selanjutnya (Tambahkan Agen)",
+    "noPublishedAgents": "Anda belum membagikan agen apa pun. Publikasikan agen Anda dengan menekan di sini.",
     "payPerUse": "Bayar per penggunaan",
     "paymentRecipient": "Penerima Pembayaran",
     "paymentSuccessful": "Pembayaran Berhasil!",
     "paymentSuccessfulDescription": "Pembayaran Anda berhasil. Alat sekarang sedang dijalankan...",
-    "noPublishedAgents": "Anda belum membagikan agen apa pun. Publikasikan agen Anda dengan menekan di sini.",
     "pleaseWait": "Silakan tunggu sementara kami memproses transaksi Anda...",
+    "proceedFree": "Lanjutkan (Gratis)",
     "processingPayment": "Memproses Pembayaran",
     "publishedTab": "Agen yang Diterbitkan",
     "registerIdentity": "Daftar Identitas",
@@ -642,9 +647,8 @@
     "usdcBalance": "Saldo USDC",
     "walletAddress": "Alamat Dompet",
     "walletBalance": "Saldo Dompet",
-    "yourWallet": "Dompet Anda",
     "walletNotSetup": "Dompet belum disiapkan",
-    "proceedFree": "Lanjutkan (Gratis)"
+    "yourWallet": "Dompet Anda"
   },
   "notifications": {
     "messageReceived": {

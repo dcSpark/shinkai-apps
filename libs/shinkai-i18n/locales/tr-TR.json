@@ -79,9 +79,8 @@
     "publishDialog": {
       "amount": "Miktar",
       "asset": "Varlık",
+      "configureAndPublish": "Yapılandır ve Yayınla",
       "description": "Açıklama",
-      "amountHelper": "Değer USDC cinsindendir",
-      "descriptionHelper": "Diğer kullanıcılar bu ajanı aradığında bu açıklama gösterilecektir.",
       "open": "Ajanı Yayınla",
       "paymentAddress": "Ödeme Adresi",
       "publish": "Yayınla",
@@ -601,6 +600,10 @@
   },
   "networkAgentsPage": {
     "addAgent": "Ajan Ekle",
+    "addAgentFromId": "ID ile Ajan Ekle",
+    "addAgentFromIdDescription": "Bir Shinkai ID'si kullanarak koleksiyonunuza bir ajan ekleyin. Örnek: @@official.sep-shinkai/main/agent/youtube_expert",
+    "addAgentFromIdHelper": "Eklemek istediğiniz ajanın Shinkai ID'sini girin.",
+    "addAgentFromIdPlaceholder": "örn. @@official.sep-shinkai/main/agent/youtube_expert",
     "addedDescription": "{{name}} artık koleksiyonunuzda. Kullanmak için bir sohbet başlatın!",
     "addedSuccess": "Başarıyla Eklendi!",
     "agentsTab": "Ajanlar",
@@ -617,12 +620,14 @@
     "howPaymentsWorkDescription": "Bu ajanı kullandığınızda, bağlı cüzdanınızdan ödemeyi onaylamanız istenecektir. Ödemeler {{network}} ağında işlenir.",
     "manageWallet": "Cüzdanı Yönet",
     "networkToolDetails": "Ağ Ajanı Detayları",
+    "nextAddAgent": "Sonraki (Ajan Ekle)",
+    "noPublishedAgents": "Henüz hiç ajan paylaşmadınız. Buraya basarak ajanınızı yayınlayın.",
     "payPerUse": "Kullanıma göre ödeme",
     "paymentRecipient": "Ödeme Alıcısı",
     "paymentSuccessful": "Ödeme Başarılı!",
     "paymentSuccessfulDescription": "Ödemeniz başarıyla gerçekleşti. Araç şimdi çalışıyor...",
-    "noPublishedAgents": "Henüz hiç ajan paylaşmadınız. Buraya basarak ajanınızı yayınlayın.",
     "pleaseWait": "İşleminizi gerçekleştirirken lütfen bekleyin...",
+    "proceedFree": "Ücretsiz Devam Et",
     "processingPayment": "Ödeme İşleniyor",
     "publishedTab": "Yayınlanan Ajanlar",
     "registerIdentity": "Kimlik Kaydet",
@@ -642,9 +647,8 @@
     "usdcBalance": "USDC Bakiyesi",
     "walletAddress": "Cüzdan Adresi",
     "walletBalance": "Cüzdan Bakiyesi",
-    "yourWallet": "Cüzdanınız",
     "walletNotSetup": "Cüzdan ayarlanmadı",
-    "proceedFree": "Ücretsiz Devam Et"
+    "yourWallet": "Cüzdanınız"
   },
   "notifications": {
     "messageReceived": {

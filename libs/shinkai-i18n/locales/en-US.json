@@ -966,12 +966,11 @@
     "publishDialog": {
       "open": "Publish Agent",
       "title": "Publish {{name}}",
+      "configureAndPublish": "Configure & Publish",
       "paymentAddress": "Payment Address",
       "asset": "Asset",
       "amount": "Amount",
       "description": "Description",
-      "amountHelper": "Value in USDC",
-      "descriptionHelper": "Shown to other users when searching for this agent.",
       "selectAgent": "Select Agent",
       "searchAgents": "Search agents",
       "publish": "Publish",

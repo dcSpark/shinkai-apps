@@ -79,9 +79,8 @@
     "publishDialog": {
       "amount": "金额",
       "asset": "资产",
+      "configureAndPublish": "配置与发布",
       "description": "描述",
-      "amountHelper": "金额以 USDC 为单位",
-      "descriptionHelper": "当其他用户搜索该代理时会显示此说明。",
       "open": "发布代理",
       "paymentAddress": "支付地址",
       "publish": "发布",
@@ -601,6 +600,10 @@
   },
   "networkAgentsPage": {
     "addAgent": "添加代理",
+    "addAgentFromId": "通过 ID 添加代理",
+    "addAgentFromIdDescription": "使用 Shinkai ID 将代理添加到您的集合中。示例：@@official.sep-shinkai/main/agent/youtube_expert",
+    "addAgentFromIdHelper": "输入您想要添加的代理的 Shinkai ID。",
+    "addAgentFromIdPlaceholder": "例如：@@official.sep-shinkai/main/agent/youtube_expert",
     "addedDescription": "{{name}} 现在在您的收藏中。开始聊天以使用它！",
     "addedSuccess": "添加成功！",
     "agentsTab": "代理",
@@ -617,12 +620,14 @@
     "howPaymentsWorkDescription": "当您使用此代理时，系统会提示您确认来自已连接钱包的付款。付款将在{{network}}网络上处理。",
     "manageWallet": "管理钱包",
     "networkToolDetails": "网络代理详情",
+    "nextAddAgent": "下一步（添加代理）",
+    "noPublishedAgents": "你还没有分享任何代理。点击此处发布你的代理。",
     "payPerUse": "按使用付费",
     "paymentRecipient": "付款接收人",
     "paymentSuccessful": "付款成功！",
     "paymentSuccessfulDescription": "您的付款已成功完成。工具正在执行...",
-    "noPublishedAgents": "你还没有分享任何代理。点击此处发布你的代理。",
     "pleaseWait": "请稍等，我们正在处理您的交易...",
+    "proceedFree": "免费继续",
     "processingPayment": "正在处理付款",
     "publishedTab": "已发布代理",
     "registerIdentity": "注册身份",
@@ -642,9 +647,8 @@
     "usdcBalance": "USDC 余额",
     "walletAddress": "钱包地址",
     "walletBalance": "钱包余额",
-    "yourWallet": "您的钱包",
     "walletNotSetup": "尚未设置钱包",
-    "proceedFree": "免费继续"
+    "yourWallet": "您的钱包"
   },
   "notifications": {
     "messageReceived": {
