@@ -1145,7 +1145,7 @@ export default {
       '{{name}} is now in your collection. Start a chat to use it!',
     browseMore: 'Browse More Agents',
     startChat: 'Start Chat',
-    setupRequired: 'Setup required to use paid agents',
+    setupRequired: 'Setup required to use paid agents and publish agents',
     removeSuccess: 'Network agent removed successfully',
     removeFailed: 'Failed to remove agent',
     registerShinkaiIdentity: 'Register Shinkai Identity',
@@ -1182,7 +1182,7 @@ export default {
     paymentSuccessfulDescription:
       'Your payment went through successfully. The tool is now executing...',
     noPublishedAgents:
-      "You haven't shared any agents yet. Publish your agent pressing here.",
+      'No agents published yet. Share your first agent to get started.',
   },
   mcpPage: {
     exposeToolsTab: 'Expose Tools',

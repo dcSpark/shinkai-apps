@@ -406,7 +406,7 @@ const PublishedAgents = () => {
   if (publishedAgents.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 pt-20">
-        <p className="text-center text-base font-medium">
+        <p className="text-center text-sm font-medium">
           {t('networkAgentsPage.noPublishedAgents')}
         </p>
         <PublishAgentDialog />

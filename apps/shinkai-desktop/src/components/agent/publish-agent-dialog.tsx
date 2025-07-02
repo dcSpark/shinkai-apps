@@ -152,7 +152,11 @@ export default function PublishAgentDialog() {
       open={open}
     >
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={!walletInfo?.payment_wallet?.data?.address?.address_id}
+        >
           <PlusIcon className="h-4 w-4" />
           {t('agents.publishDialog.open')}
         </Button>
