@@ -19,23 +19,16 @@ import {
   SearchInput,
   Input,
   Textarea,
-  DialogDescription,
-  Progress,
   Card,
   RadioGroup,
   Label,
   RadioGroupItem,
-  Badge,
-  TextField,
-  Alert,
-  AlertTitle,
-  AlertDescription,
   Checkbox,
 } from '@shinkai_network/shinkai-ui';
-import { AgentIcon, AIAgentIcon } from '@shinkai_network/shinkai-ui/assets';
+import { AIAgentIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRightIcon, DollarSign, Info, PlusIcon } from 'lucide-react';
+import { ArrowRightIcon, PlusIcon } from 'lucide-react';
 import { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '../../store/auth';
 type WizardStep = 'select' | 'configure' | 'publishing' | 'success';
@@ -171,9 +164,7 @@ export default function PublishAgentDialog() {
           <div className="-mx-[24px]">
             <div className="bg-official-gray-900 border-official-gray-780 my-2 w-full border-b py-4">
               <div className="mx-auto flex max-w-[400px] flex-col">
-                {/* Stepper bar */}
                 <div className="flex w-full items-center px-2">
-                  {/* Step 1 circle */}
                   <div
                     className={cn(
                       'ml-[40px] flex items-center justify-center rounded-full text-sm font-semibold',
@@ -247,7 +238,7 @@ export default function PublishAgentDialog() {
               onChange={(e) => setSearch(e.target.value)}
               classNames={{ input: 'bg-transparent' }}
             />
-            <div className="max-h-[472px] min-h-[300px] space-y-2 overflow-y-auto px-2 py-2">
+            <div className="max-h-[472px] min-h-[300px] overflow-y-auto px-2 py-2">
               {filteredAgents.length > 0 && (
                 <RadioGroup
                   value={selected?.agent_id}
@@ -256,6 +247,7 @@ export default function PublishAgentDialog() {
                       filteredAgents.find((a) => a.agent_id === value) ?? null,
                     )
                   }
+                  className="gap-1"
                 >
                   {filteredAgents?.map((agent) => (
                     <div key={agent.agent_id} className="relative">
@@ -340,15 +332,19 @@ export default function PublishAgentDialog() {
               </div>
 
               <div className="space-y-4">
-                <label className="mb-2 block text-sm font-medium text-white">
+                <label className="mb-0 block text-sm font-medium text-white">
                   Pricing Model
                 </label>
+                <p className="text-official-gray-400 mt-1 mb-3 text-xs">
+                  Users will be charged this amount each time they use your
+                  agent.
+                </p>
                 <RadioGroup
                   value={pricingType}
                   onValueChange={(value: 'free' | 'paid') =>
                     setPricingType(value)
                   }
-                  className="px-1.5"
+                  className="px-1"
                 >
                   <div className="space-y-3">
                     <div className="relative">
@@ -413,7 +409,7 @@ export default function PublishAgentDialog() {
                       exit={{ opacity: 0, height: 0, y: -10 }}
                       transition={{ duration: 0.3, ease: 'easeInOut' }}
                     >
-                      <Card className="border-primary/20 bg-official-gray-950 mx-2.5 -mt-2 p-4">
+                      <Card className="bg-official-gray-950 -mt-3 border-none px-5 py-2">
                         <Label htmlFor="price" className="text-sm font-medium">
                           Price per use (USDC units)
                         </Label>
@@ -426,7 +422,7 @@ export default function PublishAgentDialog() {
                           />
                         </div>
                         <p className="text-official-gray-400 mt-1 text-xs">
-                          = {formatUSDCAmount(amount)} USDC
+                          = {formatUSDCAmount(amount)} USDC per use.
                         </p>
                       </Card>
                     </motion.div>

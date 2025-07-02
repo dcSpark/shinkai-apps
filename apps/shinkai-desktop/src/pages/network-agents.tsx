@@ -254,11 +254,6 @@ export const NetworkAgentPage = () => {
           </TabsContent>
         )}
       </div>
-
-      {/* <AddNetworkAgentDialog
-        open={isAddDialogOpen}
-        onOpenChange={setIsAddDialogOpen}
-      />  */}
     </Tabs>
   );
 };
