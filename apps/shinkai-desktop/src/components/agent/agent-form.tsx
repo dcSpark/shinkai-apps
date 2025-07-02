@@ -676,6 +676,8 @@ function AgentForm({ mode }: AgentFormProps) {
           acc[filePath] = {
             checked: true,
           };
+          // Also populate the selectedFileKeysRef
+          selectedFileKeysRef.set(String(filePath), filePath);
           return acc;
         }, {});
 
@@ -685,6 +687,8 @@ function AgentForm({ mode }: AgentFormProps) {
           acc[folderPath] = {
             checked: true,
           };
+          // Also populate the selectedFolderKeysRef
+          selectedFolderKeysRef.set(String(folderPath), folderPath);
           return acc;
         }, {});
 
@@ -694,7 +698,7 @@ function AgentForm({ mode }: AgentFormProps) {
         });
       }
     }
-  }, [agent, form, mode, onSelectedKeysChange]);
+  }, [agent, form, mode, onSelectedKeysChange, selectedFileKeysRef, selectedFolderKeysRef]);
 
   useEffect(() => {
     if (mode === 'edit' && isOpenQueryActive) {
