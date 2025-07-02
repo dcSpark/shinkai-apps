@@ -1,8 +1,8 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useAddNetworkTool } from '@shinkai_network/shinkai-node-state/v2/mutations/addNetworkTool/useAddNetworkTool';
+import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetInstalledNetworkTools } from '@shinkai_network/shinkai-node-state/v2/queries/getInstalledNetworkTools/useGetInstalledNetworkTools';
 import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
-import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetWalletBalance } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletBalance/useGetWalletBalance';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import {
@@ -57,6 +57,7 @@ import {
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
+import AddAgentFromIdModal from '../components/agent/add-agent-from-id-modal';
 import PublishAgentDialog from '../components/agent/publish-agent-dialog';
 import {
   formatBalanceAmount,
@@ -65,7 +66,6 @@ import {
 import { useGetNetworkAgents } from '../components/network/network-client';
 import RemoveNetworkAgentButton from '../components/network/remove-network-agent-button';
 import { type FormattedNetworkAgent } from '../components/network/types';
-import AddAgentFromIdModal from '../components/agent/add-agent-from-id-modal';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 
