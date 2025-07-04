@@ -6,6 +6,7 @@ export enum WalletCreateConnectView {
   RegularCreate = 'regular-create',
   RegularMnemonic = 'regular-mnemonic',
   RegularPrivateKey = 'regular-private-key',
+  ViewSecretRecoveryPhrase = 'view-secret-recovery-phrase',
 }
 
 type WalletsStore = {
