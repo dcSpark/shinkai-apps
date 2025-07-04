@@ -88,8 +88,10 @@ export default function ConfigureAgentDialog({
     if (
       !currentOffering ||
       !walletInfo?.payment_wallet?.data?.address?.address_id
-    )
+    ) {
+      toast.warning('Please connect your wallet to update the agent');
       return;
+    }
 
     const usage: ToolUsageType =
       pricingType === 'free'

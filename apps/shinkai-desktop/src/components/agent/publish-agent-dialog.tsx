@@ -24,12 +24,14 @@ import {
   Label,
   RadioGroupItem,
   Checkbox,
+  Badge,
 } from '@shinkai_network/shinkai-ui';
 import { AIAgentIcon } from '@shinkai_network/shinkai-ui/assets';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRightIcon, PlusIcon } from 'lucide-react';
 import { useState, useMemo, useEffect } from 'react';
+import { toast } from 'sonner';
 import { useAuth } from '../../store/auth';
 type WizardStep = 'select' | 'configure' | 'publishing' | 'success';
 
@@ -121,7 +123,10 @@ export default function PublishAgentDialog() {
       },
     };
 
-    if (!selected.tools.length) return;
+    if (!selected.tools.length) {
+      toast.warning('Please select an agent with tools to publish');
+      return;
+    }
 
     const offering: ToolOffering = {
       meta_description: description,
@@ -252,12 +257,15 @@ export default function PublishAgentDialog() {
                       filteredAgents.find((a) => a.agent_id === value) ?? null,
                     )
                   }
-                  className="gap-1"
+                  className="gap-1.5"
                 >
                   {filteredAgents?.map((agent) => (
                     <div
                       key={agent.agent_id}
-                      className="border-official-gray-780 flex items-center gap-0 rounded-lg border px-4"
+                      className={cn(
+                        'border-official-gray-780 flex items-center gap-0 rounded-lg border px-4',
+                        publishedKeys.has(agent.tools[0]) && 'hidden',
+                      )}
                     >
                       <RadioGroupItem
                         value={agent.agent_id}
@@ -270,7 +278,19 @@ export default function PublishAgentDialog() {
                             <AIAgentIcon name={agent.name} size="sm" />
                           </div>
                           <div>
-                            <p className="text-sm font-medium">{agent.name}</p>
+                            <p className="flex items-center gap-2 text-sm font-medium">
+                              {agent.name}{' '}
+                              {agent.tools.length > 0 && (
+                                <Badge
+                                  variant="inputAdornment"
+                                  className="text-official-gray-400 text-xs font-bold"
+                                >
+                                  {agent.tools.length
+                                    ? `${agent.tools.length} tools`
+                                    : 'No tools available'}
+                                </Badge>
+                              )}
+                            </p>
                             <p className="text-official-gray-400 line-clamp-1 text-sm">
                               {agent.ui_description}
                             </p>
