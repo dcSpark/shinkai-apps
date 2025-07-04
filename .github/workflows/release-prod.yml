@@ -30,7 +30,6 @@ jobs:
         with:
           script: |
             core.setFailed('Version mismatch')
-
   # release-shinkai-visor:
   #   needs: prebuild
   #   runs-on: ubuntu-latest
