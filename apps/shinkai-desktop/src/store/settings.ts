@@ -64,6 +64,8 @@ type SettingsStore = {
   getChatFontSizeInPts: () => number;
   setChatFontSize: (size: ChatFontSize) => void;
   resetSettings: () => void;
+  dismissedCommunityAgentsDisclaimer: boolean;
+  setDismissedCommunityAgentsDisclaimer: (dismissed: boolean) => void;
   dismissedTutorialBanners: TutorialBanner[];
   dismissTutorialBanner: (bannerId: TutorialBanner) => void;
   // Playground Tool
@@ -234,6 +236,12 @@ export const useSettings = create<SettingsStore>()(
         setChatFontSize: (size) => {
           set({ chatFontSize: size });
         },
+
+        dismissedCommunityAgentsDisclaimer: false,
+        setDismissedCommunityAgentsDisclaimer: (dismissed) => {
+          set({ dismissedCommunityAgentsDisclaimer: dismissed });
+        },
+
         dismissedTutorialBanners: [] as TutorialBanner[],
         dismissTutorialBanner: (bannerId: TutorialBanner) => {
           set((state) => ({

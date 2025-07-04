@@ -3,12 +3,10 @@ import { createStore, useStore } from 'zustand';
 
 export enum WalletCreateConnectView {
   Main = 'main',
-  Mpc = 'mpc',
-  MpcRestore = 'mpc-restore',
-  Regular = 'regular',
   RegularCreate = 'regular-create',
   RegularMnemonic = 'regular-mnemonic',
   RegularPrivateKey = 'regular-private-key',
+  ViewSecretRecoveryPhrase = 'view-secret-recovery-phrase',
 }
 
 type WalletsStore = {

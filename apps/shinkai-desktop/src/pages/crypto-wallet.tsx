@@ -11,6 +11,9 @@ import { useRestoreLocalWallet } from '@shinkai_network/shinkai-node-state/v2/mu
 import { useGetWalletBalance } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletBalance/useGetWalletBalance';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
   Button,
   buttonVariants,
   Card,
@@ -18,9 +21,14 @@ import {
   CopyToClipboardIcon,
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   Form,
   FormControl,
   FormField,
@@ -41,16 +49,17 @@ import {
 } from '@shinkai_network/shinkai-ui';
 import {
   AddCryptoWalletIcon,
-  CryptoWalletIcon,
   EthereumIcon,
   USDCIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
-import { useMeasure } from '@shinkai_network/shinkai-ui/hooks';
+import {
+  useCopyClipboard,
+  useMeasure,
+} from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  ArrowDownLeft,
   ArrowLeft,
   Copy,
   Download,
@@ -61,6 +70,9 @@ import {
   RefreshCw,
   XIcon,
   ExternalLinkIcon,
+  CheckCircle2,
+  AlertTriangle,
+  MoreVertical,
 } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -76,8 +88,99 @@ import { formatBalanceAmount } from '../components/crypto-wallet/utils';
 import { useAuth } from '../store/auth';
 import { SimpleLayout } from './layout/simple-layout';
 
+const SecretRecoveryPhraseDisplay = ({
+  mnemonic,
+  showTitle = true,
+  showWarning = true,
+}: {
+  mnemonic: string;
+  showTitle?: boolean;
+  showWarning?: boolean;
+}) => {
+  const { isCopied, onCopy } = useCopyClipboard({
+    string: mnemonic,
+  });
+
+  return (
+    <div>
+      {showTitle && (
+        <DialogHeader className="mb-5">
+          <DialogTitle className="text-center">
+            Secret Recovery Phrase
+          </DialogTitle>
+        </DialogHeader>
+      )}
+
+      {showWarning && (
+        <Alert variant="warning" className="mb-3 bg-amber-500/10">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle className="mb-2 text-base font-medium">
+            Never share your Secret Recovery Phrase
+          </AlertTitle>
+          <AlertDescription className="!pl-5 text-sm text-white">
+            <ul className="list-disc space-y-1 text-sm">
+              <li>
+                Anyone with access to your Secret Recovery Phrase can take full
+                control of your wallet and funds.
+              </li>
+              <li>
+                Do not share it with anyone — even if they claim to be support.
+              </li>
+              <li>Store it offline in a secure, private place.</li>
+              <li>
+                Revealing your phrase is for backup purposes only. Proceed with
+                caution.
+              </li>
+            </ul>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      <div className="space-y-2">
+        <div className="text-official-gray-400 mb-2 text-xs">
+          Hover over each word to reveal
+        </div>
+        <div className="mb-4 grid grid-cols-2 gap-x-8 gap-y-1 rounded-lg border bg-white/5 p-4">
+          {mnemonic?.split(' ').map((word, idx) => (
+            <div
+              key={idx}
+              className="group flex cursor-pointer items-center gap-3"
+            >
+              <span className="flex h-6 w-6 min-w-[24px] shrink-0 items-center justify-center rounded-full bg-gray-700 text-sm font-medium text-white">
+                {idx + 1}
+              </span>
+              <span className="group relative rounded-md bg-gray-800/40 px-2 py-1 transition-colors duration-200 hover:bg-gray-700/30">
+                <span
+                  className="font-mono text-sm [filter:blur(4px)] transition-all duration-300 ease-out select-none group-hover:[filter:blur(0px)]"
+                  style={{
+                    textShadow: '0 0 8px rgba(255,255,255,0.8)',
+                  }}
+                >
+                  {word}
+                </span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <DialogFooter className="flex items-center justify-between gap-2 md:flex-col">
+        <Button variant="outline" size="md" className="w-full" onClick={onCopy}>
+          {isCopied ? (
+            <CheckCircle2 className="size-4" />
+          ) : (
+            <Copy className="size-4" />
+          )}
+          {isCopied ? 'Copied' : 'Copy to Clipboard'}
+        </Button>
+      </DialogFooter>
+    </div>
+  );
+};
+
 const CryptoWalletPage = () => {
   const { t } = useTranslation();
+  const [showRecoveryPhraseModal, setShowRecoveryPhraseModal] = useState(false);
 
   const auth = useAuth((state) => state.auth);
 
@@ -145,8 +248,26 @@ const CryptoWalletPage = () => {
               <Card>
                 <CardContent className="space-y-4 pt-5">
                   <div className="space-y-2">
-                    <div className="text-official-gray-400 text-sm font-medium">
-                      Wallet Address
+                    <div className="flex items-center justify-between">
+                      <div className="text-official-gray-400 text-sm font-medium">
+                        Wallet Address
+                      </div>
+                      {walletInfo?.payment_wallet?.data?.mnemonic && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="icon">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="p-2">
+                            <DropdownMenuItem
+                              onClick={() => setShowRecoveryPhraseModal(true)}
+                            >
+                              Reveal Secret Recovery Phrase
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                     </div>
                     <div className="flex items-center gap-3">
                       <code className="font-mono text-base">
@@ -319,6 +440,28 @@ const CryptoWalletPage = () => {
           </div>
         </div>
       )}
+
+      {walletInfo?.payment_wallet?.data?.mnemonic && (
+        <Dialog
+          open={showRecoveryPhraseModal}
+          onOpenChange={setShowRecoveryPhraseModal}
+        >
+          <DialogContent showCloseButton className="w-full p-6">
+            <SecretRecoveryPhraseDisplay
+              mnemonic={walletInfo?.payment_wallet?.data?.mnemonic ?? ''}
+            />
+            <DialogClose asChild>
+              <Button
+                className="w-full"
+                size="md"
+                onClick={() => setShowRecoveryPhraseModal(false)}
+              >
+                Done
+              </Button>
+            </DialogClose>
+          </DialogContent>
+        </Dialog>
+      )}
     </SimpleLayout>
   );
 };
@@ -344,16 +487,13 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
   );
 
   const handleBack = () => {
-    if (walletCreationView === WalletCreateConnectView.MpcRestore) {
-      setWalletCreationView(WalletCreateConnectView.Mpc);
-      return;
-    }
     if (
       walletCreationView === WalletCreateConnectView.RegularMnemonic ||
       walletCreationView === WalletCreateConnectView.RegularPrivateKey ||
-      walletCreationView === WalletCreateConnectView.RegularCreate
+      walletCreationView === WalletCreateConnectView.RegularCreate ||
+      walletCreationView === WalletCreateConnectView.ViewSecretRecoveryPhrase
     ) {
-      setWalletCreationView(WalletCreateConnectView.Regular);
+      setWalletCreationView(WalletCreateConnectView.Main);
       return;
     }
     setWalletCreationView(WalletCreateConnectView.Main);
@@ -393,97 +533,6 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
               </DialogTitle>
             </DialogHeader>
             <div className="mt-8 space-y-3">
-              {/* <Button
-                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
-                onClick={() =>
-                  setWalletCreationView(WalletCreateConnectView.Mpc)
-                }
-                variant="outline"
-              >
-                <AddCryptoWalletIcon className="size-5" />
-                <div>
-                  <div className="text-sm font-semibold">
-                    Multi-Party Computation Wallet{' '}
-                  </div>
-                  <div className="text-official-gray-400 text-sm">
-                    MPC Wallets provides better recovery and stronger security
-                    in crypto wallets.
-                  </div>
-                </div>
-              </Button> */}
-              <Button
-                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
-                onClick={() =>
-                  setWalletCreationView(WalletCreateConnectView.Regular)
-                }
-                variant="outline"
-              >
-                <AddCryptoWalletIcon className="size-5" />
-                <div>
-                  <div className="text-sm font-semibold">Hot Wallet</div>
-                  <div className="text-official-gray-400 text-sm">
-                    Use a hot wallet to store your cryptocurrency assets.
-                  </div>
-                </div>
-              </Button>
-            </div>
-          </div>
-        );
-      case WalletCreateConnectView.Mpc:
-        return (
-          <div>
-            <DialogHeader>
-              <DialogTitle className="text-center">MPC Wallet</DialogTitle>
-            </DialogHeader>
-            <div className="mt-8 space-y-3">
-              <a
-                className={cn(
-                  buttonVariants({
-                    variant: 'tertiary',
-                    className:
-                      'flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200',
-                  }),
-                )}
-                href="https://portal.cdp.coinbase.com/access/api"
-                rel="noreferrer"
-                target="_blank"
-              >
-                <PlusIcon className="size-4 shrink-0" />
-                <div>
-                  <div className="text-sm font-semibold">Create New</div>
-                  <div className="text-official-gray-400 text-sm">
-                    Create a new MPC wallet to store your assets.
-                  </div>
-                </div>
-              </a>
-              <Button
-                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
-                onClick={() =>
-                  setWalletCreationView(WalletCreateConnectView.MpcRestore)
-                }
-                variant="outline"
-              >
-                <Download className="size-4 shrink-0" />
-                <div>
-                  <div className="text-sm font-semibold">
-                    {' '}
-                    Import Private Key
-                  </div>
-                  <div className="text-official-gray-400 text-sm">
-                    Restore to regain access to your cryptocurrency assets.
-                  </div>
-                </div>
-              </Button>
-            </div>
-          </div>
-        );
-      case WalletCreateConnectView.Regular:
-        return (
-          <div>
-            <DialogHeader>
-              <DialogTitle className="text-center">Regular Wallet</DialogTitle>
-            </DialogHeader>
-            <div className="mt-8 space-y-3">
               <Button
                 className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
                 onClick={() =>
@@ -509,7 +558,6 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 <FileText className="size-4 shrink-0" />
                 <div>
                   <div className="text-sm font-semibold">
-                    {' '}
                     Import Secret Recovery Phrase
                   </div>
                   <div className="text-official-gray-400 text-sm">
@@ -540,14 +588,14 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
             </div>
           </div>
         );
-      case WalletCreateConnectView.MpcRestore:
-        return <MpcRestoreWallet />;
       case WalletCreateConnectView.RegularCreate:
         return <RegularCreateWallet />;
       case WalletCreateConnectView.RegularMnemonic:
         return <RegularRestoreWalletMnemonic />;
       case WalletCreateConnectView.RegularPrivateKey:
         return <RegularRestoreWalletPrivateKey />;
+      case WalletCreateConnectView.ViewSecretRecoveryPhrase:
+        return <RegularRestoreWalletSecretRecoveryPhrase />;
       default:
         throw new Error('Invalid view');
     }
@@ -1021,8 +1069,9 @@ export type RegularCreateWalletFormSchema = z.infer<
 const RegularCreateWallet = () => {
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
-  const resetWalletCreation = useWalletsStore(
-    (state) => state.resetWalletCreation,
+
+  const setWalletCreationView = useWalletsStore(
+    (state) => state.setWalletCreationView,
   );
 
   const form = useForm<RegularCreateWalletFormSchema>({
@@ -1033,10 +1082,9 @@ const RegularCreateWallet = () => {
     },
   });
 
-  const { mutateAsync: createLocalWallet } = useCreateLocalWallet({
+  const { mutateAsync: createLocalWallet, isPending } = useCreateLocalWallet({
     onSuccess: () => {
-      toast.success('Wallet created successfully');
-      resetWalletCreation();
+      setWalletCreationView(WalletCreateConnectView.ViewSecretRecoveryPhrase);
     },
     onError: (error) => {
       toast.error('Error creating wallet', {
@@ -1088,13 +1136,50 @@ const RegularCreateWallet = () => {
           />
           <div className="flex justify-end pt-6">
             <div className="flex justify-end gap-2">
-              <Button className="min-w-[100px] flex-1" size="sm" type="submit">
+              <Button
+                className="min-w-[100px] flex-1"
+                isLoading={isPending}
+                size="sm"
+                type="submit"
+                disabled={isPending}
+              >
                 {t('common.create')}
               </Button>
             </div>
           </div>
         </form>
       </Form>
+    </div>
+  );
+};
+
+const RegularRestoreWalletSecretRecoveryPhrase = () => {
+  const auth = useAuth((state) => state.auth);
+  const resetWalletCreation = useWalletsStore(
+    (state) => state.resetWalletCreation,
+  );
+
+  const { data: walletInfo } = useGetWalletList({
+    nodeAddress: auth?.node_address ?? '',
+    token: auth?.api_v2_key ?? '',
+  });
+
+  const mnemonic = walletInfo?.payment_wallet?.data?.mnemonic ?? '';
+
+  return (
+    <div>
+      <SecretRecoveryPhraseDisplay mnemonic={mnemonic} />
+      <DialogFooter className="mt-4 gap-2">
+        <Button
+          size="sm"
+          className="w-full"
+          onClick={() => {
+            resetWalletCreation();
+          }}
+        >
+          Continue
+        </Button>
+      </DialogFooter>
     </div>
   );
 };

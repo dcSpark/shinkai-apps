@@ -79,9 +79,8 @@
     "publishDialog": {
       "amount": "Cantidad",
       "asset": "Activo",
+      "configureAndPublish": "Configurar y Publicar",
       "description": "Descripción",
-      "amountHelper": "Valor en USDC",
-      "descriptionHelper": "Este texto se mostrará a otros usuarios cuando busquen este agente.",
       "open": "Publicar Agente",
       "paymentAddress": "Dirección de Pago",
       "publish": "Publicar",
@@ -601,6 +600,10 @@
   },
   "networkAgentsPage": {
     "addAgent": "Agregar Agente",
+    "addAgentFromId": "Agregar Agente Desde ID",
+    "addAgentFromIdDescription": "Agrega un agente a tu colección utilizando un ID de Shinkai. Ejemplo: @@official.sep-shinkai/main/agent/youtube_expert",
+    "addAgentFromIdHelper": "Ingresa el ID de Shinkai del agente que deseas agregar.",
+    "addAgentFromIdPlaceholder": "p. ej. @@official.sep-shinkai/main/agent/youtube_expert",
     "addedDescription": "{{name}} ahora está en tu colección. ¡Comienza un chat para usarlo!",
     "addedSuccess": "¡Agregado con Éxito!",
     "agentsTab": "Agentes",
@@ -617,12 +620,14 @@
     "howPaymentsWorkDescription": "Cuando uses este agente, se te pedirá que confirmes el pago desde tu billetera conectada. Los pagos se procesan en la red {{network}}.",
     "manageWallet": "Gestionar Billetera",
     "networkToolDetails": "Detalles del Agente de Red",
+    "nextAddAgent": "Siguiente (Agregar Agente)",
+    "noPublishedAgents": "Aún no has compartido ningún agente. Publica tu agente presionando aquí.",
     "payPerUse": "Pagar por uso",
     "paymentRecipient": "Destinatario del Pago",
     "paymentSuccessful": "¡Pago Exitoso!",
     "paymentSuccessfulDescription": "Tu pago se realizó con éxito. La herramienta se está ejecutando ahora...",
-    "noPublishedAgents": "Aún no has compartido ningún agente. Publica tu agente presionando aquí.",
     "pleaseWait": "Por favor, espera mientras procesamos tu transacción...",
+    "proceedFree": "Proceder (Gratis)",
     "processingPayment": "Procesando Pago",
     "publishedTab": "Agentes Publicados",
     "registerIdentity": "Registrar Identidad",
@@ -642,9 +647,8 @@
     "usdcBalance": "Saldo de USDC",
     "walletAddress": "Dirección de la Billetera",
     "walletBalance": "Saldo de Billetera",
-    "yourWallet": "Tu Billetera",
     "walletNotSetup": "La billetera no está configurada",
-    "proceedFree": "Proceder (Gratis)"
+    "yourWallet": "Tu Billetera"
   },
   "notifications": {
     "messageReceived": {

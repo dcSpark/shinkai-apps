@@ -608,9 +608,22 @@ export type ToolOffering = {
   usage_type: ToolUsageType;
 };
 
+export type NetworkToolNode = {
+  id: string;
+  peerId: string;
+  identity: string;
+  online: boolean;
+  lastActivity: string;
+  connected: string;
+  lastPingRtt: number;
+  bytesTx: number;
+  pingFailures: number;
+};
+
 export type NetworkToolWithOffering = {
   network_tool: NetworkShinkaiTool;
   tool_offering: ToolOffering;
+  node: NetworkToolNode;
 };
 
 export type GetToolsWithOfferingsResponse = NetworkToolWithOffering[];
@@ -647,3 +660,5 @@ export type AddNetworkToolRequest = {
     content: [NetworkShinkaiTool, boolean];
   };
 };
+
+export type GetNetworkAgentsResponse = NetworkToolWithOffering[];

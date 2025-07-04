@@ -1085,6 +1085,7 @@ export default {
     publishDialog: {
       open: 'Publish Agent',
       title: 'Publish {{name}}',
+      configureAndPublish: 'Configure & Publish',
       paymentAddress: 'Payment Address',
       asset: 'Asset',
       amount: 'Amount',
@@ -1133,16 +1134,18 @@ export default {
     toolRouterKey: 'Tool Router Key',
     addAgent: 'Add Agent',
     addAgentFromId: 'Add Agent From ID',
-    addAgentFromIdDescription: 'Add an agent to your collection using a Shinkai ID. Example: @@official.sep-shinkai/main/agent/youtube_expert',
+    addAgentFromIdDescription:
+      'Add an agent to your collection using a Shinkai ID. Example: @@official.sep-shinkai/main/agent/youtube_expert',
     addAgentFromIdHelper: 'Enter the Shinkai ID of the agent you want to add.',
-    addAgentFromIdPlaceholder: 'e.g. @@official.sep-shinkai/main/agent/youtube_expert',
+    addAgentFromIdPlaceholder:
+      'e.g. @@official.sep-shinkai/main/agent/youtube_expert',
     nextAddAgent: 'Next (Add Agent)',
     addedSuccess: 'Added Successfully!',
     addedDescription:
       '{{name}} is now in your collection. Start a chat to use it!',
     browseMore: 'Browse More Agents',
     startChat: 'Start Chat',
-    setupRequired: 'Setup required to use paid agents',
+    setupRequired: 'Setup required to use paid agents and publish agents',
     removeSuccess: 'Network agent removed successfully',
     removeFailed: 'Failed to remove agent',
     registerShinkaiIdentity: 'Register Shinkai Identity',
@@ -1179,7 +1182,7 @@ export default {
     paymentSuccessfulDescription:
       'Your payment went through successfully. The tool is now executing...',
     noPublishedAgents:
-      "You haven't shared any agents yet. Publish your agent pressing here.",
+      'No agents published yet. Share your first agent to get started.',
   },
   mcpPage: {
     exposeToolsTab: 'Expose Tools',

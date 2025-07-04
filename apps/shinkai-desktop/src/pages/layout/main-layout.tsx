@@ -683,7 +683,7 @@ const MainLayout = () => {
         </AnimatePresence>
 
         <div
-          className={cn('min-h-full flex-1 overflow-auto')}
+          className={cn('min-h-full flex-1 overflow-y-scroll')}
           ref={mainLayoutContainerRef}
         >
           <Outlet />

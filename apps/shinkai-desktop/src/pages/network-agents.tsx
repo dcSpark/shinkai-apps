@@ -1,8 +1,10 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useAddNetworkTool } from '@shinkai_network/shinkai-node-state/v2/mutations/addNetworkTool/useAddNetworkTool';
-import { useGetInstalledNetworkTools } from '@shinkai_network/shinkai-node-state/v2/queries/getInstalledNetworkTools/useGetInstalledNetworkTools';
-import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
+import { useGetInstalledNetworkTools } from '@shinkai_network/shinkai-node-state/v2/queries/getInstalledNetworkTools/useGetInstalledNetworkTools';
+import { type FormattedNetworkAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getNetworkAgents/types';
+import { useGetNetworkAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getNetworkAgents/useGetNetworkAgents';
+import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
 import { useGetWalletBalance } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletBalance/useGetWalletBalance';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import {
@@ -33,6 +35,11 @@ import {
   PopoverContent,
   PopoverTrigger,
   CardFooter,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@shinkai_network/shinkai-ui';
 import {
   CryptoWalletIcon,
@@ -42,7 +49,6 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 
 import {
-  Settings,
   User,
   CreditCard,
   Info,
@@ -53,19 +59,20 @@ import {
   Sparkles,
   Plus,
   CheckCircle,
+  Circle,
+  X,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
+import AddAgentFromIdModal from '../components/agent/add-agent-from-id-modal';
+import ConfigureAgentDialog from '../components/agent/configure-agent-dialog';
 import PublishAgentDialog from '../components/agent/publish-agent-dialog';
 import {
   formatBalanceAmount,
   truncateAddress,
 } from '../components/crypto-wallet/utils';
-import { useGetNetworkAgents } from '../components/network/network-client';
 import RemoveNetworkAgentButton from '../components/network/remove-network-agent-button';
-import { type FormattedNetworkAgent } from '../components/network/types';
-import AddAgentFromIdModal from '../components/agent/add-agent-from-id-modal';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 
@@ -152,85 +159,89 @@ export const NetworkAgentPage = () => {
               )}
             </div>
 
-            {!isWalletConnected && (
-              <Link
-                to="/settings/crypto-wallet"
-                className={cn(
-                  buttonVariants({ variant: 'outline', size: 'sm' }),
-                )}
-              >
-                <CryptoWalletIcon className="size-4" />
-                {t('networkAgentsPage.connectWallet')}
-              </Link>
-            )}
+            <div className="flex items-center gap-2">
+              <AddAgentFromIdModal />
 
-            {isWalletConnected && (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <CryptoWalletIcon className="size-4" />
-                    {truncateAddress(
-                      walletInfo?.payment_wallet?.data?.address?.address_id ??
-                        '',
-                    )}
-                    <ChevronDownIcon className="size-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80" align="end">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm font-medium">
-                        {t('networkAgentsPage.walletBalance')}
-                      </div>
-                      <div className="text-official-gray-400 text-xs">
-                        {walletInfo?.payment_wallet?.data?.network}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="flex size-6 items-center justify-center rounded-full border bg-black">
-                            <EthereumIcon />
-                          </div>
-                          <span className="text-sm">ETH</span>
-                        </div>
-                        <div className="text-sm font-medium">
-                          {formatBalanceAmount(
-                            walletBalance?.ETH.amount ?? '0',
-                            walletBalance?.ETH.decimals ?? 0,
-                          )}{' '}
-                          ETH
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="flex size-6 items-center justify-center rounded-full border bg-black">
-                            <USDCIcon />
-                          </div>
-                          <span className="text-sm">USDC</span>
-                        </div>
-                        <div className="text-sm font-medium">
-                          {formatBalanceAmount(
-                            walletBalance?.USDC.amount ?? '0',
-                            walletBalance?.USDC.decimals ?? 0,
-                          )}{' '}
-                          USDC
-                        </div>
-                      </div>
-                    </div>
-                    <Link
-                      to="/settings/crypto-wallet"
-                      className={cn(
-                        buttonVariants({ variant: 'outline', size: 'sm' }),
-                        'w-full',
+              {!isWalletConnected && (
+                <Link
+                  to="/settings/crypto-wallet"
+                  className={cn(
+                    buttonVariants({ variant: 'outline', size: 'sm' }),
+                  )}
+                >
+                  <CryptoWalletIcon className="size-4" />
+                  {t('networkAgentsPage.connectWallet')}
+                </Link>
+              )}
+
+              {isWalletConnected && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <CryptoWalletIcon className="size-4" />
+                      {truncateAddress(
+                        walletInfo?.payment_wallet?.data?.address?.address_id ??
+                          '',
                       )}
-                    >
-                      {t('networkAgentsPage.manageWallet')}
-                    </Link>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            )}
+                      <ChevronDownIcon className="size-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80" align="end">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm font-medium">
+                          {t('networkAgentsPage.walletBalance')}
+                        </div>
+                        <div className="text-official-gray-400 text-xs">
+                          {walletInfo?.payment_wallet?.data?.network}
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="flex size-6 items-center justify-center rounded-full border bg-black">
+                              <EthereumIcon />
+                            </div>
+                            <span className="text-sm">ETH</span>
+                          </div>
+                          <div className="text-sm font-medium">
+                            {formatBalanceAmount(
+                              walletBalance?.ETH.amount ?? '0',
+                              walletBalance?.ETH.decimals ?? 0,
+                            )}{' '}
+                            ETH
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="flex size-6 items-center justify-center rounded-full border bg-black">
+                              <USDCIcon />
+                            </div>
+                            <span className="text-sm">USDC</span>
+                          </div>
+                          <div className="text-sm font-medium">
+                            {formatBalanceAmount(
+                              walletBalance?.USDC.amount ?? '0',
+                              walletBalance?.USDC.decimals ?? 0,
+                            )}{' '}
+                            USDC
+                          </div>
+                        </div>
+                      </div>
+                      <Link
+                        to="/settings/crypto-wallet"
+                        className={cn(
+                          buttonVariants({ variant: 'outline', size: 'sm' }),
+                          'w-full',
+                        )}
+                      >
+                        {t('networkAgentsPage.manageWallet')}
+                      </Link>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )}
+            </div>
           </div>
           <p className="text-official-gray-400 text-sm whitespace-pre-wrap">
             {selectedTab === 'network'
@@ -242,6 +253,9 @@ export const NetworkAgentPage = () => {
         {!isWalletConnected && (
           <SetupGuide isWalletConnected={!!isWalletConnected} />
         )}
+
+        <Disclaimer />
+
         <TabsContent value="network">
           <DiscoverNetworkAgents isWalletConnected={!!isWalletConnected} />
         </TabsContent>
@@ -254,11 +268,6 @@ export const NetworkAgentPage = () => {
           </TabsContent>
         )}
       </div>
-
-      {/* <AddNetworkAgentDialog
-        open={isAddDialogOpen}
-        onOpenChange={setIsAddDialogOpen}
-      />  */}
     </Tabs>
   );
 };
@@ -269,6 +278,12 @@ const DiscoverNetworkAgents = ({
   isWalletConnected: boolean;
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [pricingFilter, setPricingFilter] = useState<'all' | 'free' | 'paid'>(
+    'all',
+  );
+  const [providerFilter, setProviderFilter] = useState<
+    'all' | 'shinkai' | 'community'
+  >('all');
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
 
@@ -309,7 +324,23 @@ const DiscoverNetworkAgents = ({
       agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       agent.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesSearch;
+    const isFreePricing =
+      agent.price.toLowerCase().includes('free') || agent.price === '$0.00';
+    const matchesPricing =
+      pricingFilter === 'all' ||
+      (pricingFilter === 'free' && isFreePricing) ||
+      (pricingFilter === 'paid' && !isFreePricing);
+
+    const isShinkaiProvider = agent.provider
+      ?.toLowerCase()
+      .includes('@@official.sep-shinkai');
+
+    const matchesProvider =
+      providerFilter === 'all' ||
+      (providerFilter === 'shinkai' && isShinkaiProvider) ||
+      (providerFilter === 'community' && !isShinkaiProvider);
+
+    return matchesSearch && matchesPricing && matchesProvider;
   });
 
   return (
@@ -321,7 +352,40 @@ const DiscoverNetworkAgents = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <AddAgentFromIdModal />
+
+        <div className="flex items-center gap-2">
+          <Select
+            value={pricingFilter}
+            onValueChange={(value: 'all' | 'free' | 'paid') =>
+              setPricingFilter(value)
+            }
+          >
+            <SelectTrigger className="!h-[auto] w-32 rounded-full bg-transparent py-2 [&>svg]:top-[12px]">
+              <SelectValue placeholder="Pricing" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Free + Paid</SelectItem>
+              <SelectItem value="free">Free</SelectItem>
+              <SelectItem value="paid">Paid</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={providerFilter}
+            onValueChange={(value: 'all' | 'shinkai' | 'community') =>
+              setProviderFilter(value)
+            }
+          >
+            <SelectTrigger className="!h-[auto] w-36 rounded-full bg-transparent py-2 [&>svg]:top-[12px]">
+              <SelectValue placeholder="Provider" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Providers</SelectItem>
+              <SelectItem value="shinkai">Shinkai</SelectItem>
+              <SelectItem value="community">Community</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="grid grid-cols-1 gap-6 pb-10 md:grid-cols-2">
         {(isNetworkAgentsPending || isInstalledNetworkToolsPending) &&
@@ -367,6 +431,7 @@ const DiscoverNetworkAgents = ({
               }
               associatedAgentId={toolAgentMap.get(agent.toolRouterKey)}
               isWalletConnected={isWalletConnected}
+              nodeStatus={agent.node?.online ? 'online' : 'offline'}
             />
           ))}
       </div>
@@ -403,6 +468,7 @@ const PublishedAgents = () => {
         provider: item.network_tool.provider,
         toolRouterKey: item.network_tool.tool_router_key,
         apiData: item,
+        node: item.node,
       };
     });
   }, [data]);
@@ -410,7 +476,7 @@ const PublishedAgents = () => {
   if (publishedAgents.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 pt-20">
-        <p className="text-center text-base font-medium">
+        <p className="text-center text-sm font-medium">
           {t('networkAgentsPage.noPublishedAgents')}
         </p>
         <PublishAgentDialog />
@@ -438,11 +504,8 @@ interface AgentCardProps {
   isInstalled?: boolean;
   isWalletConnected: boolean;
   associatedAgentId?: string;
+  nodeStatus?: 'online' | 'offline';
 }
-/* TODO:
-  - published agents
-
-*/
 
 const AgentCard = ({
   agent,
@@ -450,6 +513,7 @@ const AgentCard = ({
   isInstalled,
   isWalletConnected,
   associatedAgentId,
+  nodeStatus,
 }: AgentCardProps) => {
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -482,16 +546,33 @@ const AgentCard = ({
     <Card className="border-official-gray-850 bg-official-gray-900 flex flex-col border">
       <CardHeader className="pb-4">
         <CardTitle className="mb-1 inline-flex items-center justify-between gap-2 text-lg leading-tight font-bold text-white">
-          {agent.name}
-          {isInstalled && (
-            <Badge
-              variant="outline"
-              className="flex items-center gap-1 border-none bg-green-800/10 text-xs text-green-500"
+          <div className="inline-flex items-center gap-2">
+            {agent.name}
+            {isInstalled && (
+              <Badge variant="tags" className="gap-1">
+                <CheckCircle2 className="h-3 w-3" />
+                {t('common.added')}
+              </Badge>
+            )}
+          </div>
+          <div className="flex items-center gap-1">
+            <Circle
+              className={cn(
+                'h-3 w-3',
+                nodeStatus === 'online' && 'fill-green-500 text-green-500',
+                nodeStatus !== 'online' && 'fill-red-500 text-red-500',
+              )}
+            />
+            <span
+              className={cn(
+                'text-xs',
+                nodeStatus === 'online' && 'text-green-600',
+                nodeStatus !== 'online' && 'text-red-600',
+              )}
             >
-              <CheckCircle2 className="h-3 w-3" />
-              {t('common.added')}
-            </Badge>
-          )}
+              {nodeStatus === 'online' ? 'Online' : 'Offline'}
+            </span>
+          </div>
         </CardTitle>
 
         {agent.provider && type === 'discover' && (
@@ -500,7 +581,7 @@ const AgentCard = ({
             <span>{agent.provider}</span>
           </div>
         )}
-        <CardDescription className="text-official-gray-400 line-clamp-2 text-sm leading-relaxed">
+        <CardDescription className="text-official-gray-400 line-clamp-2 h-[44px] text-sm leading-relaxed">
           {agent.description}
         </CardDescription>
       </CardHeader>
@@ -679,10 +760,7 @@ const AgentCard = ({
           )}
           {type === 'exposed' && (
             <div className="flex w-full flex-col gap-3">
-              <Button variant="outline" size="md">
-                <Settings className="h-4 w-4" />
-                {t('common.configure')}
-              </Button>
+              <ConfigureAgentDialog agent={agent} />
             </div>
           )}
         </div>
@@ -972,6 +1050,39 @@ function SetupGuide({ isWalletConnected }: SetupGuideProps) {
             </div>
           </div>
         </AlertDescription>
+      </div>
+    </Alert>
+  );
+}
+
+function Disclaimer() {
+  const dismissedCommunityAgentsDisclaimer = useSettings(
+    (state) => state.dismissedCommunityAgentsDisclaimer,
+  );
+  const setDismissedCommunityAgentsDisclaimer = useSettings(
+    (state) => state.setDismissedCommunityAgentsDisclaimer,
+  );
+
+  if (dismissedCommunityAgentsDisclaimer) return null;
+
+  return (
+    <Alert variant="warning" className="mb-6 border-0 bg-orange-300/5 p-6">
+      <button
+        className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none"
+        onClick={() => setDismissedCommunityAgentsDisclaimer(true)}
+      >
+        <X className="h-4 w-4" />
+        <span className="sr-only">Close</span>
+      </button>
+      <div className="flex items-start gap-3">
+        <AlertCircle className="mt-0.5 size-4 shrink-0 text-orange-400" />
+        <div>
+          <p className="text-sm font-medium text-white">Community Agents</p>
+          <p className="text-official-gray-200 text-sm">
+            Community agents are not verified by Shinkai. We may remove agents
+            that violate our terms. Use at your own risk.
+          </p>
+        </div>
       </div>
     </Alert>
   );
