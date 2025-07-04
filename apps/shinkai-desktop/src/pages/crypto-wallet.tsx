@@ -454,16 +454,12 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
   );
 
   const handleBack = () => {
-    if (walletCreationView === WalletCreateConnectView.MpcRestore) {
-      setWalletCreationView(WalletCreateConnectView.Mpc);
-      return;
-    }
     if (
       walletCreationView === WalletCreateConnectView.RegularMnemonic ||
       walletCreationView === WalletCreateConnectView.RegularPrivateKey ||
       walletCreationView === WalletCreateConnectView.RegularCreate
     ) {
-      setWalletCreationView(WalletCreateConnectView.Regular);
+      setWalletCreationView(WalletCreateConnectView.Main);
       return;
     }
     setWalletCreationView(WalletCreateConnectView.Main);
@@ -506,79 +502,6 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
               <Button
                 className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
                 onClick={() =>
-                  setWalletCreationView(WalletCreateConnectView.Regular)
-                }
-                variant="outline"
-              >
-                <AddCryptoWalletIcon className="size-5" />
-                <div>
-                  <div className="text-sm font-semibold">Hot Wallet</div>
-                  <div className="text-official-gray-400 text-sm">
-                    Use a hot wallet to store your cryptocurrency assets.
-                  </div>
-                </div>
-              </Button>
-            </div>
-          </div>
-        );
-      case WalletCreateConnectView.Mpc:
-        return (
-          <div>
-            <DialogHeader>
-              <DialogTitle className="text-center">MPC Wallet</DialogTitle>
-            </DialogHeader>
-            <div className="mt-8 space-y-3">
-              <a
-                className={cn(
-                  buttonVariants({
-                    variant: 'tertiary',
-                    className:
-                      'flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200',
-                  }),
-                )}
-                href="https://portal.cdp.coinbase.com/access/api"
-                rel="noreferrer"
-                target="_blank"
-              >
-                <PlusIcon className="size-4 shrink-0" />
-                <div>
-                  <div className="text-sm font-semibold">Create New</div>
-                  <div className="text-official-gray-400 text-sm">
-                    Create a new MPC wallet to store your assets.
-                  </div>
-                </div>
-              </a>
-              <Button
-                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
-                onClick={() =>
-                  setWalletCreationView(WalletCreateConnectView.MpcRestore)
-                }
-                variant="outline"
-              >
-                <Download className="size-4 shrink-0" />
-                <div>
-                  <div className="text-sm font-semibold">
-                    {' '}
-                    Import Private Key
-                  </div>
-                  <div className="text-official-gray-400 text-sm">
-                    Restore to regain access to your cryptocurrency assets.
-                  </div>
-                </div>
-              </Button>
-            </div>
-          </div>
-        );
-      case WalletCreateConnectView.Regular:
-        return (
-          <div>
-            <DialogHeader>
-              <DialogTitle className="text-center">Regular Wallet</DialogTitle>
-            </DialogHeader>
-            <div className="mt-8 space-y-3">
-              <Button
-                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
-                onClick={() =>
                   setWalletCreationView(WalletCreateConnectView.RegularCreate)
                 }
                 variant="outline"
@@ -601,7 +524,6 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
                 <FileText className="size-4 shrink-0" />
                 <div>
                   <div className="text-sm font-semibold">
-                    {' '}
                     Import Secret Recovery Phrase
                   </div>
                   <div className="text-official-gray-400 text-sm">
@@ -632,8 +554,6 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
             </div>
           </div>
         );
-      case WalletCreateConnectView.MpcRestore:
-        return <MpcRestoreWallet />;
       case WalletCreateConnectView.RegularCreate:
         return <RegularCreateWallet />;
       case WalletCreateConnectView.RegularMnemonic:
