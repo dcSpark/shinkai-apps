@@ -35,6 +35,11 @@ import {
   PopoverContent,
   PopoverTrigger,
   CardFooter,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@shinkai_network/shinkai-ui';
 import {
   CryptoWalletIcon,
@@ -56,6 +61,7 @@ import {
   Plus,
   CheckCircle,
   Circle,
+  Filter,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
@@ -154,85 +160,89 @@ export const NetworkAgentPage = () => {
               )}
             </div>
 
-            {!isWalletConnected && (
-              <Link
-                to="/settings/crypto-wallet"
-                className={cn(
-                  buttonVariants({ variant: 'outline', size: 'sm' }),
-                )}
-              >
-                <CryptoWalletIcon className="size-4" />
-                {t('networkAgentsPage.connectWallet')}
-              </Link>
-            )}
+            <div className="flex items-center gap-2">
+              <AddAgentFromIdModal />
 
-            {isWalletConnected && (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <CryptoWalletIcon className="size-4" />
-                    {truncateAddress(
-                      walletInfo?.payment_wallet?.data?.address?.address_id ??
-                        '',
-                    )}
-                    <ChevronDownIcon className="size-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80" align="end">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm font-medium">
-                        {t('networkAgentsPage.walletBalance')}
-                      </div>
-                      <div className="text-official-gray-400 text-xs">
-                        {walletInfo?.payment_wallet?.data?.network}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="flex size-6 items-center justify-center rounded-full border bg-black">
-                            <EthereumIcon />
-                          </div>
-                          <span className="text-sm">ETH</span>
-                        </div>
-                        <div className="text-sm font-medium">
-                          {formatBalanceAmount(
-                            walletBalance?.ETH.amount ?? '0',
-                            walletBalance?.ETH.decimals ?? 0,
-                          )}{' '}
-                          ETH
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="flex size-6 items-center justify-center rounded-full border bg-black">
-                            <USDCIcon />
-                          </div>
-                          <span className="text-sm">USDC</span>
-                        </div>
-                        <div className="text-sm font-medium">
-                          {formatBalanceAmount(
-                            walletBalance?.USDC.amount ?? '0',
-                            walletBalance?.USDC.decimals ?? 0,
-                          )}{' '}
-                          USDC
-                        </div>
-                      </div>
-                    </div>
-                    <Link
-                      to="/settings/crypto-wallet"
-                      className={cn(
-                        buttonVariants({ variant: 'outline', size: 'sm' }),
-                        'w-full',
+              {!isWalletConnected && (
+                <Link
+                  to="/settings/crypto-wallet"
+                  className={cn(
+                    buttonVariants({ variant: 'outline', size: 'sm' }),
+                  )}
+                >
+                  <CryptoWalletIcon className="size-4" />
+                  {t('networkAgentsPage.connectWallet')}
+                </Link>
+              )}
+
+              {isWalletConnected && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <CryptoWalletIcon className="size-4" />
+                      {truncateAddress(
+                        walletInfo?.payment_wallet?.data?.address?.address_id ??
+                          '',
                       )}
-                    >
-                      {t('networkAgentsPage.manageWallet')}
-                    </Link>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            )}
+                      <ChevronDownIcon className="size-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80" align="end">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm font-medium">
+                          {t('networkAgentsPage.walletBalance')}
+                        </div>
+                        <div className="text-official-gray-400 text-xs">
+                          {walletInfo?.payment_wallet?.data?.network}
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="flex size-6 items-center justify-center rounded-full border bg-black">
+                              <EthereumIcon />
+                            </div>
+                            <span className="text-sm">ETH</span>
+                          </div>
+                          <div className="text-sm font-medium">
+                            {formatBalanceAmount(
+                              walletBalance?.ETH.amount ?? '0',
+                              walletBalance?.ETH.decimals ?? 0,
+                            )}{' '}
+                            ETH
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="flex size-6 items-center justify-center rounded-full border bg-black">
+                              <USDCIcon />
+                            </div>
+                            <span className="text-sm">USDC</span>
+                          </div>
+                          <div className="text-sm font-medium">
+                            {formatBalanceAmount(
+                              walletBalance?.USDC.amount ?? '0',
+                              walletBalance?.USDC.decimals ?? 0,
+                            )}{' '}
+                            USDC
+                          </div>
+                        </div>
+                      </div>
+                      <Link
+                        to="/settings/crypto-wallet"
+                        className={cn(
+                          buttonVariants({ variant: 'outline', size: 'sm' }),
+                          'w-full',
+                        )}
+                      >
+                        {t('networkAgentsPage.manageWallet')}
+                      </Link>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )}
+            </div>
           </div>
           <p className="text-official-gray-400 text-sm whitespace-pre-wrap">
             {selectedTab === 'network'
@@ -266,6 +276,12 @@ const DiscoverNetworkAgents = ({
   isWalletConnected: boolean;
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [pricingFilter, setPricingFilter] = useState<'all' | 'free' | 'paid'>(
+    'all',
+  );
+  const [providerFilter, setProviderFilter] = useState<
+    'all' | 'shinkai' | 'community'
+  >('all');
   const { t } = useTranslation();
   const auth = useAuth((state) => state.auth);
 
@@ -306,7 +322,23 @@ const DiscoverNetworkAgents = ({
       agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       agent.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesSearch;
+    const isFreePricing =
+      agent.price.toLowerCase().includes('free') || agent.price === '$0.00';
+    const matchesPricing =
+      pricingFilter === 'all' ||
+      (pricingFilter === 'free' && isFreePricing) ||
+      (pricingFilter === 'paid' && !isFreePricing);
+
+    const isShinkaiProvider = agent.provider
+      ?.toLowerCase()
+      .includes('@@official.sep-shinkai');
+
+    const matchesProvider =
+      providerFilter === 'all' ||
+      (providerFilter === 'shinkai' && isShinkaiProvider) ||
+      (providerFilter === 'community' && !isShinkaiProvider);
+
+    return matchesSearch && matchesPricing && matchesProvider;
   });
 
   return (
@@ -318,7 +350,42 @@ const DiscoverNetworkAgents = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <AddAgentFromIdModal />
+
+        <div className="flex items-center gap-2 border-l border-gray-700 pl-2">
+          <Filter className="h-4 w-4 text-gray-400" />
+
+          <Select
+            value={pricingFilter}
+            onValueChange={(value: 'all' | 'free' | 'paid') =>
+              setPricingFilter(value)
+            }
+          >
+            <SelectTrigger className="!h-[auto] w-32 rounded-full bg-transparent py-2 [&>svg]:top-[12px]">
+              <SelectValue placeholder="Pricing" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Free + Paid</SelectItem>
+              <SelectItem value="free">Free</SelectItem>
+              <SelectItem value="paid">Paid</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={providerFilter}
+            onValueChange={(value: 'all' | 'shinkai' | 'community') =>
+              setProviderFilter(value)
+            }
+          >
+            <SelectTrigger className="!h-[auto] w-36 rounded-full bg-transparent py-2 [&>svg]:top-[12px]">
+              <SelectValue placeholder="Provider" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Providers</SelectItem>
+              <SelectItem value="shinkai">Shinkai</SelectItem>
+              <SelectItem value="community">Community</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="grid grid-cols-1 gap-6 pb-10 md:grid-cols-2">
         {(isNetworkAgentsPending || isInstalledNetworkToolsPending) &&
