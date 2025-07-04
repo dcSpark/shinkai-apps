@@ -1,7 +1,7 @@
 import { CheckCircle2, CopyIcon } from 'lucide-react';
-import React, { cloneElement, type ReactElement, useState } from 'react';
+import React, { cloneElement, type ReactElement } from 'react';
 
-import { copyToClipboard } from '../helpers/copy-to-clipboard';
+import { useCopyClipboard } from '../hooks';
 import { cn } from '../utils';
 import { Button } from './button';
 
@@ -23,23 +23,12 @@ const CopyToClipboardIcon = ({
   onCopyClipboard,
   asChild = false,
 }: CopyToClipboardIconProps) => {
-  const [clipboard, setClipboard] = useState(false);
+  const { isCopied, onCopy } = useCopyClipboard({
+    string,
+    onCopyClipboard,
+  });
 
-  let timeout: ReturnType<typeof setTimeout>;
-  const onCopy = async () => {
-    if (!string) return;
-    const string_ = string.trim();
-    if (onCopyClipboard && typeof onCopyClipboard === 'function') {
-      onCopyClipboard();
-    } else {
-      await copyToClipboard(string_);
-    }
-    setClipboard(true);
-    clearTimeout(timeout);
-    timeout = setTimeout(() => setClipboard(false), 1000);
-  };
-
-  const ClipboardIcon = clipboard ? CheckCircle2 : CopyIcon;
+  const ClipboardIcon = isCopied ? CheckCircle2 : CopyIcon;
 
   if (asChild && children) {
     return cloneElement(children, {
@@ -61,11 +50,11 @@ const CopyToClipboardIcon = ({
       variant="ghost"
     >
       <ClipboardIcon
-        className={cn('h-3.5 w-3.5', clipboard && 'text-green-600')}
+        className={cn('h-3.5 w-3.5', isCopied && 'text-green-600')}
       />
       {children}
     </Button>
   );
 };
 
-export { CopyToClipboardIcon };
+export { CopyToClipboardIcon, useCopyClipboard };

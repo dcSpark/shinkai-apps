@@ -78,6 +78,7 @@ interface WalletData {
   address: Address;
   private_key: string;
   public_key: string;
+  mnemonic?: string;
 }
 
 interface LocalEthersWallet {

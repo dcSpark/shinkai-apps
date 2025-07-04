@@ -69,6 +69,7 @@ import {
   type SetToolOfferingResponse,
   type GetInstalledNetworkToolsResponse,
   type AddNetworkToolRequest,
+  type GetNetworkAgentsResponse,
 } from './types';
 
 export const createTool = async (
@@ -934,4 +935,12 @@ export const addNetworkTool = async (
     },
   );
   return response.data;
+};
+
+export const getNetworkAgents = async () => {
+  const response = await httpClient.get(
+    'https://api.shinkai.com/store/dapps/offerings',
+    { responseType: 'json' },
+  );
+  return response.data as GetNetworkAgentsResponse;
 };

@@ -13,6 +13,7 @@ import {
   type ToolCall,
 } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConversation/types';
 import { useGetMessageTraces } from '@shinkai_network/shinkai-node-state/v2/queries/getMessageTraces/useGetMessageTraces';
+import { useGetNetworkAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getNetworkAgents/useGetNetworkAgents';
 import {
   Accordion,
   AccordionContent,
@@ -75,7 +76,7 @@ import { useAuth } from '../../../store/auth';
 import { useOAuth } from '../../../store/oauth';
 import { useSettings } from '../../../store/settings';
 import { oauthUrlMatcherFromErrorMessage } from '../../../utils/oauth';
-import { useGetNetworkAgents } from '../../network/network-client';
+
 import { useChatStore } from '../context/chat-context';
 import { PythonCodeRunner } from '../python-code-runner/python-code-runner';
 
@@ -392,33 +393,35 @@ export const MessageBase = ({
                             key={`${tool.name}-${index}`}
                             value={`${tool.name}-${index}`}
                           >
-                              <div className="flex items-center">
-                                <AccordionTrigger
-                                  className={cn(
-                                    'min-w-[10rem] flex-1 gap-3 py-0 pr-2 no-underline hover:no-underline',
-                                    'hover:bg-official-gray-900 [&[data-state=open]]:bg-official-gray-950 transition-colors',
-                                    tool.status !== ToolStatusType.Complete &&
-                                      '[&>svg]:hidden',
-                                  )}
-                                >
-                                  <ToolCard
-                                    args={tool.args}
-                                    name={tool.name}
-                                    status={tool.status ?? ToolStatusType.Complete}
-                                    toolRouterKey={tool.toolRouterKey}
-                                  />
-                                </AccordionTrigger>
-                                <Button
-                                  variant="outline"
-                                  size="xs"
-                                  className="ml-2 mr-2 h-6 px-2"
-                                  onClick={() => setTracingOpen(true)}
-                                  onMouseDown={(e) => e.stopPropagation()}
-                                  onKeyDown={(e) => e.stopPropagation()}
-                                >
-                                  Network Tracing
-                                </Button>
-                              </div>
+                            <div className="flex items-center">
+                              <AccordionTrigger
+                                className={cn(
+                                  'min-w-[10rem] flex-1 gap-3 py-0 pr-2 no-underline hover:no-underline',
+                                  'hover:bg-official-gray-900 [&[data-state=open]]:bg-official-gray-950 transition-colors',
+                                  tool.status !== ToolStatusType.Complete &&
+                                    '[&>svg]:hidden',
+                                )}
+                              >
+                                <ToolCard
+                                  args={tool.args}
+                                  name={tool.name}
+                                  status={
+                                    tool.status ?? ToolStatusType.Complete
+                                  }
+                                  toolRouterKey={tool.toolRouterKey}
+                                />
+                              </AccordionTrigger>
+                              <Button
+                                variant="outline"
+                                size="xs"
+                                className="mr-2 ml-2 h-6 px-2"
+                                onClick={() => setTracingOpen(true)}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                onKeyDown={(e) => e.stopPropagation()}
+                              >
+                                Network Tracing
+                              </Button>
+                            </div>
                             <AccordionContent className="bg-official-gray-950 flex flex-col gap-1 rounded-b-lg px-3 pt-2 pb-3 text-xs">
                               {Object.keys(tool.args).length > 0 && (
                                 <span className="font-medium text-white">
@@ -896,8 +899,8 @@ export function Reasoning({
             </motion.div>
           </AnimatePresence>
         </AccordionTrigger>
-          <AccordionContent className="bg-official-gray-950 flex flex-col gap-1 rounded-b-lg px-3 pt-2 pb-3 text-sm">
-          <span className="text-official-gray-400 whitespace-pre-line break-words">
+        <AccordionContent className="bg-official-gray-950 flex flex-col gap-1 rounded-b-lg px-3 pt-2 pb-3 text-sm">
+          <span className="text-official-gray-400 break-words whitespace-pre-line">
             {reasoning}
           </span>
         </AccordionContent>

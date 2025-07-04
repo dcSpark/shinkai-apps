@@ -4,6 +4,7 @@ import {
   type ToolUsageType,
 } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { useSetToolOffering } from '@shinkai_network/shinkai-node-state/v2/mutations/setToolOffering/useSetToolOffering';
+import { type FormattedNetworkAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getNetworkAgents/types';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import {
   Dialog,
@@ -26,7 +27,6 @@ import { Settings } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useAuth } from '../../store/auth';
-import { type FormattedNetworkAgent } from '../network/types';
 
 interface ConfigureAgentDialogProps {
   agent: FormattedNetworkAgent;

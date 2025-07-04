@@ -2,6 +2,8 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { useAddNetworkTool } from '@shinkai_network/shinkai-node-state/v2/mutations/addNetworkTool/useAddNetworkTool';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetInstalledNetworkTools } from '@shinkai_network/shinkai-node-state/v2/queries/getInstalledNetworkTools/useGetInstalledNetworkTools';
+import { type FormattedNetworkAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getNetworkAgents/types';
+import { useGetNetworkAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getNetworkAgents/useGetNetworkAgents';
 import { useGetToolsWithOfferings } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsWithOfferings/useGetToolsWithOfferings';
 import { useGetWalletBalance } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletBalance/useGetWalletBalance';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
@@ -53,6 +55,7 @@ import {
   Sparkles,
   Plus,
   CheckCircle,
+  Circle,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
@@ -64,9 +67,7 @@ import {
   formatBalanceAmount,
   truncateAddress,
 } from '../components/crypto-wallet/utils';
-import { useGetNetworkAgents } from '../components/network/network-client';
 import RemoveNetworkAgentButton from '../components/network/remove-network-agent-button';
-import { type FormattedNetworkAgent } from '../components/network/types';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';
 
@@ -363,6 +364,7 @@ const DiscoverNetworkAgents = ({
               }
               associatedAgentId={toolAgentMap.get(agent.toolRouterKey)}
               isWalletConnected={isWalletConnected}
+              nodeStatus={agent.node?.online ? 'online' : 'offline'}
             />
           ))}
       </div>
@@ -399,6 +401,7 @@ const PublishedAgents = () => {
         provider: item.network_tool.provider,
         toolRouterKey: item.network_tool.tool_router_key,
         apiData: item,
+        node: item.node,
       };
     });
   }, [data]);
@@ -434,11 +437,8 @@ interface AgentCardProps {
   isInstalled?: boolean;
   isWalletConnected: boolean;
   associatedAgentId?: string;
+  nodeStatus?: 'online' | 'offline';
 }
-/* TODO:
-  - published agents
-
-*/
 
 const AgentCard = ({
   agent,
@@ -446,6 +446,7 @@ const AgentCard = ({
   isInstalled,
   isWalletConnected,
   associatedAgentId,
+  nodeStatus,
 }: AgentCardProps) => {
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -478,16 +479,33 @@ const AgentCard = ({
     <Card className="border-official-gray-850 bg-official-gray-900 flex flex-col border">
       <CardHeader className="pb-4">
         <CardTitle className="mb-1 inline-flex items-center justify-between gap-2 text-lg leading-tight font-bold text-white">
-          {agent.name}
-          {isInstalled && (
-            <Badge
-              variant="outline"
-              className="flex items-center gap-1 border-none bg-green-800/10 text-xs text-green-500"
+          <div className="inline-flex items-center gap-2">
+            {agent.name}
+            {isInstalled && (
+              <Badge variant="tags" className="gap-1">
+                <CheckCircle2 className="h-3 w-3" />
+                {t('common.added')}
+              </Badge>
+            )}
+          </div>
+          <div className="flex items-center gap-1">
+            <Circle
+              className={cn(
+                'h-3 w-3',
+                nodeStatus === 'online' && 'fill-green-500 text-green-500',
+                nodeStatus !== 'online' && 'fill-red-500 text-red-500',
+              )}
+            />
+            <span
+              className={cn(
+                'text-xs',
+                nodeStatus === 'online' && 'text-green-600',
+                nodeStatus !== 'online' && 'text-red-600',
+              )}
             >
-              <CheckCircle2 className="h-3 w-3" />
-              {t('common.added')}
-            </Badge>
-          )}
+              {nodeStatus === 'online' ? 'Online' : 'Offline'}
+            </span>
+          </div>
         </CardTitle>
 
         {agent.provider && type === 'discover' && (
@@ -496,7 +514,7 @@ const AgentCard = ({
             <span>{agent.provider}</span>
           </div>
         )}
-        <CardDescription className="text-official-gray-400 line-clamp-2 text-sm leading-relaxed">
+        <CardDescription className="text-official-gray-400 line-clamp-2 h-[44px] text-sm leading-relaxed">
           {agent.description}
         </CardDescription>
       </CardHeader>

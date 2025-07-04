@@ -11,6 +11,9 @@ import { useRestoreLocalWallet } from '@shinkai_network/shinkai-node-state/v2/mu
 import { useGetWalletBalance } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletBalance/useGetWalletBalance';
 import { useGetWalletList } from '@shinkai_network/shinkai-node-state/v2/queries/getWalletList/useGetWalletList';
 import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
   Button,
   buttonVariants,
   Card,
@@ -18,6 +21,7 @@ import {
   CopyToClipboardIcon,
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -46,7 +50,10 @@ import {
   USDCIcon,
 } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
-import { useMeasure } from '@shinkai_network/shinkai-ui/hooks';
+import {
+  useCopyClipboard,
+  useMeasure,
+} from '@shinkai_network/shinkai-ui/hooks';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -61,6 +68,8 @@ import {
   RefreshCw,
   XIcon,
   ExternalLinkIcon,
+  CheckCircle2,
+  AlertTriangle,
 } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -100,6 +109,10 @@ const CryptoWalletPage = () => {
     },
     { enabled: !!walletExist },
   );
+
+  const { isCopied, onCopy } = useCopyClipboard({
+    string: walletInfo?.payment_wallet?.data?.mnemonic ?? '',
+  });
 
   const etherscanLink = useMemo(() => {
     const address = walletInfo?.payment_wallet?.data?.address?.address_id;
@@ -178,6 +191,103 @@ const CryptoWalletPage = () => {
                             <p>View on Explorer</p>
                           </TooltipContent>
                         </Tooltip>
+                      )}
+                      {walletInfo?.payment_wallet?.data?.mnemonic && (
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" size="sm">
+                              Reveal Recovery Phrase
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent
+                            showCloseButton
+                            className="w-full max-w-md p-6"
+                          >
+                            <DialogTitle>Secret Recovery Phrase</DialogTitle>
+                            <Alert
+                              variant="warning"
+                              className="bg-amber-500/10"
+                            >
+                              <AlertTriangle className="h-4 w-4" />
+                              <AlertTitle className="mb-2 text-base font-medium">
+                                Never share your Secret Recovery Phrase
+                              </AlertTitle>
+                              <AlertDescription className="!pl-5 text-sm text-white">
+                                <ul className="list-disc space-y-1 text-sm">
+                                  <li>
+                                    Anyone with access to your Secret Recovery
+                                    Phrase can take full control of your wallet
+                                    and funds.
+                                  </li>
+                                  <li>
+                                    Do not share it with anyone — even if they
+                                    claim to be support.
+                                  </li>
+                                  <li>
+                                    Store it offline in a secure, private place.
+                                  </li>
+                                  <li>
+                                    Revealing your phrase is for backup purposes
+                                    only. Proceed with caution.
+                                  </li>
+                                </ul>
+                              </AlertDescription>
+                            </Alert>
+
+                            <div className="space-y-2">
+                              <div className="text-official-gray-400 mb-2 text-xs">
+                                Hover over each word to reveal
+                              </div>
+                              <div className="mb-4 grid grid-cols-2 gap-x-8 gap-y-1 rounded-lg border bg-white/5 p-4">
+                                {walletInfo?.payment_wallet?.data?.mnemonic
+                                  ?.split(' ')
+                                  .map((word, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="group flex cursor-pointer items-center gap-3"
+                                    >
+                                      <span className="flex h-6 w-6 min-w-[24px] shrink-0 items-center justify-center rounded-full bg-gray-700 text-sm font-medium text-white">
+                                        {idx + 1}
+                                      </span>
+                                      <span className="group relative rounded-md bg-gray-800/40 px-2 py-1 transition-colors duration-200 hover:bg-gray-700/30">
+                                        <span
+                                          className="font-mono text-sm [filter:blur(4px)] transition-all duration-300 ease-out select-none group-hover:[filter:blur(0px)]"
+                                          style={{
+                                            textShadow:
+                                              '0 0 8px rgba(255,255,255,0.8)',
+                                          }}
+                                        >
+                                          {word}
+                                        </span>
+                                      </span>
+                                    </div>
+                                  ))}
+                              </div>
+                            </div>
+
+                            <DialogFooter className="flex items-center justify-between gap-2.5 md:flex-col">
+                              <Button
+                                variant="outline"
+                                size="md"
+                                className="w-full"
+                                onClick={onCopy}
+                              >
+                                {isCopied ? (
+                                  <CheckCircle2 className="size-4" />
+                                ) : (
+                                  <Copy className="size-4" />
+                                )}
+                                {isCopied ? 'Copied' : 'Copy to Clipboard'}
+                              </Button>
+
+                              <DialogClose asChild>
+                                <Button className="w-full" size="md">
+                                  Done
+                                </Button>
+                              </DialogClose>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
                       )}
                     </div>
                   </div>
@@ -393,24 +503,6 @@ const CreateWalletDialog = ({ buttonLabel }: { buttonLabel: string }) => {
               </DialogTitle>
             </DialogHeader>
             <div className="mt-8 space-y-3">
-              {/* <Button
-                className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
-                onClick={() =>
-                  setWalletCreationView(WalletCreateConnectView.Mpc)
-                }
-                variant="outline"
-              >
-                <AddCryptoWalletIcon className="size-5" />
-                <div>
-                  <div className="text-sm font-semibold">
-                    Multi-Party Computation Wallet{' '}
-                  </div>
-                  <div className="text-official-gray-400 text-sm">
-                    MPC Wallets provides better recovery and stronger security
-                    in crypto wallets.
-                  </div>
-                </div>
-              </Button> */}
               <Button
                 className="flex h-[auto] w-full items-center justify-start gap-4 rounded-md bg-gray-500/20 px-5 py-2.5 text-left hover:bg-gray-200"
                 onClick={() =>
