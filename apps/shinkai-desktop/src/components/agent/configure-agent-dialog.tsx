@@ -69,20 +69,15 @@ export default function ConfigureAgentDialog({
   useEffect(() => {
     if (currentOffering) {
       setDescription(currentOffering.meta_description || '');
-
+      const perUse = currentOffering.usage_type.PerUse;
       if (
-        currentOffering.usage_type &&
-        'PerUse' in currentOffering.usage_type
+        typeof perUse === 'object' &&
+        'Payment' in perUse &&
+        perUse.Payment.length > 0 &&
+        perUse.Payment[0].maxAmountRequired !== ''
       ) {
-        const perUse = currentOffering.usage_type.PerUse;
-        if (perUse === 'Free') {
-          setPricingType('free');
-        } else if ('Payment' in perUse && perUse.Payment.length > 0) {
-          setPricingType('paid');
-          setAmount(perUse.Payment[0].maxAmountRequired || '');
-        } else {
-          setPricingType('free');
-        }
+        setPricingType('paid');
+        setAmount(perUse.Payment[0].maxAmountRequired || '');
       } else {
         setPricingType('free');
       }
@@ -143,7 +138,11 @@ export default function ConfigureAgentDialog({
             const perUse = currentOffering.usage_type.PerUse;
             if (perUse === 'Free') {
               setPricingType('free');
-            } else if ('Payment' in perUse && perUse.Payment.length > 0) {
+            } else if (
+              typeof perUse === 'object' &&
+              'Payment' in perUse &&
+              perUse.Payment.length > 0
+            ) {
               setPricingType('paid');
               setAmount(perUse.Payment[0].maxAmountRequired || '');
             } else {
