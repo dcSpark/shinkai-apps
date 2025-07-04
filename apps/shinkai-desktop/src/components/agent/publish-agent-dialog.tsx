@@ -255,22 +255,16 @@ export default function PublishAgentDialog() {
                   className="gap-1"
                 >
                   {filteredAgents?.map((agent) => (
-                    <div key={agent.agent_id} className="relative">
+                    <div
+                      key={agent.agent_id}
+                      className="border-official-gray-780 flex items-center gap-0 rounded-lg border px-4"
+                    >
                       <RadioGroupItem
                         value={agent.agent_id}
                         id={agent.agent_id}
                         disabled={publishedKeys.has(agent.tools[0])}
-                        className="peer sr-only"
                       />
-                      <Label
-                        htmlFor={agent.agent_id}
-                        className={cn(
-                          'block cursor-pointer transition-all',
-                          publishedKeys.has(agent.tools[0])
-                            ? 'hidden cursor-not-allowed opacity-60'
-                            : 'hover:bg-official-gray-900 peer-data-[state=checked]:bg-official-gray-900 peer-data-[state=checked]:ring-brand rounded-lg peer-data-[state=checked]:ring-2',
-                        )}
-                      >
+                      <Label htmlFor={agent.agent_id} className="font-medium">
                         <Card className="flex items-center gap-3 border-0 bg-transparent p-4 shadow-none">
                           <div className="flex size-8 items-center justify-center rounded-lg">
                             <AIAgentIcon name={agent.name} size="sm" />
@@ -352,55 +346,45 @@ export default function PublishAgentDialog() {
                   className="px-1"
                 >
                   <div className="space-y-3">
-                    <div className="relative">
+                    <div className="border-official-gray-780 flex items-center gap-0 rounded-lg border px-4">
                       <RadioGroupItem
                         value="free"
                         id="pricing-free"
-                        className="peer sr-only"
+                        className="peer"
                       />
                       <Label
                         htmlFor="pricing-free"
-                        className={cn(
-                          'block cursor-pointer transition-all',
-                          'hover:bg-official-gray-900 peer-data-[state=checked]:bg-official-gray-900 peer-data-[state=checked]:ring-brand rounded-lg peer-data-[state=checked]:ring-2',
-                        )}
+                        className="w-full px-4 py-3 font-medium"
                       >
-                        <Card className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-medium">Free</p>
-                              <p className="text-official-gray-400 text-sm">
-                                Free to use your agent
-                              </p>
-                            </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium">Free</p>
+                            <p className="text-official-gray-400 text-sm">
+                              Free to use your agent
+                            </p>
                           </div>
-                        </Card>
+                        </div>
                       </Label>
                     </div>
 
-                    <div className="relative">
+                    <div className="border-official-gray-780 flex items-center gap-0 rounded-lg border px-4">
                       <RadioGroupItem
                         value="paid"
                         id="pricing-paid"
-                        className="peer sr-only"
+                        className="peer"
                       />
                       <Label
                         htmlFor="pricing-paid"
-                        className={cn(
-                          'block cursor-pointer transition-all',
-                          'hover:bg-official-gray-900 peer-data-[state=checked]:bg-official-gray-900 peer-data-[state=checked]:ring-brand rounded-lg peer-data-[state=checked]:ring-2',
-                        )}
+                        className="w-full px-4 py-3 font-medium"
                       >
-                        <Card className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-medium">Paid (USDC)</p>
-                              <p className="text-official-gray-400 text-sm">
-                                Monetize your agent
-                              </p>
-                            </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium">Paid (USDC)</p>
+                            <p className="text-official-gray-400 text-sm">
+                              Monetize your agent
+                            </p>
                           </div>
-                        </Card>
+                        </div>
                       </Label>
                     </div>
                   </div>
