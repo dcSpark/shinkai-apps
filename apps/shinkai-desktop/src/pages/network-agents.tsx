@@ -49,7 +49,6 @@ import {
 import { cn } from '@shinkai_network/shinkai-ui/utils';
 
 import {
-  Settings,
   User,
   CreditCard,
   Info,
@@ -61,7 +60,7 @@ import {
   Plus,
   CheckCircle,
   Circle,
-  Filter,
+  X,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
@@ -254,6 +253,9 @@ export const NetworkAgentPage = () => {
         {!isWalletConnected && (
           <SetupGuide isWalletConnected={!!isWalletConnected} />
         )}
+
+        <Disclaimer />
+
         <TabsContent value="network">
           <DiscoverNetworkAgents isWalletConnected={!!isWalletConnected} />
         </TabsContent>
@@ -351,9 +353,7 @@ const DiscoverNetworkAgents = ({
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        <div className="flex items-center gap-2 border-l border-gray-700 pl-2">
-          <Filter className="h-4 w-4 text-gray-400" />
-
+        <div className="flex items-center gap-2">
           <Select
             value={pricingFilter}
             onValueChange={(value: 'all' | 'free' | 'paid') =>
@@ -1050,6 +1050,39 @@ function SetupGuide({ isWalletConnected }: SetupGuideProps) {
             </div>
           </div>
         </AlertDescription>
+      </div>
+    </Alert>
+  );
+}
+
+function Disclaimer() {
+  const dismissedCommunityAgentsDisclaimer = useSettings(
+    (state) => state.dismissedCommunityAgentsDisclaimer,
+  );
+  const setDismissedCommunityAgentsDisclaimer = useSettings(
+    (state) => state.setDismissedCommunityAgentsDisclaimer,
+  );
+
+  if (dismissedCommunityAgentsDisclaimer) return null;
+
+  return (
+    <Alert variant="warning" className="mb-6 border-0 bg-orange-300/5 p-6">
+      <button
+        className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none"
+        onClick={() => setDismissedCommunityAgentsDisclaimer(true)}
+      >
+        <X className="h-4 w-4" />
+        <span className="sr-only">Close</span>
+      </button>
+      <div className="flex items-start gap-3">
+        <AlertCircle className="mt-0.5 size-4 shrink-0 text-orange-400" />
+        <div>
+          <p className="text-sm font-medium text-white">Community Agents</p>
+          <p className="text-official-gray-200 text-sm">
+            Community agents are not verified by Shinkai. We may remove agents
+            that violate our terms. Use at your own risk.
+          </p>
+        </div>
       </div>
     </Alert>
   );
