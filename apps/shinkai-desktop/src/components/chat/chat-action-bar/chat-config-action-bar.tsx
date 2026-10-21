@@ -402,7 +402,7 @@ export function UpdateChatConfigActionBarBase({
       topP: chatConfig?.top_p,
       topK: chatConfig?.top_k,
       useTools: chatConfig?.use_tools,
-      thinking: chatConfig?.thinking,
+      thinking: thinkingConfig.forceEnabled || chatConfig?.thinking || false,
       reasoningEffort: chatConfig?.reasoning_effort,
       webSearchEnabled: chatConfig?.web_search_enabled,
     },
@@ -435,15 +435,16 @@ export function UpdateChatConfigActionBarBase({
         topP: chatConfig.top_p,
         topK: chatConfig.top_k,
         useTools: chatConfig.use_tools,
-        thinking: chatConfig.thinking,
+        thinking: thinkingConfig.forceEnabled || chatConfig.thinking || false,
         reasoningEffort: chatConfig.reasoning_effort,
         webSearchEnabled: chatConfig.web_search_enabled,
       });
     }
-  }, [chatConfig, form]);
+  }, [chatConfig, form, thinkingConfig.forceEnabled]);
 
   const onSubmit = async (data: ChatConfigFormSchemaType) => {
     if (!inboxId) return;
+    const thinking = thinkingConfig.forceEnabled || data.thinking;
     await updateChatConfig({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
@@ -455,8 +456,8 @@ export function UpdateChatConfigActionBarBase({
         top_p: data.topP,
         top_k: data.topK,
         use_tools: data.useTools,
-        thinking: data.thinking,
-        reasoning_effort: data.thinking
+        thinking,
+        reasoning_effort: thinking
           ? normalizeReasoningEffort(thinkingConfig, data.reasoningEffort)
           : undefined,
         web_search_enabled: data.webSearchEnabled,
@@ -477,7 +478,8 @@ export function UpdateChatConfigActionBarBase({
               topP: chatConfig?.top_p,
               topK: chatConfig?.top_k,
               useTools: chatConfig?.use_tools,
-              thinking: chatConfig?.thinking,
+              thinking:
+                thinkingConfig.forceEnabled || chatConfig?.thinking || false,
               reasoningEffort: chatConfig?.reasoning_effort,
               webSearchEnabled: chatConfig?.web_search_enabled,
             });
