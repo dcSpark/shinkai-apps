@@ -89,7 +89,112 @@ function convertModebar(value: unknown): unknown {
   return modebar;
 }
 
-function convertTrace(value: unknown): unknown {
+// Plotly 4 links splom dimensions and synchronizes overlay ticks by default.
+// https://plotly.com/javascript/guides/migrating-to-v4/
+function dimensionWithIndependentAxes(
+  value: unknown,
+  inherited?: unknown,
+): unknown {
+  if (!isObject(value)) return value;
+  const axis = isObject(value.axis) ? value.axis : {};
+  const inheritedAxis =
+    isObject(inherited) && isObject(inherited.axis) ? inherited.axis : {};
+  if (axis.matches != null) return value;
+  return {
+    ...value,
+    axis: { ...axis, matches: inheritedAxis.matches ?? false },
+  };
+}
+
+function axisSettings(layout: unknown, key: string): JsonObject {
+  if (!isObject(layout)) return {};
+  const template =
+    isObject(layout.template) && isObject(layout.template.layout)
+      ? layout.template.layout[key]
+      : undefined;
+  return {
+    ...(isObject(template) ? template : {}),
+    ...(isObject(layout[key]) ? layout[key] : {}),
+  };
+}
+
+function axisLayout(inherited: unknown, value: JsonObject): JsonObject {
+  const layout = { ...(isObject(inherited) ? inherited : {}), ...value };
+  const keys = new Set([
+    ...Object.keys(isObject(inherited) ? inherited : {}),
+    ...Object.keys(value),
+  ]);
+  for (const key of keys) {
+    if (/^[xy]axis\d*$/.test(key))
+      layout[key] = {
+        ...axisSettings(inherited, key),
+        ...axisSettings(value, key),
+      };
+  }
+  return layout;
+}
+
+function needsIndependentTicks(axis: JsonObject): boolean {
+  return (
+    typeof axis.overlaying === 'string' &&
+    /^[xy]\d*$/.test(axis.overlaying) &&
+    axis.tickmode == null &&
+    !axis.dtick &&
+    axis.tickvals == null
+  );
+}
+
+function preserveOverlayTicks(
+  value: JsonObject,
+  inherited?: unknown,
+): JsonObject {
+  const layout = { ...value };
+  for (const [key, axis] of Object.entries(value)) {
+    if (!/^[xy]axis\d*$/.test(key) || !isObject(axis)) continue;
+    if (
+      needsIndependentTicks({
+        ...axisSettings(inherited, key),
+        ...axisSettings(value, key),
+      })
+    )
+      layout[key] = { ...axis, tickmode: 'auto' };
+  }
+  return layout;
+}
+
+function preserveOverlayUpdate(
+  value: JsonObject,
+  layout?: unknown,
+): JsonObject {
+  const update = { ...value };
+  for (const [key, item] of Object.entries(value)) {
+    if (/^[xy]axis\d*$/.test(key) && isObject(item)) {
+      const template =
+        isObject(layout) && isObject(layout.template)
+          ? layout.template.layout
+          : undefined;
+      if (needsIndependentTicks({ ...axisSettings(template, key), ...item }))
+        update[key] = { ...item, tickmode: 'auto' };
+    } else if (
+      /^[xy]axis\d*\.(overlaying|tickmode|dtick|tickvals)$/.test(key)
+    ) {
+      const axisKey = key.split('.')[0];
+      const axis = axisSettings(layout, axisKey);
+      for (const property of ['overlaying', 'tickmode', 'dtick', 'tickvals']) {
+        if (hasOwn(value, `${axisKey}.${property}`))
+          axis[property] = value[`${axisKey}.${property}`];
+      }
+      if (needsIndependentTicks(axis)) update[`${axisKey}.tickmode`] = 'auto';
+    }
+  }
+  return update;
+}
+
+function convertTrace(
+  value: unknown,
+  typeHint?: string,
+  inherited?: unknown,
+): unknown {
   if (!isObject(value)) return value;
   const trace = normalizePlotlyColors(value, false) as JsonObject;
   if (typeof trace.type === 'string') {
@@ -98,10 +203,29 @@ function convertTrace(value: unknown): unknown {
   if (typeof trace.subplot === 'string') {
     trace.subplot = trace.subplot.replace(/^mapbox(\d*)$/, 'map$1');
   }
+  if ((trace.type ?? typeHint) === 'splom') {
+    const dimensions =
+      isObject(inherited) && Array.isArray(inherited.dimensions)
+        ? inherited.dimensions
+        : [];
+    const input = Array.isArray(trace.dimensions)
+      ? trace.dimensions
+      : trace.type === 'splom'
+        ? dimensions
+        : undefined;
+    if (input?.length)
+      trace.dimensions = input.map((dimension, index) =>
+        dimensionWithIndependentAxes(dimension, dimensions[index]),
+      );
+  }
   return trace;
 }
 
-function convertAction(value: unknown): unknown {
+function convertAction(
+  value: unknown,
+  layoutContext?: unknown,
+  traces: unknown[] = [],
+): unknown {
   if (!isObject(value)) return value;
   const method = value.method;
   if (method !== 'relayout' && method !== 'restyle' && method !== 'update')
@@ -121,9 +245,97 @@ function convertAction(value: unknown): unknown {
       key,
     );
   };
-  const convertUpdate = (update: unknown, layout: boolean): unknown => {
+  const splomUpdate = (update: JsonObject, targets: unknown[]): JsonObject => {
+    const converted = { ...update };
+    const at = (item: unknown, index: number) =>
+      Array.isArray(item) ? item[index % item.length] : item;
+    const isSplom = (index: number) => {
+      const trace = targets[index % targets.length];
+      return (
+        (hasOwn(update, 'type')
+          ? at(update.type, index)
+          : isObject(trace)
+            ? trace.type
+            : undefined) === 'splom'
+      );
+    };
+    const templateDimensions = (index: number): unknown[] => {
+      const template =
+        isObject(layoutContext) && isObject(layoutContext.template)
+          ? layoutContext.template.data
+          : undefined;
+      const defaults =
+        isObject(template) && Array.isArray(template.splom)
+          ? template.splom
+          : [];
+      const target = targets[index % targets.length];
+      const position = traces.indexOf(target);
+      const ordinal = traces
+        .slice(0, Math.max(position, 0))
+        .filter((trace) => isObject(trace) && trace.type === 'splom').length;
+      const trace = defaults[ordinal % defaults.length];
+      return isObject(trace) && Array.isArray(trace.dimensions)
+        ? trace.dimensions
+        : [];
+    };
+    const dimensions = (item: unknown, index: number) =>
+      Array.isArray(item)
+        ? item.map((dimension, dimensionIndex) =>
+            dimensionWithIndependentAxes(
+              dimension,
+              templateDimensions(index)[dimensionIndex],
+            ),
+          )
+        : item;
+    for (const [key, item] of Object.entries(update)) {
+      if (!/^dimensions(?:\[\d+\](?:\.axis)?)?$/.test(key)) continue;
+      const convert = (value: unknown, index: number) => {
+        if (!isSplom(index)) return value;
+        if (key === 'dimensions') return dimensions(value, index);
+        const dimensionIndex = Number(key.match(/\[(\d+)\]/)?.[1]);
+        const inherited = templateDimensions(index)[dimensionIndex];
+        if (key.endsWith('.axis')) {
+          return isObject(value) && value.matches == null
+            ? {
+                ...value,
+                matches:
+                  isObject(inherited) && isObject(inherited.axis)
+                    ? (inherited.axis.matches ?? false)
+                    : false,
+              }
+            : value;
+        }
+        return dimensionWithIndependentAxes(value, inherited);
+      };
+      converted[key] = Array.isArray(item)
+        ? item.map(convert)
+        : convert(item, 0);
+    }
+    if (
+      hasOwn(update, 'type') &&
+      !hasOwn(update, 'dimensions') &&
+      targets.some(
+        (trace, index) =>
+          isSplom(index) && isObject(trace) && Array.isArray(trace.dimensions),
+      )
+    ) {
+      converted.dimensions = targets.map((trace, index) =>
+        isObject(trace) && isSplom(index)
+          ? dimensions(trace.dimensions, index)
+          : isObject(trace)
+            ? trace.dimensions
+            : undefined,
+      );
+    }
+    return converted;
+  };
+  const convertUpdate = (
+    update: unknown,
+    layout: boolean,
+    targets: unknown[] = [],
+  ): unknown => {
     if (!isObject(update)) return update;
-    return Object.fromEntries(
+    const converted = Object.fromEntries(
       Object.entries(update).flatMap(([key, item]) => {
         if (layout && /^mapbox\d*\.accesstoken$/.test(key)) return [];
         let converted = item;
@@ -149,9 +361,24 @@ function convertAction(value: unknown): unknown {
         ];
       }),
     );
+    return layout
+      ? preserveOverlayUpdate(converted, layoutContext)
+      : splomUpdate(converted, targets);
   };
   const convertArgs = (args: unknown): unknown => {
     if (!Array.isArray(args)) return args;
+    const stringForm = typeof args[0] === 'string' && method === 'restyle';
+    const indices = args[method === 'update' || stringForm ? 2 : 1];
+    const targets =
+      indices === undefined
+        ? traces
+        : (Array.isArray(indices) ? indices : [indices]).flatMap((index) =>
+            typeof index === 'number' &&
+            Number.isInteger(index) &&
+            traces.at(index) !== undefined
+              ? [traces.at(index)]
+              : [],
+          );
     if (
       typeof args[0] === 'string' &&
       (method === 'relayout' || method === 'restyle')
@@ -163,15 +390,23 @@ function convertAction(value: unknown): unknown {
         if (!hasOwn(update, layoutKey(key))) return [update];
         const converted = [...args];
         converted[0] = layoutKey(key);
+        if (Object.keys(update).length > 1) return [update, ...args.slice(2)];
         if (args.length > 1) converted[1] = update[layoutKey(key)];
         return converted;
       }
-      return [key, traceValue(key, args[1]), ...args.slice(2)];
+      const update = convertUpdate(
+        { [key]: args[1] },
+        false,
+        targets,
+      ) as JsonObject;
+      return Object.keys(update).length > 1
+        ? [update, ...args.slice(2)]
+        : [key, update[key], ...args.slice(2)];
     }
     return args.map((arg, index) => {
       if (method === 'relayout' && index === 0) return convertUpdate(arg, true);
       if ((method === 'restyle' || method === 'update') && index === 0)
-        return convertUpdate(arg, false);
+        return convertUpdate(arg, false, targets);
       if (method === 'update' && index === 1) return convertUpdate(arg, true);
       return arg;
     });
@@ -188,6 +423,8 @@ function convertLayout(
   activeMaps: Set<string>,
   activeTypes: Set<string>,
   isTemplate = false,
+  inheritedLayout?: unknown,
+  traces: unknown[] = [],
 ): unknown {
   if (!isObject(value)) return value;
   const layout = normalizePlotlyColors(value, true) as JsonObject;
@@ -200,7 +437,16 @@ function convertLayout(
     if (Array.isArray(layout[collection])) {
       layout[collection] = (layout[collection] as unknown[]).map((group) =>
         isObject(group) && Array.isArray(group[actions])
-          ? { ...group, [actions]: group[actions].map(convertAction) }
+          ? {
+              ...group,
+              [actions]: group[actions].map((action) =>
+                convertAction(
+                  action,
+                  axisLayout(inheritedLayout, value),
+                  traces,
+                ),
+              ),
+            }
           : group,
       );
     }
@@ -243,7 +489,9 @@ function convertLayout(
         if (mapTraceType(key) === key)
           data.set(
             key,
-            Array.isArray(traces) ? traces.map(convertTrace) : traces,
+            Array.isArray(traces)
+              ? traces.map((trace) => convertTrace(trace, key))
+              : traces,
           );
       }
       for (const [key, traces] of Object.entries(template.data)) {
@@ -252,7 +500,9 @@ function convertLayout(
           continue;
         data.set(
           target,
-          Array.isArray(traces) ? traces.map(convertTrace) : traces,
+          Array.isArray(traces)
+            ? traces.map((trace) => convertTrace(trace, target))
+            : traces,
         );
       }
       template.data = Object.fromEntries(data);
@@ -262,10 +512,12 @@ function convertLayout(
       activeMaps,
       activeTypes,
       true,
+      { template: { data: template.data } },
+      traces,
     );
     layout.template = template;
   }
-  return layout;
+  return preserveOverlayTicks(layout, inheritedLayout);
 }
 
 function preserveGeoBounds(
@@ -317,7 +569,10 @@ function preserveGeoBounds(
   return layout;
 }
 
-function controlMapTraces(figure: JsonObject): JsonObject[] {
+function controlMapTraces(
+  figure: JsonObject,
+  onReachable?: (trace: JsonObject, index: number) => void,
+): JsonObject[] {
   const traces = figure.data as unknown[];
   const states = traces.map((trace) => [isObject(trace) ? trace : {}]);
   const updates = traces.map(() => [] as JsonObject[]);
@@ -399,6 +654,7 @@ function controlMapTraces(figure: JsonObject): JsonObject[] {
       JSON.stringify([trace.type, trace.subplot]);
     const seen = new Set(traceStates.map(identity));
     for (let index = 0; index < traceStates.length; index += 1) {
+      onReachable?.(traceStates[index], traceIndex);
       for (const update of updates[traceIndex]) {
         const trace = { ...traceStates[index], ...update };
         const key = identity(trace);
@@ -459,7 +715,10 @@ export function preparePlotlyFigure(value: unknown): PlotlyFigure {
       );
     }
   }
-  for (const trace of controlMapTraces(value)) {
+  const controlSplomIndices = new Set<number>();
+  for (const trace of controlMapTraces(value, (trace, index) => {
+    if (trace.type === 'splom') controlSplomIndices.add(index);
+  })) {
     const type = typeof trace.type === 'string' ? trace.type : '';
     const subplot = typeof trace.subplot === 'string' ? trace.subplot : '';
     if (hasOwn(legacyMapTypes, type)) {
@@ -492,32 +751,75 @@ export function preparePlotlyFigure(value: unknown): PlotlyFigure {
       );
     }
   }
+  const templateCounts = new Map<string, number>();
+  const data = value.data.map((trace) => {
+    const type =
+      isObject(trace) && typeof trace.type === 'string' ? trace.type : '';
+    const defaults = templateData[type];
+    const index = templateCounts.get(type) ?? 0;
+    templateCounts.set(type, index + 1);
+    return convertTrace(
+      trace,
+      type,
+      Array.isArray(defaults) ? defaults[index % defaults.length] : undefined,
+    );
+  });
+  const controlTraces = data.map((trace, index) =>
+    controlSplomIndices.has(index) && isObject(trace)
+      ? { ...trace, type: 'splom' }
+      : trace,
+  );
   const layout = preserveGeoBounds(
-    convertLayout(value.layout, activeMaps, activeTypes),
+    convertLayout(
+      value.layout,
+      activeMaps,
+      activeTypes,
+      false,
+      undefined,
+      controlTraces,
+    ),
     activeGeos,
     undefined,
     true,
   );
   const figure = {
     ...value,
-    data: value.data.map(convertTrace),
+    data,
     layout,
     frames: Array.isArray(value.frames)
-      ? value.frames.map((frame) =>
-          isObject(frame)
-            ? {
-                ...frame,
-                data: Array.isArray(frame.data)
-                  ? frame.data.map(convertTrace)
-                  : frame.data,
-                layout: preserveGeoBounds(
-                  convertLayout(frame.layout, activeMaps, activeTypes),
-                  activeGeos,
-                  layout,
-                ),
-              }
-            : frame,
-        )
+      ? value.frames.map((frame) => {
+          if (!isObject(frame)) return frame;
+          const frameData = Array.isArray(frame.data)
+            ? frame.data.map((trace, index) => {
+                const target = Array.isArray(frame.traces)
+                  ? frame.traces[index]
+                  : index;
+                const inherited =
+                  typeof target === 'number' ? data[target] : undefined;
+                const type =
+                  isObject(inherited) && typeof inherited.type === 'string'
+                    ? inherited.type
+                    : undefined;
+                return convertTrace(trace, type, inherited);
+              })
+            : frame.data;
+          return {
+            ...frame,
+            data: frameData,
+            layout: preserveGeoBounds(
+              convertLayout(
+                frame.layout,
+                activeMaps,
+                activeTypes,
+                false,
+                layout,
+                controlTraces,
+              ),
+              activeGeos,
+              layout,
+            ),
+          };
+        })
       : value.frames,
   };
   return figure as unknown as PlotlyFigure;

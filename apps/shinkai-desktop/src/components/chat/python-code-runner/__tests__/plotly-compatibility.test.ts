@@ -2,6 +2,423 @@ import { describe, expect, it } from 'vitest';
 
 import { preparePlotlyFigure } from '../plotly-compatibility';
 
+describe('saved Plotly axis defaults', () => {
+  it('keeps overlay ticks independent and preserves explicit tick settings', () => {
+    const input = {
+      data: [],
+      layout: {
+        xaxis2: { overlaying: 'x' },
+        yaxis2: { overlaying: 'y', side: 'right' },
+        yaxis3: { overlaying: 'y', tickmode: 'sync' },
+        yaxis4: { overlaying: 'y', tickmode: 'linear', dtick: 5 },
+        yaxis5: { overlaying: 'y', tickvals: [1, 4, 9] },
+        yaxis6: { overlaying: 'y', dtick: 3 },
+        yaxis7: { overlaying: false },
+        yaxis8: { title: { text: 'Independent' } },
+      },
+    };
+    const original = structuredClone(input);
+    expect(preparePlotlyFigure(input).layout).toEqual({
+      ...input.layout,
+      xaxis2: { overlaying: 'x', tickmode: 'auto' },
+      yaxis2: { overlaying: 'y', side: 'right', tickmode: 'auto' },
+    });
+    expect(input).toEqual(original);
+  });
+
+  it('preserves explicit and inherited overlay tick modes in templates and frames', () => {
+    const input = {
+      data: [],
+      layout: {
+        xaxis2: { overlaying: 'x' },
+        template: {
+          layout: {
+            xaxis2: { tickmode: 'sync' },
+            yaxis2: { overlaying: 'y' },
+          },
+        },
+      },
+      frames: [
+        {
+          name: 'next',
+          layout: {
+            xaxis2: { title: { text: 'New title' } },
+            yaxis3: { overlaying: 'y' },
+          },
+        },
+      ],
+    };
+    const original = structuredClone(input);
+    const output = preparePlotlyFigure(input);
+    expect(output.layout).toEqual({
+      xaxis2: { overlaying: 'x' },
+      template: {
+        layout: {
+          xaxis2: { tickmode: 'sync' },
+          yaxis2: { overlaying: 'y', tickmode: 'auto' },
+        },
+      },
+    });
+    expect(output.frames?.[0].layout).toEqual({
+      xaxis2: { title: { text: 'New title' } },
+      yaxis3: { overlaying: 'y', tickmode: 'auto' },
+    });
+    expect(input).toEqual(original);
+  });
+
+  it('keeps overlay defaults in string, object, and alternate control updates', () => {
+    const input = {
+      data: [],
+      layout: {
+        yaxis3: { tickmode: 'sync' },
+        updatemenus: [
+          {
+            buttons: [
+              {
+                method: 'relayout',
+                args: ['yaxis2.overlaying', 'y'],
+                args2: [{ yaxis2: { overlaying: 'y', tickmode: 'sync' } }],
+              },
+              {
+                method: 'update',
+                args: [{}, { 'xaxis2.overlaying': 'x', 'xaxis2.dtick': 2 }],
+              },
+              { method: 'relayout', args: [{ 'yaxis3.overlaying': 'y' }] },
+            ],
+          },
+        ],
+        sliders: [
+          {
+            steps: [
+              { method: 'relayout', args: [{ yaxis4: { overlaying: 'y' } }] },
+            ],
+          },
+        ],
+      },
+    };
+    const original = structuredClone(input);
+    const output = preparePlotlyFigure(input);
+    expect(output.layout?.updatemenus).toEqual([
+      {
+        buttons: [
+          {
+            method: 'relayout',
+            args: [{ 'yaxis2.overlaying': 'y', 'yaxis2.tickmode': 'auto' }],
+            args2: [{ yaxis2: { overlaying: 'y', tickmode: 'sync' } }],
+          },
+          input.layout.updatemenus[0].buttons[1],
+          input.layout.updatemenus[0].buttons[2],
+        ],
+      },
+    ]);
+    expect(output.layout?.sliders).toEqual([
+      {
+        steps: [
+          {
+            method: 'relayout',
+            args: [{ yaxis4: { overlaying: 'y', tickmode: 'auto' } }],
+          },
+        ],
+      },
+    ]);
+    expect(input).toEqual(original);
+  });
+
+  it('keeps splom dimensions independent without changing axis IDs or explicit matches', () => {
+    const input = {
+      data: [
+        {
+          type: 'splom',
+          xaxes: ['x3', 'x4', 'x5'],
+          yaxes: ['y3', 'y4', 'y5'],
+          dimensions: [
+            { label: 'A', values: [1, 2] },
+            {
+              label: 'B',
+              values: [3, 4],
+              axis: { type: 'log', matches: true },
+            },
+            { label: 'C', values: [5, 6], axis: { matches: false } },
+          ],
+        },
+      ],
+    };
+    const original = structuredClone(input);
+    expect(preparePlotlyFigure(input).data).toEqual([
+      {
+        ...input.data[0],
+        dimensions: [
+          { ...input.data[0].dimensions[0], axis: { matches: false } },
+          input.data[0].dimensions[1],
+          input.data[0].dimensions[2],
+        ],
+      },
+    ]);
+    expect(input).toEqual(original);
+  });
+
+  it('preserves splom template defaults and partial frame updates by trace index', () => {
+    const input = {
+      data: [
+        { type: 'bar' },
+        { type: 'splom', dimensions: [{ values: [1, 2] }, { values: [3, 4] }] },
+      ],
+      layout: {
+        template: {
+          data: { splom: [{ dimensions: [{ axis: { matches: true } }, {}] }] },
+        },
+      },
+      frames: [
+        {
+          name: 'next',
+          traces: [1],
+          data: [
+            { dimensions: [{ axis: { type: 'log' } }, { values: [5, 6] }] },
+          ],
+        },
+      ],
+    };
+    const original = structuredClone(input);
+    const output = preparePlotlyFigure(input);
+    expect(output.data[1]).toEqual({
+      type: 'splom',
+      dimensions: [
+        { values: [1, 2], axis: { matches: true } },
+        { values: [3, 4], axis: { matches: false } },
+      ],
+    });
+    expect(output.layout?.template).toEqual({
+      data: {
+        splom: [
+          {
+            dimensions: [
+              { axis: { matches: true } },
+              { axis: { matches: false } },
+            ],
+          },
+        ],
+      },
+    });
+    expect(output.frames?.[0].data).toEqual([
+      {
+        dimensions: [
+          { axis: { type: 'log', matches: true } },
+          { values: [5, 6], axis: { matches: false } },
+        ],
+      },
+    ]);
+    expect(input).toEqual(original);
+  });
+
+  it('preserves splom defaults in indexed dimension controls and type changes', () => {
+    const input = {
+      data: [
+        { type: 'parcoords', dimensions: [{ values: [1, 2] }] },
+        { type: 'splom', dimensions: [{ values: [3, 4] }] },
+      ],
+      layout: {
+        updatemenus: [
+          {
+            buttons: [
+              { method: 'restyle', args: ['type', 'splom', [0]] },
+              {
+                method: 'restyle',
+                args: [
+                  'dimensions',
+                  [[{ values: [5, 6] }, { axis: { matches: true } }]],
+                  [1],
+                ],
+              },
+              {
+                method: 'update',
+                args: [{ 'dimensions[0].axis': [{ type: 'log' }] }, {}, [1]],
+              },
+              {
+                method: 'restyle',
+                args: [{ dimensions: [[{ values: [7, 8] }]] }, [0]],
+              },
+            ],
+          },
+        ],
+      },
+    };
+    const original = structuredClone(input);
+    const output = preparePlotlyFigure(input);
+    expect(output.data[0]).toEqual(input.data[0]);
+    expect(output.layout?.updatemenus).toEqual([
+      {
+        buttons: [
+          {
+            method: 'restyle',
+            args: [
+              {
+                type: 'splom',
+                dimensions: [[{ values: [1, 2], axis: { matches: false } }]],
+              },
+              [0],
+            ],
+          },
+          {
+            method: 'restyle',
+            args: [
+              'dimensions',
+              [
+                [
+                  { values: [5, 6], axis: { matches: false } },
+                  { axis: { matches: true } },
+                ],
+              ],
+              [1],
+            ],
+          },
+          {
+            method: 'update',
+            args: [
+              { 'dimensions[0].axis': [{ type: 'log', matches: false }] },
+              {},
+              [1],
+            ],
+          },
+          {
+            method: 'restyle',
+            args: [
+              { dimensions: [[{ values: [7, 8], axis: { matches: false } }]] },
+              [0],
+            ],
+          },
+        ],
+      },
+    ]);
+    expect(input).toEqual(original);
+  });
+
+  it('keeps independent axes when a frame changes a trace to splom', () => {
+    const input = {
+      data: [{ type: 'parcoords', dimensions: [{ values: [1, 2] }] }],
+      frames: [{ name: 'matrix', data: [{ type: 'splom' }] }],
+    };
+    const original = structuredClone(input);
+    expect(preparePlotlyFigure(input).frames?.[0].data).toEqual([
+      {
+        type: 'splom',
+        dimensions: [{ values: [1, 2], axis: { matches: false } }],
+      },
+    ]);
+    expect(input).toEqual(original);
+  });
+
+  it.each([
+    { current: false, template: true, expected: true },
+    { current: true, template: false, expected: false },
+    { current: true, template: undefined, expected: false },
+  ])(
+    'uses template matches when a control replaces dimensions: %j',
+    ({ current, template, expected }) => {
+      const input = {
+        data: [
+          {
+            type: 'splom',
+            dimensions: [{ values: [1, 2], axis: { matches: current } }],
+          },
+        ],
+        layout: {
+          template: {
+            data: {
+              splom: [{ dimensions: [{ axis: { matches: template } }] }],
+            },
+          },
+          updatemenus: [
+            {
+              buttons: [
+                {
+                  method: 'restyle',
+                  args: ['dimensions', [[{ values: [3, 4] }]]],
+                  args2: [{ 'dimensions[0].axis': [{ type: 'log' }] }],
+                },
+              ],
+            },
+          ],
+        },
+      };
+      const original = structuredClone(input);
+      const output = preparePlotlyFigure(input);
+      expect(output.layout?.updatemenus).toEqual([
+        {
+          buttons: [
+            {
+              method: 'restyle',
+              args: [
+                'dimensions',
+                [[{ values: [3, 4], axis: { matches: expected } }]],
+              ],
+              args2: [
+                { 'dimensions[0].axis': [{ type: 'log', matches: expected }] },
+              ],
+            },
+          ],
+        },
+      ]);
+      expect(input).toEqual(original);
+    },
+  );
+
+  it('retains indexed splom template defaults in template and frame controls', () => {
+    const control = {
+      method: 'restyle',
+      args: [{ 'dimensions[0]': [{ values: [5, 6] }] }, [1]],
+    };
+    const input = {
+      data: [
+        {
+          type: 'splom',
+          dimensions: [{ values: [1, 2], axis: { matches: false } }],
+        },
+        {
+          type: 'splom',
+          dimensions: [{ values: [3, 4], axis: { matches: false } }],
+        },
+      ],
+      layout: {
+        template: {
+          data: {
+            splom: [
+              { dimensions: [{ axis: { matches: false } }] },
+              { dimensions: [{ axis: { matches: true } }] },
+            ],
+          },
+          layout: { updatemenus: [{ buttons: [control] }] },
+        },
+      },
+      frames: [
+        { name: 'next', layout: { updatemenus: [{ buttons: [control] }] } },
+      ],
+    };
+    const original = structuredClone(input);
+    const output = preparePlotlyFigure(input);
+    const expected = [
+      {
+        buttons: [
+          {
+            method: 'restyle',
+            args: [
+              {
+                'dimensions[0]': [{ values: [5, 6], axis: { matches: true } }],
+              },
+              [1],
+            ],
+          },
+        ],
+      },
+    ];
+    expect(output.frames?.[0].layout?.updatemenus).toEqual(expected);
+    expect(
+      (output.layout?.template as { layout: { updatemenus: unknown } }).layout
+        .updatemenus,
+    ).toEqual(expected);
+    expect(input).toEqual(original);
+  });
+});
+
 describe('saved Python Plotly colors', () => {
   it('converts sector and mesh color arrays without changing numeric entries', () => {
     const output = preparePlotlyFigure({

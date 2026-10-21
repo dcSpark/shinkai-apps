@@ -8,7 +8,11 @@ import { type GetLLMProvidersOutput } from '@shinkai_network/shinkai-node-state/
 import { type GetProviderFromJobOutput } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/types';
 import { type QueryClient } from '@tanstack/react-query';
 
-import { getThinkingConfig, normalizeReasoningEffort } from './thinking-config';
+import {
+  getThinkingConfig,
+  getReasoningEfforts,
+  normalizeReasoningEffort,
+} from './thinking-config';
 
 export const normalizeChatThinking = (
   config: JobConfig,
@@ -21,9 +25,14 @@ export const normalizeChatThinking = (
   return {
     ...config,
     thinking,
-    reasoning_effort: thinking
-      ? normalizeReasoningEffort(thinkingConfig, config.reasoning_effort)
-      : undefined,
+    reasoning_effort:
+      thinking || getReasoningEfforts(thinkingConfig, false).length > 0
+        ? normalizeReasoningEffort(
+            thinkingConfig,
+            config.reasoning_effort,
+            !!thinking,
+          )
+        : undefined,
   };
 };
 

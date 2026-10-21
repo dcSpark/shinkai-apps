@@ -22,12 +22,10 @@ import {
   DEFAULT_CHAT_CONFIG,
   FunctionKeyV2,
 } from '@shinkai_network/shinkai-node-state/v2/constants';
-import { useCreateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/createAgent/useCreateAgent';
 import { useCreateRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/createRecurringTask/useCreateRecurringTask';
 import { useRemoveRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/removeRecurringTask/useRemoveRecurringTask';
 import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
-import { useUpdateAgent } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgent/useUpdateAgent';
 import { useUploadVRFiles } from '@shinkai_network/shinkai-node-state/v2/mutations/uploadVRFiles/useUploadVRFiles';
 import { useGetAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/useGetAgent';
 import { useGetListDirectoryContents } from '@shinkai_network/shinkai-node-state/v2/queries/getDirectoryContents/useGetListDirectoryContents';
@@ -133,6 +131,10 @@ import { merge } from 'ts-deepmerge';
 import { z } from 'zod';
 
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
+import {
+  useCreateAgent,
+  useUpdateAgent,
+} from '../../hooks/use-agent-config-mutations';
 import { useCreateJob } from '../../hooks/use-chat-config-mutations';
 import { useURLQueryParams } from '../../hooks/use-url-query-params';
 import { treeOptions } from '../../lib/constants';
@@ -156,6 +158,7 @@ import {
   useWebSocketTools,
 } from '../chat/websocket-message';
 import ToolDetailsCard from '../tools/components/tool-details-card';
+import { getAgentScheduleConfig } from './agent-schedule-config';
 import { TooConfigOverrideForm } from './tool-config-override-form';
 
 const agentFormSchema = z.object({
@@ -938,22 +941,13 @@ function AgentForm({ mode }: AgentFormProps) {
             description: values.uiDescription || agent.agent_id,
             llmProvider: agent.agent_id,
             cronExpression: desiredCron,
-            chatConfig: {
-              custom_prompt: values.config?.custom_prompt ?? '',
-              temperature: values.config?.temperature,
-              top_p: values.config?.top_p,
-              top_k: values.config?.top_k,
-              use_tools: values.tools.length > 0,
-              thinking: values.config?.thinking ?? DEFAULT_CHAT_CONFIG.thinking,
-              reasoning_effort: normalizeReasoningEffort(
-                thinkingConfig,
-                values.config?.reasoning_effort,
-              ),
-              web_search_enabled:
-                values.config?.web_search_enabled ??
-                DEFAULT_CHAT_CONFIG.web_search_enabled,
-              stream: true,
-            },
+            chatConfig: getAgentScheduleConfig(
+              values.config,
+              llmProviders?.find(
+                (provider) => provider.id === values.llmProviderId,
+              )?.model,
+              values.tools.length > 0,
+            ),
             message: values.aiPrompt || values.uiDescription || 'Scheduled run',
             toolKey: '',
           });
@@ -971,22 +965,13 @@ function AgentForm({ mode }: AgentFormProps) {
             description: values.uiDescription || agent.agent_id,
             llmProvider: agent.agent_id,
             cronExpression: desiredCron,
-            chatConfig: {
-              custom_prompt: values.config?.custom_prompt ?? '',
-              temperature: values.config?.temperature,
-              top_p: values.config?.top_p,
-              top_k: values.config?.top_k,
-              use_tools: values.tools.length > 0,
-              thinking: values.config?.thinking ?? DEFAULT_CHAT_CONFIG.thinking,
-              reasoning_effort: normalizeReasoningEffort(
-                thinkingConfig,
-                values.config?.reasoning_effort,
-              ),
-              web_search_enabled:
-                values.config?.web_search_enabled ??
-                DEFAULT_CHAT_CONFIG.web_search_enabled,
-              stream: true,
-            },
+            chatConfig: getAgentScheduleConfig(
+              values.config,
+              llmProviders?.find(
+                (provider) => provider.id === values.llmProviderId,
+              )?.model,
+              values.tools.length > 0,
+            ),
             message: values.aiPrompt || values.uiDescription || 'Scheduled run',
             toolKey: '',
           });
@@ -1147,23 +1132,13 @@ function AgentForm({ mode }: AgentFormProps) {
               description: values.uiDescription || agent.agent_id,
               llmProvider: agent.agent_id,
               cronExpression: desiredCron,
-              chatConfig: {
-                custom_prompt: values.config?.custom_prompt ?? '',
-                temperature: values.config?.temperature,
-                top_p: values.config?.top_p,
-                top_k: values.config?.top_k,
-                use_tools: values.tools.length > 0,
-                thinking:
-                  values.config?.thinking ?? DEFAULT_CHAT_CONFIG.thinking,
-                reasoning_effort: normalizeReasoningEffort(
-                  thinkingConfig,
-                  values.config?.reasoning_effort,
-                ),
-                web_search_enabled:
-                  values.config?.web_search_enabled ??
-                  DEFAULT_CHAT_CONFIG.web_search_enabled,
-                stream: true,
-              },
+              chatConfig: getAgentScheduleConfig(
+                values.config,
+                llmProviders?.find(
+                  (provider) => provider.id === values.llmProviderId,
+                )?.model,
+                values.tools.length > 0,
+              ),
               message:
                 values.aiPrompt || values.uiDescription || 'Scheduled run',
               toolKey: '',
@@ -1182,23 +1157,13 @@ function AgentForm({ mode }: AgentFormProps) {
               description: values.uiDescription || agent.agent_id,
               llmProvider: agent.agent_id,
               cronExpression: desiredCron,
-              chatConfig: {
-                custom_prompt: values.config?.custom_prompt ?? '',
-                temperature: values.config?.temperature,
-                top_p: values.config?.top_p,
-                top_k: values.config?.top_k,
-                use_tools: values.tools.length > 0,
-                thinking:
-                  values.config?.thinking ?? DEFAULT_CHAT_CONFIG.thinking,
-                reasoning_effort: normalizeReasoningEffort(
-                  thinkingConfig,
-                  values.config?.reasoning_effort,
-                ),
-                web_search_enabled:
-                  values.config?.web_search_enabled ??
-                  DEFAULT_CHAT_CONFIG.web_search_enabled,
-                stream: true,
-              },
+              chatConfig: getAgentScheduleConfig(
+                values.config,
+                llmProviders?.find(
+                  (provider) => provider.id === values.llmProviderId,
+                )?.model,
+                values.tools.length > 0,
+              ),
               message:
                 values.aiPrompt || values.uiDescription || 'Scheduled run',
               toolKey: '',
@@ -1665,58 +1630,62 @@ function AgentForm({ mode }: AgentFormProps) {
                                   )}
                                 />
                               )}
-                              {thinkingConfig.reasoningLevel &&
-                                isThinkingEnabled && (
-                                  <FormField
-                                    control={form.control}
-                                    name="config.reasoning_effort"
-                                    render={({ field }) => (
-                                      <FormItem className="flex w-full flex-col gap-3">
-                                        <div className="flex justify-between gap-3">
-                                          <div className="space-y-1 leading-none">
-                                            <FormLabel className="text-text-default static space-y-1.5 text-sm">
-                                              Reasoning Effort
-                                            </FormLabel>
-                                            <p className="text-text-secondary text-xs">
-                                              Controls how much effort the model
-                                              puts into reasoning
-                                            </p>
-                                          </div>
-                                          <FormControl>
-                                            <Select
-                                              value={
-                                                normalizeReasoningEffort(
-                                                  thinkingConfig,
-                                                  field.value,
-                                                ) ?? ''
-                                              }
-                                              onValueChange={field.onChange}
-                                            >
-                                              <SelectTrigger className="!h-10 w-[120px] py-2 pr-10 [&>svg]:!top-2.5">
-                                                <SelectValue placeholder="Select effort" />
-                                              </SelectTrigger>
-                                              <SelectContent>
-                                                {getReasoningEfforts(
-                                                  thinkingConfig,
-                                                ).map((effort) => (
-                                                  <SelectItem
-                                                    key={effort}
-                                                    value={effort}
-                                                  >
-                                                    {effort
-                                                      .charAt(0)
-                                                      .toUpperCase() +
-                                                      effort.slice(1)}
-                                                  </SelectItem>
-                                                ))}
-                                              </SelectContent>
-                                            </Select>
-                                          </FormControl>
+                              {getReasoningEfforts(
+                                thinkingConfig,
+                                !!isThinkingEnabled,
+                              ).length > 0 && (
+                                <FormField
+                                  control={form.control}
+                                  name="config.reasoning_effort"
+                                  render={({ field }) => (
+                                    <FormItem className="flex w-full flex-col gap-3">
+                                      <div className="flex justify-between gap-3">
+                                        <div className="space-y-1 leading-none">
+                                          <FormLabel className="text-text-default static space-y-1.5 text-sm">
+                                            Reasoning Effort
+                                          </FormLabel>
+                                          <p className="text-text-secondary text-xs">
+                                            Controls how much effort the model
+                                            puts into reasoning
+                                          </p>
                                         </div>
-                                      </FormItem>
-                                    )}
-                                  />
-                                )}
+                                        <FormControl>
+                                          <Select
+                                            value={
+                                              normalizeReasoningEffort(
+                                                thinkingConfig,
+                                                field.value,
+                                                !!isThinkingEnabled,
+                                              ) ?? ''
+                                            }
+                                            onValueChange={field.onChange}
+                                          >
+                                            <SelectTrigger className="!h-10 w-[120px] py-2 pr-10 [&>svg]:!top-2.5">
+                                              <SelectValue placeholder="Select effort" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                              {getReasoningEfforts(
+                                                thinkingConfig,
+                                                !!isThinkingEnabled,
+                                              ).map((effort) => (
+                                                <SelectItem
+                                                  key={effort}
+                                                  value={effort}
+                                                >
+                                                  {effort
+                                                    .charAt(0)
+                                                    .toUpperCase() +
+                                                    effort.slice(1)}
+                                                </SelectItem>
+                                              ))}
+                                            </SelectContent>
+                                          </Select>
+                                        </FormControl>
+                                      </div>
+                                    </FormItem>
+                                  )}
+                                />
+                              )}
                               {!shouldDisableSliders && (
                                 <FormField
                                   control={form.control}

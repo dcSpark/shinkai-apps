@@ -9,6 +9,7 @@ export interface ThinkingConfig {
   forceEnabled: boolean;
   reasoningLevel: boolean;
   reasoningEfforts?: readonly ReasoningEffort[];
+  reasoningEffortsWhenDisabled?: readonly ReasoningEffort[];
   defaultReasoningEffort?: ReasoningEffort;
   reasoningEffortAliases?: Partial<Record<ReasoningEffort, ReasoningEffort>>;
 }
@@ -44,7 +45,7 @@ export const getThinkingConfig = (
     };
   }
 
-  const config =
+  const config: Omit<ThinkingConfig, 'supportsThinking'> =
     MODELS_WITH_THINKING_SUPPORT[
       supportedModel as keyof typeof MODELS_WITH_THINKING_SUPPORT
     ];
@@ -54,6 +55,9 @@ export const getThinkingConfig = (
     reasoningLevel: config.reasoningLevel,
     ...('reasoningEfforts' in config
       ? { reasoningEfforts: config.reasoningEfforts }
+      : {}),
+    ...('reasoningEffortsWhenDisabled' in config
+      ? { reasoningEffortsWhenDisabled: config.reasoningEffortsWhenDisabled }
       : {}),
     ...('reasoningEffortAliases' in config
       ? { reasoningEffortAliases: config.reasoningEffortAliases }
@@ -66,23 +70,29 @@ export const getThinkingConfig = (
 
 export const getReasoningEfforts = (
   config?: ThinkingConfig,
+  thinkingEnabled = true,
 ): readonly ReasoningEffort[] =>
   config?.reasoningLevel
-    ? (config.reasoningEfforts ?? ['low', 'medium', 'high'])
+    ? thinkingEnabled
+      ? (config.reasoningEfforts ?? ['low', 'medium', 'high'])
+      : (config.reasoningEffortsWhenDisabled ?? [])
     : [];
 
 export const normalizeReasoningEffort = (
   config: ThinkingConfig | undefined,
   effort: ReasoningEffort | undefined,
+  thinkingEnabled = true,
 ): ReasoningEffort | undefined => {
   if (!config?.supportsThinking) return effort;
-  const allowed = getReasoningEfforts(config);
+  const allowed = getReasoningEfforts(config, thinkingEnabled);
   const normalized = effort
     ? (config?.reasoningEffortAliases?.[effort] ?? effort)
     : undefined;
   const defaultEffort =
-    config.defaultReasoningEffort ??
-    (allowed.includes('medium') ? 'medium' : allowed[0]);
+    (config.defaultReasoningEffort &&
+    allowed.includes(config.defaultReasoningEffort)
+      ? config.defaultReasoningEffort
+      : undefined) ?? (allowed.includes('medium') ? 'medium' : allowed[0]);
   return normalized && allowed.includes(normalized)
     ? normalized
     : defaultEffort;

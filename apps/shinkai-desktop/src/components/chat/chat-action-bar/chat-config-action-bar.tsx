@@ -309,7 +309,7 @@ function ChatConfigForm({ form, thinkingConfig }: ChatConfigFormProps) {
           </FormItem>
         )}
       />
-      {thinkingConfig?.reasoningLevel && isThinkingEnabled && (
+      {getReasoningEfforts(thinkingConfig, !!isThinkingEnabled).length > 0 && (
         <FormField
           control={form.control}
           name="reasoningEffort"
@@ -321,7 +321,11 @@ function ChatConfigForm({ form, thinkingConfig }: ChatConfigFormProps) {
               <FormControl>
                 <Select
                   value={
-                    normalizeReasoningEffort(thinkingConfig, field.value) ?? ''
+                    normalizeReasoningEffort(
+                      thinkingConfig,
+                      field.value,
+                      !!isThinkingEnabled,
+                    ) ?? ''
                   }
                   onValueChange={field.onChange}
                 >
@@ -329,7 +333,10 @@ function ChatConfigForm({ form, thinkingConfig }: ChatConfigFormProps) {
                     <SelectValue placeholder="Select reasoning effort" />
                   </SelectTrigger>
                   <SelectContent>
-                    {getReasoningEfforts(thinkingConfig).map((effort) => (
+                    {getReasoningEfforts(
+                      thinkingConfig,
+                      !!isThinkingEnabled,
+                    ).map((effort) => (
                       <SelectItem key={effort} value={effort}>
                         {effort.charAt(0).toUpperCase() + effort.slice(1)}
                       </SelectItem>
@@ -457,9 +464,14 @@ export function UpdateChatConfigActionBarBase({
         top_k: data.topK,
         use_tools: data.useTools,
         thinking,
-        reasoning_effort: thinking
-          ? normalizeReasoningEffort(thinkingConfig, data.reasoningEffort)
-          : undefined,
+        reasoning_effort:
+          thinking || getReasoningEfforts(thinkingConfig, false).length > 0
+            ? normalizeReasoningEffort(
+                thinkingConfig,
+                data.reasoningEffort,
+                thinking,
+              )
+            : undefined,
         web_search_enabled: data.webSearchEnabled,
       },
     });

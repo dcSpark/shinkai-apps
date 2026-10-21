@@ -88,6 +88,10 @@ export const MODELS_WITH_THINKING_SUPPORT = {
       `claude:${model}`,
       {
         forceEnabled: model !== 'claude-haiku-5-5',
+        reasoningEffortsWhenDisabled:
+          model === 'claude-haiku-5-5'
+            ? (['low', 'medium', 'high'] as const)
+            : undefined,
         reasoningLevel: true,
         reasoningEfforts: ['low', 'medium', 'high', 'xhigh', 'max'] as const,
         defaultReasoningEffort:

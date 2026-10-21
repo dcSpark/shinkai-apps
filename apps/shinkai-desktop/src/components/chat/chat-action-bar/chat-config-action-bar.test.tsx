@@ -117,6 +117,29 @@ describe('saved chat config form submission', () => {
     },
   );
 
+  it.each(['low', 'medium', 'high', 'xhigh', 'max'] as const)(
+    'submits Haiku off effort %s using its valid off-state contract',
+    async (effort) => {
+      state.model = 'claude:claude-haiku-5-5';
+      state.thinking = false;
+      render(<UpdateChatConfigActionBarBase inboxId="job_inbox::job::false" />);
+      fireEvent.click(screen.getAllByRole('button')[0]);
+      await screen.findByText('Reasoning Effort');
+      const form = state.form as UseFormReturn<ChatConfigFormSchemaType>;
+      act(() => {
+        form.setValue('thinking', false);
+        form.setValue('reasoningEffort', effort);
+      });
+      fireEvent.submit(document.querySelector('form')!);
+      await waitFor(() => expect(state.update).toHaveBeenCalledOnce());
+      expect(state.update.mock.calls[0][0].jobConfig).toMatchObject({
+        thinking: false,
+        reasoning_effort:
+          effort === 'xhigh' || effort === 'max' ? 'medium' : effort,
+      });
+    },
+  );
+
   it('omits effort when an optional model is off', async () => {
     state.model = 'openai:gpt-6-luna';
     state.thinking = false;
