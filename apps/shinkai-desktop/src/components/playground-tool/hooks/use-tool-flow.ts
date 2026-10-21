@@ -31,6 +31,7 @@ import {
   parseJsonFromCodeBlock,
   validateCodeSnippet,
 } from '../utils/code';
+import { createToolCodeWithModelConfig } from './tool-code-request';
 import { type CreateToolCodeFormSchema } from './use-tool-code';
 import { useToolSave } from './use-tool-save';
 
@@ -288,6 +289,7 @@ export const useToolFlow = ({
 
   const { mutateAsync: createToolCode, isPending: isCreatingToolCode } =
     useCreateToolCode({
+      mutationFn: createToolCodeWithModelConfig,
       onSuccess: (data) => {
         setChatInboxId(data.inbox);
         setToolCode('');

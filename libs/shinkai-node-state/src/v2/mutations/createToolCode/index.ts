@@ -16,6 +16,7 @@ export const createToolCode = async ({
   tools,
   language,
   thinking,
+  thinkingConfig,
 }: CreateToolCodeInput) => {
   let currentJobId = jobId;
   if (!currentJobId) {
@@ -41,8 +42,10 @@ export const createToolCode = async ({
         top_p: DEFAULT_CHAT_CONFIG.top_p,
         temperature: DEFAULT_CHAT_CONFIG.temperature,
         use_tools: DEFAULT_CHAT_CONFIG.use_tools,
-        thinking: thinking ?? DEFAULT_CHAT_CONFIG.thinking,
-        reasoning_effort: DEFAULT_CHAT_CONFIG.reasoning_effort,
+        ...(thinkingConfig ?? {
+          thinking: thinking ?? DEFAULT_CHAT_CONFIG.thinking,
+          reasoning_effort: DEFAULT_CHAT_CONFIG.reasoning_effort,
+        }),
         web_search_enabled: false, // disable web search for tool builder
       },
     });

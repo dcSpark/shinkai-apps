@@ -253,6 +253,7 @@ export type GetFileNamesRequest = {
 export type GetFileNamesResponse = string[];
 
 export const REASONING_EFFORTS = [
+  'minimal',
   'low',
   'medium',
   'high',

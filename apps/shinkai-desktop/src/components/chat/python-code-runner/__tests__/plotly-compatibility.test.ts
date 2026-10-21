@@ -2,6 +2,288 @@ import { describe, expect, it } from 'vitest';
 
 import { preparePlotlyFigure } from '../plotly-compatibility';
 
+describe('saved Python Plotly colors', () => {
+  it('converts sector and mesh color arrays without changing numeric entries', () => {
+    const output = preparePlotlyFigure({
+      data: [
+        { type: 'pie', marker: { colors: ['F00', 'hsv(120, 100%, 100%)'] } },
+        {
+          type: 'mesh3d',
+          facecolor: ['fff'],
+          vertexcolor: ['abc', [255, 0, 0, 0.5]],
+        },
+        { type: 'treemap', marker: { colors: [1, 2, 3] } },
+      ],
+    });
+    expect(output.data).toEqual([
+      { type: 'pie', marker: { colors: ['#F00', 'rgb(0, 255, 0)'] } },
+      {
+        type: 'mesh3d',
+        facecolor: ['#fff'],
+        vertexcolor: ['#abc', [255, 0, 0, 0.5]],
+      },
+      { type: 'treemap', marker: { colors: [1, 2, 3] } },
+    ]);
+  });
+
+  it.each([
+    ['hsv(120, 100%, 100%)', 'rgb(0, 255, 0)'],
+    ['hsv(240, 100, 100)', 'rgb(0, 0, 255)'],
+    ['hsv(0, 1.0, 1.0)', 'rgb(255, 0, 0)'],
+    ['hsva(60, 100%, 100%, 0.25)', 'rgba(255, 255, 0, 0.25)'],
+    ['F00', '#F00'],
+    ['abcd', '#abcd'],
+    ['12aBcD', '#12aBcD'],
+    ['12345678', '#12345678'],
+    ['rgb(0.5, 0.25, 0.75)', 'rgb(128, 64, 191)'],
+    ['rgba(0.5, 0.25, 0.75, 0.4)', 'rgba(128, 64, 191, 0.4)'],
+    ['rgb(0.5, 1, 0)', 'rgb(0.5, 1, 0)'],
+    ['rgb(255, 0, 0)', 'rgb(255, 0, 0)'],
+    ['rgb(50%, 25%, 75%)', 'rgb(50%, 25%, 75%)'],
+    ['hsl(120, 100%, 50%)', 'hsl(120, 100%, 50%)'],
+    ['rebeccapurple', 'rebeccapurple'],
+    ['not-a-color', 'not-a-color'],
+  ])('preserves the old rendering of %s', (color, expected) => {
+    const output = preparePlotlyFigure({
+      data: [{ type: 'bar', marker: { color } }],
+    });
+    expect(output.data[0]).toEqual({
+      type: 'bar',
+      marker: { color: expected },
+    });
+  });
+
+  it('changes only schema color fields and preserves numeric data and user content', () => {
+    const input = {
+      data: [
+        {
+          type: 'scatter',
+          x: ['fff', 'hsv(120, 100%, 100%)'],
+          y: [1, 2],
+          name: 'F00',
+          text: ['rgb(0.5, 0.5, 0.5)'],
+          customdata: [{ marker: { color: 'F00' }, color: 'fff' }],
+          meta: { font: { color: 'F00' } },
+          marker: {
+            color: [1, 2, 3],
+            line: { color: ['F00', 'rgb(0.5, 0.5, 0.5)'] },
+            colorscale: [
+              [0, '000'],
+              [1, 'hsv(120, 100%, 100%)'],
+            ],
+          },
+        },
+      ],
+      layout: {
+        title: { text: 'fff', font: { color: 'F00' } },
+        colorway: ['F00', 'hsv(120, 100%, 100%)'],
+        colorscale: {
+          sequential: [
+            [0, '000'],
+            [1, 'fff'],
+          ],
+        },
+        xaxis2: { gridcolor: 'abc' },
+        annotations: [{ text: 'F00', font: { color: 'abc' } }],
+        meta: { color: 'fff' },
+      },
+    };
+    const original = structuredClone(input);
+    const output = preparePlotlyFigure(input);
+    expect(output.data[0]).toEqual({
+      ...input.data[0],
+      marker: {
+        color: [1, 2, 3],
+        line: { color: ['#F00', 'rgb(128, 128, 128)'] },
+        colorscale: [
+          [0, '#000'],
+          [1, 'rgb(0, 255, 0)'],
+        ],
+      },
+    });
+    expect(output.layout).toEqual({
+      ...input.layout,
+      title: { text: 'fff', font: { color: '#F00' } },
+      colorway: ['#F00', 'rgb(0, 255, 0)'],
+      colorscale: {
+        sequential: [
+          [0, '#000'],
+          [1, '#fff'],
+        ],
+      },
+      xaxis2: { gridcolor: '#abc' },
+      annotations: [{ text: 'F00', font: { color: '#abc' } }],
+    });
+    expect(input).toEqual(original);
+  });
+
+  it('converts colors in templates, frames, and controls while preserving their labels', () => {
+    const input = {
+      data: [{ type: 'scatter', marker: { color: 'fff' } }],
+      layout: {
+        template: {
+          data: { scatter: [{ marker: { color: 'F00' } }] },
+          layout: { font: { color: 'fff' } },
+        },
+        updatemenus: [
+          {
+            buttons: [
+              {
+                label: 'F00',
+                method: 'restyle',
+                args: ['marker.color', ['F00']],
+                args2: [{ 'marker.color': [['fff', '000']] }],
+              },
+              {
+                method: 'update',
+                args: [
+                  { line: { color: 'abc' } },
+                  { 'title.font.color': 'abc' },
+                ],
+              },
+            ],
+          },
+        ],
+        sliders: [
+          {
+            steps: [
+              {
+                method: 'relayout',
+                args: ['annotations[0].font.color', 'F00'],
+              },
+            ],
+          },
+        ],
+      },
+      frames: [
+        {
+          name: 'fff',
+          data: [{ marker: { color: ['F00'] } }],
+          layout: { paper_bgcolor: 'fff' },
+        },
+      ],
+    };
+    const original = structuredClone(input);
+    const output = preparePlotlyFigure(input);
+    expect(output.layout).toEqual({
+      template: {
+        data: { scatter: [{ marker: { color: '#F00' } }] },
+        layout: { font: { color: '#fff' } },
+      },
+      updatemenus: [
+        {
+          buttons: [
+            {
+              label: 'F00',
+              method: 'restyle',
+              args: ['marker.color', ['#F00']],
+              args2: [{ 'marker.color': [['#fff', '#000']] }],
+            },
+            {
+              method: 'update',
+              args: [
+                { line: { color: '#abc' } },
+                { 'title.font.color': '#abc' },
+              ],
+            },
+          ],
+        },
+      ],
+      sliders: [
+        {
+          steps: [
+            { method: 'relayout', args: ['annotations[0].font.color', '#F00'] },
+          ],
+        },
+      ],
+    });
+    expect(output.frames).toEqual([
+      {
+        name: 'fff',
+        data: [{ marker: { color: ['#F00'] } }],
+        layout: { paper_bgcolor: '#fff' },
+      },
+    ]);
+    expect(input).toEqual(original);
+  });
+});
+
+describe('saved Python Plotly geographic bounds', () => {
+  it('keeps the world view for implicit and numbered geographic subplots', () => {
+    const input = {
+      data: [
+        { type: 'scattergeo', lat: [40], lon: [-74] },
+        { type: 'choropleth', geo: 'geo2', locations: ['USA'], z: [1] },
+      ],
+    };
+    const original = structuredClone(input);
+    expect(preparePlotlyFigure(input).layout).toEqual({
+      geo: { fitbounds: false },
+      geo2: { fitbounds: false },
+    });
+    expect(input).toEqual(original);
+  });
+
+  it('keeps explicit bounds and view settings in layouts and frames', () => {
+    const input = {
+      data: [{ type: 'scattergeo' }, { type: 'choropleth', geo: 'geo2' }],
+      layout: {
+        geo: { fitbounds: 'locations', center: { lat: 20, lon: 30 } },
+        geo2: { projection: { scale: 2 }, lonaxis: { range: [-90, 0] } },
+      },
+      frames: [
+        {
+          name: 'next',
+          layout: {
+            geo: { center: { lat: 30, lon: 40 } },
+            geo2: { fitbounds: 'geojson' },
+          },
+        },
+      ],
+    };
+    const original = structuredClone(input);
+    const output = preparePlotlyFigure(input);
+    expect(output.layout).toEqual({
+      geo: input.layout.geo,
+      geo2: { ...input.layout.geo2, fitbounds: false },
+    });
+    expect(output.frames?.[0].layout).toEqual(input.frames[0].layout);
+    expect(input).toEqual(original);
+  });
+
+  it('preserves template bounds and frame-only geographic subplots', () => {
+    const input = {
+      data: [{ type: 'scattergeo' }],
+      layout: {
+        geo: {},
+        template: {
+          layout: { geo: { fitbounds: 'locations' }, geo2: { bgcolor: 'fff' } },
+        },
+      },
+      frames: [
+        {
+          name: 'next',
+          data: [{ type: 'choropleth', geo: 'geo2' }],
+          layout: { geo2: { center: { lat: 10 } } },
+        },
+      ],
+    };
+    const original = structuredClone(input);
+    const output = preparePlotlyFigure(input);
+    expect(output.layout).toEqual({
+      geo: {},
+      template: {
+        layout: {
+          geo: { fitbounds: 'locations' },
+          geo2: { bgcolor: '#fff', fitbounds: false },
+        },
+      },
+    });
+    expect(output.frames?.[0].layout).toEqual(input.frames[0].layout);
+    expect(input).toEqual(original);
+  });
+});
+
 describe('saved Python Plotly map figures', () => {
   it('converts legacy map types and numbered maps without changing the input', () => {
     const input = {

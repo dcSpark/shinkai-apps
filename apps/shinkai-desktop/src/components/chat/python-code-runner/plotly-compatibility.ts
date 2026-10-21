@@ -1,5 +1,7 @@
 import { type Data, type Frame, type Layout } from 'plotly.js';
 
+import { normalizePlotlyColors } from './plotly-color-compatibility';
+
 type JsonObject = Record<string, unknown>;
 
 export interface PlotlyFigure {
@@ -89,7 +91,7 @@ function convertModebar(value: unknown): unknown {
 
 function convertTrace(value: unknown): unknown {
   if (!isObject(value)) return value;
-  const trace = { ...value };
+  const trace = normalizePlotlyColors(value, false) as JsonObject;
   if (typeof trace.type === 'string') {
     trace.type = mapTraceType(trace.type);
   }
@@ -113,7 +115,11 @@ function convertAction(value: unknown): unknown {
       if (key === 'subplot') return entry.replace(/^mapbox(\d*)$/, 'map$1');
       return entry;
     };
-    return Array.isArray(value) ? value.map(convert) : convert(value);
+    return normalizePlotlyColors(
+      Array.isArray(value) ? value.map(convert) : convert(value),
+      false,
+      key,
+    );
   };
   const convertUpdate = (update: unknown, layout: boolean): unknown => {
     if (!isObject(update)) return update;
@@ -136,7 +142,9 @@ function convertAction(value: unknown): unknown {
         return [
           [
             layout ? layoutKey(key) : key,
-            layout ? converted : traceValue(key, item),
+            layout
+              ? normalizePlotlyColors(converted, true, layoutKey(key))
+              : traceValue(key, item),
           ],
         ];
       }),
@@ -182,7 +190,7 @@ function convertLayout(
   isTemplate = false,
 ): unknown {
   if (!isObject(value)) return value;
-  const layout = { ...value };
+  const layout = normalizePlotlyColors(value, true) as JsonObject;
   if (hasOwn(layout, 'modebar'))
     layout.modebar = convertModebar(layout.modebar);
   for (const [collection, actions] of [
@@ -210,7 +218,11 @@ function convertLayout(
       );
     }
     if (isObject(map)) {
-      const settings = convertMapSettings(map) as JsonObject;
+      const settings = normalizePlotlyColors(
+        convertMapSettings(map),
+        true,
+        target,
+      ) as JsonObject;
       if (activeMaps.has(key)) assertMapStyleSupported(settings);
       // Plotly 4 fits map bounds by default. Keep the previous initial view.
       layout[target] = {
@@ -228,7 +240,11 @@ function convertLayout(
       const data = new Map<string, unknown>();
       // Modern defaults are retained unless an active legacy trace needs its old defaults.
       for (const [key, traces] of Object.entries(template.data)) {
-        if (mapTraceType(key) === key) data.set(key, traces);
+        if (mapTraceType(key) === key)
+          data.set(
+            key,
+            Array.isArray(traces) ? traces.map(convertTrace) : traces,
+          );
       }
       for (const [key, traces] of Object.entries(template.data)) {
         const target = mapTraceType(key);
@@ -252,7 +268,56 @@ function convertLayout(
   return layout;
 }
 
-/** Keep saved Python Plotly 3 map figures usable with the patched Plotly 4 renderer. */
+function preserveGeoBounds(
+  value: unknown,
+  activeGeos: Set<string>,
+  inheritedLayout?: unknown,
+  addMissing = false,
+): unknown {
+  if (!isObject(value) && !addMissing) return value;
+  if (!isObject(value) && activeGeos.size === 0) return value;
+  const layout: JsonObject = isObject(value) ? { ...value } : {};
+  if (isObject(layout.template)) {
+    layout.template = {
+      ...layout.template,
+      layout: preserveGeoBounds(layout.template.layout, activeGeos),
+    };
+  }
+  const hasBounds = (candidate: unknown, key: string): boolean => {
+    if (!isObject(candidate)) return false;
+    const geo = candidate[key];
+    return isObject(geo) && geo.fitbounds != null;
+  };
+  const templateLayout = isObject(layout.template)
+    ? layout.template.layout
+    : undefined;
+  const inheritedTemplate =
+    isObject(inheritedLayout) && isObject(inheritedLayout.template)
+      ? inheritedLayout.template.layout
+      : undefined;
+  const keys = new Set([
+    ...Object.keys(layout).filter((key) => /^geo\d*$/.test(key)),
+    ...(addMissing ? activeGeos : []),
+  ]);
+  for (const key of keys) {
+    if (
+      hasBounds(layout, key) ||
+      hasBounds(templateLayout, key) ||
+      hasBounds(inheritedLayout, key) ||
+      hasBounds(inheritedTemplate, key)
+    )
+      continue;
+    if (layout[key] !== undefined && !isObject(layout[key])) continue;
+    // Plotly 3 kept the world view; Plotly 4 defaults to fitting locations.
+    layout[key] = {
+      ...(layout[key] as JsonObject | undefined),
+      fitbounds: false,
+    };
+  }
+  return layout;
+}
+
+/** Keep saved Python Plotly 3 figures usable with the patched Plotly 4 renderer. */
 export function preparePlotlyFigure(value: unknown): PlotlyFigure {
   if (!isObject(value) || !Array.isArray(value.data)) {
     throw new Error('This chart does not contain Plotly data.');
@@ -261,6 +326,7 @@ export function preparePlotlyFigure(value: unknown): PlotlyFigure {
   const modernMaps = new Set<string>();
   const activeTypes = new Set<string>();
   const modernTypes = new Set<string>();
+  const activeGeos = new Set<string>();
   const frameTraces = Array.isArray(value.frames)
     ? value.frames.flatMap((frame) =>
         isObject(frame) && Array.isArray(frame.data) ? frame.data : [],
@@ -270,6 +336,17 @@ export function preparePlotlyFigure(value: unknown): PlotlyFigure {
     if (!isObject(trace)) continue;
     const type = typeof trace.type === 'string' ? trace.type : '';
     const subplot = typeof trace.subplot === 'string' ? trace.subplot : '';
+    if (
+      type === 'scattergeo' ||
+      type === 'choropleth' ||
+      typeof trace.geo === 'string'
+    ) {
+      activeGeos.add(
+        typeof trace.geo === 'string' && /^geo\d*$/.test(trace.geo)
+          ? trace.geo
+          : 'geo',
+      );
+    }
     if (hasOwn(legacyMapTypes, type)) {
       activeTypes.add(type);
       activeMaps.add(/^mapbox\d*$/.test(subplot) ? subplot : 'mapbox');
@@ -307,10 +384,16 @@ export function preparePlotlyFigure(value: unknown): PlotlyFigure {
       );
     }
   }
+  const layout = preserveGeoBounds(
+    convertLayout(value.layout, activeMaps, activeTypes),
+    activeGeos,
+    undefined,
+    true,
+  );
   const figure = {
     ...value,
     data: value.data.map(convertTrace),
-    layout: convertLayout(value.layout, activeMaps, activeTypes),
+    layout,
     frames: Array.isArray(value.frames)
       ? value.frames.map((frame) =>
           isObject(frame)
@@ -319,7 +402,11 @@ export function preparePlotlyFigure(value: unknown): PlotlyFigure {
                 data: Array.isArray(frame.data)
                   ? frame.data.map(convertTrace)
                   : frame.data,
-                layout: convertLayout(frame.layout, activeMaps, activeTypes),
+                layout: preserveGeoBounds(
+                  convertLayout(frame.layout, activeMaps, activeTypes),
+                  activeGeos,
+                  layout,
+                ),
               }
             : frame,
         )

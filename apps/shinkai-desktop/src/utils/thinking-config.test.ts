@@ -12,18 +12,59 @@ import {
 } from './thinking-config';
 
 describe('getThinkingConfig', () => {
+  it.each(['gemini:gemini-4-argon', 'gemini:gemini-3.8-flash'])(
+    'keeps mandatory thinking enabled for %s',
+    (model) => {
+      expect(getThinkingConfig(model)).toEqual({
+        supportsThinking: true,
+        forceEnabled: true,
+        reasoningLevel: true,
+      });
+    },
+  );
+
   it.each([
-    'claude:claude-fable-5-1',
-    'claude:claude-opus-5-5',
-    'claude:claude-sonnet-5-5',
-    'gemini:gemini-4-argon',
-    'gemini:gemini-3.8-flash',
-  ])('keeps mandatory thinking enabled for %s', (model) => {
-    expect(getThinkingConfig(model)).toEqual({
-      supportsThinking: true,
-      forceEnabled: true,
-      reasoningLevel: true,
-    });
+    ['claude-fable-5-1', true, 'high'],
+    ['claude-opus-5-5', true, 'medium'],
+    ['claude-sonnet-5-5', true, 'high'],
+    ['claude-haiku-5-5', false, 'medium'],
+  ] as const)(
+    'uses the direct Claude effort contract for %s',
+    (model, forced, defaultEffort) => {
+      const config = getThinkingConfig(`claude:${model}`);
+      expect(config.forceEnabled).toBe(forced);
+      expect(getReasoningEfforts(config)).toEqual([
+        'low',
+        'medium',
+        'high',
+        'xhigh',
+        'max',
+      ]);
+      expect(normalizeReasoningEffort(config, undefined)).toBe(defaultEffort);
+      expect(normalizeReasoningEffort(config, 'xhigh')).toBe('xhigh');
+      expect(normalizeReasoningEffort(config, 'max')).toBe('max');
+    },
+  );
+
+  it('uses Minimal only on the verified Gemini Flash-Lite model', () => {
+    const config = getThinkingConfig('gemini:gemini-3.5-flash-lite');
+    expect(config.forceEnabled).toBe(true);
+    expect(getReasoningEfforts(config)).toEqual([
+      'minimal',
+      'low',
+      'medium',
+      'high',
+    ]);
+    expect(normalizeReasoningEffort(config, undefined)).toBe('minimal');
+    expect(normalizeReasoningEffort(config, 'minimal')).toBe('minimal');
+    for (const model of ['gemini:gemini-3.8-flash', 'gemini:gemini-4-argon']) {
+      expect(getReasoningEfforts(getThinkingConfig(model))).not.toContain(
+        'minimal',
+      );
+      expect(
+        normalizeReasoningEffort(getThinkingConfig(model), 'minimal'),
+      ).toBe('medium');
+    }
   });
 
   it.each(['openai', 'openai-legacy'])(
@@ -49,17 +90,6 @@ describe('getThinkingConfig', () => {
         ]);
         expect(normalizeReasoningEffort(config, 'xhigh')).toBe('xhigh');
       }
-    },
-  );
-
-  it.each(['claude:claude-haiku-5-5'])(
-    'allows optional thinking with effort for %s',
-    (model) => {
-      expect(getThinkingConfig(model)).toEqual({
-        supportsThinking: true,
-        forceEnabled: false,
-        reasoningLevel: true,
-      });
     },
   );
 

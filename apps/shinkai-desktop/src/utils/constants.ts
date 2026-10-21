@@ -77,12 +77,33 @@ export const MODELS_WITH_THINKING_SUPPORT = {
     reasoningEfforts: ['low', 'high', 'max'],
     defaultReasoningEffort: 'high',
   },
-  'claude:claude-fable-5-1': { forceEnabled: true, reasoningLevel: true },
-  'claude:claude-opus-5-5': { forceEnabled: true, reasoningLevel: true },
-  'claude:claude-sonnet-5-5': { forceEnabled: true, reasoningLevel: true },
-  'claude:claude-haiku-5-5': { forceEnabled: false, reasoningLevel: true },
+  // https://platform.claude.com/docs/en/build-with-claude/effort
+  ...Object.fromEntries(
+    [
+      'claude-fable-5-1',
+      'claude-opus-5-5',
+      'claude-sonnet-5-5',
+      'claude-haiku-5-5',
+    ].map((model) => [
+      `claude:${model}`,
+      {
+        forceEnabled: model !== 'claude-haiku-5-5',
+        reasoningLevel: true,
+        reasoningEfforts: ['low', 'medium', 'high', 'xhigh', 'max'] as const,
+        defaultReasoningEffort:
+          model === 'claude-opus-5-5' || model === 'claude-haiku-5-5'
+            ? ('medium' as const)
+            : ('high' as const),
+      },
+    ]),
+  ),
   'gemini:gemini-3.8-flash': { forceEnabled: true, reasoningLevel: true },
-  'gemini:gemini-3.5-flash-lite': { forceEnabled: true, reasoningLevel: true },
+  'gemini:gemini-3.5-flash-lite': {
+    forceEnabled: true,
+    reasoningLevel: true,
+    reasoningEfforts: ['minimal', 'low', 'medium', 'high'],
+    defaultReasoningEffort: 'minimal',
+  },
   'gemini:gemini-4-argon': { forceEnabled: true, reasoningLevel: true },
   // https://api-docs.deepseek.com/api/list-models/
   ...Object.fromEntries(
