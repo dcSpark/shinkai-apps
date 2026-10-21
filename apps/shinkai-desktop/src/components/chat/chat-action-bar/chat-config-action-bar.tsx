@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PopoverClose } from '@radix-ui/react-popover';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { REASONING_EFFORTS } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
-import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
@@ -42,10 +42,13 @@ import { useParams } from 'react-router';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { useUpdateChatConfig } from '../../../hooks/use-chat-config-mutations';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import {
   getThinkingConfig,
+  getReasoningEfforts,
+  normalizeReasoningEffort,
   type ThinkingConfig,
 } from '../../../utils/thinking-config';
 import { ARTIFACTS_SYSTEM_PROMPT } from '../constants';
@@ -55,7 +58,7 @@ export const chatConfigFormSchema = z.object({
   stream: z.boolean(),
   useTools: z.boolean(),
   thinking: z.boolean(),
-  reasoningEffort: z.enum(['low', 'medium', 'high']).optional(),
+  reasoningEffort: z.enum(REASONING_EFFORTS).optional(),
   webSearchEnabled: z.boolean().optional(),
   customPrompt: z.string().optional(),
   temperature: z.number(),
@@ -306,7 +309,7 @@ function ChatConfigForm({ form, thinkingConfig }: ChatConfigFormProps) {
           </FormItem>
         )}
       />
-      {thinkingConfig?.reasoningLevel && isThinkingEnabled && (
+      {getReasoningEfforts(thinkingConfig, !!isThinkingEnabled).length > 0 && (
         <FormField
           control={form.control}
           name="reasoningEffort"
@@ -316,14 +319,28 @@ function ChatConfigForm({ form, thinkingConfig }: ChatConfigFormProps) {
                 Reasoning Effort
               </FormLabel>
               <FormControl>
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select
+                  value={
+                    normalizeReasoningEffort(
+                      thinkingConfig,
+                      field.value,
+                      !!isThinkingEnabled,
+                    ) ?? ''
+                  }
+                  onValueChange={field.onChange}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select reasoning effort" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
+                    {getReasoningEfforts(
+                      thinkingConfig,
+                      !!isThinkingEnabled,
+                    ).map((effort) => (
+                      <SelectItem key={effort} value={effort}>
+                        {effort.charAt(0).toUpperCase() + effort.slice(1)}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -392,7 +409,7 @@ export function UpdateChatConfigActionBarBase({
       topP: chatConfig?.top_p,
       topK: chatConfig?.top_k,
       useTools: chatConfig?.use_tools,
-      thinking: chatConfig?.thinking,
+      thinking: thinkingConfig.forceEnabled || chatConfig?.thinking || false,
       reasoningEffort: chatConfig?.reasoning_effort,
       webSearchEnabled: chatConfig?.web_search_enabled,
     },
@@ -425,15 +442,16 @@ export function UpdateChatConfigActionBarBase({
         topP: chatConfig.top_p,
         topK: chatConfig.top_k,
         useTools: chatConfig.use_tools,
-        thinking: chatConfig.thinking,
+        thinking: thinkingConfig.forceEnabled || chatConfig.thinking || false,
         reasoningEffort: chatConfig.reasoning_effort,
         webSearchEnabled: chatConfig.web_search_enabled,
       });
     }
-  }, [chatConfig, form]);
+  }, [chatConfig, form, thinkingConfig.forceEnabled]);
 
   const onSubmit = async (data: ChatConfigFormSchemaType) => {
     if (!inboxId) return;
+    const thinking = thinkingConfig.forceEnabled || data.thinking;
     await updateChatConfig({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
@@ -445,8 +463,15 @@ export function UpdateChatConfigActionBarBase({
         top_p: data.topP,
         top_k: data.topK,
         use_tools: data.useTools,
-        thinking: data.thinking,
-        reasoning_effort: data.reasoningEffort,
+        thinking,
+        reasoning_effort:
+          thinking || getReasoningEfforts(thinkingConfig, false).length > 0
+            ? normalizeReasoningEffort(
+                thinkingConfig,
+                data.reasoningEffort,
+                thinking,
+              )
+            : undefined,
         web_search_enabled: data.webSearchEnabled,
       },
     });
@@ -465,7 +490,8 @@ export function UpdateChatConfigActionBarBase({
               topP: chatConfig?.top_p,
               topK: chatConfig?.top_k,
               useTools: chatConfig?.use_tools,
-              thinking: chatConfig?.thinking,
+              thinking:
+                thinkingConfig.forceEnabled || chatConfig?.thinking || false,
               reasoningEffort: chatConfig?.reasoning_effort,
               webSearchEnabled: chatConfig?.web_search_enabled,
             });

@@ -127,6 +127,8 @@ Shinkai is built as a modern monorepo using **NX** for orchestration and depende
 
 #### 1. Clone and Setup
 
+Use the Node.js version in `.nvmrc` and npm 10.x. Supported Node.js versions are 22.20+ in the 22.x release line, or 24.12+.
+
 ```bash
 git clone https://github.com/dcSpark/shinkai-apps
 cd shinkai-apps

@@ -252,8 +252,17 @@ export type GetFileNamesRequest = {
 
 export type GetFileNamesResponse = string[];
 
+export const REASONING_EFFORTS = [
+  'minimal',
+  'low',
+  'medium',
+  'high',
+  'xhigh',
+  'max',
+] as const;
+
 export type JobConfig = {
-  custom_prompt: string;
+  custom_prompt?: string;
   custom_system_prompt?: string;
   temperature?: number;
   seed?: number;
@@ -262,7 +271,7 @@ export type JobConfig = {
   stream?: boolean;
   use_tools?: boolean;
   thinking?: boolean;
-  reasoning_effort?: 'low' | 'medium' | 'high';
+  reasoning_effort?: (typeof REASONING_EFFORTS)[number];
   web_search_enabled?: boolean;
   other_model_params?: Record<string, string>;
 };

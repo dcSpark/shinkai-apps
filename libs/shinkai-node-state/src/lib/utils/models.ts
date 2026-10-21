@@ -17,6 +17,22 @@ export const modelsConfig = {
     apiUrl: 'https://api.openai.com',
     modelTypes: [
       {
+        name: 'GPT 6 Astra',
+        value: 'gpt-6-astra',
+      },
+      {
+        name: 'GPT 6.1 Sol',
+        value: 'gpt-6.1-sol',
+      },
+      {
+        name: 'GPT 6 Sol',
+        value: 'gpt-6-sol',
+      },
+      {
+        name: 'GPT 6 Luna',
+        value: 'gpt-6-luna',
+      },
+      {
         name: 'GPT 5.2',
         value: 'gpt-5.2',
       },
@@ -98,6 +114,22 @@ export const modelsConfig = {
     apiUrl: 'https://api.openai.com',
     modelTypes: [
       {
+        name: 'GPT 6 Astra',
+        value: 'gpt-6-astra',
+      },
+      {
+        name: 'GPT 6.1 Sol',
+        value: 'gpt-6.1-sol',
+      },
+      {
+        name: 'GPT 6 Sol',
+        value: 'gpt-6-sol',
+      },
+      {
+        name: 'GPT 6 Luna',
+        value: 'gpt-6-luna',
+      },
+      {
         name: 'GPT 5.2',
         value: 'gpt-5.2',
       },
@@ -176,8 +208,28 @@ export const modelsConfig = {
     ],
   },
   [Models.TogetherComputer]: {
-    apiUrl: 'https://api.together.xyz',
+    apiUrl: 'https://api.together.ai/v1',
     modelTypes: [
+      {
+        name: 'DeepSeek V4 Pro 0813',
+        value: 'deepseek-ai/DeepSeek-V4-Pro-0813',
+      },
+      {
+        name: 'DeepSeek V4.1 Flash 1017',
+        value: 'deepseek-ai/DeepSeek-V4.1-Flash-1017',
+      },
+      {
+        name: 'Kimi K3',
+        value: 'moonshotai/Kimi-K3',
+      },
+      {
+        name: 'MiniMax M3',
+        value: 'MiniMaxAI/MiniMax-M3',
+      },
+      {
+        name: 'Qwen 3.5 9B',
+        value: 'Qwen/Qwen3.5-9B',
+      },
       {
         name: 'Meta - LLaMA-2 Chat (70B)',
         value: 'togethercomputer/llama-2-70b-chat',
@@ -200,6 +252,10 @@ export const modelsConfig = {
     apiUrl: 'http://localhost:11434',
     modelTypes: [
       {
+        name: 'Qwen 3.5',
+        value: 'qwen3.5',
+      },
+      {
         name: 'Llama 2',
         value: 'llama2',
       },
@@ -216,6 +272,18 @@ export const modelsConfig = {
   [Models.Gemini]: {
     apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models',
     modelTypes: [
+      {
+        name: 'Gemini 4 Argon',
+        value: 'gemini-4-argon',
+      },
+      {
+        name: 'Gemini 3.8 Flash',
+        value: 'gemini-3.8-flash',
+      },
+      {
+        name: 'Gemini 3.5 Flash-Lite',
+        value: 'gemini-3.5-flash-lite',
+      },
       {
         name: 'Gemini 3 Pro Preview',
         value: 'gemini-3-pro-preview',
@@ -306,6 +374,10 @@ export const modelsConfig = {
   [Models.Groq]: {
     apiUrl: 'https://api.groq.com/openai/v1',
     modelTypes: [
+      {
+        name: 'Qwen 3.8 27B',
+        value: 'qwen/qwen3.8-27b',
+      },
       // Production Models
       { name: 'Groq Compound', value: 'groq/compound' },
       { name: 'Groq Compound Mini', value: 'groq/compound-mini' },
@@ -353,11 +425,52 @@ export const modelsConfig = {
   },
   [Models.OpenRouter]: {
     apiUrl: 'https://openrouter.ai',
-    modelTypes: [],
+    modelTypes: [
+      {
+        name: 'OpenAI GPT 6 Astra',
+        value: 'openai/gpt-6-astra',
+      },
+      {
+        name: 'OpenAI GPT 6.1 Sol',
+        value: 'openai/gpt-6.1-sol',
+      },
+      {
+        name: 'OpenAI GPT 6 Luna',
+        value: 'openai/gpt-6-luna',
+      },
+      {
+        name: 'Claude Sonnet 5.5',
+        value: 'anthropic/claude-sonnet-5.5',
+      },
+      {
+        name: 'Gemini 4 Argon',
+        value: 'google/gemini-4-argon',
+      },
+      {
+        name: 'DeepSeek V4.1 Flash 1017',
+        value: 'deepseek/deepseek-v4.1-flash-1017',
+      },
+    ],
   },
   [Models.Claude]: {
     apiUrl: 'https://api.anthropic.com',
     modelTypes: [
+      {
+        name: 'Claude Fable 5.1',
+        value: 'claude-fable-5-1',
+      },
+      {
+        name: 'Claude Opus 5.5',
+        value: 'claude-opus-5-5',
+      },
+      {
+        name: 'Claude Sonnet 5.5',
+        value: 'claude-sonnet-5-5',
+      },
+      {
+        name: 'Claude Haiku 5.5',
+        value: 'claude-haiku-5-5',
+      },
       {
         name: 'Claude 4.5 Opus',
         value: 'claude-opus-4-5',
@@ -396,6 +509,14 @@ export const modelsConfig = {
     apiUrl: 'https://api.deepseek.com',
     modelTypes: [
       {
+        name: 'DeepSeek Flash',
+        value: 'deepseek-flash',
+      },
+      {
+        name: 'DeepSeek V4 Pro',
+        value: 'deepseek-v4-pro',
+      },
+      {
         name: 'DeepSeek Chat',
         value: 'deepseek-chat',
       },
@@ -408,6 +529,10 @@ export const modelsConfig = {
   [Models.Grok]: {
     apiUrl: 'https://api.x.ai',
     modelTypes: [
+      {
+        name: 'Grok 4.7',
+        value: 'grok-4.7',
+      },
       {
         name: 'Grok 4',
         value: 'grok-4',

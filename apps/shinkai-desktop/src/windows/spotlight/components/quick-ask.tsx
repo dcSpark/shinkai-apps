@@ -10,7 +10,6 @@ import {
   createJobFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/create-job';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
-import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useRetryMessage } from '@shinkai_network/shinkai-node-state/v2/mutations/retryMessage/useRetryMessage';
 import { useSendMessageToJob } from '@shinkai_network/shinkai-node-state/v2/mutations/sendMessageToJob/useSendMessageToJob';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
@@ -71,6 +70,7 @@ import {
   useWebSocketMessage,
   useWebSocketTools,
 } from '../../../components/chat/websocket-message';
+import { useCreateJob } from '../../../hooks/use-chat-config-mutations';
 import { useChatConversationWithOptimisticUpdates } from '../../../pages/chat/chat-conversation';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
@@ -165,7 +165,7 @@ function QuickAsk() {
       topK: DEFAULT_CHAT_CONFIG.top_k,
       useTools: DEFAULT_CHAT_CONFIG.use_tools,
       thinking: DEFAULT_CHAT_CONFIG.thinking,
-      reasoningEffort: DEFAULT_CHAT_CONFIG.reasoning_effort,
+      reasoningEffort: undefined,
       webSearchEnabled: DEFAULT_CHAT_CONFIG.web_search_enabled,
     },
   });
@@ -185,7 +185,7 @@ function QuickAsk() {
       topK: DEFAULT_CHAT_CONFIG.top_k,
       useTools: DEFAULT_CHAT_CONFIG.use_tools,
       thinking: DEFAULT_CHAT_CONFIG.thinking,
-      reasoningEffort: DEFAULT_CHAT_CONFIG.reasoning_effort,
+      reasoningEffort: undefined,
       webSearchEnabled: DEFAULT_CHAT_CONFIG.web_search_enabled,
     });
     chatInputRef.current?.focus();
@@ -283,7 +283,7 @@ function QuickAsk() {
         topK: DEFAULT_CHAT_CONFIG.top_k,
         useTools: DEFAULT_CHAT_CONFIG.use_tools,
         thinking: DEFAULT_CHAT_CONFIG.thinking,
-        reasoningEffort: DEFAULT_CHAT_CONFIG.reasoning_effort,
+        reasoningEffort: undefined,
         webSearchEnabled: DEFAULT_CHAT_CONFIG.web_search_enabled,
       });
     },
@@ -384,7 +384,7 @@ function QuickAsk() {
       topK: DEFAULT_CHAT_CONFIG.top_k,
       useTools: DEFAULT_CHAT_CONFIG.use_tools,
       thinking: DEFAULT_CHAT_CONFIG.thinking,
-      reasoningEffort: DEFAULT_CHAT_CONFIG.reasoning_effort,
+      reasoningEffort: undefined,
       webSearchEnabled: DEFAULT_CHAT_CONFIG.web_search_enabled,
     });
   };

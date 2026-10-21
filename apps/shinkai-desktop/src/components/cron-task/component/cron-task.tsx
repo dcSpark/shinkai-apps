@@ -1,9 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { REASONING_EFFORTS } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { type RecurringTask } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/types';
-import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
+import {
+  DEFAULT_CHAT_CONFIG,
+  FunctionKeyV2,
+} from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/createRecurringTask/useCreateRecurringTask';
 import { useUpdateRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/updateRecurringTask/useUpdateRecurringTask';
+import { getAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/index';
+import { getLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/index';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
 import {
   Badge,
@@ -37,6 +43,7 @@ import {
 } from '@shinkai_network/shinkai-ui/assets';
 import { formatText } from '@shinkai_network/shinkai-ui/helpers';
 import { cn } from '@shinkai_network/shinkai-ui/utils';
+import { useQueryClient } from '@tanstack/react-query';
 import cronstrue from 'cronstrue';
 import { ChevronDownIcon } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
@@ -48,6 +55,10 @@ import { z } from 'zod';
 import { SubpageLayout } from '../../../pages/layout/simple-layout';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
+import {
+  getCachedModel,
+  normalizeChatThinking,
+} from '../../../utils/chat-config-submission';
 import { AIModelSelector } from '../../chat/chat-action-bar/ai-update-selection-action-bar';
 import { actionButtonClassnames } from '../../chat/conversation-footer';
 
@@ -82,7 +93,7 @@ const createTaskFormSchema = z.object({
     stream: z.boolean().optional(),
     use_tools: z.boolean().optional(),
     thinking: z.boolean().optional(),
-    reasoning_effort: z.enum(['low', 'medium', 'high']).optional(),
+    reasoning_effort: z.enum(REASONING_EFFORTS).optional(),
     web_search_enabled: z.boolean().optional(),
   }),
   jobMessage: z.object({
@@ -101,6 +112,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
   const defaultAgentId = useSettings((state) => state.defaultAgentId);
   const navigate = useNavigate();
   const auth = useAuth((state) => state.auth);
+  const queryClient = useQueryClient();
   const form = useForm<CreateTaskForm>({
     resolver: zodResolver(createTaskFormSchema),
     defaultValues: {
@@ -116,7 +128,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
         stream: DEFAULT_CHAT_CONFIG.stream ?? false,
         use_tools: DEFAULT_CHAT_CONFIG.use_tools ?? false,
         thinking: DEFAULT_CHAT_CONFIG.thinking,
-        reasoning_effort: DEFAULT_CHAT_CONFIG.reasoning_effort,
+        reasoning_effort: undefined,
         web_search_enabled: DEFAULT_CHAT_CONFIG.web_search_enabled,
       },
       llmOrAgentId: defaultAgentId,
@@ -202,12 +214,42 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
   });
 
   const submit = async (values: CreateTaskForm) => {
+    const modelQueryInput = {
+      nodeAddress: auth?.node_address ?? '',
+      token: auth?.api_v2_key ?? '',
+    };
+    let model = getCachedModel(
+      queryClient,
+      modelQueryInput,
+      values.llmOrAgentId,
+    );
+    if (!model) {
+      // The selector normally fills these queries. A cold default selection can
+      // submit before they finish, so wait for its model metadata here.
+      try {
+        await Promise.all([
+          queryClient.ensureQueryData({
+            queryKey: [FunctionKeyV2.GET_LLM_PROVIDERS, modelQueryInput],
+            queryFn: () => getLLMProviders(modelQueryInput),
+          }),
+          queryClient.ensureQueryData({
+            queryKey: [FunctionKeyV2.GET_AGENTS, modelQueryInput],
+            queryFn: () => getAgents(modelQueryInput),
+          }),
+        ]);
+      } catch {
+        // Model metadata is optional. Keep the submitted config if it cannot
+        // be resolved, and let the actual task request report its own errors.
+      }
+      model = getCachedModel(queryClient, modelQueryInput, values.llmOrAgentId);
+    }
+    const chatConfig = normalizeChatThinking(values.jobConfig, model);
     if (mode === 'create') {
       await createRecurringTask({
         nodeAddress: auth?.node_address ?? '',
         token: auth?.api_v2_key ?? '',
         cronExpression: values.cronExpression,
-        chatConfig: values.jobConfig,
+        chatConfig,
         message: values.jobMessage.content,
         toolKey: values.jobMessage.tool_key,
         llmProvider: values.llmOrAgentId,
@@ -221,7 +263,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
         nodeAddress: auth?.node_address ?? '',
         token: auth?.api_v2_key ?? '',
         cronExpression: values.cronExpression,
-        chatConfig: values.jobConfig,
+        chatConfig,
         message: values.jobMessage.content,
         toolKey: values.jobMessage.tool_key,
         llmProvider: values.llmOrAgentId,

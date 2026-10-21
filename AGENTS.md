@@ -37,5 +37,5 @@
 
 ## Security & Configuration Tips
 - Env: copy `apps/shinkai-desktop/.env.example` as needed; never commit secrets.
-- Tooling: Node 20+, npm 10+; Rust toolchain for Tauri.
+- Tooling: Use the Node.js version in `.nvmrc` and npm 10.x. Supported Node.js versions: 22.20+ in the 22.x release line, or 24.12+. Use the Rust toolchain for Tauri.
 - Patches: `postinstall` runs `patch-package`; update `patches/` when adjusting third-party deps.

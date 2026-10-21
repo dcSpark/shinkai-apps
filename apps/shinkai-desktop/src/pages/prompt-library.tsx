@@ -1,7 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { type Prompt } from '@shinkai_network/shinkai-message-ts/api/tools/types';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
-import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useRemovePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/removePrompt/useRemovePrompt';
 import { useUpdatePrompt } from '@shinkai_network/shinkai-node-state/v2/mutations/updatePrompt/useUpdatePrompt';
 
@@ -36,6 +35,7 @@ import { toast } from 'sonner';
 
 import { useWebSocketMessage } from '../components/chat/websocket-message';
 import { CreatePromptDrawer } from '../components/prompt/context/prompt-selection-context';
+import { useCreateJob } from '../hooks/use-chat-config-mutations';
 import { useDebounce } from '../hooks/use-debounce';
 import { useAuth } from '../store/auth';
 import { useSettings } from '../store/settings';

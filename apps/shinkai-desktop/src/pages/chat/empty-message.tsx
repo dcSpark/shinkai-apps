@@ -1,7 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
-import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { Badge, buttonVariants } from '@shinkai_network/shinkai-ui';
 import { invoke } from '@tauri-apps/api/core';
@@ -13,6 +12,7 @@ import { toast } from 'sonner';
 
 import { useSetJobScope } from '../../components/chat/context/set-job-scope-context';
 import { usePromptSelectionStore } from '../../components/prompt/context/prompt-selection-context';
+import { useCreateJob } from '../../hooks/use-chat-config-mutations';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
 import { useShinkaiNodeManager } from '../../store/shinkai-node-manager';
@@ -74,7 +74,7 @@ const EmptyMessage = () => {
         top_k: DEFAULT_CHAT_CONFIG.top_k,
         use_tools: DEFAULT_CHAT_CONFIG.use_tools,
         thinking: DEFAULT_CHAT_CONFIG.thinking,
-        reasoning_effort: DEFAULT_CHAT_CONFIG.reasoning_effort,
+        reasoning_effort: undefined,
         web_search_enabled: DEFAULT_CHAT_CONFIG.web_search_enabled,
       },
     });

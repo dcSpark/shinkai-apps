@@ -79,11 +79,12 @@
     "i18next-resources-to-backend": "^1.2.1",
     "immer": "^10.1.1",
     "just-diff": "^6.0.2",
-    "katex": "^0.16.9",
+    "katex": "^0.18.2",
     "libsodium-wrappers-sumo": "^0.7.13",
     "lucide-react": "^0.511.0",
     "mermaid": "^11.7.0",
     "ollama": "^0.5.6",
+    "plotly.js": "^4.1.2",
     "posthog-js": "^1.136.7",
     "primereact": "^10.9.5",
     "prism-react-editor": "^2.0.0",
@@ -110,11 +111,11 @@
     "streamdown": "^2.1.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "ts-deepmerge": "^7.0.2",
+    "ts-deepmerge": "^8.0.0",
     "tslib": "^2.6.2",
     "typescript-eslint": "^8.33.0",
     "unified": "^11.0.5",
-    "uuid": "^9.0.1",
+    "uuid": "^11.1.1",
     "vaul": "^1.1.2",
     "zod": "^3.23.8",
     "zustand": "^5.0.5"
@@ -163,8 +164,8 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/sql.js": "^1.4.9",
     "@types/uuid": "^9.0.8",
-    "@typescript-eslint/eslint-plugin": "8.33.0",
-    "@typescript-eslint/parser": "8.33.0",
+    "@typescript-eslint/eslint-plugin": "8.72.0",
+    "@typescript-eslint/parser": "8.72.0",
     "@vitejs/plugin-legacy": "^6.1.1",
     "@vitejs/plugin-react": "~4.5.0",
     "@vitest/coverage-v8": "^4.0.16",
@@ -185,7 +186,7 @@
     "eslint-plugin-react-hooks": "5.2.0",
     "eslint-plugin-testing-library": "^7.3.0",
     "jsdom": "^24.1.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.18.1",
     "nx": "22.3.1",
     "patch-package": "^8.0.0",
     "postcss": "^8.4.38",
@@ -204,7 +205,7 @@
     "zip-lib": "^1.0.4"
   },
   "engines": {
-    "node": ">=20.x.x",
+    "node": "^22.20.0 || >=24.12.0",
     "npm": "10.x.x"
   },
   "overrides": {
@@ -215,6 +216,10 @@
         "prismjs": "1.30.0"
       }
     },
-    "lodash-es": "^4.17.23"
+    "lodash-es": "^4.17.23",
+    "katex": "$katex",
+    "ajv@8": "^8.18.0",
+    "picomatch@4": "^4.0.7",
+    "fast-uri@3": "^3.1.8"
   }
 }

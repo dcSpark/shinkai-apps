@@ -1,0 +1,327 @@
+import {
+  Models,
+  modelsConfig,
+} from '@shinkai_network/shinkai-node-state/lib/utils/models';
+import { describe, expect, it } from 'vitest';
+
+import { MODELS_WITH_THINKING_SUPPORT } from './constants';
+import {
+  getThinkingConfig,
+  getReasoningEfforts,
+  normalizeReasoningEffort,
+} from './thinking-config';
+
+describe('getThinkingConfig', () => {
+  it.each(['gemini:gemini-4-argon', 'gemini:gemini-3.8-flash'])(
+    'keeps mandatory thinking enabled for %s',
+    (model) => {
+      expect(getThinkingConfig(model)).toEqual({
+        supportsThinking: true,
+        forceEnabled: true,
+        reasoningLevel: true,
+      });
+    },
+  );
+
+  it.each([
+    ['claude-fable-5-1', true, 'high'],
+    ['claude-opus-5-5', true, 'medium'],
+    ['claude-sonnet-5-5', true, 'high'],
+    ['claude-haiku-5-5', false, 'medium'],
+  ] as const)(
+    'uses the direct Claude effort contract for %s',
+    (model, forced, defaultEffort) => {
+      const config = getThinkingConfig(`claude:${model}`);
+      expect(config.forceEnabled).toBe(forced);
+      expect(getReasoningEfforts(config)).toEqual([
+        'low',
+        'medium',
+        'high',
+        'xhigh',
+        'max',
+      ]);
+      expect(normalizeReasoningEffort(config, undefined)).toBe(defaultEffort);
+      expect(normalizeReasoningEffort(config, 'xhigh')).toBe('xhigh');
+      expect(normalizeReasoningEffort(config, 'max')).toBe('max');
+    },
+  );
+
+  it('uses Minimal only on the verified Gemini Flash-Lite model', () => {
+    const config = getThinkingConfig('gemini:gemini-3.5-flash-lite');
+    expect(config.forceEnabled).toBe(true);
+    expect(getReasoningEfforts(config)).toEqual([
+      'minimal',
+      'low',
+      'medium',
+      'high',
+    ]);
+    expect(normalizeReasoningEffort(config, undefined)).toBe('minimal');
+    expect(normalizeReasoningEffort(config, 'minimal')).toBe('minimal');
+    for (const model of ['gemini:gemini-3.8-flash', 'gemini:gemini-4-argon']) {
+      expect(getReasoningEfforts(getThinkingConfig(model))).not.toContain(
+        'minimal',
+      );
+      expect(
+        normalizeReasoningEffort(getThinkingConfig(model), 'minimal'),
+      ).toBe('medium');
+    }
+  });
+
+  it.each(['openai', 'openai-legacy'])(
+    'uses the verified GPT-6 effort contract for %s',
+    (provider) => {
+      for (const model of [
+        'gpt-6-astra',
+        'gpt-6.1-sol',
+        'gpt-6-sol',
+        'gpt-6-luna',
+      ]) {
+        const config = getThinkingConfig(`${provider}:${model}`);
+        expect(config.supportsThinking).toBe(true);
+        expect(config.forceEnabled).toBe(
+          ['gpt-6-astra', 'gpt-6.1-sol'].includes(model),
+        );
+        expect(getReasoningEfforts(config)).toEqual([
+          'low',
+          'medium',
+          'high',
+          'xhigh',
+          'max',
+        ]);
+        expect(normalizeReasoningEffort(config, 'xhigh')).toBe('xhigh');
+      }
+    },
+  );
+
+  it.each([
+    'deepseek-ai/DeepSeek-V4-Pro-0813',
+    'deepseek-ai/DeepSeek-V4.1-Flash-1017',
+  ])('uses the verified Together DeepSeek effort contract for %s', (id) => {
+    const config = getThinkingConfig(`togetherai:${id}`);
+    expect(config.forceEnabled).toBe(false);
+    expect(getReasoningEfforts(config)).toEqual(['low', 'high', 'max']);
+    expect(normalizeReasoningEffort(config, undefined)).toBe('high');
+    expect(normalizeReasoningEffort(config, 'medium')).toBe('high');
+    for (const effort of ['low', 'high', 'max'] as const)
+      expect(normalizeReasoningEffort(config, effort)).toBe(effort);
+  });
+
+  it.each(['deepseek-flash', 'deepseek-v4-pro'])(
+    'uses the direct DeepSeek metadata for %s',
+    (model) => {
+      expect(
+        modelsConfig[Models.DeepSeek].modelTypes.map((entry) => entry.value),
+      ).toContain(model);
+      const config = getThinkingConfig(`deepseek:${model}`);
+      expect(config.forceEnabled).toBe(false);
+      expect(getReasoningEfforts(config)).toEqual(['low', 'high', 'max']);
+      expect(normalizeReasoningEffort(config, undefined)).toBe('high');
+      expect(normalizeReasoningEffort(config, 'medium')).toBe('high');
+      expect(normalizeReasoningEffort(config, 'xhigh')).toBe('high');
+      expect(normalizeReasoningEffort(config, 'max')).toBe('max');
+    },
+  );
+
+  it.each([
+    [Models.OpenAI, 'openai'],
+    [Models.OpenAILegacy, 'openai-legacy'],
+  ] as const)(
+    'makes all supported GPT-6 IDs selectable in %s',
+    (provider, prefix) => {
+      const selectable = modelsConfig[provider].modelTypes.map(
+        (model) => model.value,
+      );
+      const known = Object.keys(MODELS_WITH_THINKING_SUPPORT).filter((id) =>
+        id.startsWith(`${prefix}:gpt-6`),
+      );
+      expect(known).toHaveLength(4);
+      for (const id of known)
+        expect(selectable).toContain(id.slice(prefix.length + 1));
+    },
+  );
+
+  it('keeps every effort default and alias within the model-specific accepted list', () => {
+    for (const model of Object.keys(MODELS_WITH_THINKING_SUPPORT)) {
+      const config = getThinkingConfig(model);
+      const efforts = getReasoningEfforts(config);
+      if (config.reasoningLevel) {
+        expect(efforts).toContain(normalizeReasoningEffort(config, undefined));
+        for (const alias of Object.values(config.reasoningEffortAliases ?? {}))
+          expect(efforts).toContain(alias);
+      } else {
+        expect(efforts).toEqual([]);
+        expect(normalizeReasoningEffort(config, 'high')).toBeUndefined();
+      }
+    }
+  });
+
+  it.each([
+    'groq:qwen/qwen3.8-27b',
+    'groq:qwen/qwen3.6-27b',
+    'ollama:qwen3.5',
+    'ollama:qwen3.5:9b',
+    'togetherai:Qwen/Qwen3.5-9B',
+  ])(
+    'omits an effort menu when the adapter does not map it for %s',
+    (model) => {
+      expect(getThinkingConfig(model)).toEqual({
+        supportsThinking: true,
+        forceEnabled: false,
+        reasoningLevel: false,
+      });
+    },
+  );
+
+  it('hides Grok effort controls that the node removes', () => {
+    expect(getThinkingConfig('grok:grok-4.7')).toEqual({
+      supportsThinking: true,
+      forceEnabled: true,
+      reasoningLevel: false,
+    });
+  });
+
+  it('keeps exact provider IDs and ignores letter case', () => {
+    expect(getThinkingConfig('OPENAI:GPT-6.1-SOL')).toEqual(
+      getThinkingConfig('openai:gpt-6.1-sol'),
+    );
+    for (const model of [
+      undefined,
+      '',
+      'gpt-6.1-sol',
+      'openai:gpt-6.1-sol-unknown',
+      'openai:custom-model',
+      'exo:qwen3.5',
+    ]) {
+      expect(getThinkingConfig(model).supportsThinking).toBe(false);
+    }
+  });
+
+  it.each([
+    [
+      'openai/gpt-6-astra',
+      true,
+      ['low', 'medium', 'high', 'xhigh', 'max'],
+      'medium',
+    ],
+    [
+      'openai/gpt-6.1-sol',
+      true,
+      ['low', 'medium', 'high', 'xhigh', 'max'],
+      'medium',
+    ],
+    [
+      'openai/gpt-6-luna',
+      false,
+      ['low', 'medium', 'high', 'xhigh', 'max'],
+      'medium',
+    ],
+    [
+      'anthropic/claude-sonnet-5.5',
+      true,
+      ['low', 'medium', 'high', 'xhigh', 'max'],
+      'high',
+    ],
+    ['google/gemini-4-argon', true, ['low', 'medium', 'high'], 'medium'],
+    [
+      'deepseek/deepseek-v4.1-flash-1017',
+      false,
+      ['low', 'high', 'max'],
+      'high',
+    ],
+  ] as const)(
+    'exposes the OpenRouter contract for %s',
+    (id, mandatory, efforts, defaultEffort) => {
+      expect(
+        modelsConfig[Models.OpenRouter].modelTypes.some(
+          (model) => model.value === id,
+        ),
+      ).toBe(true);
+      const config = getThinkingConfig(`openrouter:${id}`);
+      expect(config.supportsThinking).toBe(true);
+      expect(config.forceEnabled).toBe(mandatory);
+      expect(getReasoningEfforts(config)).toEqual(efforts);
+      expect(normalizeReasoningEffort(config, undefined)).toBe(defaultEffort);
+      for (const effort of efforts)
+        expect(normalizeReasoningEffort(config, effort)).toBe(effort);
+    },
+  );
+
+  it('does not infer OpenRouter support from an underlying provider name', () => {
+    expect(getThinkingConfig('openrouter:openai/custom').supportsThinking).toBe(
+      false,
+    );
+    expect(
+      getThinkingConfig('openrouter:openai/gpt-6-astra-extra').supportsThinking,
+    ).toBe(false);
+  });
+
+  it('lists the public Groq successor instead of the retired Qwen model', () => {
+    const ids = modelsConfig[Models.Groq].modelTypes.map(
+      (model) => model.value,
+    );
+    expect(ids).toContain('qwen/qwen3.8-27b');
+    expect(ids).not.toContain('qwen/qwen3.6-27b');
+  });
+
+  it('exposes Kimi K3 thinking with its documented effort levels and default', () => {
+    const config = getThinkingConfig('togetherai:moonshotai/Kimi-K3');
+    expect(config).toEqual({
+      supportsThinking: true,
+      forceEnabled: false,
+      reasoningLevel: true,
+      reasoningEfforts: ['low', 'high', 'max'],
+      defaultReasoningEffort: 'max',
+      reasoningEffortAliases: { medium: 'high' },
+    });
+    expect(getReasoningEfforts(config)).toEqual(['low', 'high', 'max']);
+    expect(normalizeReasoningEffort(config, undefined)).toBe('max');
+    expect(normalizeReasoningEffort(config, 'medium')).toBe('high');
+    for (const effort of ['low', 'high', 'max'] as const)
+      expect(normalizeReasoningEffort(config, effort)).toBe(effort);
+  });
+
+  it('exposes the MiniMax M3 toggle without unsupported effort controls', () => {
+    const config = getThinkingConfig('togetherai:MiniMaxAI/MiniMax-M3');
+    expect(config).toEqual({
+      supportsThinking: true,
+      forceEnabled: false,
+      reasoningLevel: false,
+    });
+    expect(getReasoningEfforts(config)).toEqual([]);
+    expect(normalizeReasoningEffort(config, 'high')).toBeUndefined();
+  });
+
+  it('does not submit a saved model-specific effort after switching to other models', () => {
+    const config = getThinkingConfig('openai:gpt-5.2');
+    expect(getReasoningEfforts(config)).toEqual(['low', 'medium', 'high']);
+    expect(normalizeReasoningEffort(config, 'max')).toBe('medium');
+    expect(normalizeReasoningEffort(config, 'medium')).toBe('medium');
+    expect(
+      normalizeReasoningEffort(getThinkingConfig('togetherai:custom'), 'high'),
+    ).toBe('high');
+  });
+
+  it('uses the current default after a round trip through a toggle-only model', () => {
+    const kimi = getThinkingConfig('togetherai:moonshotai/Kimi-K3');
+    const minimax = getThinkingConfig('togetherai:MiniMaxAI/MiniMax-M3');
+    const openai = getThinkingConfig('openai:gpt-5.2');
+    const cleared = normalizeReasoningEffort(minimax, 'max');
+    expect(cleared).toBeUndefined();
+    expect(normalizeReasoningEffort(openai, cleared)).toBe('medium');
+    expect(normalizeReasoningEffort(kimi, cleared)).toBe('max');
+    expect(normalizeReasoningEffort(kimi, 'medium')).toBe('high');
+  });
+
+  it('keeps existing model settings', () => {
+    expect(getThinkingConfig('openai:gpt-5.2')).toEqual({
+      supportsThinking: true,
+      forceEnabled: false,
+      reasoningLevel: true,
+    });
+    expect(getThinkingConfig('deepseek:deepseek-reasoner')).toEqual({
+      supportsThinking: true,
+      forceEnabled: true,
+      reasoningLevel: false,
+    });
+  });
+});
