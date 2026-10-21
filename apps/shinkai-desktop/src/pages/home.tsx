@@ -6,7 +6,6 @@ import {
   chatMessageFormSchema,
 } from '@shinkai_network/shinkai-node-state/forms/chat/chat-message';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
-import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetTools } from '@shinkai_network/shinkai-node-state/v2/queries/getToolsList/useGetToolsList';
@@ -86,6 +85,7 @@ import {
 import { FeedbackModal } from '../components/feedback/feedback-modal';
 import { usePromptSelectionStore } from '../components/prompt/context/prompt-selection-context';
 import { useAgentRequiresToolConfigurations } from '../hooks/use-agent-requires-tool-configurations';
+import { useCreateJob } from '../hooks/use-chat-config-mutations';
 // import { VideoBanner } from '../components/video-banner';
 import { useAnalytics } from '../lib/posthog-provider';
 import { useAuth } from '../store/auth';

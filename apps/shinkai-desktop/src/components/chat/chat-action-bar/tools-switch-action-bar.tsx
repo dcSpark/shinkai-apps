@@ -1,6 +1,5 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
-import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import {
   Tooltip,
@@ -18,6 +17,7 @@ import { memo } from 'react';
 import { useParams } from 'react-router';
 import { toast } from 'sonner';
 
+import { useUpdateChatConfig } from '../../../hooks/use-chat-config-mutations';
 import { useAuth } from '../../../store/auth';
 import { actionButtonClassnames } from '../conversation-footer';
 

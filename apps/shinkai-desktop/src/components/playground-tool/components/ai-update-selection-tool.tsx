@@ -1,7 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgentInJob/useUpdateAgentInJob';
-import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
@@ -28,6 +27,7 @@ import { memo, useMemo, useState } from 'react';
 import { useLocation } from 'react-router';
 import { toast } from 'sonner';
 
+import { useUpdateChatConfig } from '../../../hooks/use-chat-config-mutations';
 import { useAuth } from '../../../store/auth';
 import ProviderIcon from '../../ais/provider-icon';
 import { actionButtonClassnames } from '../../chat/conversation-footer';
@@ -288,11 +288,15 @@ export function AiModelUpdateSelectionToolsBase({
     },
   });
 
-  const handleUpdateToolUsage = async (enabled?: boolean) => {
+  const handleUpdateToolUsage = async (
+    enabled?: boolean,
+    selectedProviderId?: string,
+  ) => {
     await updateChatConfig({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       jobId: extractJobIdFromInbox(inboxId),
+      selectedProviderId,
       jobConfig: {
         stream: chatConfig?.stream,
         custom_prompt: chatConfig?.custom_prompt ?? '',
@@ -320,7 +324,7 @@ export function AiModelUpdateSelectionToolsBase({
         });
         const selectedAgent = agents?.find((agent) => agent.agent_id === value);
         const hasTools = (selectedAgent?.tools ?? [])?.length > 0;
-        await handleUpdateToolUsage(hasTools);
+        await handleUpdateToolUsage(hasTools, value);
       }}
       value={provider?.agent?.id ?? ''}
     />

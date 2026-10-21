@@ -5,13 +5,13 @@ import {
 } from '@shinkai_network/shinkai-message-ts/api/mcp-servers/types';
 import { buildInboxIdFromJobId } from '@shinkai_network/shinkai-message-ts/utils';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
-import { useCreateJob } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/useCreateJob';
 import { useDeleteMcpServer } from '@shinkai_network/shinkai-node-state/v2/mutations/deleteMcpServer/useDeleteMcpServer';
 import { Button, SearchInput, Skeleton } from '@shinkai_network/shinkai-ui';
 import { PlusIcon, Trash } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
+import { useCreateJob } from '../../hooks/use-chat-config-mutations';
 import { type App } from '../../lib/composio/composio-api';
 import { useApps, useInstallApp } from '../../lib/composio/react-query';
 import { useAuth } from '../../store/auth';

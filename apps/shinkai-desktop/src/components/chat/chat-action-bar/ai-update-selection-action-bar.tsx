@@ -1,7 +1,6 @@
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useUpdateAgentInJob } from '@shinkai_network/shinkai-node-state/v2/mutations/updateAgentInJob/useUpdateAgentInJob';
-import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
 import { useGetAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/useGetAgents';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
@@ -34,6 +33,7 @@ import { memo, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router';
 import { toast } from 'sonner';
 
+import { useUpdateChatConfig } from '../../../hooks/use-chat-config-mutations';
 import OLLAMA_MODELS_REPOSITORY from '../../../lib/shinkai-node-manager/ollama-models-repository.json';
 import { useAuth } from '../../../store/auth';
 import { useShinkaiNodeManager } from '../../../store/shinkai-node-manager';
@@ -518,11 +518,15 @@ export function AiUpdateSelectionActionBarBase({
     },
   });
 
-  const handleUpdateToolUsage = async (enabled?: boolean) => {
+  const handleUpdateToolUsage = async (
+    enabled?: boolean,
+    selectedProviderId?: string,
+  ) => {
     await updateChatConfig({
       nodeAddress: auth?.node_address ?? '',
       token: auth?.api_v2_key ?? '',
       jobId: extractJobIdFromInbox(inboxId),
+      selectedProviderId,
       jobConfig: {
         stream: chatConfig?.stream,
         custom_prompt: chatConfig?.custom_prompt ?? '',
@@ -550,7 +554,7 @@ export function AiUpdateSelectionActionBarBase({
         });
         const selectedAgent = agents?.find((agent) => agent.agent_id === value);
         const hasTools = (selectedAgent?.tools ?? [])?.length > 0;
-        await handleUpdateToolUsage(hasTools);
+        await handleUpdateToolUsage(hasTools, value);
       }}
       value={provider?.agent?.id ?? ''}
     />

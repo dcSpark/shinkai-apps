@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { PopoverClose } from '@radix-ui/react-popover';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
-import { useUpdateChatConfig } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/useUpdateChatConfig';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
 import { useGetProviderFromJob } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/useGetProviderFromJob';
@@ -42,6 +41,7 @@ import { useParams } from 'react-router';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+import { useUpdateChatConfig } from '../../../hooks/use-chat-config-mutations';
 import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import {
