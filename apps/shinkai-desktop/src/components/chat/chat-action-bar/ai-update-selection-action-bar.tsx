@@ -50,6 +50,52 @@ const ollamaDescriptionMap = OLLAMA_MODELS_REPOSITORY.reduce(
 );
 
 const nonOllamaProviderModels = {
+  'openai:gpt-6-astra': 'OpenAI GPT-6 Astra for text, images, and reasoning.',
+  'openai:gpt-6.1-sol': 'OpenAI GPT-6.1 Sol for text, images, and reasoning.',
+  'openai:gpt-6-sol': 'OpenAI GPT-6 Sol for text, images, and reasoning.',
+  'openai:gpt-6-luna': 'OpenAI GPT-6 Luna for text, images, and reasoning.',
+  'openai-legacy:gpt-6-astra':
+    'OpenAI GPT-6 Astra for text, images, and reasoning.',
+  'openai-legacy:gpt-6.1-sol':
+    'OpenAI GPT-6.1 Sol for text, images, and reasoning.',
+  'openai-legacy:gpt-6-sol':
+    'OpenAI GPT-6 Sol for text, images, and reasoning.',
+  'openai-legacy:gpt-6-luna':
+    'OpenAI GPT-6 Luna for text, images, and reasoning.',
+  'claude:claude-fable-5-1': 'Anthropic Claude Fable 5.1 for text and images.',
+  'claude:claude-opus-5-5': 'Anthropic Claude Opus 5.5 for text and images.',
+  'claude:claude-sonnet-5-5':
+    'Anthropic Claude Sonnet 5.5 for text and images.',
+  'claude:claude-haiku-5-5': 'Anthropic Claude Haiku 5.5 for text and images.',
+  'gemini:gemini-4-argon':
+    'Google Gemini 4 Argon for text, images, audio, and video.',
+  'gemini:gemini-3.8-flash':
+    'Google Gemini 3.8 Flash for text, images, audio, and video.',
+  'gemini:gemini-3.5-flash-lite':
+    'Google Gemini 3.5 Flash-Lite for text, images, audio, and video.',
+  'deepseek:deepseek-flash': 'DeepSeek Flash for text, images, and reasoning.',
+  'deepseek:deepseek-v4-pro': 'DeepSeek V4 Pro for text and reasoning.',
+  'grok:grok-4.7': 'xAI Grok 4.7 for text, images, and reasoning.',
+  'groq:qwen/qwen3.8-27b': 'Qwen 3.8 27B on Groq for text and images.',
+  'togetherai:moonshotai/Kimi-K3':
+    'Kimi K3 on Together AI for text and images.',
+  'togetherai:MiniMaxAI/MiniMax-M3':
+    'MiniMax M3 on Together AI for text and images.',
+  'togetherai:Qwen/Qwen3.5-9B':
+    'Qwen 3.5 9B on Together AI for text and images.',
+  'togetherai:deepseek-ai/DeepSeek-V4-Pro-0813':
+    'DeepSeek V4 Pro on Together AI for text and reasoning.',
+  'togetherai:deepseek-ai/DeepSeek-V4.1-Flash-1017':
+    'DeepSeek V4.1 Flash on Together AI for text and images.',
+  'openrouter:openai/gpt-6-astra': 'OpenAI GPT-6 Astra through OpenRouter.',
+  'openrouter:openai/gpt-6.1-sol': 'OpenAI GPT-6.1 Sol through OpenRouter.',
+  'openrouter:openai/gpt-6-luna': 'OpenAI GPT-6 Luna through OpenRouter.',
+  'openrouter:anthropic/claude-sonnet-5.5':
+    'Anthropic Claude Sonnet 5.5 through OpenRouter.',
+  'openrouter:google/gemini-4-argon':
+    'Google Gemini 4 Argon through OpenRouter.',
+  'openrouter:deepseek/deepseek-v4.1-flash-1017':
+    'DeepSeek V4.1 Flash through OpenRouter.',
   'shinkai-backend:free_text_inference':
     'Shinkai AI model for text generation.',
   'shinkai-backend:code_generator':

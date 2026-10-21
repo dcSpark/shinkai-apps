@@ -25,6 +25,55 @@ export const MODELS_WITH_THINKING_SUPPORT = {
       ]),
   ),
 
+  // Current public API models. Keep provider prefixes equal to ModelPrefix.
+  // Effort controls use the existing low/medium/high menu.
+  ...Object.fromEntries(
+    ['openai', 'openai-legacy'].flatMap((provider) =>
+      ['gpt-6.1-sol', 'gpt-6-sol', 'gpt-6-luna', 'gpt-6-astra'].map((model) => [
+        `${provider}:${model}`,
+        {
+          // The node omits reasoning when off; this does not disable the API default.
+          forceEnabled: true,
+          reasoningLevel: true,
+        },
+      ]),
+    ),
+  ),
+  'claude:claude-fable-5-1': { forceEnabled: true, reasoningLevel: true },
+  'claude:claude-opus-5-5': { forceEnabled: true, reasoningLevel: true },
+  'claude:claude-sonnet-5-5': { forceEnabled: true, reasoningLevel: true },
+  'claude:claude-haiku-5-5': { forceEnabled: false, reasoningLevel: true },
+  'gemini:gemini-3.8-flash': { forceEnabled: true, reasoningLevel: true },
+  'gemini:gemini-3.5-flash-lite': { forceEnabled: true, reasoningLevel: true },
+  'gemini:gemini-4-argon': { forceEnabled: true, reasoningLevel: true },
+  'deepseek:deepseek-flash': { forceEnabled: false, reasoningLevel: true },
+  'deepseek:deepseek-v4-pro': { forceEnabled: false, reasoningLevel: true },
+  'grok:grok-4.7': { forceEnabled: true, reasoningLevel: false },
+  'togetherai:Qwen/Qwen3.5-9B': { forceEnabled: false, reasoningLevel: false },
+  'togetherai:deepseek-ai/DeepSeek-V4.1-Flash-1017': {
+    forceEnabled: false,
+    reasoningLevel: true,
+  },
+  // The Groq adapter maps the Qwen thinking toggle, but not effort levels.
+  'groq:qwen/qwen3.6-27b': { forceEnabled: false, reasoningLevel: false },
+  'groq:qwen/qwen3.8-27b': { forceEnabled: false, reasoningLevel: false },
+  ...Object.fromEntries(
+    [
+      'qwen3.5',
+      'qwen3.5:latest',
+      'qwen3.5:0.8b',
+      'qwen3.5:2b',
+      'qwen3.5:4b',
+      'qwen3.5:9b',
+      'qwen3.5:27b',
+      'qwen3.5:35b',
+      'qwen3.5:122b',
+    ].map((model) => [
+      `ollama:${model}`,
+      { forceEnabled: false, reasoningLevel: false },
+    ]),
+  ),
+
   // Claude models
   'claude:claude-opus-4-5': { forceEnabled: false, reasoningLevel: true },
   'claude:claude-sonnet-4-5': { forceEnabled: false, reasoningLevel: true },
