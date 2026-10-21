@@ -85,6 +85,50 @@ describe('getThinkingConfig', () => {
     }
   });
 
+  it.each([
+    ['openai/gpt-6-astra', true, ['low', 'medium', 'high', 'max'], 'medium'],
+    ['openai/gpt-6.1-sol', true, ['low', 'medium', 'high', 'max'], 'medium'],
+    ['openai/gpt-6-luna', false, ['low', 'medium', 'high', 'max'], 'medium'],
+    [
+      'anthropic/claude-sonnet-5.5',
+      true,
+      ['low', 'medium', 'high', 'max'],
+      'high',
+    ],
+    ['google/gemini-4-argon', true, ['low', 'medium', 'high'], 'medium'],
+    [
+      'deepseek/deepseek-v4.1-flash-1017',
+      false,
+      ['low', 'high', 'max'],
+      'high',
+    ],
+  ] as const)(
+    'exposes the OpenRouter contract for %s',
+    (id, mandatory, efforts, defaultEffort) => {
+      expect(
+        modelsConfig[Models.OpenRouter].modelTypes.some(
+          (model) => model.value === id,
+        ),
+      ).toBe(true);
+      const config = getThinkingConfig(`openrouter:${id}`);
+      expect(config.supportsThinking).toBe(true);
+      expect(config.forceEnabled).toBe(mandatory);
+      expect(getReasoningEfforts(config)).toEqual(efforts);
+      expect(normalizeReasoningEffort(config, undefined)).toBe(defaultEffort);
+      for (const effort of efforts)
+        expect(normalizeReasoningEffort(config, effort)).toBe(effort);
+    },
+  );
+
+  it('does not infer OpenRouter support from an underlying provider name', () => {
+    expect(getThinkingConfig('openrouter:openai/custom').supportsThinking).toBe(
+      false,
+    );
+    expect(
+      getThinkingConfig('openrouter:openai/gpt-6-astra-extra').supportsThinking,
+    ).toBe(false);
+  });
+
   it('lists the public Groq successor instead of the retired Qwen model', () => {
     const ids = modelsConfig[Models.Groq].modelTypes.map(
       (model) => model.value,

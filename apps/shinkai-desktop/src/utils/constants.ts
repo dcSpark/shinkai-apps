@@ -39,6 +39,43 @@ export const MODELS_WITH_THINKING_SUPPORT = {
       ]),
     ),
   ),
+  // OpenRouter exposes its own model-specific reasoning contract.
+  // Source: https://openrouter.ai/api/v1/models (reasoning metadata).
+  ...Object.fromEntries(
+    [
+      'openai/gpt-6-astra',
+      'openai/gpt-6.1-sol',
+      'anthropic/claude-sonnet-5.5',
+    ].map((model) => [
+      `openrouter:${model}`,
+      {
+        forceEnabled: true,
+        reasoningLevel: true,
+        reasoningEfforts: ['low', 'medium', 'high', 'max'] as const,
+        defaultReasoningEffort: model.startsWith('anthropic/')
+          ? ('high' as const)
+          : ('medium' as const),
+      },
+    ]),
+  ),
+  'openrouter:openai/gpt-6-luna': {
+    forceEnabled: false,
+    reasoningLevel: true,
+    reasoningEfforts: ['low', 'medium', 'high', 'max'],
+    defaultReasoningEffort: 'medium',
+  },
+  'openrouter:google/gemini-4-argon': {
+    forceEnabled: true,
+    reasoningLevel: true,
+    reasoningEfforts: ['low', 'medium', 'high'],
+    defaultReasoningEffort: 'medium',
+  },
+  'openrouter:deepseek/deepseek-v4.1-flash-1017': {
+    forceEnabled: false,
+    reasoningLevel: true,
+    reasoningEfforts: ['low', 'high', 'max'],
+    defaultReasoningEffort: 'high',
+  },
   'claude:claude-fable-5-1': { forceEnabled: true, reasoningLevel: true },
   'claude:claude-opus-5-5': { forceEnabled: true, reasoningLevel: true },
   'claude:claude-sonnet-5-5': { forceEnabled: true, reasoningLevel: true },

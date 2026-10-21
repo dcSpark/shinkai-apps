@@ -146,6 +146,26 @@ describe('chat config submission', () => {
     expect(normalizeChatThinking(custom, 'togetherai:custom')).toBe(custom);
   });
 
+  it('applies OpenRouter mandatory reasoning and honors its optional toggle', () => {
+    const config = {
+      thinking: false,
+      reasoning_effort: 'max' as const,
+      stream: true,
+    };
+    expect(
+      normalizeChatThinking(config, 'openrouter:openai/gpt-6-astra'),
+    ).toEqual({ ...config, thinking: true });
+    expect(
+      normalizeChatThinking(config, 'openrouter:openai/gpt-6-luna'),
+    ).toEqual({ ...config, reasoning_effort: undefined });
+    expect(
+      normalizeChatThinking(
+        { thinking: true, reasoning_effort: 'medium' },
+        'openrouter:deepseek/deepseek-v4.1-flash-1017',
+      ).reasoning_effort,
+    ).toBe('high');
+  });
+
   it('keeps streaming settings while applying forced thinking and toggle-only models', () => {
     expect(
       normalizeChatThinking(
