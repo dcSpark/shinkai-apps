@@ -4,6 +4,7 @@ import {
 } from '@shinkai_network/shinkai-node-state/lib/utils/models';
 import { describe, expect, it } from 'vitest';
 
+import { MODELS_WITH_THINKING_SUPPORT } from './constants';
 import {
   getThinkingConfig,
   getReasoningEfforts,
@@ -53,8 +54,6 @@ describe('getThinkingConfig', () => {
 
   it.each([
     'claude:claude-haiku-5-5',
-    'deepseek:deepseek-flash',
-    'deepseek:deepseek-v4-pro',
     'togetherai:deepseek-ai/DeepSeek-V4.1-Flash-1017',
   ])('allows optional thinking with effort for %s', (model) => {
     expect(getThinkingConfig(model)).toEqual({
@@ -62,6 +61,57 @@ describe('getThinkingConfig', () => {
       forceEnabled: false,
       reasoningLevel: true,
     });
+  });
+
+  it.each(['deepseek-flash', 'deepseek-v4-pro'])(
+    'uses the direct DeepSeek metadata for %s',
+    (model) => {
+      expect(
+        modelsConfig[Models.DeepSeek].modelTypes.map((entry) => entry.value),
+      ).toContain(model);
+      const config = getThinkingConfig(`deepseek:${model}`);
+      expect(config.forceEnabled).toBe(false);
+      expect(getReasoningEfforts(config)).toEqual(['low', 'high', 'max']);
+      expect(normalizeReasoningEffort(config, undefined)).toBe('high');
+      expect(normalizeReasoningEffort(config, 'medium')).toBe('high');
+      expect(normalizeReasoningEffort(config, 'xhigh')).toBe('high');
+      expect(normalizeReasoningEffort(config, 'max')).toBe('max');
+    },
+  );
+
+  it.each([
+    [Models.OpenAI, 'openai'],
+    [Models.OpenAILegacy, 'openai-legacy'],
+  ] as const)(
+    'makes all supported GPT-6 IDs selectable in %s',
+    (provider, prefix) => {
+      const selectable = modelsConfig[provider].modelTypes.map(
+        (model) => model.value,
+      );
+      const known = Object.keys(MODELS_WITH_THINKING_SUPPORT).filter((id) =>
+        id.startsWith(`${prefix}:gpt-6`),
+      );
+      expect(known).toHaveLength(4);
+      for (const id of known)
+        expect(selectable).toContain(id.slice(prefix.length + 1));
+    },
+  );
+
+  it('keeps every effort default and alias within the model-specific accepted list', () => {
+    for (const model of Object.keys(MODELS_WITH_THINKING_SUPPORT)) {
+      const config = getThinkingConfig(model);
+      const efforts = getReasoningEfforts(config);
+      if (config.reasoningLevel) {
+        expect(efforts).toContain(
+          normalizeReasoningEffort(config, undefined),
+        );
+        for (const alias of Object.values(config.reasoningEffortAliases ?? {}))
+          expect(efforts).toContain(alias);
+      } else {
+        expect(efforts).toEqual([]);
+        expect(normalizeReasoningEffort(config, 'high')).toBeUndefined();
+      }
+    }
   });
 
   it.each([

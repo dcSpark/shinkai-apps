@@ -84,8 +84,22 @@ export const MODELS_WITH_THINKING_SUPPORT = {
   'gemini:gemini-3.8-flash': { forceEnabled: true, reasoningLevel: true },
   'gemini:gemini-3.5-flash-lite': { forceEnabled: true, reasoningLevel: true },
   'gemini:gemini-4-argon': { forceEnabled: true, reasoningLevel: true },
-  'deepseek:deepseek-flash': { forceEnabled: false, reasoningLevel: true },
-  'deepseek:deepseek-v4-pro': { forceEnabled: false, reasoningLevel: true },
+  // https://api-docs.deepseek.com/api/list-models/
+  ...Object.fromEntries(
+    ['deepseek-flash', 'deepseek-v4-pro'].map((model) => [
+      `deepseek:${model}`,
+      {
+        forceEnabled: false,
+        reasoningLevel: true,
+        reasoningEfforts: ['low', 'high', 'max'] as const,
+        defaultReasoningEffort: 'high' as const,
+        reasoningEffortAliases: {
+          medium: 'high' as const,
+          xhigh: 'high' as const,
+        },
+      },
+    ]),
+  ),
   'grok:grok-4.7': { forceEnabled: true, reasoningLevel: false },
   'togetherai:moonshotai/Kimi-K3': {
     forceEnabled: false,

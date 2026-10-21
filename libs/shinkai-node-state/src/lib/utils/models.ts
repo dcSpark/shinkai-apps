@@ -25,6 +25,10 @@ export const modelsConfig = {
         value: 'gpt-6.1-sol',
       },
       {
+        name: 'GPT 6 Sol',
+        value: 'gpt-6-sol',
+      },
+      {
         name: 'GPT 6 Luna',
         value: 'gpt-6-luna',
       },
@@ -116,6 +120,10 @@ export const modelsConfig = {
       {
         name: 'GPT 6.1 Sol',
         value: 'gpt-6.1-sol',
+      },
+      {
+        name: 'GPT 6 Sol',
+        value: 'gpt-6-sol',
       },
       {
         name: 'GPT 6 Luna',
