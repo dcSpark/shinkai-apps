@@ -49,6 +49,17 @@ export const MODELS_WITH_THINKING_SUPPORT = {
   'deepseek:deepseek-flash': { forceEnabled: false, reasoningLevel: true },
   'deepseek:deepseek-v4-pro': { forceEnabled: false, reasoningLevel: true },
   'grok:grok-4.7': { forceEnabled: true, reasoningLevel: false },
+  'togetherai:moonshotai/Kimi-K3': {
+    forceEnabled: false,
+    reasoningLevel: true,
+    reasoningEfforts: ['low', 'high', 'max'],
+    defaultReasoningEffort: 'max',
+    reasoningEffortAliases: { medium: 'high' },
+  },
+  'togetherai:MiniMaxAI/MiniMax-M3': {
+    forceEnabled: false,
+    reasoningLevel: false,
+  },
   'togetherai:Qwen/Qwen3.5-9B': { forceEnabled: false, reasoningLevel: false },
   'togetherai:deepseek-ai/DeepSeek-V4.1-Flash-1017': {
     forceEnabled: false,

@@ -46,6 +46,8 @@ import { useAuth } from '../../../store/auth';
 import { useSettings } from '../../../store/settings';
 import {
   getThinkingConfig,
+  getReasoningEfforts,
+  normalizeReasoningEffort,
   type ThinkingConfig,
 } from '../../../utils/thinking-config';
 import { ARTIFACTS_SYSTEM_PROMPT } from '../constants';
@@ -55,7 +57,7 @@ export const chatConfigFormSchema = z.object({
   stream: z.boolean(),
   useTools: z.boolean(),
   thinking: z.boolean(),
-  reasoningEffort: z.enum(['low', 'medium', 'high']).optional(),
+  reasoningEffort: z.enum(['low', 'medium', 'high', 'max']).optional(),
   webSearchEnabled: z.boolean().optional(),
   customPrompt: z.string().optional(),
   temperature: z.number(),
@@ -316,14 +318,21 @@ function ChatConfigForm({ form, thinkingConfig }: ChatConfigFormProps) {
                 Reasoning Effort
               </FormLabel>
               <FormControl>
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select
+                  value={
+                    normalizeReasoningEffort(thinkingConfig, field.value) ?? ''
+                  }
+                  onValueChange={field.onChange}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select reasoning effort" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
+                    {getReasoningEfforts(thinkingConfig).map((effort) => (
+                      <SelectItem key={effort} value={effort}>
+                        {effort.charAt(0).toUpperCase() + effort.slice(1)}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -446,7 +455,9 @@ export function UpdateChatConfigActionBarBase({
         top_k: data.topK,
         use_tools: data.useTools,
         thinking: data.thinking,
-        reasoning_effort: data.reasoningEffort,
+        reasoning_effort: data.thinking
+          ? normalizeReasoningEffort(thinkingConfig, data.reasoningEffort)
+          : undefined,
         web_search_enabled: data.webSearchEnabled,
       },
     });

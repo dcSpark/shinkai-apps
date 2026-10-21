@@ -82,7 +82,7 @@ const createTaskFormSchema = z.object({
     stream: z.boolean().optional(),
     use_tools: z.boolean().optional(),
     thinking: z.boolean().optional(),
-    reasoning_effort: z.enum(['low', 'medium', 'high']).optional(),
+    reasoning_effort: z.enum(['low', 'medium', 'high', 'max']).optional(),
     web_search_enabled: z.boolean().optional(),
   }),
   jobMessage: z.object({

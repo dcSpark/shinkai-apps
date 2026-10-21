@@ -366,10 +366,6 @@ export const modelsConfig = {
         name: 'Qwen 3.8 27B',
         value: 'qwen/qwen3.8-27b',
       },
-      {
-        name: 'Qwen 3.6 27B',
-        value: 'qwen/qwen3.6-27b',
-      },
       // Production Models
       { name: 'Groq Compound', value: 'groq/compound' },
       { name: 'Groq Compound Mini', value: 'groq/compound-mini' },

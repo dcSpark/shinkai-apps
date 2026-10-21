@@ -262,7 +262,7 @@ export type JobConfig = {
   stream?: boolean;
   use_tools?: boolean;
   thinking?: boolean;
-  reasoning_effort?: 'low' | 'medium' | 'high';
+  reasoning_effort?: 'low' | 'medium' | 'high' | 'max';
   web_search_enabled?: boolean;
   other_model_params?: Record<string, string>;
 };

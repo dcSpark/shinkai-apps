@@ -139,7 +139,11 @@ import { useAnalytics } from '../../lib/posthog-provider';
 import { useChatConversationWithOptimisticUpdates } from '../../pages/chat/chat-conversation';
 import { useAuth } from '../../store/auth';
 import { useSettings } from '../../store/settings';
-import { getThinkingConfig } from '../../utils/thinking-config';
+import {
+  getThinkingConfig,
+  getReasoningEfforts,
+  normalizeReasoningEffort,
+} from '../../utils/thinking-config';
 import { getToolRequiresConfigurations } from '../../utils/tools-configurations';
 import { AIModelSelector } from '../chat/chat-action-bar/ai-update-selection-action-bar';
 import { MessageList } from '../chat/components/message-list';
@@ -172,7 +176,7 @@ const agentFormSchema = z.object({
       use_tools: z.boolean(),
       stream: z.boolean(),
       thinking: z.boolean(),
-      reasoning_effort: z.enum(['low', 'medium', 'high']).optional(),
+      reasoning_effort: z.enum(['low', 'medium', 'high', 'max']).optional(),
       web_search_enabled: z.boolean().optional(),
       other_model_params: z.record(z.string()),
     })
@@ -676,6 +680,16 @@ function AgentForm({ mode }: AgentFormProps) {
     return getThinkingConfig(selectedProvider.model);
   }, [currentLLMProviderId, llmProviders]);
 
+  const reasoningEffort = form.watch('config.reasoning_effort');
+  useEffect(() => {
+    const normalized = normalizeReasoningEffort(
+      thinkingConfig,
+      reasoningEffort,
+    );
+    if (reasoningEffort !== normalized)
+      form.setValue('config.reasoning_effort', normalized);
+  }, [form, thinkingConfig, reasoningEffort]);
+
   // Check if thinking is enabled (either forced or manually enabled)
   const isThinkingEnabled =
     thinkingConfig.forceEnabled || form.watch('config.thinking');
@@ -929,9 +943,10 @@ function AgentForm({ mode }: AgentFormProps) {
               top_k: values.config?.top_k,
               use_tools: values.tools.length > 0,
               thinking: values.config?.thinking ?? DEFAULT_CHAT_CONFIG.thinking,
-              reasoning_effort:
-                values.config?.reasoning_effort ??
-                DEFAULT_CHAT_CONFIG.reasoning_effort,
+              reasoning_effort: normalizeReasoningEffort(
+                thinkingConfig,
+                values.config?.reasoning_effort,
+              ),
               web_search_enabled:
                 values.config?.web_search_enabled ??
                 DEFAULT_CHAT_CONFIG.web_search_enabled,
@@ -961,9 +976,10 @@ function AgentForm({ mode }: AgentFormProps) {
               top_k: values.config?.top_k,
               use_tools: values.tools.length > 0,
               thinking: values.config?.thinking ?? DEFAULT_CHAT_CONFIG.thinking,
-              reasoning_effort:
-                values.config?.reasoning_effort ??
-                DEFAULT_CHAT_CONFIG.reasoning_effort,
+              reasoning_effort: normalizeReasoningEffort(
+                thinkingConfig,
+                values.config?.reasoning_effort,
+              ),
               web_search_enabled:
                 values.config?.web_search_enabled ??
                 DEFAULT_CHAT_CONFIG.web_search_enabled,
@@ -1137,9 +1153,10 @@ function AgentForm({ mode }: AgentFormProps) {
                 use_tools: values.tools.length > 0,
                 thinking:
                   values.config?.thinking ?? DEFAULT_CHAT_CONFIG.thinking,
-                reasoning_effort:
-                  values.config?.reasoning_effort ??
-                  DEFAULT_CHAT_CONFIG.reasoning_effort,
+                reasoning_effort: normalizeReasoningEffort(
+                  thinkingConfig,
+                  values.config?.reasoning_effort,
+                ),
                 web_search_enabled:
                   values.config?.web_search_enabled ??
                   DEFAULT_CHAT_CONFIG.web_search_enabled,
@@ -1171,9 +1188,10 @@ function AgentForm({ mode }: AgentFormProps) {
                 use_tools: values.tools.length > 0,
                 thinking:
                   values.config?.thinking ?? DEFAULT_CHAT_CONFIG.thinking,
-                reasoning_effort:
-                  values.config?.reasoning_effort ??
-                  DEFAULT_CHAT_CONFIG.reasoning_effort,
+                reasoning_effort: normalizeReasoningEffort(
+                  thinkingConfig,
+                  values.config?.reasoning_effort,
+                ),
                 web_search_enabled:
                   values.config?.web_search_enabled ??
                   DEFAULT_CHAT_CONFIG.web_search_enabled,
@@ -1664,22 +1682,31 @@ function AgentForm({ mode }: AgentFormProps) {
                                           </div>
                                           <FormControl>
                                             <Select
-                                              value={field.value}
+                                              value={
+                                                normalizeReasoningEffort(
+                                                  thinkingConfig,
+                                                  field.value,
+                                                ) ?? ''
+                                              }
                                               onValueChange={field.onChange}
                                             >
                                               <SelectTrigger className="!h-10 w-[120px] py-2 pr-10 [&>svg]:!top-2.5">
                                                 <SelectValue placeholder="Select effort" />
                                               </SelectTrigger>
                                               <SelectContent>
-                                                <SelectItem value="low">
-                                                  Low
-                                                </SelectItem>
-                                                <SelectItem value="medium">
-                                                  Medium
-                                                </SelectItem>
-                                                <SelectItem value="high">
-                                                  High
-                                                </SelectItem>
+                                                {getReasoningEfforts(
+                                                  thinkingConfig,
+                                                ).map((effort) => (
+                                                  <SelectItem
+                                                    key={effort}
+                                                    value={effort}
+                                                  >
+                                                    {effort
+                                                      .charAt(0)
+                                                      .toUpperCase() +
+                                                      effort.slice(1)}
+                                                  </SelectItem>
+                                                ))}
                                               </SelectContent>
                                             </Select>
                                           </FormControl>
