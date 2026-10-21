@@ -14,6 +14,15 @@ const legacyMapTypes: Record<string, string> = {
   densitymapbox: 'densitymap',
 };
 
+// Plotly 4 removed the Stamen aliases. These substitutes need no provider token;
+// they keep saved maps usable, but do not reproduce the original Stamen artwork.
+// https://plotly.com/javascript/maplibre-migration/
+const legacyMapStyles: Record<string, string> = {
+  'stamen-terrain': 'outdoors',
+  'stamen-toner': 'carto-positron',
+  'stamen-watercolor': 'carto-voyager',
+};
+
 function isObject(value: unknown): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -43,6 +52,18 @@ function assertMapStyleSupported(value: unknown): void {
 
 function mapTraceType(type: string): string {
   return hasOwn(legacyMapTypes, type) ? legacyMapTypes[type] : type;
+}
+
+function convertMapStyle(value: unknown): unknown {
+  return typeof value === 'string' && hasOwn(legacyMapStyles, value)
+    ? legacyMapStyles[value]
+    : value;
+}
+
+function convertMapSettings(value: unknown): unknown {
+  return isObject(value) && hasOwn(value, 'style')
+    ? { ...value, style: convertMapStyle(value.style) }
+    : value;
 }
 
 function convertTrace(value: unknown): unknown {
@@ -77,6 +98,7 @@ function convertAction(value: unknown): unknown {
     if (!isObject(update)) return update;
     return Object.fromEntries(
       Object.entries(update).map(([key, item]) => {
+        let converted = item;
         if (layout && /^mapbox\d*(\.|$)/.test(key)) {
           assertMapStyleSupported(item);
           if (
@@ -86,10 +108,15 @@ function convertAction(value: unknown): unknown {
           ) {
             assertMapStyleSupported({ accesstoken: item });
           }
+          if (/^mapbox\d*\.style$/.test(key)) {
+            converted = convertMapStyle(item);
+          } else if (/^mapbox\d*$/.test(key)) {
+            converted = convertMapSettings(item);
+          }
         }
         return [
           layout ? layoutKey(key) : key,
-          layout ? item : traceValue(key, item),
+          layout ? converted : traceValue(key, item),
         ];
       }),
     );
@@ -102,8 +129,11 @@ function convertAction(value: unknown): unknown {
     ) {
       const key = args[0];
       if (method === 'relayout') {
-        convertUpdate({ [key]: args[1] }, true);
-        return [layoutKey(key), ...args.slice(1)];
+        const update = convertUpdate({ [key]: args[1] }, true) as JsonObject;
+        const converted = [...args];
+        converted[0] = layoutKey(key);
+        if (args.length > 1) converted[1] = update[layoutKey(key)];
+        return converted;
       }
       return [key, traceValue(key, args[1]), ...args.slice(2)];
     }
@@ -157,7 +187,10 @@ function convertLayout(
     if (isObject(map)) {
       if (activeMaps.has(key)) assertMapStyleSupported(map);
       // Plotly 4 fits map bounds by default. Keep the previous initial view.
-      layout[target] = { ...map, fitbounds: map.fitbounds ?? false };
+      layout[target] = {
+        ...(convertMapSettings(map) as JsonObject),
+        fitbounds: map.fitbounds ?? false,
+      };
     } else {
       layout[target] = map;
     }

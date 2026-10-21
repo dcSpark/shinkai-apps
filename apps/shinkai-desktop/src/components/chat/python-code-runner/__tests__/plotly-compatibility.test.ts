@@ -78,6 +78,89 @@ describe('saved Python Plotly map figures', () => {
     ]);
   });
 
+  it.each([
+    ['stamen-terrain', 'outdoors'],
+    ['stamen-toner', 'carto-positron'],
+    ['stamen-watercolor', 'carto-voyager'],
+  ])(
+    'replaces removed %s tiles with %s without changing the saved chart',
+    (style, replacement) => {
+      const input = {
+        data: [
+          { type: 'scattermapbox', subplot: 'mapbox2', lat: [1], lon: [2] },
+        ],
+        layout: {
+          mapbox2: { style, zoom: 3 },
+          template: { layout: { mapbox2: { style } } },
+          updatemenus: [
+            {
+              buttons: [
+                {
+                  method: 'relayout',
+                  args: [{ 'mapbox2.style': style }],
+                  args2: ['mapbox2.style', style],
+                },
+                { method: 'update', args: [{}, { mapbox2: { style } }] },
+              ],
+            },
+          ],
+          sliders: [
+            { steps: [{ method: 'relayout', args: ['mapbox2', { style }] }] },
+          ],
+        },
+        frames: [{ name: 'next', layout: { mapbox2: { style, zoom: 5 } } }],
+      };
+      const original = structuredClone(input);
+      const output = preparePlotlyFigure(input);
+
+      expect(output.layout).toEqual({
+        map2: { style: replacement, zoom: 3, fitbounds: false },
+        template: {
+          layout: { map2: { style: replacement, fitbounds: false } },
+        },
+        updatemenus: [
+          {
+            buttons: [
+              {
+                method: 'relayout',
+                args: [{ 'map2.style': replacement }],
+                args2: ['map2.style', replacement],
+              },
+              {
+                method: 'update',
+                args: [{}, { map2: { style: replacement } }],
+              },
+            ],
+          },
+        ],
+        sliders: [
+          {
+            steps: [
+              { method: 'relayout', args: ['map2', { style: replacement }] },
+            ],
+          },
+        ],
+      });
+      expect(output.frames?.[0].layout).toEqual({
+        map2: { style: replacement, zoom: 5, fitbounds: false },
+      });
+      expect(input).toEqual(original);
+    },
+  );
+
+  it.each([
+    'open-street-map',
+    'https://example.com/map-style.json',
+    { version: 8, sources: {}, layers: [] },
+  ])('keeps supported styles and custom definitions unchanged: %j', (style) => {
+    expect(
+      preparePlotlyFigure({
+        data: [{ type: 'scattermapbox' }],
+        layout: { mapbox: { style } },
+      }).layout,
+    ).toEqual({ map: { style, fitbounds: false } });
+  });
+
   it('keeps ordinary charts with inactive Python map templates usable', () => {
     const input = {
       data: [{ type: 'bar', x: ['a'], y: [2] }],
@@ -105,14 +188,17 @@ describe('saved Python Plotly map figures', () => {
             scattermapbox: [{ marker: { size: 1 } }],
             scattermap: [{ marker: { size: 2 } }],
           },
-          layout: { mapbox: { zoom: 1 }, map: { zoom: 2 } },
+          layout: {
+            mapbox: { zoom: 1, style: 'stamen-terrain' },
+            map: { zoom: 2, style: 'light' },
+          },
         },
       },
     });
     expect(output.layout).toEqual({
       template: {
         data: { scattermap: [{ marker: { size: 2 } }] },
-        layout: { map: { zoom: 2 } },
+        layout: { map: { zoom: 2, style: 'light' } },
       },
     });
   });
