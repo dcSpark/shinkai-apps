@@ -45,15 +45,20 @@ function normalizeColor(value: unknown): unknown {
     if (!channels.every((channel) => channel >= 0 && channel < 1)) return value;
     channels = channels.map((channel) => Math.round(channel * 255));
   } else {
-    // Tinycolor, used by Plotly 3, accepts HSV percentages or 0–100 S/V.
-    const unit = (part: string, max: number) => {
-      const number = /^1\.0+$/.test(part) ? max : parseFloat(part);
-      const scaled = part.endsWith('%') ? (number * max) / 100 : number;
-      return Math.max(0, Math.min(scaled, max)) / max;
+    // TinyColor applies convertToPercentage to S/V only, then bound01.
+    // Hue stays in degrees (or percent), including its textual 1.0 special case.
+    // https://github.com/bgrins/TinyColor/blob/1.6.0/tinycolor.js
+    const unit = (part: string, max: number, fraction = false) => {
+      let input =
+        fraction && Number(part) <= 1 ? `${Number(part) * 100}%` : part;
+      if (input.includes('.') && parseFloat(input) === 1) input = '100%';
+      let number = Math.max(0, Math.min(parseFloat(input), max));
+      if (input.includes('%')) number = Math.trunc(number * max) / 100;
+      return Math.abs(number - max) < 0.000001 ? 1 : (number % max) / max;
     };
     const hue = unit(parts[0], 360) * 6;
-    const saturation = unit(parts[1], 100);
-    const brightness = unit(parts[2], 100);
+    const saturation = unit(parts[1], 100, true);
+    const brightness = unit(parts[2], 100, true);
     const chroma = brightness * saturation;
     const secondary = chroma * (1 - Math.abs((hue % 2) - 1));
     const base = brightness - chroma;

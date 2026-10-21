@@ -121,6 +121,8 @@ export const getModelObject = (
       return { OpenAILegacy: { model_type: modelType } };
     case Models.TogetherComputer:
       return { TogetherAI: { model_type: modelType } };
+    case Models.OpenRouter:
+      return { OpenRouter: { model_type: modelType } };
     case Models.Ollama:
       return { Ollama: { model_type: modelType } };
     case Models.Gemini:

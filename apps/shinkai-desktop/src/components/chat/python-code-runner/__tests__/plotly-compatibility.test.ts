@@ -626,6 +626,53 @@ describe('saved Python Plotly colors', () => {
 });
 
 describe('saved Python Plotly geographic bounds', () => {
+  it('keeps world bounds for geographic subplots reached through indexed controls', () => {
+    const input = {
+      data: [{ type: 'bar' }, { type: 'scatter' }],
+      layout: {
+        updatemenus: [
+          {
+            buttons: [
+              { method: 'restyle', args: ['type', 'scattergeo', [0]] },
+              {
+                method: 'update',
+                args: [{ type: 'choropleth', geo: 'geo2' }, {}, [1]],
+              },
+            ],
+          },
+        ],
+      },
+    };
+    const original = structuredClone(input);
+    expect(preparePlotlyFigure(input).layout).toEqual({
+      ...input.layout,
+      geo: { fitbounds: false },
+      geo2: { fitbounds: false },
+    });
+    expect(input).toEqual(original);
+  });
+
+  it('retains explicit geographic bounds in templates and alternate slider actions', () => {
+    const input = {
+      data: [{ type: 'bar' }],
+      layout: {
+        template: { layout: { geo2: { fitbounds: 'locations' } } },
+        sliders: [
+          {
+            steps: [
+              {
+                method: 'restyle',
+                args: ['type', 'bar'],
+                args2: [{ type: 'scattergeo', geo: 'geo2' }],
+              },
+            ],
+          },
+        ],
+      },
+    };
+    expect(preparePlotlyFigure(input).layout).toEqual(input.layout);
+  });
+
   it('keeps the world view for implicit and numbered geographic subplots', () => {
     const input = {
       data: [
@@ -702,6 +749,233 @@ describe('saved Python Plotly geographic bounds', () => {
 });
 
 describe('saved Python Plotly map figures', () => {
+  it.each(['scattermapbox', 'choroplethmapbox', 'densitymapbox'])(
+    'keeps the initial bounds of %s without an explicit map layout',
+    (type) => {
+      const input = { data: [{ type }, { type, subplot: 'mapbox2' }] };
+      const original = structuredClone(input);
+      expect(preparePlotlyFigure(input).layout).toEqual({
+        map: { fitbounds: false },
+        map2: { fitbounds: false },
+      });
+      expect(input).toEqual(original);
+    },
+  );
+
+  it('preserves explicit map bounds inherited from templates and frames', () => {
+    const input = {
+      data: [{ type: 'scattermapbox', subplot: 'mapbox2' }],
+      layout: {
+        template: {
+          layout: {
+            mapbox2: { fitbounds: true, center: { lat: 12, lon: 23 } },
+          },
+        },
+      },
+      frames: [{ name: 'next', layout: { mapbox2: { zoom: 4 } } }],
+    };
+    const original = structuredClone(input);
+    const output = preparePlotlyFigure(input);
+    expect(output.layout).toEqual({
+      template: {
+        layout: { map2: { fitbounds: true, center: { lat: 12, lon: 23 } } },
+      },
+    });
+    expect(output.frames?.[0].layout).toEqual({ map2: { zoom: 4 } });
+    expect(input).toEqual(original);
+  });
+
+  it('keeps legacy bounds when controls replace map settings and preserves explicit control values', () => {
+    const output = preparePlotlyFigure({
+      data: [{ type: 'scattermapbox' }],
+      layout: {
+        updatemenus: [
+          {
+            buttons: [
+              {
+                method: 'relayout',
+                args: ['mapbox', { style: 'white-bg' }],
+                args2: [{ mapbox: { style: 'white-bg', fitbounds: true } }],
+              },
+            ],
+          },
+        ],
+      },
+    });
+    expect(output.layout).toEqual({
+      map: { fitbounds: false },
+      updatemenus: [
+        {
+          buttons: [
+            {
+              method: 'relayout',
+              args: ['map', { style: 'white-bg', fitbounds: false }],
+              args2: [{ map: { style: 'white-bg', fitbounds: true } }],
+            },
+          ],
+        },
+      ],
+    });
+    expect(
+      preparePlotlyFigure({ data: [{ type: 'scattermap' }] }).layout,
+    ).toBeUndefined();
+  });
+
+  it.each([
+    {
+      type: 'scattermapbox',
+      symbol: 'airport',
+      color: ['red', 'blue'],
+      expected: 'black',
+    },
+    {
+      type: 'scattermapbox',
+      symbol: ['circle', 'airport'],
+      color: ['red', 'blue'],
+      expected: 'black',
+    },
+    {
+      type: 'scattermapbox',
+      symbol: 'circle',
+      color: ['red', 'blue'],
+      expected: ['red', 'blue'],
+    },
+    { type: 'scattermap', symbol: 'airport', color: 'red', expected: 'red' },
+  ])(
+    'preserves legacy icon colors without recoloring circle or modern markers: %j',
+    ({ type, symbol, color, expected }) => {
+      const input = { data: [{ type, marker: { symbol, color, size: 10 } }] };
+      const original = structuredClone(input);
+      expect(preparePlotlyFigure(input).data).toEqual([
+        { type: 'scattermap', marker: { symbol, color: expected, size: 10 } },
+      ]);
+      expect(input).toEqual(original);
+    },
+  );
+
+  it('preserves legacy icon identity in template defaults and partial frame updates', () => {
+    const input = {
+      data: [
+        {
+          type: 'scattermapbox',
+          marker: { symbol: 'circle', color: ['red', 'blue'] },
+        },
+      ],
+      layout: {
+        template: {
+          data: {
+            scattermapbox: [{ marker: { symbol: 'airport', color: 'red' } }],
+          },
+        },
+      },
+      frames: [
+        {
+          name: 'icon',
+          data: [{ marker: { symbol: 'airport', color: 'green' } }],
+        },
+        {
+          name: 'modern',
+          data: [
+            {
+              type: 'scattermap',
+              subplot: 'map2',
+              marker: { symbol: 'airport', color: 'green' },
+            },
+          ],
+        },
+      ],
+    };
+    const original = structuredClone(input);
+    const output = preparePlotlyFigure(input);
+    expect(output.data[0]).toEqual({
+      type: 'scattermap',
+      marker: { symbol: 'circle', color: ['red', 'blue'] },
+    });
+    expect(output.layout?.template).toEqual({
+      data: { scattermap: [{ marker: { symbol: 'airport', color: 'black' } }] },
+    });
+    expect(output.frames?.[0].data).toEqual([
+      { marker: { symbol: 'airport', color: 'black' } },
+    ]);
+    expect(output.frames?.[1].data).toEqual([
+      {
+        type: 'scattermap',
+        subplot: 'map2',
+        marker: { symbol: 'airport', color: 'green' },
+      },
+    ]);
+    expect(input).toEqual(original);
+  });
+
+  it('keeps icon changes black in controls and restores colored circle markers', () => {
+    const input = {
+      data: [
+        {
+          type: 'scattermapbox',
+          marker: { symbol: 'circle', color: ['red', 'blue'] },
+        },
+        {
+          type: 'scattermap',
+          subplot: 'map2',
+          marker: { symbol: 'airport', color: 'green' },
+        },
+      ],
+      layout: {
+        updatemenus: [
+          {
+            buttons: [
+              {
+                method: 'restyle',
+                args: ['marker.symbol', 'airport', [0]],
+                args2: ['marker.symbol', 'circle', [0]],
+              },
+              {
+                method: 'restyle',
+                args: [
+                  {
+                    'marker.symbol': ['airport', 'airport'],
+                    'marker.color': ['red', 'green'],
+                  },
+                  [0, 1],
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    };
+    const original = structuredClone(input);
+    const output = preparePlotlyFigure(input);
+    expect(output.layout?.updatemenus).toEqual([
+      {
+        buttons: [
+          {
+            method: 'restyle',
+            args: [
+              { 'marker.symbol': 'airport', 'marker.color': 'black' },
+              [0],
+            ],
+            args2: [
+              { 'marker.symbol': 'circle', 'marker.color': [['red', 'blue']] },
+              [0],
+            ],
+          },
+          {
+            method: 'restyle',
+            args: [
+              {
+                'marker.symbol': ['airport', 'airport'],
+                'marker.color': ['black', 'green'],
+              },
+              [0, 1],
+            ],
+          },
+        ],
+      },
+    ]);
+    expect(input).toEqual(original);
+  });
+
   it.each([
     { method: 'restyle', args: ['type', 'scattermapbox'] },
     { method: 'restyle', args: [{ type: ['scattermapbox'] }] },
@@ -984,7 +1258,7 @@ describe('saved Python Plotly map figures', () => {
               },
               {
                 method: 'update',
-                args: [{}, { map2: { style: replacement } }],
+                args: [{}, { map2: { style: replacement, fitbounds: false } }],
               },
             ],
           },
@@ -992,7 +1266,10 @@ describe('saved Python Plotly map figures', () => {
         sliders: [
           {
             steps: [
-              { method: 'relayout', args: ['map2', { style: replacement }] },
+              {
+                method: 'relayout',
+                args: ['map2', { style: replacement, fitbounds: false }],
+              },
             ],
           },
         ],
@@ -1051,7 +1328,7 @@ describe('saved Python Plotly map figures', () => {
     };
     const original = structuredClone(input);
     const output = preparePlotlyFigure(input);
-    const convertedMap = { style: 'light', zoom: 3 };
+    const convertedMap = { style: 'light', zoom: 3, fitbounds: false };
 
     expect(output.layout).toEqual({
       map2: { ...convertedMap, fitbounds: false },
@@ -1110,6 +1387,7 @@ describe('saved Python Plotly map figures', () => {
 
     expect(output.layout).toEqual({
       modebar: convertedModebar,
+      map: { fitbounds: false },
       template: { layout: { modebar: convertedModebar } },
       updatemenus: [
         {
@@ -1201,6 +1479,8 @@ describe('saved Python Plotly map figures', () => {
       },
     });
     expect(output.layout).toEqual({
+      map: { fitbounds: false },
+      map2: { fitbounds: false },
       updatemenus: [
         {
           buttons: [
@@ -1246,6 +1526,9 @@ describe('saved Python Plotly map figures', () => {
       },
     });
     expect(output.layout).toEqual({
+      map: { fitbounds: false },
+      map2: { fitbounds: false },
+      map3: { fitbounds: false },
       updatemenus: [
         {
           buttons: [

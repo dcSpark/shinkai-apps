@@ -190,13 +190,43 @@ function preserveOverlayUpdate(
   return update;
 }
 
+function legacyIconMarker(
+  marker: JsonObject,
+  inherited: JsonObject,
+  restoreCircle = false,
+): JsonObject | undefined {
+  const symbol = marker.symbol ?? inherited.symbol ?? 'circle';
+  // Plotly uses the circle layer only for the scalar 'circle'. Symbol arrays,
+  // including mixed arrays, use the icon layer and do not support color arrays.
+  if (
+    (typeof symbol === 'string' && symbol !== 'circle' && symbol.length > 0) ||
+    (Array.isArray(symbol) && symbol.length > 0)
+  )
+    return { ...marker, color: 'black' };
+  if (restoreCircle && marker.symbol === 'circle' && marker.color === undefined)
+    return { ...marker, color: inherited.color ?? null };
+  return undefined;
+}
+
 function convertTrace(
   value: unknown,
   typeHint?: string,
   inherited?: unknown,
+  originalMarker?: JsonObject,
 ): unknown {
   if (!isObject(value)) return value;
   const trace = normalizePlotlyColors(value, false) as JsonObject;
+  if ((value.type ?? typeHint) === 'scattermapbox') {
+    const marker = legacyIconMarker(
+      isObject(trace.marker) ? trace.marker : {},
+      originalMarker ??
+        (isObject(inherited) && isObject(inherited.marker)
+          ? inherited.marker
+          : {}),
+      originalMarker !== undefined,
+    );
+    if (marker) trace.marker = normalizePlotlyColors(marker, false, 'marker');
+  }
   if (typeof trace.type === 'string') {
     trace.type = mapTraceType(trace.type);
   }
@@ -329,6 +359,93 @@ function convertAction(
     }
     return converted;
   };
+  const iconUpdate = (
+    update: JsonObject,
+    original: JsonObject,
+    targets: unknown[],
+  ): JsonObject => {
+    if (
+      !['type', 'marker', 'marker.symbol', 'marker.color'].some((key) =>
+        hasOwn(original, key),
+      )
+    )
+      return update;
+    const at = (item: unknown, index: number) =>
+      Array.isArray(item) ? item[index % item.length] : item;
+    let changed = false;
+    const colors: unknown[] = [];
+    const markers = targets.map((target, index) => {
+      const replacement = at(update.marker, index);
+      const marker: JsonObject = isObject(replacement)
+        ? { ...replacement }
+        : {};
+      for (const key of ['symbol', 'color']) {
+        if (hasOwn(update, `marker.${key}`))
+          marker[key] = at(update[`marker.${key}`], index);
+      }
+      const legacy = hasOwn(original, 'type')
+        ? at(original.type, index) === 'scattermapbox'
+        : isObject(target) && target.legacyScattermapbox === true;
+      const templateData =
+        isObject(layoutContext) &&
+        isObject(layoutContext.template) &&
+        isObject(layoutContext.template.data)
+          ? layoutContext.template.data
+          : {};
+      const defaults = legacy
+        ? (templateData.scattermapbox ?? templateData.scattermap)
+        : templateData.scattermap;
+      const ordinal = traces
+        .slice(0, Math.max(0, traces.indexOf(target)))
+        .filter(
+          (trace) => isObject(trace) && trace.legacyScattermapbox === true,
+        ).length;
+      const template = Array.isArray(defaults)
+        ? defaults[ordinal % defaults.length]
+        : undefined;
+      const inherited = {
+        ...(isObject(template) && isObject(template.marker)
+          ? template.marker
+          : {}),
+        ...(!hasOwn(original, 'marker') &&
+        isObject(target) &&
+        isObject(target.marker)
+          ? target.marker
+          : {}),
+      };
+      const converted = legacy
+        ? legacyIconMarker(marker, inherited, true)
+        : undefined;
+      changed ||= converted !== undefined;
+      colors.push(
+        normalizePlotlyColors(
+          converted?.color ?? marker.color ?? inherited.color ?? null,
+          false,
+          'marker.color',
+        ),
+      );
+      return converted ?? replacement;
+    });
+    if (!changed) return update;
+    if (hasOwn(update, 'marker')) {
+      return {
+        ...update,
+        marker:
+          targets.length === 1 && !Array.isArray(update.marker)
+            ? markers[0]
+            : markers,
+      };
+    }
+    return {
+      ...update,
+      'marker.color':
+        colors.length === 1 &&
+        !Array.isArray(colors[0]) &&
+        !Array.isArray(update['marker.color'])
+          ? colors[0]
+          : colors,
+    };
+  };
   const convertUpdate = (
     update: unknown,
     layout: boolean,
@@ -343,9 +460,29 @@ function convertAction(
           if (/^mapbox\d*\.style$/.test(key)) {
             converted = convertMapStyle(item);
           } else if (/^mapbox\d*$/.test(key)) {
-            converted = convertMapSettings(item);
+            const target = layoutKey(key);
+            const defaults = isObject(layoutContext)
+              ? { template: layoutContext.template }
+              : undefined;
+            const updated = preserveMapBounds(
+              { [target]: convertMapSettings(item) },
+              new Set([target]),
+              defaults,
+            ) as JsonObject;
+            converted = updated[target];
           }
           assertMapStyleSupported(converted);
+        } else if (layout && /^geo\d*$/.test(key) && isObject(item)) {
+          const defaults = isObject(layoutContext)
+            ? { template: layoutContext.template }
+            : undefined;
+          converted = (
+            preserveGeoBounds(
+              { [key]: item },
+              new Set(),
+              defaults,
+            ) as JsonObject
+          )[key];
         } else if (layout && key === 'modebar') {
           converted = convertModebar(item);
         } else if (layout && /^modebar\.(add|remove)$/.test(key)) {
@@ -363,7 +500,7 @@ function convertAction(
     );
     return layout
       ? preserveOverlayUpdate(converted, layoutContext)
-      : splomUpdate(converted, targets);
+      : iconUpdate(splomUpdate(converted, targets), update, targets);
   };
   const convertArgs = (args: unknown): unknown => {
     if (!Array.isArray(args)) return args;
@@ -427,6 +564,7 @@ function convertLayout(
   traces: unknown[] = [],
 ): unknown {
   if (!isObject(value)) return value;
+  const convertedMaps = new Set<string>();
   const layout = normalizePlotlyColors(value, true) as JsonObject;
   if (hasOwn(layout, 'modebar'))
     layout.modebar = convertModebar(layout.modebar);
@@ -463,6 +601,7 @@ function convertLayout(
         `This figure has both ${key} and ${target} settings. Use one map layout.`,
       );
     }
+    convertedMaps.add(target);
     if (isObject(map)) {
       const settings = normalizePlotlyColors(
         convertMapSettings(map),
@@ -470,11 +609,7 @@ function convertLayout(
         target,
       ) as JsonObject;
       if (activeMaps.has(key)) assertMapStyleSupported(settings);
-      // Plotly 4 fits map bounds by default. Keep the previous initial view.
-      layout[target] = {
-        ...settings,
-        fitbounds: map.fitbounds ?? false,
-      };
+      layout[target] = settings;
     } else {
       layout[target] = map;
     }
@@ -501,7 +636,7 @@ function convertLayout(
         data.set(
           target,
           Array.isArray(traces)
-            ? traces.map((trace) => convertTrace(trace, target))
+            ? traces.map((trace) => convertTrace(trace, key))
             : traces,
         );
       }
@@ -512,12 +647,63 @@ function convertLayout(
       activeMaps,
       activeTypes,
       true,
-      { template: { data: template.data } },
+      {
+        template: {
+          data: isObject(value.template) ? value.template.data : template.data,
+        },
+      },
       traces,
     );
     layout.template = template;
   }
-  return preserveOverlayTicks(layout, inheritedLayout);
+  return preserveMapBounds(
+    preserveOverlayTicks(layout, inheritedLayout),
+    new Set([
+      ...convertedMaps,
+      ...[...activeMaps].map((key) => key.replace(/^mapbox/, 'map')),
+    ]),
+    inheritedLayout,
+  );
+}
+
+function preserveMapBounds(
+  value: unknown,
+  maps: Set<string>,
+  inherited?: unknown,
+  addMissing = false,
+): unknown {
+  if (!isObject(value) && (!addMissing || maps.size === 0)) return value;
+  const layout = isObject(value) ? { ...value } : {};
+  const bounds = (candidate: unknown, key: string): unknown => {
+    if (!isObject(candidate)) return undefined;
+    const settings = candidate[key] ?? candidate[key.replace(/^map/, 'mapbox')];
+    return isObject(settings) ? settings.fitbounds : undefined;
+  };
+  const template = (candidate: unknown) =>
+    isObject(candidate) && isObject(candidate.template)
+      ? candidate.template.layout
+      : undefined;
+  for (const key of maps) {
+    if (!addMissing && layout[key] === undefined) continue;
+    if (layout[key] === undefined && bounds(template(layout), key) != null)
+      continue;
+    if (layout[key] !== undefined && !isObject(layout[key])) continue;
+    const inheritedBounds = [
+      bounds(template(layout), key),
+      bounds(inherited, key),
+      bounds(template(inherited), key),
+    ].find((setting) => setting != null);
+    if (
+      bounds(layout, key) != null ||
+      (inheritedBounds != null && inheritedBounds !== false)
+    )
+      continue;
+    layout[key] = {
+      ...(layout[key] as JsonObject | undefined),
+      fitbounds: false,
+    };
+  }
+  return layout;
 }
 
 function preserveGeoBounds(
@@ -597,7 +783,7 @@ function controlMapTraces(
       const update = stringForm ? { [args[0]]: args[1] } : args[0];
       if (
         !isObject(update) ||
-        !['type', 'subplot'].some((key) => hasOwn(update, key))
+        !['type', 'subplot', 'geo'].some((key) => hasOwn(update, key))
       )
         continue;
       const indices = selection(
@@ -605,7 +791,7 @@ function controlMapTraces(
       );
       indices.forEach((target, position) => {
         const identity: JsonObject = {};
-        for (const key of ['type', 'subplot']) {
+        for (const key of ['type', 'subplot', 'geo']) {
           const value = Array.isArray(update[key])
             ? update[key][position % update[key].length]
             : update[key];
@@ -651,7 +837,7 @@ function controlMapTraces(
   const reachable: JsonObject[] = [];
   states.forEach((traceStates, traceIndex) => {
     const identity = (trace: JsonObject) =>
-      JSON.stringify([trace.type, trace.subplot]);
+      JSON.stringify([trace.type, trace.subplot, trace.geo]);
     const seen = new Set(traceStates.map(identity));
     for (let index = 0; index < traceStates.length; index += 1) {
       onReachable?.(traceStates[index], traceIndex);
@@ -673,6 +859,7 @@ export function preparePlotlyFigure(value: unknown): PlotlyFigure {
   if (!isObject(value) || !Array.isArray(value.data)) {
     throw new Error('This chart does not contain Plotly data.');
   }
+  const sourceData = value.data;
   const activeMaps = new Set<string>();
   const modernMaps = new Set<string>();
   const activeTypes = new Set<string>();
@@ -716,8 +903,17 @@ export function preparePlotlyFigure(value: unknown): PlotlyFigure {
     }
   }
   const controlSplomIndices = new Set<number>();
+  const controlLegacyMapIndices = new Set<number>();
   for (const trace of controlMapTraces(value, (trace, index) => {
     if (trace.type === 'splom') controlSplomIndices.add(index);
+    if (trace.type === 'scattermapbox') controlLegacyMapIndices.add(index);
+    if (trace.type === 'scattergeo' || trace.type === 'choropleth') {
+      activeGeos.add(
+        typeof trace.geo === 'string' && /^geo\d*$/.test(trace.geo)
+          ? trace.geo
+          : 'geo',
+      );
+    }
   })) {
     const type = typeof trace.type === 'string' ? trace.type : '';
     const subplot = typeof trace.subplot === 'string' ? trace.subplot : '';
@@ -752,31 +948,48 @@ export function preparePlotlyFigure(value: unknown): PlotlyFigure {
     }
   }
   const templateCounts = new Map<string, number>();
+  const originalMarkers: JsonObject[] = [];
   const data = value.data.map((trace) => {
     const type =
       isObject(trace) && typeof trace.type === 'string' ? trace.type : '';
     const defaults = templateData[type];
     const index = templateCounts.get(type) ?? 0;
     templateCounts.set(type, index + 1);
-    return convertTrace(
-      trace,
-      type,
-      Array.isArray(defaults) ? defaults[index % defaults.length] : undefined,
-    );
+    const inherited = Array.isArray(defaults)
+      ? defaults[index % defaults.length]
+      : undefined;
+    originalMarkers.push({
+      ...(isObject(inherited) && isObject(inherited.marker)
+        ? inherited.marker
+        : {}),
+      ...(isObject(trace) && isObject(trace.marker) ? trace.marker : {}),
+    });
+    return convertTrace(trace, type, inherited);
   });
   const controlTraces = data.map((trace, index) =>
-    controlSplomIndices.has(index) && isObject(trace)
-      ? { ...trace, type: 'splom' }
+    isObject(trace)
+      ? {
+          ...trace,
+          ...(controlSplomIndices.has(index) ? { type: 'splom' } : {}),
+          ...(controlLegacyMapIndices.has(index)
+            ? { legacyScattermapbox: true, marker: originalMarkers[index] }
+            : {}),
+        }
       : trace,
   );
   const layout = preserveGeoBounds(
-    convertLayout(
-      value.layout,
-      activeMaps,
-      activeTypes,
-      false,
+    preserveMapBounds(
+      convertLayout(
+        value.layout,
+        activeMaps,
+        activeTypes,
+        false,
+        undefined,
+        controlTraces,
+      ),
+      new Set([...activeMaps].map((key) => key.replace(/^mapbox/, 'map'))),
       undefined,
-      controlTraces,
+      true,
     ),
     activeGeos,
     undefined,
@@ -797,10 +1010,21 @@ export function preparePlotlyFigure(value: unknown): PlotlyFigure {
                 const inherited =
                   typeof target === 'number' ? data[target] : undefined;
                 const type =
-                  isObject(inherited) && typeof inherited.type === 'string'
-                    ? inherited.type
-                    : undefined;
-                return convertTrace(trace, type, inherited);
+                  typeof target === 'number' &&
+                  isObject(sourceData[target]) &&
+                  sourceData[target].type === 'scattermapbox'
+                    ? 'scattermapbox'
+                    : isObject(inherited) && typeof inherited.type === 'string'
+                      ? inherited.type
+                      : undefined;
+                return convertTrace(
+                  trace,
+                  type,
+                  inherited,
+                  typeof target === 'number'
+                    ? originalMarkers[target]
+                    : undefined,
+                );
               })
             : frame.data;
           return {
