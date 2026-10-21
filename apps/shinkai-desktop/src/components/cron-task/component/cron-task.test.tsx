@@ -4,6 +4,8 @@ import {
 } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/index';
 import { type RecurringTask } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/types';
 import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
+import { getAgents } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/index';
+import { getLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/index';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   act,
@@ -165,6 +167,72 @@ const cases = [
 describe.each(['create', 'edit'] as const)(
   'scheduled task %s API requests',
   (mode) => {
+    it.each(['network failure', 'missing target', 'filtered target'] as const)(
+      'preserves the original API config after %s',
+      async (fallback) => {
+        const client = new QueryClient({
+          defaultOptions: {
+            mutations: { retry: false },
+            queries: { retry: false },
+          },
+        });
+        const target =
+          fallback === 'missing target' ? 'unknown-provider' : 'gemini-agent';
+        if (fallback === 'network failure') {
+          vi.mocked(getLLMProviders).mockRejectedValueOnce(
+            new Error('Model metadata unavailable'),
+          );
+          vi.mocked(getAgents).mockRejectedValueOnce(
+            new Error('Agent metadata unavailable'),
+          );
+        } else {
+          client.setQueryData(
+            [FunctionKeyV2.GET_LLM_PROVIDERS, auth],
+            fallback === 'filtered target' ? [] : providers,
+          );
+          client.setQueryData(
+            [FunctionKeyV2.GET_AGENTS, auth],
+            fallback === 'filtered target' ? [] : agents,
+          );
+        }
+        render(
+          <QueryClientProvider client={client}>
+            <CronTask
+              mode={mode}
+              initialValues={mode === 'edit' ? initialValues : undefined}
+            />
+          </QueryClientProvider>,
+        );
+        const originalConfig = {
+          ...savedConfig,
+          thinking: false,
+          reasoning_effort: 'xhigh' as const,
+        };
+        const form = state.form as UseFormReturn;
+        act(() => {
+          form.setValue('cronExpression', '0 * * * *');
+          form.setValue('llmOrAgentId', target);
+          form.setValue('jobConfig', originalConfig);
+          form.setValue('jobMessage.content', 'Keep scheduled message');
+        });
+        fireEvent.submit(document.querySelector('form')!);
+        const request =
+          mode === 'create' ? createRecurringTask : setRecurringTask;
+        await waitFor(() => expect(request).toHaveBeenCalledOnce());
+        const action = vi.mocked(request).mock.calls[0][2].action;
+        expect(action).toMatchObject({
+          CreateJobWithConfigAndMessage: {
+            llm_provider: target,
+            config: originalConfig,
+            message: { content: 'Keep scheduled message' },
+          },
+        });
+        expect(action.CreateJobWithConfigAndMessage.config).toEqual(
+          originalConfig,
+        );
+      },
+    );
+
     it.each(cases)('normalizes $name', async (testCase) => {
       const client = new QueryClient({
         defaultOptions: { mutations: { retry: false } },

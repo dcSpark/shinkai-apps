@@ -238,14 +238,10 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
           }),
         ]);
       } catch {
-        toast.error('Failed to load AI model settings');
-        return;
+        // Model metadata is optional. Keep the submitted config if it cannot
+        // be resolved, and let the actual task request report its own errors.
       }
       model = getCachedModel(queryClient, modelQueryInput, values.llmOrAgentId);
-      if (!model) {
-        toast.error('The selected AI is not available');
-        return;
-      }
     }
     const chatConfig = normalizeChatThinking(values.jobConfig, model);
     if (mode === 'create') {
