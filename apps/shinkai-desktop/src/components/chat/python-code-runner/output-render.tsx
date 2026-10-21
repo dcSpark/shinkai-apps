@@ -2,12 +2,44 @@ import { useTranslation } from '@shinkai_network/shinkai-i18n';
 import Plot from 'react-plotly.js';
 
 import { ErrorRender } from './error-render';
+import { preparePlotlyFigure } from './plotly-compatibility';
 import { type RunResult } from './python-code-runner-web-worker';
 import { StderrRender } from './stderr-render';
 import { StdoutRender } from './stdout-render';
 
 export type OutputRender = {
   result: RunResult;
+};
+
+const PlotlyFigureRender = ({ data }: { data: string }) => {
+  try {
+    const figure = preparePlotlyFigure(JSON.parse(data));
+    return (
+      <Plot
+        config={{ responsive: true, displayModeBar: true, scrollZoom: false }}
+        data={figure.data}
+        frames={figure.frames}
+        layout={{
+          ...figure.layout,
+          autosize: true,
+          margin: { l: 50, r: 50, b: 50, t: 50, pad: 4 },
+          height: 400,
+        }}
+        style={{ width: '100%', height: '100%' }}
+        useResizeHandler={true}
+      />
+    );
+  } catch (error) {
+    return (
+      <ErrorRender
+        error={
+          error instanceof Error
+            ? error.message
+            : 'This chart cannot be displayed.'
+        }
+      />
+    );
+  }
 };
 
 export const OutputRender = ({ result }: { result: RunResult }) => {
@@ -29,23 +61,7 @@ export const OutputRender = ({ result }: { result: RunResult }) => {
         {result?.result?.figures?.map((figure, index) => {
           return figure.type === 'plotly' ? (
             <div className="mb-4" key={index}>
-              <Plot
-                config={{
-                  responsive: true,
-                  displayModeBar: true,
-                  scrollZoom: false,
-                }}
-                data={JSON.parse(figure.data).data}
-                layout={{
-                  ...JSON.parse(figure.data).layout,
-                  autosize: true,
-                  margin: { l: 50, r: 50, b: 50, t: 50, pad: 4 },
-                  width: '100%',
-                  height: 400,
-                }}
-                style={{ width: '100%', height: '100%' }}
-                useResizeHandler={true}
-              />
+              <PlotlyFigureRender data={figure.data} />
             </div>
           ) : (
             <div
