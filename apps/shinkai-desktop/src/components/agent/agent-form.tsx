@@ -317,7 +317,7 @@ function AgentSideChat({
           top_k: DEFAULT_CHAT_CONFIG.top_k,
           use_tools: hasTools,
           thinking: DEFAULT_CHAT_CONFIG.thinking,
-          reasoning_effort: DEFAULT_CHAT_CONFIG.reasoning_effort,
+          reasoning_effort: undefined,
           web_search_enabled: DEFAULT_CHAT_CONFIG.web_search_enabled,
         },
       });
@@ -643,7 +643,7 @@ function AgentForm({ mode }: AgentFormProps) {
         other_model_params: {},
         use_tools: true,
         thinking: DEFAULT_CHAT_CONFIG.thinking,
-        reasoning_effort: DEFAULT_CHAT_CONFIG.reasoning_effort,
+        reasoning_effort: undefined,
         web_search_enabled: DEFAULT_CHAT_CONFIG.web_search_enabled,
       },
       llmProviderId: defaultAgentId,
@@ -682,6 +682,9 @@ function AgentForm({ mode }: AgentFormProps) {
 
   const reasoningEffort = form.watch('config.reasoning_effort');
   useEffect(() => {
+    // Keep an unset new value distinct from an explicit saved effort.
+    // The selector and submission boundary apply the current model default.
+    if (reasoningEffort === undefined) return;
     const normalized = normalizeReasoningEffort(
       thinkingConfig,
       reasoningEffort,
@@ -711,7 +714,7 @@ function AgentForm({ mode }: AgentFormProps) {
         thinking: thinkingConfig.forceEnabled
           ? true
           : DEFAULT_CHAT_CONFIG.thinking,
-        reasoning_effort: DEFAULT_CHAT_CONFIG.reasoning_effort,
+        reasoning_effort: undefined,
         web_search_enabled: DEFAULT_CHAT_CONFIG.web_search_enabled,
       } as NonNullable<AgentFormValues['config']>);
 
@@ -723,7 +726,7 @@ function AgentForm({ mode }: AgentFormProps) {
       thinking: thinkingConfig.forceEnabled
         ? true
         : DEFAULT_CHAT_CONFIG.thinking,
-      reasoning_effort: DEFAULT_CHAT_CONFIG.reasoning_effort,
+      reasoning_effort: undefined,
       temperature: DEFAULT_CHAT_CONFIG.temperature,
       top_p: DEFAULT_CHAT_CONFIG.top_p,
       top_k: DEFAULT_CHAT_CONFIG.top_k,
@@ -754,9 +757,7 @@ function AgentForm({ mode }: AgentFormProps) {
         top_p: agent.config?.top_p ?? DEFAULT_CHAT_CONFIG.top_p,
         use_tools: agent.config?.use_tools ?? true,
         thinking: agent.config?.thinking ?? DEFAULT_CHAT_CONFIG.thinking,
-        reasoning_effort:
-          agent.config?.reasoning_effort ??
-          DEFAULT_CHAT_CONFIG.reasoning_effort,
+        reasoning_effort: agent.config?.reasoning_effort,
         web_search_enabled:
           agent.config?.web_search_enabled ??
           DEFAULT_CHAT_CONFIG.web_search_enabled,

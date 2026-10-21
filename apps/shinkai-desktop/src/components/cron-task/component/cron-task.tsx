@@ -116,7 +116,7 @@ function CronTask({ mode, initialValues }: CronTaskProps) {
         stream: DEFAULT_CHAT_CONFIG.stream ?? false,
         use_tools: DEFAULT_CHAT_CONFIG.use_tools ?? false,
         thinking: DEFAULT_CHAT_CONFIG.thinking,
-        reasoning_effort: DEFAULT_CHAT_CONFIG.reasoning_effort,
+        reasoning_effort: undefined,
         web_search_enabled: DEFAULT_CHAT_CONFIG.web_search_enabled,
       },
       llmOrAgentId: defaultAgentId,

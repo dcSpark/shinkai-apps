@@ -168,7 +168,7 @@ const EmptyMessage = () => {
       topK: DEFAULT_CHAT_CONFIG.top_k,
       useTools: DEFAULT_CHAT_CONFIG.use_tools,
       thinking: DEFAULT_CHAT_CONFIG.thinking,
-      reasoningEffort: DEFAULT_CHAT_CONFIG.reasoning_effort,
+      reasoningEffort: undefined,
       webSearchEnabled: DEFAULT_CHAT_CONFIG.web_search_enabled,
     },
   });

@@ -168,11 +168,22 @@ describe('getThinkingConfig', () => {
   it('does not submit a saved model-specific effort after switching to other models', () => {
     const config = getThinkingConfig('openai:gpt-5.2');
     expect(getReasoningEfforts(config)).toEqual(['low', 'medium', 'high']);
-    expect(normalizeReasoningEffort(config, 'max')).toBeUndefined();
+    expect(normalizeReasoningEffort(config, 'max')).toBe('medium');
     expect(normalizeReasoningEffort(config, 'medium')).toBe('medium');
     expect(
       normalizeReasoningEffort(getThinkingConfig('togetherai:custom'), 'high'),
     ).toBe('high');
+  });
+
+  it('uses the current default after a round trip through a toggle-only model', () => {
+    const kimi = getThinkingConfig('togetherai:moonshotai/Kimi-K3');
+    const minimax = getThinkingConfig('togetherai:MiniMaxAI/MiniMax-M3');
+    const openai = getThinkingConfig('openai:gpt-5.2');
+    const cleared = normalizeReasoningEffort(minimax, 'max');
+    expect(cleared).toBeUndefined();
+    expect(normalizeReasoningEffort(openai, cleared)).toBe('medium');
+    expect(normalizeReasoningEffort(kimi, cleared)).toBe('max');
+    expect(normalizeReasoningEffort(kimi, 'medium')).toBe('high');
   });
 
   it('keeps existing model settings', () => {

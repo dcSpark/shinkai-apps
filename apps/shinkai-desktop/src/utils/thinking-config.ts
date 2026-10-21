@@ -80,7 +80,10 @@ export const normalizeReasoningEffort = (
   const normalized = effort
     ? (config?.reasoningEffortAliases?.[effort] ?? effort)
     : undefined;
+  const defaultEffort =
+    config.defaultReasoningEffort ??
+    (allowed.includes('medium') ? 'medium' : allowed[0]);
   return normalized && allowed.includes(normalized)
     ? normalized
-    : config?.defaultReasoningEffort;
+    : defaultEffort;
 };
