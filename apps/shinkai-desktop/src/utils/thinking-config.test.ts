@@ -12,12 +12,6 @@ import {
 
 describe('getThinkingConfig', () => {
   it.each([
-    'openai:gpt-6.1-sol',
-    'openai-legacy:gpt-6-astra',
-    'openai:gpt-6-sol',
-    'openai-legacy:gpt-6-sol',
-    'openai:gpt-6-luna',
-    'openai-legacy:gpt-6-luna',
     'claude:claude-fable-5-1',
     'claude:claude-opus-5-5',
     'claude:claude-sonnet-5-5',
@@ -30,6 +24,32 @@ describe('getThinkingConfig', () => {
       reasoningLevel: true,
     });
   });
+
+  it.each(['openai', 'openai-legacy'])(
+    'uses the verified GPT-6 effort contract for %s',
+    (provider) => {
+      for (const model of [
+        'gpt-6-astra',
+        'gpt-6.1-sol',
+        'gpt-6-sol',
+        'gpt-6-luna',
+      ]) {
+        const config = getThinkingConfig(`${provider}:${model}`);
+        expect(config.supportsThinking).toBe(true);
+        expect(config.forceEnabled).toBe(
+          ['gpt-6-astra', 'gpt-6.1-sol'].includes(model),
+        );
+        expect(getReasoningEfforts(config)).toEqual([
+          'low',
+          'medium',
+          'high',
+          'xhigh',
+          'max',
+        ]);
+        expect(normalizeReasoningEffort(config, 'xhigh')).toBe('xhigh');
+      }
+    },
+  );
 
   it.each([
     'claude:claude-haiku-5-5',
@@ -86,13 +106,28 @@ describe('getThinkingConfig', () => {
   });
 
   it.each([
-    ['openai/gpt-6-astra', true, ['low', 'medium', 'high', 'max'], 'medium'],
-    ['openai/gpt-6.1-sol', true, ['low', 'medium', 'high', 'max'], 'medium'],
-    ['openai/gpt-6-luna', false, ['low', 'medium', 'high', 'max'], 'medium'],
+    [
+      'openai/gpt-6-astra',
+      true,
+      ['low', 'medium', 'high', 'xhigh', 'max'],
+      'medium',
+    ],
+    [
+      'openai/gpt-6.1-sol',
+      true,
+      ['low', 'medium', 'high', 'xhigh', 'max'],
+      'medium',
+    ],
+    [
+      'openai/gpt-6-luna',
+      false,
+      ['low', 'medium', 'high', 'xhigh', 'max'],
+      'medium',
+    ],
     [
       'anthropic/claude-sonnet-5.5',
       true,
-      ['low', 'medium', 'high', 'max'],
+      ['low', 'medium', 'high', 'xhigh', 'max'],
       'high',
     ],
     ['google/gemini-4-argon', true, ['low', 'medium', 'high'], 'medium'],

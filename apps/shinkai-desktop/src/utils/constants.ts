@@ -26,15 +26,16 @@ export const MODELS_WITH_THINKING_SUPPORT = {
   ),
 
   // Current public API models. Keep provider prefixes equal to ModelPrefix.
-  // Effort controls use the existing low/medium/high menu.
+  // GPT-6 efforts and optional reasoning follow the OpenAI model contract.
   ...Object.fromEntries(
     ['openai', 'openai-legacy'].flatMap((provider) =>
       ['gpt-6.1-sol', 'gpt-6-sol', 'gpt-6-luna', 'gpt-6-astra'].map((model) => [
         `${provider}:${model}`,
         {
-          // The node omits reasoning when off; this does not disable the API default.
-          forceEnabled: true,
+          forceEnabled: model === 'gpt-6-astra' || model === 'gpt-6.1-sol',
           reasoningLevel: true,
+          reasoningEfforts: ['low', 'medium', 'high', 'xhigh', 'max'] as const,
+          defaultReasoningEffort: 'medium' as const,
         },
       ]),
     ),
@@ -51,7 +52,7 @@ export const MODELS_WITH_THINKING_SUPPORT = {
       {
         forceEnabled: true,
         reasoningLevel: true,
-        reasoningEfforts: ['low', 'medium', 'high', 'max'] as const,
+        reasoningEfforts: ['low', 'medium', 'high', 'xhigh', 'max'] as const,
         defaultReasoningEffort: model.startsWith('anthropic/')
           ? ('high' as const)
           : ('medium' as const),
@@ -61,7 +62,7 @@ export const MODELS_WITH_THINKING_SUPPORT = {
   'openrouter:openai/gpt-6-luna': {
     forceEnabled: false,
     reasoningLevel: true,
-    reasoningEfforts: ['low', 'medium', 'high', 'max'],
+    reasoningEfforts: ['low', 'medium', 'high', 'xhigh', 'max'],
     defaultReasoningEffort: 'medium',
   },
   'openrouter:google/gemini-4-argon': {

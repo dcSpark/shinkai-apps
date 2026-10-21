@@ -166,6 +166,40 @@ describe('chat config submission', () => {
     ).toBe('high');
   });
 
+  it('keeps Luna off for both OpenAI routes and preserves xhigh when enabled', () => {
+    for (const provider of ['openai', 'openai-legacy']) {
+      expect(
+        normalizeChatThinking(
+          { thinking: false, reasoning_effort: 'xhigh' },
+          `${provider}:gpt-6-luna`,
+        ),
+      ).toEqual({ thinking: false, reasoning_effort: undefined });
+      expect(
+        normalizeChatThinking(
+          { thinking: true, reasoning_effort: 'xhigh' },
+          `${provider}:gpt-6-luna`,
+        ).reasoning_effort,
+      ).toBe('xhigh');
+    }
+    for (const model of [
+      'openrouter:openai/gpt-6-astra',
+      'openrouter:anthropic/claude-sonnet-5.5',
+    ]) {
+      expect(
+        normalizeChatThinking(
+          { thinking: true, reasoning_effort: 'xhigh' },
+          model,
+        ).reasoning_effort,
+      ).toBe('xhigh');
+    }
+    expect(
+      normalizeChatThinking(
+        { thinking: true, reasoning_effort: 'xhigh' },
+        'togetherai:moonshotai/Kimi-K3',
+      ).reasoning_effort,
+    ).toBe('max');
+  });
+
   it('keeps streaming settings while applying forced thinking and toggle-only models', () => {
     expect(
       normalizeChatThinking(

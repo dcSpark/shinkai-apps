@@ -3,6 +3,7 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { PlusIcon } from '@radix-ui/react-icons';
 import * as SelectPrimitive from '@radix-ui/react-select'; // <-- Import SelectPrimitive
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { REASONING_EFFORTS } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import {
   type ShinkaiTool,
   type ShinkaiToolHeader,
@@ -176,7 +177,7 @@ const agentFormSchema = z.object({
       use_tools: z.boolean(),
       stream: z.boolean(),
       thinking: z.boolean(),
-      reasoning_effort: z.enum(['low', 'medium', 'high', 'max']).optional(),
+      reasoning_effort: z.enum(REASONING_EFFORTS).optional(),
       web_search_enabled: z.boolean().optional(),
       other_model_params: z.record(z.string()),
     })

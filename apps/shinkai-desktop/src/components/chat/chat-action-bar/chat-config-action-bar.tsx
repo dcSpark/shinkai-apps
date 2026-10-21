@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PopoverClose } from '@radix-ui/react-popover';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { REASONING_EFFORTS } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { extractJobIdFromInbox } from '@shinkai_network/shinkai-message-ts/utils/inbox_name_handler';
 import { useGetChatConfig } from '@shinkai_network/shinkai-node-state/v2/queries/getChatConfig/useGetChatConfig';
 import { useGetLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/useGetLLMProviders';
@@ -57,7 +58,7 @@ export const chatConfigFormSchema = z.object({
   stream: z.boolean(),
   useTools: z.boolean(),
   thinking: z.boolean(),
-  reasoningEffort: z.enum(['low', 'medium', 'high', 'max']).optional(),
+  reasoningEffort: z.enum(REASONING_EFFORTS).optional(),
   webSearchEnabled: z.boolean().optional(),
   customPrompt: z.string().optional(),
   temperature: z.number(),

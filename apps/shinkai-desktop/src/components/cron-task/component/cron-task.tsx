@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@shinkai_network/shinkai-i18n';
+import { REASONING_EFFORTS } from '@shinkai_network/shinkai-message-ts/api/jobs/types';
 import { type RecurringTask } from '@shinkai_network/shinkai-message-ts/api/recurring-tasks/types';
 import { DEFAULT_CHAT_CONFIG } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { useCreateRecurringTask } from '@shinkai_network/shinkai-node-state/v2/mutations/createRecurringTask/useCreateRecurringTask';
@@ -82,7 +83,7 @@ const createTaskFormSchema = z.object({
     stream: z.boolean().optional(),
     use_tools: z.boolean().optional(),
     thinking: z.boolean().optional(),
-    reasoning_effort: z.enum(['low', 'medium', 'high', 'max']).optional(),
+    reasoning_effort: z.enum(REASONING_EFFORTS).optional(),
     web_search_enabled: z.boolean().optional(),
   }),
   jobMessage: z.object({
