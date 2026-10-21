@@ -113,9 +113,21 @@ export const MODELS_WITH_THINKING_SUPPORT = {
     reasoningLevel: false,
   },
   'togetherai:Qwen/Qwen3.5-9B': { forceEnabled: false, reasoningLevel: false },
+  // Prefer the current model page's Low/High/Max contract over the generic
+  // reasoning guide's older two-level DeepSeek preview description.
+  'togetherai:deepseek-ai/DeepSeek-V4-Pro-0813': {
+    forceEnabled: false,
+    reasoningLevel: true,
+    reasoningEfforts: ['low', 'high', 'max'],
+    defaultReasoningEffort: 'high',
+    reasoningEffortAliases: { medium: 'high', xhigh: 'max' },
+  },
+  // The node maps these native model aliases to Together's numeric 50/75/100.
   'togetherai:deepseek-ai/DeepSeek-V4.1-Flash-1017': {
     forceEnabled: false,
     reasoningLevel: true,
+    reasoningEfforts: ['low', 'high', 'max'],
+    defaultReasoningEffort: 'high',
   },
   // The Groq adapter maps the Qwen thinking toggle, but not effort levels.
   'groq:qwen/qwen3.6-27b': { forceEnabled: false, reasoningLevel: false },

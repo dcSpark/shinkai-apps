@@ -211,6 +211,10 @@ export const modelsConfig = {
     apiUrl: 'https://api.together.ai/v1',
     modelTypes: [
       {
+        name: 'DeepSeek V4 Pro 0813',
+        value: 'deepseek-ai/DeepSeek-V4-Pro-0813',
+      },
+      {
         name: 'DeepSeek V4.1 Flash 1017',
         value: 'deepseek-ai/DeepSeek-V4.1-Flash-1017',
       },

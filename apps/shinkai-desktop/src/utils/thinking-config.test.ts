@@ -52,15 +52,28 @@ describe('getThinkingConfig', () => {
     },
   );
 
+  it.each(['claude:claude-haiku-5-5'])(
+    'allows optional thinking with effort for %s',
+    (model) => {
+      expect(getThinkingConfig(model)).toEqual({
+        supportsThinking: true,
+        forceEnabled: false,
+        reasoningLevel: true,
+      });
+    },
+  );
+
   it.each([
-    'claude:claude-haiku-5-5',
-    'togetherai:deepseek-ai/DeepSeek-V4.1-Flash-1017',
-  ])('allows optional thinking with effort for %s', (model) => {
-    expect(getThinkingConfig(model)).toEqual({
-      supportsThinking: true,
-      forceEnabled: false,
-      reasoningLevel: true,
-    });
+    'deepseek-ai/DeepSeek-V4-Pro-0813',
+    'deepseek-ai/DeepSeek-V4.1-Flash-1017',
+  ])('uses the verified Together DeepSeek effort contract for %s', (id) => {
+    const config = getThinkingConfig(`togetherai:${id}`);
+    expect(config.forceEnabled).toBe(false);
+    expect(getReasoningEfforts(config)).toEqual(['low', 'high', 'max']);
+    expect(normalizeReasoningEffort(config, undefined)).toBe('high');
+    expect(normalizeReasoningEffort(config, 'medium')).toBe('high');
+    for (const effort of ['low', 'high', 'max'] as const)
+      expect(normalizeReasoningEffort(config, effort)).toBe(effort);
   });
 
   it.each(['deepseek-flash', 'deepseek-v4-pro'])(
@@ -102,9 +115,7 @@ describe('getThinkingConfig', () => {
       const config = getThinkingConfig(model);
       const efforts = getReasoningEfforts(config);
       if (config.reasoningLevel) {
-        expect(efforts).toContain(
-          normalizeReasoningEffort(config, undefined),
-        );
+        expect(efforts).toContain(normalizeReasoningEffort(config, undefined));
         for (const alias of Object.values(config.reasoningEffortAliases ?? {}))
           expect(efforts).toContain(alias);
       } else {

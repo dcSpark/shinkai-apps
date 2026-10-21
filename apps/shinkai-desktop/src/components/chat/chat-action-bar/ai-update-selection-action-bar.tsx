@@ -49,7 +49,7 @@ const ollamaDescriptionMap = OLLAMA_MODELS_REPOSITORY.reduce(
   {} as Record<string, string>,
 );
 
-const nonOllamaProviderModels = {
+export const nonOllamaProviderModels = {
   'openai:gpt-6-astra': 'OpenAI GPT-6 Astra for text, images, and reasoning.',
   'openai:gpt-6.1-sol': 'OpenAI GPT-6.1 Sol for text, images, and reasoning.',
   'openai:gpt-6-sol': 'OpenAI GPT-6 Sol for text, images, and reasoning.',
