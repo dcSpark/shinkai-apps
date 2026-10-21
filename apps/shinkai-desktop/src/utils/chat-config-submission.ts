@@ -2,8 +2,10 @@ import { type JobConfig } from '@shinkai_network/shinkai-message-ts/api/jobs/typ
 import { FunctionKeyV2 } from '@shinkai_network/shinkai-node-state/v2/constants';
 import { type CreateJobInput } from '@shinkai_network/shinkai-node-state/v2/mutations/createJob/types';
 import { type UpdateChatConfigInput } from '@shinkai_network/shinkai-node-state/v2/mutations/updateChatConfig/types';
+import { getAgent } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/index';
 import { type GetAgentOutput } from '@shinkai_network/shinkai-node-state/v2/queries/getAgent/types';
 import { type GetAgentsOutput } from '@shinkai_network/shinkai-node-state/v2/queries/getAgents/types';
+import { getLLMProviders } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/index';
 import { type GetLLMProvidersOutput } from '@shinkai_network/shinkai-node-state/v2/queries/getLLMProviders/types';
 import { type GetProviderFromJobOutput } from '@shinkai_network/shinkai-node-state/v2/queries/getProviderFromJob/types';
 import { type QueryClient } from '@tanstack/react-query';
@@ -36,6 +38,19 @@ export const normalizeChatThinking = (
   };
 };
 
+const getCachedAgent = (
+  queryClient: QueryClient,
+  auth: { nodeAddress: string; token: string },
+  agentId: string,
+) =>
+  queryClient.getQueryData<GetAgentOutput>([
+    FunctionKeyV2.GET_AGENT,
+    { ...auth, agentId },
+  ]) ??
+  queryClient
+    .getQueryData<GetAgentsOutput>([FunctionKeyV2.GET_AGENTS, auth])
+    ?.find((agent) => agent.agent_id === agentId);
+
 export const getCachedModel = (
   queryClient: QueryClient,
   input: { nodeAddress: string; token: string },
@@ -46,32 +61,83 @@ export const getCachedModel = (
     FunctionKeyV2.GET_LLM_PROVIDERS,
     auth,
   ]);
-  const agents = queryClient.getQueryData<GetAgentsOutput>([
-    FunctionKeyV2.GET_AGENTS,
-    auth,
-  ]);
-  const agent = queryClient.getQueryData<GetAgentOutput>([
-    FunctionKeyV2.GET_AGENT,
-    { ...auth, agentId: selectedProviderId },
-  ]);
-  const providerId =
-    agent?.llm_provider_id ??
-    agents?.find((agent) => agent.agent_id === selectedProviderId)
-      ?.llm_provider_id ??
-    selectedProviderId;
-  return providers?.find((provider) => provider.id === providerId)?.model;
+  const directProvider = providers?.find(
+    (provider) => provider.id === selectedProviderId,
+  );
+  if (directProvider) return directProvider.model;
+  const agent = getCachedAgent(queryClient, auth, selectedProviderId);
+  return providers?.find((provider) => provider.id === agent?.llm_provider_id)
+    ?.model;
 };
 
 export const normalizeCreateJobInput = (
   queryClient: QueryClient,
   input: CreateJobInput,
 ): CreateJobInput => {
-  if (!input.chatConfig) return input;
+  const auth = { nodeAddress: input.nodeAddress, token: input.token };
   const model = getCachedModel(queryClient, input, input.llmProvider);
+  const thinkingConfig = getThinkingConfig(model);
+  if (!input.chatConfig) {
+    // Optional and unknown models keep server defaults, including agent config.
+    if (!thinkingConfig.forceEnabled) return input;
+    const providers = queryClient.getQueryData<GetLLMProvidersOutput>([
+      FunctionKeyV2.GET_LLM_PROVIDERS,
+      auth,
+    ]);
+    const agent = providers?.some(
+      (provider) => provider.id === input.llmProvider,
+    )
+      ? undefined
+      : getCachedAgent(queryClient, auth, input.llmProvider);
+    return {
+      ...input,
+      chatConfig: {
+        ...agent?.config,
+        thinking: true,
+        reasoning_effort: normalizeReasoningEffort(
+          thinkingConfig,
+          agent?.config?.reasoning_effort,
+        ),
+      },
+    };
+  }
   return {
     ...input,
     chatConfig: normalizeChatThinking(input.chatConfig, model),
   };
+};
+
+export const prepareCreateJobInput = async (
+  queryClient: QueryClient,
+  input: CreateJobInput,
+): Promise<CreateJobInput> => {
+  const auth = { nodeAddress: input.nodeAddress, token: input.token };
+  if (!getCachedModel(queryClient, auth, input.llmProvider)) {
+    try {
+      await queryClient.ensureQueryData({
+        queryKey: [FunctionKeyV2.GET_LLM_PROVIDERS, auth],
+        queryFn: () => getLLMProviders(auth),
+        retry: false,
+      });
+    } catch {
+      // Metadata is best effort; the real create request reports its own errors.
+    }
+    if (!getCachedModel(queryClient, auth, input.llmProvider)) {
+      try {
+        await queryClient.ensureQueryData({
+          queryKey: [
+            FunctionKeyV2.GET_AGENT,
+            { ...auth, agentId: input.llmProvider },
+          ],
+          queryFn: () => getAgent({ ...auth, agentId: input.llmProvider }),
+          retry: false,
+        });
+      } catch {
+        // Unknown or unavailable targets retain their submitted/server config.
+      }
+    }
+  }
+  return normalizeCreateJobInput(queryClient, input);
 };
 
 export type ChatConfigSubmissionInput = UpdateChatConfigInput & {

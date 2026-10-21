@@ -262,7 +262,7 @@ export const REASONING_EFFORTS = [
 ] as const;
 
 export type JobConfig = {
-  custom_prompt: string;
+  custom_prompt?: string;
   custom_system_prompt?: string;
   temperature?: number;
   seed?: number;

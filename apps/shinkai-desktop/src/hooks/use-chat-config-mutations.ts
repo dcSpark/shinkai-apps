@@ -6,19 +6,19 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import {
   type ChatConfigSubmissionInput,
-  normalizeCreateJobInput,
+  prepareCreateJobInput,
   normalizeUpdateChatConfigInput,
 } from '../utils/chat-config-submission';
 
-// Normalize immediately before the request, using existing model query data.
+// Resolve metadata and normalize before creating a job or sending its first message.
 export const useCreateJob = (
   options?: Parameters<typeof useCreateJobBase>[0],
 ) => {
   const queryClient = useQueryClient();
   return useCreateJobBase({
     ...options,
-    mutationFn: (input) =>
-      createJob(normalizeCreateJobInput(queryClient, input)),
+    mutationFn: async (input) =>
+      createJob(await prepareCreateJobInput(queryClient, input)),
   });
 };
 
