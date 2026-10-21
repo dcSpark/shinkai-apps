@@ -149,16 +149,127 @@ describe('saved Python Plotly map figures', () => {
   );
 
   it.each([
+    'light',
     'open-street-map',
     'https://example.com/map-style.json',
     { version: 8, sources: {}, layers: [] },
-  ])('keeps supported styles and custom definitions unchanged: %j', (style) => {
-    expect(
-      preparePlotlyFigure({
-        data: [{ type: 'scattermapbox' }],
-        layout: { mapbox: { style } },
-      }).layout,
-    ).toEqual({ map: { style, fitbounds: false } });
+  ])(
+    'removes obsolete tokens and keeps supported styles unchanged: %j',
+    (style) => {
+      expect(
+        preparePlotlyFigure({
+          data: [{ type: 'scattermapbox' }],
+          layout: { mapbox: { style, accesstoken: 'obsolete-token' } },
+        }).layout,
+      ).toEqual({ map: { style, fitbounds: false } });
+    },
+  );
+
+  it('removes obsolete map tokens from templates, frames, and map controls', () => {
+    const map = { style: 'light', accesstoken: 'obsolete-token', zoom: 3 };
+    const input = {
+      data: [{ type: 'scattermapbox', subplot: 'mapbox2', lat: [1], lon: [2] }],
+      layout: {
+        mapbox2: map,
+        template: { layout: { mapbox2: map } },
+        updatemenus: [
+          {
+            buttons: [
+              {
+                method: 'relayout',
+                args: [
+                  {
+                    'mapbox2.accesstoken': 'obsolete-token',
+                    'mapbox2.zoom': 4,
+                  },
+                ],
+                args2: ['mapbox2.accesstoken', 'obsolete-token'],
+              },
+              { method: 'update', args: [{}, { mapbox2: map }] },
+            ],
+          },
+        ],
+        sliders: [{ steps: [{ method: 'relayout', args: ['mapbox2', map] }] }],
+      },
+      frames: [{ name: 'next', layout: { mapbox2: map } }],
+    };
+    const original = structuredClone(input);
+    const output = preparePlotlyFigure(input);
+    const convertedMap = { style: 'light', zoom: 3 };
+
+    expect(output.layout).toEqual({
+      map2: { ...convertedMap, fitbounds: false },
+      template: { layout: { map2: { ...convertedMap, fitbounds: false } } },
+      updatemenus: [
+        {
+          buttons: [
+            { method: 'relayout', args: [{ 'map2.zoom': 4 }], args2: [{}] },
+            { method: 'update', args: [{}, { map2: convertedMap }] },
+          ],
+        },
+      ],
+      sliders: [
+        { steps: [{ method: 'relayout', args: ['map2', convertedMap] }] },
+      ],
+    });
+    expect(output.frames?.[0].layout).toEqual({
+      map2: { ...convertedMap, fitbounds: false },
+    });
+    expect(input).toEqual(original);
+  });
+
+  it('converts map modebar buttons in layouts, templates, frames, and controls', () => {
+    const modebar = {
+      add: ['zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox', 'toImage'],
+      remove: ['resetViewMapbox', 'zoomOutMapbox', 'zoomInMapbox', 'zoom2d'],
+      orientation: 'v',
+    };
+    const input = {
+      data: [{ type: 'scattermapbox', lat: [1], lon: [2] }],
+      layout: {
+        modebar,
+        template: { layout: { modebar } },
+        updatemenus: [
+          {
+            buttons: [
+              {
+                method: 'relayout',
+                args: ['modebar.add', modebar.add],
+                args2: ['modebar.remove', modebar.remove],
+              },
+              { method: 'update', args: [{}, { modebar }] },
+            ],
+          },
+        ],
+      },
+      frames: [{ name: 'next', layout: { modebar } }],
+    };
+    const original = structuredClone(input);
+    const output = preparePlotlyFigure(input);
+    const convertedModebar = {
+      add: ['zoomInMap', 'zoomOutMap', 'resetViewMap', 'toImage'],
+      remove: ['resetViewMap', 'zoomOutMap', 'zoomInMap', 'zoom2d'],
+      orientation: 'v',
+    };
+
+    expect(output.layout).toEqual({
+      modebar: convertedModebar,
+      template: { layout: { modebar: convertedModebar } },
+      updatemenus: [
+        {
+          buttons: [
+            {
+              method: 'relayout',
+              args: ['modebar.add', convertedModebar.add],
+              args2: ['modebar.remove', convertedModebar.remove],
+            },
+            { method: 'update', args: [{}, { modebar: convertedModebar }] },
+          ],
+        },
+      ],
+    });
+    expect(output.frames?.[0].layout).toEqual({ modebar: convertedModebar });
+    expect(input).toEqual(original);
   });
 
   it('keeps ordinary charts with inactive Python map templates usable', () => {
@@ -307,22 +418,43 @@ describe('saved Python Plotly map figures', () => {
           ],
         },
       }),
-    ).toThrow('Mapbox style or access token');
+    ).toThrow('Mapbox style or resource');
   });
 
   it.each([
     { style: 'mapbox://styles/custom/style' },
     { style: { sources: { tiles: { url: 'mapbox://tiles' } } } },
-    { style: 'light', accesstoken: 'token' },
+    { style: 'light', layers: [{ source: ['mapbox://tiles'] }] },
   ])(
     'reports unsupported Mapbox resources instead of removing them: %j',
     (mapbox) => {
       expect(() =>
         preparePlotlyFigure({
           data: [{ type: 'scattermapbox' }],
-          layout: { mapbox },
+          layout: { mapbox: { ...mapbox, accesstoken: 'obsolete-token' } },
         }),
-      ).toThrow('Mapbox style or access token');
+      ).toThrow('Mapbox style or resource');
+    },
+  );
+
+  it.each(['template', 'frame'])(
+    'keeps errors for unsupported Mapbox layers in a %s after token removal',
+    (location) => {
+      const layout = {
+        mapbox: {
+          style: 'light',
+          accesstoken: 'obsolete-token',
+          layers: [{ source: ['mapbox://tiles'] }],
+        },
+      };
+      expect(() =>
+        preparePlotlyFigure({
+          data: [{ type: 'scattermapbox' }],
+          ...(location === 'template'
+            ? { layout: { template: { layout } } }
+            : { frames: [{ name: 'next', layout }] }),
+        }),
+      ).toThrow('Mapbox style or resource');
     },
   );
 

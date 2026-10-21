@@ -23,6 +23,12 @@ const legacyMapStyles: Record<string, string> = {
   'stamen-watercolor': 'carto-voyager',
 };
 
+const legacyMapButtons: Record<string, string> = {
+  zoomInMapbox: 'zoomInMap',
+  zoomOutMapbox: 'zoomOutMap',
+  resetViewMapbox: 'resetViewMap',
+};
+
 function isObject(value: unknown): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -38,14 +44,9 @@ function hasOwn(value: JsonObject, key: string): boolean {
 }
 
 function assertMapStyleSupported(value: unknown): void {
-  if (
-    hasMapboxResource(value) ||
-    (isObject(value) &&
-      typeof value.accesstoken === 'string' &&
-      value.accesstoken.length > 0)
-  ) {
+  if (hasMapboxResource(value)) {
     throw new Error(
-      'This figure uses a Mapbox style or access token. Use a MapLibre style or an HTTPS map style URL without mapbox:// resources.',
+      'This figure uses an unsupported Mapbox style or resource. Use a MapLibre style or an HTTPS map style URL without mapbox:// resources.',
     );
   }
 }
@@ -61,9 +62,29 @@ function convertMapStyle(value: unknown): unknown {
 }
 
 function convertMapSettings(value: unknown): unknown {
-  return isObject(value) && hasOwn(value, 'style')
-    ? { ...value, style: convertMapStyle(value.style) }
+  if (!isObject(value)) return value;
+  const map = { ...value };
+  // Plotly 4 removed this field; its presence does not require Mapbox tiles.
+  delete map.accesstoken;
+  if (hasOwn(map, 'style')) map.style = convertMapStyle(map.style);
+  return map;
+}
+
+function convertModebarButtons(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(convertModebarButtons);
+  return typeof value === 'string' && hasOwn(legacyMapButtons, value)
+    ? legacyMapButtons[value]
     : value;
+}
+
+function convertModebar(value: unknown): unknown {
+  if (!isObject(value)) return value;
+  const modebar = { ...value };
+  for (const key of ['add', 'remove']) {
+    if (hasOwn(modebar, key))
+      modebar[key] = convertModebarButtons(modebar[key]);
+  }
+  return modebar;
 }
 
 function convertTrace(value: unknown): unknown {
@@ -97,26 +118,26 @@ function convertAction(value: unknown): unknown {
   const convertUpdate = (update: unknown, layout: boolean): unknown => {
     if (!isObject(update)) return update;
     return Object.fromEntries(
-      Object.entries(update).map(([key, item]) => {
+      Object.entries(update).flatMap(([key, item]) => {
+        if (layout && /^mapbox\d*\.accesstoken$/.test(key)) return [];
         let converted = item;
         if (layout && /^mapbox\d*(\.|$)/.test(key)) {
-          assertMapStyleSupported(item);
-          if (
-            /\.accesstoken$/.test(key) &&
-            typeof item === 'string' &&
-            item.length > 0
-          ) {
-            assertMapStyleSupported({ accesstoken: item });
-          }
           if (/^mapbox\d*\.style$/.test(key)) {
             converted = convertMapStyle(item);
           } else if (/^mapbox\d*$/.test(key)) {
             converted = convertMapSettings(item);
           }
+          assertMapStyleSupported(converted);
+        } else if (layout && key === 'modebar') {
+          converted = convertModebar(item);
+        } else if (layout && /^modebar\.(add|remove)$/.test(key)) {
+          converted = convertModebarButtons(item);
         }
         return [
-          layout ? layoutKey(key) : key,
-          layout ? converted : traceValue(key, item),
+          [
+            layout ? layoutKey(key) : key,
+            layout ? converted : traceValue(key, item),
+          ],
         ];
       }),
     );
@@ -130,6 +151,8 @@ function convertAction(value: unknown): unknown {
       const key = args[0];
       if (method === 'relayout') {
         const update = convertUpdate({ [key]: args[1] }, true) as JsonObject;
+        // A control that only sets the removed token becomes a no-op relayout.
+        if (!hasOwn(update, layoutKey(key))) return [update];
         const converted = [...args];
         converted[0] = layoutKey(key);
         if (args.length > 1) converted[1] = update[layoutKey(key)];
@@ -160,6 +183,8 @@ function convertLayout(
 ): unknown {
   if (!isObject(value)) return value;
   const layout = { ...value };
+  if (hasOwn(layout, 'modebar'))
+    layout.modebar = convertModebar(layout.modebar);
   for (const [collection, actions] of [
     ['updatemenus', 'buttons'],
     ['sliders', 'steps'],
@@ -185,10 +210,11 @@ function convertLayout(
       );
     }
     if (isObject(map)) {
-      if (activeMaps.has(key)) assertMapStyleSupported(map);
+      const settings = convertMapSettings(map) as JsonObject;
+      if (activeMaps.has(key)) assertMapStyleSupported(settings);
       // Plotly 4 fits map bounds by default. Keep the previous initial view.
       layout[target] = {
-        ...(convertMapSettings(map) as JsonObject),
+        ...settings,
         fitbounds: map.fitbounds ?? false,
       };
     } else {
