@@ -317,6 +317,101 @@ function preserveGeoBounds(
   return layout;
 }
 
+function controlMapTraces(figure: JsonObject): JsonObject[] {
+  const traces = figure.data as unknown[];
+  const states = traces.map((trace) => [isObject(trace) ? trace : {}]);
+  const updates = traces.map(() => [] as JsonObject[]);
+  const selection = (value: unknown): number[] => {
+    if (value === undefined) return traces.map((_, index) => index);
+    return (Array.isArray(value) ? value : [value]).flatMap((index) => {
+      if (typeof index !== 'number' || !Number.isInteger(index)) return [];
+      const target = index < 0 ? traces.length + index : index;
+      return target >= 0 && target < traces.length ? [target] : [];
+    });
+  };
+  const addAction = (action: unknown) => {
+    if (
+      !isObject(action) ||
+      !['restyle', 'update'].includes(String(action.method))
+    )
+      return;
+    for (const args of [action.args, action.args2]) {
+      if (!Array.isArray(args)) continue;
+      const stringForm =
+        action.method === 'restyle' && typeof args[0] === 'string';
+      const update = stringForm ? { [args[0]]: args[1] } : args[0];
+      if (
+        !isObject(update) ||
+        !['type', 'subplot'].some((key) => hasOwn(update, key))
+      )
+        continue;
+      const indices = selection(
+        args[action.method === 'update' || stringForm ? 2 : 1],
+      );
+      indices.forEach((target, position) => {
+        const identity: JsonObject = {};
+        for (const key of ['type', 'subplot']) {
+          const value = Array.isArray(update[key])
+            ? update[key][position % update[key].length]
+            : update[key];
+          if (typeof value === 'string') identity[key] = value;
+          else if (value === null) identity[key] = '';
+        }
+        updates[target].push(identity);
+      });
+    }
+  };
+  const addLayout = (layout: unknown) => {
+    if (!isObject(layout)) return;
+    for (const [collection, actions] of [
+      ['updatemenus', 'buttons'],
+      ['sliders', 'steps'],
+    ]) {
+      if (!Array.isArray(layout[collection])) continue;
+      for (const group of layout[collection]) {
+        if (isObject(group) && Array.isArray(group[actions]))
+          group[actions].forEach(addAction);
+      }
+    }
+    if (isObject(layout.template)) addLayout(layout.template.layout);
+  };
+  addLayout(figure.layout);
+  if (Array.isArray(figure.frames)) {
+    for (const frame of figure.frames) {
+      if (!isObject(frame)) continue;
+      addLayout(frame.layout);
+      if (!Array.isArray(frame.data)) continue;
+      const indices = Array.isArray(frame.traces)
+        ? selection(frame.traces)
+        : traces.map((_, index) => index);
+      frame.data.forEach((trace, position) => {
+        const target = indices[position];
+        if (isObject(trace) && target !== undefined)
+          states[target].push({ ...states[target][0], ...trace });
+      });
+    }
+  }
+  // Controls can be used in sequence. Keep type/subplot updates on the same
+  // trace together, and apply later updates to every reachable identity.
+  const reachable: JsonObject[] = [];
+  states.forEach((traceStates, traceIndex) => {
+    const identity = (trace: JsonObject) =>
+      JSON.stringify([trace.type, trace.subplot]);
+    const seen = new Set(traceStates.map(identity));
+    for (let index = 0; index < traceStates.length; index += 1) {
+      for (const update of updates[traceIndex]) {
+        const trace = { ...traceStates[index], ...update };
+        const key = identity(trace);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        traceStates.push(trace);
+        reachable.push(trace);
+      }
+    }
+  });
+  return reachable;
+}
+
 /** Keep saved Python Plotly 3 figures usable with the patched Plotly 4 renderer. */
 export function preparePlotlyFigure(value: unknown): PlotlyFigure {
   if (!isObject(value) || !Array.isArray(value.data)) {
@@ -362,6 +457,19 @@ export function preparePlotlyFigure(value: unknown): PlotlyFigure {
       throw new Error(
         'This figure mixes old and new map traces on the same map. Use separate map subplots.',
       );
+    }
+  }
+  for (const trace of controlMapTraces(value)) {
+    const type = typeof trace.type === 'string' ? trace.type : '';
+    const subplot = typeof trace.subplot === 'string' ? trace.subplot : '';
+    if (hasOwn(legacyMapTypes, type)) {
+      activeTypes.add(type);
+      activeMaps.add(/^mapbox\d*$/.test(subplot) ? subplot : 'mapbox');
+    } else if (
+      Object.values(legacyMapTypes).includes(type) &&
+      /^mapbox\d*$/.test(subplot)
+    ) {
+      activeMaps.add(subplot);
     }
   }
   const templateData =

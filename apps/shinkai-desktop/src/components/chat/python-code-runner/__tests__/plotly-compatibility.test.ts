@@ -285,6 +285,163 @@ describe('saved Python Plotly geographic bounds', () => {
 });
 
 describe('saved Python Plotly map figures', () => {
+  it.each([
+    { method: 'restyle', args: ['type', 'scattermapbox'] },
+    { method: 'restyle', args: [{ type: ['scattermapbox'] }] },
+    { method: 'update', args: [{ type: 'densitymapbox' }, {}] },
+    {
+      method: 'restyle',
+      args: ['type', 'bar'],
+      args2: ['type', 'choroplethmapbox'],
+    },
+  ])(
+    'rejects unsupported styles activated by a chart control: %j',
+    (button) => {
+      expect(() =>
+        preparePlotlyFigure({
+          data: [{ type: 'bar' }],
+          layout: {
+            mapbox: { style: 'mapbox://styles/private/map' },
+            updatemenus: [{ buttons: [button] }],
+          },
+        }),
+      ).toThrow('Mapbox style or resource');
+    },
+  );
+
+  it('checks numbered maps activated through indexed slider updates', () => {
+    const input = {
+      data: [{ type: 'bar' }, { type: 'scatter' }],
+      layout: {
+        mapbox2: { style: 'light' },
+        // The first trace stays a bar, so this map remains inactive.
+        mapbox3: { style: 'mapbox://styles/private/inactive' },
+        sliders: [
+          {
+            steps: [
+              {
+                label: 'Map',
+                method: 'update',
+                args: [
+                  {
+                    type: ['scattermapbox', 'bar'],
+                    subplot: ['mapbox2', 'mapbox3'],
+                  },
+                  {},
+                  [1, 0],
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    };
+    const original = structuredClone(input);
+    const output = preparePlotlyFigure(input);
+    expect(output.layout?.sliders).toEqual([
+      {
+        steps: [
+          {
+            label: 'Map',
+            method: 'update',
+            args: [
+              { type: ['scattermap', 'bar'], subplot: ['map2', 'map3'] },
+              {},
+              [1, 0],
+            ],
+          },
+        ],
+      },
+    ]);
+    expect(input).toEqual(original);
+    expect(() =>
+      preparePlotlyFigure({
+        ...input,
+        layout: {
+          ...input.layout,
+          mapbox2: { layers: [{ source: ['mapbox://tiles/private'] }] },
+        },
+      }),
+    ).toThrow('Mapbox style or resource');
+  });
+
+  it('combines sequential controls on the same trace without mixing different trace indices', () => {
+    const figure = (target: number) => ({
+      data: [{ type: 'bar' }, { type: 'bar' }],
+      layout: {
+        mapbox: { style: 'light' },
+        mapbox2: { style: 'mapbox://styles/private/map' },
+        updatemenus: [
+          {
+            buttons: [
+              { method: 'restyle', args: ['type', 'scattermapbox', [0]] },
+              { method: 'restyle', args: [{ subplot: ['mapbox2'] }, [target]] },
+            ],
+          },
+        ],
+      },
+    });
+    // The subplot control only changes a bar on trace 1.
+    expect(() => preparePlotlyFigure(figure(1))).not.toThrow();
+    // On trace 0, both actions can be used to reach the unsupported map.
+    expect(() => preparePlotlyFigure(figure(0))).toThrow(
+      'Mapbox style or resource',
+    );
+  });
+
+  it('validates maps reached through template and frame controls', () => {
+    const button = {
+      method: 'restyle',
+      args: [{ type: 'scattermapbox', subplot: 'mapbox2' }, -1],
+    };
+    for (const location of ['template', 'frame']) {
+      const controls = { updatemenus: [{ buttons: [button] }] };
+      const layout = { mapbox2: { style: 'mapbox://styles/private/map' } };
+      expect(() =>
+        preparePlotlyFigure({
+          data: [{ type: 'bar' }, { type: 'scatter' }],
+          ...(location === 'template'
+            ? { layout: { template: { layout: { ...layout, ...controls } } } }
+            : {
+                frames: [{ name: 'next', layout: { ...layout, ...controls } }],
+              }),
+        }),
+      ).toThrow('Mapbox style or resource');
+    }
+  });
+
+  it('uses legacy template defaults when only a control activates their map type', () => {
+    const output = preparePlotlyFigure({
+      data: [{ type: 'bar' }],
+      layout: {
+        template: {
+          data: {
+            scattermapbox: [{ marker: { size: 12 } }],
+            scattermap: [{ marker: { size: 4 } }],
+          },
+          layout: {
+            mapbox2: { style: 'stamen-toner' },
+            map2: { style: 'dark' },
+          },
+        },
+        updatemenus: [
+          {
+            buttons: [
+              {
+                method: 'restyle',
+                args: [{ type: 'scattermapbox', subplot: 'mapbox2' }],
+              },
+            ],
+          },
+        ],
+      },
+    });
+    expect(output.layout?.template).toEqual({
+      data: { scattermap: [{ marker: { size: 12 } }] },
+      layout: { map2: { style: 'carto-positron', fitbounds: false } },
+    });
+  });
+
   it('converts legacy map types and numbered maps without changing the input', () => {
     const input = {
       data: [

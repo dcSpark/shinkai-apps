@@ -27,7 +27,7 @@ export const normalizeChatThinking = (
   };
 };
 
-const getCachedModel = (
+export const getCachedModel = (
   queryClient: QueryClient,
   input: { nodeAddress: string; token: string },
   selectedProviderId: string,
